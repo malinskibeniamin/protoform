@@ -1,0 +1,412 @@
+syntax = "proto3";
+
+package protoform.conformance.v1;
+
+import "buf/validate/validate.proto";
+import "google/protobuf/any.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+import "protoform/conformance/v1/predefined.proto";
+
+message NumericMatrix {
+  bool enabled = 1;
+  int32 int32_value = 2;
+  sint32 sint32_value = 3;
+  sfixed32 sfixed32_value = 4;
+  uint32 uint32_value = 5;
+  fixed32 fixed32_value = 6;
+  sint64 sint64_value = 7;
+  fixed64 fixed64_value = 8;
+  sfixed64 sfixed64_value = 9;
+  float float_value = 10;
+  double double_value = 11;
+}
+
+enum MatrixStatus {
+  // buf:lint:ignore ENUM_NO_ALLOW_ALIAS
+  option allow_alias = true;
+
+  MATRIX_STATUS_UNSPECIFIED = 0;
+  MATRIX_STATUS_ACTIVE = 1;
+  MATRIX_STATUS_ENABLED = 1;
+  MATRIX_STATUS_PAUSED = 2;
+}
+
+message MatrixChild {
+  string name = 1 [(buf.validate.field).string.min_len = 1];
+}
+
+message CollectionMatrix {
+  repeated bool flags = 1;
+  repeated bytes blobs = 2;
+  repeated MatrixStatus statuses = 3;
+  repeated int64 identifiers = 4;
+  repeated float ratios = 5;
+  repeated double amounts = 6;
+  repeated MatrixChild children = 7;
+  map<bool, string> bool_keys = 8;
+  map<int32, string> int32_keys = 9;
+  map<sint32, string> sint32_keys = 10;
+  map<sfixed32, string> sfixed32_keys = 11;
+  map<uint32, string> uint32_keys = 12;
+  map<fixed32, string> fixed32_keys = 13;
+  map<int64, string> int64_keys = 14;
+  map<sint64, string> sint64_keys = 15;
+  map<sfixed64, string> sfixed64_keys = 16;
+  map<uint64, string> uint64_keys = 17;
+  map<fixed64, string> fixed64_keys = 18;
+}
+
+message PresenceMatrix {
+  optional bool optional_enabled = 1;
+  MatrixChild child = 2;
+
+  oneof selection {
+    string label = 3;
+    bool approved = 4;
+  }
+
+  google.protobuf.DoubleValue double_wrapper = 5;
+  google.protobuf.FloatValue float_wrapper = 6;
+  google.protobuf.Int64Value int64_wrapper = 7;
+  google.protobuf.UInt32Value uint32_wrapper = 8;
+  google.protobuf.UInt64Value uint64_wrapper = 9;
+  google.protobuf.BytesValue bytes_wrapper = 10;
+}
+
+message AnyMatrix {
+  google.protobuf.Any allowed_payload = 1 [
+    (buf.validate.field).any.in = "type.googleapis.com/google.protobuf.Struct"
+  ];
+  google.protobuf.Any denied_payload = 2 [
+    (buf.validate.field).any.not_in = "type.googleapis.com/google.protobuf.Value"
+  ];
+}
+
+message DynamicJsonMatrix {
+  google.protobuf.Struct object_value = 1;
+  google.protobuf.Value scalar_or_nested_value = 2;
+  google.protobuf.ListValue list_value = 3;
+  google.protobuf.Any any_value = 4;
+}
+
+message ValidationMatrix {
+  bool must_be_true = 1 [(buf.validate.field).bool.const = true];
+  bool must_be_false = 2 [(buf.validate.field).bool.const = false];
+  string exact_text = 3 [(buf.validate.field).string.const = "protoform"];
+  string code_point_length = 4 [(buf.validate.field).string = {
+    min_len: 2
+    max_len: 4
+  }];
+  string byte_length = 5 [(buf.validate.field).string = {
+    min_bytes: 4
+    max_bytes: 8
+  }];
+  string patterned_text = 6 [(buf.validate.field).string.pattern = "^[a-z]+$"];
+  string prefixed_text = 7 [(buf.validate.field).string.prefix = "pre-"];
+  string suffixed_text = 8 [(buf.validate.field).string.suffix = "-post"];
+  string containing_text = 9 [(buf.validate.field).string.contains = "middle"];
+  string allowed_text = 10 [(buf.validate.field).string = {
+    in: "alpha"
+    in: "beta"
+  }];
+  string blocked_text = 11 [(buf.validate.field).string = {
+    not_in: "blocked"
+    not_in: "denied"
+  }];
+  string email = 12 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.email = true
+  ];
+  string uuid = 13 [(buf.validate.field).string.uuid = true];
+  string tuuid = 14 [(buf.validate.field).string.tuuid = true];
+  MatrixStatus const_status = 15 [(buf.validate.field).enum.const = 1];
+  MatrixStatus defined_status = 16 [(buf.validate.field).enum.defined_only = true];
+  MatrixStatus allowed_status = 17 [(buf.validate.field).enum = {
+    in: 1
+    in: 2
+  }];
+  MatrixStatus blocked_status = 18 [(buf.validate.field).enum.not_in = 2];
+  repeated string tags = 19 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 3
+    unique: true
+  }];
+  repeated MatrixChild children = 20 [(buf.validate.field).repeated.max_items = 2];
+  map<string, string> labels = 21 [(buf.validate.field).map = {
+    min_pairs: 1
+    max_pairs: 2
+  }];
+}
+
+message EmailContract {
+  string email = 1 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.email = true
+  ];
+}
+message FloatDoubleRules {
+  optional float float_const = 1 [(buf.validate.field).float.const = 1.5];
+  optional float float_range = 2 [(buf.validate.field).float = { gte: 1, lt: 5 }];
+  optional float float_reversed = 3 [(buf.validate.field).float = { gt: 10, lt: 5 }];
+  optional float float_allowed = 4 [(buf.validate.field).float = { in: [1, 2] }];
+  optional float float_denied = 5 [(buf.validate.field).float = { not_in: [3, 4] }];
+  optional float float_finite = 6 [(buf.validate.field).float.finite = true];
+  optional double double_const = 7 [(buf.validate.field).double.const = 1.5];
+  optional double double_range = 8 [(buf.validate.field).double = { gte: 1, lt: 5 }];
+  optional double double_reversed = 9 [(buf.validate.field).double = { gt: 10, lt: 5 }];
+  optional double double_allowed = 10 [(buf.validate.field).double = { in: [1, 2] }];
+  optional double double_denied = 11 [(buf.validate.field).double = { not_in: [3, 4] }];
+  optional double double_finite = 12 [(buf.validate.field).double.finite = true];
+}
+
+message IntegerRules {
+  optional int32 int32_const = 1 [(buf.validate.field).int32.const = 7];
+  optional int32 int32_range = 2 [(buf.validate.field).int32 = { gte: 1, lte: 10 }];
+  optional int32 int32_allowed = 3 [(buf.validate.field).int32 = { in: [1, 7] }];
+  optional int32 int32_denied = 4 [(buf.validate.field).int32 = { not_in: [8, 9] }];
+  optional int32 int32_reversed = 5 [(buf.validate.field).int32 = { gt: 10, lt: 5 }];
+  optional sint32 sint32_const = 6 [(buf.validate.field).sint32.const = 7];
+  optional sint32 sint32_range = 7 [(buf.validate.field).sint32 = { gte: 1, lte: 10 }];
+  optional sint32 sint32_allowed = 8 [(buf.validate.field).sint32 = { in: [1, 7] }];
+  optional sint32 sint32_denied = 9 [(buf.validate.field).sint32 = { not_in: [8, 9] }];
+  optional sint32 sint32_reversed = 10 [(buf.validate.field).sint32 = { gt: 10, lt: 5 }];
+  optional sfixed32 sfixed32_const = 11 [(buf.validate.field).sfixed32.const = 7];
+  optional sfixed32 sfixed32_range = 12 [(buf.validate.field).sfixed32 = { gte: 1, lte: 10 }];
+  optional sfixed32 sfixed32_allowed = 13 [(buf.validate.field).sfixed32 = { in: [1, 7] }];
+  optional sfixed32 sfixed32_denied = 14 [(buf.validate.field).sfixed32 = { not_in: [8, 9] }];
+  optional sfixed32 sfixed32_reversed = 15 [(buf.validate.field).sfixed32 = { gt: 10, lt: 5 }];
+  optional int64 int64_const = 16 [(buf.validate.field).int64.const = 7];
+  optional int64 int64_range = 17 [(buf.validate.field).int64 = { gte: 1, lte: 10 }];
+  optional int64 int64_allowed = 18 [(buf.validate.field).int64 = { in: [1, 7] }];
+  optional int64 int64_denied = 19 [(buf.validate.field).int64 = { not_in: [8, 9] }];
+  optional int64 int64_reversed = 20 [(buf.validate.field).int64 = { gt: 10, lt: 5 }];
+  optional sint64 sint64_const = 21 [(buf.validate.field).sint64.const = 7];
+  optional sint64 sint64_range = 22 [(buf.validate.field).sint64 = { gte: 1, lte: 10 }];
+  optional sint64 sint64_allowed = 23 [(buf.validate.field).sint64 = { in: [1, 7] }];
+  optional sint64 sint64_denied = 24 [(buf.validate.field).sint64 = { not_in: [8, 9] }];
+  optional sint64 sint64_reversed = 25 [(buf.validate.field).sint64 = { gt: 10, lt: 5 }];
+  optional sfixed64 sfixed64_const = 26 [(buf.validate.field).sfixed64.const = 7];
+  optional sfixed64 sfixed64_range = 27 [(buf.validate.field).sfixed64 = { gte: 1, lte: 10 }];
+  optional sfixed64 sfixed64_allowed = 28 [(buf.validate.field).sfixed64 = { in: [1, 7] }];
+  optional sfixed64 sfixed64_denied = 29 [(buf.validate.field).sfixed64 = { not_in: [8, 9] }];
+  optional sfixed64 sfixed64_reversed = 30 [(buf.validate.field).sfixed64 = { gt: 10, lt: 5 }];
+  optional uint32 uint32_const = 31 [(buf.validate.field).uint32.const = 7];
+  optional uint32 uint32_range = 32 [(buf.validate.field).uint32 = { gte: 1, lte: 10 }];
+  optional uint32 uint32_allowed = 33 [(buf.validate.field).uint32 = { in: [1, 7] }];
+  optional uint32 uint32_denied = 34 [(buf.validate.field).uint32 = { not_in: [8, 9] }];
+  optional uint32 uint32_reversed = 35 [(buf.validate.field).uint32 = { gt: 10, lt: 5 }];
+  optional fixed32 fixed32_const = 36 [(buf.validate.field).fixed32.const = 7];
+  optional fixed32 fixed32_range = 37 [(buf.validate.field).fixed32 = { gte: 1, lte: 10 }];
+  optional fixed32 fixed32_allowed = 38 [(buf.validate.field).fixed32 = { in: [1, 7] }];
+  optional fixed32 fixed32_denied = 39 [(buf.validate.field).fixed32 = { not_in: [8, 9] }];
+  optional fixed32 fixed32_reversed = 40 [(buf.validate.field).fixed32 = { gt: 10, lt: 5 }];
+  optional uint64 uint64_const = 41 [(buf.validate.field).uint64.const = 7];
+  optional uint64 uint64_range = 42 [(buf.validate.field).uint64 = { gte: 1, lte: 10 }];
+  optional uint64 uint64_allowed = 43 [(buf.validate.field).uint64 = { in: [1, 7] }];
+  optional uint64 uint64_denied = 44 [(buf.validate.field).uint64 = { not_in: [8, 9] }];
+  optional uint64 uint64_reversed = 45 [(buf.validate.field).uint64 = { gt: 10, lt: 5 }];
+  optional fixed64 fixed64_const = 46 [(buf.validate.field).fixed64.const = 7];
+  optional fixed64 fixed64_range = 47 [(buf.validate.field).fixed64 = { gte: 1, lte: 10 }];
+  optional fixed64 fixed64_allowed = 48 [(buf.validate.field).fixed64 = { in: [1, 7] }];
+  optional fixed64 fixed64_denied = 49 [(buf.validate.field).fixed64 = { not_in: [8, 9] }];
+  optional fixed64 fixed64_reversed = 50 [(buf.validate.field).fixed64 = { gt: 10, lt: 5 }];
+}
+
+message StringNetworkRules {
+  optional string hostname = 1 [(buf.validate.field).string.hostname = true];
+  optional string ip = 2 [(buf.validate.field).string.ip = true];
+  optional string ipv4 = 3 [(buf.validate.field).string.ipv4 = true];
+  optional string ipv6 = 4 [(buf.validate.field).string.ipv6 = true];
+  optional string uri_reference = 5 [(buf.validate.field).string.uri_ref = true];
+  optional string address = 6 [(buf.validate.field).string.address = true];
+  optional string ip_with_prefix_length = 7 [(buf.validate.field).string.ip_with_prefixlen = true];
+  optional string ipv4_with_prefix_length = 8 [(buf.validate.field).string.ipv4_with_prefixlen = true];
+  optional string ipv6_with_prefix_length = 9 [(buf.validate.field).string.ipv6_with_prefixlen = true];
+  optional string ip_prefix = 10 [(buf.validate.field).string.ip_prefix = true];
+  optional string ipv4_prefix = 11 [(buf.validate.field).string.ipv4_prefix = true];
+  optional string ipv6_prefix = 12 [(buf.validate.field).string.ipv6_prefix = true];
+  optional string host_and_port = 13 [(buf.validate.field).string.host_and_port = true];
+  optional string ulid = 14 [(buf.validate.field).string.ulid = true];
+  optional string protobuf_fqn = 15 [(buf.validate.field).string.protobuf_fqn = true];
+  optional string protobuf_dot_fqn = 16 [(buf.validate.field).string.protobuf_dot_fqn = true];
+}
+
+message BytesRuleMatrix {
+  optional bytes exact = 1 [(buf.validate.field).bytes.const = "proto"];
+  optional bytes exact_length = 2 [(buf.validate.field).bytes.len = 5];
+  optional bytes bounded_length = 3 [(buf.validate.field).bytes = { min_len: 3, max_len: 6 }];
+  optional bytes patterned = 4 [(buf.validate.field).bytes.pattern = "^[a-z]+$"];
+  optional bytes prefixed = 5 [(buf.validate.field).bytes.prefix = "pre"];
+  optional bytes suffixed = 6 [(buf.validate.field).bytes.suffix = "post"];
+  optional bytes containing = 7 [(buf.validate.field).bytes.contains = "mid"];
+  optional bytes allowed = 8 [(buf.validate.field).bytes = { in: ["one", "two"] }];
+  optional bytes denied = 9 [(buf.validate.field).bytes = { not_in: ["bad", "deny"] }];
+  optional bytes ip = 10 [(buf.validate.field).bytes.ip = true];
+  optional bytes ipv4 = 11 [(buf.validate.field).bytes.ipv4 = true];
+  optional bytes ipv6 = 12 [(buf.validate.field).bytes.ipv6 = true];
+  optional bytes uuid = 13 [(buf.validate.field).bytes.uuid = true];
+}
+
+message WellKnownRuleMatrix {
+  optional google.protobuf.Duration exact_duration = 1 [
+    (buf.validate.field).duration.const = { seconds: 5 }
+  ];
+  optional google.protobuf.Duration bounded_duration = 2 [
+    (buf.validate.field).duration = {
+      gte: { seconds: 5 }
+      lte: { seconds: 10 }
+    }
+  ];
+  optional google.protobuf.Duration reversed_duration = 3 [
+    (buf.validate.field).duration = {
+      gt: { seconds: 10 }
+      lt: { seconds: 5 }
+    }
+  ];
+  optional google.protobuf.Duration allowed_duration = 4 [
+    (buf.validate.field).duration = {
+      in: [{ seconds: 5 }, { seconds: 6 }]
+    }
+  ];
+  optional google.protobuf.Duration denied_duration = 5 [
+    (buf.validate.field).duration.not_in = { seconds: 5 }
+  ];
+  optional google.protobuf.FieldMask exact_mask = 6 [
+    (buf.validate.field).field_mask.const = { paths: ["display_name"] }
+  ];
+  optional google.protobuf.FieldMask allowed_mask = 7 [
+    (buf.validate.field).field_mask = { in: ["display_name", "settings"] }
+  ];
+  optional google.protobuf.FieldMask denied_mask = 8 [
+    (buf.validate.field).field_mask.not_in = "name"
+  ];
+  optional google.protobuf.Timestamp exact_timestamp = 9 [
+    (buf.validate.field).timestamp.const = { seconds: 1893456000 }
+  ];
+  optional google.protobuf.Timestamp bounded_timestamp = 10 [
+    (buf.validate.field).timestamp = {
+      gte: { seconds: 1893456000 }
+      lte: { seconds: 1893542400 }
+    }
+  ];
+  optional google.protobuf.Timestamp reversed_timestamp = 11 [
+    (buf.validate.field).timestamp = {
+      gt: { seconds: 1893542400 }
+      lt: { seconds: 1893456000 }
+    }
+  ];
+  optional google.protobuf.Timestamp recent_past = 12 [
+    (buf.validate.field).timestamp = {
+      lt_now: true
+      within: { seconds: 86400 }
+    }
+  ];
+  optional google.protobuf.Timestamp near_future = 13 [
+    (buf.validate.field).timestamp = {
+      gt_now: true
+      within: { seconds: 86400 }
+    }
+  ];
+}
+
+message PredefinedRuleMatrix {
+  optional string slug = 1 [
+    (buf.validate.field).string.(kebab_case) = true
+  ];
+}
+
+message ExampleRuleMatrix {
+  optional string email = 1 [
+    (buf.validate.field).string.email = true,
+    (buf.validate.field).string.example = "guide@example.com"
+  ];
+}
+
+message CelChild {
+  option (buf.validate.message).cel = {
+    id: "cel.child.name"
+    message: "child name must begin with child-"
+    expression: "this.name.startsWith('child-')"
+  };
+
+  string name = 1;
+}
+
+message CelRuleMatrix {
+  option (buf.validate.message).cel = {
+    id: "cel.message.first"
+    message: "first message rule failed"
+    expression: "this.message_value == 'ok'"
+  };
+  option (buf.validate.message).cel = {
+    id: "cel.message.second"
+    message: "second message rule failed"
+    expression: "this.second_message_value == 'ok'"
+  };
+
+  string boolean_value = 1 [(buf.validate.field).cel = {
+    id: "cel.field.boolean"
+    message: "boolean field rule failed"
+    expression: "this == 'ok'"
+  }];
+  string string_value = 2 [(buf.validate.field).cel = {
+    id: "cel.field.string"
+    expression: "this == 'ok' ? '' : 'received ' + this"
+  }];
+  string message_value = 3;
+  string second_message_value = 4;
+  CelChild child = 5;
+  repeated CelChild children = 6;
+}
+
+message CelProtoLanguageMatrix {
+  option (buf.validate.message).cel = {
+    id: "cel.proto.messages_enums_presence"
+    message: "Protobuf message, enum, and presence operations failed."
+    expression: "has(this.optional_value) && has(this.child) && this.status == 1"
+  };
+  option (buf.validate.message).cel = {
+    id: "cel.proto.collections"
+    message: "Protobuf list and map operations failed."
+    expression: "this.numbers.all(value, value > 0) && this.numbers.exists_one(value, value == 2) && 'primary' in this.scores && this.scores['primary'] == 3"
+  };
+  option (buf.validate.message).cel = {
+    id: "cel.proto.bytes"
+    message: "Protobuf bytes operations failed."
+    expression: "this.payload == b'proto' && this.payload.size() == 5"
+  };
+  option (buf.validate.message).cel = {
+    id: "cel.proto.temporal"
+    message: "Protobuf timestamp and duration operations failed."
+    expression: "this.start + this.window == timestamp('2025-01-01T01:00:00Z')"
+  };
+
+  optional string optional_value = 1;
+  MatrixStatus status = 2;
+  bytes payload = 3;
+  repeated int32 numbers = 4;
+  map<string, int32> scores = 5;
+  google.protobuf.Timestamp start = 6;
+  google.protobuf.Duration window = 7;
+  CelChild child = 8;
+}
+
+message RecursiveNode {
+  string name = 1;
+  RecursiveNode child = 2;
+  repeated RecursiveNode children = 3;
+}
+
+message RecursiveLeft {
+  string name = 1;
+  RecursiveRight right = 2;
+}
+
+message RecursiveRight {
+  string name = 1;
+  RecursiveLeft left = 2;
+}

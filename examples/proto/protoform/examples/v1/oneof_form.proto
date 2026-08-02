@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package protoform.examples.v1;
+
+import "buf/validate/validate.proto";
+import "protoform/v1/auto_form_ui.proto";
+
+message OneofForm {
+  oneof contact {
+    option (buf.validate.oneof).required = true;
+    option (protoform.v1.oneof_ui).description = "Choose one contact method.";
+
+    string email = 1;
+    string phone = 2;
+  }
+}

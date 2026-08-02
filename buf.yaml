@@ -1,0 +1,14 @@
+version: v2
+modules:
+  - path: registry/base-nova/protoform/lib/protobuf-provider/proto
+  - path: examples/proto
+  - path: conformance/proto
+deps:
+  - buf.build/bufbuild/protovalidate
+  - buf.build/googleapis/googleapis
+lint:
+  use:
+    - STANDARD
+breaking:
+  use:
+    - FILE

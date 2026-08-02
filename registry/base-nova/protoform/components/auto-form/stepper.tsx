@@ -1,0 +1,251 @@
+'use client';
+
+import { Check } from 'lucide-react';
+import React from 'react';
+
+import { Button } from '@/registry/base-nova/protoform/components/button';
+import { Heading, Text } from '@/registry/base-nova/protoform/components/typography';
+
+import type { ParsedField } from './core-types';
+import { FormDepthProvider, useFormDepth } from './layout-context';
+import type { AutoFormStep, AutoFormStepperOrientation } from './types';
+
+function fieldStep(field: ParsedField, firstStepId: string, stepIds: Set<string>): string {
+  const configuredStep = field.hints?.step;
+  return configuredStep && stepIds.has(configuredStep) ? configuredStep : firstStepId;
+}
+
+export function fieldsForStep(fields: ParsedField[], steps: AutoFormStep[], stepId: string): ParsedField[] {
+  const firstStepId = steps[0]?.id;
+  if (!firstStepId) {
+    return fields;
+  }
+  const stepIds = new Set(steps.map((step) => step.id));
+  return fields.filter((field) => fieldStep(field, firstStepId, stepIds) === stepId);
+}
+
+export function initialStepIndex(steps: AutoFormStep[], defaultStep: string | undefined): number {
+  const index = defaultStep ? steps.findIndex((step) => step.id === defaultStep) : 0;
+  return index >= 0 ? index : 0;
+}
+
+export function validateSteps(steps: AutoFormStep[]): void {
+  if (steps.length < 2) {
+    throw new Error('AutoForm stepper requires at least two steps.');
+  }
+  const ids = new Set<string>();
+  for (const step of steps) {
+    if (!step.id.trim()) {
+      throw new Error('AutoForm step ids must not be empty.');
+    }
+    if (ids.has(step.id)) {
+      throw new Error(`AutoForm step ids must be unique. Duplicate: ${step.id}`);
+    }
+    ids.add(step.id);
+  }
+}
+
+function StepMarker({
+  index,
+  isComplete,
+  isCurrent,
+}: {
+  index: number;
+  isComplete: boolean;
+  isCurrent: boolean;
+}) {
+  return (
+    <span
+      aria-hidden="true"
+      className={
+        isCurrent || isComplete
+          ? 'flex size-7 shrink-0 items-center justify-center rounded-full bg-primary font-semibold text-primary-foreground text-xs'
+          : 'flex size-7 shrink-0 items-center justify-center rounded-full border border-border bg-background font-semibold text-muted-foreground text-xs'
+      }
+      data-slot="step-marker"
+    >
+      {isComplete ? <Check className="size-4" /> : index + 1}
+    </span>
+  );
+}
+
+export function AutoFormStepIndicator({
+  steps,
+  currentIndex,
+  orientation,
+}: {
+  steps: AutoFormStep[];
+  currentIndex: number;
+  orientation: AutoFormStepperOrientation;
+}) {
+  return (
+    <nav aria-label="Form progress" className="@container space-y-3" data-orientation={orientation}>
+      <Text aria-live="polite" className="text-muted-foreground" variant="small">
+        Step {currentIndex + 1} of {steps.length}
+      </Text>
+      <ol
+        className={
+          orientation === 'vertical'
+            ? 'flex flex-col'
+            : 'grid gap-0'
+        }
+        data-layout={orientation === 'horizontal' ? 'adaptive-horizontal' : undefined}
+        style={orientation === 'horizontal' ? { gridTemplateColumns: `repeat(${steps.length}, minmax(0, 1fr))` } : undefined}
+      >
+        {steps.map((step, index) => {
+          const isCurrent = index === currentIndex;
+          const isComplete = index < currentIndex;
+
+          if (orientation === 'vertical') {
+            return (
+              <li
+                aria-current={isCurrent ? 'step' : undefined}
+                className="flex min-w-0 gap-3"
+                data-state={isCurrent ? 'current' : isComplete ? 'complete' : 'upcoming'}
+                key={step.id}
+              >
+                <span className="sr-only">
+                  {step.title}, {isCurrent ? 'current step' : isComplete ? 'completed' : 'upcoming step'}
+                </span>
+                <span aria-hidden="true" className="flex flex-col items-center">
+                  <StepMarker index={index} isComplete={isComplete} isCurrent={isCurrent} />
+                  {index < steps.length - 1 ? (
+                    <span
+                      className={isComplete ? 'min-h-5 w-px flex-1 bg-primary' : 'min-h-5 w-px flex-1 bg-border'}
+                      data-orientation="vertical"
+                      data-testid="step-connector"
+                    />
+                  ) : null}
+                </span>
+                <span
+                  aria-hidden="true"
+                  className={
+                    isCurrent
+                      ? 'min-w-0 pb-5 pt-1 font-semibold text-sm'
+                      : 'min-w-0 pb-5 pt-1 text-muted-foreground text-sm'
+                  }
+                  data-slot="step-label"
+                >
+                  {step.title}
+                </span>
+              </li>
+            );
+          }
+
+          return (
+            <li
+              aria-current={isCurrent ? 'step' : undefined}
+              className="flex min-w-0 items-start"
+              data-state={isCurrent ? 'current' : isComplete ? 'complete' : 'upcoming'}
+              key={step.id}
+            >
+              <span className="sr-only">
+                {step.title}, {isCurrent ? 'current step' : isComplete ? 'completed' : 'upcoming step'}
+              </span>
+              <span className="flex min-w-0 shrink-0 flex-col items-center gap-1.5 @min-[30rem]:w-16 @min-[64rem]:w-auto @min-[64rem]:flex-row @min-[64rem]:gap-2">
+                <StepMarker index={index} isComplete={isComplete} isCurrent={isCurrent} />
+                <span
+                  aria-hidden="true"
+                  className={
+                    isCurrent
+                      ? 'hidden w-full truncate text-center font-semibold text-xs @min-[30rem]:block @min-[64rem]:w-auto @min-[64rem]:max-w-32 @min-[64rem]:text-left @min-[64rem]:text-sm'
+                      : 'hidden w-full truncate text-center text-muted-foreground text-xs @min-[30rem]:block @min-[64rem]:w-auto @min-[64rem]:max-w-32 @min-[64rem]:text-left @min-[64rem]:text-sm'
+                  }
+                  data-slot="step-label"
+                >
+                  {step.title}
+                </span>
+              </span>
+              {index < steps.length - 1 ? (
+                <span
+                  aria-hidden="true"
+                  className={isComplete ? 'mt-3.5 h-px min-w-0 flex-1 bg-primary' : 'mt-3.5 h-px min-w-0 flex-1 bg-border'}
+                  data-orientation="horizontal"
+                  data-testid="step-connector"
+                />
+              ) : null}
+            </li>
+          );
+        })}
+      </ol>
+    </nav>
+  );
+}
+
+export function AutoFormStepPanel({
+  children,
+  currentIndex,
+  onBack,
+  onContinue,
+  isAdvancing,
+  orientation,
+  step,
+  steps,
+  submit,
+}: {
+  children: React.ReactNode;
+  currentIndex: number;
+  onBack: () => void;
+  onContinue: () => void | Promise<void>;
+  isAdvancing: boolean;
+  orientation: AutoFormStepperOrientation;
+  step: AutoFormStep;
+  steps: AutoFormStep[];
+  submit: React.ReactNode;
+}) {
+  const isLastStep = currentIndex === steps.length - 1;
+  const depth = useFormDepth();
+
+  return (
+    <div className="space-y-6">
+      <div
+        className={
+          orientation === 'vertical'
+            ? 'grid items-start gap-6 md:grid-cols-[minmax(10rem,0.26fr)_minmax(0,1fr)] md:gap-8'
+            : 'space-y-6'
+        }
+        data-layout={`stepper-${orientation}`}
+      >
+        <AutoFormStepIndicator currentIndex={currentIndex} orientation={orientation} steps={steps} />
+        <section
+          aria-labelledby={`autoform-step-${step.id}`}
+          className="grid items-start gap-6 border-border/60 border-y py-7 sm:grid-cols-[minmax(10rem,0.34fr)_minmax(0,1fr)] sm:gap-x-8"
+          data-layout="split"
+        >
+          <header className="space-y-1">
+            <Heading id={`autoform-step-${step.id}`} level={3}>
+              {step.title}
+            </Heading>
+            {step.description ? (
+              <Text className="text-muted-foreground" variant="small">
+                {step.description}
+              </Text>
+            ) : null}
+          </header>
+          <FormDepthProvider depth={depth + 1}>
+            <div className="min-w-0">{children}</div>
+          </FormDepthProvider>
+        </section>
+      </div>
+      <div
+        className="sticky bottom-0 z-10 -mx-2 flex flex-wrap items-center justify-between gap-3 border-border/60 border-t bg-background/95 px-2 py-4 backdrop-blur supports-[backdrop-filter]:bg-background/85"
+        data-slot="auto-form-actions"
+      >
+        {currentIndex > 0 ? (
+          <Button onClick={onBack} type="button" variant="outline">
+            Back
+          </Button>
+        ) : (
+          <span />
+        )}
+        {isLastStep ? (
+          submit
+        ) : (
+          <Button disabled={isAdvancing} onClick={onContinue} type="button">
+            {isAdvancing ? 'Checking…' : 'Continue'}
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+}

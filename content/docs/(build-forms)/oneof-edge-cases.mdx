@@ -1,0 +1,49 @@
+---
+title: Oneof and edge cases
+---
+
+Protoform treats protobuf `oneof` as a first-class form concept instead of a loose discriminated union.
+
+## Branch switching
+
+Use `setOneofValue` so dirty state and validation stay coherent.
+
+```tsx
+form.setOneofValue("delivery", "webhook", {
+  endpoint: "https://hooks.example.com/events",
+  signingSecretRef: "secrets/webhook-signing-key",
+})
+```
+
+When the branch changes, Protoform clears the previous branch before writing the next branch. That prevents stale values from being submitted under a hidden union branch.
+
+## Nested server errors
+
+Backends usually return proto paths like:
+
+```txt
+delivery.webhook.signing_secret_ref
+```
+
+`setServerErrors` maps that to the native React Hook Form or TanStack Form path that owns the
+rendered field. If the backend path cannot be mapped, the return value includes `unmapped` so the
+caller can show a summary or toast.
+
+```tsx
+const result = form.setServerErrors(error)
+if (result.unmapped.length > 0) {
+  toast.error(result.unmapped.map((v) => v.description).join("\n"))
+}
+```
+
+For summaries, rich `google.rpc.*` details, accessibility, and retry decisions, see
+[Server errors](/docs/server-errors).
+
+## Recommended tests
+
+- branch starts unset
+- branch switch clears previous branch
+- branch-specific CEL errors render under the active branch
+- inactive branch errors do not block submit after switching
+- backend snake_case violations map to camelCase field names
+- unmapped backend violations still appear in a summary

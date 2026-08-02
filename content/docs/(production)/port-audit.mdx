@@ -1,0 +1,63 @@
+---
+title: Port audit
+description: Current coverage, contract alignment, and intentional boundaries.
+---
+
+The Protoform port includes native hooks, the descriptor provider, generated bindings, a shared
+AutoForm renderer, framework adapters, and consumer verification for protobuf-backed React forms.
+
+## Current coverage
+
+- Native React Hook Form and TanStack Form `useProtoForm` facades with Protovalidate and CEL
+  validation.
+- `useProtoFormDefaults` for typed protobuf defaults.
+- Oneof flattening and branch clearing for native form-library paths.
+- Connect/gRPC `BadRequest.FieldViolation` mapping back to accessible fields.
+- `google.rpc.*` context extraction for summaries and support metadata.
+- Scalars, enums, maps, repeated fields, oneofs, optional fields, wrappers, and well-known types.
+- AutoForm simple, advanced, JSON, and summary modes.
+- UI annotations for labels, descriptions, placeholders, examples, sensitive fields, visibility,
+  disabled rules, data providers, and custom controls.
+- Source-owned shadcn controls split into native hooks, a shared AutoForm core, native AutoForm
+  adapters, an umbrella item, and examples.
+- A `protoc-gen-protoform` command for generated form bindings.
+- Standard Schema v1 as the validation interoperability boundary.
+- A standalone required and recommended conformance suite over the public TypeScript interfaces.
+- Conformance-tested TanStack Form, Formik, and Final Form validation, typed submission, and
+  structured server errors.
+- React Hook Form and TanStack Form AutoForm adapters with shared field, collection, oneof,
+  validation lifecycle, accessibility, and protobuf submission contracts.
+
+## AIP alignment
+
+Protoform keeps Google AIP concerns in their correct layers:
+
+- Resource `name`, `{resource}_id`, `parent`, `etag`, and field behaviors remain API-contract concepts.
+- Protovalidate and CEL enforce values; AutoForm annotations only describe presentation.
+- Oneof branches retain protobuf presence semantics rather than becoming loose frontend unions.
+- Connect/gRPC errors retain protobuf field paths and map back to the rendered form.
+- Update forms can contribute dirty editable paths, while the server owns `update_mask` validation,
+  concurrency, tenancy, and merged-resource validation.
+
+See [Google AIP and protobuf design](/docs/aip-protobuf) for canonical resource and standard-method
+examples.
+
+## Verification coverage
+
+| Boundary | Check |
+| --- | --- |
+| Runtime packages | Workspace builds, type checks, unit tests, and clean package-install smoke test |
+| Public contracts | Conformance cases for field models, Standard Schema, form paths, and round-trip conversion |
+| Registry | Registry build, item-shape smoke test, and a real generated consumer fixture |
+| Forms | Integration and browser tests for field rendering, oneofs, validation, and server errors |
+| Documentation | Strict Blume validation and build plus hydrated browser navigation and screenshots |
+| Generated code | Buf dependency update and all repository generation templates |
+
+## Intentional boundaries
+
+- React Hook Form is the default AutoForm engine and reference behavior. TanStack Form has a
+  separate native AutoForm registry item over the same renderer. Formik and Final Form applications
+  use the core Standard Schema adapters without generated AutoForm parity.
+- Protoform consumes AIP annotations but does not replace API-side AIP linting or handler enforcement.
+- Registry and documentation hosting are deployment concerns; the local consumer and docs builds verify
+  the artifacts before deployment.

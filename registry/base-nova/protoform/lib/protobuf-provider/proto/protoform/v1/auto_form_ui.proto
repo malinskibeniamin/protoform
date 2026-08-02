@@ -1,0 +1,112 @@
+// Auto-form UI extensions for protobuf field, message, and oneof options.
+syntax = "proto2";
+package protoform.v1;
+
+import "google/protobuf/descriptor.proto";
+
+option go_package = "github.com/malinskibeniamin/protoform/proto/gen/go/protoform/v1;protoformv1";
+
+message UiRule {
+  optional string id = 1;
+  optional string expression = 2;
+  optional string message = 3;
+}
+
+message MessageUiOptions {
+  optional string secret_scope = 2;
+  // Root-level title shown above the AutoForm body.
+  optional string title = 3;
+  // One-line subtitle shown under `title`.
+  optional string description = 4;
+}
+
+message FieldUiOptions {
+  optional ControlType control = 1 [default = CONTROL_TYPE_UNSPECIFIED];
+  optional string placeholder = 2;
+  optional string example = 3;
+  // Detailed help text shown in the tooltip (hover the info icon).
+  // Use for examples, edge cases, and extended explanations.
+  optional string help = 4;
+  repeated UiRule visible_when = 5;
+  repeated UiRule disabled_when = 6;
+  optional string step = 7;
+  optional string summary_label = 8;
+  optional bool sensitive = 9;
+  // Concise one-liner shown directly below the input field.
+  // Keep it short — most users will read this first.
+  // When omitted, the UI falls back to `help`.
+  optional string description = 10;
+  // Named data source for dropdown-style controls.
+  optional DataProviderId data_provider = 11 [default = DATA_PROVIDER_ID_UNSPECIFIED];
+  // When CONTROL_TYPE_JSON: enables a drag-and-drop zone that reads
+  // a .json file into the field value alongside the editor.
+  optional bool dropzone = 12;
+  // Link to the upstream source of truth for the values this field
+  // accepts. Rendered as a "Learn more" anchor next to the help text.
+  optional string docs_url = 13;
+}
+
+message OneofUiOptions {
+  // Detailed help text shown in the tooltip.
+  optional string help = 1;
+  repeated UiRule visible_when = 2;
+  repeated UiRule disabled_when = 3;
+  optional string step = 4;
+  optional string summary_label = 5;
+  // Concise one-liner shown below the selector.
+  optional string description = 6;
+}
+
+enum ControlType {
+  CONTROL_TYPE_UNSPECIFIED = 0;
+  CONTROL_TYPE_TEXT = 1;
+  CONTROL_TYPE_TEXTAREA = 2;
+  CONTROL_TYPE_PASSWORD = 3;
+  CONTROL_TYPE_EMAIL = 4;
+  CONTROL_TYPE_URL = 5;
+  CONTROL_TYPE_CURRENCY = 6;
+  CONTROL_TYPE_CHECKBOX = 7;
+  CONTROL_TYPE_SWITCH = 8;
+  CONTROL_TYPE_TOGGLE = 9;
+  CONTROL_TYPE_RADIO_GROUP = 10;
+  CONTROL_TYPE_SELECT = 11;
+  CONTROL_TYPE_COMBOBOX = 12;
+  CONTROL_TYPE_MULTI_SELECT = 13;
+  CONTROL_TYPE_KEY_VALUE = 14;
+  CONTROL_TYPE_JSON = 15;
+  CONTROL_TYPE_DATE = 16;
+  CONTROL_TYPE_TIMESTAMP = 17;
+  CONTROL_TYPE_SLIDER = 19;
+}
+
+enum DataProviderId {
+  DATA_PROVIDER_ID_UNSPECIFIED = 0;
+  DATA_PROVIDER_ID_AWS_REGIONS = 1;
+  DATA_PROVIDER_ID_GCP_REGIONS = 2;
+  DATA_PROVIDER_ID_AZURE_REGIONS = 3;
+  DATA_PROVIDER_ID_COHERE_EMBEDDING_MODELS = 4;
+  DATA_PROVIDER_ID_OPENAI_EMBEDDING_MODELS = 5;
+  DATA_PROVIDER_ID_OPENAI_TTS_MODELS = 6;
+  DATA_PROVIDER_ID_HTTP_METHODS = 7;
+  DATA_PROVIDER_ID_SASL_MECHANISMS = 8;
+  DATA_PROVIDER_ID_COHERE_RERANK_MODELS = 9;
+  DATA_PROVIDER_ID_OPENAI_IMAGE_MODELS = 10;
+  DATA_PROVIDER_ID_OPENAI_SPEECH_MODELS = 11;
+  DATA_PROVIDER_ID_BEDROCK_EMBEDDING_MODELS = 12;
+  DATA_PROVIDER_ID_KAFKA_COMPRESSION_CODECS = 13;
+  DATA_PROVIDER_ID_OPENAI_TTS_AUDIO_FORMATS = 14;
+  reserved 15, 16, 17;
+  DATA_PROVIDER_ID_SQL_DRIVERS = 18;
+}
+
+extend google.protobuf.MessageOptions {
+  optional MessageUiOptions message_ui = 51000;
+}
+
+extend google.protobuf.FieldOptions {
+  optional FieldUiOptions field_ui = 51001;
+}
+
+extend google.protobuf.OneofOptions {
+  optional OneofUiOptions oneof_ui = 51002;
+}

@@ -1,0 +1,631 @@
+syntax = "proto3";
+
+package protoform.v1;
+
+option go_package = "github.com/malinskibeniamin/protoform/proto/gen/go/protoform/v1;protoformv1";
+
+import "protoform/v1/auto_form_ui.proto";
+import "buf/validate/validate.proto";
+import "google/protobuf/any.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+
+// Primary protobuf fixture for AutoForm. It intentionally mixes scalar, nested,
+// repeated, map, oneof, and well-known types so the form generator can exercise
+// the sketchier corners of descriptor-driven rendering.
+message AutoFormExample {
+  option (buf.validate.message).cel = {
+    id: "threshold.range"
+    message: "Minimum threshold must be less than or equal to maximum threshold."
+    expression: "this.minimum_threshold <= this.maximum_threshold"
+  };
+
+  // Public handle shown in mentions and admin lists.
+  string username = 1 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).string = {
+      min_len: 3,
+      max_len: 32,
+      pattern: "^[a-z0-9_]+$"
+    }
+  ];
+
+  // Main email address for notifications and login recovery.
+  string primary_email = 2 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.email = true,
+    (protoform.v1.field_ui) = {
+      control: CONTROL_TYPE_EMAIL,
+      placeholder: "team@example.com",
+      example: "alerts@example.com"
+    }
+  ];
+
+  // Optional personal or team homepage.
+  string homepage_url = 3 [
+    (buf.validate.field).string.uri = true,
+    (protoform.v1.field_ui) = {
+      control: CONTROL_TYPE_URL,
+      placeholder: "https://example.com/docs",
+      example: "https://example.com/product"
+    }
+  ];
+
+  // UUID copied from an upstream system.
+  string resource_id = 4 [
+    (buf.validate.field).string.uuid = true
+  ];
+
+  // Free-form summary shown on the profile card.
+  string bio = 5 [
+    (buf.validate.field).string.max_len = 280,
+    (protoform.v1.field_ui) = {
+      control: CONTROL_TYPE_TEXTAREA,
+      placeholder: "Share a short summary for reviewers.",
+      example: "Platform admin for the the control plane."
+    }
+  ];
+
+  bool is_enabled = 6 [
+    (protoform.v1.field_ui) = {
+      control: CONTROL_TYPE_SWITCH,
+      help: "Toggle the request on or off before it is sent."
+    }
+  ];
+
+  int32 age = 7 [
+    (buf.validate.field).int32 = {
+      gte: 13,
+      lte: 120
+    }
+  ];
+
+  uint32 login_count = 8 [
+    (buf.validate.field).uint32.lte = 100000
+  ];
+
+  sint32 reputation_delta = 9 [
+    (buf.validate.field).sint32 = {
+      gte: -1000,
+      lte: 1000
+    }
+  ];
+
+  int64 employee_number = 10 [
+    (buf.validate.field).int64.gt = 0
+  ];
+
+  uint64 storage_quota_bytes = 11 [
+    (buf.validate.field).uint64.gte = 1024
+  ];
+
+  float profile_score = 12 [
+    (buf.validate.field).float = {
+      gte: 0,
+      lte: 100
+    }
+  ];
+
+  double account_balance = 13 [
+    (buf.validate.field).double = {
+      gte: 0,
+      lte: 1000000
+    },
+    (protoform.v1.field_ui) = {
+      control: CONTROL_TYPE_CURRENCY,
+      example: "$12,500.00"
+    }
+  ];
+
+  // Optional avatar payload for attachment-based workflows.
+  bytes avatar_bytes = 14 [
+    (buf.validate.field).bytes.max_len = 512
+  ];
+
+  AccessTier access_tier = 15 [
+    (buf.validate.field).enum.defined_only = true,
+    (protoform.v1.field_ui) = {
+      control: CONTROL_TYPE_RADIO_GROUP,
+      help: "Choose the access tier that best matches this request."
+    }
+  ];
+
+  // Shipping destination used for hardware deliveries.
+  Address shipping_address = 16 [
+    (buf.validate.field).required = true
+  ];
+
+  Address billing_address = 17 [
+    (protoform.v1.field_ui) = {
+      visible_when: {
+        id: "billing.visible"
+        expression: "form.accessTier == 3"
+      }
+    }
+  ];
+
+  optional string nickname = 18 [
+    (buf.validate.field).string = {
+      min_len: 2,
+      max_len: 40
+    },
+    (protoform.v1.field_ui) = {
+      visible_when: {
+        id: "nickname.visible"
+        expression: "form.username != ''"
+      }
+    }
+  ];
+
+  google.protobuf.StringValue middle_name = 19 [
+    (buf.validate.field).string.max_len = 40
+  ];
+
+  google.protobuf.Int32Value bonus_points = 20 [
+    (buf.validate.field).int32 = {
+      gte: 0,
+      lte: 10000
+    },
+    (protoform.v1.field_ui) = {
+      disabled_when: {
+        id: "bonus.disabled"
+        expression: "!form.isEnabled"
+      }
+    }
+  ];
+
+  google.protobuf.BoolValue beta_tester = 21 [
+    (protoform.v1.field_ui) = {
+      control: CONTROL_TYPE_TOGGLE,
+      help: "Use a compact toggle when this optional setting can be switched on or off."
+    }
+  ];
+
+  // Lightweight labels used for quick filtering.
+  repeated string tags = 22 [
+    (buf.validate.field).repeated = {
+      min_items: 1,
+      max_items: 5,
+      unique: true,
+      items: {
+        string: {
+          min_len: 2,
+          max_len: 24,
+          pattern: "^[a-z0-9-]+$"
+        }
+      }
+    }
+  ];
+
+  repeated Address previous_addresses = 23 [
+    (buf.validate.field).repeated = {
+      max_items: 3
+    }
+  ];
+
+  repeated int32 lucky_numbers = 24 [
+    (buf.validate.field).repeated = {
+      max_items: 4,
+      unique: true,
+      items: {
+        int32: {
+          gte: 1,
+          lte: 99
+        }
+      }
+    }
+  ];
+
+  // Flat metadata pairs for analytics and routing.
+  map<string, string> labels = 25 [
+    (buf.validate.field).map = {
+      min_pairs: 1,
+      max_pairs: 4,
+      keys: {
+        string: {
+          min_len: 2,
+          max_len: 24,
+          pattern: "^[a-z0-9_.-]+$"
+        }
+      },
+      values: {
+        string: {
+          min_len: 1,
+          max_len: 64
+        }
+      }
+    },
+    (protoform.v1.field_ui) = {
+      control: CONTROL_TYPE_KEY_VALUE,
+      example: "team=frontend"
+    }
+  ];
+
+  // Named office addresses keyed by a short slug.
+  map<string, Address> office_locations = 26 [
+    (buf.validate.field).map = {
+      max_pairs: 3,
+      keys: {
+        string: {
+          min_len: 2,
+          max_len: 24,
+          pattern: "^[a-z0-9_.-]+$"
+        }
+      }
+    }
+  ];
+
+  // Exactly one preferred contact route can be selected at a time.
+  oneof preferred_contact {
+    option (buf.validate.oneof).required = true;
+    option (protoform.v1.oneof_ui) = {
+      help: "Pick exactly one route for follow-up communication."
+      summary_label: "Preferred contact"
+    };
+
+    // Route updates to an email inbox.
+    string preferred_email = 27 [
+      (buf.validate.field).string.email = true
+    ];
+
+    // Route urgent notices to an E.164 phone number.
+    string preferred_phone = 28 [
+      (buf.validate.field).string.pattern = "^\\+[1-9]\\d{1,14}$"
+    ];
+
+    // Opt out of direct outreach entirely.
+    bool do_not_contact = 29;
+  }
+
+  // Timestamp captured when the record was created.
+  google.protobuf.Timestamp created_at = 30 [
+    (buf.validate.field).required = true,
+    (protoform.v1.field_ui) = {
+      control: CONTROL_TYPE_TIMESTAMP
+    }
+  ];
+
+  google.protobuf.Timestamp expires_at = 31 [
+    (buf.validate.field).timestamp.gt_now = true,
+    (buf.validate.field).timestamp.within = { seconds: 31536000 }
+  ];
+
+  // Delay between reminder notifications.
+  google.protobuf.Duration reminder_interval = 32 [
+    (buf.validate.field).duration = {
+      gte: { seconds: 60 },
+      lte: { seconds: 604800 }
+    }
+  ];
+
+  // Fields the current actor is allowed to update.
+  google.protobuf.FieldMask writable_paths = 33 [
+    (buf.validate.field).field_mask = {
+      in: "profile",
+      in: "profile.bio",
+      in: "preferences",
+      in: "notifications.email"
+    }
+  ];
+
+  // Arbitrary preference flags stored as a JSON-ish struct.
+  google.protobuf.Struct preferences = 34;
+
+  // Generic featured value for experiments and demos.
+  google.protobuf.Value featured_value = 35;
+
+  // Ordered dashboard widgets stored as a dynamic list.
+  google.protobuf.ListValue dashboard_blocks = 36;
+
+  // External Any payload kept intentionally loose for edge-case coverage.
+  google.protobuf.Any external_payload = 37 [
+    (buf.validate.field).any.in = "type.googleapis.com/google.protobuf.Struct"
+  ];
+
+  int32 minimum_threshold = 38 [
+    (buf.validate.field).int32 = {
+      gte: 0,
+      lte: 100
+    }
+  ];
+
+  int32 maximum_threshold = 39 [
+    (buf.validate.field).int32 = {
+      gte: 0,
+      lte: 100
+    }
+  ];
+
+  // Nested support settings with their own CEL validation rule.
+  ProfileSettings settings = 40;
+}
+
+// Focused protobuf fixture for proto UI metadata and UI CEL demos.
+message AutoFormUiMetadataExample {
+
+  // Friendly cluster name shown in rollout summaries.
+  string cluster_name = 1 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).string = {
+      min_len: 3,
+      max_len: 63
+    },
+    (protoform.v1.field_ui) = {
+      step: "basics",
+      placeholder: "scarlet-forest-dolphin",
+      help: "Use the name operators will recognize in deployment and support tools."
+    }
+  ];
+
+  // Cloud provider where the request will be deployed.
+  UiDemoProvider provider = 2 [
+    (buf.validate.field).enum.defined_only = true,
+    (protoform.v1.field_ui) = {
+      control: CONTROL_TYPE_RADIO_GROUP,
+      help: "Radio buttons make small enums easier to scan in generated forms."
+    }
+  ];
+
+  // Region where the cluster will be created.
+  string region = 3 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).string = {
+      min_len: 3,
+      max_len: 32
+    },
+    (protoform.v1.field_ui) = {
+      placeholder: "us-east-2",
+      disabled_when: {
+        id: "region.disabled"
+        expression: "form.provider == 0"
+      }
+      help: "This field stays disabled until a provider is selected."
+    }
+  ];
+
+  // Toggle the conditional support step on or off.
+  bool enable_support_mode = 4 [
+    (protoform.v1.field_ui) = {
+      control: CONTROL_TYPE_TOGGLE,
+      help: "Turn this on to reveal thesupport controls that are driven by field UI rules."
+    }
+  ];
+
+  // Requested support tier for the deployment.
+  UiDemoSupportTier support_tier = 5 [
+    (protoform.v1.field_ui) = {
+      control: CONTROL_TYPE_RADIO_GROUP,
+      help: "Selecting a support tier enables the timestamp field and reveals the support contact oneof."
+    }
+  ];
+
+  // Requested maintenance window for premium support coordination.
+  google.protobuf.Timestamp maintenance_window = 6 [
+    (protoform.v1.field_ui) = {
+      control: CONTROL_TYPE_TIMESTAMP,
+      disabled_when: {
+        id: "maintenance.disabled"
+        expression: "form.supportTier == 0"
+      }
+      help: "This stays disabled until a support tier is selected."
+    }
+  ];
+
+  // Extra context only needed for platinum support requests.
+  string escalation_reason = 7 [
+    (buf.validate.field).string.max_len = 280,
+    (protoform.v1.field_ui) = {
+      control: CONTROL_TYPE_TEXTAREA,
+      sensitive: true,
+      visible_when: {
+        id: "escalation.visible"
+        expression: "form.supportTier == 3"
+      }
+      placeholder: "Explain why this rollout needs platinum coverage."
+      help: "This field is hidden unless the highest support tier is selected."
+    }
+  ];
+
+  // Pick exactly one support contact route once premium support is active.
+  oneof support_contact {
+    option (protoform.v1.oneof_ui) = {
+      step: "support"
+      help: "This oneof is also driven by UI metadata, so it only appears after a support tier is chosen."
+      visible_when: {
+        id: "support.contact.visible"
+        expression: "form.enableSupportMode && form.supportTier != 0"
+      }
+      summary_label: "Support contact"
+    };
+
+    // Route follow-up through an email inbox.
+    string support_email = 8 [
+      (buf.validate.field).string.email = true
+    ];
+
+    // Route follow-up through a Slack channel.
+    string slack_channel = 9 [
+      (buf.validate.field).string.pattern = "^#?[a-z0-9_-]{3,80}$"
+    ];
+
+    // Explicitly avoid any follow-up contact.
+    bool no_follow_up = 10;
+  }
+
+  // API token for authenticating with the deployment service.
+  string api_token = 13 [
+    (buf.validate.field).string.max_len = 256,
+    (protoform.v1.field_ui) = {
+      control: CONTROL_TYPE_PASSWORD,
+      placeholder: "rp_tok_..."
+    }
+  ];
+
+  // Approval or change-management ticket for the deployment.
+  string approval_ticket = 11 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).string = {
+      min_len: 3,
+      max_len: 40
+    },
+    (protoform.v1.field_ui) = {
+      placeholder: "OPS-142",
+      help: "Final fields can stay simple while other fields use CEL for progressive disclosure."
+    }
+  ];
+
+  // Keep a final dry-run toggle in the deploy section.
+  bool enable_dry_run = 12 [
+    (protoform.v1.field_ui) = {
+      control: CONTROL_TYPE_TOGGLE
+    }
+  ];
+}
+
+enum AccessTier {
+  ACCESS_TIER_UNSPECIFIED = 0;
+  ACCESS_TIER_VIEWER = 1;
+  ACCESS_TIER_EDITOR = 2;
+  ACCESS_TIER_ADMIN = 3;
+}
+
+enum UiDemoProvider {
+  UI_DEMO_PROVIDER_UNSPECIFIED = 0;
+  UI_DEMO_PROVIDER_AWS = 1;
+  UI_DEMO_PROVIDER_GCP = 2;
+  UI_DEMO_PROVIDER_AZURE = 3;
+}
+
+enum UiDemoSupportTier {
+  UI_DEMO_SUPPORT_TIER_UNSPECIFIED = 0;
+  UI_DEMO_SUPPORT_TIER_STANDARD = 1;
+  UI_DEMO_SUPPORT_TIER_PRIORITY = 2;
+  UI_DEMO_SUPPORT_TIER_PLATINUM = 3;
+}
+
+// Postal address used by several nested object fields and maps.
+message Address {
+  string line_one = 1 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.min_len = 3
+  ];
+  string city = 2 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.min_len = 2
+  ];
+  string state = 3 [
+    (buf.validate.field).string.min_len = 2
+  ];
+  string postal_code = 4 [
+    (buf.validate.field).string.pattern = "^[A-Z0-9 -]{3,12}$"
+  ];
+  CountryCode country = 5 [
+    (buf.validate.field).enum.defined_only = true
+  ];
+  GeoPoint location = 6;
+  optional string line_two = 7;
+}
+
+enum CountryCode {
+  COUNTRY_CODE_UNSPECIFIED = 0;
+  COUNTRY_CODE_US = 1;
+  COUNTRY_CODE_CA = 2;
+  COUNTRY_CODE_DE = 3;
+  COUNTRY_CODE_PL = 4;
+}
+
+// Latitude/longitude pair used by the nested Address message.
+message GeoPoint {
+  double latitude = 1 [
+    (buf.validate.field).double = {
+      gte: -90,
+      lte: 90
+    }
+  ];
+  double longitude = 2 [
+    (buf.validate.field).double = {
+      gte: -180,
+      lte: 180
+    }
+  ];
+}
+
+// Support workflow settings nested under the main example message.
+message ProfileSettings {
+  option (buf.validate.message).cel = {
+    id: "support.requires.escalation"
+    message: "Escalation level must be set when support mode is enabled."
+    expression: "!this.enable_support_mode || this.escalation_level != 0"
+  };
+
+  bool enable_support_mode = 1 [
+    (protoform.v1.field_ui) = {
+      control: CONTROL_TYPE_SWITCH
+    }
+  ];
+  EscalationLevel escalation_level = 2 [
+    (buf.validate.field).enum.defined_only = true,
+    (protoform.v1.field_ui) = {
+      disabled_when: {
+        id: "support.escalation.disabled"
+        expression: "!form.settings.enableSupportMode"
+      }
+    }
+  ];
+  repeated NotificationChannel notification_channels = 3 [
+    (buf.validate.field).repeated = {
+      min_items: 1,
+      max_items: 4,
+      unique: true,
+      items: {
+        enum: {
+          defined_only: true
+        }
+      }
+    },
+    (protoform.v1.field_ui) = {
+      control: CONTROL_TYPE_MULTI_SELECT,
+      example: "EMAIL, SLACK"
+    }
+  ];
+  map<string, NestedSetting> nested_settings = 4 [
+    (buf.validate.field).map = {
+      max_pairs: 3,
+      keys: {
+        string: {
+          min_len: 2,
+          max_len: 30
+        }
+      }
+    },
+    (protoform.v1.field_ui) = {
+      help: "Keep support settings grouped by key so related rules stay together."
+    }
+  ];
+}
+
+// Small nested settings entry used inside a protobuf map.
+message NestedSetting {
+  string label = 1 [
+    (buf.validate.field).string.min_len = 2
+  ];
+  google.protobuf.Timestamp scheduled_for = 2;
+}
+
+enum EscalationLevel {
+  ESCALATION_LEVEL_UNSPECIFIED = 0;
+  ESCALATION_LEVEL_LOW = 1;
+  ESCALATION_LEVEL_MEDIUM = 2;
+  ESCALATION_LEVEL_HIGH = 3;
+}
+
+enum NotificationChannel {
+  NOTIFICATION_CHANNEL_UNSPECIFIED = 0;
+  NOTIFICATION_CHANNEL_EMAIL = 1;
+  NOTIFICATION_CHANNEL_SMS = 2;
+  NOTIFICATION_CHANNEL_SLACK = 3;
+  NOTIFICATION_CHANNEL_PAGERDUTY = 4;
+}

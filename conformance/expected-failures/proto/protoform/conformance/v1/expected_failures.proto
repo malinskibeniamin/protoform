@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package protoform.conformance.v1;
+
+import "buf/validate/validate.proto";
+
+message IgnoreChild {
+  string name = 1 [(buf.validate.field).string.min_len = 3];
+}
+
+message IgnoreRuleMatrix {
+  optional string always_ignored = 1 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).ignore = IGNORE_ALWAYS,
+    (buf.validate.field).string.min_len = 5
+  ];
+  string zero_string = 2 [
+    (buf.validate.field).ignore = IGNORE_IF_ZERO_VALUE,
+    (buf.validate.field).string.min_len = 5
+  ];
+  IgnoreChild zero_message = 3 [
+    (buf.validate.field).ignore = IGNORE_IF_ZERO_VALUE
+  ];
+  repeated string zero_repeated = 4 [
+    (buf.validate.field).ignore = IGNORE_IF_ZERO_VALUE,
+    (buf.validate.field).repeated = { min_items: 1, max_items: 1 }
+  ];
+  map<string, string> zero_map = 5 [
+    (buf.validate.field).ignore = IGNORE_IF_ZERO_VALUE,
+    (buf.validate.field).map = { min_pairs: 1, max_pairs: 1 }
+  ];
+  IgnoreChild always_child = 6 [
+    (buf.validate.field).ignore = IGNORE_ALWAYS
+  ];
+}
+
+message InvalidCelCompile {
+  option (buf.validate.message).cel_expression = "this.value >";
+
+  int32 value = 1;
+}
+
+message InvalidCelType {
+  option (buf.validate.message).cel_expression = "42";
+
+  int32 value = 1;
+}
+
+message InvalidCelUnknown {
+  option (buf.validate.message).cel_expression = "this.missing == 1";
+
+  int32 value = 1;
+}
+
+message InvalidCelRuntime {
+  option (buf.validate.message).cel_expression = "1 / this.value > 0";
+
+  int32 value = 1;
+}

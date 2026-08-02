@@ -1,0 +1,25 @@
+// Self-contained tracer fixture for the plugin golden test. Kept
+// annotation-free so it compiles without the protoform.v1 or
+// buf/validate workspace imports. Rebuild the checked-in descriptor
+// set with: bun run testdata:build (from this package).
+syntax = "proto3";
+
+package protoform.test.v1;
+
+// Nested trace details.
+message TracerChild {
+  // A detail shown with the trace.
+  string detail = 1;
+}
+
+// A trace configuration example.
+message TracerExample {
+  // The trace display name.
+  string name = 1;
+
+  // The number of trace samples.
+  int32 count = 2;
+
+  // Additional trace details.
+  TracerChild child = 3;
+}

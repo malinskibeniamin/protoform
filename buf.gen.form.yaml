@@ -1,0 +1,12 @@
+# Dogfoods protoc-gen-protoform from source: emits per-message form
+# bindings next to the example _pb files so sibling imports resolve.
+# include_imports stays off so bindings are generated only for the
+# example proto, not its import closure (auto_form_ui, buf/validate).
+version: v2
+clean: false
+plugins:
+  - local: ["bun", "run", "registry/base-nova/protoform/scripts/protoc-gen-protoform/run.ts"]
+    out: registry/base-nova/protoform/lib/protobuf-provider/gen
+    opt: target=ts,import_extension=js
+inputs:
+  - directory: registry/base-nova/protoform/lib/protobuf-provider/proto

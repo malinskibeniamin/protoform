@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package protoform.examples.v1;
+
+import "protoform/v1/auto_form_ui.proto";
+
+message TwoStepForm {
+  string name = 1 [(protoform.v1.field_ui).step = "name"];
+  string email = 2 [(protoform.v1.field_ui).step = "contact"];
+}

@@ -1,0 +1,39 @@
+edition = "2023";
+
+package protoform.conformance.v1;
+
+option features.enum_type = CLOSED;
+option features.field_presence = EXPLICIT;
+
+// State values used by the Editions conformance fixture.
+enum EditionState {
+  // No state was selected.
+  EDITION_STATE_UNSPECIFIED = 0;
+
+  // The fixture is active.
+  EDITION_STATE_ACTIVE = 1;
+}
+
+// A child encoded with Editions message encoding controls.
+message EditionChild {
+  // Human-readable child notes.
+  string note = 1;
+}
+
+// Exercises form-relevant Editions 2023 feature controls.
+message EditionsMatrix {
+  // An explicitly present scalar, including its empty value.
+  string explicit_name = 1;
+
+  // An implicit scalar that follows proto3-style default presence.
+  string implicit_label = 2 [features.field_presence = IMPLICIT];
+
+  // A value from a closed Editions enum.
+  EditionState state = 3;
+
+  // A message using delimited encoding.
+  EditionChild delimited_child = 4 [features.message_encoding = DELIMITED];
+
+  // A repeated scalar using expanded rather than packed encoding.
+  repeated int32 expanded_values = 5 [features.repeated_field_encoding = EXPANDED];
+}

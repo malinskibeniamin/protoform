@@ -1,0 +1,45 @@
+---
+title: Bookstore walkthrough
+description: Explore one complete protobuf API, its generated bindings, and five live RPC flows.
+---
+
+This is the flagship Protoform example: one public protobuf contract, generated TypeScript and
+form bindings, and five RPCs running directly in the docs. Your temporary library is isolated by
+visitor, bounded in memory, and expires automatically.
+
+<BookstoreWorkspace />
+
+## One contract, five flows
+
+| RPC | Experience | What Protoform contributes |
+| --- | --- | --- |
+| `ListBooks` | Searchable book list | Typed Connect Query inputs and results |
+| `GetBook` | Book detail | Generated protobuf resource type |
+| `CreateBook` | Two-step React Hook Form flow | Generated binding and an ISBN-13 CEL check |
+| `UpdateBook` | Edit an existing book | Dirty-field update mask, preserved output fields, and etag handling |
+| `DeleteBook` | Confirmation with no visible fields | Generated request rendered through AutoForm |
+
+The source panel is native to this documentation site. It reads the repository's actual `.proto`,
+`*_pb.ts`, `*_form.ts`, React, and service files at build time. There is no simulated terminal and
+no external playground dependency.
+
+## Generate the bindings
+
+```bash
+buf generate --template buf.gen.bookstore-form.yaml
+```
+
+The `protoc-gen-protoform` registry item generates `aip_form.ts` beside the standard Protobuf-ES
+output. The app imports those files directly: no Protoform npm package or private registry needed.
+
+## Install from the registry
+
+Install the full example to inspect and adapt its current source:
+
+```bash
+bunx shadcn@latest add @protoform/bookstore
+```
+
+Pin the repository to a Git ref when you need a reproducible snapshot. Protoform follows shadcn's
+source-distribution model: registry items track current source, while Git tags provide immutable
+release references.

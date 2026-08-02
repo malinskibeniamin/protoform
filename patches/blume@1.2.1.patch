@@ -1,0 +1,30 @@
+diff --git a/dist/cli/index.js b/dist/cli/index.js
+index 81e75de7385561b957ce05f77ce49796693bc199..80ad379e876ca4ba7f306281dda83e6d44d0e026 100755
+--- a/dist/cli/index.js
++++ b/dist/cli/index.js
+@@ -4027,7 +4027,9 @@ import data from "${up}generated/mcp-data.json";
+ 
+ export const prerender = false;
+ 
+-const handler = createMcpFetchHandler(data);
++const handler = createMcpFetchHandler(
++  data as Parameters<typeof createMcpFetchHandler>[0]
++);
+ 
+ export const ALL: APIRoute = ({ request }) => handler(request);
+ `;
+diff --git a/src/astro/templates.ts b/src/astro/templates.ts
+index e1e96f534cf47b7645aee206c106a42d83dd8837..2f554a4404ac3e2f39eead39ac5179c28d231083 100644
+--- a/src/astro/templates.ts
++++ b/src/astro/templates.ts
+@@ -1167,7 +1167,9 @@ import data from "${up}generated/mcp-data.json";
+ 
+ export const prerender = false;
+ 
+-const handler = createMcpFetchHandler(data);
++const handler = createMcpFetchHandler(
++  data as Parameters<typeof createMcpFetchHandler>[0]
++);
+ 
+ export const ALL: APIRoute = ({ request }) => handler(request);
+ `;

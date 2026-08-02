@@ -1,0 +1,331 @@
+---
+title: API recipes
+description: Production-shaped Connect Query, ConnectRPC, cache, cancellation, error, and update-mask patterns.
+---
+
+Protoform stops at the typed request boundary. ConnectRPC carries that request, Connect Query owns
+remote state in React, Protovalidate enforces the contract again on the server, and structured
+`google.rpc` details bring business failures back to the form.
+
+The working examples keep `FormExamplesService.method.submitBasicForm` as the canonical dummy
+mutation. No second dummy mutation is introduced. The resource-query snippets later on show how the
+same boundaries scale when an application generates standard Get and Update methods.
+
+## Choose the call surface
+
+| Need | API | Why |
+| --- | --- | --- |
+| Submit from a React form | `useMutation` | Typed variables plus pending, success, and error state |
+| Read in a React screen | `useQuery` | Typed cache key and server-state lifecycle |
+| Prefetch in a loader | `createQueryOptions` | The same descriptor and cache identity outside a hook |
+| One call with cancellation | `callUnaryMethod` | Direct transport access with a signal and per-call headers |
+| A full imperative service client | `createClient` | Convenient outside React when hook state is unnecessary |
+
+Connect Query supports unary RPCs. Use a Connect client or transport directly for streaming rather
+than forcing a stream into a query or mutation cache.
+
+## One provider boundary
+
+Create the query client and transport once. An interceptor is the right boundary for metadata that
+must accompany every request. Keep access tokens out of logs and never put secrets into query keys.
+
+```tsx
+import type { Interceptor } from "@connectrpc/connect"
+import { TransportProvider } from "@connectrpc/connect-query"
+import { createConnectTransport } from "@connectrpc/connect-web"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { type ReactNode, useState } from "react"
+
+const requestMetadata: Interceptor = (next) => async (request) => {
+  const accessToken = await getSessionAccessToken()
+
+  if (accessToken) {
+    request.header.set("Authorization", `Bearer ${accessToken}`)
+  }
+  request.header.set("X-Request-ID", crypto.randomUUID())
+
+  return next(request)
+}
+
+function ApiProviders({ children }: { children: ReactNode }) {
+  const [queryClient] = useState(() => new QueryClient({
+    defaultOptions: {
+      mutations: { retry: false },
+      queries: { retry: 2, staleTime: 30_000 },
+    },
+  }))
+  const [transport] = useState(() => createConnectTransport({
+    baseUrl: "http://127.0.0.1:55012",
+    interceptors: [requestMetadata],
+  }))
+
+  return (
+    <TransportProvider transport={transport}>
+      <QueryClientProvider client={queryClient}>
+        {children}
+      </QueryClientProvider>
+    </TransportProvider>
+  )
+}
+```
+
+Queries can retry transient reads. A create-like submission has **no automatic retry** because a
+second attempt can duplicate work. Add a bounded mutation retry only after the server implements an
+idempotency key such as a validated `request_id` and stores the first result.
+
+## Full mutation lifecycle
+
+The generated method descriptor carries the request and response types. Keep the `mutateAsync`
+promise attached to the form submission so its pending state covers the complete request.
+
+```tsx
+import { ConnectError } from "@connectrpc/connect"
+import { useMutation } from "@connectrpc/connect-query"
+import { formatConnectError } from "@/lib/protobuf-provider"
+import { useState } from "react"
+
+function BasicMutationForm() {
+  const [rootError, setRootError] = useState<string>()
+  const mutation = useMutation(
+    FormExamplesService.method.submitBasicForm,
+    { retry: false }
+  )
+
+  async function onSubmit(values, form) {
+    setRootError(undefined)
+
+    try {
+      await mutation.mutateAsync(values)
+    } catch (error) {
+      if (applyServerFieldErrors(error, SubmitBasicFormRequestSchema, form)) {
+        return
+      }
+      if (error instanceof ConnectError) {
+        setRootError(formatConnectError(error))
+        return
+      }
+      throw error
+    }
+  }
+
+  return (
+    <div aria-busy={mutation.isPending}>
+      <AutoForm
+        schema={SubmitBasicFormRequestSchema}
+        onSubmit={onSubmit}
+        withSubmit
+      />
+
+      {mutation.isPending ? <p role="status">Creating profile…</p> : null}
+      {mutation.data ? (
+        <p role="status">Created {mutation.data.profileId}</p>
+      ) : null}
+      {mutation.error && rootError ? (
+        <Alert role="alert">
+          <AlertTitle>Profile not created</AlertTitle>
+          <AlertDescription>{rootError}</AlertDescription>
+        </Alert>
+      ) : null}
+    </div>
+  )
+}
+```
+
+`isPending` disables duplicate submission through AutoForm and exposes progress to surrounding UI.
+`mutation.data` is the typed success response. `mutation.error` retains the typed Connect failure.
+Field violations go to inputs first; a transport, quota, or unmapped failure remains visible at the
+form root. Unexpected programming errors are rethrown instead of being disguised as server errors.
+
+## Authoritative server validation
+
+The server runs the generated Protovalidate rules before the handler. The handler adds business
+rules and returns every field failure in one `BadRequest` detail.
+
+```ts
+import { BadRequestSchema } from "@buf/googleapis_googleapis.bufbuild_es/google/rpc/error_details_pb.js"
+import { Code, ConnectError, type ServiceImpl } from "@connectrpc/connect"
+
+function submitBasicForm(request: SubmitBasicFormRequest) {
+  const violations = []
+
+  if (request.email.endsWith("@blocked.example")) {
+    violations.push({
+      field: "email",
+      description: "Use an email address from an approved domain.",
+    })
+  }
+
+  if (violations.length > 0) {
+    throw new ConnectError(
+      "Review the highlighted fields.",
+      Code.InvalidArgument,
+      undefined,
+      [{ desc: BadRequestSchema, value: { fieldViolations: violations } }]
+    )
+  }
+
+  return {
+    displayName: request.displayName,
+    profileId: `profiles/${slugify(request.displayName)}`,
+  }
+}
+
+export const formExamplesService = {
+  submitBasicForm,
+  submitComplexForm,
+} satisfies ServiceImpl<typeof FormExamplesService>
+```
+
+```ts
+await server.register(fastifyConnectPlugin, {
+  interceptors: [createValidateInterceptor()],
+  routes: (router) => {
+    router.service(FormExamplesService, formExamplesService)
+  },
+})
+```
+
+Use canonical Connect codes. Keep field paths in protobuf form such as `project_id` or
+`services[0].primary_region`; Protoform converts them to the form library's paths. Do not branch on
+human-readable error text.
+
+## Cancellation and per-call metadata
+
+Use `callUnaryMethod` when a caller needs an `AbortSignal` or metadata for one request. The same
+generated method descriptor is used, so this is not a second client contract.
+
+```ts
+import { callUnaryMethod } from "@connectrpc/connect-query"
+
+function beginBasicSubmission(transport, values) {
+  const controller = new AbortController()
+  const requestId = crypto.randomUUID()
+  const response = callUnaryMethod(
+    transport,
+    FormExamplesService.method.submitBasicForm,
+    values,
+    {
+      headers: { "X-Request-ID": requestId },
+      signal: controller.signal,
+    }
+  )
+
+  return {
+    cancel: () => controller.abort(),
+    requestId,
+    response,
+  }
+}
+```
+
+Cancellation rejects with `Code.Canceled`; it does not prove that a server-side operation was rolled
+back. For work that can outlive the HTTP request, return a standard long-running operation and make
+its cancellation semantics explicit.
+
+## Reads, prefetching, and exact invalidation
+
+When a resource API adds a generated `GetProfile` method, the descriptor owns cache identity in both
+React and route loaders. `ProfileService` below represents that generated resource service; it is not
+another dummy form mutation.
+
+```tsx
+const profileQuery = useQuery(
+  ProfileService.method.getProfile,
+  { name: "profiles/ada-lovelace" }
+)
+
+if (profileQuery.isPending) return <LoadingIndicator />
+if (profileQuery.isError) return <ProfileError error={profileQuery.error} />
+if (!profileQuery.data) return <EmptyProfile />
+
+return <ProfileDetails profile={profileQuery.data} />
+```
+
+```ts
+const getProfileInput = { name: "profiles/ada-lovelace" }
+
+await queryClient.ensureQueryData(
+  createQueryOptions(
+    ProfileService.method.getProfile,
+    getProfileInput,
+    { transport }
+  )
+)
+
+const profileKey = createConnectQueryKey({
+  schema: ProfileService.method.getProfile,
+  transport,
+  input: getProfileInput,
+  cardinality: "finite",
+})
+
+await queryClient.invalidateQueries({
+  exact: true,
+  queryKey: profileKey,
+})
+```
+
+Never call `invalidateQueries()` without a key. Invalidate the exact resource after an update. If a
+create or delete changes list membership, separately invalidate the affected List method key while
+preserving its `parent`, `filter`, and `order_by` inputs.
+
+## Minimal update payloads
+
+AutoForm derives a protobuf `FieldMask` from touched values. Internally it uses `createUpdateMask`
+and excludes identifier, immutable, and output-only fields.
+
+```tsx
+<AutoForm
+  defaultValues={profile}
+  schema={MaskableProfileSchema}
+  withSubmit
+  onSubmit={async (nextProfile, _form, context) => {
+    const updateMask = context.updateMask
+    if (!updateMask?.paths.length) return
+
+    await updateProfile(create(UpdateMaskableProfileRequestSchema, {
+      profile: nextProfile,
+      updateMask,
+    }))
+  }}
+/>
+```
+
+The mask contains only dirty protobuf paths. Nested messages retain the narrow leaf; repeated fields
+and maps collapse to their owning field. The server must reject unknown and forbidden paths, merge
+the patch into stored state, and validate the merged resource before writing it.
+
+## Test the route without a socket
+
+`createRouterTransport` runs the real generated service and interceptors in process. This keeps the
+test at the RPC boundary without binding a port or mocking the client.
+
+```ts
+import { Code, createRouterTransport } from "@connectrpc/connect"
+import { callUnaryMethod } from "@connectrpc/connect-query"
+import { createValidateInterceptor } from "@connectrpc/validate"
+
+const transport = createRouterTransport(
+  (router) => router.service(FormExamplesService, formExamplesService),
+  { router: { interceptors: [createValidateInterceptor()] } }
+)
+
+const response = await callUnaryMethod(
+  transport,
+  FormExamplesService.method.submitBasicForm,
+  { displayName: "Ada Lovelace", email: "ada@example.com" }
+)
+expect(response.profileId).toBe("profiles/ada-lovelace")
+
+await expect(callUnaryMethod(
+  transport,
+  FormExamplesService.method.submitBasicForm,
+  { displayName: "", email: "not-an-email" }
+)).rejects.toMatchObject({ code: Code.InvalidArgument })
+```
+
+Keep one network-level smoke test for CORS, protocol negotiation, and deployment wiring. Put most
+handler, validation, and error-detail coverage on the in-process transport.
+
+See [Server-error form](/docs/server-error-form), [Server errors](/docs/server-errors), and
+[Google AIP and protobuf design](/docs/aip-protobuf) for the complete working flow and API rules.

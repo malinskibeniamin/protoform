@@ -1,0 +1,51 @@
+---
+title: Bare-bones form
+description: Render and submit the smallest useful generated protobuf form.
+---
+
+**Level 1 of 8**
+
+**Prerequisite:** None. Start here.
+
+This example has one protobuf message, one string field, one `AutoForm`, and no server. It is the
+smallest end-to-end path from a descriptor to typed submitted data.
+
+<div className="my-8 border-y border-border/60 py-8">
+  <BareBonesFormExample />
+</div>
+
+## What this adds
+
+- A generated Protobuf-ES message descriptor.
+- A text input derived from one scalar field.
+- A local typed submit handler.
+
+It deliberately has no validation annotations, presentation metadata, stepper, CEL, oneof, or
+transport. Later examples add those concepts one at a time.
+
+## Contract
+
+```proto
+syntax = "proto3";
+
+package protoform.examples.v1;
+
+message BareBonesForm {
+  string name = 1;
+}
+```
+
+## React
+
+```tsx
+<AutoForm<BareBonesForm>
+  onSubmit={(values) => saveLocally(values.name)}
+  schema={BareBonesFormSchema}
+  withSubmit
+/>
+```
+
+Type a name and submit. The status below the form proves that the generated message reached the
+handler without a handwritten DTO or conversion layer.
+
+**Next:** [Two-step form](/docs/two-step-form)
