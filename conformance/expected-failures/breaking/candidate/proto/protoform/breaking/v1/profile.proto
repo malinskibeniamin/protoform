@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+package protoform.breaking.v1;
+
+message Profile {
+  int32 display_name = 1;
+}

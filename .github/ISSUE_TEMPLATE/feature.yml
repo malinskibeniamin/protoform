@@ -1,0 +1,26 @@
+name: Feature proposal
+description: Propose a focused addition to Protoform.
+title: "feature: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: Who is blocked, and what do they do today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed contract
+      description: Describe the smallest public behavior and alternatives considered.
+    validations:
+      required: true
+  - type: textarea
+    id: compatibility
+    attributes:
+      label: Compatibility impact
+      description: Note descriptors, generated source, dependencies, adapters, or migrations affected.
+    validations:
+      required: true

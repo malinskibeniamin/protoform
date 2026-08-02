@@ -1,0 +1,14 @@
+.blume
+.blume-verify
+.context
+.env
+.env.*
+.git
+.github
+.tmp
+artifacts
+coverage
+dist
+node_modules
+playwright-report
+test-results

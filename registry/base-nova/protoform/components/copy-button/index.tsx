@@ -1,0 +1,126 @@
+'use client';
+
+import { cva, type VariantProps } from 'class-variance-authority';
+import { CheckIcon, CopyIcon } from 'lucide-react';
+import { AnimatePresence, type HTMLMotionProps, motion } from 'motion/react';
+import React from 'react';
+
+import { cn } from '@/registry/base-nova/protoform/lib/utils';
+
+const buttonVariants = cva(
+  "inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium text-sm outline-none transition-all focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  {
+    variants: {
+      variant: {
+        primary: 'bg-secondary text-inverse shadow-xs hover:bg-secondary/80',
+        destructive:
+          'bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:bg-destructive/60 dark:focus-visible:ring-destructive/40',
+        outline:
+          '!border-outline-primary border text-primary-inverse shadow-xs hover:border-outline-primary-hover hover:bg-primary-alpha-subtle active:border-outline-primary-pressed active:bg-primary-alpha-subtle-default disabled:border-outline-inverse-disabled disabled:text-disabled',
+        secondary: 'bg-primary text-inverse shadow-xs hover:bg-primary/90',
+        ghost: 'hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50',
+      },
+      size: {
+        md: 'h-9 px-4 py-2 has-[>svg]:px-3',
+        sm: 'h-8 gap-1.5 rounded-md px-3 has-[>svg]:px-2.5',
+        lg: 'h-10 rounded-md px-6 has-[>svg]:px-4',
+        icon: 'size-9',
+      },
+    },
+    defaultVariants: {
+      variant: 'primary',
+      size: 'md',
+    },
+  }
+);
+
+type CopyButtonProps = Omit<HTMLMotionProps<'button'>, 'onCopy' | 'children'> &
+  VariantProps<typeof buttonVariants> & {
+    content?: string;
+    delay?: number;
+    onCopy?: (content: string) => void;
+    isCopied?: boolean;
+    onCopyChange?: (isCopied: boolean) => void;
+    testId?: string;
+    children?: React.ReactNode;
+  };
+
+function CopyButton({
+  content,
+  className,
+  size,
+  variant,
+  delay = 3000,
+  onClick,
+  onCopy,
+  isCopied,
+  onCopyChange,
+  testId,
+  children,
+  ...props
+}: CopyButtonProps) {
+  const [localIsCopied, setLocalIsCopied] = React.useState(isCopied ?? false);
+  const Icon = localIsCopied ? CheckIcon : CopyIcon;
+
+  React.useEffect(() => {
+    setLocalIsCopied(isCopied ?? false);
+  }, [isCopied]);
+
+  const handleIsCopied = React.useCallback(
+    (isCopiedState: boolean) => {
+      setLocalIsCopied(isCopiedState);
+      onCopyChange?.(isCopiedState);
+    },
+    [onCopyChange]
+  );
+
+  const handleCopy = React.useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      if (isCopied) {
+        return;
+      }
+      if (content) {
+        navigator.clipboard
+          .writeText(content)
+          .then(() => {
+            handleIsCopied(true);
+            setTimeout(() => handleIsCopied(false), delay);
+            onCopy?.(content);
+          })
+          .catch((error) => {
+            // biome-ignore lint/suspicious/noConsole: needed for copy button implementation
+            console.error('Error copying command', error);
+          });
+      }
+      onClick?.(e);
+    },
+    [isCopied, content, delay, onClick, onCopy, handleIsCopied]
+  );
+
+  return (
+    <motion.button
+      className={cn(buttonVariants({ variant, size }), className)}
+      data-slot="copy-button"
+      data-testid={testId}
+      onClick={handleCopy}
+      type="button"
+      {...props}
+    >
+      <AnimatePresence mode="wait">
+        <motion.span
+          animate={{ scale: 1 }}
+          data-slot="copy-button-icon"
+          exit={{ scale: 0 }}
+          initial={{ scale: 0 }}
+          key={localIsCopied ? 'check' : 'copy'}
+          transition={{ duration: 0.15 }}
+        >
+          <Icon />
+        </motion.span>
+      </AnimatePresence>
+      {children}
+    </motion.button>
+  );
+}
+
+export { buttonVariants, CopyButton, type CopyButtonProps };

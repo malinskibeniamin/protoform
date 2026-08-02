@@ -1,0 +1,77 @@
+{
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "extends": ["ultracite/biome/core", "ultracite/biome/react"],
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true,
+    "defaultBranch": "main"
+  },
+  "files": {
+    "ignoreUnknown": true,
+    "includes": [
+      "!**/.blume",
+      "!**/.blume-verify",
+      "!**/dist",
+      "!**/build",
+      "!**/public/r",
+      "!**/routeTree.gen.ts",
+      "!conformance/gen",
+      "!examples/gen",
+      "!registry"
+    ]
+  },
+  "linter": {
+    "rules": {
+      "complexity": {
+        // Both fight tsconfig's noImplicitReturns: TS requires an explicit
+        // tail return in mixed-return functions; these rules delete it.
+        "noUselessReturn": "off",
+        "noUselessUndefined": "off"
+      }
+    }
+  },
+  "overrides": [
+    {
+      "includes": ["scripts/**", "*.config.ts"],
+      "linter": {
+        "rules": {
+          "suspicious": { "noConsole": "off" },
+          "style": { "noDefaultExport": "off" },
+          "correctness": { "noNodejsModules": "off", "noProcessGlobal": "off" }
+        }
+      }
+    },
+    {
+      // React Compiler stabilizes component-local callbacks in example UI.
+      "includes": ["components/**/*.tsx", "examples/**/*.tsx"],
+      "linter": {
+        "rules": {
+          "performance": { "noJsxPropsBind": "off" }
+        }
+      }
+    },
+    {
+      // Blume's island convention requires PascalCase filenames and default exports.
+      "includes": ["islands/**"],
+      "linter": {
+        "rules": {
+          "performance": { "noBarrelFile": "off" },
+          "style": {
+            "noDefaultExport": "off",
+            "useFilenamingConvention": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["registry/**"],
+      "linter": {
+        "enabled": false
+      },
+      "formatter": {
+        "enabled": false
+      }
+    }
+  ]
+}

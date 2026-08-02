@@ -1,0 +1,138 @@
+---
+title: Testing forms
+description: Test one representative Protoform flow through a real Connect server with Vitest.
+---
+
+Use a real-stack integration test for the form behavior your application owns. Render the form,
+interact with it as a person would, and submit through the same Connect transport used in production.
+Start the real application router on an ephemeral port instead of replacing RPCs with test doubles.
+
+This boundary covers the generated form, React Hook Form, Connect Query, HTTP serialization, the
+Connect handler, Protovalidate, and structured field-error mapping. Vitest runs the component in
+`happy-dom`, so call this an integration test rather than browser end-to-end coverage.
+
+## Test setup
+
+Install Vitest and Testing Library in the application:
+
+```bash
+bun add --dev vitest happy-dom @testing-library/jest-dom @testing-library/react @testing-library/user-event
+```
+
+Configure the integration suite with `happy-dom` and load the Testing Library matchers:
+
+```ts title="vitest.integration.config.ts"
+import { defineConfig } from "vitest/config";
+
+export default defineConfig({
+  test: {
+    environment: "happy-dom",
+    setupFiles: ["./vitest.setup.ts"],
+  },
+});
+```
+
+```ts title="vitest.setup.ts"
+import "@testing-library/jest-dom/vitest";
+```
+
+The application should export a server builder that registers its real Connect routes without
+listening on a fixed port. Production startup calls `listen()` on that builder; the test owns the
+server lifecycle.
+
+## Canonical test
+
+One representative form is enough. Cover a successful request and the structured server error that
+returns to a field:
+
+```tsx title="profile-form.test.tsx"
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { afterEach, describe, expect, it } from "vitest";
+
+import { buildExampleServer } from "../server/server.js";
+import ProfileForm from "./profile-form.js";
+
+let closeServer: (() => Promise<void>) | undefined;
+
+afterEach(async () => {
+  await closeServer?.();
+  closeServer = undefined;
+});
+
+describe("profile form", () => {
+  it("submits a generated protobuf message to the Connect server", async () => {
+    const server = await buildExampleServer();
+    const address = await server.listen({ host: "127.0.0.1", port: 0 });
+    closeServer = () => server.close();
+    const user = userEvent.setup();
+
+    render(<ProfileForm baseUrl={address} />);
+
+    await user.type(
+      screen.getByRole("textbox", { name: /display name/i }),
+      "Ada Lovelace"
+    );
+    await user.type(
+      screen.getByRole("textbox", { name: /email/i }),
+      "ada@example.com"
+    );
+    await user.click(screen.getByRole("button", { name: "Submit" }));
+
+    expect(await screen.findByRole("status")).toHaveTextContent(
+      "profiles/ada-lovelace"
+    );
+  });
+
+  it("maps a structured server violation to its field", async () => {
+    const server = await buildExampleServer();
+    const address = await server.listen({ host: "127.0.0.1", port: 0 });
+    closeServer = () => server.close();
+    const user = userEvent.setup();
+
+    render(<ProfileForm baseUrl={address} />);
+
+    await user.type(
+      screen.getByRole("textbox", { name: /display name/i }),
+      "Ada Lovelace"
+    );
+    const email = screen.getByRole("textbox", { name: /email/i });
+    await user.type(email, "ada@blocked.example");
+    await user.click(screen.getByRole("button", { name: "Submit" }));
+
+    expect(
+      await screen.findByText("Use an email address from an approved domain.")
+    ).toBeInTheDocument();
+    expect(email).toHaveAttribute("aria-invalid", "true");
+  });
+});
+```
+
+`port: 0` asks the operating system for an available port, so parallel workers do not compete for a
+shared address. `afterEach` closes the server even when an assertion fails. `findByRole` waits for
+the asynchronous mutation result without timing sleeps.
+
+From a Protoform checkout, run the focused test directly:
+
+```bash
+bun run test:integration -- examples/basic/basic-form.test.tsx
+```
+
+The complete repository example lives in
+[`examples/basic/basic-form.test.tsx`](https://github.com/malinskibeniamin/protoform/blob/main/examples/basic/basic-form.test.tsx).
+
+## Keep the suite focused
+
+Test behavior owned by the application:
+
+- a representative successful submission
+- business rules that return structured field errors
+- application-specific recovery UI when it differs from the canonical form
+
+Do not assert every generated input, internal React state, transport implementation detail, or every
+example form. Protoform's conformance suite covers its reusable descriptor, validation, conversion,
+and path-mapping contracts. Add another application integration test only when a form introduces a
+different submission or recovery workflow.
+
+Use Playwright separately when browser layout, focus behavior, native controls, or a complete
+deployed user journey is the risk being tested.

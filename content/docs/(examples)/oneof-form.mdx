@@ -1,0 +1,40 @@
+---
+title: Oneof form
+description: Switch between two scalar oneof branches without retaining hidden values.
+---
+
+**Level 5 of 8**
+
+**Prerequisite:** [CEL and RE2 form](/docs/cel-re2-form)
+
+This example gives one concept the whole screen: protobuf `oneof` becomes a branch selector followed
+by the field owned by the selected branch.
+
+<div className="my-8 border-y border-border/60 py-8">
+  <OneofFormExample />
+</div>
+
+## What this adds
+
+- A required `oneof` with two scalar branches.
+- One typed active branch in the submitted message.
+- Automatic cleanup when the selected branch changes.
+
+## Contract
+
+```proto
+message OneofForm {
+  oneof contact {
+    option (buf.validate.oneof).required = true;
+    option (protoform.v1.oneof_ui).description = "Choose one contact method.";
+
+    string email = 1;
+    string phone = 2;
+  }
+}
+```
+
+Enter an email, switch to Phone, then submit. The typed message contains only the phone branch; the
+hidden email is cleared rather than becoming ghost data.
+
+**Next:** [Server-error form](/docs/server-error-form)

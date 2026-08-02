@@ -1,0 +1,229 @@
+---
+title: CEL expressions
+description: Model cross-field, collection, map, presence, and temporal policy without duplicating logic.
+---
+
+Protovalidate message constraints use CEL for semantic rules that do not fit a single field
+annotation. Protoform compiles and executes those rules in TypeScript through `@bufbuild/cel` and the
+protobuf v2 descriptor layer, so the browser validates the same request shape as the contract.
+
+```proto
+message RetentionPolicy {
+  bool infinite = 1;
+  int64 retention_ms = 2;
+
+  option (buf.validate.message).cel = {
+    id: "retention.required_when_not_infinite"
+    message: "Retention must be set unless infinite retention is enabled."
+    expression: "this.infinite || this.retention_ms > 0"
+  };
+}
+```
+
+Use built-in field constraints first. Reach for CEL when the invariant depends on several fields or
+collection elements.
+
+| Capability | Example |
+| --- | --- |
+| Cross-field implication | `!this.enabled || has(this.config)` |
+| Repeated-message policy | `this.services.all(service, service.replicas >= 3)` |
+| Cross-collection reference | `this.regions.exists(region, region == service.primary_region)` |
+| Uniqueness by nested property | `this.services.filter(candidate, candidate.name == service.name).size() == 1` |
+| Map membership and indexing | `'owner' in this.labels && this.labels['owner'].matches(...)` |
+| Oneof or optional presence | `has(this.notification_webhook)` |
+| Timestamp arithmetic | `this.end - this.start <= duration('14400s')` |
+| Conditional error text | `condition ? '' : 'Explain the exact failure.'` |
+
+Start with the focused [CEL and RE2 form](/docs/cel-re2-form). The live
+[kitchen-sink example](/docs/kitchen-sink) combines all of these operations in one tested
+protobuf request.
+
+## Complete capability baseline
+
+Protoform tracks the form-relevant surface of the official CEL language definition rather than one
+large "CEL supported" checkbox. Every verified row points to an executable test; unsupported runtime
+capabilities remain visible as readiness gaps.
+
+| Capability area | Covered behavior | Current status |
+| --- | --- | --- |
+| Syntax, literals, and types | Boolean, null, signed and unsigned integers, doubles, strings, bytes, lists, maps, and type values | Verified |
+| Operators and conversions | Logical, relational, arithmetic, membership, indexing, conditionals, and explicit scalar conversion | Verified |
+| Collections | Lists, maps, `all`, `exists`, `exists_one`, `filter`, and `map` | Verified |
+| Protobuf messages | Message fields, enums, optional and message presence, repeated fields, maps, and nested values | Verified |
+| Text and binary | String predicates, RE2 matching, Unicode size, bytes literals, equality, and size | Verified |
+| Temporal values | Timestamps, durations, construction, comparison, accessors, addition, and subtraction | Verified |
+| Evaluation behavior | Error propagation, logical short circuit, malformed expressions, and runtime failures | Verified |
+| Lifecycle | Parse → check → evaluate, reusable plans, and a bounded UI compile cache | Verified across Buf lint and runtime tests |
+| UI expression profile | Only `form` and the current `this` value; Boolean results; fail closed | Verified |
+| Complexity floor | CEL's required repetition and nesting minimums | Verified |
+| Partial unknown sets | Host-provided exact attribute paths, unknown-set propagation, and logical short circuit | Verified |
+| Evaluation cost limit | Configurable per-evaluation expression-step budget, including repeated comprehension work | Verified |
+
+The temporal row covers both timestamps and durations.
+
+The guarded runtime adds the host controls that the underlying evaluator does not expose directly.
+Unknown attributes are explicit exact paths, stay distinct from evaluation errors, merge into a
+stable set, and still respect Boolean short circuit. Every original AST node consumes one cost unit,
+so comprehension bodies consume budget again for every iteration. Exceeding the limit returns a
+typed safe result before the next node runs.
+
+```ts
+import { compileCelExpression } from "@/components/auto-form"
+
+const evaluate = compileCelExpression(
+  "form.enabled && form.restricted_region == 'eu-central1'",
+  {
+    maxCost: 500,
+    unknownAttributes: ["form.restricted_region"],
+  }
+)
+
+const result = evaluate({ form: { enabled: true } })
+
+switch (result.kind) {
+  case "value":
+    console.log(result.value)
+    break
+  case "unknown":
+    console.log(result.attributes)
+    break
+  case "cost-exceeded":
+    console.log(result.cost, result.limit)
+    break
+  case "error":
+    console.error(result.error)
+    break
+  default:
+    result satisfies never
+}
+```
+
+The default limit is 10,000 expression steps. UI rules use that finite default and fail closed for an
+unknown set, cost exhaustion, malformed source, runtime error, or non-Boolean result. This cost model
+is deliberately deterministic; it does not claim numeric parity with another CEL implementation's
+estimator.
+
+## Parse, check, evaluate, and cache
+
+The lifecycle is split at the correct boundaries:
+
+1. `buf lint` parses and type-checks every Protovalidate expression against its protobuf descriptor.
+2. The TypeScript runtime parses the accepted expression and creates a reusable evaluation plan.
+3. Validation evaluates that plan against each message.
+4. AutoForm keeps a bounded 256-entry compile cache for presentation expressions.
+
+```ts
+import { CelScalar, celEnv, parse, plan } from "@bufbuild/cel"
+
+const env = celEnv({ variables: { value: CelScalar.INT } })
+const parsed = parse("value * 2")
+const evaluate = plan(env, parsed)
+
+evaluate({ value: 2n }) // 4n
+evaluate({ value: 7n }) // 14n; no second parse or plan
+```
+
+Never parse and plan user expressions during render. Protobuf validation expressions are compiled
+from descriptors; UI expressions use the bounded cache.
+
+## UI expression profile
+
+`visible_when` and `disabled_when` deliberately use a smaller host environment than validation CEL:
+
+- `form` exposes current form values.
+- `this` exposes only the current field value.
+- The result must be exactly Boolean `true` to enable a rule.
+- Malformed expressions, missing names, runtime errors, and non-Boolean results fail closed.
+- UI rules cannot perform I/O, mutation, asynchronous work, or authorization checks.
+
+Presentation expressions never replace Protovalidate. A field hidden by UI CEL must still be safe and
+valid when a client bypasses the form.
+
+## Boolean and string contracts
+
+Boolean-returning rules pass with `true` and fail with `false`. Their annotation must have a
+non-empty `message`:
+
+```proto
+message ChangeWindow {
+  option (buf.validate.message).cel = {
+    id: "change.window"
+    message: "The change window must run forward and last no more than four hours."
+    expression: "!has(this.start) || (this.end > this.start && this.end - this.start <= duration('14400s'))"
+  };
+
+  google.protobuf.Timestamp start = 1;
+  google.protobuf.Timestamp end = 2;
+}
+```
+
+By contrast, string-returning rules pass with an empty string and fail with the returned text. Their
+annotation message must remain empty:
+
+```proto
+message Rollout {
+  option (buf.validate.message).cel = {
+    id: "rollout.sequence"
+    expression: "this.stages.size() < 2 ? 'Use at least two stages.' : this.stages[0] != 5 ? 'Begin at 5%.' : ''"
+  };
+
+  repeated int32 stages = 1;
+}
+```
+
+Use dynamic text when one expression has a tight decision tree and each branch can give a better
+recovery instruction. Otherwise, prefer separate Boolean rules: stable IDs make failures easier to
+measure, translate, test, and map to product behavior.
+
+## Nested collection policy
+
+CEL comprehensions can relate repeated messages to each other and to maps. This abbreviated graph
+rule checks unique service names, valid dependency targets, and rate-limit ownership:
+
+```js CEL
+this.services.all(service,
+  this.services.filter(candidate,
+    candidate.name == service.name
+  ).size() == 1 &&
+  service.dependencies.all(dependency,
+    dependency != service.name &&
+    this.services.exists(candidate,
+      candidate.name == dependency
+    )
+  )
+) &&
+this.rate_limits.all(name,
+  this.services.exists(service,
+    service.name == name
+  )
+)
+```
+
+The full kitchen-sink contract adds region coverage, public endpoint policy, direct-cycle detection,
+numeric budget allocation, production approval, notification routing, and dynamic rollout errors.
+
+## Power without chaos
+
+- Give every rule a stable, globally unique ID. Never reuse an ID for a different invariant.
+- Prefer one failure explanation per rule. Split a giant Boolean rule when users need to distinguish
+  its branches.
+- Use field annotations for local requirements, ranges, formats, item limits, and uniqueness; reserve
+  CEL for relationships those annotations cannot express.
+- Keep repeated fields and maps bounded with `max_items` and `max_pairs`. Nested comprehensions are
+  deterministic, but their work still grows with input size.
+- Test a known-good message and one minimal failing fixture per branch. Run `buf lint` so expressions
+  compile and return an allowed type before code generation.
+- No I/O, network calls, authentication lookups, mutation, or asynchronous validation belongs in
+  CEL. Keep environment-dependent policy in the backend and return structured violations.
+- Do not simulate recursion. CEL is intentionally non-Turing-complete. Use a bounded backend
+  algorithm for arbitrary-depth graph traversal.
+- Treat UI CEL such as `visible_when` as presentation only. Protovalidate message CEL is the contract;
+  hidden UI must never be the only enforcement of a security or data-integrity rule.
+
+CEL is deterministic, mutation-free, and designed for safe evaluation of user-authored policy, as
+defined by the [CEL language specification](https://github.com/google/cel-spec). Protovalidate adds
+the rule result and annotation requirements enforced by the official
+[Buf lint rules](https://buf.build/docs/lint/rules/).
+
+See [Production readiness](/docs/production-readiness) for verified CEL coverage and the remaining
+field, message, nested-path, multi-violation, and failure-mode tests.

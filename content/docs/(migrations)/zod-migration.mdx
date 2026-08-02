@@ -1,0 +1,37 @@
+---
+title: Migrating from Zod
+description: Use the migration prompt/script to move validation into proto files.
+---
+
+Zod is great when TypeScript owns the contract. Protoform is better when protobuf owns the contract.
+The migration path is incremental: keep your shadcn field UI, replace the resolver, and move rules into proto annotations.
+
+## Run the migration helper
+
+```bash
+bun run migrate:zod -- src/features/signup/form.tsx proto/example/v1/signup.proto
+```
+
+The script prints an LLM-ready migration brief. Paste it into your coding agent with the target files attached.
+It asks the agent to:
+
+1. inventory Zod object fields, refinements, defaults, and messages
+2. map them to protobuf field types and `buf.validate` rules
+3. preserve shadcn field labels, descriptions, and accessibility
+4. replace `zodResolver(schema)` with `useProtoForm(MessageSchema)`
+5. use CEL for cross-field `refine` logic
+6. add server error handling through `setServerErrors`
+
+## Rules of thumb
+
+| Zod | Protoform |
+| --- | --- |
+| `z.string().email()` | `(buf.validate.field).string.email = true` |
+| `z.string().regex(...)` | `(buf.validate.field).string.pattern` |
+| `z.number().min(1)` | numeric `gte` / `gt` rules |
+| `z.object().refine(...)` | message-level CEL |
+| discriminated union | protobuf `oneof` |
+| `z.infer<typeof Schema>` | `MessageShape<typeof MessageSchema>` |
+
+Migrating a schema that relies on casting, transforms, conditional branches, or asynchronous tests?
+See [Migrating from Yup](/docs/yup-migration) for the semantic audit and staged-rollout checklist.

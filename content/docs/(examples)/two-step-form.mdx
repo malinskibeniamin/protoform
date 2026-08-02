@@ -1,0 +1,52 @@
+---
+title: Two-step form
+description: Split two ordinary string fields across the smallest useful linear stepper.
+---
+
+**Level 2 of 8**
+
+**Prerequisite:** [Bare-bones form](/docs/bare-bones-form)
+
+This example keeps the fields simple and changes only the presentation. One string belongs to each
+step; Back and Continue preserve the same form state.
+
+<div className="my-8 border-y border-border/60 py-8">
+  <TwoStepFormExample />
+</div>
+
+## What this adds
+
+- Stable step IDs in protobuf field metadata.
+- A two-item React step configuration.
+- The vertical progress rail, which moves above the form on narrow screens.
+- Accessible linear navigation with `Step X of Y`, Back, and Continue.
+- One typed submit containing values from both steps.
+
+## Contract
+
+```proto
+message TwoStepForm {
+  string name = 1 [(protoform.v1.field_ui).step = "name"];
+  string email = 2 [(protoform.v1.field_ui).step = "contact"];
+}
+```
+
+## React
+
+```tsx
+const steps = [
+  { id: "name", title: "Name" },
+  { id: "contact", title: "Contact" },
+]
+
+<AutoForm<TwoStepForm>
+  schema={TwoStepFormSchema}
+  stepper={{ orientation: "vertical", steps }}
+  withSubmit
+/>
+```
+
+The ordered steps remain React-owned presentation. The descriptor only assigns each field to a
+stable step ID.
+
+**Next:** [Deeply nested form](/docs/deeply-nested)

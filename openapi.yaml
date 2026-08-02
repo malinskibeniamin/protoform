@@ -1,0 +1,276 @@
+openapi: 3.1.0
+info:
+  title: Protoform bookstore Connect API
+  version: 1.0.0
+  description: >-
+    The five unary Book RPCs used by the live Protoform walkthrough. Requests
+    and responses use Connect's protobuf JSON protocol.
+servers:
+  - url: /api
+    description: Same-origin documentation deployment
+  - url: http://127.0.0.1:55012
+    description: Direct local example server
+tags:
+  - name: Library RPC
+paths:
+  /protoform.conformance.v1.LibraryService/ListBooks:
+    post:
+      tags: [Library RPC]
+      summary: List books
+      operationId: protoform.conformance.v1.LibraryService.ListBooks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/protoform.conformance.v1.ListBooksRequest"
+      responses:
+        "200":
+          description: Books in the temporary library
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/protoform.conformance.v1.ListBooksResponse"
+        default:
+          $ref: "#/components/responses/ConnectError"
+  /protoform.conformance.v1.LibraryService/GetBook:
+    post:
+      tags: [Library RPC]
+      summary: Get a book
+      operationId: protoform.conformance.v1.LibraryService.GetBook
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/protoform.conformance.v1.GetBookRequest"
+      responses:
+        "200":
+          description: The requested book
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/protoform.conformance.v1.Book"
+        default:
+          $ref: "#/components/responses/ConnectError"
+  /protoform.conformance.v1.LibraryService/CreateBook:
+    post:
+      tags: [Library RPC]
+      summary: Create a book
+      operationId: protoform.conformance.v1.LibraryService.CreateBook
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/protoform.conformance.v1.CreateBookRequest"
+      responses:
+        "200":
+          description: The created book
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/protoform.conformance.v1.Book"
+        default:
+          $ref: "#/components/responses/ConnectError"
+  /protoform.conformance.v1.LibraryService/UpdateBook:
+    post:
+      tags: [Library RPC]
+      summary: Update a book
+      operationId: protoform.conformance.v1.LibraryService.UpdateBook
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/protoform.conformance.v1.UpdateBookRequest"
+      responses:
+        "200":
+          description: The updated book with a new etag
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/protoform.conformance.v1.Book"
+        default:
+          $ref: "#/components/responses/ConnectError"
+  /protoform.conformance.v1.LibraryService/DeleteBook:
+    post:
+      tags: [Library RPC]
+      summary: Delete a book
+      operationId: protoform.conformance.v1.LibraryService.DeleteBook
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/protoform.conformance.v1.DeleteBookRequest"
+      responses:
+        "200":
+          description: Empty protobuf response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+        default:
+          $ref: "#/components/responses/ConnectError"
+components:
+  responses:
+    ConnectError:
+      description: Connect error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/connect.error.v1.Error"
+  schemas:
+    protoform.conformance.v1.ListBooksRequest:
+      type: object
+      required: [parent]
+      properties:
+        parent:
+          $ref: "#/components/schemas/PublisherName"
+        pageSize:
+          type: integer
+          minimum: 0
+          maximum: 100
+        pageToken:
+          type: string
+        filter:
+          type: string
+          description: Case-insensitive title or ISBN substring.
+        orderBy:
+          type: string
+    protoform.conformance.v1.ListBooksResponse:
+      type: object
+      required: [books]
+      properties:
+        books:
+          type: array
+          items:
+            $ref: "#/components/schemas/protoform.conformance.v1.Book"
+        nextPageToken:
+          type: string
+    protoform.conformance.v1.GetBookRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          $ref: "#/components/schemas/BookName"
+    protoform.conformance.v1.CreateBookRequest:
+      type: object
+      required: [parent, book, bookId]
+      properties:
+        parent:
+          $ref: "#/components/schemas/PublisherName"
+        book:
+          $ref: "#/components/schemas/protoform.conformance.v1.Book"
+        bookId:
+          type: string
+          pattern: "^[a-z][a-z0-9-]{2,62}[a-z0-9]$"
+          example: protoform-guide
+        requestId:
+          type: string
+          format: uuid
+        validateOnly:
+          type: boolean
+          default: false
+    protoform.conformance.v1.UpdateBookRequest:
+      type: object
+      required: [book, updateMask]
+      properties:
+        book:
+          $ref: "#/components/schemas/protoform.conformance.v1.Book"
+        updateMask:
+          type: string
+          description: Protobuf JSON FieldMask, such as displayName,note.
+          example: displayName,note
+        requestId:
+          type: string
+          format: uuid
+        validateOnly:
+          type: boolean
+          default: false
+        allowMissing:
+          type: boolean
+          default: false
+    protoform.conformance.v1.DeleteBookRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          $ref: "#/components/schemas/BookName"
+        requestId:
+          type: string
+          format: uuid
+        etag:
+          type: string
+          description: Last observed book etag.
+        validateOnly:
+          type: boolean
+          default: false
+    protoform.conformance.v1.Book:
+      type: object
+      required: [displayName, isbn]
+      properties:
+        name:
+          allOf:
+            - $ref: "#/components/schemas/BookName"
+          readOnly: true
+        uid:
+          type: string
+          format: uuid
+          readOnly: true
+        displayName:
+          type: string
+          minLength: 1
+          example: The Protoform Guide
+        createTime:
+          type: string
+          format: date-time
+          readOnly: true
+        updateTime:
+          type: string
+          format: date-time
+          readOnly: true
+        isbn:
+          type: string
+          pattern: "^[0-9]{13}$"
+          description: ISBN-13; the protobuf CEL rule validates its check digit.
+          example: "9783161484100"
+        inputToken:
+          type: string
+          writeOnly: true
+        note:
+          type: string
+        etag:
+          type: string
+          readOnly: true
+        state:
+          type: string
+          enum:
+            - BOOK_STATE_UNSPECIFIED
+            - BOOK_STATE_ACTIVE
+            - BOOK_STATE_DELETING
+            - BOOK_STATE_DELETED
+          readOnly: true
+    PublisherName:
+      type: string
+      pattern: "^publishers/[a-z0-9][a-z0-9-]{2,63}$"
+      example: publishers/demo-library
+    BookName:
+      type: string
+      pattern: "^publishers/[a-z0-9][a-z0-9-]{2,63}/books/[a-z][a-z0-9-]{2,62}[a-z0-9]$"
+      example: publishers/demo-library/books/protoform-guide
+    connect.error.v1.Error:
+      type: object
+      required: [code, message]
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            type: object
+            additionalProperties: true

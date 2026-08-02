@@ -1,0 +1,168 @@
+'use client';
+
+import React from 'react';
+import {
+  FormProvider,
+  type Resolver,
+  type UseFormProps,
+  type UseFormReturn,
+  useController,
+  useFieldArray,
+  useForm,
+  useFormContext,
+  useWatch,
+} from 'react-hook-form';
+
+import { getPathInObject } from '../field-utils';
+import {
+  type AutoFormArrayController,
+  type AutoFormEngine,
+  AutoFormEngineProvider,
+  type AutoFormFieldController,
+} from '../engine';
+import { getRootErrorMessage } from '../helpers';
+import { PROTO_FORM_ROOT_ERROR_KEY } from '../proto';
+
+type FormValues = Record<string, unknown>;
+
+function ReactHookFormFieldController({
+  children,
+  name,
+}: {
+  children: (controller: AutoFormFieldController) => React.ReactNode;
+  name: string;
+}) {
+  const form = useFormContext<FormValues>();
+  const { field, fieldState } = useController<FormValues>({ name });
+  const messages = [
+    fieldState.error?.message,
+    ...Object.values(fieldState.error?.types ?? {}),
+  ].filter((message): message is string => typeof message === 'string');
+
+  return children({
+    errors: [...new Set(messages)],
+    name: field.name,
+    onBlur: field.onBlur,
+    onChange: (value, options) => {
+      if (options) {
+        form.setValue(name, value, options);
+        return;
+      }
+      field.onChange(value);
+    },
+    ref: (element) => field.ref(element),
+    value: field.value,
+  });
+}
+
+function ReactHookFormArrayController({
+  children,
+  name,
+}: {
+  children: (controller: AutoFormArrayController) => React.ReactNode;
+  name: string;
+}) {
+  const form = useFormContext<FormValues>();
+  const { append, fields, remove } = useFieldArray({
+    control: form.control,
+    name: name as never,
+  });
+  const values = getPathInObject(form.getValues(), name.split('.'));
+  const items = fields.map((field, index) => ({
+    key: field.id,
+    value: Array.isArray(values) ? values[index] : undefined,
+  }));
+
+  return children({
+    append: (value) => append(value as never),
+    items,
+    remove,
+  });
+}
+
+function applyValidationErrors<T extends FormValues>(
+  form: UseFormReturn<FormValues, unknown, T>,
+  errors: Array<{ message: string; path: Array<string | number> }>
+) {
+  form.clearErrors();
+  const rootMessages: string[] = [];
+  let shouldFocus = true;
+
+  for (const error of errors) {
+    if (error.path.length === 0) {
+      rootMessages.push(error.message);
+      continue;
+    }
+
+    form.setError(
+      error.path.join('.'),
+      { message: error.message, type: 'validation' },
+      { shouldFocus }
+    );
+    shouldFocus = false;
+  }
+
+  if (rootMessages.length > 0) {
+    form.setError('root', {
+      message: rootMessages.join('\n'),
+      type: 'validation',
+    });
+  }
+}
+
+export type ReactHookFormEngineProps<T extends FormValues> = {
+  children: (engine: AutoFormEngine) => React.ReactNode;
+  defaultValues: FormValues;
+  formOptions?: UseFormProps<FormValues, unknown, T>;
+  resolver?: Resolver<FormValues, unknown, T>;
+  values?: FormValues;
+};
+
+export function ReactHookFormEngine<T extends FormValues>({
+  children,
+  defaultValues,
+  formOptions,
+  resolver,
+  values,
+}: ReactHookFormEngineProps<T>) {
+  const form = useForm<FormValues, unknown, T>({
+    ...(formOptions ?? {}),
+    defaultValues,
+    resolver,
+    values,
+  });
+  const watchedValues = (useWatch({ control: form.control }) as FormValues | undefined) ?? {};
+  const errors = form.formState.errors as Record<string, unknown>;
+  const rootError =
+    getRootErrorMessage(form.formState.errors.root) ||
+    getRootErrorMessage(errors[PROTO_FORM_ROOT_ERROR_KEY]);
+
+  const engine: AutoFormEngine = {
+    ArrayController: ReactHookFormArrayController,
+    FieldController: ReactHookFormFieldController,
+    clearErrors: (paths) => form.clearErrors(paths),
+    defaultValues: form.formState.defaultValues,
+    dirtyFields: form.formState.dirtyFields,
+    errors,
+    focus: (path) => form.setFocus(path),
+    getFieldInvalid: (path) => form.getFieldState(path).invalid,
+    getValues: form.getValues,
+    handleSubmit: (onValid) => form.handleSubmit(onValid),
+    isSubmitting: form.formState.isSubmitting,
+    nativeForm: form,
+    reset: (nextValues, options) => form.reset(nextValues, options),
+    rootError,
+    setRootError: (message) => form.setError('root', { message, type: 'submit' }),
+    setValidationErrors: (validationErrors) => applyValidationErrors(form, validationErrors),
+    setValue: (path, value, options) => form.setValue(path, value, options),
+    trigger: async (paths) => form.trigger(paths),
+    validatesSchema: Boolean(resolver),
+    values: watchedValues,
+  };
+
+  return (
+    <FormProvider {...form}>
+      <AutoFormEngineProvider engine={engine}>{children(engine)}</AutoFormEngineProvider>
+    </FormProvider>
+  );
+}

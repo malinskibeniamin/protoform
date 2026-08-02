@@ -1,0 +1,186 @@
+/* Blume owns the docs shell; map its palette onto shadcn's semantic contract
+   so registry components keep their native appearance in every theme. */
+:root {
+  --protoform-destructive: oklch(0.577 0.245 27.325);
+  --background: var(--blume-background);
+  --foreground: var(--blume-foreground);
+  --card: var(--blume-background);
+  --card-foreground: var(--blume-foreground);
+  --popover: var(--blume-background);
+  --popover-foreground: var(--blume-foreground);
+  --primary: var(--blume-foreground);
+  --primary-foreground: var(--blume-background);
+  --secondary: var(--blume-muted);
+  --secondary-foreground: var(--blume-foreground);
+  --muted: var(--blume-muted);
+  --muted-foreground: var(--blume-muted-foreground);
+  --accent: var(--blume-accent);
+  --accent-foreground: var(--blume-accent-foreground);
+  --destructive: var(--protoform-destructive);
+  --border: var(--blume-border);
+  --input: var(--blume-border);
+  --ring: var(--blume-foreground);
+  --selected: var(--blume-foreground);
+  --selected-foreground: var(--blume-background);
+  --selection: var(--blume-foreground);
+  --selection-foreground: var(--blume-background);
+}
+
+:root[data-theme="dark"] {
+  --protoform-destructive: oklch(0.704 0.191 22.216);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-selected: var(--selected);
+  --color-selected-foreground: var(--selected-foreground);
+  --color-selection: var(--selection);
+  --color-selection-foreground: var(--selection-foreground);
+}
+
+/* Data-heavy pages opt into more room without widening every prose page. */
+#blume-content:has([data-docs-layout="wide"]) > :where(nav, details, article) {
+  width: 100%;
+  max-width: 60rem;
+}
+
+/* Keep prose measured for reading while live demos use the docs shell's
+   available center column. This covers both Blume iframe previews and direct
+   Astro islands without requiring every example page to opt in. */
+@media (min-width: 48rem) {
+  #blume-content {
+    --protoform-demo-width: min(60rem, calc(100vw - 2rem));
+  }
+
+  #blume-content article > [data-bookstore-workspace],
+  #blume-content
+    article
+    > div:has(iframe[data-blume-example-frame], > astro-island) {
+    position: relative;
+    left: 50%;
+    width: var(--protoform-demo-width);
+    transform: translateX(-50%);
+  }
+}
+
+@media (min-width: 64rem) {
+  #blume-content {
+    --protoform-demo-width: min(60rem, calc(100vw - 18.5rem));
+  }
+}
+
+@media (min-width: 80rem) {
+  #blume-content {
+    --protoform-demo-width: min(60rem, calc(100vw - 36rem));
+  }
+}
+
+/* Give Blume's flex-wrapped Mermaid output a definite width. Without this,
+   the inner div shrink-wraps to the browser's 300px replaced-element default. */
+blume-mermaid > div:not([data-diagram-controls]) {
+  width: 100%;
+}
+
+blume-mermaid > div > svg {
+  margin-inline: auto;
+}
+
+:where(blume-mermaid, [data-diagram], [data-architecture-diagram]) {
+  position: relative;
+}
+
+:where(blume-mermaid, [data-diagram], [data-architecture-diagram]):fullscreen {
+  box-sizing: border-box;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100dvh;
+  padding: 2rem;
+  overflow: auto;
+  background: var(--blume-background);
+}
+
+:where(blume-mermaid, [data-diagram], [data-architecture-diagram]):fullscreen
+  :where(svg, img, canvas),
+[data-diagram-preview] :where(svg, img, canvas) {
+  width: 100% !important;
+  max-width: none !important;
+  height: 100% !important;
+  max-height: calc(100dvh - 6rem) !important;
+  object-fit: contain;
+}
+
+[data-diagram-preview] > [data-diagram-expanded] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-width: 100%;
+  height: 100%;
+  min-height: 100%;
+  margin: 0;
+  overflow: auto;
+}
+
+/* Shiki's default light-theme orange is below WCAG AA on the docs surface. */
+code span[style*="--shiki-light:#E36209"] {
+  --shiki-light: #963b00 !important;
+}
+
+/* Component source panes always show the same counter-driven gutter that
+   Blume exposes as an opt-in for fenced code blocks. */
+pre.blume-source > code {
+  counter-reset: line;
+}
+
+pre.blume-source .line::before {
+  display: inline-block;
+  width: 1.25rem;
+  margin-right: 1.25rem;
+  color: var(--blume-muted-foreground);
+  text-align: right;
+  user-select: none;
+  content: counter(line);
+  counter-increment: line;
+}
+
+.bookstore-source-tabs blume-tabs {
+  min-width: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+}
+
+.bookstore-source-tabs pre.blume-source {
+  min-width: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+}
+
+/* Keep the accurate CEL label without showing the expression grammar's icon. */
+.prose > pre[data-title="CEL"][data-icon] > .blume-lang-icon {
+  display: none;
+}
+
+.prose > pre[data-title="CEL"][data-icon]::before {
+  padding-left: 1rem;
+}

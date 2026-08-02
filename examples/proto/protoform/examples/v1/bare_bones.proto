@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+package protoform.examples.v1;
+
+message BareBonesForm {
+  string name = 1;
+}

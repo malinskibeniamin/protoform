@@ -1,0 +1,13 @@
+syntax = "proto2";
+
+package protoform.conformance.v1;
+
+import "buf/validate/validate.proto";
+
+extend buf.validate.StringRules {
+  optional bool kebab_case = 1001 [(buf.validate.predefined).cel = {
+    id: "string.kebab_case"
+    message: "must use lowercase kebab-case"
+    expression: "!rule || this.matches('^[a-z][a-z0-9-]*$')"
+  }];
+}

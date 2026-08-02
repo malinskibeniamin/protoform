@@ -1,0 +1,2776 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "protoform",
+  "homepage": "https://github.com/malinskibeniamin/protoform",
+  "items": [
+    {
+      "name": "protoform-license",
+      "type": "registry:file",
+      "title": "Protoform license notices",
+      "description": "MIT and third-party license notices distributed with copied Protoform source.",
+      "files": [
+        {
+          "path": "LICENSE",
+          "target": "~/LICENSES/protoform-MIT.txt",
+          "type": "registry:file"
+        },
+        {
+          "path": "LICENSES/Apache-2.0.txt",
+          "target": "~/LICENSES/Apache-2.0.txt",
+          "type": "registry:file"
+        },
+        {
+          "path": "LICENSES/shadcn-MIT.txt",
+          "target": "~/LICENSES/shadcn-MIT.txt",
+          "type": "registry:file"
+        },
+        {
+          "path": "THIRD_PARTY_NOTICES.md",
+          "target": "~/THIRD_PARTY_NOTICES.md",
+          "type": "registry:file"
+        }
+      ]
+    },
+    {
+      "name": "bookstore",
+      "type": "registry:block",
+      "title": "Bookstore RPC demo",
+      "description": "Five live Book RPC flows: list, get, RHF stepper create with ISBN CEL, update masks with etags, and AutoForm delete.",
+      "registryDependencies": [
+        "@protoform/auto-form",
+        "@protoform/protoform-demo-runtime"
+      ],
+      "dependencies": [
+        "@buf/googleapis_googleapis.bufbuild_es",
+        "@bufbuild/protobuf",
+        "@connectrpc/connect",
+        "@connectrpc/connect-query",
+        "@connectrpc/connect-web",
+        "@tanstack/react-query",
+        "react-hook-form"
+      ],
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/bookstore/bookstore-demo.tsx",
+          "target": "~/components/protoform-bookstore/bookstore-demo.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/demo/bookstore/create-book-form.tsx",
+          "target": "~/components/protoform-bookstore/create-book-form.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/demo/bookstore/update-book-form.tsx",
+          "target": "~/components/protoform-bookstore/update-book-form.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/demo/bookstore/delete-book-form.tsx",
+          "target": "~/components/protoform-bookstore/delete-book-form.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/demo/bookstore/library-service.ts",
+          "target": "~/components/protoform-bookstore/library-service.ts",
+          "type": "registry:component"
+        },
+        {
+          "path": "conformance/proto/protoform/conformance/v1/aip.proto",
+          "target": "~/proto/protoform/conformance/v1/aip.proto",
+          "type": "registry:file"
+        }
+      ]
+    },
+    {
+      "name": "protoform-core",
+      "type": "registry:lib",
+      "title": "Protoform core",
+      "description": "Framework-free field model, Standard Schema integration, and form-library validation adapters.",
+      "registryDependencies": ["@protoform/protoform-license"],
+      "dependencies": ["@standard-schema/spec"],
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/lib/core/field-model.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/core/form-library-adapters.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/core/index.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/core/standard-schema.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "protobuf-provider",
+      "type": "registry:lib",
+      "title": "Protoform protobuf provider",
+      "description": "Protobuf-ES v2 descriptors, ProtoValidate and CEL validation, AIP helpers, and Connect error mapping.",
+      "registryDependencies": ["@protoform/protoform-core"],
+      "dependencies": [
+        "@buf/googleapis_googleapis.bufbuild_es",
+        "@bufbuild/protobuf",
+        "@bufbuild/protovalidate",
+        "@connectrpc/connect",
+        "@standard-schema/spec"
+      ],
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/lib/protobuf-provider/aip-client-workflow.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/protobuf-provider/aip.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/protobuf-provider/annotations.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/protobuf-provider/auto-form-example-annotations.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/protobuf-provider/field-mask.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/protobuf-provider/form-schema.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/protobuf-provider/format-error.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/protobuf-provider/format-submitted-value.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/protobuf-provider/gen/auto-form-example_form.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/protobuf-provider/gen/auto-form-example_pb.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/protobuf-provider/gen/protoform/v1/auto_form_example_form.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/protobuf-provider/gen/protoform/v1/auto_form_example_pb.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/protobuf-provider/gen/auto_form_ui_pb.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/protobuf-provider/gen/buf/validate/validate_pb.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/protobuf-provider/gen/protoform/v1/auto_form_ui_form.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/protobuf-provider/gen/protoform/v1/auto_form_ui_pb.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/protobuf-provider/humanize-validation-error.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/protobuf-provider/index.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/protobuf-provider/method-workflow.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/protobuf-provider/proto-error-path.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/protobuf-provider/provider.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/protobuf-provider/ui-options.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "protoc-gen-protoform",
+      "type": "registry:lib",
+      "title": "Protoform binding generator",
+      "description": "Source-copy Buf plugin that emits typed form bindings and source annotations next to generated Protobuf-ES files.",
+      "registryDependencies": ["@protoform/protoform-license"],
+      "dependencies": ["@bufbuild/protobuf", "@bufbuild/protoplugin"],
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/scripts/protoc-gen-protoform/generate-annotations.ts",
+          "target": "~/scripts/protoc-gen-protoform/generate-annotations.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/scripts/protoc-gen-protoform/index.ts",
+          "target": "~/scripts/protoc-gen-protoform/index.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/scripts/protoc-gen-protoform/plugin.ts",
+          "target": "~/scripts/protoc-gen-protoform/plugin.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/scripts/protoc-gen-protoform/run.ts",
+          "target": "~/scripts/protoc-gen-protoform/run.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/scripts/protoc-gen-protoform/source-comments.ts",
+          "target": "~/scripts/protoc-gen-protoform/source-comments.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "protobuf-v1-bridge",
+      "type": "registry:lib",
+      "title": "Protobuf-ES v1 migration bridge",
+      "description": "Temporary source-copy bridge for staged Protobuf-ES v1 migrations. Install separately from the v2 runtime.",
+      "registryDependencies": ["@protoform/protoform-core"],
+      "dependencies": ["@bufbuild/protobuf@^1.10.1"],
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/lib/protobuf-v1-bridge/index.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/protobuf-v1-bridge/provider.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "use-proto-form",
+      "type": "registry:hook",
+      "title": "useProtoForm",
+      "description": "React Hook Form adapter for ProtoValidate ES, CEL rules, protobuf defaults, oneofs, and Connect/gRPC field violations.",
+      "dependencies": [
+        "@bufbuild/protobuf",
+        "@connectrpc/connect",
+        "@hookform/resolvers",
+        "react-hook-form"
+      ],
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/hooks/use-proto-form/index.ts",
+          "type": "registry:hook"
+        },
+        {
+          "path": "registry/base-nova/protoform/hooks/use-proto-form/proto-error-path.ts",
+          "type": "registry:hook"
+        },
+        {
+          "path": "registry/base-nova/protoform/hooks/use-proto-form/proto-paths.ts",
+          "type": "registry:hook"
+        },
+        {
+          "path": "registry/base-nova/protoform/hooks/use-proto-form/proto-resolver.ts",
+          "type": "registry:hook"
+        },
+        {
+          "path": "registry/base-nova/protoform/hooks/use-proto-form/use-proto-form.ts",
+          "type": "registry:hook"
+        }
+      ],
+      "registryDependencies": [
+        "@protoform/protoform-core",
+        "@protoform/protobuf-provider"
+      ]
+    },
+    {
+      "name": "use-proto-form-tanstack",
+      "type": "registry:hook",
+      "title": "useProtoForm for TanStack Form",
+      "description": "TanStack Form adapter that preserves the native form API and adds protobuf messages, update masks, oneofs, and Connect/gRPC field violations.",
+      "dependencies": [
+        "@bufbuild/protobuf",
+        "@connectrpc/connect",
+        "@tanstack/react-form"
+      ],
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/hooks/use-proto-form-tanstack/index.ts",
+          "type": "registry:hook"
+        }
+      ],
+      "registryDependencies": ["@protoform/protobuf-provider"]
+    },
+    {
+      "name": "auto-form-core",
+      "type": "registry:block",
+      "title": "Protoform AutoForm core",
+      "description": "Engine-neutral shadcn-compatible AutoForm renderer shared by native form-library adapters.",
+      "registryDependencies": [
+        "@protoform/protoform-core",
+        "@protoform/protobuf-provider"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "@buf/googleapis_googleapis.bufbuild_es",
+        "@bufbuild/cel",
+        "@bufbuild/protobuf",
+        "@bufbuild/protovalidate",
+        "@connectrpc/connect",
+        "@standard-schema/spec",
+        "@tanstack/react-router",
+        "class-variance-authority",
+        "clsx",
+        "cmdk",
+        "date-fns",
+        "lucide-react",
+        "motion",
+        "prismjs",
+        "react-day-picker",
+        "react-simple-code-editor",
+        "sonner",
+        "tailwind-merge",
+        "zod"
+      ],
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/components/alert/index.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/context.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/core-types.ts",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/data-providers.ts",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/field-utils.ts",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/field-wrapper.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/fields/boolean.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/fields/bytes.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/fields/choicebox.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/fields/combobox.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/fields/currency.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/fields/date.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/fields/duration.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/fields/email.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/fields/fallback.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/fields/field-mask.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/fields/index.ts",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/fields/int64.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/fields/json.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/fields/key-value.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/fields/multiselect.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/fields/number.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/fields/password.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/fields/radio.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/fields/select.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/fields/shared.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/fields/slider.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/fields/string.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/fields/textarea.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/fields/toggle-group.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/fields/url.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/form-spacing.ts",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/helpers.ts",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/auto-form-core.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/engine.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/layout-context.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/layout.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/mode-shell.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/proto/conversion.ts",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/proto/index.ts",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/proto/schema.ts",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/registry.ts",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/renderers/array.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/renderers/controlled.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/renderers/index.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/renderers/map.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/renderers/object.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/renderers/oneof.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/renderers/shared.ts",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/runtime-provider.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/schema.ts",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/slot.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/stepper.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/test-ids.ts",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/types.ts",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/cel-runtime.ts",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/ui-rules.ts",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/utils/modes.ts",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/utils/serialization.ts",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/badge/index.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/button/index.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/calendar/index.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/card/index.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/checkbox/index.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/choicebox/index.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/collapsible/index.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/combobox/combobox-utils.ts",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/combobox/index.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/combobox/use-combobox-reducer.ts",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/command/index.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/copy-button/index.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/dialog/index.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/field/index.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/group/index.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/input/index.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/input-group/index.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/json-field/index.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/key-value-field/index.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/label/index.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/multi-select/index.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/popover/index.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/radio-group/index.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/select/index.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/separator/index.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/slider/index.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/spinner/index.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/switch/index.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/tabs/index.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/tags/index.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/textarea/index.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/toggle/index.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/toggle-group/index.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/tooltip/index.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/typography/index.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/hooks/use-controllable-state/index.ts",
+          "type": "registry:hook"
+        },
+        {
+          "path": "registry/base-nova/protoform/hooks/use-layout-effect/index.ts",
+          "type": "registry:hook"
+        },
+        {
+          "path": "registry/base-nova/protoform/hooks/use-portal-container/index.ts",
+          "type": "registry:hook"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/base-ui-compat/index.tsx",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/form-types/index.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/input-utils/index.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/utils/index.tsx",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/shadcn-controls.ts",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "auto-form",
+      "type": "registry:block",
+      "title": "Protoform AutoForm",
+      "description": "React Hook Form-first AutoForm with the complete native form API plus Protoform rendering and protobuf helpers.",
+      "registryDependencies": [
+        "@protoform/auto-form-core",
+        "@protoform/use-proto-form"
+      ],
+      "dependencies": ["react-hook-form"],
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/index.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/adapters/react-hook-form.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "auto-form-tanstack",
+      "type": "registry:block",
+      "title": "Protoform AutoForm for TanStack Form",
+      "description": "TanStack Form-native AutoForm with the complete native form API plus Protoform rendering and protobuf helpers.",
+      "registryDependencies": [
+        "@protoform/auto-form-core",
+        "@protoform/use-proto-form-tanstack"
+      ],
+      "dependencies": ["@tanstack/react-form"],
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/components/auto-form-tanstack/index.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/adapters/tanstack.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "protoform",
+      "type": "registry:block",
+      "title": "Protoform",
+      "description": "protoform - protovalidate-compatible shadcn forms",
+      "registryDependencies": [
+        "@protoform/use-proto-form",
+        "@protoform/auto-form"
+      ],
+      "dependencies": [],
+      "files": []
+    },
+    {
+      "name": "protoform-examples",
+      "type": "registry:block",
+      "title": "Protoform Examples",
+      "description": "Example protobuf AutoForm demos using generated schemas, CEL rules, oneofs, and UI metadata annotations.",
+      "registryDependencies": [
+        "@protoform/protoform",
+        "@protoform/aip-121-resource-oriented-design",
+        "@protoform/aip-122-resource-names",
+        "@protoform/aip-123-resource-types",
+        "@protoform/aip-124-resource-association",
+        "@protoform/aip-126-enumerations",
+        "@protoform/aip-127-http-and-grpc-transcoding",
+        "@protoform/aip-128-declarative-friendly-interfaces",
+        "@protoform/aip-129-server-modified-values-and-defaults",
+        "@protoform/aip-130-methods",
+        "@protoform/aip-131-standard-methods-get",
+        "@protoform/aip-132-standard-methods-list",
+        "@protoform/aip-133-standard-methods-create",
+        "@protoform/aip-134-standard-methods-update",
+        "@protoform/aip-135-standard-methods-delete",
+        "@protoform/aip-136-custom-methods",
+        "@protoform/aip-140-field-names",
+        "@protoform/aip-141-quantities",
+        "@protoform/aip-142-time-and-duration",
+        "@protoform/aip-143-standardized-codes",
+        "@protoform/aip-144-repeated-fields",
+        "@protoform/aip-145-ranges",
+        "@protoform/aip-146-generic-fields",
+        "@protoform/aip-147-sensitive-fields",
+        "@protoform/aip-148-standard-fields",
+        "@protoform/aip-149-unset-field-values",
+        "@protoform/aip-151-long-running-operations",
+        "@protoform/aip-152-jobs",
+        "@protoform/aip-153-import-and-export",
+        "@protoform/aip-154-resource-freshness-validation",
+        "@protoform/aip-155-request-identification",
+        "@protoform/aip-156-singleton-resources",
+        "@protoform/aip-157-partial-responses",
+        "@protoform/aip-158-pagination",
+        "@protoform/aip-159-reading-across-collections",
+        "@protoform/aip-160-filtering",
+        "@protoform/aip-161-field-masks",
+        "@protoform/aip-162-resource-revisions",
+        "@protoform/aip-163-change-validation",
+        "@protoform/aip-164-soft-delete",
+        "@protoform/aip-165-criteria-based-delete",
+        "@protoform/aip-180-backwards-compatibility",
+        "@protoform/aip-181-stability-levels",
+        "@protoform/aip-182-external-software-dependencies",
+        "@protoform/aip-185-api-versioning",
+        "@protoform/aip-190-naming-conventions",
+        "@protoform/aip-191-file-and-directory-structure",
+        "@protoform/aip-192-documentation",
+        "@protoform/aip-193-errors",
+        "@protoform/aip-194-automatic-retry-configuration",
+        "@protoform/aip-202-fields",
+        "@protoform/aip-203-field-behavior-documentation",
+        "@protoform/aip-210-unicode",
+        "@protoform/aip-213-common-components",
+        "@protoform/aip-214-resource-expiration",
+        "@protoform/aip-216-states",
+        "@protoform/aip-217-unreachable-resources",
+        "@protoform/aip-231-batch-methods-get",
+        "@protoform/aip-233-batch-methods-create",
+        "@protoform/aip-234-batch-methods-update",
+        "@protoform/aip-235-batch-methods-delete",
+        "@protoform/aip-236-policy-preview",
+        "@protoform/protobuf-scalars-demo",
+        "@protoform/protobuf-presence-demo",
+        "@protoform/protobuf-nested-collections-demo",
+        "@protoform/protobuf-maps-demo",
+        "@protoform/protobuf-oneof-demo",
+        "@protoform/protobuf-well-known-types-demo",
+        "@protoform/protobuf-dynamic-json-any-demo",
+        "@protoform/protobuf-json-options-demo",
+        "@protoform/protobuf-recursive-messages-demo",
+        "@protoform/bufbuild-descriptors-demo",
+        "@protoform/protobuf-unknown-fields-demo",
+        "@protoform/protobuf-editions-demo",
+        "@protoform/protovalidate-required-demo",
+        "@protoform/protovalidate-numeric-rules-demo",
+        "@protoform/protovalidate-bool-enum-demo",
+        "@protoform/protovalidate-string-rules-demo",
+        "@protoform/protovalidate-string-formats-demo",
+        "@protoform/protovalidate-bytes-any-demo",
+        "@protoform/protovalidate-repeated-demo",
+        "@protoform/protovalidate-maps-demo",
+        "@protoform/protovalidate-well-known-types-demo",
+        "@protoform/protovalidate-ignore-demo",
+        "@protoform/protovalidate-all-errors-demo",
+        "@protoform/protovalidate-predefined-demo",
+        "@protoform/cel-language-basics-demo",
+        "@protoform/cel-collections-demo",
+        "@protoform/cel-protobuf-values-demo",
+        "@protoform/cel-re2-demo",
+        "@protoform/cel-bytes-demo",
+        "@protoform/cel-time-demo",
+        "@protoform/cel-execution-demo",
+        "@protoform/cel-safe-evaluation-demo",
+        "@protoform/cel-protovalidate-demo",
+        "@protoform/cel-ui-rules-demo",
+        "@protoform/cel-complex-expressions-demo",
+        "@protoform/cel-error-paths-demo",
+        "@protoform/standard-schema-demo",
+        "@protoform/react-hook-form-demo",
+        "@protoform/tanstack-form-demo",
+        "@protoform/formik-demo",
+        "@protoform/final-form-demo",
+        "@protoform/auto-form-demo",
+        "@protoform/stepper-demo",
+        "@protoform/server-errors-demo",
+        "@protoform/credential-redaction-demo",
+        "@protoform/accessible-forms-demo",
+        "@protoform/responsive-cross-browser-demo",
+        "@protoform/ssr-hydration-demo",
+        "@protoform/connectrpc-transport-demo",
+        "@protoform/async-cancellation-demo",
+        "@protoform/dependency-matrix-demo",
+        "@protoform/performance-bundle-demo",
+        "@protoform/untrusted-input-demo"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "@buf/googleapis_googleapis.bufbuild_es",
+        "@bufbuild/cel",
+        "@bufbuild/protobuf",
+        "@bufbuild/protovalidate",
+        "@connectrpc/connect",
+        "@hookform/resolvers",
+        "@standard-schema/spec",
+        "@tanstack/react-router",
+        "class-variance-authority",
+        "clsx",
+        "cmdk",
+        "date-fns",
+        "lucide-react",
+        "motion",
+        "prismjs",
+        "react-day-picker",
+        "react-hook-form",
+        "react-simple-code-editor",
+        "sonner",
+        "tailwind-merge",
+        "zod"
+      ],
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/lib/protobuf-provider/auto-form-example-annotations.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/protobuf-provider/gen/auto-form-example_pb.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/protobuf-provider/gen/protoform/v1/auto_form_example_pb.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/demo/auto-form-basic.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/demo/auto-form-protobuf-validation.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/demo/auto-form-protobuf-complex.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/demo/auto-form-protobuf-ui-metadata.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "dependencies": ["@bufbuild/protobuf", "react", "react-hook-form"],
+      "description": "Shared fixture descriptors and generated compatibility contracts for focused Protoform demos.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/runtime/demo-schemas.ts",
+          "target": "~/components/protoform-examples/runtime/demo-schemas.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/demo/runtime/gen/buf/validate/validate_pb.ts",
+          "target": "~/components/protoform-examples/runtime/gen/buf/validate/validate_pb.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/demo/runtime/gen/google/api/field_behavior_pb.ts",
+          "target": "~/components/protoform-examples/runtime/gen/google/api/field_behavior_pb.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/demo/runtime/gen/google/api/field_info_pb.ts",
+          "target": "~/components/protoform-examples/runtime/gen/google/api/field_info_pb.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/demo/runtime/gen/google/api/resource_pb.ts",
+          "target": "~/components/protoform-examples/runtime/gen/google/api/resource_pb.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/demo/runtime/gen/google/rpc/status_pb.ts",
+          "target": "~/components/protoform-examples/runtime/gen/google/rpc/status_pb.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_form.ts",
+          "target": "~/components/protoform-examples/runtime/gen/protoform/conformance/v1/aip_form.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_pb.ts",
+          "target": "~/components/protoform-examples/runtime/gen/protoform/conformance/v1/aip_pb.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/conformance_pb.ts",
+          "target": "~/components/protoform-examples/runtime/gen/protoform/conformance/v1/conformance_pb.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/editions_pb.ts",
+          "target": "~/components/protoform-examples/runtime/gen/protoform/conformance/v1/editions_pb.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/predefined_pb.ts",
+          "target": "~/components/protoform-examples/runtime/gen/protoform/conformance/v1/predefined_pb.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "name": "protoform-demo-runtime",
+      "registryDependencies": ["@protoform/protoform"],
+      "title": "Protoform demo runtime",
+      "type": "registry:block"
+    },
+    {
+      "dependencies": [],
+      "description": "Resource descriptors remain the contract that drives form-visible resource fields.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-121-resource-oriented-design.tsx",
+          "target": "~/components/protoform-examples/aip-121-resource-oriented-design.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-121-resource-oriented-design",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-121 Resource-oriented design",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Exercise the form-visible contract for AIP-122 Resource names.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-122-resource-names.tsx",
+          "target": "~/components/protoform-examples/aip-122-resource-names.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-122-resource-names",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-122 Resource names",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Exercise the form-visible contract for AIP-123 Resource types.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-123-resource-types.tsx",
+          "target": "~/components/protoform-examples/aip-123-resource-types.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-123-resource-types",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-123 Resource types",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Exercise the form-visible contract for AIP-124 Resource association.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-124-resource-association.tsx",
+          "target": "~/components/protoform-examples/aip-124-resource-association.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-124-resource-association",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-124 Resource association",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Enum values, aliases, and unknown numeric values pass through the same typed form boundary.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-126-enumerations.tsx",
+          "target": "~/components/protoform-examples/aip-126-enumerations.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-126-enumerations",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-126 Enumerations",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "HTTP annotations partition request fields into path, query, and body roles without changing the typed request descriptor.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-127-http-and-grpc-transcoding.tsx",
+          "target": "~/components/protoform-examples/aip-127-http-and-grpc-transcoding.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-127-http-and-grpc-transcoding",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-127 HTTP and gRPC transcoding",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Declarative mutation forms preserve validate_only while reconciliation remains server-owned.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-128-declarative-friendly-interfaces.tsx",
+          "target": "~/components/protoform-examples/aip-128-declarative-friendly-interfaces.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-128-declarative-friendly-interfaces",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-128 Declarative-friendly interfaces",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Server-owned output fields are hidden; the backend still computes their values and defaults.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-129-server-modified-values-and-defaults.tsx",
+          "target": "~/components/protoform-examples/aip-129-server-modified-values-and-defaults.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-129-server-modified-values-and-defaults",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-129 Server-modified values and defaults",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Generated descriptors classify standard, batch, custom, streaming, and long-running method workflows.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-130-methods.tsx",
+          "target": "~/components/protoform-examples/aip-130-methods.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-130-methods",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-130 Methods",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Exercise the form-visible contract for AIP-131 Standard methods: Get.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-131-standard-methods-get.tsx",
+          "target": "~/components/protoform-examples/aip-131-standard-methods-get.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-131-standard-methods-get",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-131 Standard methods: Get",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Exercise the form-visible contract for AIP-132 Standard methods: List.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-132-standard-methods-list.tsx",
+          "target": "~/components/protoform-examples/aip-132-standard-methods-list.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-132-standard-methods-list",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-132 Standard methods: List",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Exercise the form-visible contract for AIP-133 Standard methods: Create.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-133-standard-methods-create.tsx",
+          "target": "~/components/protoform-examples/aip-133-standard-methods-create.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-133-standard-methods-create",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-133 Standard methods: Create",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Update masks contain only dirty editable protobuf paths.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-134-standard-methods-update.tsx",
+          "target": "~/components/protoform-examples/aip-134-standard-methods-update.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-134-standard-methods-update",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-134 Standard methods: Update",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Exercise the form-visible contract for AIP-135 Standard methods: Delete.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-135-standard-methods-delete.tsx",
+          "target": "~/components/protoform-examples/aip-135-standard-methods-delete.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-135-standard-methods-delete",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-135 Standard methods: Delete",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "The canonical SubmitBasicForm workflow proves a typed unary custom mutation without inventing a second RPC.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-136-custom-methods.tsx",
+          "target": "~/components/protoform-examples/aip-136-custom-methods.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-136-custom-methods",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-136 Custom methods",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Protobuf snake_case fields map deterministically to TypeScript camelCase form paths.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-140-field-names.tsx",
+          "target": "~/components/protoform-examples/aip-140-field-names.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-140-field-names",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-140 Field names",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Quantity units remain explicit in signed numeric field names, while counts use the standard count suffix.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-141-quantities.tsx",
+          "target": "~/components/protoform-examples/aip-141-quantities.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-141-quantities",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-141 Quantities",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Exercise the form-visible contract for AIP-142 Time and duration.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-142-time-and-duration.tsx",
+          "target": "~/components/protoform-examples/aip-142-time-and-duration.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-142-time-and-duration",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-142 Time and duration",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Currency, language, region, and time-zone codes remain forward-compatible strings with schema-owned format validation.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-143-standardized-codes.tsx",
+          "target": "~/components/protoform-examples/aip-143-standardized-codes.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-143-standardized-codes",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-143 Standardized codes",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Exercise the form-visible contract for AIP-144 Repeated fields.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-144-repeated-fields.tsx",
+          "target": "~/components/protoform-examples/aip-144-repeated-fields.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-144-repeated-fields",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-144 Repeated fields",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Optional start and end timestamps support open bounds and reject empty or reversed half-open intervals.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-145-ranges.tsx",
+          "target": "~/components/protoform-examples/aip-145-ranges.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-145-ranges",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-145 Ranges",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Generic protobuf payloads fail safely and require an explicit type registry when unpacked.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-146-generic-fields.tsx",
+          "target": "~/components/protoform-examples/aip-146-generic-fields.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-146-generic-fields",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-146 Generic fields",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Sensitive values remain usable for submission but are redacted from review output.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-147-sensitive-fields.tsx",
+          "target": "~/components/protoform-examples/aip-147-sensitive-fields.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-147-sensitive-fields",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-147 Sensitive fields",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Exercise the form-visible contract for AIP-148 Standard fields.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-148-standard-fields.tsx",
+          "target": "~/components/protoform-examples/aip-148-standard-fields.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-148-standard-fields",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-148 Standard fields",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Exercise the form-visible contract for AIP-149 Unset field values.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-149-unset-field-values.tsx",
+          "target": "~/components/protoform-examples/aip-149-unset-field-values.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-149-unset-field-values",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-149 Unset field values",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "The operation runner exposes progress, polls named operations, cancels on abort, and surfaces terminal google.rpc.Status errors.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-151-long-running-operations.tsx",
+          "target": "~/components/protoform-examples/aip-151-long-running-operations.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-151-long-running-operations",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-151 Long-running operations",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Job resources expose descriptor-driven configuration and Run request forms that compose with the cancellable operation runner.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-152-jobs.tsx",
+          "target": "~/components/protoform-examples/aip-152-jobs.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-152-jobs",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-152 Jobs",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Required source and destination oneofs, storage validation, and structured partial failures compose with long-running progress.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-153-import-and-export.tsx",
+          "target": "~/components/protoform-examples/aip-153-import-and-export.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-153-import-and-export",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-153 Import and export",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Forms preserve etags; comparison and ABORTED responses remain server-owned.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-154-resource-freshness-validation.tsx",
+          "target": "~/components/protoform-examples/aip-154-resource-freshness-validation.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-154-resource-freshness-validation",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-154 Resource freshness validation",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Mutation requests expose optional UUID-capable request IDs; deduplication remains server-owned.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-155-request-identification.tsx",
+          "target": "~/components/protoform-examples/aip-155-request-identification.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-155-request-identification",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-155 Request identification",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Exercise the form-visible contract for AIP-156 Singleton resources.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-156-singleton-resources.tsx",
+          "target": "~/components/protoform-examples/aip-156-singleton-resources.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-156-singleton-resources",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-156 Singleton resources",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Explicit read projections are validated and minimized; touched fields never guess a response projection.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-157-partial-responses.tsx",
+          "target": "~/components/protoform-examples/aip-157-partial-responses.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-157-partial-responses",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-157 Partial responses",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Forms preserve page_size and opaque page_token fields; token semantics remain server-owned.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-158-pagination.tsx",
+          "target": "~/components/protoform-examples/aip-158-pagination.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-158-pagination",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-158 Pagination",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Wildcard parents permit filters and partial success while rejecting cross-collection ordering.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-159-reading-across-collections.tsx",
+          "target": "~/components/protoform-examples/aip-159-reading-across-collections.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-159-reading-across-collections",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-159 Reading across collections",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "The list form preserves filter and order_by strings; filter parsing and evaluation remain server-owned.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-160-filtering.tsx",
+          "target": "~/components/protoform-examples/aip-160-filtering.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-160-filtering",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-160 Filtering",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Exercise the form-visible contract for AIP-161 Field masks.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-161-field-masks.tsx",
+          "target": "~/components/protoform-examples/aip-161-field-masks.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-161-field-masks",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-161 Field masks",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "The draft revision shape is tracked explicitly and may change with the upstream AIP.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-162-resource-revisions.tsx",
+          "target": "~/components/protoform-examples/aip-162-resource-revisions.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-162-resource-revisions",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-162 Resource revisions",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Exercise the form-visible contract for AIP-163 Change validation.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-163-change-validation.tsx",
+          "target": "~/components/protoform-examples/aip-163-change-validation.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-163-change-validation",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-163 Change validation",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Exercise the form-visible contract for AIP-164 Soft delete.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-164-soft-delete.tsx",
+          "target": "~/components/protoform-examples/aip-164-soft-delete.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-164-soft-delete",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-164 Soft delete",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Purge forms require a filter; force=false remains a non-destructive count/sample preview and force=true requires confirmation.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-165-criteria-based-delete.tsx",
+          "target": "~/components/protoform-examples/aip-165-criteria-based-delete.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-165-criteria-based-delete",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-165 Criteria-based delete",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "CI compares stable protobuf modules with the pull request target and rejects every non-waived FILE compatibility violation.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-180-backwards-compatibility.tsx",
+          "target": "~/components/protoform-examples/aip-180-backwards-compatibility.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-180-backwards-compatibility",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-180 Backwards compatibility",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Versioned descriptor type names and deprecation metadata produce explicit preview and migration guidance.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-181-stability-levels.tsx",
+          "target": "~/components/protoform-examples/aip-181-stability-levels.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-181-stability-levels",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-181 Stability levels",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Every external runtime dependency is declared by a public source-copy registry item.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-182-external-software-dependencies.tsx",
+          "target": "~/components/protoform-examples/aip-182-external-software-dependencies.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-182-external-software-dependencies",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-182 External software dependencies",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Exercise the form-visible contract for AIP-185 API versioning.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-185-api-versioning.tsx",
+          "target": "~/components/protoform-examples/aip-185-api-versioning.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-185-api-versioning",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-185 API versioning",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Exercise the form-visible contract for AIP-190 Naming conventions.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-190-naming-conventions.tsx",
+          "target": "~/components/protoform-examples/aip-190-naming-conventions.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-190-naming-conventions",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-190 Naming conventions",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Exercise the form-visible contract for AIP-191 File and directory structure.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-191-file-and-directory-structure.tsx",
+          "target": "~/components/protoform-examples/aip-191-file-and-directory-structure.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-191-file-and-directory-structure",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-191 File and directory structure",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Generated bindings preserve public message and field comments as descriptor-keyed form help.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-192-documentation.tsx",
+          "target": "~/components/protoform-examples/aip-192-documentation.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-192-documentation",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-192 Documentation",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Exercise the form-visible contract for AIP-193 Errors.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-193-errors.tsx",
+          "target": "~/components/protoform-examples/aip-193-errors.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-193-errors",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-193 Errors",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Only explicitly idempotent unary UNAVAILABLE calls retry automatically; unsafe, streaming, and other-code failures surface immediately.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-194-automatic-retry-configuration.tsx",
+          "target": "~/components/protoform-examples/aip-194-automatic-retry-configuration.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-194-automatic-retry-configuration",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-194 Automatic retry configuration",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Every declared protobuf field enters the stable provider model without changing its contract identity.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-202-fields.tsx",
+          "target": "~/components/protoform-examples/aip-202-fields.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-202-fields",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-202 Fields",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Exercise the form-visible contract for AIP-203 Field behavior documentation.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-203-field-behavior-documentation.tsx",
+          "target": "~/components/protoform-examples/aip-203-field-behavior-documentation.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-203-field-behavior-documentation",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-203 Field behavior documentation",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Exercise the form-visible contract for AIP-210 Unicode.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-210-unicode.tsx",
+          "target": "~/components/protoform-examples/aip-210-unicode.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-210-unicode",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-210 Unicode",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Forms use the standard protobuf well-known types rather than frontend-only replacements.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-213-common-components.tsx",
+          "target": "~/components/protoform-examples/aip-213-common-components.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-213-common-components",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-213 Common components",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Exercise the form-visible contract for AIP-214 Resource expiration.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-214-resource-expiration.tsx",
+          "target": "~/components/protoform-examples/aip-214-resource-expiration.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-214-resource-expiration",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-214 Resource expiration",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Exercise the form-visible contract for AIP-216 States.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-216-states.tsx",
+          "target": "~/components/protoform-examples/aip-216-states.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-216-states",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-216 States",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "UNORDERED_LIST unreachable names become an incomplete-results warning with a targeted retry action for every resource.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-217-unreachable-resources.tsx",
+          "target": "~/components/protoform-examples/aip-217-unreachable-resources.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-217-unreachable-resources",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-217 Unreachable resources",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Exercise the form-visible contract for AIP-231 Batch methods: Get.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-231-batch-methods-get.tsx",
+          "target": "~/components/protoform-examples/aip-231-batch-methods-get.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-231-batch-methods-get",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-231 Batch methods: Get",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Exercise the form-visible contract for AIP-233 Batch methods: Create.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-233-batch-methods-create.tsx",
+          "target": "~/components/protoform-examples/aip-233-batch-methods-create.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-233-batch-methods-create",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-233 Batch methods: Create",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Exercise the form-visible contract for AIP-234 Batch methods: Update.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-234-batch-methods-update.tsx",
+          "target": "~/components/protoform-examples/aip-234-batch-methods-update.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-234-batch-methods-update",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-234 Batch methods: Update",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Exercise the form-visible contract for AIP-235 Batch methods: Delete.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-235-batch-methods-delete.tsx",
+          "target": "~/components/protoform-examples/aip-235-batch-methods-delete.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-235-batch-methods-delete",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-235 Batch methods: Delete",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Experiment forms keep preview metadata output-only, label preview as non-enforcing, and require confirmation plus etag for live commit.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/aip-236-policy-preview.tsx",
+          "target": "~/components/protoform-examples/aip-236-policy-preview.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "aip-236-policy-preview",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "AIP-236 Policy preview",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Edit strings, booleans, signed and unsigned numbers, 64-bit values, floats, bytes, and enums without a hand-written DTO.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/protobuf-scalars.tsx",
+          "target": "~/components/protoform-examples/protobuf-scalars.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "protobuf-scalars-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "Protobuf scalar fields",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "See how optional fields, wrapper messages, and protobuf default values stay distinguishable in form state.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/protobuf-presence.tsx",
+          "target": "~/components/protoform-examples/protobuf-presence.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "protobuf-presence-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "Presence and wrapper values",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Render nested messages and repeated scalar or message values from descriptors.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/protobuf-nested-collections.tsx",
+          "target": "~/components/protoform-examples/protobuf-nested-collections.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "protobuf-nested-collections-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "Nested and repeated messages",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Use string, numeric, boolean, and message-valued protobuf maps as editable key/value collections.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/protobuf-maps.tsx",
+          "target": "~/components/protoform-examples/protobuf-maps.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "protobuf-maps-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "Protobuf maps",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Switch a protobuf oneof branch while Protoform clears values owned by the previous branch.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/protobuf-oneof.tsx",
+          "target": "~/components/protoform-examples/protobuf-oneof.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "protobuf-oneof-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "Oneof branch selection",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Edit Timestamp, Duration, and FieldMask values with purpose-built controls.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/protobuf-well-known-types.tsx",
+          "target": "~/components/protoform-examples/protobuf-well-known-types.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "protobuf-well-known-types-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "Well-known types",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Edit Struct, Value, ListValue, and Any payloads without replacing protobuf's dynamic value semantics.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/protobuf-dynamic-json-any.tsx",
+          "target": "~/components/protoform-examples/protobuf-dynamic-json-any.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "protobuf-dynamic-json-any-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "Dynamic JSON and Any",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Round-trip ProtoJSON while descriptor custom options continue to drive labels, controls, and help.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/protobuf-json-options.tsx",
+          "target": "~/components/protoform-examples/protobuf-json-options.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "protobuf-json-options-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "ProtoJSON and custom options",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Render recursive descriptors safely without expanding an unbounded field tree.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/protobuf-recursive-messages.tsx",
+          "target": "~/components/protoform-examples/protobuf-recursive-messages.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "protobuf-recursive-messages-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "Recursive messages",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Use generated service and RPC descriptors to keep a form tied to its request contract.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/bufbuild-descriptors.tsx",
+          "target": "~/components/protoform-examples/bufbuild-descriptors.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "bufbuild-descriptors-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "Bufbuild service descriptors",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Edit known fields without corrupting unknown protobuf fields retained from a newer producer.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/protobuf-unknown-fields.tsx",
+          "target": "~/components/protoform-examples/protobuf-unknown-fields.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "protobuf-unknown-fields-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "Unknown-field preservation",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Use Editions 2023 descriptors through the same field model as proto3 forms.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/protobuf-editions.tsx",
+          "target": "~/components/protoform-examples/protobuf-editions.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "protobuf-editions-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "Protobuf Editions 2023",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Show required scalar and required oneof violations at their exact form paths.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/protovalidate-required.tsx",
+          "target": "~/components/protoform-examples/protovalidate-required.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "protovalidate-required-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "Required values and oneofs",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Exercise float, double, signed, and unsigned numeric rules including bounds and membership.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/protovalidate-numeric-rules.tsx",
+          "target": "~/components/protoform-examples/protovalidate-numeric-rules.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "protovalidate-numeric-rules-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "Numeric validation rules",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Validate boolean constants and enum defined-only, allow-list, deny-list, and alias behavior.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/protovalidate-bool-enum.tsx",
+          "target": "~/components/protoform-examples/protovalidate-bool-enum.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "protovalidate-bool-enum-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "Boolean and enum rules",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Exercise string constants, lengths, patterns, prefixes, suffixes, containment, and membership.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/protovalidate-string-rules.tsx",
+          "target": "~/components/protoform-examples/protovalidate-string-rules.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "protovalidate-string-rules-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "Core string rules",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Use purpose-built URL, email, UUID, IP, hostname, and identifier inputs backed by standard format rules.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/protovalidate-string-formats.tsx",
+          "target": "~/components/protoform-examples/protovalidate-string-formats.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "protovalidate-string-formats-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "String format validation",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Validate base64 bytes and Any type URLs against exact, length, pattern, allow, and deny rules.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/protovalidate-bytes-any.tsx",
+          "target": "~/components/protoform-examples/protovalidate-bytes-any.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "protovalidate-bytes-any-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "Bytes and Any rules",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Apply repeated-item rules, cardinality limits, uniqueness, and indexed error paths.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/protovalidate-repeated.tsx",
+          "target": "~/components/protoform-examples/protovalidate-repeated.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "protovalidate-repeated-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "Repeated-field rules",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Validate map cardinality plus key and value rules without flattening typed map values.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/protovalidate-maps.tsx",
+          "target": "~/components/protoform-examples/protovalidate-maps.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "protovalidate-maps-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "Map validation rules",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Validate Duration, Timestamp, and FieldMask values with protobuf-native semantics.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/protovalidate-well-known-types.tsx",
+          "target": "~/components/protoform-examples/protovalidate-well-known-types.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "protovalidate-well-known-types-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "Well-known type rules",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Compare ignore-empty behavior with explicit zero and unset protobuf values.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/protovalidate-ignore.tsx",
+          "target": "~/components/protoform-examples/protovalidate-ignore.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "protovalidate-ignore-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "Ignore and zero-value semantics",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Render every validation violation instead of stopping at the first failing rule.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/protovalidate-all-errors.tsx",
+          "target": "~/components/protoform-examples/protovalidate-all-errors.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "protovalidate-all-errors-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "Complete violation reporting",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Use reusable predefined constraints and the standard Protovalidate rule examples.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/protovalidate-predefined.tsx",
+          "target": "~/components/protoform-examples/protovalidate-predefined.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "protovalidate-predefined-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "Predefined and example rules",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Evaluate CEL literals, scalar types, logical, relational, arithmetic, and explicit conversion expressions.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/cel-language-basics.tsx",
+          "target": "~/components/protoform-examples/cel-language-basics.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "cel-language-basics-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "CEL language basics",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Exercise CEL list and map values plus all, exists, exists_one, filter, and map comprehensions.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/cel-collections.tsx",
+          "target": "~/components/protoform-examples/cel-collections.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "cel-collections-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "CEL collections and comprehensions",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Read protobuf messages, enums, and explicit field presence directly from CEL expressions.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/cel-protobuf-values.tsx",
+          "target": "~/components/protoform-examples/cel-protobuf-values.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "cel-protobuf-values-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "CEL with protobuf values",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Use CEL string helpers and RE2-compatible regular expressions with portable validation messages.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/cel-re2.tsx",
+          "target": "~/components/protoform-examples/cel-re2.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "cel-re2-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "CEL strings and RE2",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Evaluate CEL byte literals and byte operations without treating bytes as ordinary Unicode text.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/cel-bytes.tsx",
+          "target": "~/components/protoform-examples/cel-bytes.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "cel-bytes-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "CEL byte values",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Compare timestamps and durations and use CEL time arithmetic across protobuf WKT values.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/cel-time.tsx",
+          "target": "~/components/protoform-examples/cel-time.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "cel-time-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "CEL timestamps and durations",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Parse, plan, cache, and repeatedly evaluate the same CEL contract without recompiling per keystroke.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/cel-execution.tsx",
+          "target": "~/components/protoform-examples/cel-execution.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "cel-execution-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "CEL parse and evaluation lifecycle",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Fail safely on evaluation errors, unknown attributes, excessive cost, and invalid UI expressions.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/cel-safe-evaluation.tsx",
+          "target": "~/components/protoform-examples/cel-safe-evaluation.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "cel-safe-evaluation-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "Safe CEL evaluation",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Attach CEL to messages, fields, and reusable predefined Protovalidate rules.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/cel-protovalidate.tsx",
+          "target": "~/components/protoform-examples/cel-protovalidate.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "cel-protovalidate-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "CEL in Protovalidate",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Drive progressive disclosure from the restricted, fail-closed CEL UI profile.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/cel-ui-rules.tsx",
+          "target": "~/components/protoform-examples/cel-ui-rules.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "cel-ui-rules-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "CEL-powered UI rules",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Handle the specification's minimum nesting and repetition depth with bounded evaluation cost.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/cel-complex-expressions.tsx",
+          "target": "~/components/protoform-examples/cel-complex-expressions.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "cel-complex-expressions-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "Complex CEL expressions",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Preserve dynamic messages plus nested, repeated, and multiple violation paths.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/cel-error-paths.tsx",
+          "target": "~/components/protoform-examples/cel-error-paths.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "cel-error-paths-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "CEL messages and error paths",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Use the Standard Schema v1 contract with synchronous, asynchronous, object, and callable schema implementations.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/standard-schema.tsx",
+          "target": "~/components/protoform-examples/standard-schema.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "standard-schema-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "Standard Schema interoperability",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Use React Hook Form as Protoform's default native engine without hiding its form API.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/react-hook-form.tsx",
+          "target": "~/components/protoform-examples/react-hook-form.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "react-hook-form-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "React Hook Form",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": ["@tanstack/react-form"],
+      "description": "Use the same generated field model through the optional TanStack Form adapter.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/tanstack-form.tsx",
+          "target": "~/components/protoform-examples/tanstack-form.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "tanstack-form-demo",
+      "registryDependencies": [
+        "@protoform/protoform-demo-runtime",
+        "@protoform/use-proto-form-tanstack"
+      ],
+      "title": "TanStack Form interoperability",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": ["formik"],
+      "description": "Feed Protoform validation results into an existing Formik form without replacing Formik state.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/formik.tsx",
+          "target": "~/components/protoform-examples/formik.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "formik-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "Formik interoperability",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": ["final-form", "react-final-form"],
+      "description": "Feed Protoform validation results into Final Form while preserving its native subscription model.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/final-form.tsx",
+          "target": "~/components/protoform-examples/final-form.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "final-form-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "Final Form interoperability",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Generate complete fields and controls from a descriptor while keeping source ownership.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/auto-form.tsx",
+          "target": "~/components/protoform-examples/auto-form.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "auto-form-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "Descriptor-driven AutoForm",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Split descriptor fields into an accessible linear stepper with stable step IDs.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/stepper.tsx",
+          "target": "~/components/protoform-examples/stepper.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "stepper-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "Linear stepper",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Map structured server field violations and unstructured submit failures into visible, recoverable form states.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/server-errors.tsx",
+          "target": "~/components/protoform-examples/server-errors.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "server-errors-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "Server errors and recovery",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Keep sensitive input available for submission while redacting it from review output.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/credential-redaction.tsx",
+          "target": "~/components/protoform-examples/credential-redaction.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "credential-redaction-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "Sensitive-value redaction",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Exercise labeled controls, focus management, error relationships, and the full form using only a keyboard.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/accessible-forms.tsx",
+          "target": "~/components/protoform-examples/accessible-forms.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "accessible-forms-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "Accessible keyboard workflows",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Keep generated forms usable across browser engines and narrow viewports.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/responsive-cross-browser.tsx",
+          "target": "~/components/protoform-examples/responsive-cross-browser.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "responsive-cross-browser-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "Responsive cross-browser forms",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Render descriptor-driven form HTML on the server and hydrate the interactive client without mismatches.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/ssr-hydration.tsx",
+          "target": "~/components/protoform-examples/ssr-hydration.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "ssr-hydration-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "SSR and hydration",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Submit generated request messages to a local ConnectRPC TypeScript service.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/connectrpc-transport.tsx",
+          "target": "~/components/protoform-examples/connectrpc-transport.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "connectrpc-transport-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "ConnectRPC transport",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Cancel stale asynchronous validation and submissions so older responses cannot overwrite current state.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/async-cancellation.tsx",
+          "target": "~/components/protoform-examples/async-cancellation.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "async-cancellation-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "Async cancellation",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Keep the registry source and its public third-party dependencies installable without Protoform packages.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/dependency-matrix.tsx",
+          "target": "~/components/protoform-examples/dependency-matrix.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "dependency-matrix-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "Registry dependency contract",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Stay within large-form interaction and tree-shaken bundle budgets.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/performance-bundle.tsx",
+          "target": "~/components/protoform-examples/performance-bundle.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "performance-bundle-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "Performance and bundle budgets",
+      "type": "registry:example"
+    },
+    {
+      "dependencies": [],
+      "description": "Reject malformed descriptors, conversion values, and hostile server error paths without crashing the form.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/catalog/untrusted-input.tsx",
+          "target": "~/components/protoform-examples/untrusted-input.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "name": "untrusted-input-demo",
+      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "title": "Untrusted input hardening",
+      "type": "registry:example"
+    }
+  ]
+}
