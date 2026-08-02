@@ -1,0 +1,34 @@
+name: Bug report
+description: Report a reproducible Protoform defect.
+title: "bug: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Do not report vulnerabilities here. Follow SECURITY.md.
+  - type: input
+    id: version
+    attributes:
+      label: Protoform version
+      description: Git tag or commit SHA.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Include the descriptor, adapter, steps, expected result, and actual result.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: React, protobuf packages, form library, browser, runtime, and operating system.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs
+      description: Remove credentials, private code, and customer data.

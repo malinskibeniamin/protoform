@@ -1,0 +1,809 @@
+syntax = "proto3";
+
+package protoform.examples.v1;
+
+import "protoform/v1/auto_form_ui.proto";
+import "buf/validate/validate.proto";
+import "google/api/field_behavior.proto";
+import "google/api/resource.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+
+message SubmitBasicFormRequest {
+  option (protoform.v1.message_ui) = {
+    title: "Create a profile"
+    description: "A minimal descriptor-to-server form."
+  };
+
+  string display_name = 1 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).string = {
+      min_len: 2
+      max_len: 40
+    },
+    (protoform.v1.field_ui) = {
+      placeholder: "Ada Lovelace"
+      description: "Shown to other members of the workspace."
+      help: "Use the name teammates will recognize in navigation and activity."
+    }
+  ];
+
+  string email = 2 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.email = true,
+    (protoform.v1.field_ui) = {
+      control: CONTROL_TYPE_EMAIL
+      placeholder: "ada@example.com"
+    }
+  ];
+
+  string role = 3 [
+    (buf.validate.field).string.max_len = 80,
+    (protoform.v1.field_ui) = {placeholder: "Platform engineer"}
+  ];
+}
+
+message SubmitBasicFormResponse {
+  string profile_id = 1;
+  string display_name = 2;
+}
+
+message ApiKeyCredentials {
+  string api_key = 1 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.min_len = 12,
+    (protoform.v1.field_ui) = {
+      control: CONTROL_TYPE_PASSWORD
+      sensitive: true
+      description: "Stored by the example server only for this request."
+    }
+  ];
+}
+
+message ServiceAccountCredentials {
+  string service_account_email = 1 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.email = true,
+    (protoform.v1.field_ui) = {
+      control: CONTROL_TYPE_EMAIL
+      placeholder: "deployments@example.com"
+    }
+  ];
+}
+
+message SubmitComplexFormRequest {
+  option (protoform.v1.message_ui) = {
+    title: "Create an environment"
+    description: "A stable four-step flow with oneof credentials and server errors."
+  };
+
+  string project_id = 1 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).string = {
+      min_len: 3
+      max_len: 30
+      pattern: "^[a-z][a-z0-9-]+$"
+    },
+    (protoform.v1.field_ui) = {
+      step: "project"
+      placeholder: "payments-prod"
+      description: "Stable identifier used in generated resource names."
+      help: "Use lowercase letters, digits, and hyphens; begin with a letter."
+    }
+  ];
+
+  string owner_email = 2 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.email = true,
+    (protoform.v1.field_ui) = {
+      step: "project"
+      control: CONTROL_TYPE_EMAIL
+      placeholder: "owner@example.com"
+    }
+  ];
+
+  CloudProvider provider = 3 [
+    (buf.validate.field).enum = {
+      defined_only: true
+      not_in: 0
+    },
+    (protoform.v1.field_ui) = {
+      step: "runtime"
+      control: CONTROL_TYPE_RADIO_GROUP
+    }
+  ];
+
+  string region = 4 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.pattern = "^[a-z]+-[a-z]+[0-9]$",
+    (protoform.v1.field_ui) = {
+      step: "runtime"
+      placeholder: "eu-west1"
+    }
+  ];
+
+  int32 replicas = 5 [
+    (buf.validate.field).int32 = {
+      gte: 1
+      lte: 12
+    },
+    (protoform.v1.field_ui) = {
+      step: "runtime"
+      control: CONTROL_TYPE_SLIDER
+      help: "Choose between 1 and 12 replicas."
+    }
+  ];
+
+  oneof credentials {
+    option (buf.validate.oneof).required = true;
+    option (protoform.v1.oneof_ui) = {
+      step: "access"
+      description: "Choose exactly one authentication method."
+    };
+
+    ApiKeyCredentials api_key = 6;
+    ServiceAccountCredentials service_account = 7;
+  }
+
+  string approval_ticket = 8 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).string = {
+      min_len: 3
+      max_len: 40
+    },
+    (protoform.v1.field_ui) = {
+      step: "review"
+      placeholder: "OPS-142"
+      summary_label: "Approval"
+    }
+  ];
+
+  bool dry_run = 9 [(protoform.v1.field_ui) = {
+    step: "review"
+    control: CONTROL_TYPE_SWITCH
+    description: "Validate the request without provisioning resources."
+  }];
+}
+
+message SubmitComplexFormResponse {
+  string environment_id = 1;
+  string status = 2;
+}
+
+message KitchenSinkService {
+  string name = 1 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).string = {
+      min_len: 2
+      max_len: 24
+      pattern: "^[a-z][a-z0-9-]+$"
+    }
+  ];
+
+  string primary_region = 2 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.pattern = "^[a-z]+-[a-z]+[0-9]$"
+  ];
+
+  int32 replicas = 3 [(buf.validate.field).int32 = {
+    gte: 1
+    lte: 20
+  }];
+
+  double monthly_cost_per_replica = 4 [(buf.validate.field).double = {
+    gte: 1
+    lte: 10000
+  }];
+
+  bool public_endpoint = 5 [(protoform.v1.field_ui).control = CONTROL_TYPE_SWITCH];
+
+  string health_path = 6 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 80
+    pattern: "^/[-a-zA-Z0-9_/]*$"
+  }];
+
+  repeated string dependencies = 7 [(buf.validate.field).repeated = {
+    max_items: 8
+    unique: true
+    items: {
+      string: {
+        min_len: 2
+        max_len: 24
+        pattern: "^[a-z][a-z0-9-]+$"
+      }
+    }
+  }];
+}
+
+message SubmitKitchenSinkFormRequest {
+  option (protoform.v1.message_ui) = {
+    title: "Production deployment kitchen sink"
+    description: "A five-step form backed by cross-collection CEL policy."
+  };
+
+  option (buf.validate.message).cel = {
+    id: "kitchen_sink.graph.integrity"
+    message: "Services, dependencies, regions, and rate limits must form one valid deployment graph."
+    expression: "this.services.size() >= 2 && this.services.all(s, this.regions.exists(r, r == s.primary_region) && this.services.filter(candidate, candidate.name == s.name).size() == 1 && (!s.public_endpoint || s.health_path.startsWith('/')) && s.dependencies.all(d, d != s.name && this.services.exists(candidate, candidate.name == d))) && !this.services.exists(s, s.dependencies.exists(d, this.services.exists(candidate, candidate.name == d && candidate.dependencies.exists(back, back == s.name)))) && this.regions.all(r, this.services.exists(s, s.primary_region == r)) && this.rate_limits.all(name, this.services.exists(s, s.name == name)) && this.services.filter(s, s.public_endpoint).all(s, s.name in this.rate_limits && this.rate_limits[s.name] >= 100)"
+  };
+
+  option (buf.validate.message).cel = {
+    id: "kitchen_sink.production.policy"
+    message: "Production requires two regions, three replicas per service, an owner label, a change ticket, and risk acknowledgement."
+    expression: "this.environment != 3 || (this.regions.size() >= 2 && this.acknowledge_risk && has(this.approval_ticket) && this.approval_ticket.matches('^CHG-[0-9]{6}$') && this.services.all(s, s.replicas >= 3) && 'owner' in this.labels && this.labels['owner'].matches('^[a-z][a-z0-9-]+$') && (!('data-classification' in this.labels) || this.labels['data-classification'] in ['public', 'internal', 'restricted']))"
+  };
+
+  option (buf.validate.message).cel = {
+    id: "kitchen_sink.budget.envelope"
+    message: "Each service must fit within an equal share of the monthly budget."
+    expression: "this.services.size() == 0 || this.services.all(s, double(s.replicas) * s.monthly_cost_per_replica <= this.monthly_budget / double(this.services.size()))"
+  };
+
+  option (buf.validate.message).cel = {
+    id: "kitchen_sink.change.window"
+    message: "The change window must include both timestamps, run forward, and last no more than four hours."
+    expression: "has(this.window_start) == has(this.window_end) && (!has(this.window_start) || (this.window_end > this.window_start && this.window_end - this.window_start <= duration('14400s')))"
+  };
+
+  option (buf.validate.message).cel = {
+    id: "kitchen_sink.notification.routing"
+    message: "Live public deployments require a webhook; other live deployments require one notification route."
+    expression: "this.dry_run || (this.services.exists(s, s.public_endpoint) ? has(this.notification_webhook) : has(this.notification_email) || has(this.notification_webhook))"
+  };
+
+  option (buf.validate.message).cel = {
+    id: "kitchen_sink.rollout.sequence"
+    expression: "this.dry_run ? '' : this.rollout_percentages.size() < 2 ? 'Use at least two rollout stages.' : this.rollout_percentages[0] != 5 ? 'The rollout must begin at 5%.' : this.rollout_percentages[this.rollout_percentages.size() - 1] != 100 ? 'The rollout must finish at 100%.' : !this.rollout_percentages.all(p, p in [5, 25, 50, 100] && this.rollout_percentages.filter(candidate, candidate == p).size() == 1) ? 'Use unique rollout stages from 5%, 25%, 50%, and 100%.' : ''"
+  };
+
+  string organization_slug = 1 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).string = {
+      min_len: 3
+      max_len: 40
+      pattern: "^[a-z][a-z0-9-]+$"
+    },
+    (protoform.v1.field_ui) = {
+      step: "identity"
+      placeholder: "northstar-platform"
+      description: "Stable owner of the deployment request."
+    }
+  ];
+
+  KitchenSinkEnvironment environment = 2 [
+    (buf.validate.field).enum = {
+      defined_only: true
+      not_in: 0
+    },
+    (protoform.v1.field_ui) = {
+      step: "identity"
+      control: CONTROL_TYPE_RADIO_GROUP
+    }
+  ];
+
+  uint64 estimated_events_per_day = 3 [
+    (buf.validate.field).uint64 = {
+      gte: 1
+      lte: 1000000000000
+    },
+    (protoform.v1.field_ui) = {
+      step: "identity"
+      help: "Exercises lossless uint64 form conversion."
+    }
+  ];
+
+  repeated string regions = 4 [
+    (buf.validate.field).repeated = {
+      min_items: 1
+      max_items: 4
+      unique: true
+      items: {string: {pattern: "^[a-z]+-[a-z]+[0-9]$"}}
+    },
+    (protoform.v1.field_ui).step = "topology"
+  ];
+
+  repeated KitchenSinkService services = 5 [
+    (buf.validate.field).repeated = {
+      min_items: 2
+      max_items: 8
+    },
+    (protoform.v1.field_ui) = {
+      step: "topology"
+      description: "CEL cross-references service names, regions, dependencies, and public endpoints."
+    }
+  ];
+
+  map<string, string> labels = 6 [
+    (buf.validate.field).map = {
+      min_pairs: 1
+      max_pairs: 12
+      keys: {string: {pattern: "^[a-z][a-z0-9.-]{1,31}$"}}
+      values: {string: {max_len: 63}}
+    },
+    (protoform.v1.field_ui) = {
+      step: "policy"
+      control: CONTROL_TYPE_KEY_VALUE
+    }
+  ];
+
+  map<string, int32> rate_limits = 7 [
+    (buf.validate.field).map = {
+      max_pairs: 8
+      keys: {string: {pattern: "^[a-z][a-z0-9-]+$"}}
+      values: {
+        int32: {
+          gte: 1
+          lte: 1000000
+        }
+      }
+    },
+    (protoform.v1.field_ui) = {
+      step: "policy"
+      control: CONTROL_TYPE_KEY_VALUE
+      description: "Public services require a matching entry of at least 100 requests per minute."
+    }
+  ];
+
+  double monthly_budget = 8 [
+    (buf.validate.field).double = {
+      gte: 100
+      lte: 10000000
+    },
+    (protoform.v1.field_ui) = {
+      step: "policy"
+      control: CONTROL_TYPE_CURRENCY
+    }
+  ];
+
+  google.protobuf.Struct policy_context = 9 [(protoform.v1.field_ui) = {
+    step: "policy"
+    control: CONTROL_TYPE_JSON
+    description: "Dynamic JSON-like context remains typed as google.protobuf.Struct."
+  }];
+
+  repeated int32 rollout_percentages = 10 [
+    (buf.validate.field).repeated = {
+      max_items: 4
+      unique: true
+      items: {
+        int32: {
+          gte: 1
+          lte: 100
+        }
+      }
+    },
+    (protoform.v1.field_ui) = {
+      step: "rollout"
+      visible_when: {
+        id: "rollout.visible"
+        expression: "!form.dryRun"
+      }
+      description: "The string-returning CEL rule explains the first invalid stage."
+    }
+  ];
+
+  google.protobuf.Timestamp window_start = 11 [(protoform.v1.field_ui) = {
+    step: "rollout"
+    control: CONTROL_TYPE_TIMESTAMP
+  }];
+
+  google.protobuf.Timestamp window_end = 12 [(protoform.v1.field_ui) = {
+    step: "rollout"
+    control: CONTROL_TYPE_TIMESTAMP
+  }];
+
+  google.protobuf.Duration max_downtime = 13 [
+    (buf.validate.field).duration = {
+      gte: {seconds: 0}
+      lte: {seconds: 600}
+    },
+    (protoform.v1.field_ui).step = "rollout"
+  ];
+
+  bool dry_run = 14 [(protoform.v1.field_ui) = {
+    step: "review"
+    control: CONTROL_TYPE_SWITCH
+    description: "Dry runs may omit rollout and notification details."
+  }];
+
+  optional string approval_ticket = 15 [
+    (buf.validate.field).string.pattern = "^CHG-[0-9]{6}$",
+    (protoform.v1.field_ui) = {
+      step: "review"
+      placeholder: "CHG-123456"
+      visible_when: {
+        id: "approval.visible"
+        expression: "form.environment == 3"
+      }
+    }
+  ];
+
+  bool acknowledge_risk = 16 [(protoform.v1.field_ui) = {
+    step: "review"
+    control: CONTROL_TYPE_CHECKBOX
+    visible_when: {
+      id: "risk.visible"
+      expression: "form.environment == 3"
+    }
+  }];
+
+  oneof notification {
+    option (protoform.v1.oneof_ui) = {
+      step: "review"
+      description: "Public deployments require the webhook branch."
+      visible_when: {
+        id: "notification.visible"
+        expression: "!form.dryRun"
+      }
+      summary_label: "Notification route"
+    };
+
+    string notification_email = 17 [(buf.validate.field).string.email = true];
+    string notification_webhook = 18 [
+      (buf.validate.field).string.uri = true,
+      (protoform.v1.field_ui).control = CONTROL_TYPE_URL
+    ];
+  }
+
+  google.protobuf.FieldMask changed_fields = 19 [
+    (buf.validate.field).field_mask = {
+      in: "services"
+      in: "rollout_percentages"
+      in: "monthly_budget"
+      in: "labels"
+    },
+    (protoform.v1.field_ui) = {
+      step: "review"
+      summary_label: "Changed fields"
+    }
+  ];
+}
+
+message MaskableProfile {
+  option (google.api.resource) = {
+    type: "protoform.example.com/Profile"
+    pattern: "profiles/{profile}"
+    singular: "profile"
+    plural: "profiles"
+  };
+
+  string name = 1 [(google.api.field_behavior) = IDENTIFIER];
+  string display_name = 2;
+  string biography = 3;
+  string home_region = 4 [(google.api.field_behavior) = IMMUTABLE];
+  string lifecycle_state = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+message UpdateMaskableProfileRequest {
+  MaskableProfile profile = 1 [
+    (buf.validate.field).required = true,
+    (google.api.field_behavior) = REQUIRED
+  ];
+  google.protobuf.FieldMask update_mask = 2;
+}
+
+message NestedContact {
+  string name = 1 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).string = {
+      min_len: 2
+      max_len: 60
+    }
+  ];
+  string email = 2 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.email = true,
+    (protoform.v1.field_ui).control = CONTROL_TYPE_EMAIL
+  ];
+}
+
+message NestedGovernance {
+  NestedContact primary_owner = 1 [(buf.validate.field).required = true];
+  repeated NestedContact escalation_chain = 2 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 5
+  }];
+}
+
+message NestedOrganization {
+  string organization_slug = 1 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).string = {
+      min_len: 3
+      max_len: 40
+      pattern: "^[a-z][a-z0-9-]+$"
+    },
+    (protoform.v1.field_ui) = {
+      placeholder: "northstar-platform"
+      help: "Use the stable slug shared by the nested governance, architecture, and delivery configuration."
+    }
+  ];
+  NestedGovernance governance = 2 [(buf.validate.field).required = true];
+}
+
+message NestedRoute {
+  string destination_cidr = 1 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.pattern = "^[0-9a-fA-F:.]+/[0-9]{1,3}$"
+  ];
+  string next_hop = 2 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.min_len = 2
+  ];
+  map<string, string> metadata = 3 [
+    (buf.validate.field).map = {
+      max_pairs: 8
+      keys: {string: {pattern: "^[a-z][a-z0-9.-]+$"}}
+      values: {string: {max_len: 80}}
+    },
+    (protoform.v1.field_ui).control = CONTROL_TYPE_KEY_VALUE
+  ];
+}
+
+message NestedSubnet {
+  string name = 1 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.pattern = "^[a-z][a-z0-9-]+$"
+  ];
+  string cidr = 2 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.pattern = "^[0-9a-fA-F:.]+/[0-9]{1,3}$"
+  ];
+  repeated NestedRoute routes = 3 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 12
+  }];
+}
+
+message NestedNetwork {
+  string name = 1 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.pattern = "^[a-z][a-z0-9-]+$"
+  ];
+  repeated NestedSubnet subnets = 2 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 8
+  }];
+}
+
+message NestedPort {
+  string name = 1 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.pattern = "^[a-z][a-z0-9-]+$"
+  ];
+  int32 container_port = 2 [(buf.validate.field).int32 = {
+    gte: 1
+    lte: 65535
+  }];
+  string protocol = 3 [(buf.validate.field).string = {
+    in: "TCP"
+    in: "UDP"
+  }];
+}
+
+message NestedContainer {
+  string name = 1 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.pattern = "^[a-z][a-z0-9-]+$"
+  ];
+  string container_image = 2 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).string = {
+      min_len: 3
+      max_len: 200
+      pattern: "^[a-zA-Z0-9./:_-]+$"
+    }
+  ];
+  map<string, string> environment = 3 [
+    (buf.validate.field).map = {
+      max_pairs: 24
+      keys: {string: {pattern: "^[A-Z][A-Z0-9_]+$"}}
+      values: {string: {max_len: 200}}
+    },
+    (protoform.v1.field_ui).control = CONTROL_TYPE_KEY_VALUE
+  ];
+  repeated NestedPort ports = 4 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 12
+  }];
+}
+
+message NestedHttpProbe {
+  string path = 1 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.pattern = "^/[-a-zA-Z0-9_/]*$"
+  ];
+  int32 port = 2 [(buf.validate.field).int32 = {
+    gte: 1
+    lte: 65535
+  }];
+}
+
+message NestedGrpcProbe {
+  string service = 1 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.min_len = 2
+  ];
+  int32 port = 2 [(buf.validate.field).int32 = {
+    gte: 1
+    lte: 65535
+  }];
+}
+
+message NestedAutoscaling {
+  int32 minimum_replicas = 1 [(buf.validate.field).int32 = {
+    gte: 1
+    lte: 100
+  }];
+  int32 maximum_replicas = 2 [(buf.validate.field).int32 = {
+    gte: 1
+    lte: 1000
+  }];
+  double target_cpu_utilization = 3 [(buf.validate.field).double = {
+    gte: 1
+    lte: 100
+  }];
+}
+
+message NestedResources {
+  double cpu_cores = 1 [(buf.validate.field).double = {
+    gte: 0.1
+    lte: 128
+  }];
+  int32 memory_mebibytes = 2 [(buf.validate.field).int32 = {
+    gte: 64
+    lte: 1048576
+  }];
+  NestedAutoscaling autoscaling = 3 [(buf.validate.field).required = true];
+}
+
+message NestedWorkload {
+  string name = 1 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.pattern = "^[a-z][a-z0-9-]+$"
+  ];
+  NestedResources resources = 2 [(buf.validate.field).required = true];
+  repeated NestedContainer containers = 3 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 12
+  }];
+
+  oneof health_check {
+    option (buf.validate.oneof).required = true;
+    option (protoform.v1.oneof_ui).description = "Choose the active deeply nested probe shape.";
+    NestedHttpProbe http = 4;
+    NestedGrpcProbe grpc = 5;
+  }
+}
+
+message NestedArchitecture {
+  repeated NestedNetwork networks = 1 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 6
+  }];
+  repeated NestedWorkload workloads = 2 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 20
+  }];
+}
+
+message NestedApproval {
+  string group = 1 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.pattern = "^[a-z][a-z0-9-]+$"
+  ];
+  int32 required_approvers = 2 [(buf.validate.field).int32 = {
+    gte: 1
+    lte: 10
+  }];
+}
+
+message NestedCanaryStrategy {
+  repeated int32 traffic_percentages = 1 [(buf.validate.field).repeated = {
+    min_items: 2
+    max_items: 6
+    unique: true
+    items: {
+      int32: {
+        gte: 1
+        lte: 100
+      }
+    }
+  }];
+}
+
+message NestedRollingStrategy {
+  int32 maximum_unavailable = 1 [(buf.validate.field).int32 = {
+    gte: 0
+    lte: 100
+  }];
+}
+
+message NestedObservability {
+  repeated string alert_channels = 1 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 8
+    unique: true
+    items: {string: {min_len: 2}}
+  }];
+  map<string, string> dashboards = 2 [
+    (buf.validate.field).map = {
+      max_pairs: 10
+      keys: {string: {pattern: "^[a-z][a-z0-9-]+$"}}
+      values: {string: {uri: true}}
+    },
+    (protoform.v1.field_ui).control = CONTROL_TYPE_KEY_VALUE
+  ];
+}
+
+message NestedDeliveryStage {
+  string name = 1 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.pattern = "^[a-z][a-z0-9-]+$"
+  ];
+  repeated NestedApproval approvals = 2 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 8
+  }];
+
+  oneof rollout_strategy {
+    option (buf.validate.oneof).required = true;
+    NestedCanaryStrategy canary = 3;
+    NestedRollingStrategy rolling = 4;
+  }
+
+  NestedObservability observability = 5 [(buf.validate.field).required = true];
+}
+
+message NestedDelivery {
+  repeated NestedDeliveryStage stages = 1 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 8
+  }];
+}
+
+message SubmitDeeplyNestedFormRequest {
+  option (protoform.v1.message_ui) = {
+    title: "Configure a platform blueprint"
+    description: "Six levels of messages, collections, maps, and oneofs rendered by one AutoForm."
+  };
+
+  NestedOrganization organization = 1 [(buf.validate.field).required = true];
+  NestedArchitecture architecture = 2 [(buf.validate.field).required = true];
+  NestedDelivery delivery = 3 [(buf.validate.field).required = true];
+  map<string, string> labels = 4 [
+    (buf.validate.field).map = {
+      min_pairs: 1
+      max_pairs: 20
+      keys: {string: {pattern: "^[a-z][a-z0-9.-]+$"}}
+      values: {string: {max_len: 63}}
+    },
+    (protoform.v1.field_ui).control = CONTROL_TYPE_KEY_VALUE
+  ];
+  google.protobuf.Struct extension_policy = 5 [(protoform.v1.field_ui) = {
+    control: CONTROL_TYPE_JSON
+    description: "An open-ended leaf after the strongly typed nested contract."
+  }];
+}
+
+enum CloudProvider {
+  CLOUD_PROVIDER_UNSPECIFIED = 0;
+  CLOUD_PROVIDER_AWS = 1;
+  CLOUD_PROVIDER_GCP = 2;
+  CLOUD_PROVIDER_AZURE = 3;
+}
+
+enum KitchenSinkEnvironment {
+  KITCHEN_SINK_ENVIRONMENT_UNSPECIFIED = 0;
+  KITCHEN_SINK_ENVIRONMENT_DEVELOPMENT = 1;
+  KITCHEN_SINK_ENVIRONMENT_STAGING = 2;
+  KITCHEN_SINK_ENVIRONMENT_PRODUCTION = 3;
+}
+
+service FormExamplesService {
+  rpc SubmitBasicForm(SubmitBasicFormRequest) returns (SubmitBasicFormResponse);
+  rpc SubmitComplexForm(SubmitComplexFormRequest) returns (SubmitComplexFormResponse);
+}

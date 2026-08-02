@@ -1,0 +1,44 @@
+---
+title: CEL and RE2 form
+description: Validate one field with one readable CEL expression and RE2-compatible pattern.
+---
+
+**Level 4 of 8**
+
+**Prerequisite:** [Deeply nested form](/docs/deeply-nested)
+
+This example isolates one custom rule. CEL calls `matches()` with an RE2-compatible pattern; the
+browser runs the same descriptor rule that a Protovalidate server can enforce.
+
+<div className="my-8 border-y border-border/60 py-8">
+  <CelRe2FormExample />
+</div>
+
+## What this adds
+
+- One field-level CEL rule with a stable ID.
+- One RE2-compatible regular expression.
+- One user-facing validation message.
+
+## Contract
+
+```proto
+message CelRe2Form {
+  string project_id = 1 [(buf.validate.field).cel = {
+    id: "project_id.re2"
+    message: "Use lowercase letters, digits, and hyphens."
+    expression: "this.matches('^[a-z][a-z0-9-]*$')"
+  }];
+}
+```
+
+Try `Not valid`, then `payments-prod`. This uses CEL string matching rather than a JavaScript
+`RegExp`, so keep patterns inside the [RE2 syntax](https://github.com/google/re2/wiki/Syntax)
+supported across runtimes.
+
+Use message-level CEL only when a rule truly compares fields. Keep a single-field rule attached to
+the field so its error path stays precise.
+
+**Previous:** [Deeply nested form](/docs/deeply-nested)
+
+**Next:** [Oneof form](/docs/oneof-form)

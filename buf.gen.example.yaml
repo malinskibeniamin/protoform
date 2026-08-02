@@ -1,0 +1,12 @@
+# Generates the self-contained example schema shipped by the
+# protoform-examples registry item (includes its import closure so
+# shadcn consumers get a complete gen directory).
+version: v2
+clean: false
+plugins:
+  - local: protoc-gen-es
+    out: registry/base-nova/protoform/lib/protobuf-provider/gen
+    opt: target=ts,import_extension=js
+    include_imports: true
+inputs:
+  - directory: registry/base-nova/protoform/lib/protobuf-provider/proto

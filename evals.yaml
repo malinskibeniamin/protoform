@@ -1,0 +1,55 @@
+version: 1
+questions:
+  - id: install-protoform
+    question: Our organization hosts a private Protoform registry. How do I configure an existing shadcn app for it and install the default stack?
+    expected:
+      - add @protoform to components.json and replace the example host with the deployed registry URL ending in /r/{name}.json
+      - configure .npmrc for GitHub Packages with a token that has read:packages and repository access
+      - run bunx shadcn@latest add @protoform/protoform
+    routes:
+      - /docs/getting-started
+      - /docs/registry-install
+  - id: choose-form-engine
+    question: Which Protoform path should I use for existing TanStack fields, generated TanStack fields, or existing React Hook Form code, and which generated form contracts stay consistent?
+    expected:
+      - use use-proto-form-tanstack for existing TanStack fields and state
+      - use auto-form-tanstack for descriptor-driven generated TanStack fields
+      - use the default useProtoForm and auto-form path for existing React Hook Form code
+      - both AutoForm engines share generated-field, validation, accessibility, and protobuf submission contracts
+    routes:
+      - /docs/tanstack-form
+      - /docs/auto-form
+  - id: migrate-protobuf-v1
+    question: Can I use a Protobuf-ES v1 generated message while migrating to v2, what are the bridge limitations, and what exact steps finish the migration?
+    expected:
+      - Protobuf-ES v2 is Protoform's canonical runtime
+      - protoform-protobuf-v1-bridge is an isolated temporary bridge for staged migration
+      - the bridge does not provide Protovalidate or CEL parity, automatic update masks, or v2 Connect Query schemas
+      - exit by regenerating with v2, moving to the modern provider, removing the bridge, and proving the v1 runtime is absent
+    routes:
+      - /docs/protobuf-v2-migration
+  - id: submit-auto-form-update
+    question: What does AutoForm pass to its onSubmit callback so an update request uses the correct field mask and cancels stale work?
+    expected:
+      - onSubmit receives updateMask and AbortSignal in its third argument
+      - the update mask contains dirty protobuf paths and an empty paths array means nothing changed
+      - pass the signal to an abortable transport so unmounts and newer attempts stop stale work
+    routes:
+      - /docs/auto-form
+  - id: switch-oneof-branch
+    question: Which Protoform API switches a protobuf oneof branch, and how does it prevent ghost values while keeping dirty state and validation coherent?
+    expected:
+      - call setOneofValue with the oneof path, case, and value
+      - Protoform clears the previous branch before writing the next branch
+      - clearing the previous branch keeps dirty state and validation coherent and prevents hidden stale values
+    routes:
+      - /docs/oneof-edge-cases
+  - id: handle-server-errors
+    question: How should I handle a failed Connect or gRPC form submission so every useful server error remains visible?
+    expected:
+      - clearServerErrorContext before a new request and pass every caught value to setServerErrors
+      - keep and render every unmapped field violation alongside structured precondition and quota violations
+      - show a generic visible fallback for an unhandled non-Connect error
+      - do not reset the form after failure and never branch on error message text
+    routes:
+      - /docs/server-errors

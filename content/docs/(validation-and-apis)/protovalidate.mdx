@@ -1,0 +1,75 @@
+---
+title: Protovalidate
+description: Keep client and server validation in the protobuf contract.
+---
+
+Protoform uses Protovalidate ES, so validation rules come from `buf.validate` annotations.
+The same field rules and CEL invariants can run in browser and server runtimes without recreating the
+contract in a frontend-only schema.
+
+The [production-readiness dashboard](/docs/production-readiness) tracks every installed standard rule
+family separately, so a few common string and number examples cannot be mistaken for complete coverage.
+
+```proto
+message CreateTopicRequest {
+  string name = 1 [(buf.validate.field).string = {
+    pattern: "^[a-z][a-z0-9-]{2,62}$"
+    min_len: 3
+    max_len: 63
+  }];
+
+  int32 partitions = 2 [(buf.validate.field).int32 = {
+    gte: 1
+    lte: 1000
+  }];
+}
+```
+
+```tsx
+const form = useProtoForm(CreateTopicRequestSchema, {
+  mode: "onChange",
+  defaultValues: { name: "", partitions: 3 },
+});
+```
+
+Unlike a separate Zod schema, this continues to validate correctly when the protobuf contract evolves.
+
+## Standard Schema interoperability
+
+The protobuf package exposes Protovalidate as a
+[Standard Schema v1](https://standardschema.dev/) implementation. `createProtoFormSchema` accepts form
+values, validates them through the generated protobuf descriptor, and returns a typed protobuf message
+on success. Its issues use form-shaped paths, including flattened oneofs and map entries.
+
+```tsx
+import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
+import { createProtoFormSchema } from "@/lib/protobuf-provider";
+import { useForm } from "react-hook-form";
+
+const schema = createProtoFormSchema(CreateTopicRequestSchema);
+const form = useForm({
+  resolver: standardSchemaResolver(schema),
+});
+```
+
+This is the neutral interop seam for another Standard Schema consumer or form framework. TanStack
+Form accepts this schema natively; Formik and Final Form use the dependency-free
+[Formik](/docs/formik) and [Final Form](/docs/final-form) adapters.
+Protoform React apps that use React Hook Form should normally prefer `useProtoForm`. Its custom
+resolver adds protobuf-specific error mapping, generic-message humanization, native validation
+support, and root-level CEL error handling.
+
+See [Standard Schema](/docs/standard-schema) for the complete capability matrix, Zod 4 and Zod Mini
+conformance evidence, adapter recipes, and the boundary between validation and AutoForm rendering.
+
+## Protoform vs Zod
+
+| Concern | Zod-first form | Protoform |
+| --- | --- | --- |
+| API contract | Re-modeled in TypeScript | Protobuf is source of truth |
+| Runtime validation | Zod resolver | Protovalidate resolver |
+| Server parity | Manual sync | Same annotations and CEL rules |
+| Types | `z.infer` | `MessageShape<typeof Schema>` plus oneof flattening |
+| Wire format | Separate transform | Typed protobuf message output |
+| Cross-field rules | `refine` | CEL expressions |
+| Library interop | Zod API | Standard Schema v1 |

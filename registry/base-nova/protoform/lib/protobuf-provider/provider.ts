@@ -1,0 +1,2295 @@
+import { FieldBehavior } from "@buf/googleapis_googleapis.bufbuild_es/google/api/field_behavior_pb.js";
+import {
+  create,
+  type DescField,
+  type DescMessage,
+  type DescOneof,
+  fromJson,
+  fromJsonString,
+  getExtension,
+  isMessage,
+  type JsonValue,
+  type MessageInitShape,
+  type MessageShape,
+  type MessageValidType,
+  ScalarType,
+  toJson,
+  toJsonString,
+} from "@bufbuild/protobuf";
+import { base64Decode, base64Encode } from "@bufbuild/protobuf/wire";
+import {
+  DurationSchema,
+  FeatureSet_FieldPresence,
+  FieldOptionsSchema,
+  isWrapperDesc,
+  ListValueSchema,
+  MessageOptionsSchema,
+  OneofOptionsSchema,
+  StructSchema,
+  type TimestampSchema,
+  timestampDate,
+  timestampFromDate,
+  ValueSchema,
+} from "@bufbuild/protobuf/wkt";
+import {
+  createStandardSchema,
+  type ValidatorOptions,
+} from "@bufbuild/protovalidate";
+import type {
+  FieldRenderHints,
+  FormValues,
+  ParsedField,
+  ParsedSchema,
+  ProviderCustomData,
+  SchemaProvider,
+  SchemaValidation,
+  StandardSchemaV1,
+} from "../core/index.js";
+import {
+  getProtoFieldBehaviors,
+  getProtoResourceMetadata,
+  getProtoResourceReference,
+  type ProtoResourceMetadata,
+  type ProtoResourceReference,
+} from "./aip.js";
+import type { ProtoAnnotations } from "./annotations.js";
+import { getRegisteredProtoAnnotations } from "./annotations.js";
+import type {
+  FieldRules,
+  MessageRules,
+  OneofRules,
+  StringRules,
+} from "./gen/buf/validate/validate_pb.js";
+import {
+  field as fieldExtension,
+  message as messageExtension,
+  oneof as oneofExtension,
+} from "./gen/buf/validate/validate_pb.js";
+import type { ProtoFieldUiConfig, ProtoMessageUiConfig } from "./ui-options.js";
+import {
+  getProtoFieldUi,
+  getProtoMessageUi,
+  getProtoOneofUi,
+} from "./ui-options.js";
+
+const GOOGLE_PROTOBUF_PREFIX = "google.protobuf.";
+const TIMESTAMP_TYPE = `${GOOGLE_PROTOBUF_PREFIX}Timestamp`;
+const DURATION_TYPE = `${GOOGLE_PROTOBUF_PREFIX}Duration`;
+const FIELD_MASK_TYPE = `${GOOGLE_PROTOBUF_PREFIX}FieldMask`;
+const STRUCT_TYPE = `${GOOGLE_PROTOBUF_PREFIX}Struct`;
+const VALUE_TYPE = `${GOOGLE_PROTOBUF_PREFIX}Value`;
+const LIST_VALUE_TYPE = `${GOOGLE_PROTOBUF_PREFIX}ListValue`;
+const ANY_TYPE = `${GOOGLE_PROTOBUF_PREFIX}Any`;
+const PROTO_JSON_FALLBACK_TYPES = [
+  TIMESTAMP_TYPE,
+  DURATION_TYPE,
+  FIELD_MASK_TYPE,
+  STRUCT_TYPE,
+  VALUE_TYPE,
+  LIST_VALUE_TYPE,
+  ANY_TYPE,
+];
+export const PROTO_FORM_ROOT_ERROR_KEY = "__protoFormRoot__";
+const IMPLICIT_FIELD_PRESENCE = FeatureSet_FieldPresence.IMPLICIT;
+
+export type ProtoFieldType =
+  | "string"
+  | "number"
+  | "boolean"
+  | "select"
+  | "object"
+  | "array"
+  | "oneof"
+  | "map"
+  | "bytes"
+  | "int64"
+  | "timestamp"
+  | "duration"
+  | "fieldMask"
+  | "json";
+
+export type ProtoFieldRenderType =
+  | ProtoFieldType
+  | "textarea"
+  | "password"
+  | "email"
+  | "url"
+  | "currency"
+  | "checkbox"
+  | "switch"
+  | "toggle"
+  | "radio"
+  | "combobox"
+  | "multiselect"
+  | "choicebox"
+  | "toggleGroup"
+  | "keyValue"
+  // Widget routing derived from field_ui annotations — `data_provider`
+  // promotes a string/number field to `dataProviderSelect`, and a JSON
+  // field with `dropzone: true` promotes to `dropzone-json`.
+  | "dataProviderSelect"
+  | "dropzone-json";
+
+type ProtoJsonKind = "struct" | "value" | "listValue" | "any";
+
+type ParsedProtoField = ParsedField<ProtoFieldRenderType>;
+type ParsedProtoSchema = ParsedSchema<ProtoFieldRenderType>;
+
+export interface ProtoFieldCustomData extends ProviderCustomData {
+  allowedPaths?: string[];
+  desc?: DescField;
+  fieldBehaviors?: readonly FieldBehavior[];
+  fieldRules?: FieldRules;
+  hidden?: boolean;
+  identifier?: boolean;
+  immutable?: boolean;
+  inputOnly?: boolean;
+  inputType?: string;
+  jsonKind?: ProtoJsonKind;
+  keyField?: ParsedProtoField;
+  maxItems?: number;
+  maxPairs?: number;
+  messageRules?: MessageRules;
+  minItems?: number;
+  minPairs?: number;
+  oneof?: DescOneof;
+  oneofRules?: OneofRules;
+  recursive?: boolean;
+  resource?: ProtoResourceMetadata;
+  resourceReference?: ProtoResourceReference;
+  ruleExample?: string;
+  secretScope?: string;
+  source: "proto";
+  supportsUnset?: boolean;
+  ui?: ProtoFieldUiConfig;
+  valueField?: ParsedProtoField;
+}
+
+type ProtoFieldConfig = ParsedProtoField["fieldConfig"] & {
+  customData?: ProtoFieldCustomData;
+};
+
+type SchemaIssue = StandardSchemaV1.Issue;
+
+type AnyObject = Record<string, unknown>;
+type ScalarField = Extract<DescField, { fieldKind: "scalar" }>;
+type EnumField = Extract<DescField, { fieldKind: "enum" }>;
+type MessageField = Extract<DescField, { fieldKind: "message" }>;
+type ListField = Extract<DescField, { fieldKind: "list" }>;
+type MapField = Extract<DescField, { fieldKind: "map" }>;
+
+export interface ProtoAnyFormValue {
+  typeUrl?: string;
+  valueBase64?: string;
+}
+
+export interface ProtoMapFormEntry {
+  key: unknown;
+  value: unknown;
+}
+
+interface ProtoParserContext {
+  ancestors: ReadonlySet<string>;
+  annotations?: ProtoAnnotations;
+  messageUi?: ProtoMessageUiConfig;
+  operation?: "create" | "update";
+  secretScope?: string;
+}
+
+export function isProtoMessageDescriptor(value: unknown): value is DescMessage {
+  return Boolean(
+    value &&
+      typeof value === "object" &&
+      "kind" in value &&
+      (value as { kind?: unknown }).kind === "message" &&
+      "typeName" in value &&
+      typeof (value as { typeName?: unknown }).typeName === "string" &&
+      "members" in value &&
+      Array.isArray((value as { members?: unknown }).members)
+  );
+}
+
+export function getProtoFieldCustomData(
+  field: ParsedField
+): ProtoFieldCustomData | undefined {
+  return (field.fieldConfig as ProtoFieldConfig | undefined)?.customData;
+}
+
+function getFieldRules(field: DescField): FieldRules {
+  return getExtension(
+    field.proto.options ?? create(FieldOptionsSchema),
+    fieldExtension
+  );
+}
+
+function getMessageRules(desc: DescMessage): MessageRules {
+  return getExtension(
+    desc.proto.options ?? create(MessageOptionsSchema),
+    messageExtension
+  );
+}
+
+function getOneofRules(oneof: DescOneof): OneofRules {
+  return getExtension(
+    oneof.proto.options ?? create(OneofOptionsSchema),
+    oneofExtension
+  );
+}
+
+function tracksPresence(field: DescField): boolean {
+  return field.presence !== IMPLICIT_FIELD_PRESENCE;
+}
+
+function is64BitScalar(scalar: ScalarType | undefined): boolean {
+  return (
+    scalar === ScalarType.INT64 ||
+    scalar === ScalarType.UINT64 ||
+    scalar === ScalarType.SINT64 ||
+    scalar === ScalarType.FIXED64 ||
+    scalar === ScalarType.SFIXED64
+  );
+}
+
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return Boolean(value && typeof value === "object" && !Array.isArray(value));
+}
+
+const UNSPECIFIED_PATTERN = /(unspecified|unknown)$/i;
+const CAMEL_BOUNDARY_PATTERN = /([a-z0-9])([A-Z])/g;
+const WORD_SEPARATOR_PATTERN = /[_.-]+/g;
+const WHITESPACE_PATTERN = /\s+/g;
+
+function isUnspecifiedEnumValue(enumValue: {
+  number: number;
+  localName: string;
+  name?: string;
+}): boolean {
+  if (enumValue.number !== 0) {
+    return false;
+  }
+  // Check both localName (camelCase) and name (SCREAMING_SNAKE_CASE) for unspecified/unknown suffix
+  return (
+    UNSPECIFIED_PATTERN.test(enumValue.localName) ||
+    (typeof enumValue.name === "string" &&
+      UNSPECIFIED_PATTERN.test(enumValue.name))
+  );
+}
+
+function humanize(input: string): string {
+  return input
+    .replace(CAMEL_BOUNDARY_PATTERN, "$1 $2")
+    .replace(WORD_SEPARATOR_PATTERN, " ")
+    .replace(WHITESPACE_PATTERN, " ")
+    .trim()
+    .split(" ")
+    .map((word) => {
+      const lower = word.toLowerCase();
+      if (word === word.toUpperCase() && word.length > 1) {
+        return word.charAt(0) + lower.slice(1);
+      }
+      return word.charAt(0).toUpperCase() + lower.slice(1);
+    })
+    .join(" ");
+}
+
+const NORMALIZE_SEPARATOR_PATTERN = /[\s_-]+/g;
+
+// Returns the raw localName for enum values.
+// Consumers can override labels via optionLabels in fieldConfig.
+// We intentionally do NOT humanize enum values because the transformed
+// names are often confusing (e.g., "Api Key Location Header" vs "HEADER").
+function formatEnumLabel(enumLocalName: string, enumTypeName: string): string {
+  // Proto-gen-es v2 pre-strips the type prefix from localName in most cases.
+  // If the localName still starts with the type name (camelCase), strip it.
+  const typePrefixNormalized = enumTypeName
+    .toLowerCase()
+    .replace(NORMALIZE_SEPARATOR_PATTERN, "");
+  const valueNormalized = enumLocalName
+    .toLowerCase()
+    .replace(NORMALIZE_SEPARATOR_PATTERN, "");
+  if (
+    valueNormalized.startsWith(typePrefixNormalized) &&
+    valueNormalized.length > typePrefixNormalized.length
+  ) {
+    const stripped = enumLocalName.slice(typePrefixNormalized.length);
+    if (stripped.length > 0) {
+      return humanize(stripped);
+    }
+  }
+  return humanize(enumLocalName);
+}
+
+function buildEnumOptions(
+  values: readonly {
+    number: number;
+    localName: string;
+    name?: string;
+  }[],
+  enumTypeName: string
+): [string, string][] {
+  const seenNumbers = new Set<number>();
+
+  return values
+    .filter((value) => {
+      if (isUnspecifiedEnumValue(value) || seenNumbers.has(value.number)) {
+        return false;
+      }
+      seenNumbers.add(value.number);
+      return true;
+    })
+    .map((value) => [
+      String(value.number),
+      formatEnumLabel(value.localName, enumTypeName),
+    ]);
+}
+
+function bigIntToNumber(value: bigint | undefined): number | undefined {
+  if (value === undefined) {
+    return;
+  }
+  const numericValue = Number(value);
+  return Number.isFinite(numericValue) ? numericValue : undefined;
+}
+
+function cloneField(
+  field: DescField,
+  overrides: Partial<DescField>
+): DescField {
+  return {
+    ...field,
+    ...overrides,
+  } as DescField;
+}
+
+function getStringInputType(
+  rules: StringRules | undefined
+): string | undefined {
+  switch (rules?.wellKnown.case) {
+    case "email":
+      return "email";
+    case "uri":
+      return "url";
+    case "uuid":
+      return "text";
+    default:
+      return;
+  }
+}
+
+function withFieldUi(
+  customData: ProtoFieldCustomData,
+  field: DescField
+): ProtoFieldCustomData {
+  return {
+    ...customData,
+    ui: getProtoFieldUi(field),
+  };
+}
+
+function withOneofUi(
+  customData: ProtoFieldCustomData,
+  oneof: DescOneof
+): ProtoFieldCustomData {
+  return {
+    ...customData,
+    ui: getProtoOneofUi(oneof),
+  };
+}
+
+type ProtoInputProps = Record<string, string | number | boolean | undefined>;
+
+/**
+ * Derive the schema-agnostic render hints for a field from its
+ * proto-private customData. The rendering engine reads hints via
+ * `getFieldHints`; customData stays provider-internal.
+ */
+function hintsFromCustomData(
+  data: ProtoFieldCustomData | undefined
+): FieldRenderHints | undefined {
+  if (!data) {
+    return undefined;
+  }
+  const ui = data.ui;
+  const hints: FieldRenderHints = {};
+  const assign = <Key extends keyof FieldRenderHints>(
+    key: Key,
+    value: FieldRenderHints[Key] | undefined
+  ) => {
+    if (value !== undefined) {
+      hints[key] = value;
+    }
+  };
+
+  assign("control", ui?.control);
+  assign("inputType", data.inputType);
+  assign("placeholder", ui?.placeholder);
+  assign("example", ui?.example ?? data.ruleExample);
+  assign("help", ui?.help);
+  assign("description", ui?.description);
+  assign("summaryLabel", ui?.summaryLabel);
+  assign("sensitive", ui?.sensitive);
+  assign("step", ui?.step);
+  assign("secretScope", data.secretScope);
+  assign("docsUrl", ui?.docsUrl);
+  assign("visibleWhen", ui?.visibleWhen);
+  assign("disabledWhen", ui?.disabledWhen);
+  assign("supportsUnset", data.supportsUnset);
+  assign("jsonKind", data.jsonKind);
+  assign("minItems", data.minItems);
+  assign("maxItems", data.maxItems);
+  assign("minPairs", data.minPairs);
+  assign("maxPairs", data.maxPairs);
+  assign("allowedPaths", data.allowedPaths);
+  assign("dataProvider", ui?.dataProvider);
+  assign("dropzone", ui?.dropzone);
+
+  return Object.keys(hints).length > 0 ? hints : undefined;
+}
+
+/** Attach derived render hints to a parsed field, in place. */
+function attachRenderHints(field: ParsedProtoField): ParsedProtoField {
+  const hints = hintsFromCustomData(
+    (field.fieldConfig as ProtoFieldConfig | undefined)?.customData
+  );
+  if (hints) {
+    field.hints = hints;
+  }
+  return field;
+}
+
+function buildFieldConfig(
+  customData: ProtoFieldCustomData,
+  inputProps: ProtoInputProps = {},
+  description?: string
+): ProtoFieldConfig {
+  const fieldType = customData.ui?.control as ProtoFieldRenderType | undefined;
+
+  return {
+    customData,
+    description,
+    fieldType,
+    inputProps: {
+      ...(customData.ui?.placeholder
+        ? { placeholder: customData.ui.placeholder }
+        : {}),
+      ...inputProps,
+    },
+  };
+}
+
+function getMessageDescription(
+  desc: DescMessage,
+  context: ProtoParserContext
+): string | undefined {
+  return context.annotations?.messages?.[desc.typeName];
+}
+
+function getFieldDescription(
+  field: DescField,
+  context: ProtoParserContext
+): string | undefined {
+  return context.annotations?.fields?.[
+    `${field.parent.typeName}.${field.localName}`
+  ];
+}
+
+function getOneofDescription(
+  oneof: DescOneof,
+  context: ProtoParserContext
+): string | undefined {
+  return context.annotations?.oneofs?.[
+    `${oneof.parent.typeName}.${oneof.localName}`
+  ];
+}
+
+function extractNumericBounds(rules: FieldRules | undefined): {
+  min?: number;
+  max?: number;
+  step?: string;
+} {
+  const typeCase = rules?.type.case;
+  if (!typeCase) {
+    return {};
+  }
+
+  const numericRules = rules.type.value as {
+    lessThan?: { case?: string; value?: number | bigint };
+    greaterThan?: { case?: string; value?: number | bigint };
+  };
+
+  const step = ["float", "double"].includes(typeCase) ? "any" : "1";
+  let min: number | undefined;
+  let max: number | undefined;
+
+  if (numericRules.greaterThan?.case === "gte") {
+    min = Number(numericRules.greaterThan.value);
+  } else if (numericRules.greaterThan?.case === "gt") {
+    const greaterThan = Number(numericRules.greaterThan.value);
+    min = Number.isFinite(greaterThan)
+      ? greaterThan + (step === "1" ? 1 : 0)
+      : undefined;
+  }
+
+  if (numericRules.lessThan?.case === "lte") {
+    max = Number(numericRules.lessThan.value);
+  } else if (numericRules.lessThan?.case === "lt") {
+    const lessThan = Number(numericRules.lessThan.value);
+    max = Number.isFinite(lessThan)
+      ? lessThan - (step === "1" ? 1 : 0)
+      : undefined;
+  }
+
+  if (min !== undefined && max !== undefined && min > max) {
+    return { step };
+  }
+
+  return { max, min, step };
+}
+
+function buildStringField(
+  field: DescField,
+  rules: FieldRules,
+  context: ProtoParserContext
+): ParsedProtoField {
+  const stringRules =
+    rules.type.case === "string" ? rules.type.value : undefined;
+  const inputType = getStringInputType(stringRules);
+
+  return {
+    fieldConfig: buildFieldConfig(
+      withFieldUi(
+        {
+          desc: field,
+          fieldRules: rules,
+          inputType,
+          ruleExample: stringRules?.example[0],
+          source: "proto",
+          supportsUnset: tracksPresence(field),
+        },
+        field
+      ),
+      {
+        maxLength: bigIntToNumber(stringRules?.maxLen),
+        minLength: bigIntToNumber(stringRules?.minLen),
+        pattern: stringRules?.pattern || undefined,
+        type: inputType,
+      },
+      getFieldDescription(field, context)
+    ),
+    key: field.localName,
+    required: rules.required,
+    type: "string",
+  };
+}
+
+function buildNumberField(
+  field: DescField,
+  rules: FieldRules,
+  context: ProtoParserContext
+): ParsedProtoField {
+  const { min, max, step } = extractNumericBounds(rules);
+  const isInt64 = is64BitScalar(field.scalar);
+
+  return {
+    fieldConfig: buildFieldConfig(
+      withFieldUi(
+        {
+          desc: field,
+          fieldRules: rules,
+          source: "proto",
+          supportsUnset: tracksPresence(field),
+        },
+        field
+      ),
+      {
+        ...(max === undefined ? {} : { max }),
+        ...(min === undefined ? {} : { min }),
+        step,
+      },
+      getFieldDescription(field, context)
+    ),
+    key: field.localName,
+    required: rules.required,
+    type: isInt64 ? "int64" : "number",
+  };
+}
+
+function buildBooleanField(
+  field: DescField,
+  rules: FieldRules,
+  context: ProtoParserContext
+): ParsedProtoField {
+  return {
+    fieldConfig: buildFieldConfig(
+      withFieldUi(
+        {
+          desc: field,
+          fieldRules: rules,
+          source: "proto",
+          supportsUnset: tracksPresence(field),
+        },
+        field
+      ),
+      {},
+      getFieldDescription(field, context)
+    ),
+    key: field.localName,
+    required: rules.required,
+    type: "boolean",
+  };
+}
+
+function buildBytesField(
+  field: DescField,
+  rules: FieldRules,
+  context: ProtoParserContext
+): ParsedProtoField {
+  return {
+    fieldConfig: buildFieldConfig(
+      withFieldUi(
+        {
+          desc: field,
+          fieldRules: rules,
+          source: "proto",
+          supportsUnset: tracksPresence(field),
+        },
+        field
+      ),
+      {},
+      getFieldDescription(field, context)
+    ),
+    key: field.localName,
+    required: rules.required,
+    type: "bytes",
+  };
+}
+
+function buildEnumField(
+  field: EnumField,
+  rules: FieldRules,
+  context: ProtoParserContext
+): ParsedProtoField {
+  return {
+    fieldConfig: buildFieldConfig(
+      withFieldUi(
+        {
+          desc: field,
+          fieldRules: rules,
+          source: "proto",
+          supportsUnset: tracksPresence(field),
+        },
+        field
+      ),
+      {},
+      getFieldDescription(field, context)
+    ),
+    key: field.localName,
+    options: buildEnumOptions(field.enum.values, field.enum.name),
+    required: rules.required,
+    type: "select",
+  };
+}
+
+function buildJsonField(
+  field: DescField,
+  rules: FieldRules,
+  jsonKind: ProtoJsonKind,
+  context: ProtoParserContext
+): ParsedProtoField {
+  return {
+    fieldConfig: buildFieldConfig(
+      withFieldUi(
+        {
+          desc: field,
+          fieldRules: rules,
+          jsonKind,
+          source: "proto",
+          supportsUnset: tracksPresence(field),
+        },
+        field
+      ),
+      {},
+      getFieldDescription(field, context)
+    ),
+    key: field.localName,
+    required: rules.required,
+    type: "json",
+  };
+}
+
+function buildRecursiveField(
+  field: DescField,
+  rules: FieldRules | undefined,
+  context: ProtoParserContext,
+  key = field.localName
+): ParsedProtoField {
+  return {
+    fieldConfig: buildFieldConfig(
+      {
+        desc: field,
+        fieldRules: rules,
+        recursive: true,
+        source: "proto",
+        supportsUnset: tracksPresence(field),
+      },
+      {},
+      getFieldDescription(field, context)
+    ),
+    key,
+    required: Boolean(rules?.required),
+    type: "json",
+  };
+}
+
+function buildMessageField(
+  field: MessageField,
+  rules: FieldRules,
+  context: ProtoParserContext
+): ParsedProtoField {
+  if (isWrapperDesc(field.message)) {
+    const wrappedScalar = field.message.fields[0]?.scalar;
+    if (wrappedScalar === ScalarType.BOOL) {
+      return buildBooleanField(field as DescField, rules, context);
+    }
+    if (wrappedScalar === ScalarType.BYTES) {
+      return buildBytesField(field, rules, context);
+    }
+    if (wrappedScalar === ScalarType.STRING) {
+      return buildStringField(field, rules, context);
+    }
+    return buildNumberField(field as DescField, rules, context);
+  }
+
+  const description = getFieldDescription(field, context);
+
+  if (context.ancestors.has(field.message.typeName)) {
+    return buildRecursiveField(field, rules, context);
+  }
+
+  switch (field.message.typeName) {
+    case TIMESTAMP_TYPE:
+      return {
+        fieldConfig: buildFieldConfig(
+          withFieldUi(
+            {
+              desc: field,
+              fieldRules: rules,
+              source: "proto",
+              supportsUnset: tracksPresence(field),
+            },
+            field
+          ),
+          {},
+          description
+        ),
+        key: field.localName,
+        required: rules.required,
+        type: "timestamp",
+      };
+    case DURATION_TYPE:
+      return {
+        fieldConfig: buildFieldConfig(
+          withFieldUi(
+            {
+              desc: field,
+              fieldRules: rules,
+              source: "proto",
+              supportsUnset: tracksPresence(field),
+            },
+            field
+          ),
+          {},
+          description
+        ),
+        key: field.localName,
+        required: rules.required,
+        type: "duration",
+      };
+    case FIELD_MASK_TYPE:
+      return {
+        fieldConfig: buildFieldConfig(
+          withFieldUi(
+            {
+              allowedPaths:
+                rules.type.case === "fieldMask"
+                  ? rules.type.value.in
+                  : undefined,
+              desc: field,
+              fieldRules: rules,
+              source: "proto",
+              supportsUnset: tracksPresence(field),
+            },
+            field
+          ),
+          {},
+          description
+        ),
+        key: field.localName,
+        required: rules.required,
+        type: "fieldMask",
+      };
+    case STRUCT_TYPE:
+      return buildJsonField(field, rules, "struct", context);
+    case VALUE_TYPE:
+      return buildJsonField(field, rules, "value", context);
+    case LIST_VALUE_TYPE:
+      return buildJsonField(field, rules, "listValue", context);
+    case ANY_TYPE:
+      return buildJsonField(field, rules, "any", context);
+    default:
+      return {
+        fieldConfig: buildFieldConfig(
+          withFieldUi(
+            {
+              desc: field,
+              fieldRules: rules,
+              messageRules: getMessageRules(field.message),
+              source: "proto",
+              supportsUnset: tracksPresence(field),
+            },
+            field
+          ),
+          {},
+          description ?? getMessageDescription(field.message, context)
+        ),
+        key: field.localName,
+        required: rules.required,
+        schema: parseProtoSchemaInternal(
+          field.message,
+          context.annotations,
+          context.secretScope,
+          context.ancestors,
+          context.operation
+        ).fields,
+        type: "object",
+      };
+  }
+}
+
+function buildListItemField(
+  field: ListField,
+  context: ProtoParserContext,
+  itemRules?: FieldRules
+): ParsedProtoField {
+  const syntheticField = cloneField(field, {
+    localName: "value",
+  });
+
+  if (field.listKind === "scalar") {
+    if (field.scalar === ScalarType.STRING) {
+      return buildStringField(
+        syntheticField,
+        itemRules ?? getFieldRules(field),
+        context
+      );
+    }
+    if (field.scalar === ScalarType.BOOL) {
+      return buildBooleanField(
+        syntheticField,
+        itemRules ?? getFieldRules(field),
+        context
+      );
+    }
+    if (field.scalar === ScalarType.BYTES) {
+      return buildBytesField(
+        syntheticField,
+        itemRules ?? getFieldRules(field),
+        context
+      );
+    }
+    return buildNumberField(
+      syntheticField,
+      itemRules ?? getFieldRules(field),
+      context
+    );
+  }
+
+  if (field.listKind === "enum") {
+    return {
+      fieldConfig: buildFieldConfig({
+        desc: field,
+        fieldRules: itemRules,
+        source: "proto",
+      }),
+      key: "value",
+      options: buildEnumOptions(field.enum.values, field.enum.name),
+      required: false,
+      type: "select",
+    };
+  }
+
+  if (context.ancestors.has(field.message.typeName)) {
+    return buildRecursiveField(field, itemRules, context, "value");
+  }
+
+  return {
+    fieldConfig: buildFieldConfig(
+      {
+        desc: field,
+        fieldRules: itemRules,
+        source: "proto",
+      },
+      {},
+      getMessageDescription(field.message, context)
+    ),
+    key: "value",
+    required: false,
+    schema: parseProtoSchemaInternal(
+      field.message,
+      context.annotations,
+      context.secretScope,
+      context.ancestors,
+      context.operation
+    ).fields,
+    type: "object",
+  };
+}
+
+function buildArrayField(
+  field: ListField,
+  rules: FieldRules,
+  context: ProtoParserContext
+): ParsedProtoField {
+  const repeatedRules =
+    rules.type.case === "repeated" ? rules.type.value : undefined;
+  return {
+    fieldConfig: buildFieldConfig(
+      withFieldUi(
+        {
+          desc: field,
+          fieldRules: rules,
+          maxItems: bigIntToNumber(repeatedRules?.maxItems),
+          minItems: bigIntToNumber(repeatedRules?.minItems),
+          source: "proto",
+        },
+        field
+      ),
+      {},
+      getFieldDescription(field, context)
+    ),
+    key: field.localName,
+    required: Boolean(rules.required || repeatedRules?.minItems),
+    schema: [buildListItemField(field, context, repeatedRules?.items)],
+    type: "array",
+  };
+}
+
+function buildMapKeyField(
+  field: MapField,
+  rules: FieldRules | undefined,
+  context: ProtoParserContext
+): ParsedProtoField {
+  const syntheticField = cloneField(field, {
+    fieldKind: "scalar",
+    localName: "key",
+    oneof: undefined,
+    scalar: field.mapKey,
+  });
+
+  if (field.mapKey === ScalarType.BOOL) {
+    return buildBooleanField(
+      syntheticField,
+      rules ?? getFieldRules(field),
+      context
+    );
+  }
+  if (field.mapKey === ScalarType.STRING) {
+    return buildStringField(
+      syntheticField,
+      rules ?? getFieldRules(field),
+      context
+    );
+  }
+  return buildNumberField(
+    syntheticField,
+    rules ?? getFieldRules(field),
+    context
+  );
+}
+
+function buildMapValueField(
+  field: MapField,
+  rules: FieldRules | undefined,
+  context: ProtoParserContext
+): ParsedProtoField {
+  const syntheticField = cloneField(field, {
+    localName: "value",
+  });
+
+  if (field.mapKind === "scalar") {
+    if (field.scalar === ScalarType.STRING) {
+      return buildStringField(
+        syntheticField,
+        rules ?? getFieldRules(field),
+        context
+      );
+    }
+    if (field.scalar === ScalarType.BOOL) {
+      return buildBooleanField(
+        syntheticField,
+        rules ?? getFieldRules(field),
+        context
+      );
+    }
+    if (field.scalar === ScalarType.BYTES) {
+      return buildBytesField(
+        syntheticField,
+        rules ?? getFieldRules(field),
+        context
+      );
+    }
+    return buildNumberField(
+      syntheticField,
+      rules ?? getFieldRules(field),
+      context
+    );
+  }
+
+  if (field.mapKind === "enum") {
+    return {
+      fieldConfig: buildFieldConfig({
+        desc: field,
+        fieldRules: rules,
+        source: "proto",
+      }),
+      key: "value",
+      options: buildEnumOptions(field.enum.values, field.enum.name),
+      required: false,
+      type: "select",
+    };
+  }
+
+  return buildMessageField(
+    syntheticField as MessageField,
+    rules ?? getFieldRules(field),
+    context
+  );
+}
+
+function buildMapField(
+  field: MapField,
+  rules: FieldRules,
+  context: ProtoParserContext
+): ParsedProtoField {
+  const mapRules = rules.type.case === "map" ? rules.type.value : undefined;
+  const keyField = buildMapKeyField(field, mapRules?.keys, context);
+  const valueField = buildMapValueField(field, mapRules?.values, context);
+
+  return {
+    fieldConfig: buildFieldConfig(
+      withFieldUi(
+        {
+          desc: field,
+          fieldRules: rules,
+          keyField,
+          maxPairs: bigIntToNumber(mapRules?.maxPairs),
+          minPairs: bigIntToNumber(mapRules?.minPairs),
+          source: "proto",
+          valueField,
+        },
+        field
+      ),
+      {},
+      getFieldDescription(field, context)
+    ),
+    key: field.localName,
+    required: Boolean(rules.required || mapRules?.minPairs),
+    schema: [keyField, valueField],
+    type: "map",
+  };
+}
+
+function buildOneofField(
+  oneof: DescOneof,
+  context: ProtoParserContext
+): ParsedProtoField {
+  const oneofRules = getOneofRules(oneof);
+  return attachRenderHints({
+    fieldConfig: buildFieldConfig(
+      withOneofUi(
+        {
+          oneof,
+          oneofRules,
+          source: "proto",
+        },
+        oneof
+      ),
+      {},
+      getOneofDescription(oneof, context)
+    ),
+    key: oneof.localName,
+    required: oneofRules.required,
+    schema: oneof.fields.map((field) => buildProtoField(field, context)),
+    type: "oneof",
+  });
+}
+
+function buildProtoField(
+  field: DescField,
+  context: ProtoParserContext
+): ParsedProtoField {
+  const rules = getFieldRules(field);
+
+  let result: ParsedProtoField;
+  switch (field.fieldKind) {
+    case "scalar": {
+      if (field.scalar === ScalarType.STRING) {
+        result = buildStringField(field, rules, context);
+        break;
+      }
+      if (field.scalar === ScalarType.BOOL) {
+        result = buildBooleanField(field, rules, context);
+        break;
+      }
+      if (field.scalar === ScalarType.BYTES) {
+        result = buildBytesField(field, rules, context);
+        break;
+      }
+      result = buildNumberField(field, rules, context);
+      break;
+    }
+    case "enum":
+      result = buildEnumField(field, rules, context);
+      break;
+    case "message":
+      result = buildMessageField(field, rules, context);
+      break;
+    case "list":
+      result = buildArrayField(field, rules, context);
+      break;
+    case "map":
+      result = buildMapField(field, rules, context);
+      break;
+    default:
+      throw new Error(
+        `Unsupported protobuf field kind: ${String((field as DescField).fieldKind)}`
+      );
+  }
+
+  if (result.fieldConfig) {
+    const customData = (result.fieldConfig as ProtoFieldConfig).customData;
+    if (customData) {
+      if (context.secretScope) {
+        customData.secretScope = context.secretScope;
+      }
+      const fieldBehaviors = getProtoFieldBehaviors(field);
+      const isIdentifier = fieldBehaviors.includes(FieldBehavior.IDENTIFIER);
+      const isImmutable = fieldBehaviors.includes(FieldBehavior.IMMUTABLE);
+      customData.fieldBehaviors = fieldBehaviors;
+      customData.hidden =
+        fieldBehaviors.includes(FieldBehavior.OUTPUT_ONLY) ||
+        (isIdentifier && context.operation === "create");
+      customData.identifier = isIdentifier;
+      customData.immutable =
+        (isImmutable && context.operation !== "create") ||
+        (isIdentifier && context.operation === "update");
+      customData.inputOnly = fieldBehaviors.includes(FieldBehavior.INPUT_ONLY);
+      customData.resourceReference = getProtoResourceReference(field);
+      const messageDesc =
+        field.fieldKind === "message" ||
+        (field.fieldKind === "list" && field.listKind === "message") ||
+        (field.fieldKind === "map" && field.mapKind === "message")
+          ? field.message
+          : undefined;
+      customData.resource = messageDesc
+        ? getProtoResourceMetadata(messageDesc)
+        : undefined;
+      result.required = Boolean(
+        result.required ||
+          fieldBehaviors.includes(FieldBehavior.REQUIRED) ||
+          (isIdentifier && context.operation === "update")
+      );
+    }
+  }
+
+  return attachRenderHints(result);
+}
+
+export function getProtoMessageUiConfig(
+  desc: DescMessage
+): ProtoMessageUiConfig | undefined {
+  return getProtoMessageUi(desc);
+}
+
+function parseProtoSchemaInternal(
+  desc: DescMessage,
+  annotations: ProtoAnnotations | undefined,
+  parentSecretScope: string | undefined,
+  ancestors: ReadonlySet<string>,
+  operation?: "create" | "update"
+): ParsedProtoSchema {
+  const messageUi = getProtoMessageUi(desc);
+  const context: ProtoParserContext = {
+    ancestors: new Set([...ancestors, desc.typeName]),
+    annotations,
+    messageUi,
+    operation: operation ?? inferProtoOperation(desc),
+    secretScope: messageUi?.secretScope ?? parentSecretScope,
+  };
+  return {
+    fields: desc.members.map((member) =>
+      member.kind === "oneof"
+        ? buildOneofField(member, context)
+        : buildProtoField(member, context)
+    ),
+  };
+}
+
+export function parseProtoSchema(
+  desc: DescMessage,
+  annotations = getRegisteredProtoAnnotations(desc),
+  parentSecretScope?: string
+): ParsedProtoSchema {
+  return parseProtoSchemaInternal(
+    desc,
+    annotations,
+    parentSecretScope,
+    new Set(),
+    undefined
+  );
+}
+
+function inferProtoOperation(
+  desc: DescMessage
+): "create" | "update" | undefined {
+  const messageName = desc.typeName.split(".").at(-1) ?? "";
+  if (/^Create.+Request$/.test(messageName)) {
+    return "create";
+  }
+  if (/^Update.+Request$/.test(messageName)) {
+    return "update";
+  }
+  return;
+}
+
+function toDateTimeLocalValue(
+  timestamp: MessageShape<typeof TimestampSchema> | undefined
+): string | undefined {
+  if (!timestamp) {
+    return;
+  }
+
+  const date = timestampDate(timestamp);
+  if (Number.isNaN(date.getTime())) {
+    return;
+  }
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+}
+
+function objectHasValues(value: Record<string, unknown>): boolean {
+  return Object.values(value).some((entry) => {
+    if (entry === undefined || entry === null) {
+      return false;
+    }
+    if (typeof entry === "string") {
+      return entry.trim().length > 0;
+    }
+    if (Array.isArray(entry)) {
+      return entry.length > 0;
+    }
+    if (typeof entry === "object") {
+      return isPlainObject(entry) ? objectHasValues(entry) : true;
+    }
+    return true;
+  });
+}
+
+function isJsonValue(value: unknown): value is JsonValue {
+  if (
+    value === null ||
+    typeof value === "string" ||
+    typeof value === "boolean"
+  ) {
+    return true;
+  }
+  if (typeof value === "number") {
+    return Number.isFinite(value);
+  }
+  if (Array.isArray(value)) {
+    return value.every(isJsonValue);
+  }
+  return isPlainObject(value) && Object.values(value).every(isJsonValue);
+}
+
+function fieldToFormValue(field: DescField, value: unknown): unknown {
+  switch (field.fieldKind) {
+    case "scalar": {
+      if (field.scalar === ScalarType.BYTES) {
+        return value instanceof Uint8Array ? base64Encode(value) : undefined;
+      }
+      if (is64BitScalar(field.scalar)) {
+        return typeof value === "bigint"
+          ? value.toString()
+          : (value ?? undefined);
+      }
+      return value;
+    }
+    case "enum":
+      return value;
+    case "message": {
+      if (isWrapperDesc(field.message)) {
+        const wrappedScalar = field.message.fields[0]?.scalar;
+        if (wrappedScalar === ScalarType.BYTES) {
+          return value instanceof Uint8Array ? base64Encode(value) : undefined;
+        }
+        if (is64BitScalar(wrappedScalar)) {
+          return typeof value === "bigint"
+            ? value.toString()
+            : (value ?? undefined);
+        }
+        return value;
+      }
+
+      switch (field.message.typeName) {
+        case TIMESTAMP_TYPE:
+          return toDateTimeLocalValue(
+            value as MessageShape<typeof TimestampSchema> | undefined
+          );
+        case DURATION_TYPE:
+          return value
+            ? toJsonString(
+                DurationSchema,
+                value as MessageShape<typeof DurationSchema>
+              ).replace(/"/g, "")
+            : undefined;
+        case FIELD_MASK_TYPE:
+          return isPlainObject(value) &&
+            Array.isArray((value as { paths?: unknown[] }).paths)
+            ? (value as { paths: string[] }).paths
+            : undefined;
+        case STRUCT_TYPE:
+          if (isMessage(value, StructSchema)) {
+            return toJson(StructSchema, value);
+          }
+          return isPlainObject(value) && isJsonValue(value)
+            ? structuredClone(value)
+            : undefined;
+        case VALUE_TYPE:
+          if (isMessage(value, ValueSchema)) {
+            return toJson(ValueSchema, value);
+          }
+          return isJsonValue(value) ? structuredClone(value) : undefined;
+        case LIST_VALUE_TYPE:
+          if (isMessage(value, ListValueSchema)) {
+            return toJson(ListValueSchema, value);
+          }
+          return Array.isArray(value) && isJsonValue(value)
+            ? structuredClone(value)
+            : undefined;
+        case ANY_TYPE:
+          return value && isPlainObject(value)
+            ? {
+                typeUrl:
+                  typeof (value as { typeUrl?: unknown }).typeUrl === "string"
+                    ? (value as { typeUrl: string }).typeUrl
+                    : "",
+                valueBase64:
+                  (value as { value?: unknown }).value instanceof Uint8Array
+                    ? base64Encode((value as { value: Uint8Array }).value)
+                    : "",
+              }
+            : undefined;
+        default:
+          return value
+            ? messageToFormValues(field.message, value as AnyObject)
+            : undefined;
+      }
+    }
+    case "list":
+      return Array.isArray(value)
+        ? value.map((item) => listItemToFormValue(field, item))
+        : [];
+    case "map": {
+      if (!isPlainObject(value)) {
+        return [];
+      }
+      return Object.entries(value).map(
+        ([key, entryValue]) =>
+          ({
+            key: mapKeyToFormValue(field, key),
+            value: mapValueToFormValue(field, entryValue),
+          }) satisfies ProtoMapFormEntry
+      );
+    }
+    default:
+      return value;
+  }
+}
+
+function listItemToFormValue(field: ListField, value: unknown): unknown {
+  if (field.listKind === "message" && value) {
+    if (isWrapperDesc(field.message)) {
+      return value;
+    }
+    return messageToFormValues(field.message, value as AnyObject);
+  }
+
+  if (field.listKind === "scalar" && field.scalar === ScalarType.BYTES) {
+    return value instanceof Uint8Array ? base64Encode(value) : undefined;
+  }
+
+  if (field.listKind === "scalar" && is64BitScalar(field.scalar)) {
+    return typeof value === "bigint" ? value.toString() : value;
+  }
+
+  return value;
+}
+
+function mapValueToFormValue(field: MapField, value: unknown): unknown {
+  if (field.mapKind === "message" && value) {
+    if (isWrapperDesc(field.message)) {
+      return value;
+    }
+    return messageToFormValues(field.message, value as AnyObject);
+  }
+
+  if (field.mapKind === "scalar" && field.scalar === ScalarType.BYTES) {
+    return value instanceof Uint8Array ? base64Encode(value) : undefined;
+  }
+
+  if (field.mapKind === "scalar" && is64BitScalar(field.scalar)) {
+    return typeof value === "bigint" ? value.toString() : value;
+  }
+
+  return value;
+}
+
+function mapKeyToFormValue(
+  field: MapField,
+  key: string
+): string | number | boolean {
+  if (field.mapKey === ScalarType.BOOL) {
+    return key === "true";
+  }
+  if (is64BitScalar(field.mapKey) || field.mapKey === ScalarType.STRING) {
+    return key;
+  }
+  return Number(key);
+}
+
+function messageToFormValues(
+  desc: DescMessage,
+  value: AnyObject
+): Record<string, unknown> {
+  const result: Record<string, unknown> = {};
+
+  for (const member of desc.members) {
+    if (member.kind === "oneof") {
+      const oneofValue = value[member.localName] as
+        | { case?: string; value?: unknown }
+        | undefined;
+      if (!oneofValue?.case) {
+        result[member.localName] = { case: undefined, value: undefined };
+        continue;
+      }
+
+      const activeField = member.fields.find(
+        (field) => field.localName === oneofValue.case
+      );
+      result[member.localName] = {
+        case: oneofValue.case,
+        value: activeField
+          ? fieldToFormValue(activeField, oneofValue.value)
+          : oneofValue.value,
+      };
+      continue;
+    }
+
+    result[member.localName] = fieldToFormValue(
+      member,
+      value[member.localName]
+    );
+  }
+
+  return result;
+}
+
+export function protoToFormValues<Desc extends DescMessage>(
+  desc: Desc,
+  value?: MessageShape<Desc>
+): Record<string, unknown> {
+  const baseValue = (value ?? create(desc)) as AnyObject;
+  return messageToFormValues(desc, baseValue);
+}
+
+function normalizeBooleanValue(value: unknown): boolean | undefined {
+  if (value === undefined || value === null || value === "") {
+    return;
+  }
+  if (typeof value === "boolean") {
+    return value;
+  }
+  if (value === "true") {
+    return true;
+  }
+  if (value === "false") {
+    return false;
+  }
+  return Boolean(value);
+}
+
+function normalizeNumberValue(value: unknown): number | undefined {
+  if (value === undefined || value === null || value === "") {
+    return;
+  }
+  if (typeof value === "number") {
+    return Number.isNaN(value) ? undefined : value;
+  }
+  const parsed = Number(value);
+  return Number.isNaN(parsed) ? undefined : parsed;
+}
+
+function normalizeFloatingPointValue(value: unknown): number | undefined {
+  if (value === undefined || value === null || value === "") {
+    return;
+  }
+  if (typeof value === "number") {
+    return value;
+  }
+  if (value === "NaN") {
+    return Number.NaN;
+  }
+  const parsed = Number(value);
+  return Number.isNaN(parsed) ? undefined : parsed;
+}
+
+function normalizeBigIntValue(value: unknown): bigint | undefined {
+  if (value === undefined || value === null || value === "") {
+    return;
+  }
+  if (typeof value === "bigint") {
+    return value;
+  }
+  if (typeof value === "number" && Number.isSafeInteger(value)) {
+    return BigInt(value);
+  }
+  if (typeof value === "string") {
+    try {
+      return BigInt(value);
+    } catch {
+      return;
+    }
+  }
+  return;
+}
+
+function normalizeScalarValue(field: DescField, value: unknown): unknown {
+  if (field.scalar === ScalarType.STRING) {
+    if (typeof value === "string") {
+      return value;
+    }
+
+    if (value === undefined || value === null) {
+      return;
+    }
+
+    return String(value);
+  }
+  if (field.scalar === ScalarType.BOOL) {
+    return normalizeBooleanValue(value);
+  }
+  if (field.scalar === ScalarType.BYTES) {
+    if (typeof value === "string") {
+      return base64Decode(value);
+    }
+
+    return value instanceof Uint8Array ? value : undefined;
+  }
+  if (field.scalar === ScalarType.FLOAT || field.scalar === ScalarType.DOUBLE) {
+    return normalizeFloatingPointValue(value);
+  }
+  if (is64BitScalar(field.scalar)) {
+    return normalizeBigIntValue(value);
+  }
+  return normalizeNumberValue(value);
+}
+
+function normalizeMessageFieldValue(
+  field: MessageField,
+  value: unknown
+): unknown {
+  if (isWrapperDesc(field.message)) {
+    const wrappedScalar = field.message.fields[0]?.scalar;
+    const wrappedField = cloneField(field, {
+      fieldKind: "scalar",
+      scalar: wrappedScalar,
+    });
+    return normalizeScalarValue(wrappedField, value);
+  }
+
+  switch (field.message.typeName) {
+    case TIMESTAMP_TYPE:
+      return typeof value === "string" && value
+        ? timestampFromDate(new Date(value))
+        : undefined;
+    case DURATION_TYPE:
+      return typeof value === "string" && value
+        ? fromJsonString(DurationSchema, JSON.stringify(value))
+        : undefined;
+    case FIELD_MASK_TYPE:
+      return Array.isArray(value) && value.length > 0
+        ? {
+            paths: value.filter(
+              (entry): entry is string => typeof entry === "string"
+            ),
+          }
+        : undefined;
+    case STRUCT_TYPE:
+      return value === undefined
+        ? undefined
+        : fromJson(StructSchema, (value ?? {}) as JsonValue);
+    case VALUE_TYPE:
+      return value === undefined
+        ? undefined
+        : fromJson(ValueSchema, value as JsonValue);
+    case LIST_VALUE_TYPE:
+      return value === undefined
+        ? undefined
+        : fromJson(ListValueSchema, value as JsonValue);
+    case ANY_TYPE: {
+      const anyValue = isPlainObject(value)
+        ? (value as ProtoAnyFormValue)
+        : undefined;
+      if (!(anyValue?.typeUrl || anyValue?.valueBase64)) {
+        return;
+      }
+      return {
+        typeUrl: anyValue?.typeUrl ?? "",
+        value: base64Decode(anyValue?.valueBase64 ?? ""),
+      };
+    }
+    default: {
+      const nested = isPlainObject(value)
+        ? messageToProtoInit(field.message, value)
+        : undefined;
+      if (!(nested && objectHasValues(nested))) {
+        return tracksPresence(field) ? undefined : nested;
+      }
+      return nested;
+    }
+  }
+}
+
+function listItemToProtoValue(field: ListField, value: unknown): unknown {
+  if (field.listKind === "scalar") {
+    return normalizeScalarValue(
+      cloneField(field, {
+        fieldKind: "scalar",
+        oneof: undefined,
+      }),
+      value
+    );
+  }
+  if (field.listKind === "enum") {
+    return value === undefined || value === "" ? undefined : Number(value);
+  }
+  if (isWrapperDesc(field.message)) {
+    return value;
+  }
+  return isPlainObject(value)
+    ? messageToProtoInit(field.message, value)
+    : undefined;
+}
+
+function mapValueToProtoValue(field: MapField, value: unknown): unknown {
+  if (field.mapKind === "scalar") {
+    return normalizeScalarValue(
+      cloneField(field, {
+        fieldKind: "scalar",
+        oneof: undefined,
+      }),
+      value
+    );
+  }
+  if (field.mapKind === "enum") {
+    return value === undefined || value === "" ? undefined : Number(value);
+  }
+  if (isWrapperDesc(field.message)) {
+    return value;
+  }
+  return isPlainObject(value)
+    ? messageToProtoInit(field.message, value)
+    : undefined;
+}
+
+function fieldToProtoValue(field: DescField, value: unknown): unknown {
+  switch (field.fieldKind) {
+    case "scalar":
+      return normalizeScalarValue(field, value);
+    case "enum":
+      return value === undefined || value === "" ? undefined : Number(value);
+    case "message":
+      return normalizeMessageFieldValue(field, value);
+    case "list":
+      return Array.isArray(value)
+        ? value.map((entry) => listItemToProtoValue(field, entry))
+        : [];
+    case "map":
+      return Array.isArray(value)
+        ? Object.fromEntries(
+            value
+              .map((entry) => {
+                if (!isPlainObject(entry)) {
+                  return null;
+                }
+                const mapKey = entry.key;
+                if (mapKey === undefined || mapKey === null || mapKey === "") {
+                  return null;
+                }
+                return [
+                  String(mapKey),
+                  mapValueToProtoValue(field, entry.value),
+                ] as const;
+              })
+              .filter(
+                (entry): entry is readonly [string, unknown] => entry !== null
+              )
+          )
+        : {};
+    default:
+      return value;
+  }
+}
+
+function messageToProtoInit(
+  desc: DescMessage,
+  value: AnyObject
+): Record<string, unknown> {
+  const result: Record<string, unknown> = {};
+
+  for (const member of desc.members) {
+    if (member.kind === "oneof") {
+      const oneofValue = value[member.localName] as
+        | { case?: string; value?: unknown }
+        | undefined;
+      if (!oneofValue?.case) {
+        continue;
+      }
+
+      const activeField = member.fields.find(
+        (field) => field.localName === oneofValue.case
+      );
+      if (!activeField) {
+        continue;
+      }
+
+      result[member.localName] = {
+        case: oneofValue.case,
+        value: fieldToProtoValue(activeField, oneofValue.value),
+      };
+      continue;
+    }
+
+    const normalized = fieldToProtoValue(member, value[member.localName]);
+    if (normalized === undefined && tracksPresence(member)) {
+      continue;
+    }
+    result[member.localName] = normalized;
+  }
+
+  return result;
+}
+
+export function formValuesToProtoInit<Desc extends DescMessage>(
+  desc: Desc,
+  values: Record<string, unknown>
+): MessageInitShape<Desc> {
+  return messageToProtoInit(desc, values) as MessageInitShape<Desc>;
+}
+
+/**
+ * Builds an edited message from form values while retaining unknown wire
+ * fields from the parsed source message. Unknown fields are not part of the
+ * form model, so reconstructing a message from values alone would drop them.
+ */
+export function formValuesToProto<Desc extends DescMessage>(
+  desc: Desc,
+  values: Record<string, unknown>,
+  source?: MessageShape<Desc>
+): MessageShape<Desc> {
+  const message = create(desc, formValuesToProtoInit(desc, values));
+  if (source?.$unknown) {
+    message.$unknown = structuredClone(source.$unknown);
+  }
+  return message;
+}
+
+export function protoFormValuesToPayload<Desc extends DescMessage>(
+  desc: Desc,
+  values: Record<string, unknown>
+): unknown {
+  try {
+    const init = formValuesToProtoInit(desc, values);
+    const message = create(desc, init);
+    // `alwaysEmitImplicit: true` forces every scalar / message field to
+    // appear in the serialized JSON even when the form hasn't been
+    // touched. Without it, an untouched form renders as `{}` in the
+    // summary panel — so users have to start typing just to see the
+    // request shape. Emitting defaults gives them the full schema
+    // skeleton up front and reduces the interactions needed to
+    // visualise what will actually be sent.
+    return toJson(desc, message, { alwaysEmitImplicit: true }) as unknown;
+  } catch {
+    try {
+      return formValuesToProtoInit(desc, values);
+    } catch {
+      return values;
+    }
+  }
+}
+
+export function protoPayloadToFormValues<Desc extends DescMessage>(
+  desc: Desc,
+  payload: unknown
+): FormValues | undefined {
+  try {
+    const message = fromJson(desc, (payload ?? {}) as JsonValue);
+    return protoToFormValues(desc, message);
+  } catch {
+    return;
+  }
+}
+
+function normalizeIssuePath(
+  desc: DescMessage,
+  issue: SchemaIssue,
+  values: Record<string, unknown>
+): (string | number)[] {
+  if (!issue.path || issue.path.length === 0) {
+    return [];
+  }
+
+  const normalizedPath: (string | number)[] = [];
+  let currentDesc: DescMessage | undefined = desc;
+
+  for (let index = 0; index < issue.path.length; index += 1) {
+    const segment: StandardSchemaV1.PathSegment | PropertyKey | undefined =
+      issue.path[index];
+    const key =
+      typeof segment === "object" && segment && "key" in segment
+        ? segment.key
+        : segment;
+
+    if (typeof key === "number") {
+      normalizedPath.push(key);
+      continue;
+    }
+
+    if (!currentDesc || typeof key !== "string") {
+      normalizedPath.push(String(key));
+      continue;
+    }
+
+    const matchedField: DescField | undefined = currentDesc.field[key];
+    const oneof = currentDesc.oneofs.find(
+      (candidate) => candidate.localName === key
+    );
+
+    if (oneof) {
+      normalizedPath.push(oneof.localName);
+      currentDesc = undefined;
+      continue;
+    }
+
+    if (!matchedField) {
+      normalizedPath.push(key);
+      currentDesc = undefined;
+      continue;
+    }
+
+    normalizedPath.push(matchedField.localName);
+
+    if (matchedField.fieldKind === "map") {
+      const nextSegment = issue.path[index + 1];
+      const mapKey =
+        typeof nextSegment === "object" && nextSegment && "key" in nextSegment
+          ? nextSegment.key
+          : nextSegment;
+      const mapEntries = Array.isArray(values[matchedField.localName])
+        ? (values[matchedField.localName] as ProtoMapFormEntry[])
+        : [];
+      const mapIndex =
+        typeof mapKey === "string"
+          ? mapEntries.findIndex((entry) => entry.key === mapKey)
+          : -1;
+
+      if (
+        mapIndex !== -1 &&
+        issue.path.length > index + 2 &&
+        matchedField.mapKind === "message"
+      ) {
+        normalizedPath.push(mapIndex, "value");
+        currentDesc = matchedField.message;
+        index += 1;
+        continue;
+      }
+
+      // If the protovalidate key no longer matches a rendered map entry, keep the error on the
+      // map field itself instead of targeting a stale array index in RHF state.
+      return normalizedPath;
+    }
+
+    if (matchedField.fieldKind === "message") {
+      if (
+        isWrapperDesc(matchedField.message) ||
+        PROTO_JSON_FALLBACK_TYPES.includes(matchedField.message.typeName)
+      ) {
+        return normalizedPath;
+      }
+      currentDesc = matchedField.message;
+      continue;
+    }
+
+    if (
+      matchedField.fieldKind === "list" &&
+      matchedField.listKind === "message"
+    ) {
+      if (
+        isWrapperDesc(matchedField.message) ||
+        PROTO_JSON_FALLBACK_TYPES.includes(matchedField.message.typeName)
+      ) {
+        return normalizedPath;
+      }
+      // Guard against stale array indices: if the next segment is a numeric index,
+      // verify the array still has that many entries. If not, anchor the error on
+      // the list field itself (same fallback strategy as map fields).
+      const nextSegment = issue.path[index + 1];
+      const nextKey =
+        typeof nextSegment === "object" && nextSegment && "key" in nextSegment
+          ? nextSegment.key
+          : nextSegment;
+      if (typeof nextKey === "number") {
+        const listEntries = values[matchedField.localName];
+        if (!Array.isArray(listEntries) || nextKey >= listEntries.length) {
+          return normalizedPath;
+        }
+      }
+      currentDesc = matchedField.message;
+      continue;
+    }
+
+    currentDesc = undefined;
+  }
+
+  return normalizedPath;
+}
+
+/** A Standard Schema issue whose path is already normalized to form paths. */
+export interface NormalizedProtoIssue {
+  message: string;
+  path: (string | number)[];
+}
+
+export type NormalizedProtoValidationResult<Output> =
+  | StandardSchemaV1.SuccessResult<Output>
+  | { readonly issues: readonly NormalizedProtoIssue[] };
+
+const SIGNED_32_SCALARS = [
+  ScalarType.INT32,
+  ScalarType.SINT32,
+  ScalarType.SFIXED32,
+];
+const UNSIGNED_32_SCALARS = [ScalarType.UINT32, ScalarType.FIXED32];
+const SIGNED_64_SCALARS = [
+  ScalarType.INT64,
+  ScalarType.SINT64,
+  ScalarType.SFIXED64,
+];
+const UNSIGNED_64_SCALARS = [ScalarType.UINT64, ScalarType.FIXED64];
+const SIGNED_32_MIN = -2_147_483_648;
+const SIGNED_32_MAX = 2_147_483_647;
+const UNSIGNED_32_MAX = 4_294_967_295;
+const SIGNED_64_MIN = -9_223_372_036_854_775_808n;
+const SIGNED_64_MAX = 9_223_372_036_854_775_807n;
+const UNSIGNED_64_MAX = 18_446_744_073_709_551_615n;
+
+function getScalarConversionIssue(
+  field: ScalarField,
+  value: unknown
+): string | undefined {
+  if (value === undefined || value === null || value === "") {
+    return;
+  }
+  if (SIGNED_32_SCALARS.includes(field.scalar)) {
+    const numericValue = normalizeNumberValue(value);
+    if (
+      numericValue === undefined ||
+      !Number.isInteger(numericValue) ||
+      numericValue < SIGNED_32_MIN ||
+      numericValue > SIGNED_32_MAX
+    ) {
+      return "Enter a signed 32-bit integer.";
+    }
+  }
+  if (UNSIGNED_32_SCALARS.includes(field.scalar)) {
+    const numericValue = normalizeNumberValue(value);
+    if (
+      numericValue === undefined ||
+      !Number.isInteger(numericValue) ||
+      numericValue < 0 ||
+      numericValue > UNSIGNED_32_MAX
+    ) {
+      return "Enter an unsigned 32-bit integer.";
+    }
+  }
+  if (SIGNED_64_SCALARS.includes(field.scalar)) {
+    const bigintValue = normalizeBigIntValue(value);
+    if (
+      bigintValue === undefined ||
+      bigintValue < SIGNED_64_MIN ||
+      bigintValue > SIGNED_64_MAX
+    ) {
+      return "Enter a signed 64-bit integer.";
+    }
+  }
+  if (UNSIGNED_64_SCALARS.includes(field.scalar)) {
+    const bigintValue = normalizeBigIntValue(value);
+    if (
+      bigintValue === undefined ||
+      bigintValue < 0n ||
+      bigintValue > UNSIGNED_64_MAX
+    ) {
+      return "Enter an unsigned 64-bit integer.";
+    }
+  }
+  return;
+}
+
+function getMessageConversionIssue(
+  field: MessageField,
+  value: unknown
+): string | undefined {
+  if (value === undefined || value === null || value === "") {
+    return;
+  }
+  if (field.message.typeName === TIMESTAMP_TYPE) {
+    return typeof value === "string" && !Number.isNaN(new Date(value).getTime())
+      ? undefined
+      : "Enter a valid date and time.";
+  }
+  if (field.message.typeName === DURATION_TYPE) {
+    if (typeof value !== "string") {
+      return "Enter a valid duration.";
+    }
+    try {
+      fromJsonString(DurationSchema, JSON.stringify(value));
+      return;
+    } catch {
+      return "Enter a valid duration.";
+    }
+  }
+  if (field.message.typeName !== ANY_TYPE || !isPlainObject(value)) {
+    return;
+  }
+  const valueBase64 = (value as ProtoAnyFormValue).valueBase64;
+  if (valueBase64 === undefined || valueBase64 === "") {
+    return;
+  }
+  try {
+    base64Decode(valueBase64);
+    return;
+  } catch {
+    return "Enter valid base64 data.";
+  }
+}
+
+function getMapConversionIssue(value: unknown): string | undefined {
+  if (!Array.isArray(value)) {
+    return;
+  }
+  const keys = value.flatMap((entry) => {
+    if (!isPlainObject(entry)) {
+      return [];
+    }
+    const key = entry.key;
+    return key === undefined || key === null || key === "" ? [] : [String(key)];
+  });
+  return new Set(keys).size === keys.length
+    ? undefined
+    : "Map keys must be unique.";
+}
+
+function getFormConversionIssues(
+  desc: DescMessage,
+  values: Record<string, unknown>
+): NormalizedProtoIssue[] {
+  return desc.members.flatMap((member) => {
+    if (member.kind === "oneof") {
+      return [];
+    }
+    let message: string | undefined;
+    if (member.fieldKind === "scalar") {
+      message = getScalarConversionIssue(member, values[member.localName]);
+    } else if (member.fieldKind === "message") {
+      message = getMessageConversionIssue(member, values[member.localName]);
+    } else if (member.fieldKind === "map") {
+      message = getMapConversionIssue(values[member.localName]);
+    }
+    return message ? [{ message, path: [member.localName] }] : [];
+  });
+}
+
+function toFailureResult(error: unknown): {
+  readonly issues: readonly NormalizedProtoIssue[];
+} {
+  return {
+    issues: [
+      {
+        message:
+          error instanceof Error
+            ? error.message
+            : "Failed to validate protobuf form values.",
+        path: [],
+      },
+    ],
+  };
+}
+
+function normalizeValidationResult<Desc extends DescMessage>(
+  desc: Desc,
+  values: Record<string, unknown>,
+  validationResult: StandardSchemaV1.Result<MessageValidType<Desc>>
+): NormalizedProtoValidationResult<MessageValidType<Desc>> {
+  if (validationResult.issues) {
+    return {
+      issues: validationResult.issues.map((issue) => ({
+        message: issue.message,
+        path: normalizeIssuePath(desc, issue, values),
+      })),
+    };
+  }
+
+  return validationResult;
+}
+
+/**
+ * Shared validation pipeline: form values → proto init → `create()` →
+ * protovalidate Standard Schema → issues re-pathed to FORM paths
+ * (camelCase keys, oneofs flattened, map keys resolved to entry indices).
+ *
+ * Both `createProtoFormSchema` and `ProtoProvider.validateSchema` (and the
+ * registry's react-hook-form resolver) flow through this single function.
+ */
+export function validateFormValuesAgainstProtoSchema<Desc extends DescMessage>(
+  desc: Desc,
+  values: Record<string, unknown>,
+  schema: StandardSchemaV1<MessageShape<Desc>, MessageValidType<Desc>>
+):
+  | NormalizedProtoValidationResult<MessageValidType<Desc>>
+  | Promise<NormalizedProtoValidationResult<MessageValidType<Desc>>> {
+  try {
+    const conversionIssues = getFormConversionIssues(desc, values);
+    if (conversionIssues.length > 0) {
+      return { issues: conversionIssues };
+    }
+    const init = formValuesToProtoInit(desc, values);
+    const message = create(desc, init);
+    const validationResult = schema["~standard"].validate(message);
+
+    if (validationResult instanceof Promise) {
+      return validationResult
+        .then((result) => normalizeValidationResult(desc, values, result))
+        .catch((error: unknown) => toFailureResult(error));
+    }
+
+    return normalizeValidationResult(desc, values, validationResult);
+  } catch (error) {
+    return toFailureResult(error);
+  }
+}
+
+function mapResultToSchemaValidation<Desc extends DescMessage>(
+  result: NormalizedProtoValidationResult<MessageValidType<Desc>>
+): SchemaValidation {
+  if (result.issues) {
+    return {
+      errors: result.issues.map((issue) => ({
+        message: issue.message,
+        path: issue.path,
+      })),
+      success: false,
+    };
+  }
+
+  return {
+    data: result.value,
+    success: true,
+  };
+}
+
+function validateProtoValues<Desc extends DescMessage>(
+  desc: Desc,
+  values: Record<string, unknown>,
+  schema: StandardSchemaV1<MessageShape<Desc>, MessageValidType<Desc>>
+): SchemaValidation | Promise<SchemaValidation> {
+  const result = validateFormValuesAgainstProtoSchema(desc, values, schema);
+  if (result instanceof Promise) {
+    return result.then((resolved) =>
+      mapResultToSchemaValidation<Desc>(resolved)
+    );
+  }
+  return mapResultToSchemaValidation<Desc>(result);
+}
+
+export class ProtoProvider<Desc extends DescMessage = DescMessage>
+  implements SchemaProvider<Record<string, unknown>>
+{
+  private readonly desc: Desc;
+  private readonly parsedSchema: ParsedProtoSchema;
+  private readonly standardSchema: StandardSchemaV1<
+    MessageShape<Desc>,
+    MessageValidType<Desc>
+  >;
+
+  constructor(desc: Desc, options?: ValidatorOptions) {
+    this.desc = desc;
+    this.parsedSchema = parseProtoSchema(desc);
+    this.standardSchema = createStandardSchema(desc, options);
+  }
+
+  parseSchema(): ParsedSchema {
+    return this.parsedSchema;
+  }
+
+  validateSchema(values: Record<string, unknown>): SchemaValidation {
+    const validationResult = validateProtoValues(
+      this.desc,
+      values,
+      this.standardSchema
+    );
+    if (validationResult instanceof Promise) {
+      return {
+        errors: [
+          {
+            message:
+              // Provider-based AutoForm consumers expect a synchronous result. Async protovalidate
+              // flows should go through createProtoResolver(), which RHF can await.
+              "ProtoProvider does not support async validation rules. Use createProtoResolver() for async protovalidate flows.",
+            path: [],
+          },
+        ],
+        success: false,
+      };
+    }
+    return validationResult;
+  }
+
+  getDefaultValues(): Record<string, unknown> {
+    return protoToFormValues(this.desc);
+  }
+
+  getMessageDescriptor(): Desc {
+    return this.desc;
+  }
+}
+
+export function isProtoProvider(value: unknown): value is ProtoProvider {
+  return value instanceof ProtoProvider;
+}

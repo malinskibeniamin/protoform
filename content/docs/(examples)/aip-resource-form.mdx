@@ -1,0 +1,57 @@
+---
+title: AIP resource form
+description: Edit a resource while Protoform excludes server-owned fields from the update mask.
+---
+
+**Level 7 of 8**
+
+**Prerequisite:** [Server-error form](/docs/server-error-form)
+
+This example turns one AIP-style resource into an update form. Edit the display name and biography;
+the submitted status shows the protobuf field mask built from dirty, client-writable fields.
+
+<div className="my-8 border-y border-border/60 py-8">
+  <AipResourceFormExample />
+</div>
+
+## What this adds
+
+- A `(google.api.resource)` descriptor.
+- `IDENTIFIER`, `IMMUTABLE`, and `OUTPUT_ONLY` field behavior.
+- An automatic snake-case update mask from dirty writable fields.
+
+## Contract
+
+```proto
+message MaskableProfile {
+  option (google.api.resource) = {
+    type: "protoform.example.com/Profile"
+    pattern: "profiles/{profile}"
+  };
+
+  string name = 1 [(google.api.field_behavior) = IDENTIFIER];
+  string display_name = 2;
+  string biography = 3;
+  string home_region = 4 [(google.api.field_behavior) = IMMUTABLE];
+  string lifecycle_state = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+```
+
+## React
+
+```tsx
+<AutoForm
+  defaultValues={profile}
+  schema={MaskableProfileSchema}
+  withSubmit
+  onSubmit={(_profile, _form, context) => {
+    sendUpdate(context.updateMask)
+  }}
+/>
+```
+
+The client builds the mask; the server still validates it, merges the patch, enforces etags, and
+authorizes the update. See [Google AIP and protobuf design](/docs/aip-protobuf) for the complete
+resource and standard-method shapes.
+
+**Next:** [Kitchen sink](/docs/kitchen-sink)
