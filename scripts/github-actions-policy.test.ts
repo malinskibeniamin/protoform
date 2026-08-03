@@ -42,6 +42,13 @@ describe("GitHub Actions policy", () => {
   it("limits workflow permissions and runaway jobs", () => {
     expect(workflows[0]).toContain("permissions:\n  contents: read");
 
+    const release = workflows[1] ?? "";
+    const releaseJob = workflowJob(release, "release");
+    expect(release).toContain("permissions:\n  contents: read");
+    expect(releaseJob).toContain("permissions:\n      attestations: write");
+    expect(releaseJob).toContain("contents: write");
+    expect(releaseJob).toContain("id-token: write");
+
     for (const workflow of workflows) {
       const jobs = workflow
         .split("\njobs:\n")[1]
