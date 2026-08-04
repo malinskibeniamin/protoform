@@ -91,6 +91,16 @@ describe("GitHub Actions policy", () => {
     expect(verify).toContain("bun run quality:gate");
   });
 
+  it("does not block automated gates on dependency audit results", () => {
+    const scripts = JSON.parse(readRepositoryFile("package.json")).scripts as
+      | Record<string, string>
+      | undefined;
+
+    for (const gate of ["ci:gate", "quality:gate", "release:gate"]) {
+      expect(scripts?.[gate], gate).not.toContain("bun audit");
+    }
+  });
+
   it("keeps documentation CI deterministic and API-key free", () => {
     const manifest = JSON.parse(readRepositoryFile("package.json")) as {
       scripts?: Record<string, string>;
