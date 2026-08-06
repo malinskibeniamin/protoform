@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package protoform.fixtures.deployment.v1;
+
+import "buf/validate/validate.proto";
+import "protoform/fixtures/shared/v1/release.proto";
+
+message DeploymentPolicy {
+  option (buf.validate.message).cel = {
+    id: "deployment.production_release"
+    message: "Production deployments require the stable release track."
+    expression: "this.environment in [protoform.fixtures.deployment.v1.DeploymentPolicy.Environment.ENVIRONMENT_PRODUCTION] && this.release_track == protoform.fixtures.shared.v1.ReleaseTrack.RELEASE_TRACK_STABLE"
+  };
+
+  enum Environment {
+    ENVIRONMENT_UNSPECIFIED = 0;
+    ENVIRONMENT_STAGING = 10;
+    ENVIRONMENT_PRODUCTION = 20;
+  }
+
+  Environment environment = 1;
+  protoform.fixtures.shared.v1.ReleaseTrack release_track = 2;
+}

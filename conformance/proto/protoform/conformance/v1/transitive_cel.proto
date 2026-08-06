@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package protoform.conformance.v1;
+
+import "protoform/fixtures/deployment/v1/policy.proto";
+
+message TransitiveCelConsumer {
+  protoform.fixtures.deployment.v1.DeploymentPolicy deployment = 1;
+}
