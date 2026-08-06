@@ -32,7 +32,6 @@ import {
   ValueSchema,
 } from "@bufbuild/protobuf/wkt";
 import {
-  createStandardSchema,
   type ValidatorOptions,
 } from "@bufbuild/protovalidate";
 import type {
@@ -71,6 +70,7 @@ import {
   getProtoMessageUi,
   getProtoOneofUi,
 } from "./ui-options.js";
+import { createDescriptorAwareStandardSchema } from "./validation-schema.js";
 
 const GOOGLE_PROTOBUF_PREFIX = "google.protobuf.";
 const TIMESTAMP_TYPE = `${GOOGLE_PROTOBUF_PREFIX}Timestamp`;
@@ -2251,7 +2251,7 @@ export class ProtoProvider<Desc extends DescMessage = DescMessage>
   constructor(desc: Desc, options?: ValidatorOptions) {
     this.desc = desc;
     this.parsedSchema = parseProtoSchema(desc);
-    this.standardSchema = createStandardSchema(desc, options);
+    this.standardSchema = createDescriptorAwareStandardSchema(desc, options);
   }
 
   parseSchema(): ParsedSchema {

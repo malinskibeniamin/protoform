@@ -1,6 +1,5 @@
 import type { DescMessage, MessageValidType } from "@bufbuild/protobuf";
 import {
-  createStandardSchema,
   type ValidatorOptions,
 } from "@bufbuild/protovalidate";
 import type {
@@ -9,6 +8,7 @@ import type {
 } from "../core/index.js";
 
 import { validateFormValuesAgainstProtoSchema } from "./provider.js";
+import { createDescriptorAwareStandardSchema } from "./validation-schema.js";
 
 function isFormValueObject(value: unknown): value is FormValues {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -31,7 +31,7 @@ export function createProtoFormSchema<
   desc: Desc,
   options?: ValidatorOptions
 ): StandardSchemaV1<Input, MessageValidType<Desc>> {
-  const messageSchema = createStandardSchema(desc, options);
+  const messageSchema = createDescriptorAwareStandardSchema(desc, options);
 
   return {
     "~standard": {

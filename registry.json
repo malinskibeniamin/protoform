@@ -209,6 +209,10 @@
         {
           "path": "registry/base-nova/protoform/lib/protobuf-provider/ui-options.ts",
           "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/protobuf-provider/validation-schema.ts",
+          "type": "registry:lib"
         }
       ]
     },

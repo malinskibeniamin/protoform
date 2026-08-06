@@ -1,8 +1,5 @@
 import type { DescMessage, MessageValidType } from "@bufbuild/protobuf";
-import {
-  createStandardSchema,
-  type ValidatorOptions,
-} from "@bufbuild/protovalidate";
+import { type ValidatorOptions } from "@bufbuild/protovalidate";
 import { toNestErrors, validateFieldsNatively } from "@hookform/resolvers";
 import type { FormValues } from "../../lib/core/index.js";
 import {
@@ -11,13 +8,14 @@ import {
   PROTO_FORM_ROOT_ERROR_KEY,
   validateFormValuesAgainstProtoSchema,
 } from "../../lib/protobuf-provider/index.js";
+import { createDescriptorAwareStandardSchema } from "../../lib/protobuf-provider/validation-schema.js";
 import type { Resolver } from "react-hook-form";
 
 export function createProtoResolver<Desc extends DescMessage>(
   desc: Desc,
   options?: ValidatorOptions
 ): Resolver<FormValues, unknown, MessageValidType<Desc>> {
-  const standardSchema = createStandardSchema(desc, options);
+  const standardSchema = createDescriptorAwareStandardSchema(desc, options);
 
   return async (values, _context, resolverOptions) => {
     const validationResult = await validateFormValuesAgainstProtoSchema(
