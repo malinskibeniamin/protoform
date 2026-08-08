@@ -143,8 +143,8 @@ function deriveAnnotatedControl(
   return;
 }
 
-export function getFieldUiConfig(field: ParsedField): {
-  control?: FieldTypes;
+export function getFieldUiConfig<TFieldType extends string = string>(field: ParsedField<TFieldType>): {
+  control?: FieldTypes<TFieldType>;
   placeholder?: string;
   example?: string;
   help?: string;
@@ -161,7 +161,7 @@ export function getFieldUiConfig(field: ParsedField): {
 
   const direct = customData
     ? {
-        control: typeof customData.control === 'string' ? (customData.control as FieldTypes) : undefined,
+        control: typeof customData.control === 'string' ? (customData.control as FieldTypes<TFieldType>) : undefined,
         placeholder: typeof customData.placeholder === 'string' ? customData.placeholder : undefined,
         example: typeof customData.example === 'string' ? customData.example : undefined,
         help: typeof customData.help === 'string' ? customData.help : undefined,
@@ -178,7 +178,7 @@ export function getFieldUiConfig(field: ParsedField): {
 
   const nested = nestedUi
     ? {
-        control: typeof nestedUi.control === 'string' ? (nestedUi.control as FieldTypes) : undefined,
+        control: typeof nestedUi.control === 'string' ? (nestedUi.control as FieldTypes<TFieldType>) : undefined,
         placeholder: typeof nestedUi.placeholder === 'string' ? nestedUi.placeholder : undefined,
         example: typeof nestedUi.example === 'string' ? nestedUi.example : undefined,
         help: typeof nestedUi.help === 'string' ? nestedUi.help : undefined,
@@ -206,11 +206,13 @@ export function getFieldUiConfig(field: ParsedField): {
     ...(nested ?? {}),
     ...(direct ?? {}),
     control:
-      (typeof field.fieldConfig?.fieldType === 'string' ? (field.fieldConfig.fieldType as FieldTypes) : undefined) ||
+      (typeof field.fieldConfig?.fieldType === 'string'
+        ? (field.fieldConfig.fieldType as FieldTypes<TFieldType>)
+        : undefined) ||
       annotatedControl ||
       direct?.control ||
       nested?.control ||
-      (protoUi?.control as FieldTypes | undefined),
+      (protoUi?.control as FieldTypes<TFieldType> | undefined),
     placeholder:
       (typeof field.fieldConfig?.inputProps?.placeholder === 'string'
         ? (field.fieldConfig.inputProps.placeholder as string)
@@ -330,7 +332,9 @@ function isSimpleKeyValueLikeObject(field: ParsedField | undefined): boolean {
   return Boolean(keyField && valueField && isKeyValueScalarField(keyField) && isKeyValueScalarField(valueField));
 }
 
-export function resolveRenderFieldType(field: ParsedField): FieldTypes {
+export function resolveRenderFieldType<TFieldType extends string = string>(
+  field: ParsedField<TFieldType>
+): FieldTypes<TFieldType> {
   const uiConfig = getFieldUiConfig(field);
   if (uiConfig.control) {
     return uiConfig.control;
@@ -418,7 +422,7 @@ export function resolveRenderFieldType(field: ParsedField): FieldTypes {
     }
   }
 
-  return field.type as FieldTypes;
+  return field.type as FieldTypes<TFieldType>;
 }
 
 function buildRangeHint(field: ParsedField): string | undefined {
@@ -556,10 +560,10 @@ export function defaultClassifyField(field: ParsedField): 'simple' | 'advanced' 
   return field.required || hasSimpleRequiredCount(field) ? 'simple' : 'advanced';
 }
 
-export function deriveSimpleFields(
-  fields: ParsedField[] | undefined,
-  classifyField: (field: ParsedField) => 'simple' | 'advanced' = defaultClassifyField
-): ParsedField[] {
+export function deriveSimpleFields<TFieldType extends string = string>(
+  fields: ParsedField<TFieldType>[] | undefined,
+  classifyField: (field: ParsedField<TFieldType>) => 'simple' | 'advanced' = defaultClassifyField
+): ParsedField<TFieldType>[] {
   if (!fields) {
     return [];
   }

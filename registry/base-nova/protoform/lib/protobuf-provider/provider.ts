@@ -35,6 +35,7 @@ import {
   type ValidatorOptions,
 } from "@bufbuild/protovalidate";
 import type {
+  EmptyRepeatedStringPolicy,
   FieldRenderHints,
   FormValues,
   ParsedField,
@@ -137,6 +138,7 @@ type ParsedProtoSchema = ParsedSchema<ProtoFieldRenderType>;
 
 export interface ProtoFieldCustomData extends ProviderCustomData {
   allowedPaths?: string[];
+  deprecated?: boolean;
   desc?: DescField;
   fieldBehaviors?: readonly FieldBehavior[];
   fieldRules?: FieldRules;
@@ -187,6 +189,20 @@ export interface ProtoMapFormEntry {
   key: unknown;
   value: unknown;
 }
+
+export interface ProtoConversionOptions {
+  /**
+   * Per-field policies keyed by descriptor path. Empty and whitespace-only
+   * repeated strings are discarded unless the field is set to `preserve`.
+   */
+  emptyRepeatedStringPolicies?: Readonly<
+    Record<string, EmptyRepeatedStringPolicy>
+  >;
+}
+
+export interface ProtoFormOptions
+  extends ValidatorOptions,
+    ProtoConversionOptions {}
 
 interface ProtoParserContext {
   ancestors: ReadonlySet<string>;
@@ -441,6 +457,7 @@ function hintsFromCustomData(
   assign("maxPairs", data.maxPairs);
   assign("allowedPaths", data.allowedPaths);
   assign("dataProvider", ui?.dataProvider);
+  assign("deprecated", data.deprecated);
   assign("dropzone", ui?.dropzone);
 
   return Object.keys(hints).length > 0 ? hints : undefined;
@@ -1176,6 +1193,9 @@ function buildProtoField(
       const isIdentifier = fieldBehaviors.includes(FieldBehavior.IDENTIFIER);
       const isImmutable = fieldBehaviors.includes(FieldBehavior.IMMUTABLE);
       customData.fieldBehaviors = fieldBehaviors;
+      if (field.proto.options?.deprecated === true) {
+        customData.deprecated = true;
+      }
       customData.hidden =
         fieldBehaviors.includes(FieldBehavior.OUTPUT_ONLY) ||
         (isIdentifier && context.operation === "create");
@@ -1613,7 +1633,9 @@ function normalizeScalarValue(field: DescField, value: unknown): unknown {
 
 function normalizeMessageFieldValue(
   field: MessageField,
-  value: unknown
+  value: unknown,
+  options: ProtoConversionOptions,
+  path: readonly string[]
 ): unknown {
   if (isWrapperDesc(field.message)) {
     const wrappedScalar = field.message.fields[0]?.scalar;
@@ -1667,7 +1689,7 @@ function normalizeMessageFieldValue(
     }
     default: {
       const nested = isPlainObject(value)
-        ? messageToProtoInit(field.message, value)
+        ? messageToProtoInit(field.message, value, options, path)
         : undefined;
       if (!(nested && objectHasValues(nested))) {
         return tracksPresence(field) ? undefined : nested;
@@ -1677,7 +1699,12 @@ function normalizeMessageFieldValue(
   }
 }
 
-function listItemToProtoValue(field: ListField, value: unknown): unknown {
+function listItemToProtoValue(
+  field: ListField,
+  value: unknown,
+  options: ProtoConversionOptions,
+  path: readonly string[]
+): unknown {
   if (field.listKind === "scalar") {
     return normalizeScalarValue(
       cloneField(field, {
@@ -1694,11 +1721,16 @@ function listItemToProtoValue(field: ListField, value: unknown): unknown {
     return value;
   }
   return isPlainObject(value)
-    ? messageToProtoInit(field.message, value)
+    ? messageToProtoInit(field.message, value, options, path)
     : undefined;
 }
 
-function mapValueToProtoValue(field: MapField, value: unknown): unknown {
+function mapValueToProtoValue(
+  field: MapField,
+  value: unknown,
+  options: ProtoConversionOptions,
+  path: readonly string[]
+): unknown {
   if (field.mapKind === "scalar") {
     return normalizeScalarValue(
       cloneField(field, {
@@ -1715,22 +1747,49 @@ function mapValueToProtoValue(field: MapField, value: unknown): unknown {
     return value;
   }
   return isPlainObject(value)
-    ? messageToProtoInit(field.message, value)
+    ? messageToProtoInit(field.message, value, options, path)
     : undefined;
 }
 
-function fieldToProtoValue(field: DescField, value: unknown): unknown {
+function repeatedListEntries(
+  field: ListField,
+  value: unknown,
+  options: ProtoConversionOptions,
+  path: readonly string[]
+): unknown[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+  const policy = options.emptyRepeatedStringPolicies?.[path.join(".")];
+  if (
+    field.listKind !== "scalar" ||
+    field.scalar !== ScalarType.STRING ||
+    policy === "preserve"
+  ) {
+    return value;
+  }
+  return value.filter(
+    (entry) => typeof entry !== "string" || entry.trim().length > 0
+  );
+}
+
+function fieldToProtoValue(
+  field: DescField,
+  value: unknown,
+  options: ProtoConversionOptions,
+  path: readonly string[]
+): unknown {
   switch (field.fieldKind) {
     case "scalar":
       return normalizeScalarValue(field, value);
     case "enum":
       return value === undefined || value === "" ? undefined : Number(value);
     case "message":
-      return normalizeMessageFieldValue(field, value);
+      return normalizeMessageFieldValue(field, value, options, path);
     case "list":
-      return Array.isArray(value)
-        ? value.map((entry) => listItemToProtoValue(field, entry))
-        : [];
+      return repeatedListEntries(field, value, options, path).map((entry) =>
+        listItemToProtoValue(field, entry, options, path)
+      );
     case "map":
       return Array.isArray(value)
         ? Object.fromEntries(
@@ -1745,7 +1804,7 @@ function fieldToProtoValue(field: DescField, value: unknown): unknown {
                 }
                 return [
                   String(mapKey),
-                  mapValueToProtoValue(field, entry.value),
+                  mapValueToProtoValue(field, entry.value, options, path),
                 ] as const;
               })
               .filter(
@@ -1760,7 +1819,9 @@ function fieldToProtoValue(field: DescField, value: unknown): unknown {
 
 function messageToProtoInit(
   desc: DescMessage,
-  value: AnyObject
+  value: AnyObject,
+  options: ProtoConversionOptions,
+  path: readonly string[]
 ): Record<string, unknown> {
   const result: Record<string, unknown> = {};
 
@@ -1782,12 +1843,22 @@ function messageToProtoInit(
 
       result[member.localName] = {
         case: oneofValue.case,
-        value: fieldToProtoValue(activeField, oneofValue.value),
+        value: fieldToProtoValue(
+          activeField,
+          oneofValue.value,
+          options,
+          [...path, member.localName, activeField.localName]
+        ),
       };
       continue;
     }
 
-    const normalized = fieldToProtoValue(member, value[member.localName]);
+    const normalized = fieldToProtoValue(
+      member,
+      value[member.localName],
+      options,
+      [...path, member.localName]
+    );
     if (normalized === undefined && tracksPresence(member)) {
       continue;
     }
@@ -1799,9 +1870,10 @@ function messageToProtoInit(
 
 export function formValuesToProtoInit<Desc extends DescMessage>(
   desc: Desc,
-  values: Record<string, unknown>
+  values: Record<string, unknown>,
+  options: ProtoConversionOptions = {}
 ): MessageInitShape<Desc> {
-  return messageToProtoInit(desc, values) as MessageInitShape<Desc>;
+  return messageToProtoInit(desc, values, options, []) as MessageInitShape<Desc>;
 }
 
 /**
@@ -1812,9 +1884,10 @@ export function formValuesToProtoInit<Desc extends DescMessage>(
 export function formValuesToProto<Desc extends DescMessage>(
   desc: Desc,
   values: Record<string, unknown>,
-  source?: MessageShape<Desc>
+  source?: MessageShape<Desc>,
+  options: ProtoConversionOptions = {}
 ): MessageShape<Desc> {
-  const message = create(desc, formValuesToProtoInit(desc, values));
+  const message = create(desc, formValuesToProtoInit(desc, values, options));
   if (source?.$unknown) {
     message.$unknown = structuredClone(source.$unknown);
   }
@@ -1823,10 +1896,11 @@ export function formValuesToProto<Desc extends DescMessage>(
 
 export function protoFormValuesToPayload<Desc extends DescMessage>(
   desc: Desc,
-  values: Record<string, unknown>
+  values: Record<string, unknown>,
+  options: ProtoConversionOptions = {}
 ): unknown {
   try {
-    const init = formValuesToProtoInit(desc, values);
+    const init = formValuesToProtoInit(desc, values, options);
     const message = create(desc, init);
     // `alwaysEmitImplicit: true` forces every scalar / message field to
     // appear in the serialized JSON even when the form hasn't been
@@ -1838,7 +1912,7 @@ export function protoFormValuesToPayload<Desc extends DescMessage>(
     return toJson(desc, message, { alwaysEmitImplicit: true }) as unknown;
   } catch {
     try {
-      return formValuesToProtoInit(desc, values);
+      return formValuesToProtoInit(desc, values, options);
     } catch {
       return values;
     }
@@ -2180,7 +2254,8 @@ function normalizeValidationResult<Desc extends DescMessage>(
 export function validateFormValuesAgainstProtoSchema<Desc extends DescMessage>(
   desc: Desc,
   values: Record<string, unknown>,
-  schema: StandardSchemaV1<MessageShape<Desc>, MessageValidType<Desc>>
+  schema: StandardSchemaV1<MessageShape<Desc>, MessageValidType<Desc>>,
+  options: ProtoConversionOptions = {}
 ):
   | NormalizedProtoValidationResult<MessageValidType<Desc>>
   | Promise<NormalizedProtoValidationResult<MessageValidType<Desc>>> {
@@ -2189,7 +2264,7 @@ export function validateFormValuesAgainstProtoSchema<Desc extends DescMessage>(
     if (conversionIssues.length > 0) {
       return { issues: conversionIssues };
     }
-    const init = formValuesToProtoInit(desc, values);
+    const init = formValuesToProtoInit(desc, values, options);
     const message = create(desc, init);
     const validationResult = schema["~standard"].validate(message);
 
@@ -2227,9 +2302,15 @@ function mapResultToSchemaValidation<Desc extends DescMessage>(
 function validateProtoValues<Desc extends DescMessage>(
   desc: Desc,
   values: Record<string, unknown>,
-  schema: StandardSchemaV1<MessageShape<Desc>, MessageValidType<Desc>>
+  schema: StandardSchemaV1<MessageShape<Desc>, MessageValidType<Desc>>,
+  options: ProtoConversionOptions
 ): SchemaValidation | Promise<SchemaValidation> {
-  const result = validateFormValuesAgainstProtoSchema(desc, values, schema);
+  const result = validateFormValuesAgainstProtoSchema(
+    desc,
+    values,
+    schema,
+    options
+  );
   if (result instanceof Promise) {
     return result.then((resolved) =>
       mapResultToSchemaValidation<Desc>(resolved)
@@ -2242,14 +2323,16 @@ export class ProtoProvider<Desc extends DescMessage = DescMessage>
   implements SchemaProvider<Record<string, unknown>>
 {
   private readonly desc: Desc;
+  private readonly options: ProtoFormOptions;
   private readonly parsedSchema: ParsedProtoSchema;
   private readonly standardSchema: StandardSchemaV1<
     MessageShape<Desc>,
     MessageValidType<Desc>
   >;
 
-  constructor(desc: Desc, options?: ValidatorOptions) {
+  constructor(desc: Desc, options: ProtoFormOptions = {}) {
     this.desc = desc;
+    this.options = options;
     this.parsedSchema = parseProtoSchema(desc);
     this.standardSchema = createDescriptorAwareStandardSchema(desc, options);
   }
@@ -2262,7 +2345,8 @@ export class ProtoProvider<Desc extends DescMessage = DescMessage>
     const validationResult = validateProtoValues(
       this.desc,
       values,
-      this.standardSchema
+      this.standardSchema,
+      this.options
     );
     if (validationResult instanceof Promise) {
       return {

@@ -17,6 +17,7 @@ export type {
 } from '../../lib/form-types';
 
 import type { FieldWrapperProps, ParsedField, UiRenderable } from '../../lib/form-types';
+export { getFieldHints } from '../../lib/form-types';
 
 // ---------------------------------------------------------------------------
 // UI component contracts — AutoForm-specific wrapper and field props.
@@ -62,6 +63,6 @@ export type AutoFormFieldProps = {
   inputProps: Record<string, any>;
 };
 
-export type AutoFormFieldComponents = {
-  [key: string]: React.ComponentType<AutoFormFieldProps>;
-};
+export type AutoFormFieldComponents<TFieldType extends string = string> = {
+  fallback: React.ComponentType<AutoFormFieldProps>;
+} & Partial<Record<TFieldType, React.ComponentType<AutoFormFieldProps>>>;

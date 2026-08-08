@@ -12,7 +12,7 @@ import { createEmptyFieldValue, getFieldErrorMessage, getFieldUiConfig } from '.
 import { FormDepthProvider, useFormDepth } from '../layout-context';
 import { getAutoFormFieldTestId } from '../test-ids';
 import { AutoFormFieldRenderer } from './index';
-import { getRenderedLabel, useFieldPresentation } from './shared';
+import { getRenderedLabel, isDeprecatedField, isFieldHidden, useFieldPresentation } from './shared';
 
 export function OneofFieldRenderer({
   field,
@@ -24,7 +24,7 @@ export function OneofFieldRenderer({
   inheritedDisabled?: boolean;
 }) {
   const { uiComponents } = useAutoFormRenderContext();
-  const { evaluateRules } = useAutoFormRuntimeContext();
+  const { deprecatedFields, evaluateRules } = useAutoFormRuntimeContext();
   const form = useAutoFormEngine();
   const fullPath = path.join('.');
   const oneofValue = (getPathInObject(form.values, path) as { case?: string; value?: unknown } | undefined) ?? {
@@ -39,28 +39,41 @@ export function OneofFieldRenderer({
   const controlTestId = getAutoFormFieldTestId(testIdPrefix, fullPath, 'control');
   const depth = useFormDepth();
 
-  const availableFields = (field.schema ?? []).filter((candidate) => {
+  const ruleVisibleFields = (field.schema ?? []).filter((candidate) => {
     const candidateUi = getFieldUiConfig(candidate);
     const candidateValue = candidate.key === oneofValue.case ? oneofValue.value : undefined;
     return evaluateRules(candidateUi.visibleWhen, candidateValue);
   });
+  const availableFields = ruleVisibleFields.filter(
+    (candidate) => !isFieldHidden(candidate, deprecatedFields)
+  );
 
   const selectedField = availableFields.find((candidate) => candidate.key === oneofValue.case);
+  const selectedSchemaField = (field.schema ?? []).find(
+    (candidate) => candidate.key === oneofValue.case
+  );
+  const selectedDeprecatedDisabled =
+    deprecatedFields === 'disable' &&
+    selectedSchemaField !== undefined &&
+    isDeprecatedField(selectedSchemaField);
+  const oneofDisabled = isDisabled || selectedDeprecatedDisabled;
 
   React.useEffect(() => {
     if (!oneofValue.case) {
       return;
     }
 
-    const stillAvailable = availableFields.some((candidate) => candidate.key === oneofValue.case);
-    if (!stillAvailable) {
+    const stillVisibleByRule = ruleVisibleFields.some(
+      (candidate) => candidate.key === oneofValue.case
+    );
+    if (!stillVisibleByRule) {
       form.setValue(
         fullPath,
         { case: undefined, value: undefined },
         { shouldDirty: true, shouldTouch: true, shouldValidate: true }
       );
     }
-  }, [availableFields, form, fullPath, oneofValue.case]);
+  }, [form, fullPath, oneofValue.case, ruleVisibleFields]);
 
   if (!isVisible) {
     return null;
@@ -78,7 +91,7 @@ export function OneofFieldRenderer({
             })),
           ]}
           onValueChange={(value) => {
-            if (isDisabled) {
+            if (oneofDisabled) {
               return;
             }
             if (value === null) {
@@ -102,7 +115,7 @@ export function OneofFieldRenderer({
           }}
           value={oneofValue.case ?? null}
         >
-          <SelectTrigger aria-label={String(label)} disabled={isDisabled} id={fullPath} testId={controlTestId}>
+          <SelectTrigger aria-label={String(label)} disabled={oneofDisabled} id={fullPath} testId={controlTestId}>
             <SelectValue placeholder="Choose a field" />
           </SelectTrigger>
           <SelectContent>
@@ -116,6 +129,7 @@ export function OneofFieldRenderer({
             )}
             {availableFields.map((candidate) => (
               <SelectItem
+                disabled={deprecatedFields === 'disable' && isDeprecatedField(candidate)}
                 key={candidate.key}
                 testId={getAutoFormFieldTestId(testIdPrefix, fullPath, `option-${candidate.key}`)}
                 value={candidate.key}
@@ -138,7 +152,7 @@ export function OneofFieldRenderer({
             // by ObjectWrapper consistent with siblings reached via
             // plain nested-object paths.
             <FormDepthProvider depth={depth + 1}>
-              <AutoFormFieldRenderer field={selectedField} inheritedDisabled={isDisabled} path={[...path, 'value']} />
+              <AutoFormFieldRenderer field={selectedField} inheritedDisabled={oneofDisabled} path={[...path, 'value']} />
             </FormDepthProvider>
           )
         ) : null}

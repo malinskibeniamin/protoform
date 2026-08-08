@@ -24,7 +24,12 @@ import { AutoFormModeShell } from './mode-shell';
 import { getProtoMessageUiConfig, PROTO_FORM_ROOT_ERROR_KEY } from './proto';
 import { AutoFormFields } from './renderers';
 import { AutoFormRuntimeProvider } from './runtime-provider';
-import { mergeFieldOverrides, normalizeProtoInitialValues, resolveSchema } from './schema';
+import {
+  mergeFieldOverrides,
+  normalizeProtoInitialValues,
+  protoConversionOptionsFromFieldConfig,
+  resolveSchema,
+} from './schema';
 import { AutoFormStepPanel, fieldsForStep, initialStepIndex, validateSteps } from './stepper';
 import { buildAutoFormTestId, resolveAutoFormTestIdPrefix } from './test-ids';
 import type {
@@ -61,7 +66,11 @@ export type AutoFormEngineRender = (props: {
 export type AutoFormCoreProps<
   T extends Record<string, unknown>,
   TNativeForm,
-> = Omit<AutoFormProps<T, TNativeForm, never, never>, 'formOptions' | 'resolver'> & {
+  TCustomFieldType extends string = never,
+> = Omit<
+  AutoFormProps<T, TNativeForm, never, never, TCustomFieldType>,
+  'formOptions' | 'resolver'
+> & {
   renderEngine: AutoFormEngineRender;
 };
 
@@ -142,15 +151,23 @@ function renderModeContent({
   );
 }
 
-type AutoFormContentProps<T extends Record<string, unknown>, TNativeForm> = Omit<
-  AutoFormCoreProps<T, TNativeForm>,
+type AutoFormContentProps<
+  T extends Record<string, unknown>,
+  TNativeForm,
+  TCustomFieldType extends string,
+> = Omit<
+  AutoFormCoreProps<T, TNativeForm, TCustomFieldType>,
   'defaultValues' | 'renderEngine' | 'schema' | 'values'
 > & {
   engine: AutoFormEngine;
   resolvedSchema: ResolvedSchema;
 };
 
-function AutoFormContent<T extends Record<string, unknown>, TNativeForm>({
+function AutoFormContent<
+  T extends Record<string, unknown>,
+  TNativeForm,
+  TCustomFieldType extends string,
+>({
   engine,
   resolvedSchema,
   testId,
@@ -168,15 +185,18 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm>({
   renderSummary,
   fieldRegistry,
   dataProviders,
+  deprecatedFields = 'show',
   classifyField,
   payloadSchema,
   payloadBuilder,
   payloadParser,
   onFieldChange,
+  renderRootHeader,
+  rootHeader = 'auto',
   stepper,
   validationMode = 'submit',
   revalidationMode = 'change',
-}: AutoFormContentProps<T, TNativeForm>) {
+}: AutoFormContentProps<T, TNativeForm, TCustomFieldType>) {
   const testIdPrefix = resolveAutoFormTestIdPrefix(testId);
   const submitController = React.useRef<AbortController | undefined>(undefined);
   const validationController = React.useRef<AbortController | undefined>(undefined);
@@ -184,8 +204,13 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm>({
   const advancedFields = mergeFieldOverrides(resolvedSchema.parsedSchema.fields, fieldConfigOverrides);
   const simpleFields = deriveSimpleFields(advancedFields, classifyField);
   const protoMessageUi = resolvedSchema.protoDesc ? getProtoMessageUiConfig(resolvedSchema.protoDesc) : undefined;
+  const rootHeaderMetadata = {
+    description: protoMessageUi?.description,
+    title: protoMessageUi?.title,
+  };
   const mergedUiComponents = { ...ShadcnUIComponents, ...uiComponents };
   const mergedFormComponents = { ...ShadcnAutoFormFieldComponents, ...formComponents };
+  const conversionOptions = protoConversionOptionsFromFieldConfig(fieldConfigOverrides);
   const availableModes = normalizeModes(modes);
   const preferredMode = resolveInitialMode(availableModes, defaultMode);
   const [mode, setMode] = React.useState<AutoFormMode>(preferredMode);
@@ -494,7 +519,9 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm>({
     <TooltipProvider delayDuration={150} skipDelayDuration={0}>
       <AutoFormRuntimeProvider<TNativeForm>
         advancedFields={advancedFields}
+        conversionOptions={conversionOptions}
         dataProviders={dataProviders}
+        deprecatedFields={deprecatedFields}
         fieldRegistry={fieldRegistry}
         formComponents={mergedFormComponents}
         mode={mode}
@@ -521,7 +548,9 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm>({
               </Alert>
             ) : null}
 
-            {protoMessageUi?.title || protoMessageUi?.description ? (
+            {rootHeader === 'hidden' ? null : renderRootHeader ? (
+              renderRootHeader(rootHeaderMetadata)
+            ) : protoMessageUi?.title || protoMessageUi?.description ? (
               <header
                 className="space-y-1 border-border/60 border-b pb-4"
                 data-testid={`${testIdPrefix}-root-header`}
@@ -565,14 +594,19 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm>({
   );
 }
 
-function AutoFormCoreInner<T extends Record<string, unknown>, TNativeForm>({
+function AutoFormCoreInner<
+  T extends Record<string, unknown>,
+  TNativeForm,
+  TCustomFieldType extends string,
+>({
   schema,
   defaultValues,
   values,
   renderEngine,
   ...props
-}: AutoFormCoreProps<T, TNativeForm>) {
-  const resolvedSchema = resolveSchema(schema);
+}: AutoFormCoreProps<T, TNativeForm, TCustomFieldType>) {
+  const conversionOptions = protoConversionOptionsFromFieldConfig(props.fieldConfig);
+  const resolvedSchema = resolveSchema(schema, conversionOptions);
   const providerDefaults = resolvedSchema.provider.getDefaultValues();
   const initialDefaultValues =
     resolvedSchema.isProto && resolvedSchema.protoDesc
@@ -591,7 +625,7 @@ function AutoFormCoreInner<T extends Record<string, unknown>, TNativeForm>({
     defaultValues: initialDefaultValues,
     values: controlledValues,
     children: (engine) => (
-      <AutoFormContent<T, TNativeForm>
+      <AutoFormContent<T, TNativeForm, TCustomFieldType>
         {...props}
         engine={engine}
         resolvedSchema={resolvedSchema}
@@ -625,8 +659,12 @@ class AutoFormErrorBoundary extends React.Component<{ children: React.ReactNode 
   }
 }
 
-export function AutoFormCore<T extends Record<string, unknown>, TNativeForm>(
-  props: AutoFormCoreProps<T, TNativeForm>
+export function AutoFormCore<
+  T extends Record<string, unknown>,
+  TNativeForm,
+  TCustomFieldType extends string = never,
+>(
+  props: AutoFormCoreProps<T, TNativeForm, TCustomFieldType>
 ) {
   const schemaRef = React.useRef(props.schema);
   const [schemaKey, setSchemaKey] = React.useState(0);

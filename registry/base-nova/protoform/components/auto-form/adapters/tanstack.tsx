@@ -17,6 +17,7 @@ import {
   AutoFormEngineProvider,
   type AutoFormFieldController,
   errorMessages,
+  useDirtyStateNotification,
 } from '../engine';
 import { getPathInObject } from '../field-utils';
 
@@ -212,11 +213,46 @@ function dirtyFieldsFromMeta(
   return dirtyFields;
 }
 
+function formValuesEqual(left: unknown, right: unknown): boolean {
+  if (Object.is(left, right)) {
+    return true;
+  }
+  if (!left || !right || typeof left !== 'object' || typeof right !== 'object') {
+    return false;
+  }
+  if (left instanceof Date && right instanceof Date) {
+    return left.getTime() === right.getTime();
+  }
+  if (left instanceof Map && right instanceof Map) {
+    if (left.size !== right.size) {
+      return false;
+    }
+    return [...left].every(
+      ([key, value]) => right.has(key) && formValuesEqual(value, right.get(key))
+    );
+  }
+  if (left instanceof Set && right instanceof Set) {
+    return left.size === right.size && [...left].every((value) => right.has(value));
+  }
+
+  const leftRecord = left as Record<string, unknown>;
+  const rightRecord = right as Record<string, unknown>;
+  const leftKeys = Object.keys(leftRecord);
+  const rightKeys = Object.keys(rightRecord);
+  return (
+    leftKeys.length === rightKeys.length &&
+    leftKeys.every(
+      (key) => Object.hasOwn(rightRecord, key) && formValuesEqual(leftRecord[key], rightRecord[key])
+    )
+  );
+}
+
 export type TanStackEngineProps = {
   children: (engine: AutoFormEngine) => React.ReactNode;
   defaultValues: FormValues;
   formOptions?: TanStackFormOptions;
   values?: FormValues;
+  onDirtyChange?: (isDirty: boolean) => void;
 };
 
 export function TanStackEngine({
@@ -224,9 +260,11 @@ export function TanStackEngine({
   defaultValues,
   formOptions,
   values,
+  onDirtyChange,
 }: TanStackEngineProps) {
   const submitRef = React.useRef<((values: FormValues) => void | Promise<void>) | undefined>(undefined);
   const nativeSubmissionRef = React.useRef<TanStackSubmitPayload | undefined>(undefined);
+  const formDefaultValuesRef = React.useRef(defaultValues);
   const nativeOnSubmit = formOptions?.onSubmit;
   const form = useForm<
     FormValues,
@@ -243,17 +281,21 @@ export function TanStackEngine({
     unknown
   >({
     ...(formOptions ?? {}),
-    defaultValues,
+    defaultValues: formDefaultValuesRef.current,
     onSubmit: async (submission) => {
       nativeSubmissionRef.current = submission;
       await submitRef.current?.(submission.value);
     },
   });
   const state = useStore(form.store, (current) => current);
+  const cleanValuesRef = React.useRef<FormValues>(defaultValues);
   const [validationErrors, setValidationErrors] = React.useState<SchemaValidationError[]>([]);
   const [submitError, setSubmitError] = React.useState<string>();
   const fieldRefs = React.useRef(new Map<string, HTMLElement>());
   const fieldErrors = validationErrorsByPath(validationErrors);
+  const dirtyFields = dirtyFieldsFromMeta(state.fieldMeta);
+  const isDirty = !formValuesEqual(state.values, cleanValuesRef.current);
+  const notifyDirtyChange = useDirtyStateNotification(isDirty, onDirtyChange);
   const errors: Record<string, unknown> = {};
   for (const [path, meta] of Object.entries(state.fieldMeta)) {
     const messages = errorMessages(meta?.errors ?? []);
@@ -273,7 +315,10 @@ export function TanStackEngine({
 
   React.useEffect(() => {
     if (values) {
-      form.reset(values, { keepDefaultValues: true });
+      formDefaultValuesRef.current = values;
+      cleanValuesRef.current = values;
+      form.reset(values);
+      notifyDirtyChange(false);
     }
   }, [form, values]);
 
@@ -306,8 +351,8 @@ export function TanStackEngine({
     ArrayController: TanStackArrayController,
     FieldController: TanStackFieldController,
     clearErrors,
-    defaultValues,
-    dirtyFields: dirtyFieldsFromMeta(state.fieldMeta),
+    defaultValues: cleanValuesRef.current,
+    dirtyFields,
     errors,
     focus: (path) => fieldRefs.current.get(path)?.focus(),
     getFieldInvalid: (path) =>
@@ -318,9 +363,23 @@ export function TanStackEngine({
       submitRef.current = onValid;
       void form.handleSubmit();
     },
+    isDirty,
     isSubmitting: state.isSubmitting,
+    markClean: () => {
+      const currentValues = form.state.values;
+      formDefaultValuesRef.current = currentValues;
+      cleanValuesRef.current = currentValues;
+      form.reset(currentValues);
+      notifyDirtyChange(false);
+    },
     nativeForm: form,
-    reset: (nextValues, options) => form.reset(nextValues, options),
+    reset: (nextValues, options) => {
+      if (!options?.keepDefaultValues) {
+        formDefaultValuesRef.current = nextValues;
+        cleanValuesRef.current = nextValues;
+      }
+      form.reset(nextValues, options);
+    },
     rootError,
     runNativeSubmit: nativeOnSubmit
       ? async () => {

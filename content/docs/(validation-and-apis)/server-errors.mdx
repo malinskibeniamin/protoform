@@ -96,8 +96,9 @@ const form = useProtoForm(NotificationSchema, {
 
 Protoform strips the exact prefix, walks the protobuf descriptor, converts protobuf `snake_case` names
 to TypeScript `camelCase`, and flattens oneof branches under `{oneofLocalName}.value`. It focuses the
-first mapped field and adds every mapped violation with React Hook Form error type `server`. An empty
-description falls back to `Invalid value.`
+first mapped field and adds every mapped violation with React Hook Form error type `server`. Generic
+Protovalidate descriptions use the same actionable copy as client validation, while an empty
+description falls back to `Review this value and try again.`
 
 Unknown fields stay in `unmapped`. Bracket-indexed repeated and map paths such as
 `contacts[0].email` are also currently unmapped because the mapper resolves descriptor field segments,

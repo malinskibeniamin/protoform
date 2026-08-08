@@ -1,5 +1,6 @@
 import type { AutoFormFieldComponents } from '../core-types';
 import { FieldTypeRegistry } from '../registry';
+import type { FieldTypes } from '../types';
 import {
   booleanFieldDefinition,
   checkboxFieldDefinition,
@@ -33,7 +34,9 @@ import { urlFieldDefinition } from './url';
 // Default registry with all built-in field types
 // ---------------------------------------------------------------------------
 
-export const defaultRegistry = new FieldTypeRegistry()
+export const defaultRegistry = new FieldTypeRegistry<FieldTypes>();
+
+defaultRegistry
   // Data-provider-annotated fields win over every default matcher — the
   // annotation is an explicit instruction from proto, overriding the
   // string/email/etc. fallbacks.
@@ -115,9 +118,10 @@ export const AutoFormFieldComponentRegistry = {
   duration: durationFieldDefinition.component,
   fieldMask: fieldMaskFieldDefinition.component,
   json: jsonFieldDefinition.component,
+  'dropzone-json': jsonFieldDefinition.component,
   keyValue: keyValueFieldDefinition.component,
   fallback: MissingFieldComponent,
-} satisfies AutoFormFieldComponents;
+} satisfies AutoFormFieldComponents<FieldTypes>;
 
 // ---------------------------------------------------------------------------
 // Re-exports

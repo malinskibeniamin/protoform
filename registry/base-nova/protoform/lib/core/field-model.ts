@@ -47,6 +47,9 @@ export interface FormValues {
   [field: string]: unknown;
 }
 
+/** How protobuf conversion treats empty entries in a repeated string field. */
+export type EmptyRepeatedStringPolicy = "discard" | "preserve";
+
 /**
  * Render-driving metadata, independent of any schema system.
  * Everything here answers "how should this field look and behave",
@@ -62,12 +65,16 @@ export interface FieldRenderHints {
   control?: string;
   /** Named data source id for dropdown-style controls. */
   dataProvider?: string;
+  /** The schema marks this field as deprecated. */
+  deprecated?: boolean;
   /** Concise one-liner shown below the input. */
   description?: string;
   disabledWhen?: UiRule[];
   docsUrl?: string;
   /** Enable file drag-and-drop into the field value. */
   dropzone?: boolean;
+  /** Keep blank repeated-string rows instead of discarding them during conversion. */
+  emptyRepeatedStringPolicy?: EmptyRepeatedStringPolicy;
   example?: string;
   /** Detailed help text (tooltip). */
   help?: string;
@@ -99,6 +106,8 @@ export interface FieldConfig<
 > {
   customData?: CustomData;
   description?: Renderable;
+  /** Keep blank repeated-string rows instead of discarding them during conversion. */
+  emptyRepeatedStringPolicy?: EmptyRepeatedStringPolicy;
   fieldType?: FieldTypes;
   inputProps?: InputProps;
   label?: Renderable;

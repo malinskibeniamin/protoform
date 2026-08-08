@@ -1,5 +1,6 @@
 export {
   type FieldConfig,
+  type EmptyRepeatedStringPolicy,
   type FieldRenderHints,
   type FormValues,
   getFieldHints,

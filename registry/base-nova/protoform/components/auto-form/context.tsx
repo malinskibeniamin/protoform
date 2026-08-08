@@ -5,6 +5,7 @@ import type { DataProviderRegistry } from './data-providers';
 import { getPathInObject } from './field-utils';
 import type { FieldTypeRegistry } from './registry';
 import type { AutoFormUiRule } from './types';
+import type { DeprecatedFieldPolicy } from './types';
 
 export type AutoFormContextValue = {
   uiComponents: AutoFormUIComponents;
@@ -13,8 +14,9 @@ export type AutoFormContextValue = {
   evaluateRules: (rules: AutoFormUiRule[] | undefined, fieldValue?: unknown) => boolean;
   getFieldUiConfig: (field: ParsedField) => Record<string, unknown>;
   testIdPrefix: string;
-  fieldRegistry?: FieldTypeRegistry;
+  fieldRegistry?: FieldTypeRegistry<string>;
   dataProviders?: DataProviderRegistry;
+  deprecatedFields: DeprecatedFieldPolicy;
 };
 
 export const AutoFormContext = React.createContext<AutoFormContextValue | null>(null);
@@ -47,7 +49,7 @@ export function useAutoFormField(path: string[]) {
 export type InternalAutoFormRenderContextValue = Pick<AutoFormContextValue, 'uiComponents' | 'formComponents'>;
 export type InternalAutoFormRuntimeContextValue = Pick<
   AutoFormContextValue,
-  'formValues' | 'evaluateRules' | 'getFieldUiConfig' | 'testIdPrefix'
+  'deprecatedFields' | 'formValues' | 'evaluateRules' | 'getFieldUiConfig' | 'testIdPrefix'
 >;
 
 export const AutoFormRenderContext = AutoFormContext;

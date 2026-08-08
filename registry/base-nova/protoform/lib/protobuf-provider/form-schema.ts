@@ -1,13 +1,13 @@
 import type { DescMessage, MessageValidType } from "@bufbuild/protobuf";
-import {
-  type ValidatorOptions,
-} from "@bufbuild/protovalidate";
 import type {
   FormValues,
   StandardSchemaV1,
 } from "../core/index.js";
 
-import { validateFormValuesAgainstProtoSchema } from "./provider.js";
+import {
+  type ProtoFormOptions,
+  validateFormValuesAgainstProtoSchema,
+} from "./provider.js";
 import { createDescriptorAwareStandardSchema } from "./validation-schema.js";
 
 function isFormValueObject(value: unknown): value is FormValues {
@@ -29,7 +29,7 @@ export function createProtoFormSchema<
   Desc extends DescMessage = DescMessage,
 >(
   desc: Desc,
-  options?: ValidatorOptions
+  options: ProtoFormOptions = {}
 ): StandardSchemaV1<Input, MessageValidType<Desc>> {
   const messageSchema = createDescriptorAwareStandardSchema(desc, options);
 
@@ -43,7 +43,12 @@ export function createProtoFormSchema<
             ],
           };
         }
-        return validateFormValuesAgainstProtoSchema(desc, value, messageSchema);
+        return validateFormValuesAgainstProtoSchema(
+          desc,
+          value,
+          messageSchema,
+          options
+        );
       },
       vendor: "protoform",
       version: 1,

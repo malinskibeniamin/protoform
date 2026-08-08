@@ -26,6 +26,8 @@ export type AutoFormEngineHandle = {
   clearErrors: (paths?: string[]) => void;
   focus: (path: string) => void;
   getValues: () => Record<string, unknown>;
+  /** Establish the current values as the new clean baseline. */
+  markClean: () => void;
   reset: (values: Record<string, unknown>, options?: { keepDefaultValues?: boolean }) => void;
   setValue: (
     path: string,
@@ -51,6 +53,7 @@ export type AutoFormEngine = AutoFormEngineHandle & {
     onValid: (values: Record<string, unknown>) => void | Promise<void>
   ) => React.FormEventHandler<HTMLFormElement>;
   isSubmitting: boolean;
+  isDirty: boolean;
   nativeForm: unknown;
   rootError: string | undefined;
   runNativeSubmit?: () => void | Promise<void>;
@@ -100,4 +103,27 @@ export function errorMessage(value: unknown): string | undefined {
 
 export function errorMessages(values: unknown[]): string[] {
   return values.map(errorMessage).filter((message): message is string => Boolean(message));
+}
+
+export function useDirtyStateNotification(
+  isDirty: boolean,
+  onDirtyChange: ((isDirty: boolean) => void) | undefined
+) {
+  const callbackRef = React.useRef(onDirtyChange);
+  const lastNotificationRef = React.useRef<boolean | undefined>(undefined);
+  callbackRef.current = onDirtyChange;
+
+  function notifyDirtyChange(nextIsDirty: boolean) {
+    if (lastNotificationRef.current === nextIsDirty) {
+      return;
+    }
+    lastNotificationRef.current = nextIsDirty;
+    callbackRef.current?.(nextIsDirty);
+  }
+
+  React.useEffect(() => {
+    notifyDirtyChange(isDirty);
+  }, [isDirty]);
+
+  return notifyDirtyChange;
 }

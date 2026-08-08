@@ -16,8 +16,10 @@ import type {
   Renderable,
 } from '../core';
 import type { ComponentType, ReactNode } from 'react';
+export { getFieldHints } from '../core';
 
 export type {
+  EmptyRepeatedStringPolicy,
   FieldRenderHints,
   FormValues,
   InputProps,

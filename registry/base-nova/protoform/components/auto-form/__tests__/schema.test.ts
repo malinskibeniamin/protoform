@@ -5,9 +5,23 @@ import '@/registry/base-nova/protoform/lib/protobuf-provider/auto-form-example-a
 import { AutoFormExampleSchema } from '@/registry/base-nova/protoform/lib/protobuf-provider/gen/auto-form-example_pb';
 
 import { createMockProvider } from './test-utils';
-import { resolveSchema } from '../schema';
+import { protoConversionOptionsFromFieldConfig, resolveSchema } from '../schema';
 
 describe('resolveSchema', () => {
+  it('maps per-field repeated-string policies to descriptor paths', () => {
+    expect(
+      protoConversionOptionsFromFieldConfig({
+        aliases: { emptyRepeatedStringPolicy: 'preserve' },
+        name: {},
+        'settings.labels': { emptyRepeatedStringPolicy: 'discard' },
+      })
+    ).toEqual({
+      emptyRepeatedStringPolicies: {
+        aliases: 'preserve',
+        'settings.labels': 'discard',
+      },
+    });
+  });
   it('throws for unsupported input types', () => {
     expect(() => resolveSchema('not a schema' as never)).toThrow('Unsupported AutoForm schema input');
     expect(() => resolveSchema(42 as never)).toThrow('Unsupported');

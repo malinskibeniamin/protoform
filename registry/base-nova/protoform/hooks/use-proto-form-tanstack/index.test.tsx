@@ -91,8 +91,16 @@ describe('TanStack useProtoForm', () => {
         value: {
           fieldViolations: [
             {
-              description: 'Use an approved email address.',
+              description: 'value is required',
               field: 'primary_email',
+            },
+            {
+              description: 'must contain at least 1 item(s)',
+              field: 'tags',
+            },
+            {
+              description: '   ',
+              field: 'homepage_url',
             },
           ],
         },
@@ -107,7 +115,13 @@ describe('TanStack useProtoForm', () => {
     expect(mapped?.handled).toBe(true);
     expect(mapped?.unmapped).toEqual([]);
     expect(result.current.getAllErrors().fields.primaryEmail?.errors).toContain(
-      'Use an approved email address.'
+      'Enter a value.'
+    );
+    expect(result.current.getAllErrors().fields.tags?.errors).toContain(
+      'Add at least one item.'
+    );
+    expect(result.current.getAllErrors().fields.homepageUrl?.errors).toContain(
+      'Review this value and try again.'
     );
   });
 

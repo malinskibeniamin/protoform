@@ -182,6 +182,21 @@ describe("useProtoForm — update mask", () => {
 // ---------------------------------------------------------------------------
 
 describe("useProtoForm — createMessage", () => {
+  it("preserves configured empty repeated strings", () => {
+    const { result } = renderHook(() =>
+      useProtoForm(AutoFormExampleSchema, {
+        defaultValues: defaults({ tags: ["alpha", "", "omega"] }),
+        emptyRepeatedStringPolicies: { tags: "preserve" },
+      })
+    );
+
+    expect(result.current.createMessage().tags).toEqual([
+      "alpha",
+      "",
+      "omega",
+    ]);
+  });
+
   it("preserves unknown fields from parsed default values", async () => {
     const originalBytes = toBinary(
       AutoFormExampleSchema,

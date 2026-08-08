@@ -6,15 +6,20 @@ import type { Resolver, UseFormProps, UseFormReturn } from 'react-hook-form';
 import { ReactHookFormEngine } from './adapters/react-hook-form';
 import { AutoFormCore } from './auto-form-core';
 import { isProtoMessageDescriptor, isProtoProvider } from './proto';
+import { protoConversionOptionsFromFieldConfig } from './schema';
 import type { AutoFormProps as BaseAutoFormProps } from './types';
 
 type FormValues = Record<string, unknown>;
 
-export type AutoFormProps<T extends FormValues = FormValues> = BaseAutoFormProps<
+export type AutoFormProps<
+  T extends FormValues = FormValues,
+  TCustomFieldType extends string = never,
+> = BaseAutoFormProps<
   T,
   UseFormReturn<FormValues, unknown, T>,
   UseFormProps<FormValues, unknown, T>,
-  Resolver<FormValues, unknown, T>
+  Resolver<FormValues, unknown, T>,
+  TCustomFieldType
 >;
 
 export {
@@ -32,29 +37,39 @@ export { AutoFormSlot } from './slot';
 export type {
   AutoFormMode,
   AutoFormRevalidationMode,
+  AutoFormRootHeaderMetadata,
+  AutoFormRootHeaderMode,
   AutoFormStep,
   AutoFormStepperConfig,
   AutoFormStepperOrientation,
   AutoFormSubmitContext,
   AutoFormValidationMode,
+  BuiltInFieldType,
+  DeprecatedFieldPolicy,
   FieldTypes,
 } from './types';
 export { ShadcnAutoFormFieldComponents } from './auto-form-core';
+export type { AutoFormFieldComponents, AutoFormFieldProps } from './core-types';
+export type { AutoFormEngineHandle } from './engine';
 
-export function AutoForm<T extends FormValues = FormValues>({
+export function AutoForm<
+  T extends FormValues = FormValues,
+  TCustomFieldType extends string = never,
+>({
   formOptions,
   resolver,
   ...props
-}: AutoFormProps<T>) {
+}: AutoFormProps<T, TCustomFieldType>) {
   const protoDescriptor = isProtoMessageDescriptor(props.schema)
     ? props.schema
     : isProtoProvider(props.schema)
       ? props.schema.getMessageDescriptor()
       : undefined;
+  const conversionOptions = protoConversionOptionsFromFieldConfig(props.fieldConfig);
   const resolvedResolver =
     resolver ??
     (protoDescriptor
-      ? (createProtoResolver(protoDescriptor) as unknown as Resolver<FormValues, unknown, T>)
+      ? (createProtoResolver(protoDescriptor, conversionOptions) as unknown as Resolver<FormValues, unknown, T>)
       : undefined);
   const engineOptions: UseFormProps<FormValues, unknown, T> = {
     ...(formOptions ?? {}),
@@ -77,12 +92,13 @@ export function AutoForm<T extends FormValues = FormValues>({
   };
 
   return (
-    <AutoFormCore<T, UseFormReturn<FormValues, unknown, T>>
+    <AutoFormCore<T, UseFormReturn<FormValues, unknown, T>, TCustomFieldType>
       {...props}
       renderEngine={({ children, defaultValues, values }) => (
         <ReactHookFormEngine<T>
           defaultValues={defaultValues}
           formOptions={engineOptions}
+          onDirtyChange={props.onDirtyChange}
           resolver={resolvedResolver}
           values={values}
         >

@@ -1,4 +1,5 @@
 import { create } from '@bufbuild/protobuf';
+import { FieldOptionsSchema } from '@bufbuild/protobuf/wkt';
 import { describe, expect, it } from 'vitest';
 
 import './auto-form-example-annotations';
@@ -20,7 +21,7 @@ import { createProtoResolver } from '../../hooks/use-proto-form';
 
 const MESSAGE_LEVEL_ERROR = /minimum threshold must be less than or equal to maximum threshold/i;
 const DATETIME_LOCAL_VALUE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;
-const REQUIRED_FIELD_ERROR = /required/i;
+const REQUIRED_FIELD_ERROR = /enter a value/i;
 
 function buildValidProtoFormValues() {
   return {
@@ -68,6 +69,26 @@ function buildValidProtoFormValues() {
 }
 
 describe('protobuf-provider', () => {
+  it('exposes descriptor deprecation through provider data and render hints', () => {
+    const username = AutoFormExampleSchema.fields.find(
+      (field) => field.localName === 'username'
+    );
+    expect(username).toBeDefined();
+    if (!username) {
+      return;
+    }
+    const originalOptions = username.proto.options;
+    username.proto.options = create(FieldOptionsSchema, { deprecated: true });
+
+    try {
+      const parsed = parseProtoSchema(AutoFormExampleSchema);
+      const field = parsed.fields.find((candidate) => candidate.key === 'username');
+      expect(field?.hints?.deprecated).toBe(true);
+      expect(getProtoFieldCustomData(field)?.deprecated).toBe(true);
+    } finally {
+      username.proto.options = originalOptions;
+    }
+  });
   it('parses enums and oneofs into autoform-friendly fields', () => {
     const parsedSchema = parseProtoSchema(AutoFormExampleSchema);
     const accessTierField = parsedSchema.fields.find((field) => field.key === 'accessTier');

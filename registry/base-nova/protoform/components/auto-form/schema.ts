@@ -1,7 +1,14 @@
 import type { ParsedField, SchemaProvider } from './core-types';
+import type { ProtoConversionOptions } from '../../lib/protobuf-provider';
 import { sortFieldsByOrder } from './field-utils';
 import { isProtoMessageDescriptor, isProtoProvider, ProtoProvider } from './proto';
-import type { AutoFormSchemaInput, FieldConfigMap, RenderFieldConfig, ResolvedSchema } from './types';
+import type {
+  AutoFormSchemaInput,
+  FieldConfigMap,
+  FieldTypes,
+  RenderFieldConfig,
+  ResolvedSchema,
+} from './types';
 
 function isSchemaProvider(value: unknown): value is SchemaProvider<Record<string, unknown>> {
   return Boolean(
@@ -19,7 +26,8 @@ function isSchemaProvider(value: unknown): value is SchemaProvider<Record<string
 export { normalizeProtoInitialValues } from './proto';
 
 export function resolveSchema<T extends Record<string, unknown>>(
-  schemaInput: AutoFormSchemaInput<T>
+  schemaInput: AutoFormSchemaInput<T>,
+  conversionOptions: ProtoConversionOptions = {}
 ): ResolvedSchema {
   if (isSchemaProvider(schemaInput)) {
     const provider = schemaInput as SchemaProvider<Record<string, unknown>>;
@@ -43,7 +51,7 @@ export function resolveSchema<T extends Record<string, unknown>>(
   }
 
   if (isProtoMessageDescriptor(schemaInput)) {
-    const provider = new ProtoProvider(schemaInput);
+    const provider = new ProtoProvider(schemaInput, conversionOptions);
     return {
       provider,
       parsedSchema: provider.parseSchema(),
@@ -55,11 +63,26 @@ export function resolveSchema<T extends Record<string, unknown>>(
   throw new Error('Unsupported AutoForm schema input. Pass a SchemaProvider or a Buf message descriptor.');
 }
 
-export function mergeFieldOverrides(
+export function protoConversionOptionsFromFieldConfig<TCustom extends string>(
+  fieldConfig: FieldConfigMap<TCustom> | undefined
+): ProtoConversionOptions {
+  const emptyRepeatedStringPolicies = Object.fromEntries(
+    Object.entries(fieldConfig ?? {}).flatMap(([path, config]) =>
+      config.emptyRepeatedStringPolicy
+        ? [[path, config.emptyRepeatedStringPolicy] as const]
+        : []
+    )
+  );
+  return Object.keys(emptyRepeatedStringPolicies).length > 0
+    ? { emptyRepeatedStringPolicies }
+    : {};
+}
+
+export function mergeFieldOverrides<TCustom extends string = never>(
   fields: ParsedField[] | undefined,
-  overrides: FieldConfigMap | undefined,
+  overrides: FieldConfigMap<TCustom> | undefined,
   path: string[] = []
-): ParsedField[] {
+): ParsedField<FieldTypes<TCustom>>[] {
   if (!fields) {
     return [];
   }
@@ -68,21 +91,21 @@ export function mergeFieldOverrides(
     fields.map((field) => {
       const fieldPath = [...path, field.key].join('.');
       const override = overrides?.[fieldPath];
-      const existingConfig = (field.fieldConfig ?? {}) as RenderFieldConfig;
-      const mergedFieldConfig: ParsedField['fieldConfig'] = override
+      const existingConfig = field.fieldConfig as RenderFieldConfig<TCustom> | undefined;
+      const mergedFieldConfig: RenderFieldConfig<TCustom> | undefined = override
         ? ({
-            ...existingConfig,
+            ...(existingConfig ?? {}),
             ...override,
             inputProps: {
-              ...(existingConfig.inputProps ?? {}),
+              ...(existingConfig?.inputProps ?? {}),
               ...(override.inputProps ?? {}),
             },
             customData: {
-              ...(existingConfig.customData ?? {}),
+              ...(existingConfig?.customData ?? {}),
               ...(override.customData ?? {}),
             },
-          } as ParsedField['fieldConfig'])
-        : field.fieldConfig;
+          } as RenderFieldConfig<TCustom>)
+        : existingConfig;
 
       const nextSchema = field.schema?.length
         ? mergeFieldOverrides(field.schema, overrides, [...path, field.key])
@@ -92,7 +115,7 @@ export function mergeFieldOverrides(
         ...field,
         fieldConfig: mergedFieldConfig,
         schema: nextSchema,
-      };
+      } as ParsedField<FieldTypes<TCustom>>;
     })
   );
 }
