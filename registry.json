@@ -45,7 +45,6 @@
         "@bufbuild/protobuf",
         "@connectrpc/connect",
         "@connectrpc/connect-query",
-        "@connectrpc/connect-web",
         "@tanstack/react-query",
         "react-hook-form"
       ],

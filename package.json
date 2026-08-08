@@ -4,15 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "blume dev --port 55011",
-    "build": "blume build --strict && bun run build:server",
-    "build:server": "bun build scripts/production-server.ts --target=node --outfile=dist/production-server.mjs",
-    "start": "node ./dist/production-server.mjs",
+    "build": "bun run registry:build && blume build --strict",
+    "start": "blume preview --host 0.0.0.0 --port 8080",
     "docs:blume:dev": "blume dev --port 55011",
     "docs:blume:build": "blume build --strict",
     "docs:blume:audit": "blume audit --fail-on error",
     "docs:blume:check": "blume check --strict --isolated",
     "docs:blume:doctor": "blume doctor",
-    "docs:blume:e2e": "blume build --strict --isolated && HOST=127.0.0.1 PORT=55013 node .blume-verify/dist/server/entry.mjs",
+    "docs:blume:e2e": "blume build --strict --isolated && astro preview --root .blume-verify --host 127.0.0.1 --port 55013",
     "docs:blume:eval": "blume eval --agent codex --threshold 1 --timeout 45",
     "docs:blume:validate": "blume validate",
     "examples:dev": "bun run --parallel examples:server dev",
@@ -70,7 +69,6 @@
     "@connectrpc/validate": "^0.2.0",
     "@fastify/cors": "^11.3.0",
     "@hookform/resolvers": "^5.5.7",
-    "@modelcontextprotocol/sdk": "^1.30.0",
     "@orama/orama": "^3.1.18",
     "@standard-schema/spec": "^1.1.0",
     "@tanstack/react-form": "^1.33.2",
@@ -150,8 +148,5 @@
     "tar": "7.5.22",
     "undici": "8.9.0",
     "ws": "8.21.1"
-  },
-  "patchedDependencies": {
-    "blume@1.2.1": "patches/blume@1.2.1.patch"
   }
 }

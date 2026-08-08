@@ -1,6 +1,6 @@
 ---
 title: LLM migration playbook
-description: Give coding agents typed Protoform context, discover focused form examples through MCP, and review generated protobuf migrations safely.
+description: Give coding agents typed Protoform context, discover focused form examples through static documentation, and review generated protobuf migrations safely.
 ---
 
 Protoform ships a migration prompt generator because schema migrations are often safer when an LLM does the repetitive mapping and a human reviews the contract.
@@ -10,10 +10,9 @@ For Yup, complete the transform, presence, conditional-rule, and asynchronous-te
 
 ## Connect an agent
 
-Use `/llms.txt` for the compact documentation map, `/llms-full.txt` for the complete corpus, or
-connect an MCP client to `/mcp`. MCP clients should call `search_docs` first, then pass the returned
-route directly to `get_page`. Focused demo pages return the same copyable source shown in their
-Preview and Code tabs.
+Use `/llms.txt` for the compact documentation map or `/llms-full.txt` for the complete corpus.
+Focused demo pages also expose raw Markdown by adding `.md` to their URL, including the same
+copyable source shown in their Preview and Code tabs.
 
 Protoform keeps React Hook Form as the default while making interoperability examples explicit:
 

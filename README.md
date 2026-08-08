@@ -105,9 +105,9 @@ bun run lint
 bun run build
 ```
 
-`bun run dev` serves the Blume docs. `bun run examples:server` starts the ConnectRPC example service
-for local development. Production runs both behind one same-origin deployment so the browser calls
-the demo API without cross-origin configuration.
+`bun run dev` serves the Blume docs. The hosted examples use in-browser Connect transports, so the
+production docs and registry deploy as one static artifact. `bun run examples:server` remains
+available for real-network integration testing during local development.
 
 CI validates documentation deterministically through Blume build, audit, and type-check commands.
 The AI-assisted `bun run docs:blume:eval` command remains available as an optional local maintainer

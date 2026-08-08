@@ -27,7 +27,7 @@ gitleaks git . --log-opts="--remotes=origin" --redact
 - [ ] `bun install --frozen-lockfile` succeeds on a clean checkout.
 - [ ] `bun run release:gate` passes, including unit, integration, browser, end-to-end, docs,
   conformance, build, type, lint, registry consumer, and dependency-audit checks.
-- [ ] `docker build -f Dockerfile.docs .` succeeds and its `/api/health` health check becomes healthy.
+- [ ] `bun run build` succeeds and produces `dist/docs/index.html` plus `dist/r/protoform.json`.
 - [ ] GitHub Actions billing is healthy and `CI` and `Quality Gate` have successful runs.
 - [ ] Required actions remain pinned to reviewed full commit SHAs.
 - [ ] Dependabot is enabled for Bun packages, Actions, and the docs container.

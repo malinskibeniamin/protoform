@@ -1,45 +1,80 @@
 ---
 title: Deployment
-description: Run the docs, public registry, and live bookstore API from one portable container.
+description: Publish the docs and current source registry together on Cloudflare Pages.
 ---
 
-Protoform needs one deployment, not an npm registry. The production image serves:
+Protoform deploys as one static artifact:
 
 - Blume documentation under `/docs`;
 - built shadcn registry JSON under `/r`;
-- the bookstore ConnectRPC service under `/api`.
+- interactive examples backed by in-browser Connect transports.
 
-The public gateway keeps the browser and RPC API on the same origin. It strips `/api` before
-forwarding to the internal Connect server and forwards every other path to Blume.
+The static deployment has no application server, accounts, database, or cold starts. The bookstore
+keeps its temporary state in the browser and resets when the page reloads.
 
-Set `PUBLIC_ORIGIN` to the external HTTP or HTTPS origin. This keeps forwarded host and protocol
-metadata correct behind a TLS-terminating platform proxy. The container health check probes the live
-Connect service through `/api/health` and the rendered documentation through `/docs`.
+## Deploy with Cloudflare Pages
 
-```bash
-docker build -f Dockerfile.docs -t protoform .
-docker run --rm -p 8080:8080 -e PUBLIC_ORIGIN=http://localhost:8080 protoform
+Import `malinskibeniamin/protoform` as a Pages project and use these settings:
+
+| Setting | Value |
+| --- | --- |
+| Production branch | `main` |
+| Build command | `bun run build` |
+| Build output directory | `dist` |
+| Root directory | repository root |
+
+Pin the toolchain under **Settings → Environment variables**:
+
+| Variable | Value |
+| --- | --- |
+| `BUN_VERSION` | `1.3.14` |
+
+Cloudflare rebuilds the site after each push to `main`. If the Pages project is named `protoform`,
+the public endpoints are:
+
+```text
+https://protoform.pages.dev/docs
+https://protoform.pages.dev/r/{name}.json
+https://protoform.pages.dev/r/protoform.json
 ```
 
-Open `http://localhost:8080/docs/bookstore`. The same image can run on any service that accepts an
-OCI container and provides a `PORT`; it does not require a specific host or Protoform-owned domain.
+Configure shadcn to install current source from the Pages deployment:
 
-## Demo state
+```json
+{
+  "registries": {
+    "@protoform": "https://protoform.pages.dev/r/{name}.json"
+  }
+}
+```
 
-The bookstore is intentionally temporary:
+```bash
+bunx shadcn@latest add @protoform/protoform
+```
 
-- each browser gets a random publisher ID in session storage;
-- data is isolated by that parent resource;
-- idle libraries expire after 30 minutes;
-- the process keeps at most 500 libraries and 20 books per library;
-- restarting the deployment resets everything.
+Use the actual `*.pages.dev` hostname shown by Cloudflare if `protoform.pages.dev` is unavailable.
+A custom domain can later expose the same paths, such as `https://protoform.dev/docs` and
+`https://protoform.dev/r/{name}.json`.
 
-There are no accounts and no database. This keeps the flagship demo real enough to exercise all
-five RPCs without presenting the in-memory store as an application architecture.
+## Verify locally
+
+```bash
+bun install --frozen-lockfile
+bun run build
+bun run start
+```
+
+Open `http://localhost:8080/docs` and
+`http://localhost:8080/r/protoform.json`.
 
 ## Release a source snapshot
 
-The hosted `/r` endpoint always contains the deployment's current source. A `v*` Git tag must match
-`package.json`; the release workflow then runs the complete quality and security gate before creating
-an archive, checksum, provenance attestation, and GitHub release. Consumers can install
-`public/r/*.json` through the raw URL for that tag.
+The hosted `/r` endpoint contains the current source from `main`. Keep stable installs pinned to an
+immutable Git tag:
+
+```text
+https://raw.githubusercontent.com/malinskibeniamin/protoform/v1.0.0/public/r/{name}.json
+```
+
+A `v*` Git tag must match `package.json`; the release workflow runs the quality and security gates
+before creating an archive, checksum, provenance attestation, and GitHub release.

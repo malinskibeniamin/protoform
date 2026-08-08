@@ -204,7 +204,6 @@ describe("docs content policy", () => {
       readFileSync(new URL("package.json", repositoryDirectory), "utf8")
     ) as {
       dependencies?: Record<string, string>;
-      patchedDependencies?: Record<string, string>;
       scripts?: Record<string, string>;
     };
     const legacyFiles = ["app", "source.config.ts", "vite.config.ts"];
@@ -218,7 +217,9 @@ describe("docs content policy", () => {
 
     expect(manifest.scripts?.dev).toBe("blume dev --port 55011");
     expect(manifest.scripts?.build).toContain("blume build --strict");
-    expect(manifest.scripts?.start).toBe("node ./dist/production-server.mjs");
+    expect(manifest.scripts?.start).toBe(
+      "blume preview --host 0.0.0.0 --port 8080"
+    );
     expect(manifest.scripts?.["docs:blume:audit"]).toBe(
       "blume audit --fail-on error"
     );
@@ -233,15 +234,12 @@ describe("docs content policy", () => {
       "bun run build && bun run docs:blume:audit"
     );
     expect(manifest.dependencies?.blume).toBe("1.2.1");
-    expect(manifest.dependencies?.["@modelcontextprotocol/sdk"]).toBe(
-      "^1.30.0"
-    );
+    expect(
+      manifest.dependencies?.["@modelcontextprotocol/sdk"]
+    ).toBeUndefined();
     expect(manifest.dependencies?.["@orama/orama"]).toBe("^3.1.18");
     expect(manifest.scripts?.["docs:blume:e2e"]).toContain(
-      "node .blume-verify/dist/server/entry.mjs"
-    );
-    expect(manifest.patchedDependencies?.["blume@1.2.1"]).toBe(
-      "patches/blume@1.2.1.patch"
+      "astro preview --root .blume-verify"
     );
     expect(
       legacyFiles.filter((file) =>
@@ -274,7 +272,7 @@ describe("docs content policy", () => {
     expect(evals.match(/^ {4}routes:$/gmu)).toHaveLength(6);
   });
 
-  it("uses Blume's complete agent and example surface", () => {
+  it("uses Blume's complete static and example surface", () => {
     const config = readFileSync(
       new URL("blume.config.ts", repositoryDirectory),
       "utf8"
@@ -285,12 +283,10 @@ describe("docs content policy", () => {
     );
     const migrationPlaybook = readDoc("llm-migration-playbook.mdx");
 
-    expect(config).toContain('adapter: "node"');
-    expect(config).toContain('output: "server"');
-    expect(config).toContain("mcp:");
-    expect(config).toContain("enabled: true");
-    expect(config).toContain('name: "Protoform docs"');
-    expect(config).toContain('route: "/mcp"');
+    expect(config).toContain('site: "https://protoform.pages.dev"');
+    expect(config).not.toContain('adapter: "');
+    expect(config).not.toContain('output: "server"');
+    expect(config).not.toContain("mcp:");
     expect(config).toContain("openapi:");
     expect(config).toContain('renderer: "blume"');
     expect(config).toContain('route: "/reference"');
@@ -304,41 +300,6 @@ describe("docs content policy", () => {
     expect(readFileSync("package.json", "utf8")).toContain(
       "bun run docs:blume:audit"
     );
-  });
-
-  it("ships the docs as a non-root Blume Node server installed with Bun", () => {
-    const dockerfile = readFileSync(
-      new URL("Dockerfile.docs", repositoryDirectory),
-      "utf8"
-    );
-
-    expect(dockerfile).toContain("bun install --frozen-lockfile");
-    expect(dockerfile).toContain("bun run docs:blume:build");
-    expect(dockerfile).toContain("FROM node:");
-    expect(dockerfile).toContain("USER node");
-    expect(dockerfile).toContain(
-      'CMD ["node", "./dist/production-server.mjs"]'
-    );
-    expect(dockerfile.toLowerCase()).not.toContain("caddy");
-  });
-
-  it("documents and publishes the read-only docs MCP endpoint", () => {
-    const content = readDoc("mcp-for-agents.mdx");
-    const requiredTerms = [
-      "/mcp",
-      "/.well-known/mcp.json",
-      "streamable HTTP",
-      "search_docs",
-      "get_page",
-      "list_pages",
-      "get_navigation",
-      "read-only",
-    ];
-
-    expect(
-      requiredTerms.filter((term) => !content.includes(term)),
-      "Missing hosted MCP setup guidance"
-    ).toEqual([]);
   });
 
   it("publishes the real CreateBook RPC through OpenAPI and a Component demo", () => {
@@ -384,17 +345,6 @@ describe("docs content policy", () => {
     expect(spec).toContain(
       "operationId: protoform.conformance.v1.LibraryService.CreateBook"
     );
-  });
-
-  it("patches Blume's generated MCP data boundary for strict typing", () => {
-    const patch = readFileSync(
-      new URL("patches/blume@1.2.1.patch", repositoryDirectory),
-      "utf8"
-    );
-
-    expect(patch).toContain("Parameters<typeof createMcpFetchHandler>[0]");
-    expect(patch).toContain("src/astro/templates.ts");
-    expect(patch).toContain("dist/cli/index.js");
   });
 
   it("does not repeat a frontmatter title as a body heading", () => {
