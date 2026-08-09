@@ -92,7 +92,7 @@ export const readinessProfile = {
     "react-final-form": "^7.0.1",
     "react-hook-form": "^7.84.0",
   },
-  reviewedAt: "2026-08-05",
+  reviewedAt: "2026-08-09",
   version: 2,
 };
 
