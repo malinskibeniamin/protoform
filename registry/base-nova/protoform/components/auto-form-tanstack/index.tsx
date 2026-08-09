@@ -10,8 +10,11 @@ import type { AutoFormProps as BaseAutoFormProps } from '../auto-form/types';
 
 type FormValues = Record<string, unknown>;
 
-export type AutoFormProps<T extends FormValues = FormValues> = Omit<
-  BaseAutoFormProps<T, TanStackAutoFormApi, TanStackFormOptions, never>,
+export type AutoFormProps<
+  T extends FormValues = FormValues,
+  TCustomFieldType extends string = never,
+> = Omit<
+  BaseAutoFormProps<T, TanStackAutoFormApi, TanStackFormOptions, never, TCustomFieldType>,
   'resolver'
 >;
 
@@ -34,27 +37,37 @@ export { AutoFormSlot } from '../auto-form/slot';
 export type {
   AutoFormMode,
   AutoFormRevalidationMode,
+  AutoFormRootHeaderMetadata,
+  AutoFormRootHeaderMode,
   AutoFormStep,
   AutoFormStepperConfig,
   AutoFormStepperOrientation,
   AutoFormSubmitContext,
   AutoFormValidationMode,
+  BuiltInFieldType,
+  DeprecatedFieldPolicy,
   FieldTypes,
 } from '../auto-form/types';
 export { ShadcnAutoFormFieldComponents } from '../auto-form/auto-form-core';
+export type { AutoFormFieldComponents, AutoFormFieldProps } from '../auto-form/core-types';
+export type { AutoFormEngineHandle } from '../auto-form/engine';
 export type { TanStackAutoFormApi, TanStackFormOptions };
 
-export function AutoForm<T extends FormValues = FormValues>({
+export function AutoForm<
+  T extends FormValues = FormValues,
+  TCustomFieldType extends string = never,
+>({
   formOptions,
   ...props
-}: AutoFormProps<T>) {
+}: AutoFormProps<T, TCustomFieldType>) {
   return (
-    <AutoFormCore<T, TanStackAutoFormApi>
+    <AutoFormCore<T, TanStackAutoFormApi, TCustomFieldType>
       {...props}
       renderEngine={({ children, defaultValues, values }) => (
         <TanStackEngine
           defaultValues={defaultValues}
           formOptions={formOptions}
+          onDirtyChange={props.onDirtyChange}
           values={values}
         >
           {children}

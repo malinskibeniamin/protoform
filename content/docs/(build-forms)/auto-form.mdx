@@ -84,6 +84,107 @@ Oneofs are flattened for form use while still creating valid protobuf messages:
 form.setOneofValue("auth", "sasl", { username: "", password: "" });
 ```
 
+## Custom field renderers
+
+Extend the typed registry when a host needs a control that is not bundled. The custom name flows
+through `fieldConfig`, the registry, nested fields, classification, and both form adapters without
+casts. If configuration names a renderer that has no component, AutoForm shows a field-level
+configuration error instead of crashing.
+
+```tsx
+import {
+  AutoForm,
+  defaultRegistry,
+  type AutoFormFieldProps,
+} from "@/components/auto-form";
+import { Textarea as CodeEditor } from "@/components/ui/textarea";
+
+function CodeField({ id, inputProps }: AutoFormFieldProps) {
+  const { onValueChange, testId, value, ...controlProps } = inputProps;
+  return (
+    <CodeEditor
+      {...controlProps}
+      data-testid={testId}
+      id={id}
+      value={String(value ?? "")}
+      onChange={(event) => onValueChange(event.target.value)}
+    />
+  );
+}
+
+const registry = defaultRegistry.clone().register({
+  name: "code",
+  priority: 100,
+  match: (field) => field.key === "source",
+  component: CodeField,
+});
+
+<AutoForm
+  schema={schema}
+  fieldRegistry={registry}
+  formComponents={{ code: CodeField }}
+  fieldConfig={{ "settings.source": { fieldType: "code" } }}
+/>;
+```
+
+## Repeated strings
+
+Protobuf conversion discards empty and whitespace-only entries from repeated string fields by
+default. Other repeated scalar, enum, bytes, and message fields are unchanged. Preserve blank rows
+for a specific field with its descriptor path:
+
+```tsx
+<AutoForm
+  schema={RequestSchema}
+  fieldConfig={{ aliases: { emptyRepeatedStringPolicy: "preserve" } }}
+/>;
+
+useProtoForm(RequestSchema, {
+  emptyRepeatedStringPolicies: { "settings.aliases": "preserve" },
+});
+```
+
+Nested message and oneof-message paths use dot notation.
+
+## Dirty-state lifecycle
+
+`onDirtyChange` reports the initial `false` state and each distinct transition. It covers scalar,
+nested, array, map, and oneof changes. Reverting to the clean baseline reports `false` again. After
+a successful save, establish the submitted values as the new baseline before navigation:
+
+```tsx
+<AutoForm
+  schema={RequestSchema}
+  onDirtyChange={setHasUnsavedChanges}
+  onSubmit={async (message, _nativeForm, { form }) => {
+    await save(message);
+    form.markClean();
+    navigate({ to: "/resources" });
+  }}
+/>;
+```
+
+`markClean()` updates the callback synchronously, so route blockers observe the clean state in the
+same submit callback.
+
+## Root header and deprecated fields
+
+The schema-provided root title and description render by default. Use `rootHeader="hidden"` to omit
+them or `renderRootHeader={(metadata) => ...}` to render them in a host-owned shell.
+
+Fields marked deprecated by their protobuf descriptor remain visible by default. Set
+`deprecatedFields="disable"` to prevent edits or `deprecatedFields="hide"` to omit them, including
+nested fields and oneof choices. Hidden and disabled values stay in the form payload, so editing a
+newer field does not silently delete existing data.
+
+## Server field errors
+
+Both protobuf form hooks map server field paths to their controls, humanize generic constraint
+descriptions, focus the first mapped field where the adapter supports it, and retain unmapped
+violations for summary or toast handling. Blank server descriptions use the actionable fallback
+“Review this value and try again.” Error detail context remains available through
+`serverErrorContext`.
+
 
 ## shadcn-native control coverage
 

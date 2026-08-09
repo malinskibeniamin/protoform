@@ -6,8 +6,8 @@
 const REGEX_ERROR_PATTERN = /regex pattern\s*`([^`]+)`/;
 const MIN_LEN_PATTERN = /^value length must be at least (\d+)/;
 const MAX_LEN_PATTERN = /^value length must be at most (\d+)/;
-const MIN_ITEMS_PATTERN = /^value must contain at least (\d+)/;
-const MAX_ITEMS_PATTERN = /^value must contain at most (\d+)/;
+const MIN_ITEMS_PATTERN = /^(?:value )?must contain at least (\d+)(?: item(?:\(s\)|s)?)?/;
+const MAX_ITEMS_PATTERN = /^(?:value )?must contain at most (\d+)(?: item(?:\(s\)|s)?)?/;
 const GTE_PATTERN = /^value must be greater than or equal to ([\d.]+)/;
 const LTE_PATTERN = /^value must be less than or equal to ([\d.]+)/;
 const GT_PATTERN = /^value must be greater than ([\d.]+)/;
@@ -103,8 +103,8 @@ function humanizeItemConstraint(message: string): string | undefined {
   const minItemsMatch = MIN_ITEMS_PATTERN.exec(message);
   if (minItemsMatch?.[1]) {
     return minItemsMatch[1] === "1"
-      ? "At least one item is required."
-      : `At least ${minItemsMatch[1]} items are required.`;
+      ? "Add at least one item."
+      : `Add at least ${minItemsMatch[1]} items.`;
   }
   const maxItemsMatch = MAX_ITEMS_PATTERN.exec(message);
   if (maxItemsMatch?.[1]) {
@@ -150,7 +150,7 @@ function humanizeRegexError(message: string): string | undefined {
  */
 export function humanizeValidationError(message: string): string {
   if (message === "value is required") {
-    return "This field is required.";
+    return "Enter a value.";
   }
   if (message === "exactly one field is required in oneof") {
     return "Select an option.";
@@ -163,4 +163,12 @@ export function humanizeValidationError(message: string): string {
     humanizeRegexError(message) ??
     message
   );
+}
+
+export const SERVER_FIELD_ERROR_FALLBACK = "Review this value and try again.";
+
+/** Humanize a server field violation and ensure blank descriptions stay actionable. */
+export function humanizeServerFieldError(description: string): string {
+  const message = description.trim();
+  return message ? humanizeValidationError(message) : SERVER_FIELD_ERROR_FALLBACK;
 }

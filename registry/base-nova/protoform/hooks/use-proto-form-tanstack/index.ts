@@ -9,6 +9,8 @@ import {
   extractConnectErrorContext,
   extractFieldViolations,
   formValuesToProto,
+  humanizeServerFieldError,
+  type ProtoConversionOptions,
   protoPathToFormPath,
 } from '../../lib/protobuf-provider';
 import { ConnectError } from '@connectrpc/connect';
@@ -165,6 +167,7 @@ export function useProtoForm<
     TOnServer,
     TSubmitMeta
   > & {
+    emptyRepeatedStringPolicies?: ProtoConversionOptions["emptyRepeatedStringPolicies"];
     serverPathPrefix?: string;
   }
 ): UseProtoFormReturn<
@@ -181,8 +184,18 @@ export function useProtoForm<
   TOnServer,
   TSubmitMeta
 > {
-  const { serverPathPrefix, ...nativeOptions } = options;
-  const protoSchema = createProtoFormSchema<Values, Desc>(schema);
+  const {
+    emptyRepeatedStringPolicies,
+    serverPathPrefix,
+    ...nativeOptions
+  } = options;
+  const conversionOptions: ProtoConversionOptions = {
+    emptyRepeatedStringPolicies,
+  };
+  const protoSchema = createProtoFormSchema<Values, Desc>(
+    schema,
+    conversionOptions
+  );
   const onSubmitAsyncValidator = composeSubmitAsyncValidator(
     nativeOptions.validators?.onSubmitAsync,
     protoSchema
@@ -253,7 +266,7 @@ export function useProtoForm<
           ...meta,
           errorMap: {
             ...meta.errorMap,
-            onServer: violation.description || 'Invalid value.',
+            onServer: humanizeServerFieldError(violation.description),
           },
           errorSourceMap: {
             ...meta.errorSourceMap,
@@ -327,7 +340,12 @@ export function useProtoForm<
   return Object.assign(form, {
     clearServerErrorContext: () => setServerErrorContext(undefined),
     createMessage: (values?: Values) =>
-      formValuesToProto(schema, values ?? form.state.values, sourceMessage),
+      formValuesToProto(
+        schema,
+        values ?? form.state.values,
+        sourceMessage,
+        conversionOptions
+      ),
     createUpdateMask: () =>
       createDirtyUpdateMask(
         schema,

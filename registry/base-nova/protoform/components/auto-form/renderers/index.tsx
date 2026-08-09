@@ -7,14 +7,14 @@ import { defaultRegistry } from '../fields';
 import { getFieldUiConfig, resolveRenderFieldType } from '../helpers';
 import { buildFieldMatchContext, type FieldTypeRegistry } from '../registry';
 import type { AutoFormSlotProps } from '../slot';
-import type { FieldTypes } from '../types';
 import { ArrayFieldRenderer } from './array';
 import { ControlledFieldRenderer } from './controlled';
 import { MapFieldRenderer } from './map';
 import { ObjectFieldRenderer } from './object';
 import { OneofFieldRenderer } from './oneof';
+import { isFieldHidden } from './shared';
 
-function resolveFieldType(field: ParsedField, registry: FieldTypeRegistry): FieldTypes {
+function resolveFieldType(field: ParsedField, registry: FieldTypeRegistry<string>): string {
   const explicitControl = getFieldUiConfig(field).control;
   if (explicitControl) {
     return explicitControl;
@@ -22,7 +22,7 @@ function resolveFieldType(field: ParsedField, registry: FieldTypeRegistry): Fiel
 
   const matchContext = buildFieldMatchContext(field);
   const resolved = registry.resolve(field, matchContext);
-  return (resolved?.name as FieldTypes) ?? resolveRenderFieldType(field);
+  return resolved?.name ?? resolveRenderFieldType(field);
 }
 
 export function AutoFormFieldRenderer({
@@ -34,7 +34,7 @@ export function AutoFormFieldRenderer({
   field: ParsedField;
   path: string[];
   inheritedDisabled?: boolean;
-  registry?: FieldTypeRegistry;
+  registry?: FieldTypeRegistry<string>;
 }) {
   const activeRegistry = registry ?? defaultRegistry;
   const renderType = resolveFieldType(field, activeRegistry);
@@ -77,13 +77,6 @@ type SlotEntry = {
   content: React.ReactNode;
 };
 
-function isHiddenField(field: ParsedField): boolean {
-  const customData = field.fieldConfig?.customData as
-    | Record<string, unknown>
-    | undefined;
-  return Boolean(customData?.hidden);
-}
-
 function extractSlots(children: React.ReactNode): { slots: SlotEntry[]; other: React.ReactNode[] } {
   const slots: SlotEntry[] = [];
   const other: React.ReactNode[] = [];
@@ -105,7 +98,7 @@ function extractSlots(children: React.ReactNode): { slots: SlotEntry[]; other: R
 }
 
 export function AutoFormFields({ fields, children }: { fields: ParsedField[]; children?: React.ReactNode }) {
-  const { fieldRegistry } = useAutoForm();
+  const { deprecatedFields, fieldRegistry } = useAutoForm();
   const { slots, other } = React.useMemo(() => extractSlots(children), [children]);
 
   // Build slot maps for O(1) lookup
@@ -150,7 +143,7 @@ export function AutoFormFields({ fields, children }: { fields: ParsedField[]; ch
             </div>
           ))
         : null}
-      {fields.filter((field) => !isHiddenField(field)).map((field) => (
+      {fields.filter((field) => !isFieldHidden(field, deprecatedFields)).map((field) => (
         <div className="py-7 first:pt-0 last:pb-0" data-slot="auto-form-field-row" key={field.key}>
           {beforeSlots.get(field.key)?.map((content, i) => (
             <React.Fragment key={`before-${field.key}-${i}`}>{content}</React.Fragment>

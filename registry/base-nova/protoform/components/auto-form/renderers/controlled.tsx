@@ -35,9 +35,14 @@ export function ControlledFieldRenderer({
 
   const resolvedRenderType = renderType ?? inferredRenderType;
   const FieldWrapperComponent = field.fieldConfig?.fieldWrapper || uiComponents.FieldWrapper;
-  const FieldComponent = (formComponents[resolvedRenderType] ??
-    formComponents[renderField.type] ??
-    formComponents.fallback) as React.ComponentType<AutoFormFieldProps>;
+  const registeredComponent = formComponents[resolvedRenderType];
+  const FieldComponent = (registeredComponent ?? formComponents.fallback) as React.ComponentType<AutoFormFieldProps>;
+  const componentField = registeredComponent
+    ? renderField
+    : {
+        ...renderField,
+        type: resolvedRenderType,
+      };
 
   return (
     <FieldController name={fullPath}>
@@ -47,7 +52,7 @@ export function ControlledFieldRenderer({
           <FieldWrapperComponent error={error} field={renderField} id={fullPath} label={label}>
             <FieldComponent
               error={error}
-              field={renderField}
+              field={componentField}
               id={fullPath}
               inputProps={{
                 ...renderField.fieldConfig?.inputProps,

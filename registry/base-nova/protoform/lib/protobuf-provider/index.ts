@@ -28,7 +28,9 @@ export {
 export { formatSubmittedValue } from "./format-submitted-value.js";
 export {
   humanizeValidationError,
+  humanizeServerFieldError,
   isGenericValidationMessage,
+  SERVER_FIELD_ERROR_FALLBACK,
 } from "./humanize-validation-error.js";
 export { protoPathToFormPath } from "./proto-error-path.js";
 export {
@@ -46,6 +48,8 @@ export {
   type ProtoFieldRenderType,
   type ProtoFieldType,
   type ProtoMapFormEntry,
+  type ProtoConversionOptions,
+  type ProtoFormOptions,
   ProtoProvider,
   parseProtoSchema,
   protoFormValuesToPayload,

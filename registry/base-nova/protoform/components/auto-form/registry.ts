@@ -4,8 +4,8 @@ import type { AutoFormFieldProps, ParsedField } from './core-types';
 import { getLabel } from './field-utils';
 import { getProtoFieldCustomData } from './proto';
 
-export type FieldTypeDefinition = {
-  name: string;
+export type FieldTypeDefinition<TName extends string = string> = {
+  name: TName;
   match: (field: ParsedField, context: FieldMatchContext) => boolean;
   priority: number;
   component: React.ComponentType<AutoFormFieldProps>;
@@ -17,25 +17,29 @@ export type FieldMatchContext = {
   maxLength: number;
 };
 
-export class FieldTypeRegistry {
+export class FieldTypeRegistry<TName extends string = never> {
   private definitions: FieldTypeDefinition[] = [];
 
-  register(definition: FieldTypeDefinition): this {
+  register<const TRegisteredName extends string>(
+    definition: FieldTypeDefinition<TRegisteredName>
+  ): FieldTypeRegistry<TName | TRegisteredName> {
     this.definitions.push(definition);
     this.definitions.sort((a, b) => b.priority - a.priority);
-    return this;
+    return this as FieldTypeRegistry<TName | TRegisteredName>;
   }
 
-  resolve(field: ParsedField, context: FieldMatchContext): FieldTypeDefinition | undefined {
-    return this.definitions.find((def) => def.match(field, context));
+  resolve(field: ParsedField, context: FieldMatchContext): FieldTypeDefinition<TName> | undefined {
+    return this.definitions.find((def) => def.match(field, context)) as
+      | FieldTypeDefinition<TName>
+      | undefined;
   }
 
-  list(): readonly FieldTypeDefinition[] {
-    return this.definitions;
+  list(): readonly FieldTypeDefinition<TName>[] {
+    return this.definitions as unknown as readonly FieldTypeDefinition<TName>[];
   }
 
-  clone(): FieldTypeRegistry {
-    const registry = new FieldTypeRegistry();
+  clone(): FieldTypeRegistry<TName> {
+    const registry = new FieldTypeRegistry<TName>();
     for (const def of this.definitions) {
       registry.register(def);
     }

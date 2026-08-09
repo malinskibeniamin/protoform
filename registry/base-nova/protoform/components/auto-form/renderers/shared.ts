@@ -2,8 +2,19 @@ import React from 'react';
 
 import { useAutoFormRuntimeContext } from '../context';
 import type { ParsedField } from '../core-types';
+import { getFieldHints } from '../core-types';
 import { getLabel, getPathInObject } from '../field-utils';
 import { getFieldUiConfig, resolveRenderFieldType } from '../helpers';
+import type { DeprecatedFieldPolicy } from '../types';
+
+export function isDeprecatedField(field: ParsedField): boolean {
+  return getFieldHints(field)?.deprecated === true;
+}
+
+export function isFieldHidden(field: ParsedField, policy: DeprecatedFieldPolicy): boolean {
+  const customData = (field.fieldConfig?.customData ?? {}) as Record<string, unknown>;
+  return Boolean(customData.hidden) || (policy === 'hide' && isDeprecatedField(field));
+}
 
 export function cloneFieldWithDisabled(field: ParsedField, disabled: boolean): ParsedField {
   if (!disabled) {
@@ -23,15 +34,19 @@ export function cloneFieldWithDisabled(field: ParsedField, disabled: boolean): P
 }
 
 export function useFieldPresentation(field: ParsedField, path: string[], inheritedDisabled = false) {
-  const { formValues, evaluateRules } = useAutoFormRuntimeContext();
+  const { deprecatedFields, formValues, evaluateRules } = useAutoFormRuntimeContext();
   const fieldValue = getPathInObject(formValues, path);
   const uiConfig = getFieldUiConfig(field);
   const customData = (field.fieldConfig?.customData ?? {}) as Record<string, unknown>;
-  const isHidden = Boolean(customData.hidden);
+  const isHidden = isFieldHidden(field, deprecatedFields);
   const isImmutable = Boolean(customData.immutable);
   const isVisible = !isHidden && evaluateRules(uiConfig.visibleWhen, fieldValue);
   const isDisabledByRule = uiConfig.disabledWhen?.length ? evaluateRules(uiConfig.disabledWhen, fieldValue) : false;
-  const isDisabled = inheritedDisabled || isDisabledByRule || isImmutable;
+  const isDisabled =
+    inheritedDisabled ||
+    isDisabledByRule ||
+    isImmutable ||
+    (deprecatedFields === 'disable' && isDeprecatedField(field));
   const renderField = React.useMemo(() => cloneFieldWithDisabled(field, isDisabled), [field, isDisabled]);
 
   return {

@@ -57,7 +57,9 @@ export function getLabel(field: ParsedField): string {
   return (field.fieldConfig?.label as string) || (field.description as string) || beautifyLabel(field.key);
 }
 
-export function sortFieldsByOrder(fields: ParsedField[] | undefined): ParsedField[] {
+export function sortFieldsByOrder<TFieldType extends string = string>(
+  fields: ParsedField<TFieldType>[] | undefined
+): ParsedField<TFieldType>[] {
   if (!fields) {
     return [];
   }

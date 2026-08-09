@@ -285,7 +285,11 @@ describe('TanStack AutoForm conformance', () => {
 
   it('builds update masks from native TanStack dirty metadata', async () => {
     const user = userEvent.setup();
-    const onSubmit = vi.fn();
+    const onSubmit = vi.fn((_message, _nativeForm, context) => {
+      if (onSubmit.mock.calls.length === 1) {
+        context.form.markClean();
+      }
+    });
     render(
       <AutoForm
         defaultValues={{
@@ -308,6 +312,15 @@ describe('TanStack AutoForm conformance', () => {
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
     expect(onSubmit.mock.calls[0]?.[2].updateMask.paths).toEqual(['city']);
+
+    await user.clear(city);
+    await user.type(city, 'Gdansk');
+    await user.clear(city);
+    await user.type(city, 'Krakow');
+    await user.click(screen.getByRole('button', { name: 'Submit' }));
+
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(2));
+    expect(onSubmit.mock.calls[1]?.[2].updateMask.paths).toEqual([]);
   });
 
   it('revalidates failed submissions on the shared lifecycle', async () => {

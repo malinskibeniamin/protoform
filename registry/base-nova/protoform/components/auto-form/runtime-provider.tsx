@@ -2,6 +2,7 @@
 
 import type { DescMessage } from '@bufbuild/protobuf';
 import React from 'react';
+import type { ProtoConversionOptions } from '../../lib/protobuf-provider';
 
 import { AutoFormContext, type AutoFormContextValue } from './context';
 import type {
@@ -16,7 +17,13 @@ import { type AutoFormEngine, useAutoFormEngine } from './engine';
 import { getFieldUiConfig, isRecord, isValidationSuccess } from './helpers';
 import { protoFormValuesToPayload, protoPayloadToFormValues } from './proto';
 import type { FieldTypeRegistry } from './registry';
-import type { AutoFormMode, AutoFormPayloadBuilderContext, AutoFormSummaryContext, AutoFormUiRule } from './types';
+import type {
+  AutoFormMode,
+  AutoFormPayloadBuilderContext,
+  AutoFormSummaryContext,
+  AutoFormUiRule,
+  DeprecatedFieldPolicy,
+} from './types';
 import { evaluateUiRules } from './ui-rules';
 import { isPromiseLike, safeStringify } from './utils/serialization';
 
@@ -36,8 +43,10 @@ type AutoFormRuntimeProviderProps<TNativeForm> = {
   uiComponents: AutoFormUIComponents;
   formComponents: AutoFormFieldComponents;
   testIdPrefix: string;
-  fieldRegistry?: FieldTypeRegistry;
+  fieldRegistry?: FieldTypeRegistry<string>;
+  conversionOptions?: ProtoConversionOptions;
   dataProviders?: DataProviderRegistry;
+  deprecatedFields: DeprecatedFieldPolicy;
   resolvedSchema: {
     provider: SchemaProvider<Record<string, unknown>>;
     parsedSchema: ParsedSchema;
@@ -84,6 +93,7 @@ function AutoFormPayloadController<TNativeForm>({
   payloadParser,
   payloadSchema,
   renderContent,
+  conversionOptions,
 }: {
   watchedValues: Record<string, unknown>;
   methods: AutoFormEngine;
@@ -94,6 +104,7 @@ function AutoFormPayloadController<TNativeForm>({
   payloadBuilder: AutoFormRuntimeProviderProps<TNativeForm>['payloadBuilder'];
   payloadParser: AutoFormRuntimeProviderProps<TNativeForm>['payloadParser'];
   payloadSchema: AutoFormRuntimeProviderProps<TNativeForm>['payloadSchema'];
+  conversionOptions: AutoFormRuntimeProviderProps<TNativeForm>['conversionOptions'];
   renderContent: AutoFormRuntimeProviderProps<TNativeForm>['renderContent'];
 }) {
   const deferredValues = React.useDeferredValue(watchedValues);
@@ -168,7 +179,11 @@ function AutoFormPayloadController<TNativeForm>({
 
     if (payload === undefined) {
       if (resolvedSchema.isProto && resolvedSchema.protoDesc) {
-        payload = protoFormValuesToPayload(resolvedSchema.protoDesc, deferredValues);
+        payload = protoFormValuesToPayload(
+          resolvedSchema.protoDesc,
+          deferredValues,
+          conversionOptions
+        );
         bestEffort ||= !validationSuccess;
       } else if (validationSuccess) {
         payload = validatedData;
@@ -191,6 +206,7 @@ function AutoFormPayloadController<TNativeForm>({
     return { bestEffort, payload };
   }, [
     deferredValues,
+    conversionOptions,
     payloadBuilder,
     payloadContextBase,
     payloadSchema,
@@ -318,7 +334,9 @@ export function AutoFormRuntimeProvider<TNativeForm>({
   formComponents,
   testIdPrefix,
   fieldRegistry,
+  conversionOptions,
   dataProviders,
+  deprecatedFields,
   resolvedSchema,
   mode,
   simpleFields,
@@ -358,14 +376,16 @@ export function AutoFormRuntimeProvider<TNativeForm>({
       testIdPrefix,
       fieldRegistry,
       dataProviders,
+      deprecatedFields,
     }),
-    [dataProviders, fieldRegistry, formComponents, uiComponents, testIdPrefix, watchedValues]
+    [dataProviders, deprecatedFields, fieldRegistry, formComponents, uiComponents, testIdPrefix, watchedValues]
   );
 
   return (
     <AutoFormContext.Provider value={contextValue}>
       <AutoFormPayloadController<TNativeForm>
         advancedFields={advancedFields}
+        conversionOptions={conversionOptions}
         methods={methods}
         mode={mode}
         payloadBuilder={payloadBuilder}

@@ -142,6 +142,7 @@ function KeyValueRow({
         disabled={disabled}
         onClick={() => onDelete(index)}
         size="icon-sm"
+        type="button"
         variant="ghost"
       >
         <X size={16} />
@@ -155,6 +156,7 @@ function KeyValueRow({
           disabled={disabled}
           onClick={onAdd}
           size="sm"
+          type="button"
           variant="outline"
         >
           <Plus size={14} />
@@ -252,6 +254,7 @@ export function KeyValueField({
           disabled={disabled}
           onClick={handleAdd}
           size="sm"
+          type="button"
           variant="outline"
         >
           <Plus size={14} />

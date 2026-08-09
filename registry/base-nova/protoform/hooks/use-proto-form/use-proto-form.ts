@@ -13,6 +13,8 @@ import {
   extractConnectErrorContext,
   extractFieldViolations,
   formValuesToProto,
+  humanizeServerFieldError,
+  type ProtoConversionOptions,
 } from "../../lib/protobuf-provider/index.js";
 import { useState } from "react";
 import {
@@ -44,6 +46,8 @@ type NestedErrors<T> = {
 
 export interface UseProtoFormOptions<Desc extends DescMessage>
   extends Omit<UseFormProps<FormShape<Desc>>, "resolver"> {
+  /** Per-field repeated-string conversion overrides keyed by descriptor path. */
+  emptyRepeatedStringPolicies?: ProtoConversionOptions["emptyRepeatedStringPolicies"];
   /**
    * Strip a leading server-path prefix before mapping server-side field
    * violations onto the form (e.g. `'notification'` when the RPC wraps the
@@ -134,12 +138,20 @@ export function useProtoForm<Desc extends DescMessage>(
   schema: Desc,
   options?: UseProtoFormOptions<Desc>
 ): UseProtoFormReturn<Desc> {
-  const { serverPathPrefix, mode = "onChange", ...rest } = options ?? {};
+  const {
+    emptyRepeatedStringPolicies,
+    serverPathPrefix,
+    mode = "onChange",
+    ...rest
+  } = options ?? {};
+  const conversionOptions: ProtoConversionOptions = {
+    emptyRepeatedStringPolicies,
+  };
 
   const form = useForm({
     ...rest,
     mode,
-    resolver: createProtoResolver(schema),
+    resolver: createProtoResolver(schema, conversionOptions),
   } as unknown as UseFormProps<FormShape<Desc>>) as UseFormReturn<
     FormShape<Desc>
   >;
@@ -156,7 +168,8 @@ export function useProtoForm<Desc extends DescMessage>(
     return formValuesToProto(
       schema,
       raw as Record<string, unknown>,
-      sourceMessage
+      sourceMessage,
+      conversionOptions
     );
   };
 
@@ -240,11 +253,8 @@ export function useProtoForm<Desc extends DescMessage>(
       }
       form.setError(
         formPath as FieldPath<FormShape<Desc>>,
-        // Fallback message when the backend omits a description. Without it the
-        // field renders a red border + empty <FieldError>, which reads as a UI
-        // bug rather than validation feedback.
         {
-          message: violation.description || "Invalid value.",
+          message: humanizeServerFieldError(violation.description),
           type: "server",
         },
         handled ? undefined : { shouldFocus: true }

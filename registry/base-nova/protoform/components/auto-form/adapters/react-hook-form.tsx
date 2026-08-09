@@ -19,6 +19,7 @@ import {
   type AutoFormEngine,
   AutoFormEngineProvider,
   type AutoFormFieldController,
+  useDirtyStateNotification,
 } from '../engine';
 import { getRootErrorMessage } from '../helpers';
 import { PROTO_FORM_ROOT_ERROR_KEY } from '../proto';
@@ -116,6 +117,7 @@ export type ReactHookFormEngineProps<T extends FormValues> = {
   formOptions?: UseFormProps<FormValues, unknown, T>;
   resolver?: Resolver<FormValues, unknown, T>;
   values?: FormValues;
+  onDirtyChange?: (isDirty: boolean) => void;
 };
 
 export function ReactHookFormEngine<T extends FormValues>({
@@ -124,6 +126,7 @@ export function ReactHookFormEngine<T extends FormValues>({
   formOptions,
   resolver,
   values,
+  onDirtyChange,
 }: ReactHookFormEngineProps<T>) {
   const form = useForm<FormValues, unknown, T>({
     ...(formOptions ?? {}),
@@ -136,6 +139,7 @@ export function ReactHookFormEngine<T extends FormValues>({
   const rootError =
     getRootErrorMessage(form.formState.errors.root) ||
     getRootErrorMessage(errors[PROTO_FORM_ROOT_ERROR_KEY]);
+  const notifyDirtyChange = useDirtyStateNotification(form.formState.isDirty, onDirtyChange);
 
   const engine: AutoFormEngine = {
     ArrayController: ReactHookFormArrayController,
@@ -148,7 +152,12 @@ export function ReactHookFormEngine<T extends FormValues>({
     getFieldInvalid: (path) => form.getFieldState(path).invalid,
     getValues: form.getValues,
     handleSubmit: (onValid) => form.handleSubmit(onValid),
+    isDirty: form.formState.isDirty,
     isSubmitting: form.formState.isSubmitting,
+    markClean: () => {
+      form.reset(form.getValues());
+      notifyDirtyChange(false);
+    },
     nativeForm: form,
     reset: (nextValues, options) => form.reset(nextValues, options),
     rootError,

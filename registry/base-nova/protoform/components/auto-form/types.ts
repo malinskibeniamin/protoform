@@ -18,6 +18,13 @@ export type AutoFormMode = 'simple' | 'advanced' | 'json';
 export type AutoFormValidationMode = 'submit' | 'blur' | 'change';
 export type AutoFormRevalidationMode = Exclude<AutoFormValidationMode, 'submit'>;
 export type AutoFormStepperOrientation = 'horizontal' | 'vertical';
+export type AutoFormRootHeaderMode = 'auto' | 'hidden';
+export type DeprecatedFieldPolicy = 'show' | 'disable' | 'hide';
+
+export type AutoFormRootHeaderMetadata = {
+  description?: string;
+  title?: string;
+};
 
 export type AutoFormStep = {
   description?: ReactNode;
@@ -42,10 +49,17 @@ export type AutoFormOptionGroup = {
   options: AutoFormOptionItem[];
 };
 
-export type FieldTypes = ProtoFieldRenderType | 'date' | 'slider';
+export type BuiltInFieldType = ProtoFieldRenderType | 'dataProviderMultiSelect' | 'date' | 'slider';
+export type FieldTypes<TCustom extends string = never> = BuiltInFieldType | TCustom;
 
-export type RenderFieldConfig = FieldConfig<FieldTypes, Record<string, unknown>>;
-export type FieldConfigMap = Record<string, RenderFieldConfig>;
+export type RenderFieldConfig<TCustom extends string = never> = FieldConfig<
+  FieldTypes<TCustom>,
+  Record<string, unknown>
+>;
+export type FieldConfigMap<TCustom extends string = never> = Record<
+  string,
+  RenderFieldConfig<TCustom>
+>;
 export type AutoFormSchemaInput<T extends Record<string, unknown>> = SchemaProvider<T> | DescMessage;
 
 export type AutoFormUiRule = ProtoUiRule;
@@ -88,6 +102,7 @@ export type AutoFormProps<
   TNativeForm = unknown,
   TFormOptions = unknown,
   TResolver = unknown,
+  TCustomFieldType extends string = never,
 > = {
   schema: AutoFormSchemaInput<T>;
   /**
@@ -111,11 +126,19 @@ export type AutoFormProps<
   values?: Partial<T> | Partial<Record<string, unknown>>;
   children?: React.ReactNode;
   uiComponents?: Partial<AutoFormUIComponents>;
-  formComponents?: Partial<AutoFormFieldComponents>;
+  formComponents?: Partial<AutoFormFieldComponents<FieldTypes<TCustomFieldType>>>;
   withSubmit?: boolean;
   onFormInit?: (form: TNativeForm) => void;
+  /** Reports distinct engine-neutral dirty-state transitions, including the initial clean state. */
+  onDirtyChange?: (isDirty: boolean) => void;
+  /** Controls whether schema-provided root metadata is shown. */
+  rootHeader?: AutoFormRootHeaderMode;
+  /** Replaces the default root header while preserving resolved schema metadata. */
+  renderRootHeader?: (metadata: AutoFormRootHeaderMetadata) => ReactNode;
+  /** Presentation policy for fields marked deprecated by the schema. */
+  deprecatedFields?: DeprecatedFieldPolicy;
   formProps?: React.ComponentProps<'form'> | Record<string, unknown>;
-  fieldConfig?: FieldConfigMap;
+  fieldConfig?: FieldConfigMap<TCustomFieldType>;
   formOptions?: TFormOptions;
   resolver?: TResolver;
   modes?: AutoFormMode[];
@@ -128,7 +151,7 @@ export type AutoFormProps<
   stepper?: AutoFormStepperConfig;
   showSummary?: boolean;
   renderSummary?: (payload: unknown, context: AutoFormSummaryContext<TNativeForm>) => React.ReactNode;
-  fieldRegistry?: FieldTypeRegistry;
+  fieldRegistry?: FieldTypeRegistry<FieldTypes<TCustomFieldType>>;
   /**
    * Named data-source implementations consumed by dropdown-style controls
    * annotated with `field_ui.data_provider`. The keys mirror the proto
@@ -140,7 +163,9 @@ export type AutoFormProps<
    * descriptors and asserts every referenced id is registered here.
    */
   dataProviders?: import('./data-providers').DataProviderRegistry;
-  classifyField?: (field: ParsedField) => 'simple' | 'advanced';
+  classifyField?: (
+    field: ParsedField<FieldTypes<TCustomFieldType>>
+  ) => 'simple' | 'advanced';
   payloadSchema?: {
     safeParse: (data: unknown) => { success: boolean; error?: { issues: Array<{ path: unknown[]; message: string }> } };
   };
