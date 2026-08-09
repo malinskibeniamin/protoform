@@ -1,22 +1,12 @@
 import { defineConfig } from "blume";
 
 export default defineConfig({
-  ai: {
-    mcp: {
-      enabled: true,
-      instructions:
-        "Search Protoform documentation before editing a form, then fetch the focused AIP or feature page and follow its registry installation example.",
-      name: "Protoform docs",
-      route: "/mcp",
-    },
-  },
   basePath: "/docs",
   content: {
     root: "content/docs",
   },
   deployment: {
-    adapter: "node",
-    output: "server",
+    site: "https://protoform.pages.dev",
   },
   description: "Protovalidate-compatible shadcn forms for protobuf apps.",
   examples: {

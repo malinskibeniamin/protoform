@@ -13,7 +13,7 @@ source snapshots.
 - Formik and Final Form validation adapters.
 - Source-copy `protoc-gen-protoform` generator.
 - Conformance, accessibility, browser, performance, security, and consumer-installation evidence.
-- Complete bookstore RPC example, documentation server, registry, and read-only docs MCP endpoint.
+- Complete bookstore RPC example, static documentation site, and source registry.
 
 ### Compatibility
 

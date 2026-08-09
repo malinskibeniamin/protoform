@@ -1,33 +1,4 @@
-import { type APIRequestContext, expect, test } from "@playwright/test";
-
-interface McpTextResponse {
-  result: {
-    content: [{ text: string; type: "text" }];
-  };
-}
-
-async function callMcp(
-  request: APIRequestContext,
-  name: "get_page" | "search_docs",
-  args: Record<string, unknown>
-): Promise<string> {
-  const response = await request.post("/mcp", {
-    data: {
-      id: name,
-      jsonrpc: "2.0",
-      method: "tools/call",
-      params: { arguments: args, name },
-    },
-    headers: {
-      Accept: "application/json, text/event-stream",
-      "Mcp-Protocol-Version": "2025-03-26",
-    },
-  });
-  expect(response.ok()).toBe(true);
-  const payload = (await response.json()) as McpTextResponse;
-  expect(payload.result.content).toHaveLength(1);
-  return payload.result.content[0].text;
-}
+import { expect, test } from "@playwright/test";
 
 test("publishes focused feature and AIP catalogs with working live forms", async ({
   page,
@@ -199,7 +170,7 @@ test("shows the actual form implementation in the Code preview", async ({
   await expect(codePanel).not.toContainText("RegistryCapabilityDemo");
 });
 
-test("serves demo source through Markdown and the hosted MCP server", async ({
+test("serves demo source through static Markdown routes", async ({
   request,
 }) => {
   const markdownResponse = await request.get(
@@ -214,33 +185,6 @@ test("serves demo source through Markdown and the hosted MCP server", async ({
   expect(markdown).not.toContain("RegistryCapabilityDemo");
   expect(markdown).not.toContain("<Component");
   expect(markdown).not.toContain("<CapabilityDemo");
-
-  const searchText = await callMcp(request, "search_docs", {
-    limit: 5,
-    query: "AIP-131 Standard methods Get",
-  });
-  const hits = JSON.parse(searchText) as Array<{
-    route: string;
-    title: string;
-    url: string;
-  }>;
-  const hit = hits.find(
-    (candidate) => candidate.route === "/docs/aip-131-standard-methods-get"
-  );
-  expect(hit).toMatchObject({
-    route: "/docs/aip-131-standard-methods-get",
-    title: "AIP-131 Standard methods: Get",
-    url: "/docs/aip-131-standard-methods-get",
-  });
-
-  const pageMarkdown = await callMcp(request, "get_page", {
-    route: hit?.route,
-  });
-  expect(pageMarkdown).toContain("getDemoSchema");
-  expect(pageMarkdown).toContain("<AutoForm");
-  expect(pageMarkdown).toContain("onSubmit=");
-  expect(pageMarkdown).not.toContain("RegistryCapabilityDemo");
-  expect(pageMarkdown).not.toContain("<Component");
 
   const stepperMarkdownResponse = await request.get("/docs/example-stepper.md");
   expect(stepperMarkdownResponse.ok()).toBe(true);
@@ -259,34 +203,6 @@ test("serves demo source through Markdown and the hosted MCP server", async ({
   expect(rpcMarkdown).toContain("```tsx");
   expect(rpcMarkdown).toContain("LibraryService.method.createBook");
   expect(rpcMarkdown).not.toContain("<Component");
-
-  const rpcPageMarkdown = await callMcp(request, "get_page", {
-    route: "/docs/example-bufbuild-descriptors",
-  });
-  expect(rpcPageMarkdown).toContain("LibraryService.method.createBook");
-  expect(rpcPageMarkdown).not.toContain("<Component");
-
-  const discoveryResponse = await request.get("/.well-known/mcp.json");
-  expect(discoveryResponse.ok()).toBe(true);
-  await expect(discoveryResponse.json()).resolves.toMatchObject({
-    servers: [
-      {
-        name: "Protoform docs",
-        transport: "streamable-http",
-        url: "/mcp",
-      },
-    ],
-  });
-
-  const serverCardResponse = await request.get(
-    "/.well-known/mcp/server-card.json"
-  );
-  expect(serverCardResponse.ok()).toBe(true);
-  await expect(serverCardResponse.json()).resolves.toMatchObject({
-    name: "Protoform docs",
-    transport: "streamable-http",
-    url: "/mcp",
-  });
 });
 
 test("renders the native OpenAPI reference and real RPC method shape", async ({

@@ -1,20 +1,11 @@
-import { createRouterTransport } from "@connectrpc/connect";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 
-import { createLibraryService } from "@/examples/server/service";
-import { LibraryService } from "@/conformance/gen/protoform/conformance/v1/aip_pb";
-
 import { BookstoreDemo } from "./bookstore-demo";
 
 function renderDemo() {
-  const transport = createRouterTransport((router) =>
-    router.service(LibraryService, createLibraryService())
-  );
-  render(
-    <BookstoreDemo transport={transport} visitorId="bookstore-demo-test" />
-  );
+  render(<BookstoreDemo visitorId="bookstore-demo-test" />);
 }
 
 describe("bookstore flagship demo", () => {

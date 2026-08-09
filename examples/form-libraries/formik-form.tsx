@@ -1,7 +1,6 @@
 "use client";
 
 import { createClient } from "@connectrpc/connect";
-import { createConnectTransport } from "@connectrpc/connect-web";
 import { Formik, type FormikErrors } from "formik";
 import React from "react";
 import {
@@ -18,6 +17,7 @@ import {
 } from "@/registry/base-nova/protoform/components/field";
 import { Input } from "@/registry/base-nova/protoform/components/input";
 import { createFormikValidator } from "@/registry/base-nova/protoform/lib/core";
+import { createFormExamplesTransport } from "../browser-transport.js";
 import { FormExamplesService } from "../gen/protoform/examples/v1/forms_pb.js";
 import {
   type BasicFormValues,
@@ -37,16 +37,12 @@ function readStatusMessages(status: unknown): string[] {
     : [];
 }
 
-export function FormikExample({
-  baseUrl = "http://127.0.0.1:55012",
-}: {
-  baseUrl?: string;
-}) {
+export function FormikExample({ baseUrl }: { baseUrl?: string }) {
   const idPrefix = React.useId();
   const [profileId, setProfileId] = React.useState<string>();
   const client = createClient(
     FormExamplesService,
-    createConnectTransport({ baseUrl })
+    createFormExamplesTransport(baseUrl)
   );
 
   return (

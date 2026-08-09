@@ -30,6 +30,26 @@ describe("server-error form example", () => {
     );
   });
 
+  it("submits through an in-browser service when no server URL is provided", async () => {
+    const user = userEvent.setup();
+
+    render(<ServerErrorFormExample />);
+
+    await user.type(
+      screen.getByRole("textbox", { name: displayNamePattern }),
+      "Ada Lovelace"
+    );
+    await user.type(
+      screen.getByRole("textbox", { name: emailPattern }),
+      "ada@example.com"
+    );
+    await user.click(screen.getByRole("button", { name: "Submit" }));
+
+    expect(await screen.findByRole("status")).toHaveTextContent(
+      "profiles/ada-lovelace"
+    );
+  });
+
   it("submits a generated protobuf message to the local Connect server", async () => {
     const server = await buildExampleServer();
     const address = await server.listen({ host: "127.0.0.1", port: 0 });

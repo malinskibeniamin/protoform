@@ -1,12 +1,11 @@
 "use client";
 
-import type { Transport } from "@connectrpc/connect";
+import { createRouterTransport, type Transport } from "@connectrpc/connect";
 import {
   skipToken,
   TransportProvider,
   useQuery,
 } from "@connectrpc/connect-query";
-import { createConnectTransport } from "@connectrpc/connect-web";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 
@@ -36,6 +35,7 @@ import {
 
 import { CreateBookForm } from "./create-book-form";
 import { DeleteBookForm } from "./delete-book-form";
+import { createLibraryService } from "./library-service";
 import { UpdateBookForm } from "./update-book-form";
 
 export const client = "only";
@@ -51,18 +51,6 @@ const VISITOR_KEY = "protoform-bookstore-visitor";
 
 function newVisitorId(): string {
   return `demo-${globalThis.crypto.randomUUID().toLowerCase()}`;
-}
-
-function defaultServiceUrl(): string {
-  if (
-    typeof window !== "undefined" &&
-    (window.location.hostname === "127.0.0.1" ||
-      window.location.hostname === "localhost") &&
-    window.location.port === "55011"
-  ) {
-    return "http://127.0.0.1:55012";
-  }
-  return "/api";
 }
 
 function initialVisitorId(provided?: string): string {
@@ -89,7 +77,9 @@ export function BookstoreDemo({
   const [transport] = useState(
     () =>
       providedTransport ??
-      createConnectTransport({ baseUrl: defaultServiceUrl() })
+      createRouterTransport((router) =>
+        router.service(LibraryService, createLibraryService())
+      )
   );
   const [visitorId, setVisitorId] = useState(() =>
     initialVisitorId(providedVisitorId)

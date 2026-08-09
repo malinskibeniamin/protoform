@@ -1,7 +1,6 @@
 "use client";
 
 import { createClient } from "@connectrpc/connect";
-import { createConnectTransport } from "@connectrpc/connect-web";
 import React from "react";
 import {
   Alert,
@@ -17,6 +16,7 @@ import {
 } from "@/registry/base-nova/protoform/components/field";
 import { Input } from "@/registry/base-nova/protoform/components/input";
 import { useProtoForm } from "@/registry/base-nova/protoform/hooks/use-proto-form-tanstack";
+import { createFormExamplesTransport } from "../browser-transport.js";
 import {
   FormExamplesService,
   SubmitBasicFormRequestSchema,
@@ -33,16 +33,12 @@ function fieldErrorMessage(error: unknown): string | undefined {
   return;
 }
 
-export function TanStackFormExample({
-  baseUrl = "http://127.0.0.1:55012",
-}: {
-  baseUrl?: string;
-}) {
+export function TanStackFormExample({ baseUrl }: { baseUrl?: string }) {
   const [profileId, setProfileId] = React.useState<string>();
   const [rootErrors, setRootErrors] = React.useState<string[]>([]);
   const client = createClient(
     FormExamplesService,
-    createConnectTransport({ baseUrl })
+    createFormExamplesTransport(baseUrl)
   );
   const form = useProtoForm(SubmitBasicFormRequestSchema, {
     defaultValues: {

@@ -42,12 +42,7 @@ interface DocsPage {
 const sidebarHierarchy = [
   {
     label: "Start here",
-    pages: [
-      "Getting started",
-      "Bookstore walkthrough",
-      "Registry install",
-      "MCP for agents",
-    ],
+    pages: ["Getting started", "Bookstore walkthrough", "Registry install"],
   },
   {
     label: "Examples",

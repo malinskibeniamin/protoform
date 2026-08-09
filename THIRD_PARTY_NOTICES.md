@@ -18,9 +18,8 @@ is in [LICENSES/shadcn-MIT.txt](LICENSES/shadcn-MIT.txt).
 
 ## Blume
 
-`patches/blume@1.2.1.patch` includes a small modification to
-[Blume](https://github.com/haydenbleasel/blume). Blume is used under the MIT License. The upstream
-notice is in [LICENSES/blume-MIT.txt](LICENSES/blume-MIT.txt).
+The documentation site uses [Blume](https://github.com/haydenbleasel/blume) under the MIT License.
+The upstream notice is in [LICENSES/blume-MIT.txt](LICENSES/blume-MIT.txt).
 
 ## Contributor Covenant
 

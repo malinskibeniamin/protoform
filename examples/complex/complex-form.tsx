@@ -2,10 +2,8 @@
 
 import { create } from "@bufbuild/protobuf";
 import { createClient } from "@connectrpc/connect";
-import { createConnectTransport } from "@connectrpc/connect-web";
 import React from "react";
 import type { UseFormReturn } from "react-hook-form";
-
 import {
   Alert,
   AlertDescription,
@@ -19,8 +17,8 @@ import {
   Heading,
   Text,
 } from "@/registry/base-nova/protoform/components/typography";
-
 import { applyServerFieldErrors } from "../apply-server-errors.js";
+import { createFormExamplesTransport } from "../browser-transport.js";
 import {
   ApiKeyCredentialsSchema,
   CloudProvider,
@@ -87,7 +85,7 @@ function ComplexReviewSummary({ payload }: { payload: unknown }) {
 }
 
 export default function ComplexFormExample({
-  baseUrl = "http://127.0.0.1:55012",
+  baseUrl,
   initialProjectId = "launch-demo",
 }: {
   baseUrl?: string;
@@ -99,7 +97,7 @@ export default function ComplexFormExample({
   }>();
   const rpcClient = createClient(
     FormExamplesService,
-    createConnectTransport({ baseUrl })
+    createFormExamplesTransport(baseUrl)
   );
   const defaultValues = create(SubmitComplexFormRequestSchema, {
     approvalTicket: "OPS-142",

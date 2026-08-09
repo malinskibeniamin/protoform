@@ -1,7 +1,6 @@
 "use client";
 
 import { createClient } from "@connectrpc/connect";
-import { createConnectTransport } from "@connectrpc/connect-web";
 import { FORM_ERROR } from "final-form";
 import React from "react";
 import { Field as FinalField, Form as FinalForm } from "react-final-form";
@@ -22,6 +21,7 @@ import {
   createFinalFormValidator,
   standardSchemaIssuesToFormErrors,
 } from "@/registry/base-nova/protoform/lib/core";
+import { createFormExamplesTransport } from "../browser-transport.js";
 import { FormExamplesService } from "../gen/protoform/examples/v1/forms_pb.js";
 import {
   type BasicFormValues,
@@ -57,16 +57,12 @@ function mapSubmissionErrors(error: unknown) {
   };
 }
 
-export function FinalFormExample({
-  baseUrl = "http://127.0.0.1:55012",
-}: {
-  baseUrl?: string;
-}) {
+export function FinalFormExample({ baseUrl }: { baseUrl?: string }) {
   const idPrefix = React.useId();
   const [profileId, setProfileId] = React.useState<string>();
   const client = createClient(
     FormExamplesService,
-    createConnectTransport({ baseUrl })
+    createFormExamplesTransport(baseUrl)
   );
 
   return (
