@@ -57,6 +57,13 @@ export function OneofFieldRenderer({
     selectedSchemaField !== undefined &&
     isDeprecatedField(selectedSchemaField);
   const oneofDisabled = isDisabled || selectedDeprecatedDisabled;
+  const selectedValueLabel = selectedField
+    ? getLabel(selectedField)
+    : oneofValue.case
+      ? 'Unavailable selection'
+      : field.required
+        ? undefined
+        : 'Not set';
 
   React.useEffect(() => {
     if (!oneofValue.case) {
@@ -116,7 +123,7 @@ export function OneofFieldRenderer({
           value={oneofValue.case ?? null}
         >
           <SelectTrigger aria-label={String(label)} disabled={oneofDisabled} id={fullPath} testId={controlTestId}>
-            <SelectValue placeholder="Choose a field" />
+            <SelectValue placeholder="Choose a field">{selectedValueLabel}</SelectValue>
           </SelectTrigger>
           <SelectContent>
             {field.required ? null : (

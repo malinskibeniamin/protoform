@@ -100,6 +100,8 @@ describe.each([
 
     const contactSelector = screen.getByRole('combobox', { name: 'Contact' });
     expect(contactSelector).not.toHaveTextContent('Legacy contact');
+    expect(contactSelector).not.toHaveTextContent('legacyContact');
+    expect(contactSelector).toHaveTextContent('Unavailable selection');
     fireEvent.click(contactSelector);
     expect(screen.queryByRole('option', { name: 'Legacy contact' })).not.toBeInTheDocument();
     expect(screen.getByRole('option', { name: 'Current contact' })).toBeInTheDocument();
