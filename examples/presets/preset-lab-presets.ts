@@ -1,8 +1,4 @@
-import {
-  decodePreset,
-  encodePreset,
-  type PresetConfig,
-} from "./shadcn-preset-codec";
+import { decodePreset, encodePreset, type PresetConfig } from "shadcn/preset";
 
 export type PresetMode = "light" | "dark";
 export type PresetRadius = PresetConfig["radius"];
