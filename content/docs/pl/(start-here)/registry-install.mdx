@@ -1,0 +1,83 @@
+---
+title: Instalacja z rejestru
+---
+Protoform jest dystrybuowany jako niestandardowy rejestr w stylu shadcn. Możesz zainstalować pełny zestaw lub wybrać mniejszy punkt wejścia.
+
+## 1. Dodaj przestrzeń nazw rejestru
+
+```json title="components.json"
+{
+  "registries": {
+    "@protoform": "https://raw.githubusercontent.com/malinskibeniamin/protoform/v1.0.0/public/r/{name}.json"
+  }
+}
+```
+
+Zachowaj przypięty tag Git oraz ścieżkę `/r/{name}.json`, aby shadcn mógł rozpoznać każdy
+element `@protoform`.
+
+## 2. Wybierz cel instalacji
+
+Rejestr kopiuje cały kod źródłowy Protoform do aplikacji i instaluje wyłącznie publiczne zależności
+zewnętrzne. Rejestr npm Protoform ani token pakietu nie są wymagane.
+
+```bash
+# Hook only: React Hook Form + ProtoValidate + server error mapping
+bunx shadcn@latest add @protoform/use-proto-form
+
+# AutoForm components: protobuf-driven form renderer + shadcn fields
+bunx shadcn@latest add @protoform/auto-form
+
+# Native TanStack Form hook
+bunx shadcn@latest add @protoform/use-proto-form-tanstack
+
+# TanStack Form AutoForm
+bunx shadcn@latest add @protoform/auto-form-tanstack
+
+# Default React Hook Form stack
+bunx shadcn@latest add @protoform/protoform
+
+# Demos and generated example schemas
+bunx shadcn@latest add @protoform/protoform-examples
+
+# Complete five-RPC bookstore
+bunx shadcn@latest add @protoform/bookstore
+```
+
+## Warstwy rejestru
+
+| Element | Kiedy używać | Zawiera |
+| --- | --- | --- |
+| `use-proto-form` | Masz już interfejs formularza shadcn i chcesz korzystać z walidacji protobuf | `useProtoForm`, resolver ProtoValidate, narzędzia pomocnicze oneof, mapowanie błędów Connect/gRPC |
+| `use-proto-form-tanstack` | Korzystasz już z TanStack Form | Natywne API TanStack oraz komunikaty protobuf, maski aktualizacji, pola oneof i błędy serwera |
+| `auto-form` | Chcesz pól generowanych ze schematu z domyślnym silnikiem | Współdzielony renderer oraz adapter React Hook Form |
+| `auto-form-tanstack` | Chcesz pól generowanych ze schematu z TanStack Form | Współdzielony renderer oraz adapter TanStack Form |
+| `auto-form-core` | Utrzymujesz adapter silnika | Renderer niezależny od silnika, instalowany przez oba elementy AutoForm |
+| `protoform` | Chcesz korzystać z domyślnego zestawu funkcji produktu | Hook React Hook Form i AutoForm |
+| `protoform-examples` | Potrzebujesz demonstracyjnych implementacji referencyjnych | Wygenerowane przykładowe schematy i komponenty demonstracyjne |
+| `bookstore` | Potrzebujesz jednej kompletnej historii RPC | Pięć metod, wygenerowane powiązania, formularze i tymczasowa usługa |
+
+## Dlaczego ten podział?
+
+Natywne hooki pozwalają zespołom wdrożyć walidację protobuf bez zastępowania układu pól ani API
+stanu formularza. Elementy AutoForm dodają generowane pola tylko wtedy, gdy jest to przydatne. Współdzielony rdzeń zapewnia spójne
+działanie pól bez uzależniania jednej biblioteki formularzy od drugiej.
+
+## Przypnij migawkę źródła
+
+Hostowany rejestr zawiera aktualny kod źródłowy. Aby instalacja była powtarzalna, przypnij przestrzeń nazw do tagu
+Git:
+
+```json title="components.json"
+{
+  "registries": {
+    "@protoform": "https://raw.githubusercontent.com/malinskibeniamin/protoform/v1.0.0/public/r/{name}.json"
+  }
+}
+```
+
+```bash
+bunx shadcn@latest add @protoform/protoform
+```
+
+Aktualizacja jest wykonywana jawnie: ponownie uruchom `shadcn add`, przejrzyj różnice w kodzie źródłowym, a następnie zachowaj lub dostosuj zmiany.

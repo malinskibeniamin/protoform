@@ -1,0 +1,60 @@
+---
+title: Protoform
+description: 面向 protobuf 应用、兼容 Protovalidate 的 shadcn 表单。
+---
+Protoform 是一个 shadcn 风格的表单注册表，以 protobuf 作为事实来源。
+它结合了：
+
+- **Protovalidate**：提供可在客户端和服务器端通用的验证规则。
+- **React Hook Form**：作为默认生成的 AutoForm 引擎；此外还为 **TanStack Form** 提供原生 hook 和生成式 AutoForm。
+- **Formik** 和 **Final Form** 验证适配器：适用于继续使用这些状态 API 的应用。
+- **CEL 表达式**：用于条件业务规则。
+- **AutoForm 注解**：根据 protobuf 描述符生成 UI。
+- **Connect/gRPC 错误映射**：用于映射服务器端字段违规错误。
+- **[Standard Schema](/docs/standard-schema)**：为其他表单库提供可移植的验证接口。
+- **一致性测试套件**：覆盖描述符解析、验证、表单路径和值转换。
+- **生产就绪度配置**：衡量已验证的覆盖范围，并列出所有剩余测试。
+- **五个聚焦交互式演示中心**：涵盖 [Protobuf](/docs/protobuf-examples)、[Protovalidate](/docs/protovalidate-examples)、[CEL](/docs/cel-examples)、[生产行为](/docs/production-examples)和 AIP。
+- **[每项适用 AIP 的实时表单](/docs/aip-example-catalog)**：集中在一个中心，并提供关联可执行兼容性证据的稳定深层链接。
+
+## 存在的意义
+
+大多数表单技术栈从 TypeScript schema 开始，随后逐渐偏离 API 契约。
+Protoform 则以 protobuf 契约为起点：消息描述符可提供类型、验证、UI 元数据、oneof 结构、服务器错误路径和未来的代码生成 hook。
+
+```bash
+bunx shadcn@latest add @protoform/protoform
+```
+
+## 工作流程
+
+1. 保留应用已使用的 React Hook Form 或 TanStack Form API。
+2. 将原生 hook 导入替换为对应的 `useProtoForm(schema, options)`。
+3. 使用 Protovalidate 注解，避免重复编写前端验证逻辑。
+4. 使用 CEL 实现跨字段逻辑。
+5. 为 proto 文件添加注解，以自动生成表单。
+6. 将后端 `BadRequest.FieldViolation` 错误映射到具体字段。
+7. 使用 LLM 迁移提示词逐步迁移 Zod schema。
+8. 使用 `bun run test:conformance` 锁定公开行为。
+9. 使用 `bun run readiness:report` 跟踪剩余的生产就绪工作。
+
+现有 Protobuf-ES v1 应用应从
+[v2 迁移指南](/docs/protobuf-v2-migration)开始；Protoform 仅接受 v2 生成的 schema。
+
+请查看实时[生产就绪度仪表板](/docs/production-readiness)，了解 Protobuf、Protovalidate、CEL、Google AIP 和各运行时领域的当前评分。
+
+```mermaid
+flowchart TD
+  Contract["Define .proto"] --> Generate["Generate schemas"]
+
+  subgraph React[Choose the React seam]
+    RHF["React Hook Form"]
+    TanStack["TanStack Form"]
+  end
+
+  Generate --> RHF
+  Generate --> TanStack
+  RHF --> Components["Native hook or generated fields"]
+  TanStack --> Components
+  Components --> Submit["Typed request"]
+```

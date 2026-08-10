@@ -1,0 +1,206 @@
+---
+title: CEL 表达式
+description: 无需重复逻辑，即可构建跨字段、集合、映射、存在性和时间策略。
+---
+Protovalidate 消息约束使用 CEL 表达不适合单个字段注解的语义规则。Protoform 通过 `@bufbuild/cel` 和
+protobuf v2 描述符层在 TypeScript 中编译并执行这些规则，因此浏览器验证的请求结构与契约一致。
+
+```proto
+message RetentionPolicy {
+  bool infinite = 1;
+  int64 retention_ms = 2;
+
+  option (buf.validate.message).cel = {
+    id: "retention.required_when_not_infinite"
+    message: "Retention must be set unless infinite retention is enabled."
+    expression: "this.infinite || this.retention_ms > 0"
+  };
+}
+```
+
+请优先使用内置字段约束。当不变量依赖多个字段或集合元素时，再使用 CEL。
+
+| 能力 | 示例 |
+| --- | --- |
+| 跨字段蕴含 | `!this.enabled || has(this.config)` |
+| 重复消息策略 | `this.services.all(service, service.replicas >= 3)` |
+| 跨集合引用 | `this.regions.exists(region, region == service.primary_region)` |
+| 按嵌套属性唯一 | `this.services.filter(candidate, candidate.name == service.name).size() == 1` |
+| 映射成员关系和索引 | `'owner' in this.labels && this.labels['owner'].matches(...)` |
+| Oneof 或可选字段存在性 | `has(this.notification_webhook)` |
+| 时间戳运算 | `this.end - this.start <= duration('14400s')` |
+| 条件错误文本 | `condition ? '' : 'Explain the exact failure.'` |
+
+先从针对性更强的 [CEL 和 RE2 表单](/docs/cel-re2-form)开始。实时的
+[综合示例](/docs/kitchen-sink)在一个经过测试的 protobuf 请求中组合了所有这些操作。
+
+## 完整能力基线
+
+Protoform 逐项跟踪官方 CEL 语言定义中与表单相关的能力，而不是笼统地提供一个“支持 CEL”的复选框。
+每个已验证行都对应可执行测试；尚不支持的运行时能力会继续作为就绪差距明确列出。
+
+| 能力领域 | 覆盖的行为 | 当前状态 |
+| --- | --- | --- |
+| 语法、字面量和类型 | 布尔值、null、有符号和无符号整数、双精度浮点数、字符串、字节、列表、映射和类型值 | 已验证 |
+| 运算符和转换 | 逻辑、关系、算术、成员关系、索引、条件运算和显式标量转换 | 已验证 |
+| 集合 | 列表、映射、`all`、`exists`、`exists_one`、`filter` 和 `map` | 已验证 |
+| Protobuf 消息 | 消息字段、枚举、可选字段和消息存在性、重复字段、映射和嵌套值 | 已验证 |
+| 文本和二进制 | 字符串谓词、RE2 匹配、Unicode 大小、字节字面量、相等性和大小 | 已验证 |
+| 时间值 | 时间戳、时长、构造、比较、访问器、加法和减法 | 已验证 |
+| 求值行为 | 错误传播、逻辑短路、格式错误的表达式和运行时失败 | 已验证 |
+| 生命周期 | 解析 → 检查 → 求值、可复用计划和有界 UI 编译缓存 | 已通过 Buf lint 和运行时测试验证 |
+| UI 表达式配置 | 仅提供 `form` 和当前 `this` 值；结果为布尔值；失败时关闭 | 已验证 |
+| 复杂度下限 | CEL 要求的重复和嵌套最低限值 | 已验证 |
+| 部分未知集合 | 宿主提供的精确属性路径、未知集合传播和逻辑短路 | 已验证 |
+| 求值成本限制 | 每次求值可配置的表达式步骤预算，包括重复执行的推导工作 | 已验证 |
+
+时间值一行同时涵盖时间戳和时长。
+
+受防护的运行时添加了底层求值器未直接提供的宿主控制。未知属性使用显式的精确路径，与求值错误保持区分，
+合并为稳定集合，同时仍遵循布尔短路。每个原始 AST 节点消耗一个成本单位，因此推导式主体在每次迭代时都会
+再次消耗预算。超过限制时，会在运行下一个节点之前返回类型化的安全结果。
+
+```ts
+import { compileCelExpression } from "@/components/auto-form"
+
+const evaluate = compileCelExpression(
+  "form.enabled && form.restricted_region == 'eu-central1'",
+  {
+    maxCost: 500,
+    unknownAttributes: ["form.restricted_region"],
+  }
+)
+
+const result = evaluate({ form: { enabled: true } })
+
+switch (result.kind) {
+  case "value":
+    console.log(result.value)
+    break
+  case "unknown":
+    console.log(result.attributes)
+    break
+  case "cost-exceeded":
+    console.log(result.cost, result.limit)
+    break
+  case "error":
+    console.error(result.error)
+    break
+  default:
+    result satisfies never
+}
+```
+
+默认限制为 10,000 个表达式步骤。UI 规则使用此有限默认值，并在遇到未知集合、成本耗尽、源代码格式错误、
+运行时错误或非布尔结果时关闭。此成本模型刻意保持确定性；它并不声称在数值上与其他 CEL 实现的估算器一致。
+
+## 解析、检查、求值和缓存
+
+生命周期按正确的边界拆分：
+
+1. `buf lint` 根据相应 protobuf 描述符解析并对每个 Protovalidate 表达式进行类型检查。
+2. TypeScript 运行时解析已接受的表达式，并创建可复用的求值计划。
+3. 验证过程针对每条消息执行该计划。
+4. AutoForm 为展示表达式维护一个有界的 256 项编译缓存。
+
+```ts
+import { CelScalar, celEnv, parse, plan } from "@bufbuild/cel"
+
+const env = celEnv({ variables: { value: CelScalar.INT } })
+const parsed = parse("value * 2")
+const evaluate = plan(env, parsed)
+
+evaluate({ value: 2n }) // 4n
+evaluate({ value: 7n }) // 14n; no second parse or plan
+```
+
+切勿在渲染期间解析和规划用户表达式。Protobuf 验证表达式根据描述符编译；UI 表达式使用有界缓存。
+
+## UI 表达式配置
+
+`visible_when` 和 `disabled_when` 有意使用比验证 CEL 更小的宿主环境：
+
+- `form` 公开当前表单值。
+- `this` 仅公开当前字段值。
+- 结果必须恰好是布尔值 `true`，规则才会启用。
+- 格式错误的表达式、缺失的名称、运行时错误和非布尔结果均会导致规则关闭。
+- UI 规则不能执行 I/O、修改、异步工作或授权检查。
+
+展示表达式绝不能替代 Protovalidate。即使客户端绕过表单，被 UI CEL 隐藏的字段也必须保持安全有效。
+
+## 布尔值和字符串契约
+
+返回布尔值的规则在结果为 `true` 时通过，在结果为 `false` 时失败。其注解必须包含非空
+`message`：
+
+```proto
+message ChangeWindow {
+  option (buf.validate.message).cel = {
+    id: "change.window"
+    message: "The change window must run forward and last no more than four hours."
+    expression: "!has(this.start) || (this.end > this.start && this.end - this.start <= duration('14400s'))"
+  };
+
+  google.protobuf.Timestamp start = 1;
+  google.protobuf.Timestamp end = 2;
+}
+```
+
+相比之下，返回字符串的规则在结果为空字符串时通过，在结果为返回文本时失败。其注解消息必须保持为空：
+
+```proto
+message Rollout {
+  option (buf.validate.message).cel = {
+    id: "rollout.sequence"
+    expression: "this.stages.size() < 2 ? 'Use at least two stages.' : this.stages[0] != 5 ? 'Begin at 5%.' : ''"
+  };
+
+  repeated int32 stages = 1;
+}
+```
+
+当一个表达式具有紧凑的决策树，并且每个分支都能提供更好的恢复说明时，请使用动态文本。否则，优先使用独立的
+布尔规则：稳定 ID 能让失败情况更易于度量、翻译、测试并映射到产品行为。
+
+## 嵌套集合策略
+
+CEL 推导式可以关联重复消息，也可以将其与映射关联。以下简化的图规则检查服务名称唯一性、依赖目标有效性
+以及速率限制的归属关系：
+
+```js CEL
+this.services.all(service,
+  this.services.filter(candidate,
+    candidate.name == service.name
+  ).size() == 1 &&
+  service.dependencies.all(dependency,
+    dependency != service.name &&
+    this.services.exists(candidate,
+      candidate.name == dependency
+    )
+  )
+) &&
+this.rate_limits.all(name,
+  this.services.exists(service,
+    service.name == name
+  )
+)
+```
+
+完整的综合契约还加入了区域覆盖、公共端点策略、直接循环检测、数值预算分配、生产环境批准、通知路由和动态发布错误。
+
+## 强大而不混乱
+
+- 为每条规则提供稳定且全局唯一的 ID。绝不要为不同的不变量复用 ID。
+- 每条规则尽量只提供一种失败说明。当用户需要区分各分支时，应拆分庞大的布尔规则。
+- 对局部要求、范围、格式、条目限制和唯一性使用字段注解；仅将 CEL 用于这些注解无法表达的关系。
+- 使用 `max_items` 和 `max_pairs` 限制重复字段和映射的大小。嵌套推导式是确定性的，但其工作量仍会随输入大小增长。
+- 为每个分支测试一条已知有效的消息和一个最小失败夹具。运行 `buf lint`，确保表达式在代码生成之前能够编译并返回允许的类型。
+- CEL 中不得包含 I/O、网络调用、身份验证查询、修改或异步验证。将依赖环境的策略保留在后端，并返回结构化违规信息。
+- 不要模拟递归。CEL 有意设计为非图灵完备。对任意深度的图遍历使用有界后端算法。
+- 将 `visible_when` 等 UI CEL 仅视为展示逻辑。Protovalidate 消息 CEL 才是契约；隐藏 UI 绝不能成为安全或数据完整性规则的唯一保障。
+
+根据 [CEL 语言规范](https://github.com/google/cel-spec)，CEL 具有确定性、无修改能力，专为安全地求值用户编写的策略而设计。
+Protovalidate 添加了由官方 [Buf lint 规则](https://buf.build/docs/lint/rules/)强制执行的规则结果和注解要求。
+
+有关已验证的 CEL 覆盖情况，以及其余字段、消息、嵌套路径、多违规和失败模式测试，请参阅
+[生产就绪性](/docs/production-readiness)。

@@ -1,0 +1,55 @@
+---
+title: AIP 资源表单
+description: 编辑资源，同时 Protoform 从更新掩码中排除服务器拥有的字段。
+---
+**第 7 级，共 8 级**
+
+**前置条件：** [服务器错误表单](/docs/server-error-form)
+
+此示例将一个 AIP 风格的资源转换为更新表单。编辑显示名称和个人简介；
+提交状态会显示根据已修改且客户端可写的字段构建的 protobuf 字段掩码。
+
+<div className="my-8 border-y border-border/60 py-8">
+  <AipResourceFormExample />
+</div>
+
+## 新增内容
+
+- 一个 `(google.api.resource)` 描述符。
+- `IDENTIFIER`、`IMMUTABLE` 和 `OUTPUT_ONLY` 字段行为。
+- 根据已修改的可写字段自动生成 snake_case 更新掩码。
+
+## 契约
+
+```proto
+message MaskableProfile {
+  option (google.api.resource) = {
+    type: "protoform.example.com/Profile"
+    pattern: "profiles/{profile}"
+  };
+
+  string name = 1 [(google.api.field_behavior) = IDENTIFIER];
+  string display_name = 2;
+  string biography = 3;
+  string home_region = 4 [(google.api.field_behavior) = IMMUTABLE];
+  string lifecycle_state = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+```
+
+## React
+
+```tsx
+<AutoForm
+  defaultValues={profile}
+  schema={MaskableProfileSchema}
+  withSubmit
+  onSubmit={(_profile, _form, context) => {
+    sendUpdate(context.updateMask)
+  }}
+/>
+```
+
+客户端负责构建掩码；服务器仍会验证掩码、合并补丁、强制执行 etag，并
+对更新进行授权。有关完整的资源和标准方法结构，请参阅 [Google AIP 和 protobuf 设计](/docs/aip-protobuf)。
+
+**下一步：** [综合示例](/docs/kitchen-sink)

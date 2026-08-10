@@ -1,0 +1,94 @@
+---
+title: React Hook Form
+description: 将 Protoform 用作 React Hook Form 的直接替代层。
+---
+shadcn React Hook Form 指南从 Zod 开始。Protoform 保持相同的 UI 结构，但将
+schema resolver 替换为 protobuf descriptor。React Hook Form 仍是默认引擎，也是
+Protoform 的参考行为。
+
+```bash
+bunx shadcn@latest add @protoform/use-proto-form
+```
+
+```tsx
+import { Controller } from "react-hook-form";
+import { Button } from "@/components/ui/button";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { useProtoForm } from "@/hooks/use-proto-form";
+import { SignupRequestSchema } from "@/gen/example/v1/signup_pb";
+
+export function SignupForm() {
+  const form = useProtoForm(SignupRequestSchema, {
+    defaultValues: { email: "", displayName: "" },
+  });
+
+  return (
+    <form onSubmit={form.handleSubmit((values) => console.log(form.createMessage(values)))}>
+      <Controller
+        control={form.control}
+        name="email"
+        render={({ field, fieldState }) => (
+          <Field data-invalid={fieldState.invalid}>
+            <FieldLabel htmlFor={field.name}>Email</FieldLabel>
+            <Input {...field} id={field.name} aria-invalid={fieldState.invalid} />
+            {fieldState.invalid ? <FieldError errors={[fieldState.error]} /> : null}
+          </Field>
+        )}
+      />
+      <Button type="submit">Create account</Button>
+    </form>
+  );
+}
+```
+
+## 可获得的功能
+
+- 底层使用 `resolver: createProtoResolver(schema)`。
+- 使用 `createMessage(values)` 将表单值转换为 protobuf message。
+- 使用 `createUpdateMask()`，仅在更新请求中包含已修改且可写的 protobuf 路径。
+- 使用 `setOneofValue(path, case, value)` 安全地更新 oneof。
+- 使用 `setServerErrors(error)` 将 Connect/gRPC 字段违规映射回 RHF。
+
+返回值是完整的 `UseFormReturn`，因此现有的 `Controller`、`useFieldArray`、
+`watch`、`reset`、resolver 选项以及不常见的 React Hook Form 模式仍然可用。
+
+## 生成字段
+
+默认 registry item 使用 React Hook Form：
+
+```bash
+bunx shadcn@latest add @protoform/auto-form
+```
+
+```tsx
+import { AutoForm } from "@/components/auto-form";
+import { SignupRequestSchema } from "@/gen/example/v1/signup_pb";
+
+export function SignupForm() {
+  return (
+    <AutoForm
+      schema={SignupRequestSchema}
+      formOptions={{ shouldFocusError: true }}
+      validationMode="blur"
+      revalidationMode="change"
+      onFormInit={(form) => {
+        // Full React Hook Form API.
+        form.watch("email");
+      }}
+      onSubmit={async (message, form, { updateMask, signal }) => {
+        await client.signup(message, { signal });
+        console.log(form.formState.isDirty, updateMask?.paths);
+      }}
+      withSubmit
+    />
+  );
+}
+```
+
+`formOptions` 会传递给 `useForm`。`onFormInit`、`onFieldChange` 和 `onSubmit` 接收
+原生 React Hook Form 实例。Protoform 在不替换你已熟悉 API 的前提下，增加了生成式渲染。
+
+已经标准化使用其他表单 store？请参阅
+[TanStack Form](/docs/tanstack-form) 中的原生 hook 和生成式 AutoForm 路径，或
+[Formik](/docs/formik) 和 [Final Form](/docs/final-form) adapter。

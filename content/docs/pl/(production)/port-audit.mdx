@@ -1,0 +1,60 @@
+---
+title: Audyt portu
+description: Bieżący zakres, zgodność kontraktów i celowo wyznaczone granice.
+---
+Port Protoform obejmuje natywne hooki, dostawcę deskryptorów, wygenerowane powiązania, współdzielony
+renderer AutoForm, adaptery frameworków oraz weryfikację po stronie konsumenta dla formularzy React opartych na protobuf.
+
+## Bieżący zakres
+
+- Natywne fasady `useProtoForm` dla React Hook Form i TanStack Form z walidacją Protovalidate i CEL.
+- `useProtoFormDefaults` dla typowanych wartości domyślnych protobuf.
+- Spłaszczanie oneof i czyszczenie gałęzi w natywnych ścieżkach bibliotek formularzy.
+- Mapowanie `BadRequest.FieldViolation` z Connect/gRPC z powrotem na dostępne pola.
+- Wyodrębnianie kontekstu `google.rpc.*` na potrzeby podsumowań i metadanych pomocy technicznej.
+- Skalary, typy wyliczeniowe, mapy, pola powtarzane, oneof, pola opcjonalne, wrappery i dobrze znane typy.
+- Tryby AutoForm: prosty, zaawansowany, JSON i podsumowanie.
+- Adnotacje interfejsu użytkownika dla etykiet, opisów, tekstów zastępczych, przykładów, pól poufnych, widoczności,
+  reguł wyłączenia, dostawców danych i niestandardowych kontrolek.
+- Kontrolki shadcn zarządzane w kodzie źródłowym, podzielone na natywne hooki, współdzielony rdzeń AutoForm, natywne
+  adaptery AutoForm, element zbiorczy i przykłady.
+- Polecenie `protoc-gen-protoform` do generowania powiązań formularzy.
+- Standard Schema v1 jako granica interoperacyjności walidacji.
+- Samodzielny zestaw wymaganych i zalecanych testów zgodności dla publicznych interfejsów TypeScript.
+- Objęte testami zgodności: walidacja TanStack Form, Formik i Final Form, typowane przesyłanie oraz
+  ustrukturyzowane błędy serwera.
+- Adaptery AutoForm dla React Hook Form i TanStack Form ze współdzielonymi kontraktami pól, kolekcji, oneof,
+  cyklu życia walidacji, dostępności i przesyłania protobuf.
+
+## Zgodność z AIP
+
+Protoform utrzymuje zagadnienia Google AIP w odpowiednich warstwach:
+
+- `name` zasobu, `{resource}_id`, `parent`, `etag` i zachowania pól pozostają elementami kontraktu API.
+- Protovalidate i CEL wymuszają poprawność wartości; adnotacje AutoForm opisują wyłącznie sposób prezentacji.
+- Gałęzie oneof zachowują semantykę obecności protobuf, zamiast stawać się luźnymi uniami frontendu.
+- Błędy Connect/gRPC zachowują ścieżki pól protobuf i są mapowane z powrotem na wyrenderowany formularz.
+- Formularze aktualizacji mogą dostarczać zmodyfikowane, edytowalne ścieżki, natomiast serwer odpowiada za walidację `update_mask`,
+  współbieżność, izolację dzierżawców i walidację scalonego zasobu.
+
+Kanoniczne przykłady zasobów i standardowych metod znajdziesz w sekcji [Google AIP i projektowanie protobuf](/docs/aip-protobuf).
+
+## Zakres weryfikacji
+
+| Granica | Kontrola |
+| --- | --- |
+| Pakiety uruchomieniowe | Kompilacje przestrzeni roboczej, sprawdzanie typów, testy jednostkowe i test dymny czystej instalacji pakietu |
+| Kontrakty publiczne | Przypadki zgodności dla modeli pól, Standard Schema, ścieżek formularzy i konwersji w obie strony |
+| Rejestr | Kompilacja rejestru, test dymny struktury elementu i rzeczywisty wygenerowany fixture konsumenta |
+| Formularze | Testy integracyjne i przeglądarkowe renderowania pól, oneof, walidacji i błędów serwera |
+| Dokumentacja | Ścisła walidacja i kompilacja Blume oraz nawigacja w uwodnionej aplikacji przeglądarkowej i zrzuty ekranu |
+| Wygenerowany kod | Aktualizacja zależności Buf i wszystkie repozytoryjne szablony generowania |
+
+## Celowo wyznaczone granice
+
+- React Hook Form jest domyślnym silnikiem AutoForm i zachowaniem referencyjnym. TanStack Form ma
+  oddzielny natywny element rejestru AutoForm oparty na tym samym rendererze. Aplikacje Formik i Final Form
+  używają podstawowych adapterów Standard Schema bez równoważnej obsługi wygenerowanego AutoForm.
+- Protoform korzysta z adnotacji AIP, ale nie zastępuje lintowania AIP ani egzekwowania reguł w handlerach po stronie API.
+- Hosting rejestru i dokumentacji stanowi kwestię wdrożeniową; lokalne kompilacje konsumenta i dokumentacji weryfikują
+  artefakty przed wdrożeniem.

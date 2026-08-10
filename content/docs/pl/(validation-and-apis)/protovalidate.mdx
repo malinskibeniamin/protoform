@@ -1,0 +1,74 @@
+---
+title: Protovalidate
+description: Zachowaj walidację klienta i serwera w kontrakcie protobuf.
+---
+Protoform korzysta z Protovalidate ES, dlatego reguły walidacji pochodzą z adnotacji `buf.validate`.
+Te same reguły pól i niezmienniki CEL mogą działać w środowiskach przeglądarki i serwera bez ponownego tworzenia
+kontraktu w schemacie przeznaczonym wyłącznie dla frontendu.
+
+[Panel gotowości produkcyjnej](/docs/production-readiness) śledzi oddzielnie każdą zainstalowaną rodzinę standardowych reguł,
+dzięki czemu kilku typowych przykładów dla ciągów znaków i liczb nie można pomylić z pełnym pokryciem.
+
+```proto
+message CreateTopicRequest {
+  string name = 1 [(buf.validate.field).string = {
+    pattern: "^[a-z][a-z0-9-]{2,62}$"
+    min_len: 3
+    max_len: 63
+  }];
+
+  int32 partitions = 2 [(buf.validate.field).int32 = {
+    gte: 1
+    lte: 1000
+  }];
+}
+```
+
+```tsx
+const form = useProtoForm(CreateTopicRequestSchema, {
+  mode: "onChange",
+  defaultValues: { name: "", partitions: 3 },
+});
+```
+
+W przeciwieństwie do oddzielnego schematu Zod walidacja nadal działa poprawnie, gdy kontrakt protobuf się zmienia.
+
+## Współdziałanie ze Standard Schema
+
+Pakiet protobuf udostępnia Protovalidate jako implementację
+[Standard Schema v1](https://standardschema.dev/). `createProtoFormSchema` przyjmuje wartości
+formularza, waliduje je za pomocą wygenerowanego deskryptora protobuf i po powodzeniu zwraca typowaną wiadomość protobuf.
+Zgłaszane problemy używają ścieżek zgodnych ze strukturą formularza, w tym spłaszczonych pól oneof i wpisów map.
+
+```tsx
+import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
+import { createProtoFormSchema } from "@/lib/protobuf-provider";
+import { useForm } from "react-hook-form";
+
+const schema = createProtoFormSchema(CreateTopicRequestSchema);
+const form = useForm({
+  resolver: standardSchemaResolver(schema),
+});
+```
+
+Jest to neutralny punkt współdziałania z innym konsumentem Standard Schema lub frameworkiem formularzy. TanStack
+Form obsługuje ten schemat natywnie, a Formik i Final Form korzystają z adapterów
+[Formik](/docs/formik) i [Final Form](/docs/final-form), które nie wymagają dodatkowych zależności.
+Aplikacje Protoform React korzystające z React Hook Form powinny zwykle wybierać `useProtoForm`. Jego niestandardowy
+resolver dodaje mapowanie błędów specyficzne dla protobuf, przekształcanie ogólnych komunikatów na czytelne dla użytkownika,
+obsługę walidacji natywnej oraz błędów CEL na poziomie głównym.
+
+Pełną macierz funkcji, dowody zgodności z Zod 4 i Zod Mini, przepisy dotyczące adapterów oraz granicę
+między walidacją a renderowaniem AutoForm znajdziesz w sekcji [Standard Schema](/docs/standard-schema).
+
+## Protoform a Zod
+
+| Obszar | Formularz oparty na Zod | Protoform |
+| --- | --- | --- |
+| Kontrakt API | Ponownie modelowany w TypeScript | Protobuf jest źródłem prawdy |
+| Walidacja w czasie wykonywania | Resolver Zod | Resolver Protovalidate |
+| Zgodność z serwerem | Ręczna synchronizacja | Te same adnotacje i reguły CEL |
+| Typy | `z.infer` | `MessageShape<typeof Schema>` oraz spłaszczanie oneof |
+| Format transmisji | Oddzielna transformacja | Typowana wiadomość protobuf na wyjściu |
+| Reguły między polami | `refine` | Wyrażenia CEL |
+| Współdziałanie z bibliotekami | API Zod | Standard Schema v1 |

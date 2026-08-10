@@ -1,0 +1,49 @@
+---
+title: 兩步驟表單
+description: 將兩個一般字串欄位拆分至最精簡實用的線性步驟導覽。
+---
+**第 2 級，共 8 級**
+
+**先備條件：**[極簡表單](/docs/bare-bones-form)
+
+此範例維持欄位簡單，僅變更呈現方式。每個步驟各包含一個字串欄位；「返回」和「繼續」會保留相同的表單狀態。
+
+<div className="my-8 border-y border-border/60 py-8">
+  <TwoStepFormExample />
+</div>
+
+## 新增內容
+
+- protobuf 欄位中繼資料中的穩定步驟 ID。
+- 包含兩個項目的 React 步驟設定。
+- 垂直進度軌，在窄螢幕上會移至表單上方。
+- 具備 `第 X 步，共 Y 步`、返回與繼續的無障礙線性導覽。
+- 一次型別明確的提交，包含兩個步驟的值。
+
+## 合約
+
+```proto
+message TwoStepForm {
+  string name = 1 [(protoform.v1.field_ui).step = "name"];
+  string email = 2 [(protoform.v1.field_ui).step = "contact"];
+}
+```
+
+## React
+
+```tsx
+const steps = [
+  { id: "name", title: "Name" },
+  { id: "contact", title: "Contact" },
+]
+
+<AutoForm<TwoStepForm>
+  schema={TwoStepFormSchema}
+  stepper={{ orientation: "vertical", steps }}
+  withSubmit
+/>
+```
+
+步驟順序仍由 React 負責呈現。描述元只會將每個欄位指派給穩定的步驟 ID。
+
+**下一篇：**[深層巢狀表單](/docs/deeply-nested)

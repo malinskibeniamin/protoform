@@ -1,0 +1,46 @@
+---
+title: Oneof 和边界情况
+---
+Protoform 将 protobuf `oneof` 视为一等表单概念，而不是松散的可辨识联合类型。
+
+## 分支切换
+
+使用 `setOneofValue`，以确保脏状态和验证保持一致。
+
+```tsx
+form.setOneofValue("delivery", "webhook", {
+  endpoint: "https://hooks.example.com/events",
+  signingSecretRef: "secrets/webhook-signing-key",
+})
+```
+
+当分支发生变化时，Protoform 会先清除上一个分支，再写入新分支。这可以防止隐藏联合分支中的陈旧值被提交。
+
+## 嵌套服务端错误
+
+后端通常返回如下 proto 路径：
+
+```txt
+delivery.webhook.signing_secret_ref
+```
+
+`setServerErrors` 会将其映射到所渲染字段对应的原生 React Hook Form 或 TanStack Form 路径。如果后端路径无法映射，返回值将包含 `unmapped`，以便调用方显示摘要或 toast。
+
+```tsx
+const result = form.setServerErrors(error)
+if (result.unmapped.length > 0) {
+  toast.error(result.unmapped.map((v) => v.description).join("\n"))
+}
+```
+
+有关摘要、丰富的 `google.rpc.*` 详细信息、无障碍支持和重试决策，请参阅
+[服务端错误](/docs/server-errors)。
+
+## 推荐测试
+
+- 分支初始状态为未设置
+- 切换分支时清除上一个分支
+- 分支特定的 CEL 错误显示在活动分支下
+- 切换后，非活动分支的错误不会阻止提交
+- 后端 snake_case 违规项映射到 camelCase 字段名称
+- 未映射的后端违规项仍会显示在摘要中

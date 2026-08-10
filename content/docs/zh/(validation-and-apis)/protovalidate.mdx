@@ -1,0 +1,68 @@
+---
+title: Protovalidate
+description: 在 protobuf 契约中统一客户端和服务器端验证。
+---
+Protoform 使用 Protovalidate ES，因此验证规则来自 `buf.validate` 注解。
+相同的字段规则和 CEL 不变量可在浏览器和服务器运行时中执行，无需在仅供前端使用的 schema 中重新创建契约。
+
+[生产就绪情况面板](/docs/production-readiness)会分别跟踪已安装的每个标准规则系列，因此不能用少数常见的字符串和数值示例误判为完整覆盖。
+
+```proto
+message CreateTopicRequest {
+  string name = 1 [(buf.validate.field).string = {
+    pattern: "^[a-z][a-z0-9-]{2,62}$"
+    min_len: 3
+    max_len: 63
+  }];
+
+  int32 partitions = 2 [(buf.validate.field).int32 = {
+    gte: 1
+    lte: 1000
+  }];
+}
+```
+
+```tsx
+const form = useProtoForm(CreateTopicRequestSchema, {
+  mode: "onChange",
+  defaultValues: { name: "", partitions: 3 },
+});
+```
+
+与单独的 Zod schema 不同，当 protobuf 契约演进时，此方案仍能正确执行验证。
+
+## Standard Schema 互操作性
+
+protobuf 包将 Protovalidate 作为
+[Standard Schema v1](https://standardschema.dev/) 实现公开。`createProtoFormSchema` 接收表单值，通过生成的 protobuf 描述符进行验证，并在成功时返回类型化的 protobuf message。其问题路径采用表单结构，包括扁平化的 oneof 和 map 条目。
+
+```tsx
+import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
+import { createProtoFormSchema } from "@/lib/protobuf-provider";
+import { useForm } from "react-hook-form";
+
+const schema = createProtoFormSchema(CreateTopicRequestSchema);
+const form = useForm({
+  resolver: standardSchemaResolver(schema),
+});
+```
+
+这是供其他 Standard Schema 使用方或表单框架使用的中立互操作接口。TanStack
+Form 原生支持此 schema；Formik 和 Final Form 使用无依赖的
+[Formik](/docs/formik) 和 [Final Form](/docs/final-form) 适配器。
+使用 React Hook Form 的 Protoform React 应用通常应优先选择 `useProtoForm`。其自定义
+resolver 增加了 protobuf 专用的错误映射、通用 message 人性化、原生验证支持，以及根级 CEL 错误处理。
+
+有关完整的能力矩阵、Zod 4 和 Zod Mini 一致性证据、适配器方案，以及验证与 AutoForm 渲染之间的边界，请参阅 [Standard Schema](/docs/standard-schema)。
+
+## Protoform 与 Zod 对比
+
+| 关注点 | Zod 优先表单 | Protoform |
+| --- | --- | --- |
+| API 契约 | 在 TypeScript 中重新建模 | Protobuf 是事实来源 |
+| 运行时验证 | Zod resolver | Protovalidate resolver |
+| 服务器端一致性 | 手动同步 | 使用相同的注解和 CEL 规则 |
+| 类型 | `z.infer` | `MessageShape<typeof Schema>` 加 oneof 扁平化 |
+| 线格式 | 单独转换 | 输出类型化的 protobuf message |
+| 跨字段规则 | `refine` | CEL 表达式 |
+| 库互操作性 | Zod API | Standard Schema v1 |

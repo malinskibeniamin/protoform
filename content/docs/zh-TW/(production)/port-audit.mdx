@@ -1,0 +1,61 @@
+---
+title: 連接埠稽核
+description: 目前的涵蓋範圍、契約一致性與刻意設定的邊界。
+---
+Protoform 移植版本包含原生 hooks、descriptor provider、產生的 bindings、共用的
+AutoForm renderer、框架 adapters，以及針對 protobuf 支援的 React 表單所進行的消費端驗證。
+
+## 目前的涵蓋範圍
+
+- 原生 React Hook Form 與 TanStack Form `useProtoForm` facades，支援 Protovalidate 與 CEL
+  驗證。
+- 使用 `useProtoFormDefaults` 提供具型別的 protobuf 預設值。
+- 原生表單函式庫路徑支援 oneof 扁平化與分支清除。
+- 將 Connect/gRPC `BadRequest.FieldViolation` 對應回可存取的欄位。
+- 擷取 `google.rpc.*` context，用於摘要與支援中繼資料。
+- 支援 scalars、enums、maps、repeated fields、oneofs、optional fields、wrappers 與 well-known types。
+- AutoForm simple、advanced、JSON 與 summary 模式。
+- UI annotations 支援 labels、descriptions、placeholders、examples、sensitive fields、visibility、
+  disabled rules、data providers 與 custom controls。
+- 原始碼自有的 shadcn controls，拆分為 native hooks、共用 AutoForm core、原生 AutoForm
+  adapters、umbrella item 與範例。
+- 用於產生表單 bindings 的 `protoc-gen-protoform` command。
+- 以 Standard Schema v1 作為驗證互通邊界。
+- 針對公開 TypeScript interfaces 的獨立必要與建議 conformance suite。
+- 經 conformance 測試的 TanStack Form、Formik 與 Final Form 驗證、具型別提交，以及
+  結構化伺服器錯誤。
+- React Hook Form 與 TanStack Form AutoForm adapters，共用欄位、集合、oneof、
+  驗證生命週期、無障礙功能與 protobuf 提交契約。
+
+## AIP 一致性
+
+Protoform 將 Google AIP 關注事項保留在正確的層級：
+
+- 資源 `name`、`{resource}_id`、`parent`、`etag` 與欄位行為仍屬於 API 契約概念。
+- Protovalidate 與 CEL 負責強制執行值；AutoForm annotations 僅描述呈現方式。
+- Oneof 分支保留 protobuf presence semantics，而不會變成鬆散的前端 unions。
+- Connect/gRPC 錯誤保留 protobuf 欄位路徑，並對應回已呈現的表單。
+- 更新表單可提供已變更且可編輯的路徑，而伺服器負責 `update_mask` 驗證、
+  並行控制、租戶隔離與合併後的資源驗證。
+
+標準資源與標準方法範例請參閱 [Google AIP 與 protobuf 設計](/docs/aip-protobuf)。
+
+## 驗證涵蓋範圍
+
+| 邊界 | 檢查 |
+| --- | --- |
+| Runtime packages | Workspace builds、型別檢查、單元測試，以及乾淨的 package-install smoke test |
+| 公開契約 | 欄位模型、Standard Schema、表單路徑與往返轉換的 conformance cases |
+| Registry | Registry build、item-shape smoke test，以及實際產生的 consumer fixture |
+| 表單 | 欄位呈現、oneofs、驗證與伺服器錯誤的整合及瀏覽器測試 |
+| 文件 | 嚴格的 Blume 驗證與建置，以及 hydrated browser navigation 與螢幕擷取畫面 |
+| 產生的程式碼 | Buf dependency update 與所有 repository generation templates |
+
+## 刻意設定的邊界
+
+- React Hook Form 是預設的 AutoForm engine 與參考行為。TanStack Form 在相同 renderer
+  上提供獨立的原生 AutoForm registry item。Formik 與 Final Form 應用程式使用核心
+  Standard Schema adapters，不提供產生的 AutoForm 同等功能。
+- Protoform 使用 AIP annotations，但不取代 API 端的 AIP linting 或 handler enforcement。
+- Registry 與文件託管屬於部署考量；本機 consumer 與文件建置會在部署前驗證
+  artifacts。

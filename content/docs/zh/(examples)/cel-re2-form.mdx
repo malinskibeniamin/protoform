@@ -1,0 +1,39 @@
+---
+title: CEL 和 RE2 表单
+description: 使用一条易读的 CEL 表达式和 RE2 兼容模式验证一个字段。
+---
+**第 4 级，共 8 级**
+
+**前置要求：** [深层嵌套表单](/docs/deeply-nested)
+
+此示例单独展示一条自定义规则。CEL 使用 RE2 兼容模式调用 `matches()`；浏览器运行与 Protovalidate 服务器可执行的相同描述符规则。
+
+<div className="my-8 border-y border-border/60 py-8">
+  <CelRe2FormExample />
+</div>
+
+## 新增内容
+
+- 一条具有稳定 ID 的字段级 CEL 规则。
+- 一个 RE2 兼容的正则表达式。
+- 一条面向用户的验证消息。
+
+## 契约
+
+```proto
+message CelRe2Form {
+  string project_id = 1 [(buf.validate.field).cel = {
+    id: "project_id.re2"
+    message: "Use lowercase letters, digits, and hyphens."
+    expression: "this.matches('^[a-z][a-z0-9-]*$')"
+  }];
+}
+```
+
+先尝试 `Not valid`，再尝试 `payments-prod`。这里使用 CEL 字符串匹配，而不是 JavaScript `RegExp`，因此模式应遵循各运行时均支持的 [RE2 语法](https://github.com/google/re2/wiki/Syntax)。
+
+仅当规则确实需要比较多个字段时，才使用消息级 CEL。单字段规则应附加到对应字段，以确保错误路径准确。
+
+**上一页：** [深层嵌套表单](/docs/deeply-nested)
+
+**下一页：** [Oneof 表单](/docs/oneof-form)

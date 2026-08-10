@@ -1,0 +1,47 @@
+---
+title: 最基本的表單
+description: 呈現並提交最精簡且實用的 protobuf 產生式表單。
+---
+**第 1 級，共 8 級**
+
+**先決條件：** 無。請從這裡開始。
+
+此範例包含一個 protobuf 訊息、一個字串欄位、一個 `AutoForm`，且不含伺服器。這是從描述器到具型別提交資料最精簡的端到端流程。
+
+<div className="my-8 border-y border-border/60 py-8">
+  <BareBonesFormExample />
+</div>
+
+## 本篇新增內容
+
+- 產生的 Protobuf-ES 訊息描述器。
+- 從單一純量欄位衍生的文字輸入欄位。
+- 本機具型別提交處理常式。
+
+此範例刻意不包含驗證註解、呈現中繼資料、步驟器、CEL、oneof 或傳輸機制。後續範例會逐一加入這些概念。
+
+## 合約
+
+```proto
+syntax = "proto3";
+
+package protoform.examples.v1;
+
+message BareBonesForm {
+  string name = 1;
+}
+```
+
+## React
+
+```tsx
+<AutoForm<BareBonesForm>
+  onSubmit={(values) => saveLocally(values.name)}
+  schema={BareBonesFormSchema}
+  withSubmit
+/>
+```
+
+輸入名稱並提交。表單下方的狀態可證明，產生的訊息無須手寫 DTO 或轉換層，即可傳送至處理常式。
+
+**下一篇：** [兩步驟表單](/docs/two-step-form)

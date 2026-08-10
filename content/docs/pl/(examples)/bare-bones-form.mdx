@@ -1,0 +1,49 @@
+---
+title: Minimalny formularz
+description: >-
+  Wyrenderuj i prześlij najmniejszy użyteczny formularz wygenerowany na
+  podstawie protobuf.
+---
+**Poziom 1 z 8**
+
+**Wymagania wstępne:** Brak. Zacznij tutaj.
+
+Ten przykład zawiera jeden komunikat protobuf, jedno pole tekstowe, jeden komponent `AutoForm` i nie wymaga serwera. Jest to najkrótsza kompletna ścieżka od deskryptora do przesłanych danych z określonym typem.
+
+<div className="my-8 border-y border-border/60 py-8">
+  <BareBonesFormExample />
+</div>
+
+## Co dodaje ten przykład
+
+- Wygenerowany deskryptor komunikatu Protobuf-ES.
+- Pole tekstowe utworzone na podstawie jednego pola skalarnego.
+- Lokalny, typowany moduł obsługi przesyłania.
+
+Celowo pominięto adnotacje walidacji, metadane prezentacji, formularz krokowy, CEL, oneof i warstwę transportową. Kolejne przykłady wprowadzają te pojęcia pojedynczo.
+
+## Kontrakt
+
+```proto
+syntax = "proto3";
+
+package protoform.examples.v1;
+
+message BareBonesForm {
+  string name = 1;
+}
+```
+
+## React
+
+```tsx
+<AutoForm<BareBonesForm>
+  onSubmit={(values) => saveLocally(values.name)}
+  schema={BareBonesFormSchema}
+  withSubmit
+/>
+```
+
+Wpisz nazwę i prześlij formularz. Status pod formularzem potwierdza, że wygenerowany komunikat dotarł do modułu obsługi bez ręcznie napisanego DTO ani warstwy konwersji.
+
+**Dalej:** [Formularz dwuetapowy](/docs/two-step-form)

@@ -1,0 +1,42 @@
+---
+title: CEL 與 RE2 表單
+description: 使用一個易讀的 CEL 運算式和 RE2 相容模式驗證單一欄位。
+---
+**第 4 級，共 8 級**
+
+**先決條件：**[深層巢狀表單](/docs/deeply-nested)
+
+此範例聚焦於一項自訂規則。CEL 會使用 RE2 相容模式呼叫 `matches()`；
+瀏覽器執行的描述元規則，與 Protovalidate 伺服器可強制執行的規則相同。
+
+<div className="my-8 border-y border-border/60 py-8">
+  <CelRe2FormExample />
+</div>
+
+## 此範例新增的內容
+
+- 一項具有穩定 ID 的欄位層級 CEL 規則。
+- 一個 RE2 相容的規則運算式。
+- 一則向使用者顯示的驗證訊息。
+
+## 契約
+
+```proto
+message CelRe2Form {
+  string project_id = 1 [(buf.validate.field).cel = {
+    id: "project_id.re2"
+    message: "Use lowercase letters, digits, and hyphens."
+    expression: "this.matches('^[a-z][a-z0-9-]*$')"
+  }];
+}
+```
+
+先嘗試 `Not valid`，再輸入 `payments-prod`。此處使用 CEL 字串比對，而非 JavaScript
+`RegExp`，因此請確保模式符合各執行環境支援的 [RE2 語法](https://github.com/google/re2/wiki/Syntax)。
+
+只有在規則確實需要比較多個欄位時，才使用訊息層級 CEL。單一欄位規則應附加至該欄位，
+讓錯誤路徑保持精確。
+
+**上一頁：**[深層巢狀表單](/docs/deeply-nested)
+
+**下一頁：**[Oneof 表單](/docs/oneof-form)

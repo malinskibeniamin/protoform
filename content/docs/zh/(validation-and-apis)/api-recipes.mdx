@@ -1,0 +1,302 @@
+---
+title: API 配方
+description: 面向生产环境的 Connect Query、ConnectRPC、缓存、取消、错误和更新掩码模式。
+---
+Protoform 的职责止于类型化请求边界。ConnectRPC 负责传输该请求，Connect Query 管理 React 中的远程状态，Protovalidate 在服务端再次强制执行契约，而结构化的 `google.rpc` 详情则将业务失败信息返回表单。
+
+示例始终使用 `FormExamplesService.method.submitBasicForm` 作为规范的虚拟 mutation，不会引入第二个虚拟 mutation。后续资源查询片段展示了应用生成标准 Get 和 Update 方法时，如何扩展相同的边界。
+
+## 选择调用方式
+
+| 需求 | API | 原因 |
+| --- | --- | --- |
+| 从 React 表单提交 | `useMutation` | 提供类型化变量以及待处理、成功和错误状态 |
+| 在 React 页面中读取 | `useQuery` | 提供类型化缓存键和服务端状态生命周期 |
+| 在 loader 中预取 | `createQueryOptions` | 在 hook 外使用相同的描述符和缓存标识 |
+| 发起一个支持取消的调用 | `callUnaryMethod` | 直接访问 transport，并支持 signal 和单次调用的请求头 |
+| 完整的命令式服务客户端 | `createClient` | 适用于不需要 hook 状态的 React 外部场景 |
+
+Connect Query 支持一元 RPC。对于流式调用，请直接使用 Connect 客户端或 transport，不要强行将流放入 query 或 mutation 缓存。
+
+## 单一 provider 边界
+
+只创建一次 query client 和 transport。对于每个请求都必须携带的元数据，interceptor 是合适的处理边界。不要在日志中记录访问令牌，也绝不要将密钥放入 query key。
+
+```tsx
+import type { Interceptor } from "@connectrpc/connect"
+import { TransportProvider } from "@connectrpc/connect-query"
+import { createConnectTransport } from "@connectrpc/connect-web"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { type ReactNode, useState } from "react"
+
+const requestMetadata: Interceptor = (next) => async (request) => {
+  const accessToken = await getSessionAccessToken()
+
+  if (accessToken) {
+    request.header.set("Authorization", `Bearer ${accessToken}`)
+  }
+  request.header.set("X-Request-ID", crypto.randomUUID())
+
+  return next(request)
+}
+
+function ApiProviders({ children }: { children: ReactNode }) {
+  const [queryClient] = useState(() => new QueryClient({
+    defaultOptions: {
+      mutations: { retry: false },
+      queries: { retry: 2, staleTime: 30_000 },
+    },
+  }))
+  const [transport] = useState(() => createConnectTransport({
+    baseUrl: "http://127.0.0.1:55012",
+    interceptors: [requestMetadata],
+  }))
+
+  return (
+    <TransportProvider transport={transport}>
+      <QueryClientProvider client={queryClient}>
+        {children}
+      </QueryClientProvider>
+    </TransportProvider>
+  )
+}
+```
+
+查询可以重试暂时失败的读取操作。创建类提交**不会自动重试**，因为再次尝试可能造成重复操作。只有当服务端实现并验证了诸如 `request_id` 的幂等键，并保存首次结果后，才应为 mutation 添加次数受限的重试。
+
+## 完整的 mutation 生命周期
+
+生成的方法描述符携带请求和响应类型。让 `mutateAsync` promise 始终与表单提交关联，以确保其待处理状态覆盖整个请求。
+
+```tsx
+import { ConnectError } from "@connectrpc/connect"
+import { useMutation } from "@connectrpc/connect-query"
+import { formatConnectError } from "@/lib/protobuf-provider"
+import { useState } from "react"
+
+function BasicMutationForm() {
+  const [rootError, setRootError] = useState<string>()
+  const mutation = useMutation(
+    FormExamplesService.method.submitBasicForm,
+    { retry: false }
+  )
+
+  async function onSubmit(values, form) {
+    setRootError(undefined)
+
+    try {
+      await mutation.mutateAsync(values)
+    } catch (error) {
+      if (applyServerFieldErrors(error, SubmitBasicFormRequestSchema, form)) {
+        return
+      }
+      if (error instanceof ConnectError) {
+        setRootError(formatConnectError(error))
+        return
+      }
+      throw error
+    }
+  }
+
+  return (
+    <div aria-busy={mutation.isPending}>
+      <AutoForm
+        schema={SubmitBasicFormRequestSchema}
+        onSubmit={onSubmit}
+        withSubmit
+      />
+
+      {mutation.isPending ? <p role="status">Creating profile…</p> : null}
+      {mutation.data ? (
+        <p role="status">Created {mutation.data.profileId}</p>
+      ) : null}
+      {mutation.error && rootError ? (
+        <Alert role="alert">
+          <AlertTitle>Profile not created</AlertTitle>
+          <AlertDescription>{rootError}</AlertDescription>
+        </Alert>
+      ) : null}
+    </div>
+  )
+}
+```
+
+`isPending` 通过 AutoForm 禁止重复提交，并向周边 UI 提供进度状态。`mutation.data` 是类型化的成功响应。`mutation.error` 保留类型化的 Connect 失败信息。字段违规信息优先显示在输入项上；transport、配额或未映射的失败仍显示在表单根部。意外的编程错误会被重新抛出，而不会伪装成服务端错误。
+
+## 权威的服务端验证
+
+服务端会在 handler 之前执行生成的 Protovalidate 规则。handler 负责添加业务规则，并通过一个 `BadRequest` 详情返回所有字段错误。
+
+```ts
+import { BadRequestSchema } from "@buf/googleapis_googleapis.bufbuild_es/google/rpc/error_details_pb.js"
+import { Code, ConnectError, type ServiceImpl } from "@connectrpc/connect"
+
+function submitBasicForm(request: SubmitBasicFormRequest) {
+  const violations = []
+
+  if (request.email.endsWith("@blocked.example")) {
+    violations.push({
+      field: "email",
+      description: "Use an email address from an approved domain.",
+    })
+  }
+
+  if (violations.length > 0) {
+    throw new ConnectError(
+      "Review the highlighted fields.",
+      Code.InvalidArgument,
+      undefined,
+      [{ desc: BadRequestSchema, value: { fieldViolations: violations } }]
+    )
+  }
+
+  return {
+    displayName: request.displayName,
+    profileId: `profiles/${slugify(request.displayName)}`,
+  }
+}
+
+export const formExamplesService = {
+  submitBasicForm,
+  submitComplexForm,
+} satisfies ServiceImpl<typeof FormExamplesService>
+```
+
+```ts
+await server.register(fastifyConnectPlugin, {
+  interceptors: [createValidateInterceptor()],
+  routes: (router) => {
+    router.service(FormExamplesService, formExamplesService)
+  },
+})
+```
+
+使用规范的 Connect 状态码。字段路径应保持 protobuf 格式，例如 `project_id` 或 `services[0].primary_region`；Protoform 会将其转换为表单库使用的路径。不要根据人类可读的错误文本进行分支判断。
+
+## 取消和单次调用元数据
+
+当调用方需要为单个请求提供 `AbortSignal` 或元数据时，使用 `callUnaryMethod`。它使用相同的生成方法描述符，因此不会形成第二套客户端契约。
+
+```ts
+import { callUnaryMethod } from "@connectrpc/connect-query"
+
+function beginBasicSubmission(transport, values) {
+  const controller = new AbortController()
+  const requestId = crypto.randomUUID()
+  const response = callUnaryMethod(
+    transport,
+    FormExamplesService.method.submitBasicForm,
+    values,
+    {
+      headers: { "X-Request-ID": requestId },
+      signal: controller.signal,
+    }
+  )
+
+  return {
+    cancel: () => controller.abort(),
+    requestId,
+    response,
+  }
+}
+```
+
+取消操作会以 `Code.Canceled` 拒绝，但这不能证明服务端操作已回滚。对于可能在 HTTP 请求结束后继续运行的任务，应返回标准的长时间运行操作，并明确说明其取消语义。
+
+## 读取、预取和精确失效
+
+资源 API 添加生成的 `GetProfile` 方法后，其描述符会同时管理 React 和路由 loader 中的缓存标识。下面的 `ProfileService` 表示该生成的资源服务，而不是另一个虚拟表单 mutation。
+
+```tsx
+const profileQuery = useQuery(
+  ProfileService.method.getProfile,
+  { name: "profiles/ada-lovelace" }
+)
+
+if (profileQuery.isPending) return <LoadingIndicator />
+if (profileQuery.isError) return <ProfileError error={profileQuery.error} />
+if (!profileQuery.data) return <EmptyProfile />
+
+return <ProfileDetails profile={profileQuery.data} />
+```
+
+```ts
+const getProfileInput = { name: "profiles/ada-lovelace" }
+
+await queryClient.ensureQueryData(
+  createQueryOptions(
+    ProfileService.method.getProfile,
+    getProfileInput,
+    { transport }
+  )
+)
+
+const profileKey = createConnectQueryKey({
+  schema: ProfileService.method.getProfile,
+  transport,
+  input: getProfileInput,
+  cardinality: "finite",
+})
+
+await queryClient.invalidateQueries({
+  exact: true,
+  queryKey: profileKey,
+})
+```
+
+绝不要在不提供 key 的情况下调用 `invalidateQueries()`。更新后，应使对应的精确资源失效。如果创建或删除操作改变了列表成员关系，应单独使受影响的 List 方法 key 失效，同时保留其 `parent`、`filter` 和 `order_by` 输入。
+
+## 最小更新载荷
+
+AutoForm 根据已触碰的值派生 protobuf `FieldMask`。其内部使用 `createUpdateMask`，并排除标识符字段、不可变字段和仅输出字段。
+
+```tsx
+<AutoForm
+  defaultValues={profile}
+  schema={MaskableProfileSchema}
+  withSubmit
+  onSubmit={async (nextProfile, _form, context) => {
+    const updateMask = context.updateMask
+    if (!updateMask?.paths.length) return
+
+    await updateProfile(create(UpdateMaskableProfileRequestSchema, {
+      profile: nextProfile,
+      updateMask,
+    }))
+  }}
+/>
+```
+
+掩码只包含已修改的 protobuf 路径。嵌套消息保留到具体叶级字段；重复字段和 map 则收敛到其所属字段。服务端必须拒绝未知和禁止修改的路径，将补丁合并到已存储状态中，并在写入前验证合并后的资源。
+
+## 无需套接字即可测试路由
+
+`createRouterTransport` 在进程内运行真实的生成服务和 interceptor。这样无需绑定端口或模拟客户端，也能在 RPC 边界上进行测试。
+
+```ts
+import { Code, createRouterTransport } from "@connectrpc/connect"
+import { callUnaryMethod } from "@connectrpc/connect-query"
+import { createValidateInterceptor } from "@connectrpc/validate"
+
+const transport = createRouterTransport(
+  (router) => router.service(FormExamplesService, formExamplesService),
+  { router: { interceptors: [createValidateInterceptor()] } }
+)
+
+const response = await callUnaryMethod(
+  transport,
+  FormExamplesService.method.submitBasicForm,
+  { displayName: "Ada Lovelace", email: "ada@example.com" }
+)
+expect(response.profileId).toBe("profiles/ada-lovelace")
+
+await expect(callUnaryMethod(
+  transport,
+  FormExamplesService.method.submitBasicForm,
+  { displayName: "", email: "not-an-email" }
+)).rejects.toMatchObject({ code: Code.InvalidArgument })
+```
+
+保留一个网络级冒烟测试，用于验证 CORS、协议协商和部署连接。大多数 handler、验证和错误详情测试应基于进程内 transport。
+
+有关完整的工作流程和 API 规则，请参阅[服务端错误表单](/docs/server-error-form)、[服务端错误](/docs/server-errors)和 [Google AIP 与 protobuf 设计](/docs/aip-protobuf)。

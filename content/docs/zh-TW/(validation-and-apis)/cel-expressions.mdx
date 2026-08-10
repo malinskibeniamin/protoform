@@ -1,0 +1,199 @@
+---
+title: CEL 運算式
+description: 建立跨欄位、集合、對映、存在性與時間政策，無須重複邏輯。
+---
+Protovalidate 訊息約束使用 CEL 處理無法納入單一欄位註解的語意規則。
+Protoform 透過 `@bufbuild/cel` 與 protobuf v2 描述元層，在 TypeScript 中編譯並執行這些規則，因此瀏覽器會依照契約驗證相同的請求結構。
+
+```proto
+message RetentionPolicy {
+  bool infinite = 1;
+  int64 retention_ms = 2;
+
+  option (buf.validate.message).cel = {
+    id: "retention.required_when_not_infinite"
+    message: "Retention must be set unless infinite retention is enabled."
+    expression: "this.infinite || this.retention_ms > 0"
+  };
+}
+```
+
+請優先使用內建欄位約束。當不變條件取決於多個欄位或集合元素時，再使用 CEL。
+
+| 功能 | 範例 |
+| --- | --- |
+| 跨欄位推論 | `!this.enabled || has(this.config)` |
+| 重複訊息政策 | `this.services.all(service, service.replicas >= 3)` |
+| 跨集合參照 | `this.regions.exists(region, region == service.primary_region)` |
+| 依巢狀屬性判斷唯一性 | `this.services.filter(candidate, candidate.name == service.name).size() == 1` |
+| 對映成員資格與索引 | `'owner' in this.labels && this.labels['owner'].matches(...)` |
+| Oneof 或選用欄位存在性 | `has(this.notification_webhook)` |
+| 時間戳記運算 | `this.end - this.start <= duration('14400s')` |
+| 條件式錯誤文字 | `condition ? '' : 'Explain the exact failure.'` |
+
+請從聚焦的 [CEL 與 RE2 表單](/docs/cel-re2-form)開始。即時
+[綜合範例](/docs/kitchen-sink)會在單一經測試的 protobuf 請求中結合所有這些操作。
+
+## 完整功能基準
+
+Protoform 會追蹤官方 CEL 語言定義中與表單相關的功能範圍，而不是只提供一個籠統的「支援 CEL」核取方塊。每個已驗證項目都指向可執行測試；尚未支援的執行階段功能則會繼續顯示為就緒度缺口。
+
+| 功能領域 | 涵蓋的行為 | 目前狀態 |
+| --- | --- | --- |
+| 語法、常值與型別 | 布林值、null、有號與無號整數、雙精度浮點數、字串、位元組、清單、對映與型別值 | 已驗證 |
+| 運算子與轉換 | 邏輯、關係、算術、成員資格、索引、條件式與明確的純量轉換 | 已驗證 |
+| 集合 | 清單、對映、`all`、`exists`、`exists_one`、`filter` 與 `map` | 已驗證 |
+| Protobuf 訊息 | 訊息欄位、列舉、選用欄位與訊息存在性、重複欄位、對映與巢狀值 | 已驗證 |
+| 文字與二進位資料 | 字串述詞、RE2 比對、Unicode 大小、位元組常值、相等性與大小 | 已驗證 |
+| 時間值 | 時間戳記、持續時間、建構、比較、存取子、加法與減法 | 已驗證 |
+| 求值行為 | 錯誤傳播、邏輯短路、格式錯誤的運算式與執行階段失敗 | 已驗證 |
+| 生命週期 | 剖析 → 檢查 → 求值、可重複使用的計畫，以及有界的 UI 編譯快取 | 已透過 Buf lint 與執行階段測試驗證 |
+| UI 運算式設定檔 | 僅限 `form` 與目前的 `this` 值；布林結果；失敗時關閉 | 已驗證 |
+| 複雜度下限 | CEL 要求的重複與巢狀最低限制 | 已驗證 |
+| 部分未知集合 | 主機提供的精確屬性路徑、未知集合傳播與邏輯短路 | 已驗證 |
+| 求值成本限制 | 可設定的單次求值運算式步驟預算，包含重複的推導式作業 | 已驗證 |
+
+時間值項目同時涵蓋時間戳記與持續時間。
+
+受防護的執行階段會加入底層求值器未直接提供的主機控制。未知屬性是明確的精確路徑，與求值錯誤保持區隔，合併為穩定集合，且仍遵循布林短路。每個原始 AST 節點會消耗一個成本單位，因此推導式主體在每次迭代時都會再次消耗預算。超過限制時，會在執行下一個節點前傳回具型別的安全結果。
+
+```ts
+import { compileCelExpression } from "@/components/auto-form"
+
+const evaluate = compileCelExpression(
+  "form.enabled && form.restricted_region == 'eu-central1'",
+  {
+    maxCost: 500,
+    unknownAttributes: ["form.restricted_region"],
+  }
+)
+
+const result = evaluate({ form: { enabled: true } })
+
+switch (result.kind) {
+  case "value":
+    console.log(result.value)
+    break
+  case "unknown":
+    console.log(result.attributes)
+    break
+  case "cost-exceeded":
+    console.log(result.cost, result.limit)
+    break
+  case "error":
+    console.error(result.error)
+    break
+  default:
+    result satisfies never
+}
+```
+
+預設限制為 10,000 個運算式步驟。UI 規則會使用此有限的預設值，並在遇到未知集合、成本耗盡、來源格式錯誤、執行階段錯誤或非布林結果時關閉。此成本模型刻意採用確定性設計；它不宣稱數值會與其他 CEL 實作的估算器完全一致。
+
+## 剖析、檢查、求值與快取
+
+生命週期依正確的界線劃分：
+
+1. `buf lint` 會依據 protobuf 描述元，剖析每個 Protovalidate 運算式並進行型別檢查。
+2. TypeScript 執行階段會剖析已接受的運算式，並建立可重複使用的求值計畫。
+3. 驗證程序會針對每則訊息執行該計畫。
+4. AutoForm 會為呈現用運算式維護一個有界的 256 筆編譯快取。
+
+```ts
+import { CelScalar, celEnv, parse, plan } from "@bufbuild/cel"
+
+const env = celEnv({ variables: { value: CelScalar.INT } })
+const parsed = parse("value * 2")
+const evaluate = plan(env, parsed)
+
+evaluate({ value: 2n }) // 4n
+evaluate({ value: 7n }) // 14n; no second parse or plan
+```
+
+絕對不要在算繪期間剖析並規劃使用者運算式。Protobuf 驗證運算式會從描述元編譯；UI 運算式則使用有界快取。
+
+## UI 運算式設定檔
+
+`visible_when` 與 `disabled_when` 刻意使用比驗證 CEL 更精簡的主機環境：
+
+- `form` 會公開目前的表單值。
+- `this` 只會公開目前欄位的值。
+- 結果必須恰為布林值 `true`，才能啟用規則。
+- 格式錯誤的運算式、缺少的名稱、執行階段錯誤與非布林結果都會以關閉狀態處理。
+- UI 規則無法執行 I/O、變更、非同步作業或授權檢查。
+
+呈現用運算式絕不會取代 Protovalidate。即使使用者端繞過表單，透過 UI CEL 隱藏的欄位仍必須安全且有效。
+
+## 布林與字串契約
+
+傳回布林值的規則會在 `true` 時通過，在 `false` 時失敗。其註解必須包含非空白的 `message`：
+
+```proto
+message ChangeWindow {
+  option (buf.validate.message).cel = {
+    id: "change.window"
+    message: "The change window must run forward and last no more than four hours."
+    expression: "!has(this.start) || (this.end > this.start && this.end - this.start <= duration('14400s'))"
+  };
+
+  google.protobuf.Timestamp start = 1;
+  google.protobuf.Timestamp end = 2;
+}
+```
+
+相較之下，傳回字串的規則會在字串為空白時通過，並以傳回的文字表示失敗。其註解訊息必須保持空白：
+
+```proto
+message Rollout {
+  option (buf.validate.message).cel = {
+    id: "rollout.sequence"
+    expression: "this.stages.size() < 2 ? 'Use at least two stages.' : this.stages[0] != 5 ? 'Begin at 5%.' : ''"
+  };
+
+  repeated int32 stages = 1;
+}
+```
+
+當單一運算式具有緊密的決策樹，且每個分支都能提供更合適的修正指示時，請使用動態文字。其他情況下，請優先使用獨立的布林規則：穩定的 ID 能讓失敗情況更容易衡量、翻譯、測試，並對應至產品行為。
+
+## 巢狀集合政策
+
+CEL 推導式可讓重複訊息彼此關聯，也能與對映建立關聯。以下簡化的圖形規則會檢查服務名稱是否唯一、相依目標是否有效，以及速率限制的擁有者：
+
+```js CEL
+this.services.all(service,
+  this.services.filter(candidate,
+    candidate.name == service.name
+  ).size() == 1 &&
+  service.dependencies.all(dependency,
+    dependency != service.name &&
+    this.services.exists(candidate,
+      candidate.name == dependency
+    )
+  )
+) &&
+this.rate_limits.all(name,
+  this.services.exists(service,
+    service.name == name
+  )
+)
+```
+
+完整的綜合契約還會加入區域涵蓋範圍、公開端點政策、直接循環偵測、數值預算配置、正式環境核准、通知路由與動態推出錯誤。
+
+## 強大而不混亂
+
+- 為每條規則提供穩定且全域唯一的 ID。絕對不要將同一 ID 重複用於不同的不變條件。
+- 每條規則最好只提供一種失敗說明。若使用者需要區分各個分支，請拆分龐大的布林規則。
+- 對本機需求、範圍、格式、項目限制與唯一性使用欄位註解；僅將 CEL 用於這些註解無法表達的關係。
+- 使用 `max_items` 與 `max_pairs` 限制重複欄位和對映。巢狀推導式具有確定性，但其工作量仍會隨輸入大小增加。
+- 針對每個分支測試一則已知有效的訊息，以及一個最小失敗測試資料。執行 `buf lint`，確保運算式在程式碼產生前能成功編譯並傳回允許的型別。
+- CEL 不應包含 I/O、網路呼叫、驗證查詢、變更或非同步驗證。請將依賴環境的政策保留在後端，並傳回結構化違規資訊。
+- 不要模擬遞迴。CEL 刻意設計為非圖靈完備。請使用有界的後端演算法處理任意深度的圖形走訪。
+- 將 `visible_when` 等 UI CEL 僅視為呈現用途。Protovalidate 訊息 CEL 才是契約；隱藏 UI 絕不能成為安全性或資料完整性規則的唯一強制機制。
+
+CEL 具備確定性、無變更特性，專為安全地求值使用者撰寫的政策而設計，詳見
+[CEL 語言規格](https://github.com/google/cel-spec)。Protovalidate 加入了官方
+[Buf lint 規則](https://buf.build/docs/lint/rules/)所強制執行的規則結果與註解要求。
+
+請參閱[正式環境就緒度](/docs/production-readiness)，瞭解已驗證的 CEL 涵蓋範圍，以及尚待完成的欄位、訊息、巢狀路徑、多重違規與失敗模式測試。

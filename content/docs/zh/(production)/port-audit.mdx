@@ -1,0 +1,59 @@
+---
+title: 端口审计
+description: 当前覆盖范围、契约一致性和有意设定的边界。
+---
+Protoform 移植版本包括原生 hooks、描述符 provider、生成的 bindings、共享的
+AutoForm renderer、框架 adapters，以及针对 protobuf 支持的 React 表单的消费者验证。
+
+## 当前覆盖范围
+
+- 原生 React Hook Form 和 TanStack Form `useProtoForm` facades，支持 Protovalidate 和 CEL
+  验证。
+- 用于类型化 protobuf 默认值的 `useProtoFormDefaults`。
+- 原生表单库路径的 oneof 扁平化和分支清除。
+- 将 Connect/gRPC `BadRequest.FieldViolation` 映射回可访问字段。
+- 提取 `google.rpc.*` 上下文，用于摘要和支持元数据。
+- 标量、枚举、映射、重复字段、oneof、可选字段、wrappers 和 well-known types。
+- AutoForm 简单、高级、JSON 和摘要模式。
+- 用于标签、描述、占位符、示例、敏感字段、可见性、禁用规则、数据 providers 和自定义控件的 UI annotations。
+- 源码自有的 shadcn 控件，拆分为原生 hooks、共享 AutoForm core、原生 AutoForm
+  adapters、umbrella item 和示例。
+- 用于生成表单 bindings 的 `protoc-gen-protoform` 命令。
+- 以 Standard Schema v1 作为验证互操作边界。
+- 基于公共 TypeScript 接口的独立必需和推荐一致性测试套件。
+- 经过一致性测试的 TanStack Form、Formik 和 Final Form 验证、类型化提交和
+  结构化服务器错误。
+- React Hook Form 和 TanStack Form AutoForm adapters，共享字段、集合、oneof、
+  验证生命周期、可访问性和 protobuf 提交契约。
+
+## AIP 一致性
+
+Protoform 将 Google AIP 关注点保留在正确的层中：
+
+- 资源 `name`、`{resource}_id`、`parent`、`etag` 和字段行为仍属于 API 契约概念。
+- Protovalidate 和 CEL 强制约束值；AutoForm annotations 仅描述展示方式。
+- Oneof 分支保留 protobuf presence 语义，而不会变成松散的前端 unions。
+- Connect/gRPC 错误保留 protobuf 字段路径，并映射回渲染的表单。
+- 更新表单可以提供已修改的可编辑路径，而 `update_mask` 验证、并发控制、租户隔离和合并后资源验证由服务器负责。
+
+有关规范资源和标准方法示例，请参阅 [Google AIP 和 protobuf 设计](/docs/aip-protobuf)。
+
+## 验证覆盖范围
+
+| 边界 | 检查 |
+| --- | --- |
+| 运行时 packages | 工作区构建、类型检查、单元测试和全新 package 安装冒烟测试 |
+| 公共契约 | 字段模型、Standard Schema、表单路径和往返转换的一致性测试用例 |
+| Registry | Registry 构建、item 结构冒烟测试和真实的生成式消费者 fixture |
+| 表单 | 字段渲染、oneof、验证和服务器错误的集成测试与浏览器测试 |
+| 文档 | 严格的 Blume 验证和构建，以及 hydrated 浏览器导航和截图 |
+| 生成代码 | Buf 依赖项更新和所有仓库生成模板 |
+
+## 有意设定的边界
+
+- React Hook Form 是默认的 AutoForm 引擎和参考行为。TanStack Form 在同一 renderer 上拥有
+  独立的原生 AutoForm registry item。Formik 和 Final Form 应用程序
+  使用核心 Standard Schema adapters，不提供生成式 AutoForm 对等支持。
+- Protoform 使用 AIP annotations，但不替代 API 端的 AIP linting 或处理程序强制执行。
+- Registry 和文档托管属于部署关注点；本地消费者和文档构建会在部署前验证
+  artifacts。

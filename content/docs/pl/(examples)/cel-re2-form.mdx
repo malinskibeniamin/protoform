@@ -1,0 +1,45 @@
+---
+title: Formularz CEL i RE2
+description: >-
+  Waliduj jedno pole za pomocą jednego czytelnego wyrażenia CEL i wzorca
+  zgodnego z RE2.
+---
+**Poziom 4 z 8**
+
+**Wymaganie wstępne:** [Formularz z głęboko zagnieżdżonymi polami](/docs/deeply-nested)
+
+Ten przykład wyodrębnia jedną regułę niestandardową. CEL wywołuje `matches()` ze wzorcem zgodnym z RE2, a
+przeglądarka wykonuje tę samą regułę deskryptora, którą może egzekwować serwer Protovalidate.
+
+<div className="my-8 border-y border-border/60 py-8">
+  <CelRe2FormExample />
+</div>
+
+## Co dodaje ten przykład
+
+- Jedną regułę CEL na poziomie pola ze stabilnym identyfikatorem.
+- Jedno wyrażenie regularne zgodne z RE2.
+- Jeden komunikat walidacyjny dla użytkownika.
+
+## Kontrakt
+
+```proto
+message CelRe2Form {
+  string project_id = 1 [(buf.validate.field).cel = {
+    id: "project_id.re2"
+    message: "Use lowercase letters, digits, and hyphens."
+    expression: "this.matches('^[a-z][a-z0-9-]*$')"
+  }];
+}
+```
+
+Wypróbuj `Not valid`, a następnie `payments-prod`. Ten przykład używa dopasowywania ciągów znaków CEL zamiast
+`RegExp` języka JavaScript, dlatego stosuj wzorce zgodne ze [składnią RE2](https://github.com/google/re2/wiki/Syntax)
+obsługiwaną we wszystkich środowiskach wykonawczych.
+
+Używaj CEL na poziomie komunikatu tylko wtedy, gdy reguła rzeczywiście porównuje pola. Regułę dotyczącą jednego pola
+pozostaw przypisaną do tego pola, aby ścieżka błędu była precyzyjna.
+
+**Poprzedni:** [Formularz z głęboko zagnieżdżonymi polami](/docs/deeply-nested)
+
+**Następny:** [Formularz oneof](/docs/oneof-form)

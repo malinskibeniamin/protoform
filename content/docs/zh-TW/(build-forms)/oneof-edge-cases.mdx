@@ -1,0 +1,46 @@
+---
+title: Oneof 與邊界情況
+---
+Protoform 將 protobuf `oneof` 視為一等表單概念，而非鬆散的可辨識聯集。
+
+## 分支切換
+
+使用 `setOneofValue`，讓 dirty 狀態與驗證維持一致。
+
+```tsx
+form.setOneofValue("delivery", "webhook", {
+  endpoint: "https://hooks.example.com/events",
+  signingSecretRef: "secrets/webhook-signing-key",
+})
+```
+
+分支變更時，Protoform 會先清除上一個分支，再寫入下一個分支。這可避免隱藏的聯集分支提交過期值。
+
+## 巢狀伺服器錯誤
+
+後端通常會回傳如下的 proto 路徑：
+
+```txt
+delivery.webhook.signing_secret_ref
+```
+
+`setServerErrors` 會將該路徑對應至擁有已呈現欄位的原生 React Hook Form 或 TanStack Form 路徑。若無法對應後端路徑，回傳值會包含 `unmapped`，讓呼叫端顯示摘要或 toast 通知。
+
+```tsx
+const result = form.setServerErrors(error)
+if (result.unmapped.length > 0) {
+  toast.error(result.unmapped.map((v) => v.description).join("\n"))
+}
+```
+
+關於摘要、豐富的 `google.rpc.*` 詳細資料、無障礙功能與重試決策，請參閱
+[伺服器錯誤](/docs/server-errors)。
+
+## 建議測試
+
+- 分支初始為未設定
+- 切換分支會清除上一個分支
+- 分支專屬的 CEL 錯誤會顯示在作用中分支下方
+- 切換後，非作用中分支的錯誤不會阻止提交
+- 後端 snake_case 違規項目會對應至 camelCase 欄位名稱
+- 無法對應的後端違規項目仍會顯示在摘要中

@@ -1,0 +1,14 @@
+---
+import type { ComponentProps } from "astro/types";
+// biome-ignore lint/style/useImportType: Astro renders this component at runtime.
+import Header from "blume/components/layout/Header.astro";
+
+interface Props extends ComponentProps<typeof Header> {}
+---
+
+<Header
+  {...Astro.props}
+  localeSwitch={Astro.props.localeSwitch?.filter(
+    (locale) => locale.current || !locale.untranslated
+  )}
+/>

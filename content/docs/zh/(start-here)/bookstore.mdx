@@ -1,0 +1,44 @@
+---
+title: 书店操作指南
+description: 探索一个完整的 protobuf API、其生成的绑定以及五个实时 RPC 流程。
+---
+这是 Protoform 的旗舰示例：一个公开的 protobuf 契约、生成的 TypeScript 和
+表单绑定，以及直接在文档中运行的五个 RPC。你的临时书库按
+访客隔离，内存用量受限，并会自动过期。
+
+<BookstoreWorkspace />
+
+## 一个契约，五个流程
+
+| RPC | 体验 | Protoform 提供的功能 |
+| --- | --- | --- |
+| `ListBooks` | 可搜索的图书列表 | 类型安全的 Connect Query 输入和结果 |
+| `GetBook` | 图书详情 | 生成的 protobuf 资源类型 |
+| `CreateBook` | 两步式 React Hook Form 流程 | 生成的绑定和 ISBN-13 CEL 检查 |
+| `UpdateBook` | 编辑现有图书 | 脏字段更新掩码、保留的输出字段和 etag 处理 |
+| `DeleteBook` | 无可见字段的确认操作 | 通过 AutoForm 渲染生成的请求 |
+
+源代码面板是本文档站点的原生功能。它会在构建时读取仓库中实际的 `.proto`、
+`*_pb.ts`、`*_form.ts`、React 和服务文件。这里没有模拟终端，也不依赖
+外部演练场。
+
+## 生成绑定
+
+```bash
+buf generate --template buf.gen.bookstore-form.yaml
+```
+
+`protoc-gen-protoform` 注册表项会在标准 Protobuf-ES
+输出旁生成 `aip_form.ts`。应用会直接导入这些文件：无需 Protoform npm 包或私有注册表。
+
+## 从注册表安装
+
+安装完整示例，以查看并调整其当前源代码：
+
+```bash
+bunx shadcn@latest add @protoform/bookstore
+```
+
+需要可复现的快照时，请将仓库固定到某个 Git ref。Protoform 遵循 shadcn 的
+源代码分发模式：注册表项跟踪当前源代码，而 Git 标签提供不可变的
+版本引用。

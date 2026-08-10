@@ -1,0 +1,38 @@
+---
+title: Migracja z Zod
+description: >-
+  Użyj promptu lub skryptu migracyjnego, aby przenieść walidację do plików
+  proto.
+---
+Zod sprawdza się świetnie, gdy kontrakt jest definiowany w TypeScript. Protoform jest lepszym wyborem, gdy kontrakt jest definiowany w protobuf.
+Migrację można przeprowadzać stopniowo: zachowaj interfejs pól shadcn, zastąp resolver i przenieś reguły do adnotacji proto.
+
+## Uruchom narzędzie pomocnicze do migracji
+
+```bash
+bun run migrate:zod -- src/features/signup/form.tsx proto/example/v1/signup.proto
+```
+
+Skrypt generuje opis migracji gotowy do użycia przez LLM. Wklej go do agenta programistycznego i dołącz pliki docelowe.
+Opis instruuje agenta, aby:
+
+1. zinwentaryzował pola obiektu Zod, reguły dodatkowe, wartości domyślne i komunikaty
+2. przypisał je do typów pól protobuf i reguł `buf.validate`
+3. zachował etykiety i opisy pól shadcn oraz ich dostępność
+4. zastąpił `zodResolver(schema)` wywołaniem `useProtoForm(MessageSchema)`
+5. użył CEL dla logiki `refine` obejmującej wiele pól
+6. dodał obsługę błędów serwera za pomocą `setServerErrors`
+
+## Praktyczne zasady
+
+| Zod | Protoform |
+| --- | --- |
+| `z.string().email()` | `(buf.validate.field).string.email = true` |
+| `z.string().regex(...)` | `(buf.validate.field).string.pattern` |
+| `z.number().min(1)` | numeryczne reguły `gte` / `gt` |
+| `z.object().refine(...)` | CEL na poziomie komunikatu |
+| unia dyskryminowana | protobuf `oneof` |
+| `z.infer<typeof Schema>` | `MessageShape<typeof MessageSchema>` |
+
+Migrujesz schemat korzystający z rzutowania, transformacji, gałęzi warunkowych lub testów asynchronicznych?
+Zapoznaj się ze stroną [Migracja z Yup](/docs/yup-migration), która zawiera listy kontrolne audytu semantycznego i wdrażania etapowego.
