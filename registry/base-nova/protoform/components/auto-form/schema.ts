@@ -1,4 +1,5 @@
 import type { ParsedField, SchemaProvider } from './core-types';
+import type { Message } from '@bufbuild/protobuf';
 import type { ProtoConversionOptions } from '../../lib/protobuf-provider';
 import { sortFieldsByOrder } from './field-utils';
 import { isProtoMessageDescriptor, isProtoProvider, ProtoProvider } from './proto';
@@ -27,7 +28,8 @@ export { normalizeProtoInitialValues } from './proto';
 
 export function resolveSchema<T extends Record<string, unknown>>(
   schemaInput: AutoFormSchemaInput<T>,
-  conversionOptions: ProtoConversionOptions = {}
+  conversionOptions: ProtoConversionOptions = {},
+  protoSource?: Message
 ): ResolvedSchema {
   if (isSchemaProvider(schemaInput)) {
     const provider = schemaInput as SchemaProvider<Record<string, unknown>>;
@@ -40,6 +42,7 @@ export function resolveSchema<T extends Record<string, unknown>>(
         parsedSchema,
         isProto: true,
         protoDesc,
+        protoSource,
       };
     }
 
@@ -57,6 +60,7 @@ export function resolveSchema<T extends Record<string, unknown>>(
       parsedSchema: provider.parseSchema(),
       isProto: true,
       protoDesc: schemaInput,
+      protoSource,
     };
   }
 

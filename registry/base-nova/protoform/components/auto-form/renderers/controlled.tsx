@@ -27,7 +27,7 @@ export function ControlledFieldRenderer({
     renderField,
     renderType: inferredRenderType,
   } = useFieldPresentation(field, path, inheritedDisabled);
-  const { testIdPrefix } = useAutoFormRuntimeContext();
+  const { fieldRegistry, testIdPrefix } = useAutoFormRuntimeContext();
 
   if (!isVisible) {
     return null;
@@ -35,7 +35,9 @@ export function ControlledFieldRenderer({
 
   const resolvedRenderType = renderType ?? inferredRenderType;
   const FieldWrapperComponent = field.fieldConfig?.fieldWrapper || uiComponents.FieldWrapper;
-  const registeredComponent = formComponents[resolvedRenderType];
+  const registeredComponent =
+    formComponents[resolvedRenderType] ??
+    fieldRegistry?.list().find((definition) => definition.name === resolvedRenderType)?.component;
   const FieldComponent = (registeredComponent ?? formComponents.fallback) as React.ComponentType<AutoFormFieldProps>;
   const componentField = registeredComponent
     ? renderField

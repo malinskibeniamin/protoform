@@ -30,6 +30,12 @@ export {
   type CompiledCelExpression,
 } from './cel-runtime';
 export { useAutoForm } from './context';
+export {
+  inspectAutoFormConfiguration,
+  type AutoFormConfigurationDiagnostic,
+  type AutoFormConfigurationDiagnosticCode,
+  type InspectAutoFormConfigurationInput,
+} from './configuration';
 export { defaultRegistry } from './fields';
 export { defaultClassifyField } from './helpers';
 export { type FieldMatchContext, type FieldTypeDefinition, FieldTypeRegistry } from './registry';

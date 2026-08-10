@@ -1,5 +1,6 @@
 import { FieldBehavior } from "@buf/googleapis_googleapis.bufbuild_es/google/api/field_behavior_pb.js";
 import {
+  clone,
   create,
   type DescField,
   type DescMessage,
@@ -1876,6 +1877,188 @@ export function formValuesToProtoInit<Desc extends DescMessage>(
   return messageToProtoInit(desc, values, options, []) as MessageInitShape<Desc>;
 }
 
+function knownMessageValuesEqual(
+  desc: DescMessage,
+  left: AnyObject,
+  right: AnyObject
+): boolean {
+  return toJsonString(desc, left as never) === toJsonString(desc, right as never);
+}
+
+function preserveRepeatedMessageUnknownFields(
+  desc: DescMessage,
+  target: unknown[],
+  source: unknown[]
+): void {
+  const matchedSourceIndexes = new Set<number>();
+  const matchedTargetIndexes = new Set<number>();
+
+  for (const [targetIndex, targetValue] of target.entries()) {
+    if (!isPlainObject(targetValue)) {
+      continue;
+    }
+    const candidates = source.flatMap((sourceValue, sourceIndex) =>
+      !matchedSourceIndexes.has(sourceIndex) &&
+      isPlainObject(sourceValue) &&
+      knownMessageValuesEqual(desc, targetValue, sourceValue)
+        ? [sourceIndex]
+        : []
+    );
+    if (candidates.length !== 1) {
+      continue;
+    }
+    const [sourceIndex] = candidates;
+    if (sourceIndex === undefined) {
+      continue;
+    }
+    const sourceValue = source[sourceIndex];
+    if (!isPlainObject(sourceValue)) {
+      continue;
+    }
+    const competingTargetCount = target.filter(
+      (candidate, candidateIndex) =>
+        !matchedTargetIndexes.has(candidateIndex) &&
+        isPlainObject(candidate) &&
+        knownMessageValuesEqual(desc, candidate, sourceValue)
+    ).length;
+    if (competingTargetCount !== 1) {
+      continue;
+    }
+    preserveMessageUnknownFields(
+      desc,
+      targetValue,
+      sourceValue
+    );
+    matchedSourceIndexes.add(sourceIndex);
+    matchedTargetIndexes.add(targetIndex);
+  }
+
+  if (target.length !== source.length) {
+    return;
+  }
+
+  for (const [index, targetValue] of target.entries()) {
+    const sourceValue = source[index];
+    if (
+      matchedTargetIndexes.has(index) ||
+      matchedSourceIndexes.has(index) ||
+      !isPlainObject(targetValue) ||
+      !isPlainObject(sourceValue)
+    ) {
+      continue;
+    }
+    preserveMessageUnknownFields(desc, targetValue, sourceValue);
+  }
+}
+
+function preserveFieldUnknownFields(
+  field: DescField,
+  target: unknown,
+  source: unknown
+): void {
+  switch (field.fieldKind) {
+    case "message":
+      if (isPlainObject(target) && isPlainObject(source)) {
+        preserveMessageUnknownFields(field.message, target, source);
+      }
+      return;
+    case "list":
+      if (
+        field.listKind === "message" &&
+        Array.isArray(target) &&
+        Array.isArray(source)
+      ) {
+        preserveRepeatedMessageUnknownFields(field.message, target, source);
+      }
+      return;
+    case "map":
+      if (
+        field.mapKind === "message" &&
+        isPlainObject(target) &&
+        isPlainObject(source)
+      ) {
+        for (const [key, targetValue] of Object.entries(target)) {
+          const sourceValue = source[key];
+          if (isPlainObject(targetValue) && isPlainObject(sourceValue)) {
+            preserveMessageUnknownFields(
+              field.message,
+              targetValue,
+              sourceValue
+            );
+          }
+        }
+      }
+      return;
+    case "enum":
+    case "scalar":
+      return;
+    default:
+      field satisfies never;
+  }
+}
+
+function preserveMessageUnknownFields(
+  desc: DescMessage,
+  target: AnyObject,
+  source: AnyObject
+): void {
+  if (source.$unknown) {
+    target.$unknown = structuredClone(source.$unknown);
+  }
+
+  for (const member of desc.members) {
+    if (member.kind === "oneof") {
+      const targetOneof = target[member.localName];
+      const sourceOneof = source[member.localName];
+      if (!(isPlainObject(targetOneof) && isPlainObject(sourceOneof))) {
+        continue;
+      }
+      const targetCase = targetOneof.case;
+      if (
+        typeof targetCase !== "string" ||
+        targetCase !== sourceOneof.case
+      ) {
+        continue;
+      }
+      const activeField = member.fields.find(
+        (field) => field.localName === targetCase
+      );
+      if (activeField) {
+        preserveFieldUnknownFields(
+          activeField,
+          targetOneof.value,
+          sourceOneof.value
+        );
+      }
+      continue;
+    }
+
+    preserveFieldUnknownFields(
+      member,
+      target[member.localName],
+      source[member.localName]
+    );
+  }
+}
+
+/**
+ * Returns a validated protobuf message with unknown wire fields restored from
+ * the corresponding surviving nodes in its edit source. The target is cloned
+ * when a source is present.
+ */
+export function preserveProtoMessageSource<Desc extends DescMessage>(
+  desc: Desc,
+  target: MessageShape<Desc>,
+  source?: MessageShape<Desc>
+): MessageShape<Desc> {
+  if (!source) {
+    return target;
+  }
+  const message = clone(desc, target);
+  preserveMessageUnknownFields(desc, message, source);
+  return message;
+}
+
 /**
  * Builds an edited message from form values while retaining unknown wire
  * fields from the parsed source message. Unknown fields are not part of the
@@ -1888,8 +2071,8 @@ export function formValuesToProto<Desc extends DescMessage>(
   options: ProtoConversionOptions = {}
 ): MessageShape<Desc> {
   const message = create(desc, formValuesToProtoInit(desc, values, options));
-  if (source?.$unknown) {
-    message.$unknown = structuredClone(source.$unknown);
+  if (source) {
+    preserveMessageUnknownFields(desc, message, source);
   }
   return message;
 }
@@ -2255,7 +2438,8 @@ export function validateFormValuesAgainstProtoSchema<Desc extends DescMessage>(
   desc: Desc,
   values: Record<string, unknown>,
   schema: StandardSchemaV1<MessageShape<Desc>, MessageValidType<Desc>>,
-  options: ProtoConversionOptions = {}
+  options: ProtoConversionOptions = {},
+  source?: MessageShape<Desc>
 ):
   | NormalizedProtoValidationResult<MessageValidType<Desc>>
   | Promise<NormalizedProtoValidationResult<MessageValidType<Desc>>> {
@@ -2264,8 +2448,7 @@ export function validateFormValuesAgainstProtoSchema<Desc extends DescMessage>(
     if (conversionIssues.length > 0) {
       return { issues: conversionIssues };
     }
-    const init = formValuesToProtoInit(desc, values, options);
-    const message = create(desc, init);
+    const message = formValuesToProto(desc, values, source, options);
     const validationResult = schema["~standard"].validate(message);
 
     if (validationResult instanceof Promise) {

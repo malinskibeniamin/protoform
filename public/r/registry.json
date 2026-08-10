@@ -378,6 +378,10 @@
           "type": "registry:component"
         },
         {
+          "path": "registry/base-nova/protoform/components/auto-form/configuration.ts",
+          "type": "registry:component"
+        },
+        {
           "path": "registry/base-nova/protoform/components/auto-form/context.tsx",
           "type": "registry:component"
         },

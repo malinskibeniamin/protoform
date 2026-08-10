@@ -1,3 +1,4 @@
+import { create, fromBinary, toBinary } from '@bufbuild/protobuf';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
@@ -321,6 +322,33 @@ describe('TanStack AutoForm conformance', () => {
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(2));
     expect(onSubmit.mock.calls[1]?.[2].updateMask.paths).toEqual([]);
+  });
+
+  it('preserves the edit source message through the TanStack adapter', async () => {
+    const user = userEvent.setup();
+    const onSubmit = vi.fn();
+    const knownSource = create(AddressSchema, {
+      city: 'Warsaw',
+      country: 4,
+      lineOne: '1 Main Street',
+      postalCode: '00-001',
+      state: 'Mazowieckie',
+    });
+    const source = fromBinary(
+      AddressSchema,
+      Uint8Array.from([...toBinary(AddressSchema, knownSource), 0x98, 0x06, 0x01])
+    );
+
+    render(<AutoForm defaultValues={source} onSubmit={onSubmit} schema={AddressSchema} withSubmit />);
+    const city = screen.getByRole('textbox', { name: /city/i });
+    await user.clear(city);
+    await user.type(city, 'Krakow');
+    await user.click(screen.getByRole('button', { name: 'Submit' }));
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
+
+    const submitted = onSubmit.mock.calls[0]?.[0];
+    expect(submitted.city).toBe('Krakow');
+    expect(submitted.$unknown).toEqual(source.$unknown);
   });
 
   it('revalidates failed submissions on the shared lifecycle', async () => {

@@ -1,4 +1,4 @@
-import { create } from '@bufbuild/protobuf';
+import { create, fromBinary, toBinary } from '@bufbuild/protobuf';
 import { FieldOptionsSchema } from '@bufbuild/protobuf/wkt';
 import { describe, expect, it } from 'vitest';
 
@@ -12,6 +12,7 @@ import {
 import {
   getProtoFieldCustomData,
   getProtoMessageUiConfig,
+  formValuesToProto,
   PROTO_FORM_ROOT_ERROR_KEY,
   ProtoProvider,
   parseProtoSchema,
@@ -231,6 +232,32 @@ describe('protobuf-provider', () => {
     expect(rootError?.message).toMatch(MESSAGE_LEVEL_ERROR);
     expect(formRootError?.message).toMatch(MESSAGE_LEVEL_ERROR);
     expect(officeLocationsErrors?.[0]?.value?.city?.message).toMatch(REQUIRED_FIELD_ERROR);
+  });
+
+  it('preserves an edit source message in React Hook Form resolver output', async () => {
+    const values = buildValidProtoFormValues();
+    const knownSource = formValuesToProto(AutoFormExampleSchema, values);
+    const source = fromBinary(
+      AutoFormExampleSchema,
+      Uint8Array.from([...toBinary(AutoFormExampleSchema, knownSource), 0x98, 0x06, 0x01])
+    );
+    const resolver = createProtoResolver(AutoFormExampleSchema, {}, source);
+
+    const result = await resolver(
+      { ...values, username: 'edited_admin' },
+      undefined,
+      {
+        criteriaMode: 'firstError',
+        fields: {},
+        names: [],
+        shouldUseNativeValidation: false,
+      } as never
+    );
+
+    expect(result.values).toMatchObject({
+      $unknown: source.$unknown,
+      username: 'edited_admin',
+    });
   });
 
   it('supports provider-style defaults and synchronous validation', () => {

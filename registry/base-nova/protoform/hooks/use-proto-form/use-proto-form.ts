@@ -147,11 +147,14 @@ export function useProtoForm<Desc extends DescMessage>(
   const conversionOptions: ProtoConversionOptions = {
     emptyRepeatedStringPolicies,
   };
+  const sourceMessage = isMessage(rest.defaultValues, schema)
+    ? rest.defaultValues
+    : undefined;
 
   const form = useForm({
     ...rest,
     mode,
-    resolver: createProtoResolver(schema, conversionOptions),
+    resolver: createProtoResolver(schema, conversionOptions, sourceMessage),
   } as unknown as UseFormProps<FormShape<Desc>>) as UseFormReturn<
     FormShape<Desc>
   >;
@@ -159,10 +162,6 @@ export function useProtoForm<Desc extends DescMessage>(
   const formErrors = form.formState.errors;
   const dirtyFields = form.formState.dirtyFields;
   const initialValues = form.formState.defaultValues;
-  const sourceMessage = isMessage(rest.defaultValues, schema)
-    ? rest.defaultValues
-    : undefined;
-
   const createMessage = (values?: FormShape<Desc>): MessageShape<Desc> => {
     const raw = values ?? form.getValues();
     return formValuesToProto(

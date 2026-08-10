@@ -1,6 +1,10 @@
 'use client';
 
-import { createUpdateMask } from '../../lib/protobuf-provider';
+import {
+  createUpdateMask,
+  formValuesToProto,
+  preserveProtoMessageSource,
+} from '../../lib/protobuf-provider';
 import React from 'react';
 
 import { Alert, AlertDescription, AlertTitle } from '@/registry/base-nova/protoform/components/alert';
@@ -21,7 +25,13 @@ import {
 import { AutoFormFieldComponentRegistry } from './fields';
 import { deriveSimpleFields } from './helpers';
 import { AutoFormModeShell } from './mode-shell';
-import { getProtoMessageUiConfig, PROTO_FORM_ROOT_ERROR_KEY } from './proto';
+import {
+  getProtoMessageUiConfig,
+  isProtoMessageDescriptor,
+  isProtoProvider,
+  PROTO_FORM_ROOT_ERROR_KEY,
+  resolveProtoSourceMessage,
+} from './proto';
 import { AutoFormFields } from './renderers';
 import { AutoFormRuntimeProvider } from './runtime-provider';
 import {
@@ -368,7 +378,24 @@ function AutoFormContent<
       if (controller.signal.aborted) {
         return;
       }
-      await onSubmit(values, engine.nativeForm as TNativeForm, context);
+      const validatedProtoMessage = resolvedSchema.protoDesc
+        ? resolveProtoSourceMessage(resolvedSchema.protoDesc, values)
+        : undefined;
+      const submittedValues = resolvedSchema.protoDesc
+        ? validatedProtoMessage
+          ? preserveProtoMessageSource(
+              resolvedSchema.protoDesc,
+              validatedProtoMessage,
+              resolvedSchema.protoSource as never
+            )
+          : formValuesToProto(
+              resolvedSchema.protoDesc,
+              values,
+              resolvedSchema.protoSource as never,
+              conversionOptions
+            )
+        : values;
+      await onSubmit(submittedValues as T, engine.nativeForm as TNativeForm, context);
       if (!controller.signal.aborted) {
         routeToFirstStepError();
       }
@@ -610,7 +637,15 @@ function AutoFormCoreInner<
   ...props
 }: AutoFormCoreProps<T, TNativeForm, TCustomFieldType>) {
   const conversionOptions = protoConversionOptionsFromFieldConfig(props.fieldConfig);
-  const resolvedSchema = resolveSchema(schema, conversionOptions);
+  const protoDescriptor = isProtoMessageDescriptor(schema)
+    ? schema
+    : isProtoProvider(schema)
+      ? schema.getMessageDescriptor()
+      : undefined;
+  const protoSource = protoDescriptor
+    ? resolveProtoSourceMessage(protoDescriptor, values, defaultValues)
+    : undefined;
+  const resolvedSchema = resolveSchema(schema, conversionOptions, protoSource);
   const providerDefaults = resolvedSchema.provider.getDefaultValues();
   const initialDefaultValues =
     resolvedSchema.isProto && resolvedSchema.protoDesc

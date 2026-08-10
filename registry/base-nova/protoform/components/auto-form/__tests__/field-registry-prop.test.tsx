@@ -21,7 +21,6 @@ describe('AutoForm – fieldRegistry prop wiring', () => {
       <AutoForm
         fieldConfig={{ greeting: { fieldType: 'code' } }}
         fieldRegistry={customRegistry}
-        formComponents={{ code: CustomComponent }}
         schema={schema}
       />
     );

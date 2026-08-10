@@ -1,11 +1,15 @@
-import { create } from '@bufbuild/protobuf';
+import { create, fromBinary, toBinary } from '@bufbuild/protobuf';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
 import '@/registry/base-nova/protoform/lib/protobuf-provider/auto-form-example-annotations';
 
-import { AutoFormExampleSchema } from '@/registry/base-nova/protoform/lib/protobuf-provider/gen/auto-form-example_pb';
+import {
+  AddressSchema,
+  AutoFormExampleSchema,
+} from '@/registry/base-nova/protoform/lib/protobuf-provider/gen/auto-form-example_pb';
+import { formValuesToProto } from '@/registry/base-nova/protoform/lib/protobuf-provider';
 
 import { AutoForm } from '../index';
 
@@ -125,6 +129,64 @@ describe('AutoForm – protobuf forms', () => {
     expect(submittedValue.createdAt.$typeName).toBe('google.protobuf.Timestamp');
     expect(submittedValue.reminderInterval.$typeName).toBe('google.protobuf.Duration');
     expect(submittedValue.writablePaths.paths).toEqual(['profile']);
+  }, 10_000);
+
+  it('preserves the edit source message through the React Hook Form adapter', async () => {
+    const user = userEvent.setup();
+    const onSubmit = vi.fn();
+    const base = formValuesToProto(AutoFormExampleSchema, buildValidProtoDefaults());
+    const addressWithUnknown = fromBinary(
+      AddressSchema,
+      Uint8Array.from([...toBinary(AddressSchema, base.shippingAddress), 0x98, 0x06, 0x01])
+    );
+    const knownSource = create(AutoFormExampleSchema, {
+      ...base,
+      shippingAddress: addressWithUnknown,
+    });
+    const source = fromBinary(
+      AutoFormExampleSchema,
+      Uint8Array.from([...toBinary(AutoFormExampleSchema, knownSource), 0x98, 0x06, 0x02])
+    );
+
+    render(<AutoForm defaultValues={source} onSubmit={onSubmit} schema={AutoFormExampleSchema} withSubmit />);
+    await user.click(screen.getByRole('button', { name: SUBMIT_BUTTON }));
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
+
+    const submitted = onSubmit.mock.calls[0][0];
+    expect(submitted.$unknown).toEqual(source.$unknown);
+    expect(submitted.shippingAddress.$unknown).toEqual(source.shippingAddress.$unknown);
+  }, 10_000);
+
+  it('preserves resolver-normalized protobuf values while restoring source unknown fields', async () => {
+    const user = userEvent.setup();
+    const onSubmit = vi.fn();
+    const knownSource = formValuesToProto(AutoFormExampleSchema, buildValidProtoDefaults());
+    const source = fromBinary(
+      AutoFormExampleSchema,
+      Uint8Array.from([...toBinary(AutoFormExampleSchema, knownSource), 0x98, 0x06, 0x03])
+    );
+
+    render(
+      <AutoForm
+        defaultValues={source}
+        onSubmit={onSubmit}
+        resolver={async (values) => ({
+          errors: {},
+          values: formValuesToProto(AutoFormExampleSchema, {
+            ...values,
+            username: 'normalized_admin',
+          }),
+        })}
+        schema={AutoFormExampleSchema}
+        withSubmit
+      />
+    );
+    await user.click(screen.getByRole('button', { name: SUBMIT_BUTTON }));
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
+
+    const submitted = onSubmit.mock.calls[0][0];
+    expect(submitted.username).toBe('normalized_admin');
+    expect(submitted.$unknown).toEqual(source.$unknown);
   }, 10_000);
 
   it('shows protobuf field-level validation feedback', async () => {

@@ -1,4 +1,8 @@
-import type { DescMessage, MessageValidType } from "@bufbuild/protobuf";
+import type {
+  DescMessage,
+  MessageShape,
+  MessageValidType,
+} from "@bufbuild/protobuf";
 import { toNestErrors, validateFieldsNatively } from "@hookform/resolvers";
 import type { FormValues } from "../../lib/core/index.js";
 import {
@@ -13,7 +17,8 @@ import type { Resolver } from "react-hook-form";
 
 export function createProtoResolver<Desc extends DescMessage>(
   desc: Desc,
-  options: ProtoFormOptions = {}
+  options: ProtoFormOptions = {},
+  source?: MessageShape<Desc>
 ): Resolver<FormValues, unknown, MessageValidType<Desc>> {
   const standardSchema = createDescriptorAwareStandardSchema(desc, options);
 
@@ -22,7 +27,8 @@ export function createProtoResolver<Desc extends DescMessage>(
       desc,
       values,
       standardSchema,
-      options
+      options,
+      source
     );
 
     if (!validationResult.issues) {
