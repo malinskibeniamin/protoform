@@ -7,7 +7,6 @@ import { Button } from '@/registry/base-nova/protoform/components/button';
 import { usePortalContainer } from '@/registry/base-nova/protoform/hooks/use-portal-container';
 import {
   asChildTrigger,
-  extractCompatProp,
   narrowOpenChange,
   renderDescription,
   renderWithDataState,
@@ -105,19 +104,18 @@ interface DialogContentProps
   showCloseButton?: boolean;
 }
 
-function DialogContent(allProps: DialogContentProps) {
-  const { props: contentProps, value: onOpenAutoFocus } = extractCompatProp(allProps, 'onOpenAutoFocus');
-  const {
-    className,
-    children,
-    showCloseButton = true,
-    showOverlay = true,
-    size,
-    variant,
-    testId,
-    container,
-    ...props
-  } = contentProps;
+function DialogContent({
+  className,
+  children,
+  showCloseButton = true,
+  showOverlay = true,
+  size,
+  variant,
+  testId,
+  container,
+  onOpenAutoFocus,
+  ...props
+}: DialogContentProps) {
   warnDeprecatedProp(
     'DialogContent',
     'onOpenAutoFocus',

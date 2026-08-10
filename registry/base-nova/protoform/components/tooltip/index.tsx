@@ -5,14 +5,7 @@ import { AnimatePresence, motion, type Transition } from 'motion/react';
 import React from 'react';
 
 import { usePortalContainer } from '@/registry/base-nova/protoform/hooks/use-portal-container';
-import {
-  asChildToRender,
-  extractCompatProp,
-  narrowOpenChange,
-  renderWithDataState,
-  useMirroredOpen,
-  warnDeprecatedProp,
-} from '@/registry/base-nova/protoform/lib/base-ui-compat';
+import { asChildToRender, narrowOpenChange, renderWithDataState, useMirroredOpen } from '@/registry/base-nova/protoform/lib/base-ui-compat';
 import { cn, type PortalContentProps, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
 type TooltipContextType = {
@@ -105,27 +98,20 @@ type TooltipContentProps = React.ComponentProps<typeof TooltipPrimitive.Popup> &
     alignOffset?: number;
   };
 
-function TooltipContent(allProps: TooltipContentProps) {
-  const { props: contentProps, value: onOpenAutoFocus } = extractCompatProp(allProps, 'onOpenAutoFocus');
-  const {
-    className,
-    side = 'top',
-    align = 'center',
-    sideOffset = 4,
-    alignOffset,
-    transition = { type: 'spring', stiffness: 300, damping: 25 },
-    arrow = true,
-    children,
-    testId,
-    container,
-    ...props
-  } = contentProps;
-  warnDeprecatedProp(
-    'TooltipContent',
-    'onOpenAutoFocus',
-    onOpenAutoFocus,
-    'Use `initialFocus` on the underlying Base UI popup instead.'
-  );
+function TooltipContent({
+  className,
+  side = 'top',
+  align = 'center',
+  sideOffset = 4,
+  alignOffset,
+  transition = { type: 'spring', stiffness: 300, damping: 25 },
+  arrow = true,
+  children,
+  testId,
+  container,
+  onOpenAutoFocus: _onOpenAutoFocus,
+  ...props
+}: TooltipContentProps) {
   const { isOpen } = useTooltip();
   const initialPosition = getInitialPosition(side);
   const portalContainer = usePortalContainer();

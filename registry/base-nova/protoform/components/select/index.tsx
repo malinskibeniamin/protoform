@@ -6,12 +6,7 @@ import React from 'react';
 
 import { useGroup } from '@/registry/base-nova/protoform/components/group';
 import { usePortalContainer } from '@/registry/base-nova/protoform/hooks/use-portal-container';
-import {
-  extractCompatProp,
-  narrowOpenChange,
-  renderWithDataState,
-  warnDeprecatedProp,
-} from '@/registry/base-nova/protoform/lib/base-ui-compat';
+import { narrowOpenChange, renderWithDataState } from '@/registry/base-nova/protoform/lib/base-ui-compat';
 import { cn, type PortalContentProps, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
 type SelectRootProps = Omit<
@@ -159,11 +154,11 @@ type SelectContentProps = React.ComponentProps<typeof SelectPrimitive.Popup> &
   };
 
 const SelectContent = React.forwardRef<React.ComponentRef<typeof SelectPrimitive.Popup>, SelectContentProps>(
-  (allProps, ref) => {
-    const { props: contentProps, value: requestedPosition } = extractCompatProp(allProps, 'position');
-    const {
+  (
+    {
       className,
       children,
+      position = 'popper',
       testId,
       container,
       side = 'bottom',
@@ -172,14 +167,9 @@ const SelectContent = React.forwardRef<React.ComponentRef<typeof SelectPrimitive
       alignOffset,
       alignItemWithTrigger = false,
       ...props
-    } = contentProps;
-    const position = requestedPosition === 'item-aligned' ? 'item-aligned' : 'popper';
-    warnDeprecatedProp(
-      'SelectContent',
-      'position',
-      requestedPosition,
-      'Base UI positioning is automatic; use `alignItemWithTrigger` when selected-item alignment is required.'
-    );
+    },
+    ref
+  ) => {
     const portalContainer = usePortalContainer();
     return (
       <SelectPrimitive.Portal container={container ?? portalContainer}>

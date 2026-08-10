@@ -6,10 +6,6 @@ import React from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/registry/base-nova/protoform/components/dialog';
 import { Popover, PopoverAnchor, PopoverContent } from '@/registry/base-nova/protoform/components/popover';
 import { Text } from '@/registry/base-nova/protoform/components/typography';
-import {
-  extractCompatProp,
-  warnDeprecatedProp,
-} from '@/registry/base-nova/protoform/lib/base-ui-compat';
 import { cn, type FixedPositionContentProps, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
 const commandVariants = cva(
@@ -51,31 +47,22 @@ function Command({ className, variant, size, testId, ...props }: CommandProps) {
   );
 }
 
-type CommandDialogProps = Omit<React.ComponentProps<typeof Dialog>, 'children'> &
+function CommandDialog({
+  title = 'Command Palette',
+  description = 'Search for a command to run...',
+  children,
+  showOverlay = true,
+  container,
+  onOpenAutoFocus,
+  className,
+  ...props
+}: Omit<React.ComponentProps<typeof Dialog>, 'children'> &
   Pick<FixedPositionContentProps, 'showOverlay' | 'container' | 'onOpenAutoFocus'> & {
     title?: string;
     description?: string;
     className?: string;
     children?: React.ReactNode;
-  };
-
-function CommandDialog(allProps: CommandDialogProps) {
-  const { props: commandProps, value: onOpenAutoFocus } = extractCompatProp(allProps, 'onOpenAutoFocus');
-  const {
-    title = 'Command Palette',
-    description = 'Search for a command to run...',
-    children,
-    showOverlay = true,
-    container,
-    className,
-    ...props
-  } = commandProps;
-  warnDeprecatedProp(
-    'CommandDialog',
-    'onOpenAutoFocus',
-    onOpenAutoFocus,
-    'Use `initialFocus` on Base UI `Dialog.Popup` instead.'
-  );
+  }) {
   return (
     <Dialog {...props}>
       <DialogHeader className="sr-only">
@@ -85,6 +72,7 @@ function CommandDialog(allProps: CommandDialogProps) {
       <DialogContent
         className={cn('overflow-hidden p-0', container && 'absolute', className)}
         container={container}
+        onOpenAutoFocus={onOpenAutoFocus}
         showOverlay={showOverlay}
       >
         <Command
@@ -255,6 +243,7 @@ function CommandSubContent({ className, children }: CommandSubContentProps) {
     <PopoverContent
       align="start"
       className={cn('w-fit p-0', className)}
+      onOpenAutoFocus={(e) => e.preventDefault()}
       side="right"
       sideOffset={4}
     >

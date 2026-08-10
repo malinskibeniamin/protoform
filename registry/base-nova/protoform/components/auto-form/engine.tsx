@@ -51,7 +51,7 @@ export type AutoFormEngine = AutoFormEngineHandle & {
   getFieldInvalid: (path: string) => boolean;
   handleSubmit: (
     onValid: (values: Record<string, unknown>) => void | Promise<void>
-  ) => React.SubmitEventHandler<HTMLFormElement>;
+  ) => React.FormEventHandler<HTMLFormElement>;
   isSubmitting: boolean;
   isDirty: boolean;
   nativeForm: unknown;
