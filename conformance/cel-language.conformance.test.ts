@@ -45,6 +45,11 @@ describe("CEL language conformance", () => {
     `);
   });
 
+  it("uses RE2 semantics for string matching", () => {
+    expect(run("'protoform'.matches('^proto.*$')")).toBe(true);
+    expect(isCelError(run("'ab'.matches('a(?=b)')"))).toBe(true);
+  });
+
   it("supports timestamp and duration construction, comparison, and arithmetic", () => {
     expectCelTrue(`
       duration('90s') > duration('60s') &&
