@@ -41,54 +41,57 @@ function renderControls(
 }
 
 describe("large-form performance budget", () => {
-  it.each(
-    matrix
-  )("keeps render, validation, field change, and step transition within budgets for a $fields-field descriptor", async (budget) => {
-    const descriptor = createPerformanceDescriptor(budget.fields);
-    const values = Object.fromEntries(
-      Array.from({ length: budget.fields }, (_, index) => [
-        `field${index + 1}`,
-        `value-${index + 1}`,
-      ])
-    );
-    const { fields } = parseProtoSchema(descriptor);
+  it.each(matrix)(
+    "keeps render, validation, field change, and step transition within budgets for a $fields-field descriptor",
+    async (budget) => {
+      const descriptor = createPerformanceDescriptor(budget.fields);
+      const values = Object.fromEntries(
+        Array.from({ length: budget.fields }, (_, index) => [
+          `field${index + 1}`,
+          `value-${index + 1}`,
+        ])
+      );
+      const { fields } = parseProtoSchema(descriptor);
 
-    const renderStarted = performance.now();
-    const markup = renderControls(fields, values);
-    expect(markup).toContain(`name="field${budget.fields}"`);
-    expect(performance.now() - renderStarted).toBeLessThan(budget.render);
+      const renderStarted = performance.now();
+      const markup = renderControls(fields, values);
+      expect(markup).toContain(`name="field${budget.fields}"`);
+      expect(performance.now() - renderStarted).toBeLessThan(budget.render);
 
-    const validationStarted = performance.now();
-    const validation =
-      await createProtoFormSchema(descriptor)["~standard"].validate(values);
-    expect(validation.issues).toBeUndefined();
-    expect(performance.now() - validationStarted).toBeLessThan(
-      budget.validation
-    );
+      const validationStarted = performance.now();
+      const validation =
+        await createProtoFormSchema(descriptor)["~standard"].validate(values);
+      expect(validation.issues).toBeUndefined();
+      expect(performance.now() - validationStarted).toBeLessThan(
+        budget.validation
+      );
 
-    const changeStarted = performance.now();
-    const changedValues = { ...values, field1: "updated" };
-    expect(protoFormValuesToPayload(descriptor, changedValues)).toMatchObject({
-      field1: "updated",
-    });
-    expect(performance.now() - changeStarted).toBeLessThan(budget.change);
+      const changeStarted = performance.now();
+      const changedValues = { ...values, field1: "updated" };
+      expect(protoFormValuesToPayload(descriptor, changedValues)).toMatchObject(
+        {
+          field1: "updated",
+        }
+      );
+      expect(performance.now() - changeStarted).toBeLessThan(budget.change);
 
-    const steppedFields = fields.map((field, index) => ({
-      ...field,
-      hints: {
-        ...field.hints,
-        step: index < budget.fields / 2 ? "first" : "second",
-      },
-    }));
-    const steps = [
-      { id: "first", title: "First" },
-      { id: "second", title: "Second" },
-    ];
-    const stepStarted = performance.now();
-    const secondStep = fieldsForStep(steppedFields, steps, "second");
-    const stepMarkup = renderControls(secondStep, values);
-    expect(secondStep).toHaveLength(budget.fields / 2);
-    expect(stepMarkup).toContain(`name="field${budget.fields}"`);
-    expect(performance.now() - stepStarted).toBeLessThan(budget.step);
-  });
+      const steppedFields = fields.map((field, index) => ({
+        ...field,
+        hints: {
+          ...field.hints,
+          step: index < budget.fields / 2 ? "first" : "second",
+        },
+      }));
+      const steps = [
+        { id: "first", title: "First" },
+        { id: "second", title: "Second" },
+      ];
+      const stepStarted = performance.now();
+      const secondStep = fieldsForStep(steppedFields, steps, "second");
+      const stepMarkup = renderControls(secondStep, values);
+      expect(secondStep).toHaveLength(budget.fields / 2);
+      expect(stepMarkup).toContain(`name="field${budget.fields}"`);
+      expect(performance.now() - stepStarted).toBeLessThan(budget.step);
+    }
+  );
 });

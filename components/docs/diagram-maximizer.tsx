@@ -96,11 +96,11 @@ function samePortals(current: DiagramPortal[], next: DiagramPortal[]): boolean {
 }
 
 function ExpandedDiagramPreview({ target }: { target: HTMLElement }) {
-  const previewRef = React.useRef<HTMLDivElement>(null);
+  const previewRef = React.useRef<HTMLDivElement | null>(null);
 
   React.useEffect(
     function renderPreview() {
-      const preview = previewRef.current;
+      const preview: HTMLDivElement | null = previewRef.current;
       if (!preview) {
         return;
       }

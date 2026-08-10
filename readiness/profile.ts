@@ -85,14 +85,14 @@ export const readinessProfile = {
     "@bufbuild/protobuf": "^2.13.0",
     "@bufbuild/protovalidate": "^1.2.0",
     "@standard-schema/spec": "^1.1.0",
-    "@tanstack/react-form": "^1.33.2",
+    "@tanstack/react-form": "^1.33.3",
     "final-form": "^5.0.1",
     formik: "^2.4.9",
     react: "^19.2.8",
     "react-final-form": "^7.0.1",
     "react-hook-form": "^7.84.0",
   },
-  reviewedAt: "2026-08-09",
+  reviewedAt: "2026-08-10",
   version: 2,
 };
 
