@@ -250,7 +250,7 @@ describe("docs content policy", () => {
     expect(
       manifest.dependencies?.["@modelcontextprotocol/sdk"]
     ).toBeUndefined();
-    expect(manifest.dependencies?.["@orama/orama"]).toBe("^3.1.18");
+    expect(manifest.dependencies?.["@orama/orama"]).toBeUndefined();
     expect(manifest.scripts?.["docs:blume:e2e"]).toContain(
       "astro preview --root .blume-verify"
     );
