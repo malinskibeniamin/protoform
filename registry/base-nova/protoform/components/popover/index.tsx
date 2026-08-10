@@ -5,7 +5,15 @@ import { AnimatePresence, type HTMLMotionProps, motion, type Transition } from '
 import React from 'react';
 
 import { usePortalContainer } from '@/registry/base-nova/protoform/hooks/use-portal-container';
-import { asChildTrigger, narrowOpenChange, renderWithDataState, Slot, useMirroredOpen } from '@/registry/base-nova/protoform/lib/base-ui-compat';
+import {
+  asChildTrigger,
+  extractCompatProp,
+  narrowOpenChange,
+  renderWithDataState,
+  Slot,
+  useMirroredOpen,
+  warnDeprecatedProp,
+} from '@/registry/base-nova/protoform/lib/base-ui-compat';
 import { cn, type PortalContentProps, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
 type PopoverContextType = {
@@ -23,7 +31,7 @@ const usePopover = (): PopoverContextType => {
 };
 
 type PopoverAnchorContextType = {
-  anchorRef: React.MutableRefObject<Element | null>;
+  anchorRef: React.RefObject<Element | null>;
   setHasAnchor: (hasAnchor: boolean) => void;
   hasAnchor: boolean;
 };
@@ -107,19 +115,26 @@ type PopoverContentProps = React.ComponentProps<typeof PopoverPrimitive.Popup> &
     alignOffset?: number;
   };
 
-function PopoverContent({
-  className,
-  align = 'center',
-  side = 'bottom',
-  sideOffset = 4,
-  alignOffset,
-  transition = { type: 'spring', stiffness: 300, damping: 25 },
-  children,
-  testId,
-  container,
-  onOpenAutoFocus: _onOpenAutoFocus,
-  ...props
-}: PopoverContentProps) {
+function PopoverContent(allProps: PopoverContentProps) {
+  const { props: contentProps, value: onOpenAutoFocus } = extractCompatProp(allProps, 'onOpenAutoFocus');
+  const {
+    className,
+    align = 'center',
+    side = 'bottom',
+    sideOffset = 4,
+    alignOffset,
+    transition = { type: 'spring', stiffness: 300, damping: 25 },
+    children,
+    testId,
+    container,
+    ...props
+  } = contentProps;
+  warnDeprecatedProp(
+    'PopoverContent',
+    'onOpenAutoFocus',
+    onOpenAutoFocus,
+    'Use `initialFocus` on Base UI `Popover.Popup` instead.'
+  );
   const { isOpen } = usePopover();
   const initialPosition = getInitialPosition(side);
   const portalContainer = usePortalContainer();

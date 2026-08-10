@@ -567,7 +567,7 @@ const featureDemoDefinitions: readonly FeatureDemoDefinition[] = [
     requirementIds: ["production.react-hook-form"],
     schemaKey: "validation",
     slug: "react-hook-form",
-    title: "React Hook Form",
+    title: "React Hook Form integration",
     tryIt:
       "Edit, blur, validate, and submit through the default React Hook Form adapter.",
   },

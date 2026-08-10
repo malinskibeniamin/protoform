@@ -319,6 +319,20 @@ export function warnDeprecatedProp(component: string, prop: string, value: unkno
 }
 
 /**
+ * Reads and removes a compatibility-only prop without triggering a consumer-facing
+ * TypeScript deprecation hint inside the compatibility layer itself.
+ */
+export function extractCompatProp<P extends object>(
+  props: P,
+  prop: string
+): { props: P; value: unknown } {
+  const value = Reflect.get(props, prop);
+  const remaining = { ...props };
+  Reflect.deleteProperty(remaining, prop);
+  return { props: remaining, value };
+}
+
+/**
  * Radix's `forceMount` on a Content/Panel component maps to Base UI's
  * `keepMounted` on the surrounding Portal. Use at a Content wrapper to
  * accept `forceMount` for source-compat, forward it to `keepMounted`, and
@@ -392,7 +406,7 @@ function composeRefs<T>(...refs: Array<React.Ref<T> | undefined>): React.RefCall
       if (typeof ref === 'function') {
         ref(value);
       } else {
-        (ref as React.MutableRefObject<T>).current = value;
+        Reflect.set(ref, 'current', value);
       }
     }
   };

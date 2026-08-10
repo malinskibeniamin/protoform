@@ -2588,7 +2588,7 @@
       ],
       "name": "react-hook-form-demo",
       "registryDependencies": ["@protoform/protoform-demo-runtime"],
-      "title": "React Hook Form",
+      "title": "React Hook Form integration",
       "type": "registry:example"
     },
     {

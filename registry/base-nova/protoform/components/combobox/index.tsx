@@ -386,11 +386,6 @@ export const Combobox = memo(
       [open]
     );
 
-    const preventAutoFocusHandler = useMemo(
-      () => (preventAutoFocusOnOpen ? preventDefault : undefined),
-      [preventAutoFocusOnOpen]
-    );
-
     // ── Render ────────────────────────────────────────────────────────
 
     return (
@@ -440,7 +435,6 @@ export const Combobox = memo(
           className="p-0"
           container={container}
           onMouseDown={preventDefault}
-          onOpenAutoFocus={preventAutoFocusHandler}
           style={popoverStyle}
         >
           <Command

@@ -1,6 +1,6 @@
 ---
 title: 从 Zod 迁移
-description: 使用迁移提示词/脚本将验证逻辑迁移到 proto 文件中。
+description: "使用迁移提示词/脚本将验证逻辑迁移到 proto 文件中。本指南进一步说明如何在 Protoform 中实际应用此功能，并涵盖契约设计、表单生成、字段验证、错误处理、迁移策略、无障碍体验、测试方法与生产环境集成，帮助团队采用经过验证且可维护的实现路径。"
 ---
 当 TypeScript 定义契约时，Zod 非常合适。当 protobuf 定义契约时，Protoform 更合适。
 迁移可以逐步进行：保留 shadcn 字段 UI，替换 resolver，并将规则迁移到 proto 注解中。

@@ -19,7 +19,12 @@ import {
 import { TagsValue } from '@/registry/base-nova/protoform/components/tags';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/registry/base-nova/protoform/components/tooltip';
 import { useControllableState } from '@/registry/base-nova/protoform/hooks/use-controllable-state';
-import { narrowOpenChange, renderWithDataState } from '@/registry/base-nova/protoform/lib/base-ui-compat';
+import {
+  extractCompatProp,
+  narrowOpenChange,
+  renderWithDataState,
+  warnDeprecatedProp,
+} from '@/registry/base-nova/protoform/lib/base-ui-compat';
 import { cn, type PortalContentProps, type PortalRootProps, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
 export type MultiSelectOptionItem = {
@@ -334,7 +339,15 @@ interface MultiSelectContentProps extends React.ComponentPropsWithoutRef<typeof 
 }
 
 const MultiSelectContent = React.forwardRef<React.ComponentRef<typeof PopoverPrimitive.Popup>, MultiSelectContentProps>(
-  ({ className, children, container, testId, onOpenAutoFocus: _onOpenAutoFocus, ...props }, ref) => {
+  (allProps, ref) => {
+    const { props: contentProps, value: onOpenAutoFocus } = extractCompatProp(allProps, 'onOpenAutoFocus');
+    const { className, children, container, testId, ...props } = contentProps;
+    warnDeprecatedProp(
+      'MultiSelectContent',
+      'onOpenAutoFocus',
+      onOpenAutoFocus,
+      'Use Base UI focus controls on the underlying popup instead.'
+    );
     const context = useMultiSelect();
 
     const fragmentRef = React.useRef<DocumentFragment | null>(null);
@@ -590,25 +603,32 @@ const widthClasses = {
   auto: 'w-auto',
 };
 
-function SimpleMultiSelect({
-  id,
-  options,
-  value,
-  onValueChange,
-  placeholder = 'Select items...',
-  className,
-  disabled,
-  maxCount,
-  maxDisplay,
-  searchable = true,
-  width = 'md',
-  container,
-  onOpenAutoFocus,
-  open,
-  defaultOpen,
-  onOpenChange,
-  testId,
-}: SimpleMultiSelectProps) {
+function SimpleMultiSelect(allProps: SimpleMultiSelectProps) {
+  const { props: selectProps, value: onOpenAutoFocus } = extractCompatProp(allProps, 'onOpenAutoFocus');
+  const {
+    id,
+    options,
+    value,
+    onValueChange,
+    placeholder = 'Select items...',
+    className,
+    disabled,
+    maxCount,
+    maxDisplay,
+    searchable = true,
+    width = 'md',
+    container,
+    open,
+    defaultOpen,
+    onOpenChange,
+    testId,
+  } = selectProps;
+  warnDeprecatedProp(
+    'SimpleMultiSelect',
+    'onOpenAutoFocus',
+    onOpenAutoFocus,
+    'Use Base UI focus controls on the underlying popup instead.'
+  );
   // Convert simple string array to option objects
   const normalizedOptions: MultiSelectOption[] = React.useMemo(
     () =>
@@ -646,7 +666,6 @@ function SimpleMultiSelect({
       </MultiSelectTrigger>
       <MultiSelectContent
         container={container}
-        onOpenAutoFocus={onOpenAutoFocus}
         testId={testId ? `${testId}-content` : undefined}
       >
         {searchable ? (
