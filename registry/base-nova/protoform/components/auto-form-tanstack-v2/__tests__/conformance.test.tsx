@@ -139,6 +139,65 @@ describe('experimental TanStack Form v2 AutoForm conformance', () => {
     );
   });
 
+  it('renders a provider root error once', async () => {
+    const user = userEvent.setup();
+    const schema = createNameSchema(() => ({
+      success: false,
+      errors: [{ message: 'Provider exploded.', path: [] }],
+    }));
+
+    render(<AutoForm schema={schema} withSubmit />);
+    await user.click(screen.getByRole('button', { name: 'Submit' }));
+
+    const rootError = await screen.findByRole('alert');
+    expect(rootError.textContent?.match(/Provider exploded\./g)).toHaveLength(1);
+  });
+
+  it('surfaces a rejected async provider validation without leaking it', async () => {
+    const user = userEvent.setup();
+    const schema = createNameSchema(async (values) => {
+      if (values.name === 'reject') {
+        throw new Error('Async provider exploded.');
+      }
+      return { success: true, data: values };
+    });
+
+    render(<AutoForm schema={schema} withSubmit />);
+    await user.type(screen.getByRole('textbox', { name: /name/i }), 'reject');
+    await user.click(screen.getByRole('button', { name: 'Submit' }));
+
+    const rootError = await screen.findByRole('alert');
+    expect(rootError.textContent?.match(/Async provider exploded\./g)).toHaveLength(
+      1
+    );
+  });
+
+  it('clears provider errors when controlled values reset the form', async () => {
+    const user = userEvent.setup();
+    const schema = createNameSchema((values) =>
+      values.name
+        ? { success: true, data: values }
+        : {
+            success: false,
+            errors: [{ message: 'Enter a name.', path: ['name'] }],
+          }
+    );
+    const view = render(
+      <AutoForm schema={schema} values={{ name: '' }} withSubmit />
+    );
+    await user.click(screen.getByRole('button', { name: 'Submit' }));
+    expect(await screen.findByText('Enter a name.')).toBeInTheDocument();
+
+    view.rerender(
+      <AutoForm schema={schema} values={{ name: 'Ada' }} withSubmit />
+    );
+
+    await waitFor(() =>
+      expect(screen.queryByText('Enter a name.')).not.toBeInTheDocument()
+    );
+    expect(screen.getByRole('textbox', { name: /name/i })).toHaveValue('Ada');
+  });
+
   it('runs provider validation on change when requested', async () => {
     const user = userEvent.setup();
     const schema = createNameSchema((values) =>

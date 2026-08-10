@@ -396,11 +396,14 @@ export function TanStackV2Engine({
   const validationRootErrors = validationErrors
     .filter((error) => error.path.length === 0)
     .map((error) => error.message);
-  const rootError = [
-    ...errorMessages(state.errors),
-    ...validationRootErrors,
-    ...(submitError ? [submitError] : []),
-  ].join('\n') || undefined;
+  const rootError =
+    [
+      ...new Set([
+        ...errorMessages(state.errors),
+        ...validationRootErrors,
+        ...(submitError ? [submitError] : []),
+      ]),
+    ].join('\n') || undefined;
 
   React.useEffect(function normalizeMountedDefaults() {
     if (!hasNormalizedDefaultsRef.current) {
@@ -415,6 +418,10 @@ export function TanStackV2Engine({
 
   React.useEffect(function syncControlledValues() {
     if (values) {
+      validatedValuesRef.current = undefined;
+      setSubmitError(undefined);
+      setValidationErrors([]);
+      setNativeFieldErrors(new Map());
       formDefaultValuesRef.current = values;
       cleanValuesRef.current = values;
       form.reset(values);
@@ -498,6 +505,10 @@ export function TanStackV2Engine({
     },
     nativeForm: form,
     reset: (nextValues, options) => {
+      validatedValuesRef.current = undefined;
+      setSubmitError(undefined);
+      setValidationErrors([]);
+      setNativeFieldErrors(new Map());
       if (!options?.keepDefaultValues) {
         formDefaultValuesRef.current = nextValues;
         cleanValuesRef.current = nextValues;

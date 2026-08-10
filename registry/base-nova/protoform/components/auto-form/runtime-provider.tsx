@@ -152,6 +152,9 @@ function AutoFormPayloadController<TNativeForm>({
         signal: payloadValidationController.signal,
       });
       if (isPromiseLike(validationResult)) {
+        // Payload preview is best-effort; the engine's awaited validation path
+        // owns user-visible errors. Observe rejection here to avoid leaking it.
+        void Promise.resolve(validationResult).catch(() => undefined);
         bestEffort = true;
       } else if (isValidationSuccess(validationResult)) {
         validationSuccess = true;
