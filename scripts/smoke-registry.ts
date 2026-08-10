@@ -13,9 +13,11 @@ const expectedItems = [
   "protobuf-v1-bridge",
   "use-proto-form",
   "use-proto-form-tanstack",
+  "use-proto-form-tanstack-v2",
   "auto-form-core",
   "auto-form",
   "auto-form-tanstack",
+  "auto-form-tanstack-v2",
   "protoform",
   "protoform-examples",
   "protoform-demo-runtime",
@@ -126,6 +128,38 @@ if (
 }
 if (tanstackAutoForm.dependencies?.includes("react-hook-form")) {
   throw new Error("auto-form-tanstack must not install React Hook Form");
+}
+
+const tanstackV2Alias =
+  "@tanstack/react-form-v2@npm:@tanstack/react-form@2.0.0-alpha.0";
+const tanstackV2Hook = JSON.parse(
+  readFileSync("public/r/use-proto-form-tanstack-v2.json", "utf8")
+) as { dependencies?: string[] };
+const tanstackV2AutoForm = JSON.parse(
+  readFileSync("public/r/auto-form-tanstack-v2.json", "utf8")
+) as {
+  dependencies?: string[];
+  registryDependencies?: string[];
+};
+if (!tanstackV2Hook.dependencies?.includes(tanstackV2Alias)) {
+  throw new Error(
+    "use-proto-form-tanstack-v2 must install the pinned v2 alias"
+  );
+}
+if (
+  !(
+    tanstackV2AutoForm.dependencies?.includes(tanstackV2Alias) &&
+    tanstackV2AutoForm.registryDependencies?.includes(
+      "@protoform/auto-form-core"
+    ) &&
+    tanstackV2AutoForm.registryDependencies.includes(
+      "@protoform/use-proto-form-tanstack-v2"
+    )
+  )
+) {
+  throw new Error(
+    "auto-form-tanstack-v2 must install the shared core, v2 hook, and pinned v2 alias"
+  );
 }
 
 console.log(`Registry smoke passed: ${expectedItems.join(", ")}`);

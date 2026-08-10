@@ -575,6 +575,29 @@ describe("docs content policy", () => {
     );
   });
 
+  it("documents the separate experimental TanStack Form v2 path", () => {
+    const content = readDoc("tanstack-form.mdx");
+    const requiredTerms = [
+      "@protoform/use-proto-form-tanstack-v2",
+      "@protoform/auto-form-tanstack-v2",
+      "2.0.0-alpha.0",
+      "form.atom",
+      "field.value",
+      "field.errors",
+      "validators: [",
+      "ArrayField",
+      "createValidationError",
+      "schemaOutputs",
+      "unmounted",
+      "[]",
+    ];
+
+    expect(
+      requiredTerms.filter((term) => !content.includes(term)),
+      "Missing experimental TanStack Form v2 guidance"
+    ).toEqual([]);
+  });
+
   it("documents the canonical Connect Query mutation path", () => {
     const content = readDoc("server-error-form.mdx");
     const requiredTerms = [

@@ -153,6 +153,9 @@ async function assertInstalled() {
     "hooks/use-proto-form/index.ts",
     "components/auto-form/index.tsx",
     "components/auto-form-tanstack/index.tsx",
+    "components/auto-form-tanstack-v2/index.tsx",
+    "components/auto-form/adapters/tanstack-v2.tsx",
+    "hooks/use-proto-form-tanstack-v2/index.ts",
     "lib/core/index.ts",
     "lib/protobuf-provider/index.ts",
     "LICENSES/Apache-2.0.txt",
@@ -193,9 +196,12 @@ async function assertInstalled() {
     [
       "import { AutoForm, defaultRegistry, type AutoFormProps, type FieldTypes } from './components/auto-form';",
       "import { AutoForm as TanStackAutoForm } from './components/auto-form-tanstack';",
+      "import { AutoForm as TanStackV2AutoForm } from './components/auto-form-tanstack-v2';",
       "import { BookstoreDemo } from './components/protoform-bookstore/bookstore-demo';",
       "import { createLibraryService } from './components/protoform-bookstore/library-service';",
+      "import { BookSchema } from './components/protoform-examples/runtime/gen/protoform/conformance/v1/aip_pb';",
       "import { useProtoForm } from './hooks/use-proto-form';",
+      "import { useProtoForm as useProtoFormV2 } from './hooks/use-proto-form-tanstack-v2';",
       "import type { SchemaProvider } from './lib/core';",
       "import { createProtoFormSchema } from './lib/protobuf-provider';",
       "",
@@ -230,16 +236,35 @@ async function assertInstalled() {
       "    schema={schema}",
       "  />",
       ");",
+      "const customTanStackV2Form = (",
+      "  <TanStackV2AutoForm",
+      "    fieldConfig={{ code: { fieldType: 'code' } }}",
+      "    fieldRegistry={registry}",
+      "    formComponents={{ code: CodeField }}",
+      "    formOptions={{ validators: [{ run: () => undefined, triggers: [] }] }}",
+      "    schema={schema}",
+      "  />",
+      ");",
+      "function TanStackV2HookSmoke() {",
+      "  const form = useProtoFormV2(BookSchema, {",
+      "    defaultValues: { displayName: '', isbn: '', note: '' },",
+      "    validators: [{ run: () => undefined, triggers: [] }],",
+      "  });",
+      "  return <form.Field name='displayName'>{(field) => <input onChange={(event) => field.handleChange(event.target.value)} value={String(field.value)} />}</form.Field>;",
+      "}",
       "const builtInFieldType: FieldTypes = 'textarea';",
       "",
       "void AutoForm;",
       "void TanStackAutoForm;",
+      "void TanStackV2AutoForm;",
+      "void TanStackV2HookSmoke;",
       "void BookstoreDemo;",
       "void createLibraryService;",
       "void useProtoForm;",
       "void createProtoFormSchema;",
       "void customForm;",
       "void customTanStackForm;",
+      "void customTanStackV2Form;",
       "void builtInFieldType;",
       "",
     ].join("\n")
@@ -252,6 +277,7 @@ try {
   await $`bun install --cwd ${fixture}`;
   await $`bunx shadcn@latest add @protoform/bookstore --cwd ${fixture} --yes --overwrite`;
   await $`bunx shadcn@latest add @protoform/auto-form-tanstack --cwd ${fixture} --yes --overwrite`;
+  await $`bunx shadcn@latest add @protoform/auto-form-tanstack-v2 --cwd ${fixture} --yes --overwrite`;
   await assertInstalled();
   await $`bun run --cwd ${fixture} typecheck`;
   console.log(`Registry-only consumer fixture passed: ${fixture}`);

@@ -163,12 +163,140 @@ The generated field, array, map, object, oneof, stepper, accessibility, and prot
 contracts are shared with the default React Hook Form AutoForm. The form state and native escape
 hatches remain TanStack Form-owned.
 
+## Experimental: TanStack Form v2 alpha
+
+TanStack Form v2 support is a separate, opt-in path. It does not replace the stable v1 items above.
+The registry currently pins `2.0.0-alpha.0` through a package alias, so both generations can be
+evaluated in one application. Review the upstream [v2 announcement](https://tanstack.com/blog/announcing-tanstack-form-v2-alpha)
+and [migration guide](https://tanstack.com/form/alpha/docs/migrate-from-v1) before adopting it.
+
+Install the experimental native hook:
+
+```bash
+bunx shadcn@latest add @protoform/use-proto-form-tanstack-v2
+```
+
+The v2 adapter follows the v2 contract rather than emulating v1: validators and listeners are arrays,
+the form exposes `form.atom`, fields expose `field.value` and `field.errors` directly, and a successful
+Standard Schema validator contributes its protobuf message to `schemaOutputs`.
+
+```tsx
+import { Button } from "@/components/ui/button";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { useProtoForm } from "@/hooks/use-proto-form-tanstack-v2";
+import { SignupRequestSchema } from "@/gen/example/v1/signup_pb";
+
+export function ExperimentalSignupForm() {
+  const form = useProtoForm(SignupRequestSchema, {
+    defaultValues: { email: "", displayName: "" },
+    validators: [
+      {
+        run: ({ value }) =>
+          value.email.endsWith("@example.com")
+            ? undefined
+            : { fields: { email: "Use your example.com address." } },
+        triggers: ["change"],
+      },
+    ],
+    onSubmit: async ({ createValidationError, schemaOutputs }) => {
+      const message = schemaOutputs.at(-1);
+      const result = await client.signup(message);
+      if (!result.ok) {
+        return createValidationError({
+          fields: { email: "The server rejected this email." },
+        });
+      }
+    },
+  });
+
+  return (
+    <form
+      onSubmit={(event) => {
+        event.preventDefault();
+        void form.handleSubmit();
+      }}
+    >
+      <form.Field name="email">
+        {(field) => (
+          <Field data-invalid={field.meta.isInvalid}>
+            <FieldLabel htmlFor={field.name}>Email</FieldLabel>
+            <Input
+              aria-invalid={field.meta.isInvalid}
+              id={field.name}
+              name={field.name}
+              onBlur={field.handleBlur}
+              onChange={(event) => field.handleChange(event.target.value)}
+              type="email"
+              value={field.value}
+            />
+            {field.errors.map((error) => (
+              <FieldError key={error.message}>{error.message}</FieldError>
+            ))}
+          </Field>
+        )}
+      </form.Field>
+      <Button type="submit">Create account</Button>
+    </form>
+  );
+}
+```
+
+The protobuf validator is appended after caller validators. With no caller schema validators, the
+typed protobuf message is `schemaOutputs[0]`; otherwise read the final output as shown above. The hook
+also adds `createMessage`, `createUpdateMask`, and `setOneofValue`. Use v2's native
+`createValidationError` return for submit-time server errors.
+
+Install the experimental generated form separately:
+
+```bash
+bunx shadcn@latest add @protoform/auto-form-tanstack-v2
+```
+
+```tsx
+import { AutoForm } from "@/components/auto-form-tanstack-v2";
+import { SignupRequestSchema } from "@/gen/example/v1/signup_pb";
+
+export function ExperimentalGeneratedSignupForm() {
+  return (
+    <AutoForm
+      schema={SignupRequestSchema}
+      formOptions={{
+        validators: [
+          {
+            run: ({ value }) =>
+              value.displayName ? undefined : "Enter a display name.",
+            triggers: ["blur"],
+          },
+        ],
+      }}
+      onSubmit={async (message) => client.signup(message)}
+      withSubmit
+    />
+  );
+}
+```
+
+AutoForm v2 uses native `Field` and `ArrayField` components, preserves caller validator arrays, and
+runs provider validation before native and Protoform submit callbacks.
+
+Treat this path as experimental:
+
+- TanStack Form v2 and these registry items are alpha APIs pinned to one exact release.
+- Initialize repeated values with `[]`. Upstream handling for arrays that begin as `null` or
+  `undefined` is still evolving.
+- Test steppers, conditional fields, and oneofs in the application. Upstream v2 behavior for
+  unmounted fields is still under design, so those flows can change between alpha releases.
+- Promote only after the application's focused form tests pass. Keep the stable v1 registry items
+  installed until the migration is complete.
+
 ## Choose a path
 
 | Starting point | Use |
 | --- | --- |
 | Existing TanStack fields and state | `use-proto-form-tanstack` |
 | Descriptor-driven generated fields | `auto-form-tanstack` |
+| TanStack Form v2 alpha evaluation | `use-proto-form-tanstack-v2` or `auto-form-tanstack-v2` |
 | Validation outside React | `createProtoFormSchema` |
 | Existing React Hook Form code | Default [`useProtoForm` and `auto-form`](/docs/react-hook-form) |
 

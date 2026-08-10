@@ -11,7 +11,11 @@ export {
   type ProtoAnnotations,
   registerProtoAnnotations,
 } from "./annotations.js";
-export { createFieldMask, createUpdateMask } from "./field-mask.js";
+export {
+  createFieldMask,
+  createUpdateMask,
+  dirtyFieldsFromValues,
+} from "./field-mask.js";
 export { createProtoFormSchema } from "./form-schema.js";
 export {
   type ConnectErrorContext,

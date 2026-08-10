@@ -325,6 +325,23 @@
       "registryDependencies": ["@protoform/protobuf-provider"]
     },
     {
+      "name": "use-proto-form-tanstack-v2",
+      "type": "registry:hook",
+      "title": "Experimental useProtoForm for TanStack Form v2",
+      "description": "Experimental TanStack Form v2 alpha adapter with the native atom, validator-array, and schema-output APIs plus protobuf messages, update masks, and oneofs.",
+      "dependencies": [
+        "@bufbuild/protobuf",
+        "@tanstack/react-form-v2@npm:@tanstack/react-form@2.0.0-alpha.0"
+      ],
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/hooks/use-proto-form-tanstack-v2/index.ts",
+          "type": "registry:hook"
+        }
+      ],
+      "registryDependencies": ["@protoform/protobuf-provider"]
+    },
+    {
       "name": "auto-form-core",
       "type": "registry:block",
       "title": "Protoform AutoForm core",
@@ -804,6 +821,29 @@
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/adapters/tanstack.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "auto-form-tanstack-v2",
+      "type": "registry:block",
+      "title": "Experimental Protoform AutoForm for TanStack Form v2",
+      "description": "Experimental AutoForm adapter for the TanStack Form v2 alpha with native atoms, validator arrays, ArrayField state, and submit validation errors.",
+      "registryDependencies": [
+        "@protoform/auto-form-core",
+        "@protoform/use-proto-form-tanstack-v2"
+      ],
+      "dependencies": [
+        "@tanstack/react-form-v2@npm:@tanstack/react-form@2.0.0-alpha.0"
+      ],
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/components/auto-form-tanstack-v2/index.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/adapters/tanstack-v2.tsx",
           "type": "registry:component"
         }
       ]
