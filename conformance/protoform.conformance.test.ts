@@ -229,17 +229,15 @@ describe("required Protoform conformance", () => {
     expect(Array.from(result.value.avatarBytes)).toEqual([1, 2, 3, 4]);
   });
 
-  it.each(
-    requiredValidationCases
-  )("returns form-shaped paths for $name failures", async ({
-    input,
-    paths,
-  }) => {
-    const schema = createProtoFormSchema(AutoFormExampleSchema);
-    const result = await schema["~standard"].validate(input);
+  it.each(requiredValidationCases)(
+    "returns form-shaped paths for $name failures",
+    async ({ input, paths }) => {
+      const schema = createProtoFormSchema(AutoFormExampleSchema);
+      const result = await schema["~standard"].validate(input);
 
-    expect(getIssuePaths(result.issues)).toEqual(paths);
-  });
+      expect(getIssuePaths(result.issues)).toEqual(paths);
+    }
+  );
 
   it("returns a root issue for a non-object input instead of throwing", async () => {
     const schema = createProtoFormSchema(AutoFormExampleSchema);
@@ -250,14 +248,15 @@ describe("required Protoform conformance", () => {
 });
 
 describe("recommended Protoform conformance", () => {
-  it.each(
-    recommendedValidationCases
-  )("reports $name with stable paths", async ({ input, paths }) => {
-    const schema = createProtoFormSchema(AutoFormExampleSchema);
-    const result = await schema["~standard"].validate(input);
+  it.each(recommendedValidationCases)(
+    "reports $name with stable paths",
+    async ({ input, paths }) => {
+      const schema = createProtoFormSchema(AutoFormExampleSchema);
+      const result = await schema["~standard"].validate(input);
 
-    expect(getIssuePaths(result.issues)).toEqual(paths);
-  });
+      expect(getIssuePaths(result.issues)).toEqual(paths);
+    }
+  );
 
   it("round-trips optional, wrapper, JSON, map, bytes, and oneof values", async () => {
     const schema = createProtoFormSchema(AutoFormExampleSchema);

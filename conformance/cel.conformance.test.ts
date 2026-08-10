@@ -185,12 +185,15 @@ describe("CEL validation conformance", () => {
     ["wrong result type", InvalidCelTypeSchema, 1],
     ["unknown field", InvalidCelUnknownSchema, 1],
     ["evaluation error", InvalidCelRuntimeSchema, 0],
-  ] as const)("does not expose a CEL runtime failure for %s as a form validation issue", async (_name, schema, value) => {
-    const result = await createProtoFormSchema(schema)["~standard"].validate({
-      value,
-    });
+  ] as const)(
+    "does not expose a CEL runtime failure for %s as a form validation issue",
+    async (_name, schema, value) => {
+      const result = await createProtoFormSchema(schema)["~standard"].validate({
+        value,
+      });
 
-    expect(result.issues).toBeUndefined();
-    expect(result.value).toMatchObject({ value });
-  });
+      expect(result.issues).toBeUndefined();
+      expect(result.value).toMatchObject({ value });
+    }
+  );
 });

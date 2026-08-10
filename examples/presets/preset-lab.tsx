@@ -475,8 +475,8 @@ function isolateWorkspace(workspace: HTMLElement): () => void {
 }
 
 function useWorkspaceFullscreen(setStatus: (message: string) => void) {
-  const inlineHostRef = useRef<HTMLDivElement>(null);
-  const workspaceRef = useRef<HTMLElement>(null);
+  const inlineHostRef = useRef<HTMLDivElement | null>(null);
+  const workspaceRef = useRef<HTMLElement | null>(null);
   const [workspaceHost] = useState(createWorkspaceHost);
   const [isNativeFullscreen, setIsNativeFullscreen] = useState(false);
   const [isFallbackFullscreen, setIsFallbackFullscreen] = useState(false);
@@ -506,7 +506,7 @@ function useWorkspaceFullscreen(setStatus: (message: string) => void) {
 
   useEffect(
     function mountWorkspaceHost() {
-      const inlineHost = inlineHostRef.current;
+      const inlineHost: HTMLDivElement | null = inlineHostRef.current;
       if (!(inlineHost && workspaceHost)) {
         return;
       }
@@ -523,8 +523,8 @@ function useWorkspaceFullscreen(setStatus: (message: string) => void) {
         return;
       }
 
-      const workspace = workspaceRef.current;
-      const inlineHost = inlineHostRef.current;
+      const workspace: HTMLElement | null = workspaceRef.current;
+      const inlineHost: HTMLDivElement | null = inlineHostRef.current;
       if (!(workspace && inlineHost && workspaceHost)) {
         return;
       }
@@ -552,7 +552,7 @@ function useWorkspaceFullscreen(setStatus: (message: string) => void) {
   );
 
   async function toggleFullscreen() {
-    const workspace = workspaceRef.current;
+    const workspace: HTMLElement | null = workspaceRef.current;
     if (!workspace) {
       setStatus("Full screen is not available.");
       return;
