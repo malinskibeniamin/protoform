@@ -26,7 +26,7 @@ terminals.
 | `complex/` | Four-step flow with a oneof, redacted review summary, and error routing |
 | `tanstack/` | Manual TanStack Form fields using the protobuf Standard Schema contract |
 | `form-libraries/` | Formik and Final Form live examples plus shared adapter fixtures |
-| `server/` | Fastify ConnectRPC server with the validation interceptor |
+| `server/` | Node.js ConnectRPC server with the validation interceptor |
 | `apply-server-errors.ts` | `google.rpc.BadRequest` field-path mapping for AutoForm |
 
 ## End-to-end contract

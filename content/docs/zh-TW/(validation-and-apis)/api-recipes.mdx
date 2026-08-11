@@ -176,12 +176,14 @@ export const formExamplesService = {
 ```
 
 ```ts
-await server.register(fastifyConnectPlugin, {
+const handler = connectNodeAdapter({
   interceptors: [createValidateInterceptor()],
   routes: (router) => {
     router.service(FormExamplesService, formExamplesService)
   },
 })
+
+createServer(handler).listen(55012, "127.0.0.1")
 ```
 
 使用標準 Connect code。欄位路徑應保持 protobuf 格式，例如 `project_id` 或

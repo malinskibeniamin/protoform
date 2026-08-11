@@ -160,6 +160,7 @@ describe("PresetLab", () => {
     const sharedPreset = new URL(window.location.href).searchParams.get(
       "preset"
     );
+    expect(sharedPreset).toBe("b1YmqvjO4");
     expect(
       screen.getByRole("link", { name: "Open in shadcn/create" })
     ).toHaveAttribute(

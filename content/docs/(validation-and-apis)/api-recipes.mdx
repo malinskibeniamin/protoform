@@ -177,12 +177,14 @@ export const formExamplesService = {
 ```
 
 ```ts
-await server.register(fastifyConnectPlugin, {
+const handler = connectNodeAdapter({
   interceptors: [createValidateInterceptor()],
   routes: (router) => {
     router.service(FormExamplesService, formExamplesService)
   },
 })
+
+createServer(handler).listen(55012, "127.0.0.1")
 ```
 
 Use canonical Connect codes. Keep field paths in protobuf form such as `project_id` or

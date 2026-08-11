@@ -153,10 +153,12 @@ const routes = (router: ConnectRouter) => {
   router.service(FormExamplesService, formExamplesService)
 }
 
-await server.register(fastifyConnectPlugin, {
+const handler = connectNodeAdapter({
   interceptors: [createValidateInterceptor()],
   routes,
 })
+
+createServer(handler).listen(55012, "127.0.0.1")
 ```
 
 The interceptor enforces the same Protovalidate annotations on the server. Business rules return a

@@ -22,6 +22,43 @@ afterEach(async () => {
 });
 
 describe("form example Connect server", () => {
+  it("serves health checks and reflects browser origins", async () => {
+    const server = buildExampleServer();
+    const address = await server.listen({ host: "127.0.0.1", port: 0 });
+    closeServer = () => server.close();
+
+    const response = await fetch(`${address}/health`, {
+      headers: { Origin: "https://protoform.pages.dev" },
+    });
+
+    await expect(response.json()).resolves.toEqual({ status: "ok" });
+    expect(response.headers.get("access-control-allow-origin")).toBe(
+      "https://protoform.pages.dev"
+    );
+
+    const preflight = await fetch(`${address}/health`, {
+      headers: {
+        "Access-Control-Request-Headers": "Content-Type, X-Protoform-Test",
+        "Access-Control-Request-Method": "POST",
+        Origin: "https://protoform.pages.dev",
+      },
+      method: "OPTIONS",
+    });
+    expect(preflight.status).toBe(204);
+    expect(preflight.headers.get("access-control-allow-methods")).toBe(
+      "GET,HEAD,POST"
+    );
+    expect(preflight.headers.get("access-control-allow-headers")).toBe(
+      "Content-Type, X-Protoform-Test"
+    );
+
+    const invalidPreflight = await fetch(`${address}/health`, {
+      headers: { Origin: "https://protoform.pages.dev" },
+      method: "OPTIONS",
+    });
+    expect(invalidPreflight.status).toBe(400);
+  });
+
   it("runs the generated route and validation interceptor in process", async () => {
     const transport = createRouterTransport(
       (router) => router.service(FormExamplesService, formExamplesService),

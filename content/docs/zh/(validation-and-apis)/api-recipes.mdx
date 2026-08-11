@@ -163,12 +163,14 @@ export const formExamplesService = {
 ```
 
 ```ts
-await server.register(fastifyConnectPlugin, {
+const handler = connectNodeAdapter({
   interceptors: [createValidateInterceptor()],
   routes: (router) => {
     router.service(FormExamplesService, formExamplesService)
   },
 })
+
+createServer(handler).listen(55012, "127.0.0.1")
 ```
 
 使用规范的 Connect 状态码。字段路径应保持 protobuf 格式，例如 `project_id` 或 `services[0].primary_region`；Protoform 会将其转换为表单库使用的路径。不要根据人类可读的错误文本进行分支判断。
