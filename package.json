@@ -60,15 +60,7 @@
     "typecheck:source": "node node_modules/@typescript/native/bin/tsc --noEmit"
   },
   "overrides": {
-    "@bufbuild/cel": "0.6.0",
-    "ai": "6.0.238",
-    "astro": "7.1.6",
-    "cookie": "2.0.1",
-    "js-yaml": "4.3.1",
-    "minimatch": "10.2.6",
-    "path-to-regexp": "8.4.2",
-    "picomatch": "4.0.5",
-    "undici": "8.9.0"
+    "path-to-regexp": "8.4.2"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
