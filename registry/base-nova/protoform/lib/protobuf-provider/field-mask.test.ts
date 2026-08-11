@@ -5,7 +5,11 @@ import {
 } from "../../../../../examples/gen/protoform/examples/v1/forms_pb.js";
 import { AutoFormExampleSchema } from "./gen/auto-form-example_pb.js";
 
-import { createFieldMask, createUpdateMask } from "./field-mask.js";
+import {
+  createFieldMask,
+  createUpdateMask,
+  dirtyFieldsFromValues,
+} from "./field-mask.js";
 
 describe("createFieldMask", () => {
   it("normalizes and minimizes explicit read-mask paths", () => {
@@ -109,5 +113,36 @@ describe("createUpdateMask", () => {
     );
 
     expect(mask.paths).toEqual(["display_name"]);
+  });
+});
+
+describe("dirtyFieldsFromValues", () => {
+  it("builds a nested dirty tree and collapses changed collections", () => {
+    expect(
+      dirtyFieldsFromValues(
+        {
+          profile: { city: "Warsaw", name: "Ada" },
+          tags: ["forms", "protobuf"],
+          username: "ada",
+        },
+        {
+          profile: { city: "Krakow", name: "Ada" },
+          tags: ["forms"],
+          username: "ada",
+        }
+      )
+    ).toEqual({
+      profile: { city: true },
+      tags: true,
+    });
+  });
+
+  it("returns an empty tree for deeply equal values", () => {
+    expect(
+      dirtyFieldsFromValues(
+        { profile: { name: "Ada" }, tags: ["forms"] },
+        { profile: { name: "Ada" }, tags: ["forms"] }
+      )
+    ).toEqual({});
   });
 });

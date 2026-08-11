@@ -27,6 +27,67 @@ function isRecord(value: unknown): value is FormRecord {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
+function valuesEqual(left: unknown, right: unknown): boolean {
+  if (Object.is(left, right)) {
+    return true;
+  }
+  if (left instanceof Date && right instanceof Date) {
+    return left.getTime() === right.getTime();
+  }
+  if (left instanceof Uint8Array && right instanceof Uint8Array) {
+    return (
+      left.byteLength === right.byteLength &&
+      left.every((value, index) => value === right[index])
+    );
+  }
+  if (Array.isArray(left) && Array.isArray(right)) {
+    return (
+      left.length === right.length &&
+      left.every((value, index) => valuesEqual(value, right[index]))
+    );
+  }
+  if (!isRecord(left) || !isRecord(right)) {
+    return false;
+  }
+
+  const leftKeys = Object.keys(left);
+  const rightKeys = Object.keys(right);
+  return (
+    leftKeys.length === rightKeys.length &&
+    leftKeys.every(
+      (key) => Object.hasOwn(right, key) && valuesEqual(left[key], right[key])
+    )
+  );
+}
+
+/** Build the dirty-field tree expected by createUpdateMask from two value snapshots. */
+export function dirtyFieldsFromValues(
+  current: unknown,
+  initial: unknown
+): FormRecord {
+  if (valuesEqual(current, initial)) {
+    return {};
+  }
+  if (!isRecord(current) || !isRecord(initial)) {
+    return {};
+  }
+
+  const dirtyFields: FormRecord = {};
+  const keys = new Set([...Object.keys(current), ...Object.keys(initial)]);
+  for (const key of keys) {
+    const currentValue = current[key];
+    const initialValue = initial[key];
+    if (valuesEqual(currentValue, initialValue)) {
+      continue;
+    }
+    dirtyFields[key] =
+      isRecord(currentValue) && isRecord(initialValue)
+        ? dirtyFieldsFromValues(currentValue, initialValue)
+        : true;
+  }
+  return dirtyFields;
+}
+
 function hasDirtyValue(value: unknown): boolean {
   if (value === true) {
     return true;

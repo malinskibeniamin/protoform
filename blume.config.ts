@@ -26,5 +26,52 @@ export default defineConfig({
     route: "/reference",
     spec: "./openapi.yaml",
   },
+  theme: {
+    fonts: {
+      body: {
+        fallback: "sans",
+        name: "Inter",
+        variants: [
+          {
+            src: "node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2",
+            weight: "100..900",
+          },
+        ],
+      },
+      display: {
+        fallback: "sans",
+        name: "Inter Tight",
+        variants: [
+          {
+            src: "node_modules/@fontsource-variable/inter-tight/files/inter-tight-latin-wght-normal.woff2",
+            weight: "100..900",
+          },
+        ],
+      },
+      mono: {
+        fallback: "mono",
+        name: "IBM Plex Mono",
+        variants: [
+          {
+            src: "node_modules/@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-400-normal.woff2",
+            weight: 400,
+          },
+          {
+            src: "node_modules/@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-500-normal.woff2",
+            weight: 500,
+          },
+          {
+            src: "node_modules/@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-600-normal.woff2",
+            weight: 600,
+          },
+          {
+            src: "node_modules/@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-700-normal.woff2",
+            weight: 700,
+          },
+        ],
+      },
+    },
+  },
+
   title: "Protoform",
 });

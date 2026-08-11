@@ -60,6 +60,10 @@ export const ShadcnAutoFormFieldComponents = AutoFormFieldComponentRegistry;
 export type AutoFormEngineRender = (props: {
   children: (engine: AutoFormEngine) => React.ReactNode;
   defaultValues: Record<string, unknown>;
+  validateSchema: (
+    values: Record<string, unknown>,
+    signal: AbortSignal
+  ) => Promise<SchemaValidation>;
   values?: Record<string, unknown>;
 }) => React.ReactNode;
 
@@ -623,6 +627,26 @@ function AutoFormCoreInner<
 
   return renderEngine({
     defaultValues: initialDefaultValues,
+    validateSchema: async (submittedValues, signal) => {
+      try {
+        return await Promise.resolve(
+          resolvedSchema.provider.validateSchema(submittedValues, { signal })
+        );
+      } catch (error) {
+        return {
+          success: false,
+          errors: [
+            {
+              path: [],
+              message:
+                error instanceof Error
+                  ? error.message
+                  : 'Failed to validate form values.',
+            },
+          ],
+        };
+      }
+    },
     values: controlledValues,
     children: (engine) => (
       <AutoFormContent<T, TNativeForm, TCustomFieldType>
