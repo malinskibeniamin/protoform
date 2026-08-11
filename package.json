@@ -56,8 +56,8 @@
     "test:unit": "vitest run --config vitest.unit.config.ts --reporter=verbose",
     "test:unit:ci": "vitest run --config vitest.unit.config.ts --maxWorkers=1 --reporter=dot",
     "test:unit:watch": "vitest --config vitest.unit.config.ts --reporter=verbose",
-    "typecheck": "node node_modules/@typescript/native/bin/tsc --noEmit && bun run docs:blume:check",
-    "typecheck:source": "node node_modules/@typescript/native/bin/tsc --noEmit"
+    "typecheck": "tsc --noEmit && bun run docs:blume:check",
+    "typecheck:source": "tsc --noEmit"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
