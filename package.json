@@ -59,9 +59,6 @@
     "typecheck": "node node_modules/@typescript/native/bin/tsc --noEmit && bun run docs:blume:check",
     "typecheck:source": "node node_modules/@typescript/native/bin/tsc --noEmit"
   },
-  "overrides": {
-    "path-to-regexp": "8.4.2"
-  },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
     "@buf/googleapis_googleapis.bufbuild_es": "^2.13.0-20260414192239-c17df5b2beca.1",
