@@ -13,6 +13,8 @@ const mermaidStartPattern = /```mermaid\n([^\n]+)/g;
 const protoFencePattern = /```proto\n([\s\S]*?)\n```/g;
 const fencedBlockPattern = /```([^\n]*)\n([\s\S]*?)\n```/g;
 const standaloneCelPattern = /^(?:!?this\.|has\()/;
+const remoteFontProviderPattern =
+  /provider: "(?:google|fontsource|bunny|fontshare)"/u;
 const GENERAL_AIP_NUMBERS = [
   1, 2, 3, 8, 9, 100, 111, 121, 122, 123, 124, 126, 127, 128, 129, 130, 131,
   132, 133, 134, 135, 136, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149,
@@ -300,6 +302,33 @@ describe("docs content policy", () => {
     expect(readFileSync("package.json", "utf8")).toContain(
       "bun run docs:blume:audit"
     );
+  });
+
+  it("keeps documentation builds independent of remote font hosts", () => {
+    const config = readFileSync(
+      new URL("blume.config.ts", repositoryDirectory),
+      "utf8"
+    );
+    const packageJson = readFileSync(
+      new URL("package.json", repositoryDirectory),
+      "utf8"
+    );
+
+    expect(config).toContain(
+      "node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2"
+    );
+    expect(config).toContain(
+      "node_modules/@fontsource-variable/inter-tight/files/inter-tight-latin-wght-normal.woff2"
+    );
+    expect(config).toContain(
+      "node_modules/@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-400-normal.woff2"
+    );
+    expect(config).not.toMatch(remoteFontProviderPattern);
+    expect(packageJson).toContain('"@fontsource-variable/inter": "5.3.0"');
+    expect(packageJson).toContain(
+      '"@fontsource-variable/inter-tight": "5.3.0"'
+    );
+    expect(packageJson).toContain('"@fontsource/ibm-plex-mono": "5.3.0"');
   });
 
   it("publishes the real CreateBook RPC through OpenAPI and a Component demo", () => {
