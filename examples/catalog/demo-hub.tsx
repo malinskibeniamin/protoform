@@ -16,6 +16,10 @@ import {
 } from "@/registry/base-nova/protoform/components/alert";
 import { Badge } from "@/registry/base-nova/protoform/components/badge";
 import {
+  Field,
+  FieldLabel,
+} from "@/registry/base-nova/protoform/components/field";
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -136,10 +140,8 @@ export function DemoHub({ category }: { category: DemoHubCategory }) {
 
   return (
     <div className="not-prose space-y-8 text-foreground">
-      <div className="space-y-2">
-        <label className="font-medium text-sm" htmlFor={`${category}-demo`}>
-          Choose a demo
-        </label>
+      <Field>
+        <FieldLabel htmlFor={`${category}-demo`}>Choose a demo</FieldLabel>
         <Select onValueChange={handleDemoChange} value={selectedDemo.slug}>
           <SelectTrigger
             aria-label="Choose a demo"
@@ -157,7 +159,7 @@ export function DemoHub({ category }: { category: DemoHubCategory }) {
             ))}
           </SelectContent>
         </Select>
-      </div>
+      </Field>
 
       <section aria-labelledby={`${category}-demo-title`} className="space-y-6">
         <div className="space-y-3">

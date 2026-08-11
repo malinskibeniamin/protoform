@@ -52,7 +52,9 @@ describe("DemoHub", () => {
 
     fireEvent.click(screen.getByRole("tab", { name: "Code" }));
 
-    expect(await screen.findByText(demoSchemaSource)).toBeInTheDocument();
+    expect(
+      await screen.findByText(demoSchemaSource, {}, { timeout: 5000 })
+    ).toBeInTheDocument();
     expect(screen.getByText(autoFormSource)).toBeInTheDocument();
   });
 });

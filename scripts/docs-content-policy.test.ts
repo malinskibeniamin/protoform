@@ -1,6 +1,7 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-
+import { demoCatalog } from "../examples/catalog/demo-catalog.js";
+import { demoRedirects } from "../examples/catalog/demo-docs.js";
 import {
   getReadinessSummary,
   readinessRequirements,
@@ -22,6 +23,7 @@ const GENERAL_AIP_NUMBERS = [
   180, 181, 182, 185, 190, 191, 192, 193, 194, 200, 202, 203, 205, 210, 211,
   213, 214, 215, 216, 217, 231, 233, 234, 235, 236,
 ] as const;
+const localizedDocsDirectories = new Set(["pl", "zh", "zh-TW"]);
 const unscopedProtoDeclarationPattern =
   /^(?:option\s|(?:(?:optional|repeated)\s+)?(?:bool|bytes|double|fixed32|fixed64|float|int32|int64|sfixed32|sfixed64|sint32|sint64|string|uint32|uint64|[A-Z]\w*(?:\.\w+)*)\s+\w+\s*=)/;
 
@@ -37,15 +39,24 @@ function findFiles(directory: URL, extension: string): URL[] {
   });
 }
 
+function findEnglishDocsFiles(extension: string): URL[] {
+  return findFiles(docsDirectory, extension).filter((file) => {
+    const relativePath = file.pathname.slice(docsDirectory.pathname.length);
+    const [topLevelDirectory = ""] = relativePath.split("/");
+
+    return !localizedDocsDirectories.has(topLevelDirectory);
+  });
+}
+
 function readDocs(): Array<{ content: string; file: string }> {
-  return findFiles(docsDirectory, ".mdx").map((file) => ({
+  return findEnglishDocsFiles(".mdx").map((file) => ({
     content: readFileSync(file, "utf8"),
     file: file.pathname.slice(docsDirectory.pathname.length),
   }));
 }
 
 function readDoc(fileName: string): string {
-  const matches = findFiles(docsDirectory, ".mdx").filter(
+  const matches = findEnglishDocsFiles(".mdx").filter(
     (file) => file.pathname.split("/").at(-1) === fileName
   );
 
@@ -57,7 +68,7 @@ function readDoc(fileName: string): string {
 }
 
 function readNavigation(): string {
-  return findFiles(docsDirectory, "meta.ts")
+  return findEnglishDocsFiles("meta.ts")
     .map((file) => readFileSync(file, "utf8"))
     .join("\n");
 }
@@ -235,7 +246,7 @@ describe("docs content policy", () => {
     expect(manifest.scripts?.["quality:gate"]).toContain(
       "bun run build && bun run docs:blume:audit"
     );
-    expect(manifest.dependencies?.blume).toBe("1.3.1");
+    expect(manifest.dependencies?.blume).toBe("1.4.2");
     expect(
       manifest.dependencies?.["@modelcontextprotocol/sdk"]
     ).toBeUndefined();
@@ -347,7 +358,10 @@ describe("docs content policy", () => {
       ),
       "utf8"
     );
-    const page = readDoc("example-bufbuild-descriptors.mdx");
+    const page = readDoc("protobuf-examples.mdx");
+    const demo = demoCatalog.find(
+      (candidate) => candidate.slug === "bufbuild-descriptors"
+    );
     const component = readFileSync(
       new URL(
         "registry/base-nova/protoform/demo/catalog/bufbuild-descriptors.tsx",
@@ -359,9 +373,16 @@ describe("docs content policy", () => {
     expect(config).toContain(
       "registry/base-nova/protoform/demo/catalog/!(*.test).tsx"
     );
-    expect(page).toContain(
-      '<Component path="registry/base-nova/protoform/demo/catalog/bufbuild-descriptors" />'
-    );
+    expect(page).toContain('<DemoHub category="protobuf" />');
+    expect(demo).toMatchObject({
+      category: "protobuf",
+      schemaKey: "create-book",
+    });
+    expect(demoRedirects).toContainEqual({
+      from: "/example-bufbuild-descriptors",
+      status: 308,
+      to: "/protobuf-examples#bufbuild-descriptors",
+    });
     expect(proto).toContain("service LibraryService");
     expect(proto).toContain("rpc CreateBook(CreateBookRequest) returns (Book)");
     expect(component).toContain("LibraryService.method.createBook");
