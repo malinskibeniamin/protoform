@@ -151,10 +151,12 @@ const routes = (router: ConnectRouter) => {
   router.service(FormExamplesService, formExamplesService)
 }
 
-await server.register(fastifyConnectPlugin, {
+const handler = connectNodeAdapter({
   interceptors: [createValidateInterceptor()],
   routes,
 })
+
+createServer(handler).listen(55012, "127.0.0.1")
 ```
 
 interceptor 會在伺服器上強制執行相同的 Protovalidate annotation。商業規則會傳回
