@@ -53,6 +53,18 @@ for (const theme of ["light", "dark"] as const) {
   });
 }
 
+test("keeps localized demo hubs readable in dark theme", async ({ page }) => {
+  await page.goto("/docs/pl/production-examples#formik");
+  await page.evaluate(() => {
+    document.documentElement.dataset.theme = "dark";
+  });
+
+  await expect(page.getByLabel("Email")).toBeVisible({ timeout: 30_000 });
+  const preview = page.getByRole("tabpanel", { name: "Preview" });
+  await expect(preview).toHaveCSS("opacity", "1");
+  await expectNoSeriousViolations(page);
+});
+
 test("has no serious accessibility violations across representative form states", async ({
   page,
 }) => {
@@ -108,11 +120,10 @@ test("has no serious accessibility violations across representative form states"
   await expectNoSeriousViolations(page);
 
   await page.goto("/docs/aip-133-standard-methods-create");
-  const preview = page.frameLocator(
-    'iframe[title="Preview of registry/base-nova/protoform/demo/catalog/aip-133-standard-methods-create"]'
-  );
   await expect(
-    preview.getByText("React Hook Form", { exact: true })
+    page
+      .getByRole("tabpanel", { name: "Preview" })
+      .getByText("React Hook Form", { exact: true })
   ).toBeVisible({ timeout: 30_000 });
   await expectNoSeriousViolations(page);
 });

@@ -1,0 +1,37 @@
+---
+title: Oneof 表單
+description: 在兩個純量 oneof 分支間切換，且不保留隱藏值。
+---
+**第 5 級，共 8 級**
+
+**先備條件：** [CEL 與 RE2 表單](/docs/cel-re2-form)
+
+此範例讓單一概念占滿整個畫面：protobuf `oneof` 會成為分支選擇器，後接所選分支擁有的欄位。
+
+<div className="my-8 border-y border-border/60 py-8">
+  <OneofFormExample />
+</div>
+
+## 新增內容
+
+- 包含兩個純量分支的必填 `oneof`。
+- 提交的訊息中僅有一個具型別的作用中分支。
+- 所選分支變更時自動清除資料。
+
+## 合約
+
+```proto
+message OneofForm {
+  oneof contact {
+    option (buf.validate.oneof).required = true;
+    option (protoform.v1.oneof_ui).description = "Choose one contact method.";
+
+    string email = 1;
+    string phone = 2;
+  }
+}
+```
+
+輸入電子郵件、切換至「電話」，然後提交。具型別的訊息只包含電話分支；隱藏的電子郵件會被清除，而不會成為幽靈資料。
+
+**下一步：** [伺服器錯誤表單](/docs/server-error-form)

@@ -1,0 +1,74 @@
+---
+title: 部署
+description: 在 Cloudflare Pages 上一併發布文件與目前的原始碼 registry。
+---
+Protoform 會部署為單一靜態成品：
+
+- 位於 `/docs` 的 Blume 文件；
+- 位於 `/r` 的已建置 shadcn registry JSON；
+- 由瀏覽器內 Connect transports 支援的互動式範例。
+
+此靜態部署沒有應用程式伺服器、帳號、資料庫或冷啟動。書店會將暫存狀態保留在瀏覽器中，並在頁面重新載入時重設。
+
+## 使用 Cloudflare Pages 部署
+
+將 `malinskibeniamin/protoform` 匯入為 Pages 專案，並使用以下設定：
+
+| 設定 | 值 |
+| --- | --- |
+| Production branch | `main` |
+| Build command | `bun run build` |
+| Build output directory | `dist` |
+| Root directory | repository root |
+
+在 **Settings → Environment variables** 下固定工具鏈版本：
+
+| 變數 | 值 |
+| --- | --- |
+| `BUN_VERSION` | `1.3.14` |
+
+每次推送至 `main` 後，Cloudflare 都會重新建置網站。如果 Pages 專案名稱為 `protoform`，公開端點如下：
+
+```text
+https://protoform.pages.dev/docs
+https://protoform.pages.dev/r/{name}.json
+https://protoform.pages.dev/r/protoform.json
+```
+
+設定 shadcn，以從 Pages 部署安裝目前的原始碼：
+
+```json
+{
+  "registries": {
+    "@protoform": "https://protoform.pages.dev/r/{name}.json"
+  }
+}
+```
+
+```bash
+bunx shadcn@latest add @protoform/protoform
+```
+
+如果 `protoform.pages.dev` 無法使用，請使用 Cloudflare 顯示的實際 `*.pages.dev` 主機名稱。之後可透過自訂網域公開相同路徑，例如 `https://protoform.dev/docs` 和
+`https://protoform.dev/r/{name}.json`。
+
+## 在本機驗證
+
+```bash
+bun install --frozen-lockfile
+bun run build
+bun run start
+```
+
+開啟 `http://localhost:8080/docs` 和
+`http://localhost:8080/r/protoform.json`。
+
+## 發布原始碼快照
+
+託管的 `/r` 端點包含 `main` 中目前的原始碼。穩定安裝應固定至不可變的 Git tag：
+
+```text
+https://raw.githubusercontent.com/malinskibeniamin/protoform/v1.0.0/public/r/{name}.json
+```
+
+`v*` Git tag 必須與 `package.json` 相符；release workflow 會先執行品質與安全性檢查，再建立封存檔、checksum、provenance attestation 與 GitHub release。

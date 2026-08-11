@@ -1,0 +1,134 @@
+---
+title: 测试表单
+description: 使用 Vitest，通过真实的 Connect 服务器测试一个具有代表性的 Protoform 流程。
+---
+对于应用自身负责的表单行为，请使用真实技术栈的集成测试。渲染表单，
+像用户一样与其交互，并通过生产环境使用的同一 Connect transport 提交。
+在临时端口上启动真实的应用 router，而不是使用测试替身替换 RPC。
+
+此边界涵盖生成的表单、React Hook Form、Connect Query、HTTP 序列化、
+Connect handler、Protovalidate 和结构化字段错误映射。Vitest 在
+`happy-dom` 中运行组件，因此应将其称为集成测试，而不是浏览器端到端测试。
+
+## 测试设置
+
+在应用中安装 Vitest 和 Testing Library：
+
+```bash
+bun add --dev vitest happy-dom @testing-library/jest-dom @testing-library/react @testing-library/user-event
+```
+
+使用 `happy-dom` 配置集成测试套件，并加载 Testing Library matcher：
+
+```ts title="vitest.integration.config.ts"
+import { defineConfig } from "vitest/config";
+
+export default defineConfig({
+  test: {
+    environment: "happy-dom",
+    setupFiles: ["./vitest.setup.ts"],
+  },
+});
+```
+
+```ts title="vitest.setup.ts"
+import "@testing-library/jest-dom/vitest";
+```
+
+应用应导出一个 server builder，用于注册真实的 Connect route，但不监听固定端口。
+生产环境启动时会对该 builder 调用 `listen()`；测试则负责管理 server 生命周期。
+
+## 标准测试
+
+一个具有代表性的表单即可。覆盖成功请求，以及返回到字段的结构化 server 错误：
+
+```tsx title="profile-form.test.tsx"
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { afterEach, describe, expect, it } from "vitest";
+
+import { buildExampleServer } from "../server/server.js";
+import ProfileForm from "./profile-form.js";
+
+let closeServer: (() => Promise<void>) | undefined;
+
+afterEach(async () => {
+  await closeServer?.();
+  closeServer = undefined;
+});
+
+describe("profile form", () => {
+  it("submits a generated protobuf message to the Connect server", async () => {
+    const server = await buildExampleServer();
+    const address = await server.listen({ host: "127.0.0.1", port: 0 });
+    closeServer = () => server.close();
+    const user = userEvent.setup();
+
+    render(<ProfileForm baseUrl={address} />);
+
+    await user.type(
+      screen.getByRole("textbox", { name: /display name/i }),
+      "Ada Lovelace"
+    );
+    await user.type(
+      screen.getByRole("textbox", { name: /email/i }),
+      "ada@example.com"
+    );
+    await user.click(screen.getByRole("button", { name: "Submit" }));
+
+    expect(await screen.findByRole("status")).toHaveTextContent(
+      "profiles/ada-lovelace"
+    );
+  });
+
+  it("maps a structured server violation to its field", async () => {
+    const server = await buildExampleServer();
+    const address = await server.listen({ host: "127.0.0.1", port: 0 });
+    closeServer = () => server.close();
+    const user = userEvent.setup();
+
+    render(<ProfileForm baseUrl={address} />);
+
+    await user.type(
+      screen.getByRole("textbox", { name: /display name/i }),
+      "Ada Lovelace"
+    );
+    const email = screen.getByRole("textbox", { name: /email/i });
+    await user.type(email, "ada@blocked.example");
+    await user.click(screen.getByRole("button", { name: "Submit" }));
+
+    expect(
+      await screen.findByText("Use an email address from an approved domain.")
+    ).toBeInTheDocument();
+    expect(email).toHaveAttribute("aria-invalid", "true");
+  });
+});
+```
+
+`port: 0` 请求操作系统分配一个可用端口，因此并行 worker 不会争用同一个
+地址。即使断言失败，`afterEach` 也会关闭 server。`findByRole` 会等待
+异步 mutation 结果，无需使用定时休眠。
+
+在 Protoform checkout 中，直接运行指定测试：
+
+```bash
+bun run test:integration -- examples/basic/basic-form.test.tsx
+```
+
+完整的 repository 示例位于
+[`examples/basic/basic-form.test.tsx`](https://github.com/malinskibeniamin/protoform/blob/main/examples/basic/basic-form.test.tsx)。
+
+## 保持测试套件聚焦
+
+测试应用自身负责的行为：
+
+- 一个具有代表性的成功提交
+- 返回结构化字段错误的业务规则
+- 与标准表单不同的应用特定恢复 UI
+
+不要断言每个生成的 input、React 内部状态、transport 实现细节或每个
+示例表单。Protoform 的一致性测试套件覆盖其可复用的 descriptor、validation、conversion
+和 path-mapping contract。仅当表单引入不同的提交或恢复工作流时，才添加另一个应用集成测试。
+
+如果要测试的风险涉及浏览器布局、焦点行为、原生控件或完整的
+已部署用户旅程，请单独使用 Playwright。

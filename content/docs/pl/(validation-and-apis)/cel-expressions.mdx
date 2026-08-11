@@ -1,0 +1,197 @@
+---
+title: Wyrażenia CEL
+description: >-
+  Modeluj zasady dotyczące wielu pól, kolekcji, map, obecności i czasu bez
+  powielania logiki.
+---
+Ograniczenia komunikatów Protovalidate używają CEL do definiowania reguł semantycznych, których nie można ująć w adnotacji pojedynczego pola. Protoform kompiluje i wykonuje te reguły w TypeScript za pomocą `@bufbuild/cel` oraz warstwy deskryptorów protobuf v2, dzięki czemu przeglądarka waliduje taki sam kształt żądania jak kontrakt.
+
+```proto
+message RetentionPolicy {
+  bool infinite = 1;
+  int64 retention_ms = 2;
+
+  option (buf.validate.message).cel = {
+    id: "retention.required_when_not_infinite"
+    message: "Retention must be set unless infinite retention is enabled."
+    expression: "this.infinite || this.retention_ms > 0"
+  };
+}
+```
+
+Najpierw używaj wbudowanych ograniczeń pól. Sięgnij po CEL, gdy niezmiennik zależy od kilku pól lub elementów kolekcji.
+
+| Możliwość | Przykład |
+| --- | --- |
+| Implikacja między polami | `!this.enabled || has(this.config)` |
+| Zasada dla powtarzanych komunikatów | `this.services.all(service, service.replicas >= 3)` |
+| Odwołanie między kolekcjami | `this.regions.exists(region, region == service.primary_region)` |
+| Unikalność według zagnieżdżonej właściwości | `this.services.filter(candidate, candidate.name == service.name).size() == 1` |
+| Przynależność do mapy i indeksowanie | `'owner' in this.labels && this.labels['owner'].matches(...)` |
+| Obecność oneof lub pola opcjonalnego | `has(this.notification_webhook)` |
+| Arytmetyka znaczników czasu | `this.end - this.start <= duration('14400s')` |
+| Warunkowy tekst błędu | `condition ? '' : 'Explain the exact failure.'` |
+
+Zacznij od wyspecjalizowanego [formularza CEL i RE2](/docs/cel-re2-form). Interaktywny [przykład kitchen-sink](/docs/kitchen-sink) łączy wszystkie te operacje w jednym przetestowanym żądaniu protobuf.
+
+## Kompletny poziom bazowy możliwości
+
+Protoform śledzi istotny dla formularzy zakres oficjalnej definicji języka CEL, zamiast ograniczać się do jednego ogólnego pola wyboru „obsługa CEL”. Każdy zweryfikowany wiersz wskazuje test wykonywalny, a nieobsługiwane możliwości środowiska wykonawczego pozostają widoczne jako braki gotowości.
+
+| Obszar możliwości | Objęte zachowanie | Bieżący stan |
+| --- | --- | --- |
+| Składnia, literały i typy | Wartości logiczne, null, liczby całkowite ze znakiem i bez znaku, liczby zmiennoprzecinkowe podwójnej precyzji, ciągi znaków, bajty, listy, mapy i wartości typów | Zweryfikowano |
+| Operatory i konwersje | Operacje logiczne, relacyjne i arytmetyczne, przynależność, indeksowanie, wyrażenia warunkowe oraz jawna konwersja wartości skalarnych | Zweryfikowano |
+| Kolekcje | Listy, mapy, `all`, `exists`, `exists_one`, `filter` i `map` | Zweryfikowano |
+| Komunikaty protobuf | Pola komunikatów, wyliczenia, obecność pól opcjonalnych i komunikatów, pola powtarzane, mapy oraz wartości zagnieżdżone | Zweryfikowano |
+| Tekst i dane binarne | Predykaty ciągów znaków, dopasowywanie RE2, rozmiar Unicode, literały bajtowe, równość i rozmiar | Zweryfikowano |
+| Wartości czasowe | Znaczniki czasu, czasy trwania, tworzenie, porównywanie, akcesory, dodawanie i odejmowanie | Zweryfikowano |
+| Zachowanie podczas obliczania | Propagacja błędów, logiczne obliczanie skrócone, nieprawidłowe wyrażenia i błędy środowiska wykonawczego | Zweryfikowano |
+| Cykl życia | Parsowanie → sprawdzanie → obliczanie, plany wielokrotnego użytku i ograniczona pamięć podręczna kompilacji interfejsu użytkownika | Zweryfikowano w testach Buf lint i środowiska wykonawczego |
+| Profil wyrażeń interfejsu użytkownika | Tylko `form` i bieżąca wartość `this`; wyniki logiczne; bezpieczna odmowa w razie błędu | Zweryfikowano |
+| Minimalny poziom złożoności | Wymagane przez CEL minimalne poziomy powtórzeń i zagnieżdżenia | Zweryfikowano |
+| Częściowe zbiory nieznanych wartości | Dokładne ścieżki atrybutów przekazywane przez hosta, propagacja zbiorów nieznanych wartości i logiczne obliczanie skrócone | Zweryfikowano |
+| Limit kosztu obliczania | Konfigurowalny budżet kroków wyrażenia dla każdego obliczenia, obejmujący pracę powtarzanych komprehensji | Zweryfikowano |
+
+Wiersz dotyczący wartości czasowych obejmuje zarówno znaczniki czasu, jak i czasy trwania.
+
+Chronione środowisko wykonawcze dodaje mechanizmy kontroli hosta, których bazowy interpreter nie udostępnia bezpośrednio. Nieznane atrybuty są jawnymi, dokładnymi ścieżkami, pozostają odrębne od błędów obliczania, są łączone w stabilny zbiór i nadal respektują logiczne obliczanie skrócone. Każdy pierwotny węzeł AST zużywa jedną jednostkę kosztu, więc ciała komprehensji ponownie zużywają budżet w każdej iteracji. Przekroczenie limitu zwraca typowany, bezpieczny wynik przed wykonaniem następnego węzła.
+
+```ts
+import { compileCelExpression } from "@/components/auto-form"
+
+const evaluate = compileCelExpression(
+  "form.enabled && form.restricted_region == 'eu-central1'",
+  {
+    maxCost: 500,
+    unknownAttributes: ["form.restricted_region"],
+  }
+)
+
+const result = evaluate({ form: { enabled: true } })
+
+switch (result.kind) {
+  case "value":
+    console.log(result.value)
+    break
+  case "unknown":
+    console.log(result.attributes)
+    break
+  case "cost-exceeded":
+    console.log(result.cost, result.limit)
+    break
+  case "error":
+    console.error(result.error)
+    break
+  default:
+    result satisfies never
+}
+```
+
+Domyślny limit wynosi 10 000 kroków wyrażenia. Reguły interfejsu użytkownika używają tego skończonego limitu i bezpiecznie odmawiają w przypadku zbioru nieznanych wartości, wyczerpania budżetu, nieprawidłowego kodu źródłowego, błędu środowiska wykonawczego lub wyniku, który nie jest wartością logiczną. Ten model kosztów jest celowo deterministyczny i nie gwarantuje zgodności wartości liczbowych z estymatorem innej implementacji CEL.
+
+## Parsowanie, sprawdzanie, obliczanie i pamięć podręczna
+
+Cykl życia jest podzielony we właściwych miejscach:
+
+1. `buf lint` parsuje i sprawdza typy każdego wyrażenia Protovalidate względem jego deskryptora protobuf.
+2. Środowisko wykonawcze TypeScript parsuje zaakceptowane wyrażenie i tworzy plan obliczania wielokrotnego użytku.
+3. Walidacja oblicza ten plan dla każdego komunikatu.
+4. AutoForm przechowuje wyrażenia prezentacyjne w ograniczonej pamięci podręcznej kompilacji mieszczącej 256 wpisów.
+
+```ts
+import { CelScalar, celEnv, parse, plan } from "@bufbuild/cel"
+
+const env = celEnv({ variables: { value: CelScalar.INT } })
+const parsed = parse("value * 2")
+const evaluate = plan(env, parsed)
+
+evaluate({ value: 2n }) // 4n
+evaluate({ value: 7n }) // 14n; no second parse or plan
+```
+
+Nigdy nie parsuj ani nie planuj wyrażeń użytkownika podczas renderowania. Wyrażenia walidacyjne protobuf są kompilowane z deskryptorów, a wyrażenia interfejsu użytkownika korzystają z ograniczonej pamięci podręcznej.
+
+## Profil wyrażeń interfejsu użytkownika
+
+`visible_when` i `disabled_when` celowo korzystają z mniejszego środowiska hosta niż CEL używany do walidacji:
+
+- `form` udostępnia bieżące wartości formularza.
+- `this` udostępnia wyłącznie bieżącą wartość pola.
+- Wynik musi być dokładnie wartością logiczną `true`, aby włączyć regułę.
+- Nieprawidłowe wyrażenia, brakujące nazwy, błędy środowiska wykonawczego i wyniki, które nie są wartościami logicznymi, powodują bezpieczną odmowę.
+- Reguły interfejsu użytkownika nie mogą wykonywać operacji wejścia i wyjścia, mutacji, pracy asynchronicznej ani kontroli autoryzacji.
+
+Wyrażenia prezentacyjne nigdy nie zastępują Protovalidate. Pole ukryte przez CEL interfejsu użytkownika nadal musi być bezpieczne i prawidłowe, gdy klient ominie formularz.
+
+## Kontrakty logiczne i tekstowe
+
+Reguły zwracające wartości logiczne przechodzą dla `true`, a kończą się niepowodzeniem dla `false`. Ich adnotacja musi zawierać niepustą wartość `message`:
+
+```proto
+message ChangeWindow {
+  option (buf.validate.message).cel = {
+    id: "change.window"
+    message: "The change window must run forward and last no more than four hours."
+    expression: "!has(this.start) || (this.end > this.start && this.end - this.start <= duration('14400s'))"
+  };
+
+  google.protobuf.Timestamp start = 1;
+  google.protobuf.Timestamp end = 2;
+}
+```
+
+Natomiast reguły zwracające ciąg znaków przechodzą dla pustego ciągu i kończą się niepowodzeniem z użyciem zwróconego tekstu. Wartość komunikatu w ich adnotacji musi pozostać pusta:
+
+```proto
+message Rollout {
+  option (buf.validate.message).cel = {
+    id: "rollout.sequence"
+    expression: "this.stages.size() < 2 ? 'Use at least two stages.' : this.stages[0] != 5 ? 'Begin at 5%.' : ''"
+  };
+
+  repeated int32 stages = 1;
+}
+```
+
+Używaj dynamicznego tekstu, gdy pojedyncze wyrażenie ma ścisłe drzewo decyzyjne, a każda gałąź może podać lepszą instrukcję rozwiązania problemu. W przeciwnym razie preferuj oddzielne reguły logiczne: stabilne identyfikatory ułatwiają pomiar, tłumaczenie i testowanie niepowodzeń oraz mapowanie ich na zachowanie produktu.
+
+## Zasady dotyczące zagnieżdżonych kolekcji
+
+Komprehensje CEL mogą wiązać powtarzane komunikaty ze sobą i z mapami. Ta skrócona reguła grafu sprawdza unikalność nazw usług, prawidłowość celów zależności i własność limitów częstotliwości:
+
+```js CEL
+this.services.all(service,
+  this.services.filter(candidate,
+    candidate.name == service.name
+  ).size() == 1 &&
+  service.dependencies.all(dependency,
+    dependency != service.name &&
+    this.services.exists(candidate,
+      candidate.name == dependency
+    )
+  )
+) &&
+this.rate_limits.all(name,
+  this.services.exists(service,
+    service.name == name
+  )
+)
+```
+
+Pełny kontrakt kitchen-sink dodaje pokrycie regionów, zasady publicznych punktów końcowych, wykrywanie bezpośrednich cykli, liczbową alokację budżetu, zatwierdzanie produkcyjne, kierowanie powiadomień i dynamiczne błędy wdrażania.
+
+## Duże możliwości bez chaosu
+
+- Nadaj każdej regule stabilny, globalnie unikalny identyfikator. Nigdy nie używaj ponownie identyfikatora dla innego niezmiennika.
+- Preferuj jedno wyjaśnienie niepowodzenia na regułę. Podziel rozbudowaną regułę logiczną, gdy użytkownicy muszą rozróżniać jej gałęzie.
+- Używaj adnotacji pól do lokalnych wymagań, zakresów, formatów, limitów elementów i unikalności; zachowaj CEL dla zależności, których te adnotacje nie mogą wyrazić.
+- Ograniczaj pola powtarzane i mapy za pomocą `max_items` oraz `max_pairs`. Zagnieżdżone komprehensje są deterministyczne, ale ilość wykonywanej przez nie pracy nadal rośnie wraz z rozmiarem danych wejściowych.
+- Testuj znany prawidłowy komunikat oraz jeden minimalny przypadek testowy zakończony niepowodzeniem dla każdej gałęzi. Uruchom `buf lint`, aby przed wygenerowaniem kodu upewnić się, że wyrażenia się kompilują i zwracają dozwolony typ.
+- Operacje wejścia i wyjścia, wywołania sieciowe, wyszukiwanie danych uwierzytelniających, mutacje ani walidacja asynchroniczna nie należą do CEL. Zasady zależne od środowiska przechowuj w backendzie i zwracaj naruszenia w ustrukturyzowanej postaci.
+- Nie symuluj rekurencji. CEL celowo nie jest zupełny w sensie Turinga. Do przechodzenia grafów o dowolnej głębokości użyj ograniczonego algorytmu backendowego.
+- Traktuj CEL interfejsu użytkownika, taki jak `visible_when`, wyłącznie jako warstwę prezentacji. CEL komunikatów Protovalidate stanowi kontrakt; ukrywanie elementów interfejsu użytkownika nigdy nie może być jedynym sposobem egzekwowania reguły bezpieczeństwa lub integralności danych.
+
+CEL jest deterministyczny, pozbawiony mutacji i zaprojektowany do bezpiecznego obliczania zasad tworzonych przez użytkowników, zgodnie z definicją w [specyfikacji języka CEL](https://github.com/google/cel-spec). Protovalidate dodaje wymagania dotyczące wyniku reguły i adnotacji, egzekwowane przez oficjalne [reguły Buf lint](https://buf.build/docs/lint/rules/).
+
+Zobacz [Gotowość produkcyjną](/docs/production-readiness), aby zapoznać się ze zweryfikowanym zakresem obsługi CEL oraz pozostałymi testami pól, komunikatów, zagnieżdżonych ścieżek, wielu naruszeń i trybów niepowodzenia.

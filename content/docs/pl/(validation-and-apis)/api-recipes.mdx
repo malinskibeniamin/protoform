@@ -1,0 +1,332 @@
+---
+title: Przepisy API
+description: >-
+  Wzorce Connect Query, ConnectRPC, pamięci podręcznej, anulowania, błędów i
+  masek aktualizacji przeznaczone do środowisk produkcyjnych.
+---
+Protoform kończy działanie na granicy typowanego żądania. ConnectRPC przesyła to żądanie, Connect Query zarządza
+stanem zdalnym w React, Protovalidate ponownie wymusza kontrakt na serwerze, a ustrukturyzowane
+szczegóły `google.rpc` przekazują błędy biznesowe z powrotem do formularza.
+
+Działające przykłady zachowują `FormExamplesService.method.submitBasicForm` jako kanoniczną fikcyjną
+mutację. Nie wprowadzają drugiej fikcyjnej mutacji. Późniejsze fragmenty kodu dotyczące zapytań o zasoby pokazują, jak te
+same granice skalują się, gdy aplikacja generuje standardowe metody Get i Update.
+
+## Wybór sposobu wywołania
+
+| Potrzeba | API | Dlaczego |
+| --- | --- | --- |
+| Wysłanie danych z formularza React | `useMutation` | Typowane zmienne oraz stan oczekiwania, powodzenia i błędu |
+| Odczyt na ekranie React | `useQuery` | Typowany klucz pamięci podręcznej i cykl życia stanu serwera |
+| Wstępne pobranie w loaderze | `createQueryOptions` | Ten sam deskryptor i tożsamość pamięci podręcznej poza hookiem |
+| Pojedyncze wywołanie z możliwością anulowania | `callUnaryMethod` | Bezpośredni dostęp do transportu z sygnałem i nagłówkami dla danego wywołania |
+| Pełny imperatywny klient usługi | `createClient` | Wygodne rozwiązanie poza React, gdy stan hooka jest zbędny |
+
+Connect Query obsługuje jednoargumentowe RPC. W przypadku strumieniowania używaj bezpośrednio klienta Connect lub transportu,
+zamiast wymuszać umieszczenie strumienia w pamięci podręcznej zapytań lub mutacji.
+
+## Jedna granica providera
+
+Utwórz klienta zapytań i transport tylko raz. Interceptor jest właściwą granicą dla metadanych, które
+muszą towarzyszyć każdemu żądaniu. Nie zapisuj tokenów dostępu w logach i nigdy nie umieszczaj sekretów w kluczach zapytań.
+
+```tsx
+import type { Interceptor } from "@connectrpc/connect"
+import { TransportProvider } from "@connectrpc/connect-query"
+import { createConnectTransport } from "@connectrpc/connect-web"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { type ReactNode, useState } from "react"
+
+const requestMetadata: Interceptor = (next) => async (request) => {
+  const accessToken = await getSessionAccessToken()
+
+  if (accessToken) {
+    request.header.set("Authorization", `Bearer ${accessToken}`)
+  }
+  request.header.set("X-Request-ID", crypto.randomUUID())
+
+  return next(request)
+}
+
+function ApiProviders({ children }: { children: ReactNode }) {
+  const [queryClient] = useState(() => new QueryClient({
+    defaultOptions: {
+      mutations: { retry: false },
+      queries: { retry: 2, staleTime: 30_000 },
+    },
+  }))
+  const [transport] = useState(() => createConnectTransport({
+    baseUrl: "http://127.0.0.1:55012",
+    interceptors: [requestMetadata],
+  }))
+
+  return (
+    <TransportProvider transport={transport}>
+      <QueryClientProvider client={queryClient}>
+        {children}
+      </QueryClientProvider>
+    </TransportProvider>
+  )
+}
+```
+
+Zapytania mogą ponawiać przejściowo nieudane odczyty. Wysyłanie danych przypominające operację tworzenia **nie jest automatycznie ponawiane**, ponieważ
+druga próba może zduplikować pracę. Dodaj ograniczone ponawianie mutacji dopiero wtedy, gdy serwer zaimplementuje
+klucz idempotencji, taki jak zweryfikowany `request_id`, i zapisze pierwszy wynik.
+
+## Pełny cykl życia mutacji
+
+Wygenerowany deskryptor metody zawiera typy żądania i odpowiedzi. Zachowaj powiązanie obietnicy `mutateAsync`
+z wysłaniem formularza, aby jej stan oczekiwania obejmował całe żądanie.
+
+```tsx
+import { ConnectError } from "@connectrpc/connect"
+import { useMutation } from "@connectrpc/connect-query"
+import { formatConnectError } from "@/lib/protobuf-provider"
+import { useState } from "react"
+
+function BasicMutationForm() {
+  const [rootError, setRootError] = useState<string>()
+  const mutation = useMutation(
+    FormExamplesService.method.submitBasicForm,
+    { retry: false }
+  )
+
+  async function onSubmit(values, form) {
+    setRootError(undefined)
+
+    try {
+      await mutation.mutateAsync(values)
+    } catch (error) {
+      if (applyServerFieldErrors(error, SubmitBasicFormRequestSchema, form)) {
+        return
+      }
+      if (error instanceof ConnectError) {
+        setRootError(formatConnectError(error))
+        return
+      }
+      throw error
+    }
+  }
+
+  return (
+    <div aria-busy={mutation.isPending}>
+      <AutoForm
+        schema={SubmitBasicFormRequestSchema}
+        onSubmit={onSubmit}
+        withSubmit
+      />
+
+      {mutation.isPending ? <p role="status">Creating profile…</p> : null}
+      {mutation.data ? (
+        <p role="status">Created {mutation.data.profileId}</p>
+      ) : null}
+      {mutation.error && rootError ? (
+        <Alert role="alert">
+          <AlertTitle>Profile not created</AlertTitle>
+          <AlertDescription>{rootError}</AlertDescription>
+        </Alert>
+      ) : null}
+    </div>
+  )
+}
+```
+
+`isPending` wyłącza wielokrotne wysyłanie przez AutoForm i udostępnia stan postępu otaczającemu interfejsowi.
+`mutation.data` jest typowaną odpowiedzią o powodzeniu. `mutation.error` zachowuje typowany błąd Connect.
+Naruszenia dotyczące pól trafiają najpierw do pól formularza; błąd transportu, limitu lub niemający mapowania pozostaje widoczny w
+głównej części formularza. Nieoczekiwane błędy programistyczne są ponownie zgłaszane, zamiast udawać błędy serwera.
+
+## Autorytatywna walidacja na serwerze
+
+Serwer uruchamia wygenerowane reguły Protovalidate przed procedurą obsługi. Procedura obsługi dodaje reguły
+biznesowe i zwraca wszystkie błędy pól w jednym szczególe `BadRequest`.
+
+```ts
+import { BadRequestSchema } from "@buf/googleapis_googleapis.bufbuild_es/google/rpc/error_details_pb.js"
+import { Code, ConnectError, type ServiceImpl } from "@connectrpc/connect"
+
+function submitBasicForm(request: SubmitBasicFormRequest) {
+  const violations = []
+
+  if (request.email.endsWith("@blocked.example")) {
+    violations.push({
+      field: "email",
+      description: "Use an email address from an approved domain.",
+    })
+  }
+
+  if (violations.length > 0) {
+    throw new ConnectError(
+      "Review the highlighted fields.",
+      Code.InvalidArgument,
+      undefined,
+      [{ desc: BadRequestSchema, value: { fieldViolations: violations } }]
+    )
+  }
+
+  return {
+    displayName: request.displayName,
+    profileId: `profiles/${slugify(request.displayName)}`,
+  }
+}
+
+export const formExamplesService = {
+  submitBasicForm,
+  submitComplexForm,
+} satisfies ServiceImpl<typeof FormExamplesService>
+```
+
+```ts
+await server.register(fastifyConnectPlugin, {
+  interceptors: [createValidateInterceptor()],
+  routes: (router) => {
+    router.service(FormExamplesService, formExamplesService)
+  },
+})
+```
+
+Używaj kanonicznych kodów Connect. Zachowaj ścieżki pól w formacie protobuf, takim jak `project_id` lub
+`services[0].primary_region`; Protoform konwertuje je na ścieżki używane przez bibliotekę formularzy. Nie twórz rozgałęzień na podstawie
+czytelnego dla człowieka tekstu błędu.
+
+## Anulowanie i metadane poszczególnych wywołań
+
+Użyj `callUnaryMethod`, gdy kod wywołujący potrzebuje `AbortSignal` lub metadanych dla pojedynczego żądania. Używany jest ten sam
+wygenerowany deskryptor metody, więc nie jest to drugi kontrakt klienta.
+
+```ts
+import { callUnaryMethod } from "@connectrpc/connect-query"
+
+function beginBasicSubmission(transport, values) {
+  const controller = new AbortController()
+  const requestId = crypto.randomUUID()
+  const response = callUnaryMethod(
+    transport,
+    FormExamplesService.method.submitBasicForm,
+    values,
+    {
+      headers: { "X-Request-ID": requestId },
+      signal: controller.signal,
+    }
+  )
+
+  return {
+    cancel: () => controller.abort(),
+    requestId,
+    response,
+  }
+}
+```
+
+Anulowanie powoduje odrzucenie z kodem `Code.Canceled`; nie dowodzi, że operacja po stronie serwera została
+wycofana. W przypadku pracy, która może trwać dłużej niż żądanie HTTP, zwróć standardową operację długotrwałą i jasno
+określ semantykę jej anulowania.
+
+## Odczyty, wstępne pobieranie i dokładne unieważnianie
+
+Gdy API zasobu dodaje wygenerowaną metodę `GetProfile`, deskryptor określa tożsamość pamięci podręcznej zarówno w
+React, jak i w loaderach tras. Poniższy `ProfileService` reprezentuje tę wygenerowaną usługę zasobu; nie jest
+kolejną fikcyjną mutacją formularza.
+
+```tsx
+const profileQuery = useQuery(
+  ProfileService.method.getProfile,
+  { name: "profiles/ada-lovelace" }
+)
+
+if (profileQuery.isPending) return <LoadingIndicator />
+if (profileQuery.isError) return <ProfileError error={profileQuery.error} />
+if (!profileQuery.data) return <EmptyProfile />
+
+return <ProfileDetails profile={profileQuery.data} />
+```
+
+```ts
+const getProfileInput = { name: "profiles/ada-lovelace" }
+
+await queryClient.ensureQueryData(
+  createQueryOptions(
+    ProfileService.method.getProfile,
+    getProfileInput,
+    { transport }
+  )
+)
+
+const profileKey = createConnectQueryKey({
+  schema: ProfileService.method.getProfile,
+  transport,
+  input: getProfileInput,
+  cardinality: "finite",
+})
+
+await queryClient.invalidateQueries({
+  exact: true,
+  queryKey: profileKey,
+})
+```
+
+Nigdy nie wywołuj `invalidateQueries()` bez klucza. Po aktualizacji unieważnij dokładnie wskazany zasób. Jeśli operacja
+tworzenia lub usuwania zmienia zawartość listy, osobno unieważnij klucz odpowiedniej metody List, zachowując
+jej dane wejściowe `parent`, `filter` i `order_by`.
+
+## Minimalne dane aktualizacji
+
+AutoForm wyprowadza protobuf `FieldMask` z wartości, których dotknięto. Wewnętrznie używa `createUpdateMask`
+i wyklucza pola identyfikatorów, niezmienne oraz przeznaczone wyłącznie do odczytu.
+
+```tsx
+<AutoForm
+  defaultValues={profile}
+  schema={MaskableProfileSchema}
+  withSubmit
+  onSubmit={async (nextProfile, _form, context) => {
+    const updateMask = context.updateMask
+    if (!updateMask?.paths.length) return
+
+    await updateProfile(create(UpdateMaskableProfileRequestSchema, {
+      profile: nextProfile,
+      updateMask,
+    }))
+  }}
+/>
+```
+
+Maska zawiera wyłącznie zmienione ścieżki protobuf. Zagnieżdżone komunikaty zachowują precyzyjną ścieżkę do liścia; pola powtarzane
+i mapy są sprowadzane do pola, do którego należą. Serwer musi odrzucać nieznane i niedozwolone ścieżki, scalać
+zmiany z zapisanym stanem oraz weryfikować scalony zasób przed jego zapisaniem.
+
+## Testowanie trasy bez gniazda
+
+`createRouterTransport` uruchamia rzeczywistą wygenerowaną usługę i interceptory w tym samym procesie. Dzięki temu
+test pozostaje na granicy RPC bez wiązania portu ani tworzenia imitacji klienta.
+
+```ts
+import { Code, createRouterTransport } from "@connectrpc/connect"
+import { callUnaryMethod } from "@connectrpc/connect-query"
+import { createValidateInterceptor } from "@connectrpc/validate"
+
+const transport = createRouterTransport(
+  (router) => router.service(FormExamplesService, formExamplesService),
+  { router: { interceptors: [createValidateInterceptor()] } }
+)
+
+const response = await callUnaryMethod(
+  transport,
+  FormExamplesService.method.submitBasicForm,
+  { displayName: "Ada Lovelace", email: "ada@example.com" }
+)
+expect(response.profileId).toBe("profiles/ada-lovelace")
+
+await expect(callUnaryMethod(
+  transport,
+  FormExamplesService.method.submitBasicForm,
+  { displayName: "", email: "not-an-email" }
+)).rejects.toMatchObject({ code: Code.InvalidArgument })
+```
+
+Zachowaj jeden test dymny na poziomie sieci dla CORS, negocjacji protokołu i konfiguracji wdrożenia. Większość
+testów procedur obsługi, walidacji i szczegółów błędów wykonuj z użyciem transportu działającego w tym samym procesie.
+
+Pełny przepływ działania i reguły API opisują strony [Formularz z błędem serwera](/docs/server-error-form), [Błędy serwera](/docs/server-errors) oraz
+[Google AIP i projektowanie protobuf](/docs/aip-protobuf).

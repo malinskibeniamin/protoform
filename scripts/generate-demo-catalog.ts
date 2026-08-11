@@ -12,7 +12,7 @@ import {
   type DemoCatalogEntry,
   demoCatalog,
 } from "../examples/catalog/demo-catalog.js";
-import { readinessRequirements } from "../readiness/profile.js";
+import { demoHubs, demosForHub } from "../examples/catalog/demo-docs.js";
 
 const root = new URL("../", import.meta.url).pathname;
 const aipDirectory = join(root, "content/docs/(aip-examples)");
@@ -54,125 +54,21 @@ function removeGeneratedFiles(directory: string, extension: string): void {
 }
 
 function meta(title: string, pages: readonly string[]): string {
-  const pageLines = pages
-    .map((page) => `    ${JSON.stringify(page)},`)
-    .join("\n");
+  const pageList = pages.map((page) => JSON.stringify(page)).join(", ");
 
   return `import { defineMeta } from "blume";
 
 export default defineMeta({
-  pages: [
-${pageLines}
-  ],
+  pages: [${pageList}],
   title: ${JSON.stringify(title)},
 });`;
-}
-
-function registryCommand(demo: DemoCatalogEntry): string {
-  return `bunx shadcn@latest add @protoform/${demo.registryName}`;
 }
 
 function registryItem(name: string): string {
   return `@protoform/${name}`;
 }
 
-function docsSlug(demo: DemoCatalogEntry): string {
-  return demo.category === "aip" ? demo.slug : `example-${demo.slug}`;
-}
-
-function evidenceFor(demo: DemoCatalogEntry): string {
-  return demo.requirementIds
-    .map((requirementId) => {
-      const requirement = readinessRequirements.find(
-        (candidate) => candidate.id === requirementId
-      );
-      if (requirement?.status !== "verified") {
-        throw new Error(`Missing verified requirement ${requirementId}`);
-      }
-      return `- \`${requirement.id}\` — \`${requirement.evidence.file}\`, “${requirement.evidence.testName}”`;
-    })
-    .join("\n");
-}
-
-function liveComponent(demo: DemoCatalogEntry): string {
-  const focusedExamples: Record<string, string> = {
-    "cel-re2": "examples/learning/cel-re2-form",
-    "credential-redaction": "examples/complex/complex-form",
-    "performance-bundle": "examples/kitchen-sink/kitchen-sink-form",
-    "protobuf-nested-collections": "examples/nested/deeply-nested-form",
-    "protobuf-oneof": "examples/learning/oneof-form",
-    "responsive-cross-browser": "examples/kitchen-sink/kitchen-sink-form",
-    "server-errors": "examples/basic/basic-form",
-    stepper: "examples/learning/two-step-form",
-  };
-
-  const path =
-    focusedExamples[demo.slug] ??
-    `registry/base-nova/protoform/demo/catalog/${demo.slug}`;
-  return `<Component path="${path}" />`;
-}
-
-function pageFor(demo: DemoCatalogEntry): string {
-  const isAip = demo.category === "aip";
-  const officialSource = isAip
-    ? `\n[Read the canonical ${demo.title.split(" ")[0]} specification](https://google.aip.dev/${demo.requirementIds[0]?.slice(4)}).`
-    : "";
-  const engineNote =
-    demo.engine === "react-hook-form"
-      ? "This example uses Protoform's default React Hook Form adapter."
-      : `This is an explicitly labeled ${engineLabels[demo.engine]} interoperability example; React Hook Form remains the default elsewhere.`;
-
-  return `---
-title: ${JSON.stringify(demo.title)}
-description: ${JSON.stringify(demo.description)}
----
-
-${generatedHeader}
-
-${demo.description}
-${officialSource}
-
-## Try it
-
-${demo.tryIt}
-
-<div className="my-8 border-y border-border/60 py-8">
-  ${liveComponent(demo)}
-</div>
-
-## Form engine
-
-${engineNote}
-
-## Install this example
-
-\`\`\`bash
-${registryCommand(demo)}
-\`\`\`
-
-The registry item installs this focused example and its shared demo runtime. Copy it, rename it, and
-replace the fixture contract with your own generated descriptor.
-
-## Executable compatibility evidence
-
-The live form is visual evidence. These automated checks prove the underlying contract:
-
-${evidenceFor(demo)}
-`;
-}
-
-function indexPage(
-  title: string,
-  description: string,
-  demos: readonly DemoCatalogEntry[]
-): string {
-  const rows = demos
-    .map(
-      (demo) =>
-        `| [${demo.title}](/docs/${docsSlug(demo)}) | ${demo.description} | \`@protoform/${demo.registryName}\` |`
-    )
-    .join("\n");
-
+function hubPage(title: string, description: string, category: string): string {
   return `---
 title: ${JSON.stringify(title)}
 description: ${JSON.stringify(description)}
@@ -180,14 +76,9 @@ description: ${JSON.stringify(description)}
 
 ${generatedHeader}
 
-${description}
+Choose a focused live demo. Each selection has a stable deep link and an independent registry install.
 
-Every page has one focused live form, an independent registry install, and links to executable
-compatibility evidence.
-
-| Example | Focus | Registry item |
-| --- | --- | --- |
-${rows}
+<DemoHub category="${category}" />
 `;
 }
 
@@ -197,13 +88,6 @@ function wrapperName(slug: string): string {
     .map((part) => `${part[0]?.toUpperCase() ?? ""}${part.slice(1)}`)
     .join("")}Demo`;
 }
-
-const engineLabels = {
-  "final-form": "Final Form",
-  formik: "Formik",
-  "react-hook-form": "React Hook Form",
-  "tanstack-form": "TanStack Form",
-} as const;
 
 function tanStackRegistryWrapper(): string {
   return `${generatedSourceHeader}
@@ -576,21 +460,17 @@ function dependenciesForDemo(demo: DemoCatalogEntry): string[] {
 
 function generateDocs(): void {
   removeGeneratedFiles(aipDirectory, ".mdx");
-  const aipDemos = demoCatalog.filter((demo) => demo.category === "aip");
-  for (const demo of aipDemos) {
-    write(join(aipDirectory, `${docsSlug(demo)}.mdx`), pageFor(demo));
+  const aipHub = demoHubs.find((hub) => hub.category === "aip");
+  if (!aipHub) {
+    throw new Error("Missing AIP demo hub definition.");
   }
   write(
     join(aipDirectory, "aip-example-catalog.mdx"),
-    indexPage(
-      "AIP demo catalog",
-      "One focused live React Hook Form example for every form-applicable General AIP.",
-      aipDemos
-    )
+    hubPage(aipHub.title, aipHub.description, aipHub.category)
   );
   write(
     join(aipDirectory, "meta.ts"),
-    meta("AIP examples", ["aip-example-catalog", ...aipDemos.map(docsSlug)])
+    meta("AIP examples", ["aip-example-catalog"])
   );
 
   const featureCategories = [
@@ -599,37 +479,27 @@ function generateDocs(): void {
     ["cel", "CEL"],
     ["production", "Production and interoperability"],
   ] as const;
-  const featureDemos = demoCatalog.filter((demo) => demo.category !== "aip");
-
   removeGeneratedFiles(featureDirectory, ".mdx");
   write(
-    join(featureDirectory, "feature-example-catalog.mdx"),
-    indexPage(
-      "Feature demo catalog",
-      "Focused visual demos spanning Protobuf, Protovalidate, CEL, form workflows, and production behavior.",
-      featureDemos
-    )
-  );
-  write(
     join(featureDirectory, "meta.ts"),
-    meta("Feature examples", [
-      "feature-example-catalog",
-      ...featureCategories.map(([category]) => category),
-    ])
+    meta(
+      "Feature examples",
+      featureCategories.map(([category]) => category)
+    )
   );
 
   for (const [category, title] of featureCategories) {
     const directory = join(featureDirectory, `(${category})`);
     removeGeneratedFiles(directory, ".mdx");
-    const demos = featureDemos.filter((demo) =>
-      category === "production"
-        ? demo.category === "production" || demo.category === "interop"
-        : demo.category === category
-    );
-    for (const demo of demos) {
-      write(join(directory, `${docsSlug(demo)}.mdx`), pageFor(demo));
+    const hub = demoHubs.find((candidate) => candidate.category === category);
+    if (!hub || demosForHub(hub.category).length === 0) {
+      throw new Error(`Missing populated ${title} demo hub definition.`);
     }
-    write(join(directory, "meta.ts"), meta(title, demos.map(docsSlug)));
+    write(
+      join(directory, `${hub.slug}.mdx`),
+      hubPage(hub.title, hub.description, hub.category)
+    );
+    write(join(directory, "meta.ts"), meta(title, [hub.slug]));
   }
 }
 

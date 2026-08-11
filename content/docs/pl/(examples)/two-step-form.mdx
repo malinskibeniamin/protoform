@@ -1,0 +1,51 @@
+---
+title: Formularz dwuetapowy
+description: >-
+  Podziel dwa zwykłe pola tekstowe między najmniejszy użyteczny liniowy
+  formularz etapowy.
+---
+**Poziom 2 z 8**
+
+**Wymaganie wstępne:** [Podstawowy formularz](/docs/bare-bones-form)
+
+W tym przykładzie pola pozostają proste, a zmienia się tylko sposób ich prezentacji. Każdy etap zawiera jedno pole tekstowe; przyciski Wstecz i Kontynuuj zachowują ten sam stan formularza.
+
+<div className="my-8 border-y border-border/60 py-8">
+  <TwoStepFormExample />
+</div>
+
+## Co zostało dodane
+
+- Stabilne identyfikatory etapów w metadanych pól protobuf.
+- Dwu-elementowa konfiguracja etapów React.
+- Pionowy wskaźnik postępu, który na wąskich ekranach jest wyświetlany nad formularzem.
+- Dostępna nawigacja liniowa z komunikatem `Step X of Y` oraz przyciskami Wstecz i Kontynuuj.
+- Jedno typowane przesłanie formularza zawierające wartości z obu etapów.
+
+## Kontrakt
+
+```proto
+message TwoStepForm {
+  string name = 1 [(protoform.v1.field_ui).step = "name"];
+  string email = 2 [(protoform.v1.field_ui).step = "contact"];
+}
+```
+
+## React
+
+```tsx
+const steps = [
+  { id: "name", title: "Name" },
+  { id: "contact", title: "Contact" },
+]
+
+<AutoForm<TwoStepForm>
+  schema={TwoStepFormSchema}
+  stepper={{ orientation: "vertical", steps }}
+  withSubmit
+/>
+```
+
+Kolejność etapów pozostaje elementem warstwy prezentacji zarządzanym przez React. Deskryptor jedynie przypisuje każde pole do stabilnego identyfikatora etapu.
+
+**Dalej:** [Formularz głęboko zagnieżdżony](/docs/deeply-nested)

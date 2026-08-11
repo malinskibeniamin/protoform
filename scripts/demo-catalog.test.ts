@@ -1,17 +1,18 @@
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 import { demoCatalog } from "../examples/catalog/demo-catalog.js";
+import {
+  demoHubCategoryFor,
+  demoRedirects,
+  getDemoHub,
+} from "../examples/catalog/demo-docs.js";
 import { readinessRequirements } from "../readiness/profile.js";
 
 const repositoryRoot = new URL("../", import.meta.url);
 
 function read(path: string): string {
   return readFileSync(new URL(path, repositoryRoot), "utf8");
-}
-
-function docsSlug(demo: (typeof demoCatalog)[number]): string {
-  return demo.category === "aip" ? demo.slug : `example-${demo.slug}`;
 }
 
 describe("live demo catalog", () => {
@@ -47,7 +48,7 @@ describe("live demo catalog", () => {
     );
   });
 
-  it("gives every applicable AIP its own focused page and registry item", () => {
+  it("consolidates generated demos into five focused documentation hubs", () => {
     const applicableAips = readinessRequirements.filter(
       (requirement) =>
         requirement.category === "aip" && requirement.status === "verified"
@@ -69,11 +70,55 @@ describe("live demo catalog", () => {
           )
         ),
         demo.slug
-      ).toBe(true);
-      const page = read(`content/docs/(aip-examples)/${demo.slug}.mdx`);
-      expect(page).toContain("<Component path=");
-      expect(page).not.toContain("<CapabilityDemo");
+      ).toBe(false);
     }
+
+    const hubs = [
+      [
+        "content/docs/(aip-examples)/aip-example-catalog.mdx",
+        '<DemoHub category="aip" />',
+        "aip",
+      ],
+      [
+        "content/docs/(feature-examples)/(protobuf)/protobuf-examples.mdx",
+        '<DemoHub category="protobuf" />',
+        "protobuf",
+      ],
+      [
+        "content/docs/(feature-examples)/(protovalidate)/protovalidate-examples.mdx",
+        '<DemoHub category="protovalidate" />',
+        "protovalidate",
+      ],
+      [
+        "content/docs/(feature-examples)/(cel)/cel-examples.mdx",
+        '<DemoHub category="cel" />',
+        "cel",
+      ],
+      [
+        "content/docs/(feature-examples)/(production)/production-examples.mdx",
+        '<DemoHub category="production" />',
+        "production",
+      ],
+    ] as const;
+
+    for (const [path, island, category] of hubs) {
+      const page = read(path);
+      expect(page, path).toContain(island);
+      expect(page.split(getDemoHub(category).description), path).toHaveLength(
+        2
+      );
+    }
+
+    const generatedMdx = [
+      ...readdirSync(new URL("content/docs/(aip-examples)", repositoryRoot), {
+        recursive: true,
+      }),
+      ...readdirSync(
+        new URL("content/docs/(feature-examples)", repositoryRoot),
+        { recursive: true }
+      ),
+    ].filter((path) => path.toString().endsWith(".mdx"));
+    expect(generatedMdx).toHaveLength(5);
   });
 
   it("keeps React Hook Form as the default while labeling interop demos", () => {
@@ -133,54 +178,36 @@ describe("live demo catalog", () => {
     }
   });
 
-  it("points focused visual pages at their full implementations", () => {
-    const focusedSources = {
-      "cel-re2": "examples/learning/cel-re2-form",
-      "credential-redaction": "examples/complex/complex-form",
-      "performance-bundle": "examples/kitchen-sink/kitchen-sink-form",
-      "protobuf-nested-collections": "examples/nested/deeply-nested-form",
-      "protobuf-oneof": "examples/learning/oneof-form",
-      "responsive-cross-browser": "examples/kitchen-sink/kitchen-sink-form",
-      "server-errors": "examples/basic/basic-form",
-      stepper: "examples/learning/two-step-form",
-    } as const;
-
-    for (const [slug, sourcePath] of Object.entries(focusedSources)) {
-      let category = "production";
-      if (slug === "cel-re2") {
-        category = "cel";
-      } else if (slug.startsWith("protobuf-")) {
-        category = "protobuf";
-      }
-      const page = read(
-        `content/docs/(feature-examples)/(${category})/example-${slug}.mdx`
-      );
-      const source = read(`${sourcePath}.tsx`);
-
-      expect(page, slug).toContain(`<Component path="${sourcePath}" />`);
-      expect(source, slug).toContain("<AutoForm");
-      expect(source, slug).not.toContain("lazy(");
-    }
-  });
-
-  it("makes every registry demo renderable by Blume Component previews", () => {
+  it("keeps every registry demo renderable by the consolidated hub", () => {
     for (const demo of demoCatalog) {
       const source = read(
         `registry/base-nova/protoform/demo/catalog/${demo.slug}.tsx`
       );
       expect(source, demo.id).toContain("export default");
       expect(source, demo.id).toContain("export const client = 'only'");
-
-      const directory =
-        demo.category === "aip"
-          ? "content/docs/(aip-examples)"
-          : `content/docs/(feature-examples)/(${
-              demo.category === "interop" ? "production" : demo.category
-            })`;
-      const page = read(`${directory}/${docsSlug(demo)}.mdx`);
-      expect(page, demo.id).toContain("<Component path=");
-      expect(page, demo.id).not.toContain("<CapabilityDemo");
     }
+  });
+
+  it("redirects every retired demo page to its deep-linked hub selection", () => {
+    expect(demoRedirects).toHaveLength(demoCatalog.length + 1);
+
+    for (const demo of demoCatalog) {
+      const from =
+        demo.category === "aip" ? `/${demo.slug}` : `/example-${demo.slug}`;
+      const hub = getDemoHub(demoHubCategoryFor(demo.category));
+
+      expect(demoRedirects).toContainEqual({
+        from,
+        status: 308,
+        to: `/${hub.slug}#${demo.slug}`,
+      });
+    }
+
+    expect(demoRedirects).toContainEqual({
+      from: "/feature-example-catalog",
+      status: 308,
+      to: "/protobuf-examples",
+    });
   });
 
   it("makes every demo independently installable from the registry", () => {

@@ -1,0 +1,49 @@
+---
+title: 两步表单
+description: 将两个普通字符串字段拆分到最精简实用的线性分步表单中。
+---
+**第 2 级，共 8 级**
+
+**前置要求：** [基础表单](/docs/bare-bones-form)
+
+此示例保持字段简单，仅改变呈现方式。每个步骤包含一个字符串字段；“返回”和“继续”会保留同一份表单状态。
+
+<div className="my-8 border-y border-border/60 py-8">
+  <TwoStepFormExample />
+</div>
+
+## 新增内容
+
+- protobuf 字段元数据中的稳定步骤 ID。
+- 包含两项的 React 步骤配置。
+- 垂直进度轨道；在窄屏幕上，它会移至表单上方。
+- 支持无障碍访问的线性导航，包含`第 X 步，共 Y 步`、“返回”和“继续”。
+- 一次类型安全的提交，其中包含两个步骤的值。
+
+## 契约
+
+```proto
+message TwoStepForm {
+  string name = 1 [(protoform.v1.field_ui).step = "name"];
+  string email = 2 [(protoform.v1.field_ui).step = "contact"];
+}
+```
+
+## React
+
+```tsx
+const steps = [
+  { id: "name", title: "Name" },
+  { id: "contact", title: "Contact" },
+]
+
+<AutoForm<TwoStepForm>
+  schema={TwoStepFormSchema}
+  stepper={{ orientation: "vertical", steps }}
+  withSubmit
+/>
+```
+
+有序步骤仍是由 React 管理的呈现配置。描述符仅将每个字段分配给一个稳定的步骤 ID。
+
+**下一篇：** [深层嵌套表单](/docs/deeply-nested)

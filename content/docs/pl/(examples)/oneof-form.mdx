@@ -1,0 +1,39 @@
+---
+title: Formularz oneof
+description: >-
+  Przełączaj się między dwiema skalarnymi gałęziami oneof bez zachowywania
+  ukrytych wartości.
+---
+**Poziom 5 z 8**
+
+**Wymaganie wstępne:** [Formularz CEL i RE2](/docs/cel-re2-form)
+
+Ten przykład poświęca cały ekran jednej koncepcji: protobuf `oneof` staje się selektorem gałęzi, po którym następuje pole należące do wybranej gałęzi.
+
+<div className="my-8 border-y border-border/60 py-8">
+  <OneofFormExample />
+</div>
+
+## Co dodaje ten przykład
+
+- Wymagane pole `oneof` z dwiema skalarnymi gałęziami.
+- Jedna aktywna gałąź o określonym typie w przesłanej wiadomości.
+- Automatyczne czyszczenie po zmianie wybranej gałęzi.
+
+## Kontrakt
+
+```proto
+message OneofForm {
+  oneof contact {
+    option (buf.validate.oneof).required = true;
+    option (protoform.v1.oneof_ui).description = "Choose one contact method.";
+
+    string email = 1;
+    string phone = 2;
+  }
+}
+```
+
+Wprowadź adres e-mail, przełącz się na Telefon, a następnie prześlij formularz. Wiadomość o określonym typie zawiera tylko gałąź telefonu; ukryty adres e-mail zostaje wyczyszczony, zamiast stać się osieroconymi danymi.
+
+**Dalej:** [Formularz błędu serwera](/docs/server-error-form)

@@ -1,0 +1,95 @@
+---
+title: React Hook Form
+description: Używaj Protoform jako bezpośrednio zastępowalnej warstwy React Hook Form.
+---
+Przewodnik shadcn dotyczący React Hook Form zaczyna się od Zod. Protoform zachowuje ten sam kształt interfejsu, ale zastępuje
+resolver schematu deskryptorem protobuf. React Hook Form pozostaje domyślnym mechanizmem i
+wzorcowym zachowaniem dla Protoform.
+
+```bash
+bunx shadcn@latest add @protoform/use-proto-form
+```
+
+```tsx
+import { Controller } from "react-hook-form";
+import { Button } from "@/components/ui/button";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { useProtoForm } from "@/hooks/use-proto-form";
+import { SignupRequestSchema } from "@/gen/example/v1/signup_pb";
+
+export function SignupForm() {
+  const form = useProtoForm(SignupRequestSchema, {
+    defaultValues: { email: "", displayName: "" },
+  });
+
+  return (
+    <form onSubmit={form.handleSubmit((values) => console.log(form.createMessage(values)))}>
+      <Controller
+        control={form.control}
+        name="email"
+        render={({ field, fieldState }) => (
+          <Field data-invalid={fieldState.invalid}>
+            <FieldLabel htmlFor={field.name}>Email</FieldLabel>
+            <Input {...field} id={field.name} aria-invalid={fieldState.invalid} />
+            {fieldState.invalid ? <FieldError errors={[fieldState.error]} /> : null}
+          </Field>
+        )}
+      />
+      <Button type="submit">Create account</Button>
+    </form>
+  );
+}
+```
+
+## Co otrzymujesz
+
+- `resolver: createProtoResolver(schema)` używany wewnętrznie.
+- `createMessage(values)` do konwertowania wartości formularza na komunikat protobuf.
+- `createUpdateMask()` do uwzględniania w żądaniu aktualizacji wyłącznie zmienionych, zapisywalnych ścieżek protobuf.
+- `setOneofValue(path, case, value)` do bezpiecznych aktualizacji pól oneof.
+- `setServerErrors(error)` do mapowania naruszeń pól Connect/gRPC z powrotem do RHF.
+
+Zwracana wartość to kompletny obiekt `UseFormReturn`, dzięki czemu istniejące `Controller`, `useFieldArray`,
+`watch`, `reset`, opcje resolvera i mniej typowe wzorce React Hook Form pozostają dostępne.
+
+## Generowanie pól
+
+Domyślny element rejestru korzysta z React Hook Form:
+
+```bash
+bunx shadcn@latest add @protoform/auto-form
+```
+
+```tsx
+import { AutoForm } from "@/components/auto-form";
+import { SignupRequestSchema } from "@/gen/example/v1/signup_pb";
+
+export function SignupForm() {
+  return (
+    <AutoForm
+      schema={SignupRequestSchema}
+      formOptions={{ shouldFocusError: true }}
+      validationMode="blur"
+      revalidationMode="change"
+      onFormInit={(form) => {
+        // Full React Hook Form API.
+        form.watch("email");
+      }}
+      onSubmit={async (message, form, { updateMask, signal }) => {
+        await client.signup(message, { signal });
+        console.log(form.formState.isDirty, updateMask?.paths);
+      }}
+      withSubmit
+    />
+  );
+}
+```
+
+`formOptions` jest przekazywane do `useForm`. Funkcje `onFormInit`, `onFieldChange` i `onSubmit` otrzymują
+natywną instancję React Hook Form. Protoform dodaje generowane renderowanie bez zastępowania interfejsu API, który
+już znasz.
+
+Korzystasz już ze standaryzowanego rozwiązania opartego na innym magazynie stanu formularza? Zobacz natywny hook i generowaną ścieżkę AutoForm w
+[TanStack Form](/docs/tanstack-form) albo adaptery
+[Formik](/docs/formik) i [Final Form](/docs/final-form).

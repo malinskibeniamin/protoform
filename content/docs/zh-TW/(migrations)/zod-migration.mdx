@@ -1,0 +1,36 @@
+---
+title: 從 Zod 遷移
+description: 使用遷移提示詞／指令碼，將驗證移至 proto 檔案。
+---
+當 TypeScript 掌控契約時，Zod 很好用。當 protobuf 掌控契約時，Protoform 更合適。
+遷移可逐步進行：保留 shadcn 欄位 UI、取代 resolver，並將規則移至 proto 註解。
+
+## 執行遷移輔助工具
+
+```bash
+bun run migrate:zod -- src/features/signup/form.tsx proto/example/v1/signup.proto
+```
+
+此指令碼會輸出可供 LLM 使用的遷移摘要。將摘要貼入程式設計代理，並附上目標檔案。
+摘要會要求代理：
+
+1. 盤點 Zod 物件欄位、refinement、預設值和訊息
+2. 將其對應至 protobuf 欄位型別和 `buf.validate` 規則
+3. 保留 shadcn 欄位標籤、說明和無障礙功能
+4. 將 `zodResolver(schema)` 替換為 `useProtoForm(MessageSchema)`
+5. 使用 CEL 實作跨欄位 `refine` 邏輯
+6. 透過 `setServerErrors` 加入伺服器錯誤處理
+
+## 經驗法則
+
+| Zod | Protoform |
+| --- | --- |
+| `z.string().email()` | `(buf.validate.field).string.email = true` |
+| `z.string().regex(...)` | `(buf.validate.field).string.pattern` |
+| `z.number().min(1)` | 數值 `gte`／`gt` 規則 |
+| `z.object().refine(...)` | 訊息層級 CEL |
+| 可辨識聯集 | protobuf `oneof` |
+| `z.infer<typeof Schema>` | `MessageShape<typeof MessageSchema>` |
+
+要遷移依賴型別轉換、transform、條件分支或非同步測試的 schema？
+請參閱[從 Yup 遷移](/docs/yup-migration)，了解語意稽核和分階段推出檢查清單。

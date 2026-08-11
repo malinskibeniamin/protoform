@@ -1,0 +1,46 @@
+---
+title: Przewodnik po księgarni
+description: >-
+  Poznaj kompletne API protobuf, wygenerowane powiązania i pięć działających
+  przepływów RPC.
+---
+To flagowy przykład Protoform: jeden publiczny kontrakt protobuf, wygenerowane powiązania TypeScript
+i formularzy oraz pięć RPC działających bezpośrednio w dokumentacji. Twoja tymczasowa biblioteka jest odizolowana dla
+każdego odwiedzającego, ma ograniczone użycie pamięci i automatycznie wygasa.
+
+<BookstoreWorkspace />
+
+## Jeden kontrakt, pięć przepływów
+
+| RPC | Działanie | Wkład Protoform |
+| --- | --- | --- |
+| `ListBooks` | Lista książek z wyszukiwaniem | Typowane dane wejściowe i wyniki Connect Query |
+| `GetBook` | Szczegóły książki | Wygenerowany typ zasobu protobuf |
+| `CreateBook` | Dwuetapowy przepływ React Hook Form | Wygenerowane powiązanie i walidacja CEL numeru ISBN-13 |
+| `UpdateBook` | Edycja istniejącej książki | Maska aktualizacji zmienionych pól, zachowane pola wyjściowe i obsługa etag |
+| `DeleteBook` | Potwierdzenie bez widocznych pól | Wygenerowane żądanie renderowane przez AutoForm |
+
+Panel kodu źródłowego jest integralną częścią tej witryny dokumentacji. Podczas kompilacji odczytuje rzeczywiste pliki `.proto`,
+`*_pb.ts`, `*_form.ts`, React i usługi z repozytorium. Nie korzysta z symulowanego terminala ani
+zewnętrznego środowiska testowego.
+
+## Generowanie powiązań
+
+```bash
+buf generate --template buf.gen.bookstore-form.yaml
+```
+
+Element rejestru `protoc-gen-protoform` generuje plik `aip_form.ts` obok standardowych
+wyników Protobuf-ES. Aplikacja importuje te pliki bezpośrednio: pakiet npm Protoform ani prywatny rejestr nie są potrzebne.
+
+## Instalacja z rejestru
+
+Zainstaluj pełny przykład, aby przejrzeć i dostosować jego aktualny kod źródłowy:
+
+```bash
+bunx shadcn@latest add @protoform/bookstore
+```
+
+Przypnij repozytorium do odwołania Git, gdy potrzebujesz powtarzalnego obrazu. Protoform korzysta z modelu
+dystrybucji kodu źródłowego shadcn: elementy rejestru śledzą aktualny kod źródłowy, a tagi Git zapewniają niezmienne
+odwołania do wydań.

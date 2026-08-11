@@ -1,0 +1,89 @@
+---
+title: Registry 安装
+---
+Protoform 以 shadcn 风格的自定义 registry 分发。你可以安装完整技术栈，也可以选择更精简的入口。
+
+## 1. 添加 registry 命名空间
+
+```json title="components.json"
+{
+  "registries": {
+    "@protoform": "https://raw.githubusercontent.com/malinskibeniamin/protoform/v1.0.0/public/r/{name}.json"
+  }
+}
+```
+
+请固定 Git 标签，并保留 `/r/{name}.json` 路径，以便 shadcn 解析每个
+`@protoform` 项目。
+
+## 2. 选择安装目标
+
+registry 会将 Protoform 的全部源代码复制到你的应用中，并且只安装公开的第三方
+依赖项。无需 Protoform npm registry 或软件包令牌。
+
+```bash
+# Hook only: React Hook Form + ProtoValidate + server error mapping
+bunx shadcn@latest add @protoform/use-proto-form
+
+# AutoForm components: protobuf-driven form renderer + shadcn fields
+bunx shadcn@latest add @protoform/auto-form
+
+# Native TanStack Form hook
+bunx shadcn@latest add @protoform/use-proto-form-tanstack
+
+# TanStack Form AutoForm
+bunx shadcn@latest add @protoform/auto-form-tanstack
+
+# Experimental TanStack Form v2 alpha hook
+bunx shadcn@latest add @protoform/use-proto-form-tanstack-v2
+
+# Experimental TanStack Form v2 alpha AutoForm
+bunx shadcn@latest add @protoform/auto-form-tanstack-v2
+
+# Default React Hook Form stack
+bunx shadcn@latest add @protoform/protoform
+
+# Demos and generated example schemas
+bunx shadcn@latest add @protoform/protoform-examples
+
+# Complete five-RPC bookstore
+bunx shadcn@latest add @protoform/bookstore
+```
+
+## Registry 分层
+
+| 项目 | 适用场景 | 包含内容 |
+| --- | --- | --- |
+| `use-proto-form` | 你已有 shadcn 表单 UI，并希望使用 protobuf 验证 | `useProtoForm`、ProtoValidate resolver、oneof 辅助函数、Connect/gRPC 错误映射 |
+| `use-proto-form-tanstack` | 你已在使用 TanStack Form | 原生 TanStack API，以及 protobuf 消息、update mask、oneof 和服务端错误 |
+| `auto-form` | 你希望使用默认引擎生成基于 schema 的字段 | 共享 renderer 和 React Hook Form adapter |
+| `auto-form-tanstack` | 你希望通过 TanStack Form 生成基于 schema 的字段 | 共享 renderer 和 TanStack Form adapter |
+| `use-proto-form-tanstack-v2` | 你正在评估 TanStack Form v2 alpha | 独立的 v2 原生 hook，固定到 `2.0.0-alpha.0` |
+| `auto-form-tanstack-v2` | 你正在评估 TanStack Form v2 alpha 上生成的字段 | 独立的 v2 原生 AutoForm adapter 和共享 renderer |
+| `auto-form-core` | 你正在维护 engine adapter | 由两个 AutoForm 项目安装的引擎无关 renderer |
+| `protoform` | 你希望使用默认产品功能 | React Hook Form hook 和 AutoForm |
+| `protoform-examples` | 你希望查看参考演示 | 生成的示例 schema 和演示组件 |
+| `bookstore` | 你希望查看一个完整的 RPC 示例 | 五个方法、生成的 binding、表单和临时服务 |
+
+## 为什么要拆分？
+
+原生 hook 让团队无需替换字段布局或表单状态 API，即可采用 protobuf 验证。只有在需要时，AutoForm 项目才会添加生成的字段。共享核心可让字段行为保持一致，同时避免让任一表单库成为另一个表单库的依赖项。
+
+## 固定源代码快照
+
+托管的 registry 包含当前源代码。为确保安装可复现，请将命名空间固定到 Git
+标签：
+
+```json title="components.json"
+{
+  "registries": {
+    "@protoform": "https://raw.githubusercontent.com/malinskibeniamin/protoform/v1.0.0/public/r/{name}.json"
+  }
+}
+```
+
+```bash
+bunx shadcn@latest add @protoform/protoform
+```
+
+更新需显式执行：再次运行 `shadcn add`，审查源代码差异，并保留或调整这些更改。

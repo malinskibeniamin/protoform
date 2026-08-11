@@ -1,0 +1,79 @@
+---
+title: Wdrożenie
+description: Opublikuj dokumentację i bieżący rejestr źródłowy razem w Cloudflare Pages.
+---
+Protoform jest wdrażany jako jeden statyczny artefakt:
+
+- dokumentacja Blume w `/docs`;
+- zbudowane pliki JSON rejestru shadcn w `/r`;
+- interaktywne przykłady korzystające z transportów Connect działających w przeglądarce.
+
+Statyczne wdrożenie nie wymaga serwera aplikacji, kont, bazy danych ani zimnych startów. Księgarnia
+przechowuje swój tymczasowy stan w przeglądarce i resetuje go po ponownym wczytaniu strony.
+
+## Wdrażanie za pomocą Cloudflare Pages
+
+Zaimportuj `malinskibeniamin/protoform` jako projekt Pages i użyj następujących ustawień:
+
+| Ustawienie | Wartość |
+| --- | --- |
+| Gałąź produkcyjna | `main` |
+| Polecenie kompilacji | `bun run build` |
+| Katalog wynikowy kompilacji | `dist` |
+| Katalog główny | katalog główny repozytorium |
+
+Przypnij wersję zestawu narzędzi w sekcji **Ustawienia → Zmienne środowiskowe**:
+
+| Zmienna | Wartość |
+| --- | --- |
+| `BUN_VERSION` | `1.3.14` |
+
+Cloudflare ponownie kompiluje witrynę po każdym wypchnięciu zmian do `main`. Jeśli projekt Pages nosi nazwę `protoform`,
+publiczne punkty końcowe są dostępne pod adresami:
+
+```text
+https://protoform.pages.dev/docs
+https://protoform.pages.dev/r/{name}.json
+https://protoform.pages.dev/r/protoform.json
+```
+
+Skonfiguruj shadcn tak, aby instalował bieżące źródła z wdrożenia Pages:
+
+```json
+{
+  "registries": {
+    "@protoform": "https://protoform.pages.dev/r/{name}.json"
+  }
+}
+```
+
+```bash
+bunx shadcn@latest add @protoform/protoform
+```
+
+Jeśli `protoform.pages.dev` jest niedostępny, użyj właściwej nazwy hosta `*.pages.dev` wyświetlanej przez Cloudflare.
+Domena niestandardowa może później udostępniać te same ścieżki, takie jak `https://protoform.dev/docs` i
+`https://protoform.dev/r/{name}.json`.
+
+## Weryfikacja lokalna
+
+```bash
+bun install --frozen-lockfile
+bun run build
+bun run start
+```
+
+Otwórz `http://localhost:8080/docs` oraz
+`http://localhost:8080/r/protoform.json`.
+
+## Publikowanie migawki źródeł
+
+Hostowany punkt końcowy `/r` zawiera bieżące źródła z `main`. Stabilne instalacje przypinaj do
+niezmiennego tagu Git:
+
+```text
+https://raw.githubusercontent.com/malinskibeniamin/protoform/v1.0.0/public/r/{name}.json
+```
+
+Tag Git `v*` musi odpowiadać wersji w `package.json`; proces wydania uruchamia mechanizmy kontroli jakości i bezpieczeństwa
+przed utworzeniem archiwum, sumy kontrolnej, poświadczenia pochodzenia i wydania GitHub.

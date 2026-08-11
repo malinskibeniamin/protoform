@@ -1,0 +1,55 @@
+---
+title: AIP 資源表單
+description: 編輯資源，同時讓 Protoform 從更新遮罩中排除伺服器擁有的欄位。
+---
+**第 7 級，共 8 級**
+
+**先決條件：**[伺服器錯誤表單](/docs/server-error-form)
+
+此範例將一個 AIP 風格的資源轉換為更新表單。編輯顯示名稱和個人簡介；
+提交狀態會顯示由已變更且用戶端可寫入欄位建立的 protobuf 欄位遮罩。
+
+<div className="my-8 border-y border-border/60 py-8">
+  <AipResourceFormExample />
+</div>
+
+## 新增內容
+
+- `(google.api.resource)` 描述元。
+- `IDENTIFIER`、`IMMUTABLE` 和 `OUTPUT_ONLY` 欄位行為。
+- 根據已變更的可寫入欄位，自動建立 snake-case 更新遮罩。
+
+## 合約
+
+```proto
+message MaskableProfile {
+  option (google.api.resource) = {
+    type: "protoform.example.com/Profile"
+    pattern: "profiles/{profile}"
+  };
+
+  string name = 1 [(google.api.field_behavior) = IDENTIFIER];
+  string display_name = 2;
+  string biography = 3;
+  string home_region = 4 [(google.api.field_behavior) = IMMUTABLE];
+  string lifecycle_state = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+```
+
+## React
+
+```tsx
+<AutoForm
+  defaultValues={profile}
+  schema={MaskableProfileSchema}
+  withSubmit
+  onSubmit={(_profile, _form, context) => {
+    sendUpdate(context.updateMask)
+  }}
+/>
+```
+
+用戶端會建立遮罩；伺服器仍會驗證遮罩、合併修補內容、強制執行 etag，並
+授權更新。完整的資源和標準方法結構請參閱 [Google AIP 與 protobuf 設計](/docs/aip-protobuf)。
+
+**下一步：**[Kitchen sink](/docs/kitchen-sink)

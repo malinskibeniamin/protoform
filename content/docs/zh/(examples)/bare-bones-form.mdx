@@ -1,0 +1,47 @@
+---
+title: 极简表单
+description: 渲染并提交最小可用的生成式 protobuf 表单。
+---
+**第 1 级，共 8 级**
+
+**前提条件：** 无。从这里开始。
+
+此示例包含一个 protobuf 消息、一个字符串字段、一个 `AutoForm`，且不使用服务器。它展示了从描述符到类型化提交数据的最小端到端流程。
+
+<div className="my-8 border-y border-border/60 py-8">
+  <BareBonesFormExample />
+</div>
+
+## 新增内容
+
+- 生成的 Protobuf-ES 消息描述符。
+- 从一个标量字段派生的文本输入框。
+- 本地类型化提交处理程序。
+
+此示例特意不包含验证注解、展示元数据、步骤表单、CEL、oneof 或传输层。后续示例将逐一添加这些概念。
+
+## 契约
+
+```proto
+syntax = "proto3";
+
+package protoform.examples.v1;
+
+message BareBonesForm {
+  string name = 1;
+}
+```
+
+## React
+
+```tsx
+<AutoForm<BareBonesForm>
+  onSubmit={(values) => saveLocally(values.name)}
+  schema={BareBonesFormSchema}
+  withSubmit
+/>
+```
+
+输入名称并提交。表单下方的状态表明，生成的消息无需手写 DTO 或转换层即可到达处理程序。
+
+**下一步：** [两步表单](/docs/two-step-form)

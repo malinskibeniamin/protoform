@@ -1,0 +1,36 @@
+---
+title: 从 Zod 迁移
+description: 使用迁移提示词/脚本将验证逻辑迁移到 proto 文件中。
+---
+当 TypeScript 定义契约时，Zod 非常合适。当 protobuf 定义契约时，Protoform 更合适。
+迁移可以逐步进行：保留 shadcn 字段 UI，替换 resolver，并将规则迁移到 proto 注解中。
+
+## 运行迁移辅助工具
+
+```bash
+bun run migrate:zod -- src/features/signup/form.tsx proto/example/v1/signup.proto
+```
+
+该脚本会输出一份可供 LLM 直接使用的迁移说明。将其粘贴到编码智能体中，并附上目标文件。
+它会要求智能体：
+
+1. 盘点 Zod 对象的字段、refinement、默认值和消息
+2. 将它们映射到 protobuf 字段类型和 `buf.validate` 规则
+3. 保留 shadcn 字段标签、描述和无障碍支持
+4. 将 `zodResolver(schema)` 替换为 `useProtoForm(MessageSchema)`
+5. 使用 CEL 实现跨字段 `refine` 逻辑
+6. 通过 `setServerErrors` 添加服务端错误处理
+
+## 实用规则
+
+| Zod | Protoform |
+| --- | --- |
+| `z.string().email()` | `(buf.validate.field).string.email = true` |
+| `z.string().regex(...)` | `(buf.validate.field).string.pattern` |
+| `z.number().min(1)` | 数值 `gte` / `gt` 规则 |
+| `z.object().refine(...)` | 消息级 CEL |
+| 可辨识联合类型 | protobuf `oneof` |
+| `z.infer<typeof Schema>` | `MessageShape<typeof MessageSchema>` |
+
+要迁移依赖类型转换、转换操作、条件分支或异步测试的 schema？
+请参阅[从 Yup 迁移](/docs/yup-migration)，了解语义审核和分阶段发布检查清单。

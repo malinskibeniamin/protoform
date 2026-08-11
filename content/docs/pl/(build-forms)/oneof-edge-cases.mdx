@@ -1,0 +1,48 @@
+---
+title: Oneof i przypadki brzegowe
+---
+Protoform traktuje protobuf `oneof` jako pełnoprawny element formularza, a nie luźną unię dyskryminowaną.
+
+## Przełączanie gałęzi
+
+Używaj `setOneofValue`, aby stan dirty i walidacja pozostawały spójne.
+
+```tsx
+form.setOneofValue("delivery", "webhook", {
+  endpoint: "https://hooks.example.com/events",
+  signingSecretRef: "secrets/webhook-signing-key",
+})
+```
+
+Gdy gałąź się zmienia, Protoform czyści poprzednią gałąź przed zapisaniem następnej. Zapobiega to przesłaniu nieaktualnych wartości w ukrytej gałęzi unii.
+
+## Zagnieżdżone błędy serwera
+
+Backendy zwykle zwracają ścieżki proto, takie jak:
+
+```txt
+delivery.webhook.signing_secret_ref
+```
+
+`setServerErrors` mapuje taką ścieżkę na natywną ścieżkę React Hook Form lub TanStack Form, do której należy
+renderowane pole. Jeśli ścieżki backendu nie można zmapować, zwracana wartość zawiera `unmapped`, dzięki czemu
+kod wywołujący może wyświetlić podsumowanie lub powiadomienie typu toast.
+
+```tsx
+const result = form.setServerErrors(error)
+if (result.unmapped.length > 0) {
+  toast.error(result.unmapped.map((v) => v.description).join("\n"))
+}
+```
+
+Więcej informacji o podsumowaniach, szczegółowych danych `google.rpc.*`, dostępności i decyzjach dotyczących ponawiania prób znajdziesz w sekcji
+[Błędy serwera](/docs/server-errors).
+
+## Zalecane testy
+
+- gałąź jest początkowo nieustawiona
+- przełączenie gałęzi czyści poprzednią gałąź
+- błędy CEL specyficzne dla gałęzi są wyświetlane pod aktywną gałęzią
+- po przełączeniu błędy nieaktywnej gałęzi nie blokują przesłania formularza
+- naruszenia zwracane przez backend w formacie snake_case są mapowane na nazwy pól w formacie camelCase
+- niezmapowane naruszenia zwracane przez backend nadal pojawiają się w podsumowaniu

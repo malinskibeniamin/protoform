@@ -1,0 +1,57 @@
+---
+title: Formularz zasobu AIP
+description: >-
+  Edytuj zasób, podczas gdy Protoform wyklucza pola zarządzane przez serwer z
+  maski aktualizacji.
+---
+**Poziom 7 z 8**
+
+**Wymaganie wstępne:** [Formularz błędu serwera](/docs/server-error-form)
+
+Ten przykład przekształca zasób zgodny ze stylem AIP w formularz aktualizacji. Edytuj nazwę wyświetlaną i biografię;
+status przesłania pokazuje maskę pól protobuf utworzoną ze zmienionych pól, które klient może zapisywać.
+
+<div className="my-8 border-y border-border/60 py-8">
+  <AipResourceFormExample />
+</div>
+
+## Co dodaje ten przykład
+
+- Deskryptor `(google.api.resource)`.
+- Zachowania pól `IDENTIFIER`, `IMMUTABLE` i `OUTPUT_ONLY`.
+- Automatyczną maskę aktualizacji w zapisie snake_case utworzoną ze zmienionych pól, które można zapisywać.
+
+## Kontrakt
+
+```proto
+message MaskableProfile {
+  option (google.api.resource) = {
+    type: "protoform.example.com/Profile"
+    pattern: "profiles/{profile}"
+  };
+
+  string name = 1 [(google.api.field_behavior) = IDENTIFIER];
+  string display_name = 2;
+  string biography = 3;
+  string home_region = 4 [(google.api.field_behavior) = IMMUTABLE];
+  string lifecycle_state = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+```
+
+## React
+
+```tsx
+<AutoForm
+  defaultValues={profile}
+  schema={MaskableProfileSchema}
+  withSubmit
+  onSubmit={(_profile, _form, context) => {
+    sendUpdate(context.updateMask)
+  }}
+/>
+```
+
+Klient tworzy maskę; serwer nadal ją weryfikuje, scala poprawkę, wymusza użycie etagów i
+autoryzuje aktualizację. Pełne struktury zasobów i standardowych metod znajdziesz w sekcji [Google AIP i projektowanie protobuf](/docs/aip-protobuf).
+
+**Dalej:** [Pełny zestaw funkcji](/docs/kitchen-sink)
