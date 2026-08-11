@@ -97,6 +97,11 @@ paths:
     post:
       tags: [Library RPC]
       summary: Delete a book
+      description: >-
+        Delete a book by resource name and etag. The server validates optimistic
+        concurrency, returns a structured Connect error when the version is
+        stale, and responds with an empty protobuf message after successful
+        deletion.
       operationId: protoform.conformance.v1.LibraryService.DeleteBook
       requestBody:
         required: true

@@ -19,8 +19,9 @@ const description =
   banner={data.config.banner}
   analytics={data.config.analytics}
   navigation={data.navigation}
-  page={{ title: "Protoform", description, route: "/" }}
+  page={{ title: "Protoform — protobuf-driven forms", description, route: "/" }}
   siteUrl={data.config.site}
+  ogEnabled={data.config.og.enabled}
   themeMode={data.config.theme.mode}
   fontCssVars={data.fontCssVars}
   searchEnabled={data.config.search.enabled}
@@ -35,6 +36,11 @@ const description =
     </h1>
     <p class="max-w-2xl text-balance text-lg text-muted-foreground">
       {description}
+    </p>
+    <p class="max-w-2xl text-balance text-muted-foreground">
+      Generate accessible fields, preserve protobuf semantics, and keep client
+      and server validation aligned without maintaining a second form schema or
+      duplicated rules.
     </p>
     <a
       class="rounded-md bg-primary px-5 py-3 font-medium text-primary-foreground text-sm"

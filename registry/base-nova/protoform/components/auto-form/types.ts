@@ -1,4 +1,4 @@
-import type { DescMessage } from '@bufbuild/protobuf';
+import type { DescMessage, Message } from '@bufbuild/protobuf';
 import type { FieldMask } from '@bufbuild/protobuf/wkt';
 import type { ReactNode } from 'react';
 
@@ -69,6 +69,7 @@ export type ResolvedSchema = {
   parsedSchema: ParsedSchema;
   isProto: boolean;
   protoDesc?: DescMessage;
+  protoSource?: Message;
 };
 
 export type AutoFormPayloadBuilderContext<TNativeForm = unknown> = {

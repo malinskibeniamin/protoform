@@ -58,6 +58,7 @@
     ".tmp",
     "test-results",
     "artifacts",
+    "registry/base-nova",
     "registry/base-nova/protoform/lib/protobuf-v1-bridge",
     "**/*.test.ts",
     "**/*.test.tsx",

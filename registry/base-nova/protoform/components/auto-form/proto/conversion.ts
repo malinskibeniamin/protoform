@@ -1,4 +1,4 @@
-import type { DescMessage } from '@bufbuild/protobuf';
+import { isMessage, type DescMessage, type MessageShape } from '@bufbuild/protobuf';
 import { getFieldHints } from '../../../lib/core';
 
 import type { ParsedField } from '../../../lib/form-types';
@@ -36,6 +36,13 @@ export function isProtoMapEntries(value: unknown): value is ProtoMapFormEntry[] 
 
 function isProtoMessageShape(value: unknown): boolean {
   return Boolean(value && typeof value === 'object' && '$typeName' in (value as Record<string, unknown>));
+}
+
+export function resolveProtoSourceMessage<Desc extends DescMessage>(
+  desc: Desc,
+  ...candidates: unknown[]
+): MessageShape<Desc> | undefined {
+  return candidates.find((candidate): candidate is MessageShape<Desc> => isMessage(candidate, desc));
 }
 
 export function normalizeProtoInitialValues(

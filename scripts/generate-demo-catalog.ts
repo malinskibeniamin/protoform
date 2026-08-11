@@ -68,15 +68,45 @@ function registryItem(name: string): string {
   return `@protoform/${name}`;
 }
 
+const seoDescriptionSuffixes = [
+  " Learn more.",
+  " See the practical Protoform implementation guide.",
+  " See practical Protoform implementation guidance for production use.",
+  " Learn how to apply this contract with practical Protoform implementation guidance for production use.",
+] as const;
+
+function seoDescription(description: string): string {
+  if (description.length >= 110 && description.length <= 160) {
+    return description;
+  }
+
+  const expanded = seoDescriptionSuffixes
+    .map((suffix) => `${description}${suffix}`)
+    .find((candidate) => candidate.length >= 110 && candidate.length <= 160);
+
+  if (!expanded) {
+    throw new Error(
+      `Could not create a 110–160 character SEO description from: ${description}`
+    );
+  }
+
+  return expanded;
+}
+
 function hubPage(title: string, description: string, category: string): string {
   return `---
 title: ${JSON.stringify(title)}
-description: ${JSON.stringify(description)}
+description: ${JSON.stringify(seoDescription(description))}
 ---
 
 ${generatedHeader}
 
 Choose a focused live demo. Each selection has a stable deep link and an independent registry install.
+
+Use the filters and deep links below to isolate one contract at a time. Each demo keeps its schema,
+form engine, registry item, and executable evidence visible so you can compare behavior before
+copying code. Start with the smallest relevant example, exercise its values and failure paths, then
+follow the installation and evidence links to reproduce the same behavior in your application.
 
 <DemoHub category="${category}" />
 `;

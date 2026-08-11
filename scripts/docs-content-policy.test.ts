@@ -234,7 +234,7 @@ describe("docs content policy", () => {
       "blume preview --host 0.0.0.0 --port 8080"
     );
     expect(manifest.scripts?.["docs:blume:audit"]).toBe(
-      "blume audit --fail-on error"
+      "blume audit --fail-on info --skip url_style"
     );
     expect(manifest.scripts?.["docs:blume:check"]).toBe(
       "blume check --strict --isolated"

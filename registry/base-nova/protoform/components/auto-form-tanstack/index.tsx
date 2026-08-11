@@ -25,6 +25,12 @@ export {
   type CompileCelExpressionOptions,
   type CompiledCelExpression,
 } from '../auto-form/cel-runtime';
+export {
+  inspectAutoFormConfiguration,
+  type AutoFormConfigurationDiagnostic,
+  type AutoFormConfigurationDiagnosticCode,
+  type InspectAutoFormConfigurationInput,
+} from '../auto-form/configuration';
 export { useAutoForm } from '../auto-form/context';
 export { defaultRegistry } from '../auto-form/fields';
 export { defaultClassifyField } from '../auto-form/helpers';

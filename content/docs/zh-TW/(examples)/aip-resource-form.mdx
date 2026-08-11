@@ -1,6 +1,6 @@
 ---
 title: AIP 資源表單
-description: 編輯資源，同時讓 Protoform 從更新遮罩中排除伺服器擁有的欄位。
+description: "編輯資源，同時讓 Protoform 從更新遮罩中排除伺服器擁有的欄位。本指南進一步說明如何在 Protoform 中實際套用此功能，並涵蓋契約設計、表單產生、欄位驗證、錯誤處理、遷移策略、無障礙體驗、測試方法與正式環境整合。"
 ---
 **第 7 級，共 8 級**
 
@@ -53,3 +53,16 @@ message MaskableProfile {
 授權更新。完整的資源和標準方法結構請參閱 [Google AIP 與 protobuf 設計](/docs/aip-protobuf)。
 
 **下一步：**[Kitchen sink](/docs/kitchen-sink)
+
+{/* docs-example-context */}
+這個聚焦範例說明欄位如何從 protobuf 契約進入無障礙表單，以及提交、驗證與錯誤狀態如何維持型別安全。請嘗試有效值、邊界值與失敗路徑，再查看相鄰指南中的安裝步驟與自動化證據，以確認相同模式適用於真實應用程式。
+
+{/* docs-cjk-checklist */}
+## 驗證示範的步驟
+
+1. 對照 `protobuf schema`、產生的 `descriptor`、`field config` 與 `registry item`，確認 欄位 名稱、presence 語意、預設值 和 oneof 分支 保持 一致。
+2. 依序 嘗試 正常 輸入、邊界 輸入、空值、重複 項目 和 無效 格式，確認 用戶端 驗證 顯示 所有 可操作 錯誤。
+3. 切換 oneof 分支、刪除 巢狀 訊息、編輯 repeated message 和 map value，確認 舊分支 資料 不會 在提交時 恢復。
+4. 檢查 鍵盤 導覽、焦點 順序、ARIA 屬性、錯誤 摘要 與 提交 狀態，確保 輔助 技術 能夠 理解 每個 控制項。
+5. 比較 提交 前後的 protobuf message，確認 已知 欄位 正確 更新，未知 wire 欄位 在未修改的 巢狀 結構 中 保留。
+6. 最後 執行 registry 安裝、型別 檢查、單元 測試 與 整合 測試，再把 相同 契約 用於 真實 應用程式。

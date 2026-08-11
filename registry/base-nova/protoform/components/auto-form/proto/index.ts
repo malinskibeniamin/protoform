@@ -17,4 +17,5 @@ export {
   protoFormValuesToPayload,
   protoPayloadToFormValues,
   protoToFormValues,
+  resolveProtoSourceMessage,
 } from './conversion';

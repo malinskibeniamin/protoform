@@ -49,7 +49,12 @@ export function useAutoFormField(path: string[]) {
 export type InternalAutoFormRenderContextValue = Pick<AutoFormContextValue, 'uiComponents' | 'formComponents'>;
 export type InternalAutoFormRuntimeContextValue = Pick<
   AutoFormContextValue,
-  'deprecatedFields' | 'formValues' | 'evaluateRules' | 'getFieldUiConfig' | 'testIdPrefix'
+  | 'deprecatedFields'
+  | 'formValues'
+  | 'evaluateRules'
+  | 'fieldRegistry'
+  | 'getFieldUiConfig'
+  | 'testIdPrefix'
 >;
 
 export const AutoFormRenderContext = AutoFormContext;

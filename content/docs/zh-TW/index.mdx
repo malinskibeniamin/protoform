@@ -1,6 +1,6 @@
 ---
 title: Protoform
-description: 適用於 protobuf 應用程式、相容 Protovalidate 的 shadcn 表單。
+description: "適用於 protobuf 應用程式、相容 Protovalidate 的 shadcn 表單。本指南進一步說明如何在 Protoform 中實際套用此功能，並涵蓋契約設計、表單產生、欄位驗證、錯誤處理、遷移策略、無障礙體驗、測試方法與正式環境整合。"
 ---
 Protoform 是一套 shadcn 風格的表單 registry，以 protobuf 作為唯一真實來源。
 它結合了：
@@ -65,3 +65,19 @@ flowchart TD
   TanStack --> Components
   Components --> Submit["Typed request"]
 ```
+
+{/* docs-directory:start */}
+## 文件目錄
+
+使用以下內文連結直接前往每一篇持續維護的指南與範例。
+
+- **AIP 範例:** [AIP 範例](/docs/zh-TW/aip-example-catalog)
+- **建立表單:** [步驟導覽](/docs/zh-TW/steppers), [AutoForm 註解](/docs/zh-TW/auto-form), [Final Form](/docs/zh-TW/final-form), [Formik](/docs/zh-TW/formik), [Oneof 與邊界情況](/docs/zh-TW/oneof-edge-cases), [React Hook Form](/docs/zh-TW/react-hook-form), [TanStack Form](/docs/zh-TW/tanstack-form)
+- **學習範例:** [伺服器錯誤表單](/docs/zh-TW/server-error-form), [兩步驟表單](/docs/zh-TW/two-step-form), [深度巢狀表單](/docs/zh-TW/deeply-nested), [最基本的表單](/docs/zh-TW/bare-bones-form), [廚房水槽](/docs/zh-TW/kitchen-sink), [複雜的端對端範例](/docs/zh-TW/complex-example), [AIP 資源表單](/docs/zh-TW/aip-resource-form), [CEL 與 RE2 表單](/docs/zh-TW/cel-re2-form), [Oneof 表單](/docs/zh-TW/oneof-form)
+- **功能範例:** [正式環境範例](/docs/zh-TW/production-examples), [CEL 範例](/docs/zh-TW/cel-examples), [Protobuf 範例](/docs/zh-TW/protobuf-examples), [Protovalidate 範例](/docs/zh-TW/protovalidate-examples)
+- **遷移:** [從 Yup 遷移](/docs/zh-TW/yup-migration), [從 Zod 遷移](/docs/zh-TW/zod-migration), [遷移至 Protobuf-ES v2](/docs/zh-TW/protobuf-v2-migration), [LLM 遷移手冊](/docs/zh-TW/llm-migration-playbook)
+- **更多指南:** [預設配置](/docs/zh-TW/presets)
+- **正式環境:** [一致性測試套件](/docs/zh-TW/conformance), [正式環境就緒程度](/docs/zh-TW/production-readiness), [連接埠稽核](/docs/zh-TW/port-audit), [部署](/docs/zh-TW/deployment), [測試表單](/docs/zh-TW/testing-forms)
+- **開始使用:** [書店操作導覽](/docs/zh-TW/bookstore), [開始使用](/docs/zh-TW/getting-started), [Registry 安裝](/docs/zh-TW/registry-install)
+- **驗證與 API:** [伺服器錯誤](/docs/zh-TW/server-errors), [API 實作範例](/docs/zh-TW/api-recipes), [CEL 運算式](/docs/zh-TW/cel-expressions), [Google AIP 與 protobuf 設計](/docs/zh-TW/aip-protobuf), [Protovalidate](/docs/zh-TW/protovalidate), [Standard Schema](/docs/zh-TW/standard-schema)
+{/* docs-directory:end */}

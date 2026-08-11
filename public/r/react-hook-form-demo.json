@@ -1,7 +1,7 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "react-hook-form-demo",
-  "title": "React Hook Form",
+  "title": "React Hook Form integration",
   "description": "Use React Hook Form as Protoform's default native engine without hiding its form API.",
   "dependencies": [],
   "registryDependencies": [
