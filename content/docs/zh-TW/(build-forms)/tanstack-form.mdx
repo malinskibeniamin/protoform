@@ -162,12 +162,139 @@ API。
 契約，都與預設的 React Hook Form AutoForm 共用。表單狀態與原生擴充
 機制仍由 TanStack Form 管理。
 
+## 實驗性功能：TanStack Form v2 alpha
+
+TanStack Form v2 支援是獨立的選用方式，不會取代上述穩定的 v1 項目。
+registry 目前透過 package alias 固定使用 `2.0.0-alpha.0`，因此可在同一個應用程式中
+評估兩個世代。採用前，請先查看上游的 [v2 公告](https://tanstack.com/blog/announcing-tanstack-form-v2-alpha)
+與[遷移指南](https://tanstack.com/form/alpha/docs/migrate-from-v1)。
+
+安裝實驗性的原生 hook：
+
+```bash
+bunx shadcn@latest add @protoform/use-proto-form-tanstack-v2
+```
+
+v2 adapter 遵循 v2 契約，而不模擬 v1：validators 與 listeners 為 array、
+表單提供 `form.atom`，欄位直接提供 `field.value` 與 `field.errors`，且成功的
+Standard Schema validator 會將其 protobuf message 加入 `schemaOutputs`。
+
+```tsx
+import { Button } from "@/components/ui/button";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { useProtoForm } from "@/hooks/use-proto-form-tanstack-v2";
+import { SignupRequestSchema } from "@/gen/example/v1/signup_pb";
+
+export function ExperimentalSignupForm() {
+  const form = useProtoForm(SignupRequestSchema, {
+    defaultValues: { email: "", displayName: "" },
+    validators: [
+      {
+        run: ({ value }) =>
+          value.email.endsWith("@example.com")
+            ? undefined
+            : { fields: { email: "Use your example.com address." } },
+        triggers: ["change"],
+      },
+    ],
+    onSubmit: async ({ createValidationError, schemaOutputs }) => {
+      const message = schemaOutputs.at(-1);
+      const result = await client.signup(message);
+      if (!result.ok) {
+        return createValidationError({
+          fields: { email: "The server rejected this email." },
+        });
+      }
+    },
+  });
+
+  return (
+    <form
+      onSubmit={(event) => {
+        event.preventDefault();
+        void form.handleSubmit();
+      }}
+    >
+      <form.Field name="email">
+        {(field) => (
+          <Field data-invalid={field.meta.isInvalid}>
+            <FieldLabel htmlFor={field.name}>Email</FieldLabel>
+            <Input
+              aria-invalid={field.meta.isInvalid}
+              id={field.name}
+              name={field.name}
+              onBlur={field.handleBlur}
+              onChange={(event) => field.handleChange(event.target.value)}
+              type="email"
+              value={field.value}
+            />
+            {field.errors.map((error) => (
+              <FieldError key={error.message}>{error.message}</FieldError>
+            ))}
+          </Field>
+        )}
+      </form.Field>
+      <Button type="submit">Create account</Button>
+    </form>
+  );
+}
+```
+
+protobuf validator 會附加在呼叫端 validators 之後。若呼叫端沒有 schema validators，
+型別化的 protobuf message 即為 `schemaOutputs[0]`；否則請如上所示讀取最後一個輸出。此 hook
+也會加入 `createMessage`、`createUpdateMask` 與 `setOneofValue`。提交時的伺服器錯誤請使用 v2 原生的
+`createValidationError` 回傳值。
+
+另行安裝實驗性的產生式表單：
+
+```bash
+bunx shadcn@latest add @protoform/auto-form-tanstack-v2
+```
+
+```tsx
+import { AutoForm } from "@/components/auto-form-tanstack-v2";
+import { SignupRequestSchema } from "@/gen/example/v1/signup_pb";
+
+export function ExperimentalGeneratedSignupForm() {
+  return (
+    <AutoForm
+      schema={SignupRequestSchema}
+      formOptions={{
+        validators: [
+          {
+            run: ({ value }) =>
+              value.displayName ? undefined : "Enter a display name.",
+            triggers: ["blur"],
+          },
+        ],
+      }}
+      onSubmit={async (message) => client.signup(message)}
+      withSubmit
+    />
+  );
+}
+```
+
+AutoForm v2 使用原生的 `Field` 與 `ArrayField` 元件、保留呼叫端 validator arrays，並
+在原生及 Protoform 提交 callbacks 之前執行 provider 驗證。
+
+請將此方式視為實驗性功能：
+
+- TanStack Form v2 與這些 registry 項目皆為固定於單一確切版本的 alpha API。
+- 重複值請以 `[]` 初始化。上游對初始值為 `null` 或
+  `undefined` 的 array 處理方式仍在演進。
+- 請在應用程式中測試 steppers、conditional fields 與 oneofs。上游 v2 對
+  unmounted fields 的行為仍在設計中，因此這些流程可能會隨 alpha 版本變更。
+- 僅在應用程式的重點表單測試通過後再升級。遷移完成前，請保留已安裝的穩定 v1 registry 項目。
+
 ## 選擇使用方式
 
 | 起點 | 使用 |
 | --- | --- |
 | 現有 TanStack 欄位與狀態 | `use-proto-form-tanstack` |
 | 由 descriptor 驅動的產生欄位 | `auto-form-tanstack` |
+| TanStack Form v2 alpha 評估 | `use-proto-form-tanstack-v2` 或 `auto-form-tanstack-v2` |
 | React 以外的驗證 | `createProtoFormSchema` |
 | 現有 React Hook Form 程式碼 | 預設的 [`useProtoForm` 與 `auto-form`](/docs/react-hook-form) |
 
