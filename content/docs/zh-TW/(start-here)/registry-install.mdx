@@ -1,6 +1,8 @@
 ---
 title: Registry 安裝
-description: "使用 shadcn 安裝 Protoform 登錄項目、驗證相依套件，並在現有 React 應用中開始建立 protobuf 表單。本指南說明如何在 Protoform 中套用此功能，並涵蓋驗證、錯誤處理與正式環境整合。"
+description: >-
+  使用 shadcn 安裝 Protoform registry 項目、驗證相依套件，並在現有 React 應用程式中開始建立以 protobuf
+  為基礎的表單。
 ---
 Protoform 以 shadcn 風格的自訂 registry 發布。你可以安裝完整技術棧，或選擇較精簡的進入點。
 
@@ -29,6 +31,12 @@ bunx shadcn@latest add @protoform/use-proto-form
 # AutoForm components: protobuf-driven form renderer + shadcn fields
 bunx shadcn@latest add @protoform/auto-form
 
+# Experimental React Hook Form v8 beta hook
+bunx shadcn@latest add @protoform/use-proto-form-v8
+
+# Experimental React Hook Form v8 beta AutoForm
+bunx shadcn@latest add @protoform/auto-form-react-hook-form-v8
+
 # Native TanStack Form hook
 bunx shadcn@latest add @protoform/use-proto-form-tanstack
 
@@ -56,8 +64,10 @@ bunx shadcn@latest add @protoform/bookstore
 | 項目 | 適用情境 | 包含內容 |
 | --- | --- | --- |
 | `use-proto-form` | 你已有 shadcn 表單 UI，並想使用 protobuf 驗證 | `useProtoForm`、ProtoValidate resolver、oneof 輔助工具、Connect/gRPC 錯誤映射 |
+| `use-proto-form-v8` | 你正在評估 React Hook Form v8 beta | 獨立的 v8 原生 hook，固定使用 `8.0.0-beta.3` |
 | `use-proto-form-tanstack` | 你已使用 TanStack Form | 原生 TanStack API，以及 protobuf 訊息、更新遮罩、oneof 和伺服器錯誤 |
 | `auto-form` | 你想使用預設引擎產生 schema 驅動的欄位 | 共用 renderer，以及 React Hook Form adapter |
+| `auto-form-react-hook-form-v8` | 你正在評估 React Hook Form v8 beta 的產生欄位 | 獨立的 v8 原生 AutoForm adapter 和共用 renderer |
 | `auto-form-tanstack` | 你想使用 TanStack Form 產生 schema 驅動的欄位 | 共用 renderer，以及 TanStack Form adapter |
 | `use-proto-form-tanstack-v2` | 你正在評估 TanStack Form v2 alpha | 獨立的 v2 原生 hook，固定使用 `2.0.0-alpha.0` |
 | `auto-form-tanstack-v2` | 你正在評估 TanStack Form v2 alpha 的產生欄位 | 獨立的 v2 原生 AutoForm adapter 和共用 renderer |

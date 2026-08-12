@@ -1,6 +1,6 @@
 ---
 title: React Hook Form
-description: "将 Protoform 用作 React Hook Form 的直接替代层。本指南进一步说明如何在 Protoform 中实际应用此功能，并涵盖契约设计、表单生成、字段验证、错误处理、迁移策略、无障碍体验、测试方法与生产环境集成。"
+description: 将 Protoform 用作 React Hook Form 的直接替代层。请参阅面向生产环境的 Protoform 实际实施指南。
 ---
 shadcn React Hook Form 指南从 Zod 开始。Protoform 保持相同的 UI 结构，但将
 schema resolver 替换为 protobuf descriptor。React Hook Form 仍是默认引擎，也是
@@ -88,6 +88,37 @@ export function SignupForm() {
 
 `formOptions` 会传递给 `useForm`。`onFormInit`、`onFieldChange` 和 `onSubmit` 接收
 原生 React Hook Form 实例。Protoform 在不替换你已熟悉 API 的前提下，增加了生成式渲染。
+
+## 实验性功能：React Hook Form v8 beta
+
+React Hook Form v8 支持是一条独立的可选路径。它不会替代上面的稳定版 v7 item，
+而且可以在同一个应用中评估两个版本。上游 API 仍处于 beta 阶段，因此 adapter 固定使用
+`8.0.0-beta.3`。
+
+安装实验性原生 hook：
+
+```bash
+bunx shadcn@latest add @protoform/use-proto-form-v8
+```
+
+```tsx
+import { useProtoForm } from "@/hooks/use-proto-form-v8";
+```
+
+单独安装实验性生成式表单：
+
+```bash
+bunx shadcn@latest add @protoform/auto-form-react-hook-form-v8
+```
+
+```tsx
+import { AutoForm } from "@/components/auto-form-react-hook-form-v8";
+```
+
+这些 item 会通过 `react-hook-form-v8` package alias 安装 v8，保留原生 v8 API，并
+使用 v8 的 `key` field-array identifier。在迁移完成之前，请将稳定版和 beta 版的 import
+分开。采用 beta 路径前，请查看上游
+[v8 beta 发布说明](https://github.com/react-hook-form/react-hook-form/releases/tag/v8.0.0-beta.0)。
 
 已经标准化使用其他表单 store？请参阅
 [TanStack Form](/docs/tanstack-form) 中的原生 hook 和生成式 AutoForm 路径，或
