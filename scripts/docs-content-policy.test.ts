@@ -246,7 +246,7 @@ describe("docs content policy", () => {
     expect(manifest.scripts?.["quality:gate"]).toContain(
       "bun run build && bun run docs:blume:audit"
     );
-    expect(manifest.dependencies?.blume).toBe("1.4.2");
+    expect(manifest.dependencies?.blume).toBe("1.4.3");
     expect(
       manifest.dependencies?.["@modelcontextprotocol/sdk"]
     ).toBeUndefined();
