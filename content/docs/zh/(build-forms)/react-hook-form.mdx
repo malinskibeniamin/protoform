@@ -53,6 +53,32 @@ export function SignupForm() {
 返回值是完整的 `UseFormReturn`，因此现有的 `Controller`、`useFieldArray`、
 `watch`、`reset`、resolver 选项以及不常见的 React Hook Form 模式仍然可用。
 
+## 验证部分编辑
+
+更新表单有时会省略服务器仍会保留的字段值，例如只写凭据。启用 `modified-fields`
+验证后，只有用户编辑该字段时，省略的值才会被视为无效：
+
+```tsx
+const form = useProtoForm(ServiceConnectionSchema, {
+  defaultValues: connection,
+  validationScope: "modified-fields",
+});
+
+const onSubmit = form.handleSubmit(async (values) => {
+  await updateConnection(create(UpdateServiceConnectionRequestSchema, {
+    connection: form.createMessage(values),
+    updateMask: form.createUpdateMask(),
+  }));
+
+  form.reset(values);
+});
+```
+
+修改集合会有意持续保留。如果字段初始为空，随后输入内容又再次清空，Protoform 会验证该
+空值，并在更新掩码中包含对应的 protobuf 路径。未触碰的空字段既不会被验证，也不会被
+包含。`reset()` 会建立新的编辑基线。消息级 CEL 问题仍然可见，因为 Protoform 无法安全地
+将其归因于某一个已修改字段。创建表单仍默认验证完整消息。
+
 ## 生成字段
 
 默认 registry item 使用 React Hook Form：

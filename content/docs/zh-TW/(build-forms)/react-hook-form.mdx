@@ -52,6 +52,32 @@ export function SignupForm() {
 回傳值是完整的 `UseFormReturn`，因此仍可使用既有的 `Controller`、`useFieldArray`、
 `watch`、`reset`、resolver 選項，以及較少見的 React Hook Form 模式。
 
+## 驗證部分編輯
+
+更新表單有時會省略伺服器仍會保留的欄位值，例如唯寫憑證。啟用 `modified-fields`
+驗證後，只有使用者編輯該欄位時，省略的值才會被視為無效：
+
+```tsx
+const form = useProtoForm(ServiceConnectionSchema, {
+  defaultValues: connection,
+  validationScope: "modified-fields",
+});
+
+const onSubmit = form.handleSubmit(async (values) => {
+  await updateConnection(create(UpdateServiceConnectionRequestSchema, {
+    connection: form.createMessage(values),
+    updateMask: form.createUpdateMask(),
+  }));
+
+  form.reset(values);
+});
+```
+
+修改集合會刻意持續保留。如果欄位一開始為空白，接著輸入內容後又再次清除，Protoform
+會驗證該空白值，並在更新遮罩中包含對應的 protobuf 路徑。未觸碰的空白欄位既不會被
+驗證，也不會被包含。`reset()` 會建立新的編輯基準。訊息層級的 CEL 問題仍會顯示，因為
+Protoform 無法安全地將其歸因於單一已修改欄位。建立表單仍預設驗證完整訊息。
+
 ## 產生欄位
 
 預設的 registry 項目使用 React Hook Form：

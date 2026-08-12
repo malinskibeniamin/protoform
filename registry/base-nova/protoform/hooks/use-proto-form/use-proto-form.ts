@@ -16,7 +16,7 @@ import {
   humanizeServerFieldError,
   type ProtoConversionOptions,
 } from "../../lib/protobuf-provider/index.js";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   type FieldPath,
   type Path,
@@ -44,10 +44,22 @@ type NestedErrors<T> = {
     : { message?: string };
 };
 
+interface ModifiedFieldTree {
+  [segment: string]: ModifiedFieldTree | true;
+}
+
+export type ProtoValidationScope = "all" | "modified-fields";
+
 export interface UseProtoFormOptions<Desc extends DescMessage>
   extends Omit<UseFormProps<FormShape<Desc>>, "resolver"> {
   /** Per-field repeated-string conversion overrides keyed by descriptor path. */
   emptyRepeatedStringPolicies?: ProtoConversionOptions["emptyRepeatedStringPolicies"];
+  /**
+   * `modified-fields` validates only fields intentionally changed since the
+   * last reset and uses the same sticky field set for update masks. Root
+   * issues remain visible. Defaults to full-message validation.
+   */
+  validationScope?: ProtoValidationScope;
   /**
    * Strip a leading server-path prefix before mapping server-side field
    * violations onto the form (e.g. `'notification'` when the RPC wraps the
@@ -141,6 +153,7 @@ export function useProtoForm<Desc extends DescMessage>(
   const {
     emptyRepeatedStringPolicies,
     serverPathPrefix,
+    validationScope = "all",
     mode = "onChange",
     ...rest
   } = options ?? {};
@@ -150,18 +163,92 @@ export function useProtoForm<Desc extends DescMessage>(
   const sourceMessage = isMessage(rest.defaultValues, schema)
     ? rest.defaultValues
     : undefined;
+  const modifiedFieldsRef = useRef<ModifiedFieldTree>({});
+  const suppressModifiedTrackingRef = useRef(false);
+  const formRef = useRef<UseFormReturn<FormShape<Desc>> | undefined>(undefined);
 
   const form = useForm({
     ...rest,
     mode,
-    resolver: createProtoResolver(schema, conversionOptions, sourceMessage),
+    resolver: createProtoResolver(
+      schema,
+      conversionOptions,
+      sourceMessage,
+      validationScope === "modified-fields"
+        ? {
+            getValidationMask: (values) =>
+              createDirtyUpdateMask(
+                schema,
+                modifiedFieldsRef.current,
+                values,
+                formRef.current?.formState.defaultValues ?? rest.defaultValues
+              ),
+          }
+        : undefined
+    ),
   } as unknown as UseFormProps<FormShape<Desc>>) as UseFormReturn<
     FormShape<Desc>
   >;
+  formRef.current = form;
   // Read during render so react-hook-form subscribes this hook to error updates.
   const formErrors = form.formState.errors;
   const dirtyFields = form.formState.dirtyFields;
   const initialValues = form.formState.defaultValues;
+  const trackModifiedField = (path: string) => {
+    if (
+      validationScope === "modified-fields" &&
+      !suppressModifiedTrackingRef.current
+    ) {
+      setModifiedPath(modifiedFieldsRef.current, path);
+    }
+  };
+  useEffect(
+    function subscribeToModifiedFields() {
+      if (validationScope !== "modified-fields") {
+        return;
+      }
+      // allow: form-watch side-effect subscription observes the field name
+      // synchronously before RHF invokes its resolver and does not re-render.
+      const subscription = form.watch((_values, { name }) => {
+        if (name) {
+          trackModifiedField(name);
+        }
+      });
+      return () => subscription.unsubscribe();
+    },
+    [form.watch, validationScope]
+  );
+
+  const setValue: typeof form.setValue = (name, value, setValueOptions) => {
+    trackModifiedField(name);
+    form.setValue(name, value, setValueOptions);
+  };
+  const setValues: typeof form.setValues = (values, setValueOptions) => {
+    const resolvedValues =
+      typeof values === "function" ? values(form.getValues()) : values;
+    for (const path of Object.keys(resolvedValues)) {
+      trackModifiedField(path);
+    }
+    form.setValues(resolvedValues, setValueOptions);
+  };
+  const reset: typeof form.reset = (values, keepStateOptions) => {
+    modifiedFieldsRef.current = {};
+    suppressModifiedTrackingRef.current = true;
+    try {
+      form.reset(values, keepStateOptions);
+    } finally {
+      suppressModifiedTrackingRef.current = false;
+    }
+  };
+  const resetField: typeof form.resetField = (name, resetFieldOptions) => {
+    clearModifiedPath(modifiedFieldsRef.current, name);
+    suppressModifiedTrackingRef.current = true;
+    try {
+      form.resetField(name, resetFieldOptions);
+    } finally {
+      suppressModifiedTrackingRef.current = false;
+    }
+  };
   const createMessage = (values?: FormShape<Desc>): MessageShape<Desc> => {
     const raw = values ?? form.getValues();
     return formValuesToProto(
@@ -173,7 +260,14 @@ export function useProtoForm<Desc extends DescMessage>(
   };
 
   const createUpdateMask = (): FieldMask =>
-    createDirtyUpdateMask(schema, dirtyFields, form.getValues(), initialValues);
+    createDirtyUpdateMask(
+      schema,
+      validationScope === "modified-fields"
+        ? modifiedFieldsRef.current
+        : dirtyFields,
+      form.getValues(),
+      initialValues
+    );
 
   const setOneofValue = (
     path: string,
@@ -194,13 +288,13 @@ export function useProtoForm<Desc extends DescMessage>(
     }
     const prev = current as { case?: string; value?: unknown } | undefined;
     if (prev?.case && prev.case !== oneofCase) {
-      form.setValue(
+      setValue(
         path as Path<FormShape<Desc>>,
         { case: "", value: {} } as never
       );
     }
     // `shouldDirty: true` default: switching a branch is a meaningful edit.
-    form.setValue(
+    setValue(
       path as Path<FormShape<Desc>>,
       { case: oneofCase, value } as never,
       {
@@ -263,14 +357,18 @@ export function useProtoForm<Desc extends DescMessage>(
     return { context, handled, unmapped };
   };
 
-  return Object.assign(form, {
+  return Object.assign({}, form, {
     clearServerErrorContext,
     createMessage,
     createUpdateMask,
     getNestedErrors,
     serverErrorContext,
+    setValue,
+    setValues,
     setOneofValue,
     setServerErrors,
+    reset,
+    resetField,
   });
 }
 
@@ -294,4 +392,56 @@ function stripPrefix(field: string, prefix?: string): string {
   }
   const withDot = `${prefix}.`;
   return field.startsWith(withDot) ? field.slice(withDot.length) : field;
+}
+
+function setModifiedPath(target: ModifiedFieldTree, path: string): void {
+  const segments = path.match(/[^.[\]]+/g) ?? [];
+  let current = target;
+  for (const [index, segment] of segments.entries()) {
+    if (index === segments.length - 1) {
+      current[segment] = true;
+      return;
+    }
+    const existing = current[segment];
+    if (existing === true) {
+      return;
+    }
+    if (!isModifiedFieldTree(existing)) {
+      current[segment] = {};
+    }
+    const next = current[segment];
+    if (!isModifiedFieldTree(next)) {
+      return;
+    }
+    current = next;
+  }
+}
+
+function clearModifiedPath(
+  target: ModifiedFieldTree,
+  path: string
+): void {
+  const segments = path.match(/[^.[\]]+/g) ?? [];
+  const [segment, ...rest] = segments;
+  if (!segment) {
+    return;
+  }
+  if (rest.length === 0) {
+    delete target[segment];
+    return;
+  }
+  const child = target[segment];
+  if (!isModifiedFieldTree(child)) {
+    return;
+  }
+  clearModifiedPath(child, rest.join("."));
+  if (Object.keys(child).length === 0) {
+    delete target[segment];
+  }
+}
+
+function isModifiedFieldTree(
+  value: ModifiedFieldTree | true | undefined
+): value is ModifiedFieldTree {
+  return typeof value === "object";
 }

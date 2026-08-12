@@ -54,6 +54,7 @@ export {
   type ProtoMapFormEntry,
   type ProtoConversionOptions,
   type ProtoFormOptions,
+  type ProtoValidationContext,
   ProtoProvider,
   parseProtoSchema,
   preserveProtoMessageSource,

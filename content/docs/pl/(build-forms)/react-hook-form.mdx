@@ -53,6 +53,35 @@ export function SignupForm() {
 Zwracana wartość to kompletny obiekt `UseFormReturn`, dzięki czemu istniejące `Controller`, `useFieldArray`,
 `watch`, `reset`, opcje resolvera i mniej typowe wzorce React Hook Form pozostają dostępne.
 
+## Walidacja częściowych edycji
+
+Formularze aktualizacji czasem pomijają wartość pola, którą serwer zachowa, na przykład poświadczenie
+tylko do zapisu. Włącz walidację `modified-fields`, aby pominięta wartość nie była uznawana za
+nieprawidłową, dopóki użytkownik nie edytuje tego pola:
+
+```tsx
+const form = useProtoForm(ServiceConnectionSchema, {
+  defaultValues: connection,
+  validationScope: "modified-fields",
+});
+
+const onSubmit = form.handleSubmit(async (values) => {
+  await updateConnection(create(UpdateServiceConnectionRequestSchema, {
+    connection: form.createMessage(values),
+    updateMask: form.createUpdateMask(),
+  }));
+
+  form.reset(values);
+});
+```
+
+Zbiór modyfikacji jest celowo trwały. Jeśli pole początkowo jest puste, otrzyma wartość, a następnie
+zostanie ponownie wyczyszczone, Protoform zwaliduje pustą wartość i uwzględni ścieżkę protobuf pola
+w masce aktualizacji. Nietknięte puste pole nie jest ani walidowane, ani uwzględniane. `reset()`
+rozpoczyna nowy stan bazowy edycji. Błędy CEL na poziomie komunikatu pozostają widoczne, ponieważ
+Protoform nie może bezpiecznie przypisać ich do jednego zmodyfikowanego pola. Formularze tworzenia
+zachowują domyślną walidację całego komunikatu.
+
 ## Generowanie pól
 
 Domyślny element rejestru korzysta z React Hook Form:

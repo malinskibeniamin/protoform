@@ -21,6 +21,7 @@ import { base64Decode, base64Encode } from "@bufbuild/protobuf/wire";
 import {
   DurationSchema,
   FeatureSet_FieldPresence,
+  type FieldMask,
   FieldOptionsSchema,
   isWrapperDesc,
   ListValueSchema,
@@ -73,6 +74,7 @@ import {
   getProtoOneofUi,
 } from "./ui-options.js";
 import { createDescriptorAwareStandardSchema } from "./validation-schema.js";
+import { protoPathToFormPath } from "./proto-error-path.js";
 
 const GOOGLE_PROTOBUF_PREFIX = "google.protobuf.";
 const TIMESTAMP_TYPE = `${GOOGLE_PROTOBUF_PREFIX}Timestamp`;
@@ -2248,6 +2250,14 @@ export type NormalizedProtoValidationResult<Output> =
   | StandardSchemaV1.SuccessResult<Output>
   | { readonly issues: readonly NormalizedProtoIssue[] };
 
+export interface ProtoValidationContext {
+  /**
+   * Restrict pathful issues to fields overlapping this mask. Message-level
+   * issues remain visible because they cannot be attributed safely.
+   */
+  validationMask?: FieldMask;
+}
+
 const SIGNED_32_SCALARS = [
   ScalarType.INT32,
   ScalarType.SINT32,
@@ -2412,18 +2422,56 @@ function toFailureResult(error: unknown): {
 function normalizeValidationResult<Desc extends DescMessage>(
   desc: Desc,
   values: Record<string, unknown>,
-  validationResult: StandardSchemaV1.Result<MessageValidType<Desc>>
+  validationResult: StandardSchemaV1.Result<MessageValidType<Desc>>,
+  fallbackValue: MessageShape<Desc>,
+  context: ProtoValidationContext
 ): NormalizedProtoValidationResult<MessageValidType<Desc>> {
   if (validationResult.issues) {
-    return {
-      issues: validationResult.issues.map((issue) => ({
+    const issues = filterValidationIssues(
+      desc,
+      validationResult.issues.map((issue) => ({
         message: issue.message,
         path: normalizeIssuePath(desc, issue, values),
       })),
+      context.validationMask
+    );
+    if (issues.length === 0) {
+      return { value: fallbackValue as MessageValidType<Desc> };
+    }
+    return {
+      issues,
     };
   }
 
   return validationResult;
+}
+
+function filterValidationIssues(
+  desc: DescMessage,
+  issues: readonly NormalizedProtoIssue[],
+  validationMask?: FieldMask
+): readonly NormalizedProtoIssue[] {
+  if (!validationMask || validationMask.paths.includes("*")) {
+    return issues;
+  }
+
+  const formPaths = validationMask.paths.flatMap((path) => {
+    const formPath = protoPathToFormPath(desc, path);
+    return formPath ? [formPath] : [];
+  });
+
+  return issues.filter((issue) => {
+    if (issue.path.length === 0) {
+      return true;
+    }
+    const issuePath = issue.path.join(".");
+    return formPaths.some(
+      (formPath) =>
+        issuePath === formPath ||
+        issuePath.startsWith(`${formPath}.`) ||
+        formPath.startsWith(`${issuePath}.`)
+    );
+  });
 }
 
 /**
@@ -2439,12 +2487,17 @@ export function validateFormValuesAgainstProtoSchema<Desc extends DescMessage>(
   values: Record<string, unknown>,
   schema: StandardSchemaV1<MessageShape<Desc>, MessageValidType<Desc>>,
   options: ProtoConversionOptions = {},
-  source?: MessageShape<Desc>
+  source?: MessageShape<Desc>,
+  context: ProtoValidationContext = {}
 ):
   | NormalizedProtoValidationResult<MessageValidType<Desc>>
   | Promise<NormalizedProtoValidationResult<MessageValidType<Desc>>> {
   try {
-    const conversionIssues = getFormConversionIssues(desc, values);
+    const conversionIssues = filterValidationIssues(
+      desc,
+      getFormConversionIssues(desc, values),
+      context.validationMask
+    );
     if (conversionIssues.length > 0) {
       return { issues: conversionIssues };
     }
@@ -2453,11 +2506,19 @@ export function validateFormValuesAgainstProtoSchema<Desc extends DescMessage>(
 
     if (validationResult instanceof Promise) {
       return validationResult
-        .then((result) => normalizeValidationResult(desc, values, result))
+        .then((result) =>
+          normalizeValidationResult(desc, values, result, message, context)
+        )
         .catch((error: unknown) => toFailureResult(error));
     }
 
-    return normalizeValidationResult(desc, values, validationResult);
+    return normalizeValidationResult(
+      desc,
+      values,
+      validationResult,
+      message,
+      context
+    );
   } catch (error) {
     return toFailureResult(error);
   }

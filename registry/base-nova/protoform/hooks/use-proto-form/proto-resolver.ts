@@ -3,6 +3,7 @@ import type {
   MessageShape,
   MessageValidType,
 } from "@bufbuild/protobuf";
+import type { FieldMask } from "@bufbuild/protobuf/wkt";
 import { toNestErrors, validateFieldsNatively } from "@hookform/resolvers";
 import type { FormValues } from "../../lib/core/index.js";
 import {
@@ -15,10 +16,16 @@ import {
 import { createDescriptorAwareStandardSchema } from "../../lib/protobuf-provider/validation-schema.js";
 import type { Resolver } from "react-hook-form";
 
+export interface ProtoResolverOptions {
+  /** Resolve the current validation mask. Omit it to validate the full message. */
+  getValidationMask?: (values: FormValues) => FieldMask | undefined;
+}
+
 export function createProtoResolver<Desc extends DescMessage>(
   desc: Desc,
   options: ProtoFormOptions = {},
-  source?: MessageShape<Desc>
+  source?: MessageShape<Desc>,
+  protoResolverOptions: ProtoResolverOptions = {}
 ): Resolver<FormValues, unknown, MessageValidType<Desc>> {
   const standardSchema = createDescriptorAwareStandardSchema(desc, options);
 
@@ -28,7 +35,8 @@ export function createProtoResolver<Desc extends DescMessage>(
       values,
       standardSchema,
       options,
-      source
+      source,
+      { validationMask: protoResolverOptions.getValidationMask?.(values) }
     );
 
     if (!validationResult.issues) {
