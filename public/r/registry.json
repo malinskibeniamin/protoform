@@ -325,6 +325,43 @@
       "registryDependencies": ["@protoform/protobuf-provider"]
     },
     {
+      "name": "use-proto-form-v8",
+      "type": "registry:hook",
+      "title": "Experimental useProtoForm for React Hook Form v8",
+      "description": "Experimental React Hook Form v8 beta adapter with protobuf messages, update masks, oneofs, and Connect/gRPC field violations.",
+      "dependencies": [
+        "@bufbuild/protobuf",
+        "@connectrpc/connect",
+        "react-hook-form-v8@npm:react-hook-form@8.0.0-beta.3"
+      ],
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/hooks/use-proto-form-v8/index.ts",
+          "type": "registry:hook"
+        },
+        {
+          "path": "registry/base-nova/protoform/hooks/use-proto-form-v8/proto-error-path.ts",
+          "type": "registry:hook"
+        },
+        {
+          "path": "registry/base-nova/protoform/hooks/use-proto-form-v8/proto-paths.ts",
+          "type": "registry:hook"
+        },
+        {
+          "path": "registry/base-nova/protoform/hooks/use-proto-form-v8/proto-resolver.ts",
+          "type": "registry:hook"
+        },
+        {
+          "path": "registry/base-nova/protoform/hooks/use-proto-form-v8/use-proto-form.ts",
+          "type": "registry:hook"
+        }
+      ],
+      "registryDependencies": [
+        "@protoform/protoform-core",
+        "@protoform/protobuf-provider"
+      ]
+    },
+    {
       "name": "use-proto-form-tanstack-v2",
       "type": "registry:hook",
       "title": "Experimental useProtoForm for TanStack Form v2",
@@ -825,6 +862,27 @@
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/adapters/tanstack.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "auto-form-react-hook-form-v8",
+      "type": "registry:block",
+      "title": "Experimental Protoform AutoForm for React Hook Form v8",
+      "description": "Experimental AutoForm adapter for the React Hook Form v8 beta with its native form API plus Protoform rendering and protobuf helpers.",
+      "registryDependencies": [
+        "@protoform/auto-form-core",
+        "@protoform/use-proto-form-v8"
+      ],
+      "dependencies": ["react-hook-form-v8@npm:react-hook-form@8.0.0-beta.3"],
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/components/auto-form-react-hook-form-v8/index.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/adapters/react-hook-form-v8.tsx",
           "type": "registry:component"
         }
       ]

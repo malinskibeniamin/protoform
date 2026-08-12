@@ -1,6 +1,7 @@
 #!/usr/bin/env bun
 
 import { existsSync, readFileSync } from "node:fs";
+import { z } from "zod";
 
 import { demoCatalog } from "../examples/catalog/demo-catalog.js";
 
@@ -12,10 +13,12 @@ const expectedItems = [
   "protoc-gen-protoform",
   "protobuf-v1-bridge",
   "use-proto-form",
+  "use-proto-form-v8",
   "use-proto-form-tanstack",
   "use-proto-form-tanstack-v2",
   "auto-form-core",
   "auto-form",
+  "auto-form-react-hook-form-v8",
   "auto-form-tanstack",
   "auto-form-tanstack-v2",
   "protoform",
@@ -104,6 +107,43 @@ if (
   )
 ) {
   throw new Error("auto-form must depend on the shared core and RHF hook");
+}
+
+const reactHookFormV8Alias =
+  "react-hook-form-v8@npm:react-hook-form@8.0.0-beta.3";
+const dependencyItemSchema = z.object({
+  dependencies: z.array(z.string()).optional(),
+  registryDependencies: z.array(z.string()).optional(),
+});
+const reactHookFormV8Hook = dependencyItemSchema.parse(
+  JSON.parse(readFileSync("public/r/use-proto-form-v8.json", "utf8"))
+);
+const reactHookFormV8AutoForm = dependencyItemSchema.parse(
+  JSON.parse(readFileSync("public/r/auto-form-react-hook-form-v8.json", "utf8"))
+);
+if (
+  !reactHookFormV8Hook.dependencies?.includes(reactHookFormV8Alias) ||
+  reactHookFormV8Hook.dependencies.includes("react-hook-form") ||
+  reactHookFormV8Hook.dependencies.includes("@hookform/resolvers")
+) {
+  throw new Error(
+    "use-proto-form-v8 must install only the pinned v8 form-library alias"
+  );
+}
+if (
+  !(
+    reactHookFormV8AutoForm.dependencies?.includes(reactHookFormV8Alias) &&
+    reactHookFormV8AutoForm.registryDependencies?.includes(
+      "@protoform/auto-form-core"
+    ) &&
+    reactHookFormV8AutoForm.registryDependencies.includes(
+      "@protoform/use-proto-form-v8"
+    )
+  )
+) {
+  throw new Error(
+    "auto-form-react-hook-form-v8 must install the shared core, v8 hook, and pinned v8 alias"
+  );
 }
 
 const tanstackAutoForm = JSON.parse(

@@ -89,4 +89,24 @@ describe('native form adapter registry entries', () => {
       'registry/base-nova/protoform/components/auto-form/adapters/tanstack-v2.tsx'
     );
   });
+
+  it('ships React Hook Form v8 as separate experimental registry items', () => {
+    const packageAlias =
+      'react-hook-form-v8@npm:react-hook-form@8.0.0-beta.3';
+    const reactHookFormHook = item('use-proto-form-v8');
+    const reactHookFormAutoForm = item('auto-form-react-hook-form-v8');
+
+    expect(reactHookFormHook.dependencies).toContain(packageAlias);
+    expect(reactHookFormHook.dependencies).not.toContain('react-hook-form');
+    expect(reactHookFormHook.dependencies).not.toContain('@hookform/resolvers');
+    expect(reactHookFormAutoForm.registryDependencies).toEqual([
+      '@protoform/auto-form-core',
+      '@protoform/use-proto-form-v8',
+    ]);
+    expect(reactHookFormAutoForm.dependencies).toContain(packageAlias);
+    expect(reactHookFormAutoForm.dependencies).not.toContain('react-hook-form');
+    expect(filePaths(reactHookFormAutoForm)).toContain(
+      'registry/base-nova/protoform/components/auto-form/adapters/react-hook-form-v8.tsx'
+    );
+  });
 });
