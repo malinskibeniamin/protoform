@@ -30,6 +30,12 @@ bunx shadcn@latest add @protoform/use-proto-form
 # AutoForm components: protobuf-driven form renderer + shadcn fields
 bunx shadcn@latest add @protoform/auto-form
 
+# Experimental React Hook Form v8 beta hook
+bunx shadcn@latest add @protoform/use-proto-form-v8
+
+# Experimental React Hook Form v8 beta AutoForm
+bunx shadcn@latest add @protoform/auto-form-react-hook-form-v8
+
 # Native TanStack Form hook
 bunx shadcn@latest add @protoform/use-proto-form-tanstack
 
@@ -57,8 +63,10 @@ bunx shadcn@latest add @protoform/bookstore
 | Item | Use when | Includes |
 | --- | --- | --- |
 | `use-proto-form` | You already have a shadcn form UI and want protobuf validation | `useProtoForm`, ProtoValidate resolver, oneof helpers, Connect/gRPC error mapping |
+| `use-proto-form-v8` | You are evaluating React Hook Form v8 beta | Separate v8-native hook pinned to `8.0.0-beta.3` |
 | `use-proto-form-tanstack` | You already use TanStack Form | Native TanStack API plus protobuf messages, update masks, oneofs, and server errors |
 | `auto-form` | You want schema-generated fields with the default engine | Shared renderer plus the React Hook Form adapter |
+| `auto-form-react-hook-form-v8` | You are evaluating generated fields on React Hook Form v8 beta | Separate v8-native AutoForm adapter and shared renderer |
 | `auto-form-tanstack` | You want schema-generated fields with TanStack Form | Shared renderer plus the TanStack Form adapter |
 | `use-proto-form-tanstack-v2` | You are evaluating TanStack Form v2 alpha | Separate v2-native hook pinned to `2.0.0-alpha.0` |
 | `auto-form-tanstack-v2` | You are evaluating generated fields on TanStack Form v2 alpha | Separate v2-native AutoForm adapter and shared renderer |

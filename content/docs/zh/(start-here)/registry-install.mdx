@@ -29,6 +29,12 @@ bunx shadcn@latest add @protoform/use-proto-form
 # AutoForm components: protobuf-driven form renderer + shadcn fields
 bunx shadcn@latest add @protoform/auto-form
 
+# Experimental React Hook Form v8 beta hook
+bunx shadcn@latest add @protoform/use-proto-form-v8
+
+# Experimental React Hook Form v8 beta AutoForm
+bunx shadcn@latest add @protoform/auto-form-react-hook-form-v8
+
 # Native TanStack Form hook
 bunx shadcn@latest add @protoform/use-proto-form-tanstack
 
@@ -56,8 +62,10 @@ bunx shadcn@latest add @protoform/bookstore
 | 项目 | 适用场景 | 包含内容 |
 | --- | --- | --- |
 | `use-proto-form` | 你已有 shadcn 表单 UI，并希望使用 protobuf 验证 | `useProtoForm`、ProtoValidate resolver、oneof 辅助函数、Connect/gRPC 错误映射 |
+| `use-proto-form-v8` | 你正在评估 React Hook Form v8 beta | 独立的 v8 原生 hook，固定到 `8.0.0-beta.3` |
 | `use-proto-form-tanstack` | 你已在使用 TanStack Form | 原生 TanStack API，以及 protobuf 消息、update mask、oneof 和服务端错误 |
 | `auto-form` | 你希望使用默认引擎生成基于 schema 的字段 | 共享 renderer 和 React Hook Form adapter |
+| `auto-form-react-hook-form-v8` | 你正在评估 React Hook Form v8 beta 上生成的字段 | 独立的 v8 原生 AutoForm adapter 和共享 renderer |
 | `auto-form-tanstack` | 你希望通过 TanStack Form 生成基于 schema 的字段 | 共享 renderer 和 TanStack Form adapter |
 | `use-proto-form-tanstack-v2` | 你正在评估 TanStack Form v2 alpha | 独立的 v2 原生 hook，固定到 `2.0.0-alpha.0` |
 | `auto-form-tanstack-v2` | 你正在评估 TanStack Form v2 alpha 上生成的字段 | 独立的 v2 原生 AutoForm adapter 和共享 renderer |

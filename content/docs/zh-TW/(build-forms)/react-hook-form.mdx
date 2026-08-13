@@ -88,6 +88,36 @@ export function SignupForm() {
 `formOptions` 會傳遞給 `useForm`。`onFormInit`、`onFieldChange` 和 `onSubmit` 會接收
 原生 React Hook Form 實例。Protoform 加入產生式渲染，同時保留你已熟悉的 API。
 
+## 實驗性功能：React Hook Form v8 beta
+
+React Hook Form v8 支援是獨立且須選擇啟用的途徑。它不會取代上述穩定版 v7 項目，
+且可在同一個應用程式中評估這兩個世代。上游 API 仍處於 beta 階段，因此介接器固定使用
+`8.0.0-beta.3`。
+
+安裝實驗性的原生 hook：
+
+```bash
+bunx shadcn@latest add @protoform/use-proto-form-v8
+```
+
+```tsx
+import { useProtoForm } from "@/hooks/use-proto-form-v8";
+```
+
+另外安裝實驗性的產生式表單：
+
+```bash
+bunx shadcn@latest add @protoform/auto-form-react-hook-form-v8
+```
+
+```tsx
+import { AutoForm } from "@/components/auto-form-react-hook-form-v8";
+```
+
+這些項目會在 `react-hook-form-v8` 套件別名下安裝 v8、保留原生 v8 API，並
+使用 v8 的 `key` 欄位陣列識別碼。在遷移完成前，請將穩定版與 beta 版的 import 分開。採用 beta 途徑前，請先檢閱上游的
+[v8 beta 版本資訊](https://github.com/react-hook-form/react-hook-form/releases/tag/v8.0.0-beta.0)。
+
 已標準化採用其他表單儲存庫？請參閱
 [TanStack Form](/docs/tanstack-form) 中的原生 hook 與產生式 AutoForm 使用方式，或
 [Formik](/docs/formik) 和 [Final Form](/docs/final-form) 介接器。
