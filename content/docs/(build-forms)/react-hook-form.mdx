@@ -47,12 +47,40 @@ export function SignupForm() {
 
 - `resolver: createProtoResolver(schema)` under the hood.
 - `createMessage(values)` to convert form values into a protobuf message.
-- `createUpdateMask()` to include only dirty, writable protobuf paths in an update request.
+- `createUpdateMask()` to include only changed, writable protobuf paths in an update request.
 - `setOneofValue(path, case, value)` for oneof-safe updates.
 - `setServerErrors(error)` to map Connect/gRPC field violations back into RHF.
 
 The return value is the complete `UseFormReturn`, so existing `Controller`, `useFieldArray`,
 `watch`, `reset`, resolver options, and uncommon React Hook Form patterns remain available.
+
+## Validate partial edits
+
+Update forms sometimes omit a field value that the server will retain, such as a write-only
+credential. Opt into `modified-fields` validation so the omitted value is not treated as invalid
+until the user edits that field:
+
+```tsx
+const form = useProtoForm(ServiceConnectionSchema, {
+  defaultValues: connection,
+  validationScope: "modified-fields",
+});
+
+const onSubmit = form.handleSubmit(async (values) => {
+  await updateConnection(create(UpdateServiceConnectionRequestSchema, {
+    connection: form.createMessage(values),
+    updateMask: form.createUpdateMask(),
+  }));
+
+  form.reset(values);
+});
+```
+
+The modification set is intentionally sticky. If a field starts blank, receives input, then is
+cleared again, Protoform validates the blank value and includes its protobuf path in the update
+mask. An untouched blank field is neither validated nor included. `reset()` starts a new edit
+baseline. Message-level CEL issues remain visible because Protoform cannot safely attribute them to
+one modified field. Create forms keep the default full-message validation.
 
 ## Generate the fields
 
