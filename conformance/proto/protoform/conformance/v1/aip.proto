@@ -3,6 +3,8 @@ syntax = "proto3";
 package protoform.conformance.v1;
 
 import "buf/validate/validate.proto";
+import "google/api/annotations.proto";
+import "google/api/client.proto";
 import "google/api/field_behavior.proto";
 import "google/api/field_info.proto";
 import "google/api/resource.proto";
@@ -12,13 +14,19 @@ import "google/protobuf/field_mask.proto";
 import "google/protobuf/timestamp.proto";
 import "google/rpc/status.proto";
 
+// The lifecycle state of a book.
 enum BookState {
+  // The book state is not specified.
   BOOK_STATE_UNSPECIFIED = 0;
+  // The book is available.
   BOOK_STATE_ACTIVE = 1;
+  // The book is being deleted.
   BOOK_STATE_DELETING = 2;
+  // The book is soft deleted.
   BOOK_STATE_DELETED = 3;
 }
 
+// A book managed by the library service.
 message Book {
   option (google.api.resource) = {
     type: "library.protoform.dev/Book"
@@ -27,20 +35,28 @@ message Book {
     plural: "books"
   };
 
+  // The resource name of the book.
+  // Format: publishers/{publisher}/books/{book}
   string name = 1 [(google.api.field_behavior) = IDENTIFIER];
+  // The system-assigned UUID for the book.
   string uid = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The display name of the book.
   string display_name = 3 [(google.api.field_behavior) = REQUIRED];
+  // The time when the book was created.
   google.protobuf.Timestamp create_time = 4 [
     (google.api.field_behavior) = OUTPUT_ONLY
   ];
+  // The time when the book was last updated.
   google.protobuf.Timestamp update_time = 5 [
     (google.api.field_behavior) = OUTPUT_ONLY
   ];
+  // The time when the book was soft deleted.
   google.protobuf.Timestamp delete_time = 6 [
     (google.api.field_behavior) = OUTPUT_ONLY
   ];
   // ISBN-13 digits. The CEL rule enforces the alternating 1/3 checksum.
   string isbn = 7 [
+    (google.api.field_behavior) = REQUIRED,
     (google.api.field_behavior) = IMMUTABLE,
     (buf.validate.field).required = true,
     (buf.validate.field).string.pattern = "^[0-9]{13}$",
@@ -50,16 +66,28 @@ message Book {
       expression: "!this.matches('^[0-9]{13}$') || (int(this.substring(0, 1)) + int(this.substring(1, 2)) * 3 + int(this.substring(2, 3)) + int(this.substring(3, 4)) * 3 + int(this.substring(4, 5)) + int(this.substring(5, 6)) * 3 + int(this.substring(6, 7)) + int(this.substring(7, 8)) * 3 + int(this.substring(8, 9)) + int(this.substring(9, 10)) * 3 + int(this.substring(10, 11)) + int(this.substring(11, 12)) * 3 + int(this.substring(12, 13))) % 10 == 0"
     }
   ];
-  string input_token = 8 [(google.api.field_behavior) = INPUT_ONLY];
+  // An optional token consumed while creating or updating the book.
+  string input_token = 8 [
+    (google.api.field_behavior) = OPTIONAL,
+    (google.api.field_behavior) = INPUT_ONLY
+  ];
+  // An optional note about the book.
   optional string note = 9 [(google.api.field_behavior) = OPTIONAL];
+  // The checksum used for optimistic concurrency control.
   string etag = 10 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The requested expiration policy for the book.
   oneof expiration {
+    // The absolute time when the book expires.
     google.protobuf.Timestamp expire_time = 11;
+    // The duration after creation when the book expires.
     google.protobuf.Duration ttl = 12 [
+      (google.api.field_behavior) = OPTIONAL,
       (google.api.field_behavior) = INPUT_ONLY
     ];
   }
+  // The current lifecycle state of the book.
   BookState state = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The time when the soft-deleted book will be permanently removed.
   google.protobuf.Timestamp purge_time = 14 [
     (google.api.field_behavior) = OUTPUT_ONLY
   ];
@@ -83,24 +111,38 @@ message BookRevision {
   ];
 }
 
+// The request for LibraryService.CreateBook.
 message CreateBookRequest {
+  // The publisher in which to create the book.
+  // Format: publishers/{publisher}
   string parent = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference).child_type = "library.protoform.dev/Book"
   ];
+  // The book to create.
   Book book = 2 [(google.api.field_behavior) = REQUIRED];
+  // The ID to use for the book, which becomes the final resource-name segment.
   string book_id = 3 [(google.api.field_behavior) = REQUIRED];
-  string request_id = 4 [(google.api.field_info).format = UUID4];
-  bool validate_only = 5;
+  // An optional UUID that makes retries idempotent.
+  string request_id = 4 [
+    (google.api.field_behavior) = OPTIONAL,
+    (google.api.field_info).format = UUID4
+  ];
+  // Whether to validate the request without applying it.
+  bool validate_only = 5 [(google.api.field_behavior) = OPTIONAL];
 }
 
+// The request for LibraryService.GetBook.
 message GetBookRequest {
+  // The name of the book to retrieve.
+  // Format: publishers/{publisher}/books/{book}
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference).type = "library.protoform.dev/Book"
   ];
 }
 
+// The request for LibraryService.ListBooks.
 message ListBooksRequest {
   option (buf.validate.message).cel = {
     id: "aip159.cross_collection_order"
@@ -113,45 +155,92 @@ message ListBooksRequest {
     expression: "!this.return_partial_success || this.parent.endsWith('/-')"
   };
 
+  // The publisher whose books are listed.
+  // Format: publishers/{publisher}
   string parent = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference).child_type = "library.protoform.dev/Book"
   ];
-  int32 page_size = 2;
-  string page_token = 3;
-  string filter = 4;
-  string order_by = 5;
-  bool return_partial_success = 6;
+  // The maximum number of books to return.
+  int32 page_size = 2 [(google.api.field_behavior) = OPTIONAL];
+  // A token identifying the next result page.
+  string page_token = 3 [(google.api.field_behavior) = OPTIONAL];
+  // An optional filter applied to the books.
+  string filter = 4 [(google.api.field_behavior) = OPTIONAL];
+  // An optional ordering expression for the books.
+  string order_by = 5 [(google.api.field_behavior) = OPTIONAL];
+  // Whether cross-collection reads may return partial results.
+  bool return_partial_success = 6 [(google.api.field_behavior) = OPTIONAL];
+  // Whether soft-deleted books are included.
+  bool show_deleted = 7 [(google.api.field_behavior) = OPTIONAL];
 }
 
+// The response from LibraryService.ListBooks.
 message ListBooksResponse {
+  // The books in the requested page.
   repeated Book books = 1;
+  // A token that retrieves the next page, or empty when no page remains.
   string next_page_token = 2;
+  // Locations that could not be reached for a partial-success request.
   repeated string unreachable = 3 [
     (google.api.field_behavior) = UNORDERED_LIST
   ];
 }
 
+// The request for LibraryService.UpdateBook.
 message UpdateBookRequest {
+  // The book with updated values. Its name identifies the target.
   Book book = 1 [(google.api.field_behavior) = REQUIRED];
+  // The fields to update. Omit to update every populated field.
   google.protobuf.FieldMask update_mask = 2 [
-    (google.api.field_behavior) = REQUIRED
+    (google.api.field_behavior) = OPTIONAL
   ];
-  string request_id = 3 [(google.api.field_info).format = UUID4];
-  bool validate_only = 4;
+  // An optional UUID that makes retries idempotent.
+  string request_id = 3 [
+    (google.api.field_behavior) = OPTIONAL,
+    (google.api.field_info).format = UUID4
+  ];
+  // Whether to validate the request without applying it.
+  bool validate_only = 4 [(google.api.field_behavior) = OPTIONAL];
 }
 
+// The request for LibraryService.DeleteBook.
 message DeleteBookRequest {
+  // The name of the book to soft delete.
+  // Format: publishers/{publisher}/books/{book}
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference).type = "library.protoform.dev/Book"
   ];
+  // The etag that must match the current book when provided.
   string etag = 2 [(google.api.field_behavior) = OPTIONAL];
-  string request_id = 3 [(google.api.field_info).format = UUID4];
-  bool validate_only = 4;
+  // An optional UUID that makes retries idempotent.
+  string request_id = 3 [
+    (google.api.field_behavior) = OPTIONAL,
+    (google.api.field_info).format = UUID4
+  ];
+  // Whether to validate the request without applying it.
+  bool validate_only = 4 [(google.api.field_behavior) = OPTIONAL];
+  // Whether to delete child resources with the book.
+  bool force = 5 [(google.api.field_behavior) = OPTIONAL];
+  // Whether repeated deletion succeeds when the book is already soft deleted.
+  bool allow_missing = 6 [(google.api.field_behavior) = OPTIONAL];
 }
 
+// The request for LibraryService.UndeleteBook.
 message UndeleteBookRequest {
+  // The name of the soft-deleted book to restore.
+  // Format: publishers/{publisher}/books/{book}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "library.protoform.dev/Book"
+  ];
+}
+
+// The request for LibraryService.ExpungeBook.
+message ExpungeBookRequest {
+  // The name of the soft-deleted book to permanently remove.
+  // Format: publishers/{publisher}/books/{book}
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference).type = "library.protoform.dev/Book"
@@ -235,7 +324,7 @@ message UpdateProjectSettingsRequest {
     (google.api.field_behavior) = REQUIRED
   ];
   google.protobuf.FieldMask update_mask = 2 [
-    (google.api.field_behavior) = REQUIRED
+    (google.api.field_behavior) = OPTIONAL
   ];
 }
 
@@ -468,20 +557,70 @@ message CommitPolicyExperimentRequest {
   string parent_etag = 3 [(google.api.field_behavior) = OPTIONAL];
 }
 
+// Manages books in the library catalog.
 service LibraryService {
   // buf:lint:ignore RPC_REQUEST_RESPONSE_UNIQUE
   // buf:lint:ignore RPC_RESPONSE_STANDARD_NAME
   // AIP-131 returns the requested resource directly.
-  rpc GetBook(GetBookRequest) returns (Book);
-  rpc ListBooks(ListBooksRequest) returns (ListBooksResponse);
+  rpc GetBook(GetBookRequest) returns (Book) {
+    option (google.api.http) = {
+      get: "/v1/{name=publishers/*/books/*}"
+    };
+    option (google.api.method_signature) = "name";
+  }
+  // Lists books in a publisher.
+  rpc ListBooks(ListBooksRequest) returns (ListBooksResponse) {
+    option (google.api.http) = {
+      get: "/v1/{parent=publishers/*}/books"
+    };
+    option (google.api.method_signature) = "parent";
+  }
   // buf:lint:ignore RPC_REQUEST_RESPONSE_UNIQUE
   // buf:lint:ignore RPC_RESPONSE_STANDARD_NAME
   // AIP-133 returns the created resource directly.
-  rpc CreateBook(CreateBookRequest) returns (Book);
+  rpc CreateBook(CreateBookRequest) returns (Book) {
+    option (google.api.http) = {
+      post: "/v1/{parent=publishers/*}/books"
+      body: "book"
+    };
+    option (google.api.method_signature) = "parent,book,book_id";
+  }
   // buf:lint:ignore RPC_REQUEST_RESPONSE_UNIQUE
   // buf:lint:ignore RPC_RESPONSE_STANDARD_NAME
   // AIP-134 returns the updated resource directly.
-  rpc UpdateBook(UpdateBookRequest) returns (Book);
+  rpc UpdateBook(UpdateBookRequest) returns (Book) {
+    option (google.api.http) = {
+      patch: "/v1/{book.name=publishers/*/books/*}"
+      body: "book"
+    };
+    option (google.api.method_signature) = "book,update_mask";
+  }
+  // buf:lint:ignore RPC_REQUEST_RESPONSE_UNIQUE
   // buf:lint:ignore RPC_RESPONSE_STANDARD_NAME
-  rpc DeleteBook(DeleteBookRequest) returns (google.protobuf.Empty);
+  // Soft deletes a book and returns its updated state.
+  rpc DeleteBook(DeleteBookRequest) returns (Book) {
+    option (google.api.http) = {
+      delete: "/v1/{name=publishers/*/books/*}"
+    };
+    option (google.api.method_signature) = "name";
+  }
+  // buf:lint:ignore RPC_REQUEST_RESPONSE_UNIQUE
+  // buf:lint:ignore RPC_RESPONSE_STANDARD_NAME
+  // Restores a soft-deleted book.
+  rpc UndeleteBook(UndeleteBookRequest) returns (Book) {
+    option (google.api.http) = {
+      post: "/v1/{name=publishers/*/books/*}:undelete"
+      body: "*"
+    };
+    option (google.api.method_signature) = "name";
+  }
+  // buf:lint:ignore RPC_RESPONSE_STANDARD_NAME
+  // Permanently deletes a soft-deleted book.
+  rpc ExpungeBook(ExpungeBookRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/{name=publishers/*/books/*}:expunge"
+      body: "*"
+    };
+    option (google.api.method_signature) = "name";
+  }
 }

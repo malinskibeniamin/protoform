@@ -234,10 +234,10 @@ export function ReadinessDashboard() {
               </p>
               <Badge
                 variant={
-                  summary.productionReady ? "success" : "warning-inverted"
+                  summary.profileComplete ? "success" : "warning-inverted"
                 }
               >
-                Production ready: {summary.productionReady ? "yes" : "not yet"}
+                Profile complete: {summary.profileComplete ? "yes" : "not yet"}
               </Badge>
             </div>
             <p className="mt-3 mb-0 text-muted-foreground text-sm">

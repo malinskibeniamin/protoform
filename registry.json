@@ -1114,6 +1114,16 @@
           "type": "registry:lib"
         },
         {
+          "path": "registry/base-nova/protoform/demo/runtime/gen/google/api/annotations_pb.ts",
+          "target": "~/components/protoform-examples/runtime/gen/google/api/annotations_pb.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/demo/runtime/gen/google/api/client_pb.ts",
+          "target": "~/components/protoform-examples/runtime/gen/google/api/client_pb.ts",
+          "type": "registry:lib"
+        },
+        {
           "path": "registry/base-nova/protoform/demo/runtime/gen/google/api/field_behavior_pb.ts",
           "target": "~/components/protoform-examples/runtime/gen/google/api/field_behavior_pb.ts",
           "type": "registry:lib"
@@ -1121,6 +1131,16 @@
         {
           "path": "registry/base-nova/protoform/demo/runtime/gen/google/api/field_info_pb.ts",
           "target": "~/components/protoform-examples/runtime/gen/google/api/field_info_pb.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/demo/runtime/gen/google/api/http_pb.ts",
+          "target": "~/components/protoform-examples/runtime/gen/google/api/http_pb.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/demo/runtime/gen/google/api/launch_stage_pb.ts",
+          "target": "~/components/protoform-examples/runtime/gen/google/api/launch_stage_pb.ts",
           "type": "registry:lib"
         },
         {
@@ -1146,6 +1166,11 @@
         {
           "path": "registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/conformance_pb.ts",
           "target": "~/components/protoform-examples/runtime/gen/protoform/conformance/v1/conformance_pb.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/editions_2024_pb.ts",
+          "target": "~/components/protoform-examples/runtime/gen/protoform/conformance/v1/editions_2024_pb.ts",
           "type": "registry:lib"
         },
         {
@@ -2246,7 +2271,7 @@
     },
     {
       "dependencies": [],
-      "description": "Use Editions 2023 descriptors through the same field model as proto3 forms.",
+      "description": "Use Editions 2023 and 2024 descriptors, including strict symbol visibility, through the same field model as proto3 forms.",
       "files": [
         {
           "path": "registry/base-nova/protoform/demo/catalog/protobuf-editions.tsx",
@@ -2256,7 +2281,7 @@
       ],
       "name": "protobuf-editions-demo",
       "registryDependencies": ["@protoform/protoform-demo-runtime"],
-      "title": "Protobuf Editions 2023",
+      "title": "Protobuf Editions 2024",
       "type": "registry:example"
     },
     {

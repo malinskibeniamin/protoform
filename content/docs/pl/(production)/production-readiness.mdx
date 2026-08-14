@@ -4,7 +4,7 @@ description: "Sprawdź pełny, oparty na dowodach profil możliwości oraz grani
 ---
 <span aria-hidden="true" data-docs-layout="wide" hidden />
 
-**Profil gotowości produkcyjnej v2** przekształca deklaracje wsparcia Protoform w wersjonowany,
+Profil dowodów możliwości v3 przekształca deklaracje wsparcia Protoform w wersjonowany,
 czytelny maszynowo rejestr możliwości. Obejmuje istotne dla formularzy funkcje Protobuf, wszystkie aktualne
 rodziny reguł Protovalidate, działanie CEL, istotne dla formularzy wytyczne Google AIP oraz jakość
 środowiska produkcyjnego.
@@ -15,11 +15,11 @@ Katalog opiera się na aktualnych [przewodnikach po języku Protobuf](https://pr
 [ogólnym katalogu AIP](https://google.aip.dev/general). Profil zawęża te szerokie specyfikacje
 do zachowań, za które może odpowiadać biblioteka formularzy TypeScript, i wyraźnie wskazuje wyłączone obowiązki.
 
-Aktualny wynik Profilu v2 to **100%: zweryfikowano 174 ze 174 mających zastosowanie kontroli**. Kolejnych 16 wyłączonych
+Aktualny Profil v3 jest kompletny: 175 ze 175 mających zastosowanie kontroli ma dowody. Kolejnych 16 wyłączonych
 kontroli pozostaje widocznych bez wpływu na wartość procentową: 13 zewnętrznych, 1 zweryfikowana opcjonalna, 1 poza
-zakresem docelowym i 1 zastąpiona. Zgodnie ze ścisłą definicją profilu Protoform jest więc **gotowy do użycia produkcyjnego**.
-Utrzymywany most Protobuf-ES v1 jest zweryfikowanym opcjonalnym wsparciem migracji, ale
-nie jest objęty tą deklaracją; kanonicznym docelowym środowiskiem uruchomieniowym jest Protobuf-ES v2.
+zakresem docelowym i 1 zastąpiona. Kompletność profilu nie certyfikuje gotowości produkcyjnej ani nie dowodzi,
+że bieżąca wersja kodu przechodzi weryfikację wydania. Utrzymywany most Protobuf-ES v1 jest zweryfikowanym
+opcjonalnym wsparciem migracji; kanonicznym docelowym środowiskiem uruchomieniowym jest Protobuf-ES v2.
 
 <ReadinessDashboard />
 
@@ -37,14 +37,10 @@ Ogólna wartość procentowa to `verified / applicable`:
 - **Zastąpione** oznacza funkcję usuniętą lub zastąpioną w nadrzędnej specyfikacji i jest wyłączone z mianownika.
 - **Profil wymagany** wyróżnia obowiązkowy podzbiór.
 
-`Production ready: yes` wymaga zweryfikowania każdej mającej zastosowanie kontroli oraz pomyślnego
-przejścia wskazanych zestawów testów. Sama dokumentacja, kod implementacji lub ręczna deklaracja nie mogą zwiększyć wyniku.
-Test integralności dowodów również kończy się niepowodzeniem, jeśli zweryfikowany wiersz wskazuje brakujący test.
-
-Brama wydania ma węższy zakres niż deklaracja gotowości produkcyjnej. Przechodzi, gdy nie ma
-nieplanowanych wierszy `missing`, a każde zweryfikowane odwołanie do dowodu pozostaje prawidłowe. Zatwierdzone wiersze odroczone i
-nieobsługiwane pozostają widoczne i obniżają gotowość, ale nie powodują niepowodzenia każdego bieżącego buildu. Pomyślnego
-przejścia bramy wydania nie należy interpretować jako `Production ready: yes`.
+`Profile complete: yes` oznacza, że każdy mający zastosowanie wiersz jest oznaczony jako zweryfikowany.
+Sama dokumentacja, kod implementacji lub ręczna deklaracja nie mogą zwiększyć wyniku. Test integralności
+dowodów również kończy się niepowodzeniem, jeśli zweryfikowany wiersz wskazuje brakujący test. Profil nie
+uruchamia tych zestawów testów i nie certyfikuje gotowości wdrożeniowej, operacyjnej, bezpieczeństwa ani wydania.
 
 Zapobiega to sytuacji, w której szeroka deklaracja, taka jak „obsługuje Protobuf”, ukrywa nieprzetestowane rodziny typów skalarnych, semantykę
 obecności, typy dobrze znane, operatory walidacji lub zachowanie ścieżek błędów.
@@ -61,14 +57,21 @@ Pobierz pełny profil jako JSON do użycia w innym panelu lub artefakcie CI:
 bun run readiness:report -- --json
 ```
 
-Uruchom tę samą bramę wydania, której używa CI:
+Sprawdź tylko kompletność profilu:
 
 ```bash
 bun run readiness:gate
 ```
 
-CI uruchamia `readiness:gate` po zestawie testów zgodności. Polecenie kończy się kodem różnym od zera, gdy do
-profilu trafi nieplanowana luka. Test integralności dowodów osobno odrzuca brakujące pliki dowodów lub nazwy testów.
+`readiness:gate` kończy się kodem różnym od zera, gdy mający zastosowanie wiersz ma stan missing, deferred
+lub unsupported. To brama profilu, a nie brama wydania. Pełną lokalną weryfikację wydania uruchom osobno:
+
+```bash
+bun run release:gate
+```
+
+`release:gate` uruchamia pełną bramę jakości, w tym testy zgodności, jednostkowe, integracyjne,
+przeglądarkowe i end-to-end, buildy, testy konsumenckie, sprawdzanie typów oraz linting.
 
 Uruchom tę samą kontrolę zgodności z AIP-180 względem gałęzi docelowej:
 
@@ -92,16 +95,16 @@ bun run registry:consumer-smoke
 Polecenia te udostępniają zbudowany rejestr, instalują przykład bookstore wraz z oboma silnikami formularzy w czystym projekcie konsumenckim
 i sprawdzają typy wyłącznie skopiowanego kodu źródłowego oraz publicznych zależności zewnętrznych.
 
-## Zakres Profilu v2
+## Zakres Profilu v3
 
 Mianownik jest określony jawnie, zamiast zakładać, że każda funkcja Protobuf lub AIP należy do biblioteki formularzy:
 
 | Obszar | Zweryfikowane | Otwarte prace mające zastosowanie | Wyłączone |
 | --- | --- | --- | --- |
-| Protobuf | Kanoniczne zachowanie v2, deskryptory Editions 2023, zachowanie nieznanych pól oraz klasyfikacja przepływów usług/RPC | Brak | Utrzymywany most Protobuf-ES v1 jest zweryfikowany i opcjonalny; wykrywanie rozszerzeń i przestarzałych grup jest poza zakresem docelowym; zgodność kodeka binarnego pozostaje odpowiedzialnością Protobuf-ES |
+| Protobuf | Kanoniczne zachowanie v2, deskryptory Editions 2023 i 2024, ścisła widoczność symboli, importy tylko opcji, zachowanie nieznanych pól oraz klasyfikacja przepływów usług/RPC | Brak | Utrzymywany most Protobuf-ES v1 jest zweryfikowany i opcjonalny; wykrywanie rozszerzeń i przestarzałych grup jest poza zakresem docelowym; zgodność kodeka binarnego pozostaje odpowiedzialnością Protobuf-ES |
 | Protovalidate | Zachowanie required/ignore oraz wszystkie aktualne rodziny reguł typów skalarnych, kolekcji, typów dobrze znanych, przykładów i reguł predefiniowanych | Brak | Usunięte opcje `disabled`/`skip` zostały zastąpione przez bieżącą semantykę ignorowania |
 | CEL | Wyniki pól/komunikatów, zagnieżdżone ścieżki, wiele naruszeń, częściowo nieznane wartości, limity kosztu, niepowodzenia i wyrażenia interfejsu użytkownika | Brak | Autoryzacja backendu i egzekwowanie zasad pozostają odpowiedzialnością serwera |
-| AIP | Metadane zasobów, standardowe kształty żądań, role transkodowania, klasyfikacja metod, operacje długotrwałe, przepływy zadań/importu/eksportu, pola ilości i ustandaryzowanych kodów, zakresy, wyniki częściowe, ponowienia, podgląd zasad, maski, etagi, błędy strukturalne i egzekwowanie zgodności | Brak | Zarządzanie AIP, przegląd przed wdrożeniem, egzekwowanie autoryzacji i odpowiedzialność za repozytorium |
+| Obsługa klienta zgodna z AIP | Metadane zasobów, standardowe kształty żądań, role transkodowania, klasyfikacja metod, operacje długotrwałe, przepływy zadań/importu/eksportu, pola ilości i ustandaryzowanych kodów, zakresy, wyniki częściowe, ponowienia, podgląd zasad, maski, etagi, błędy strukturalne i egzekwowanie zgodności | Brak | Zgodność serwera i organizacji, zarządzanie AIP, przegląd przed wdrożeniem, egzekwowanie autoryzacji i odpowiedzialność za repozytorium |
 | Środowisko produkcyjne | Integracje z frameworkami formularzy, generowane formularze, formularze krokowe, dostępność, odporność, przeglądarki, zgodność, bezpieczeństwo i wydajność | Brak | Brak |
 
 Dowody dotyczące środowiska obejmują kontrole axe w reprezentatywnych stanach formularzy, odzyskiwanie formularza krokowego wyłącznie za pomocą klawiatury,
@@ -112,9 +115,9 @@ instalację konsumencką wyłącznie z rejestru oraz przypadki nieprawidłowych 
 Profil jest celowo szczegółowy. Test oparty na tabeli może zweryfikować wiele wartości w ramach jednej możliwości,
 ale pojedynczy szeroki test integracyjny nie może oznaczyć niepowiązanych rodzin funkcji jako ukończonych.
 
-## Jak utrzymać 100%
+## Jak utrzymywać dowody
 
-Profil v2 uwzględnia odroczone i nieobsługiwane prace po stronie klienta, zamiast ukrywać je pod szeroką
+Profil v3 uwzględnia odroczone i nieobsługiwane prace po stronie klienta, zamiast ukrywać je pod szeroką
 etykietą braku zastosowania. Przyszłe prace powinny pogłębiać dowody bez osłabiania mianownika:
 
 - **Głębokość dowodów, nie wartość logiczna.** Wymagaj odpowiedniego połączenia dowodów z testów jednostkowych, zgodności, przeglądarkowych

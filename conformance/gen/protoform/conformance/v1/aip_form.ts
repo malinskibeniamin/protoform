@@ -3,14 +3,33 @@
 /* eslint-disable */
 
 import { createProtoFormSchema, parseProtoSchema, protoToFormValues, registerProtoAnnotations } from "@/lib/protobuf-provider";
-import { ArchiveDestinationSchema, BatchCreateBooksRequestSchema, BatchCreateBooksResponseSchema, BatchDeleteBooksRequestSchema, BatchDeleteBooksResponseSchema, BatchGetBooksRequestSchema, BatchGetBooksResponseSchema, BatchUpdateBooksRequestSchema, BatchUpdateBooksResponseSchema, BookRevisionSchema, BookSchema, CloudStorageDestinationSchema, CloudStorageSourceSchema, CommitPolicyExperimentRequestSchema, CreateBookRequestSchema, CreateWriteBookJobRequestSchema, DeleteBookRequestSchema, ExportBooksRequestSchema, GetBookRequestSchema, GetProjectSettingsRequestSchema, ImportBooksMetadataSchema, ImportBooksRequestSchema, InlineSourceSchema, ListBooksRequestSchema, ListBooksResponseSchema, PolicyExperimentSchema, PolicyPreviewMetadataSchema, PolicySchema, ProjectSettingsSchema, ProvisionCapacityRequestSchema, PurgeBooksRequestSchema, PurgeBooksResponseSchema, RunWriteBookJobRequestSchema, StartPreviewPolicyExperimentRequestSchema, StopPreviewPolicyExperimentRequestSchema, TimeRangeSchema, UndeleteBookRequestSchema, UpdateBookRequestSchema, UpdateProjectSettingsRequestSchema, WriteBookJobSchema } from "./aip_pb.js";
+import { ArchiveDestinationSchema, BatchCreateBooksRequestSchema, BatchCreateBooksResponseSchema, BatchDeleteBooksRequestSchema, BatchDeleteBooksResponseSchema, BatchGetBooksRequestSchema, BatchGetBooksResponseSchema, BatchUpdateBooksRequestSchema, BatchUpdateBooksResponseSchema, BookRevisionSchema, BookSchema, CloudStorageDestinationSchema, CloudStorageSourceSchema, CommitPolicyExperimentRequestSchema, CreateBookRequestSchema, CreateWriteBookJobRequestSchema, DeleteBookRequestSchema, ExportBooksRequestSchema, ExpungeBookRequestSchema, GetBookRequestSchema, GetProjectSettingsRequestSchema, ImportBooksMetadataSchema, ImportBooksRequestSchema, InlineSourceSchema, ListBooksRequestSchema, ListBooksResponseSchema, PolicyExperimentSchema, PolicyPreviewMetadataSchema, PolicySchema, ProjectSettingsSchema, ProvisionCapacityRequestSchema, PurgeBooksRequestSchema, PurgeBooksResponseSchema, RunWriteBookJobRequestSchema, StartPreviewPolicyExperimentRequestSchema, StopPreviewPolicyExperimentRequestSchema, TimeRangeSchema, UndeleteBookRequestSchema, UpdateBookRequestSchema, UpdateProjectSettingsRequestSchema, WriteBookJobSchema } from "./aip_pb.js";
 
 /**
  * Source documentation for protoform.conformance.v1.Book.
  */
 export const BookFormAnnotations = {
   fields: {
+    "protoform.conformance.v1.Book.name": "The resource name of the book.\n Format: publishers/{publisher}/books/{book}",
+    "protoform.conformance.v1.Book.uid": "The system-assigned UUID for the book.",
+    "protoform.conformance.v1.Book.displayName": "The display name of the book.",
+    "protoform.conformance.v1.Book.createTime": "The time when the book was created.",
+    "protoform.conformance.v1.Book.updateTime": "The time when the book was last updated.",
+    "protoform.conformance.v1.Book.deleteTime": "The time when the book was soft deleted.",
     "protoform.conformance.v1.Book.isbn": "ISBN-13 digits. The CEL rule enforces the alternating 1/3 checksum.",
+    "protoform.conformance.v1.Book.inputToken": "An optional token consumed while creating or updating the book.",
+    "protoform.conformance.v1.Book.note": "An optional note about the book.",
+    "protoform.conformance.v1.Book.etag": "The checksum used for optimistic concurrency control.",
+    "protoform.conformance.v1.Book.expireTime": "The absolute time when the book expires.",
+    "protoform.conformance.v1.Book.ttl": "The duration after creation when the book expires.",
+    "protoform.conformance.v1.Book.state": "The current lifecycle state of the book.",
+    "protoform.conformance.v1.Book.purgeTime": "The time when the soft-deleted book will be permanently removed.",
+  },
+  messages: {
+    "protoform.conformance.v1.Book": "A book managed by the library service.",
+  },
+  oneofs: {
+    "protoform.conformance.v1.Book.expiration": "The requested expiration policy for the book.",
   },
 } as const;
 registerProtoAnnotations(BookSchema, BookFormAnnotations);
@@ -31,7 +50,26 @@ export const BookFormBinding = {
  */
 export const BookRevisionFormAnnotations = {
   fields: {
+    "protoform.conformance.v1.Book.name": "The resource name of the book.\n Format: publishers/{publisher}/books/{book}",
+    "protoform.conformance.v1.Book.uid": "The system-assigned UUID for the book.",
+    "protoform.conformance.v1.Book.displayName": "The display name of the book.",
+    "protoform.conformance.v1.Book.createTime": "The time when the book was created.",
+    "protoform.conformance.v1.Book.updateTime": "The time when the book was last updated.",
+    "protoform.conformance.v1.Book.deleteTime": "The time when the book was soft deleted.",
     "protoform.conformance.v1.Book.isbn": "ISBN-13 digits. The CEL rule enforces the alternating 1/3 checksum.",
+    "protoform.conformance.v1.Book.inputToken": "An optional token consumed while creating or updating the book.",
+    "protoform.conformance.v1.Book.note": "An optional note about the book.",
+    "protoform.conformance.v1.Book.etag": "The checksum used for optimistic concurrency control.",
+    "protoform.conformance.v1.Book.expireTime": "The absolute time when the book expires.",
+    "protoform.conformance.v1.Book.ttl": "The duration after creation when the book expires.",
+    "protoform.conformance.v1.Book.state": "The current lifecycle state of the book.",
+    "protoform.conformance.v1.Book.purgeTime": "The time when the soft-deleted book will be permanently removed.",
+  },
+  messages: {
+    "protoform.conformance.v1.Book": "A book managed by the library service.",
+  },
+  oneofs: {
+    "protoform.conformance.v1.Book.expiration": "The requested expiration policy for the book.",
   },
 } as const;
 registerProtoAnnotations(BookRevisionSchema, BookRevisionFormAnnotations);
@@ -52,7 +90,32 @@ export const BookRevisionFormBinding = {
  */
 export const CreateBookRequestFormAnnotations = {
   fields: {
+    "protoform.conformance.v1.CreateBookRequest.parent": "The publisher in which to create the book.\n Format: publishers/{publisher}",
+    "protoform.conformance.v1.CreateBookRequest.book": "The book to create.",
+    "protoform.conformance.v1.CreateBookRequest.bookId": "The ID to use for the book, which becomes the final resource-name segment.",
+    "protoform.conformance.v1.CreateBookRequest.requestId": "An optional UUID that makes retries idempotent.",
+    "protoform.conformance.v1.CreateBookRequest.validateOnly": "Whether to validate the request without applying it.",
+    "protoform.conformance.v1.Book.name": "The resource name of the book.\n Format: publishers/{publisher}/books/{book}",
+    "protoform.conformance.v1.Book.uid": "The system-assigned UUID for the book.",
+    "protoform.conformance.v1.Book.displayName": "The display name of the book.",
+    "protoform.conformance.v1.Book.createTime": "The time when the book was created.",
+    "protoform.conformance.v1.Book.updateTime": "The time when the book was last updated.",
+    "protoform.conformance.v1.Book.deleteTime": "The time when the book was soft deleted.",
     "protoform.conformance.v1.Book.isbn": "ISBN-13 digits. The CEL rule enforces the alternating 1/3 checksum.",
+    "protoform.conformance.v1.Book.inputToken": "An optional token consumed while creating or updating the book.",
+    "protoform.conformance.v1.Book.note": "An optional note about the book.",
+    "protoform.conformance.v1.Book.etag": "The checksum used for optimistic concurrency control.",
+    "protoform.conformance.v1.Book.expireTime": "The absolute time when the book expires.",
+    "protoform.conformance.v1.Book.ttl": "The duration after creation when the book expires.",
+    "protoform.conformance.v1.Book.state": "The current lifecycle state of the book.",
+    "protoform.conformance.v1.Book.purgeTime": "The time when the soft-deleted book will be permanently removed.",
+  },
+  messages: {
+    "protoform.conformance.v1.CreateBookRequest": "The request for LibraryService.CreateBook.",
+    "protoform.conformance.v1.Book": "A book managed by the library service.",
+  },
+  oneofs: {
+    "protoform.conformance.v1.Book.expiration": "The requested expiration policy for the book.",
   },
 } as const;
 registerProtoAnnotations(CreateBookRequestSchema, CreateBookRequestFormAnnotations);
@@ -72,6 +135,12 @@ export const CreateBookRequestFormBinding = {
  * Source documentation for protoform.conformance.v1.GetBookRequest.
  */
 export const GetBookRequestFormAnnotations = {
+  fields: {
+    "protoform.conformance.v1.GetBookRequest.name": "The name of the book to retrieve.\n Format: publishers/{publisher}/books/{book}",
+  },
+  messages: {
+    "protoform.conformance.v1.GetBookRequest": "The request for LibraryService.GetBook.",
+  },
 } as const;
 registerProtoAnnotations(GetBookRequestSchema, GetBookRequestFormAnnotations);
 
@@ -90,6 +159,18 @@ export const GetBookRequestFormBinding = {
  * Source documentation for protoform.conformance.v1.ListBooksRequest.
  */
 export const ListBooksRequestFormAnnotations = {
+  fields: {
+    "protoform.conformance.v1.ListBooksRequest.parent": "The publisher whose books are listed.\n Format: publishers/{publisher}",
+    "protoform.conformance.v1.ListBooksRequest.pageSize": "The maximum number of books to return.",
+    "protoform.conformance.v1.ListBooksRequest.pageToken": "A token identifying the next result page.",
+    "protoform.conformance.v1.ListBooksRequest.filter": "An optional filter applied to the books.",
+    "protoform.conformance.v1.ListBooksRequest.orderBy": "An optional ordering expression for the books.",
+    "protoform.conformance.v1.ListBooksRequest.returnPartialSuccess": "Whether cross-collection reads may return partial results.",
+    "protoform.conformance.v1.ListBooksRequest.showDeleted": "Whether soft-deleted books are included.",
+  },
+  messages: {
+    "protoform.conformance.v1.ListBooksRequest": "The request for LibraryService.ListBooks.",
+  },
 } as const;
 registerProtoAnnotations(ListBooksRequestSchema, ListBooksRequestFormAnnotations);
 
@@ -109,7 +190,30 @@ export const ListBooksRequestFormBinding = {
  */
 export const ListBooksResponseFormAnnotations = {
   fields: {
+    "protoform.conformance.v1.ListBooksResponse.books": "The books in the requested page.",
+    "protoform.conformance.v1.ListBooksResponse.nextPageToken": "A token that retrieves the next page, or empty when no page remains.",
+    "protoform.conformance.v1.ListBooksResponse.unreachable": "Locations that could not be reached for a partial-success request.",
+    "protoform.conformance.v1.Book.name": "The resource name of the book.\n Format: publishers/{publisher}/books/{book}",
+    "protoform.conformance.v1.Book.uid": "The system-assigned UUID for the book.",
+    "protoform.conformance.v1.Book.displayName": "The display name of the book.",
+    "protoform.conformance.v1.Book.createTime": "The time when the book was created.",
+    "protoform.conformance.v1.Book.updateTime": "The time when the book was last updated.",
+    "protoform.conformance.v1.Book.deleteTime": "The time when the book was soft deleted.",
     "protoform.conformance.v1.Book.isbn": "ISBN-13 digits. The CEL rule enforces the alternating 1/3 checksum.",
+    "protoform.conformance.v1.Book.inputToken": "An optional token consumed while creating or updating the book.",
+    "protoform.conformance.v1.Book.note": "An optional note about the book.",
+    "protoform.conformance.v1.Book.etag": "The checksum used for optimistic concurrency control.",
+    "protoform.conformance.v1.Book.expireTime": "The absolute time when the book expires.",
+    "protoform.conformance.v1.Book.ttl": "The duration after creation when the book expires.",
+    "protoform.conformance.v1.Book.state": "The current lifecycle state of the book.",
+    "protoform.conformance.v1.Book.purgeTime": "The time when the soft-deleted book will be permanently removed.",
+  },
+  messages: {
+    "protoform.conformance.v1.ListBooksResponse": "The response from LibraryService.ListBooks.",
+    "protoform.conformance.v1.Book": "A book managed by the library service.",
+  },
+  oneofs: {
+    "protoform.conformance.v1.Book.expiration": "The requested expiration policy for the book.",
   },
 } as const;
 registerProtoAnnotations(ListBooksResponseSchema, ListBooksResponseFormAnnotations);
@@ -130,7 +234,31 @@ export const ListBooksResponseFormBinding = {
  */
 export const UpdateBookRequestFormAnnotations = {
   fields: {
+    "protoform.conformance.v1.UpdateBookRequest.book": "The book with updated values. Its name identifies the target.",
+    "protoform.conformance.v1.UpdateBookRequest.updateMask": "The fields to update. Omit to update every populated field.",
+    "protoform.conformance.v1.UpdateBookRequest.requestId": "An optional UUID that makes retries idempotent.",
+    "protoform.conformance.v1.UpdateBookRequest.validateOnly": "Whether to validate the request without applying it.",
+    "protoform.conformance.v1.Book.name": "The resource name of the book.\n Format: publishers/{publisher}/books/{book}",
+    "protoform.conformance.v1.Book.uid": "The system-assigned UUID for the book.",
+    "protoform.conformance.v1.Book.displayName": "The display name of the book.",
+    "protoform.conformance.v1.Book.createTime": "The time when the book was created.",
+    "protoform.conformance.v1.Book.updateTime": "The time when the book was last updated.",
+    "protoform.conformance.v1.Book.deleteTime": "The time when the book was soft deleted.",
     "protoform.conformance.v1.Book.isbn": "ISBN-13 digits. The CEL rule enforces the alternating 1/3 checksum.",
+    "protoform.conformance.v1.Book.inputToken": "An optional token consumed while creating or updating the book.",
+    "protoform.conformance.v1.Book.note": "An optional note about the book.",
+    "protoform.conformance.v1.Book.etag": "The checksum used for optimistic concurrency control.",
+    "protoform.conformance.v1.Book.expireTime": "The absolute time when the book expires.",
+    "protoform.conformance.v1.Book.ttl": "The duration after creation when the book expires.",
+    "protoform.conformance.v1.Book.state": "The current lifecycle state of the book.",
+    "protoform.conformance.v1.Book.purgeTime": "The time when the soft-deleted book will be permanently removed.",
+  },
+  messages: {
+    "protoform.conformance.v1.UpdateBookRequest": "The request for LibraryService.UpdateBook.",
+    "protoform.conformance.v1.Book": "A book managed by the library service.",
+  },
+  oneofs: {
+    "protoform.conformance.v1.Book.expiration": "The requested expiration policy for the book.",
   },
 } as const;
 registerProtoAnnotations(UpdateBookRequestSchema, UpdateBookRequestFormAnnotations);
@@ -150,6 +278,17 @@ export const UpdateBookRequestFormBinding = {
  * Source documentation for protoform.conformance.v1.DeleteBookRequest.
  */
 export const DeleteBookRequestFormAnnotations = {
+  fields: {
+    "protoform.conformance.v1.DeleteBookRequest.name": "The name of the book to soft delete.\n Format: publishers/{publisher}/books/{book}",
+    "protoform.conformance.v1.DeleteBookRequest.etag": "The etag that must match the current book when provided.",
+    "protoform.conformance.v1.DeleteBookRequest.requestId": "An optional UUID that makes retries idempotent.",
+    "protoform.conformance.v1.DeleteBookRequest.validateOnly": "Whether to validate the request without applying it.",
+    "protoform.conformance.v1.DeleteBookRequest.force": "Whether to delete child resources with the book.",
+    "protoform.conformance.v1.DeleteBookRequest.allowMissing": "Whether repeated deletion succeeds when the book is already soft deleted.",
+  },
+  messages: {
+    "protoform.conformance.v1.DeleteBookRequest": "The request for LibraryService.DeleteBook.",
+  },
 } as const;
 registerProtoAnnotations(DeleteBookRequestSchema, DeleteBookRequestFormAnnotations);
 
@@ -168,6 +307,12 @@ export const DeleteBookRequestFormBinding = {
  * Source documentation for protoform.conformance.v1.UndeleteBookRequest.
  */
 export const UndeleteBookRequestFormAnnotations = {
+  fields: {
+    "protoform.conformance.v1.UndeleteBookRequest.name": "The name of the soft-deleted book to restore.\n Format: publishers/{publisher}/books/{book}",
+  },
+  messages: {
+    "protoform.conformance.v1.UndeleteBookRequest": "The request for LibraryService.UndeleteBook.",
+  },
 } as const;
 registerProtoAnnotations(UndeleteBookRequestSchema, UndeleteBookRequestFormAnnotations);
 
@@ -180,6 +325,30 @@ export const UndeleteBookRequestFormBinding = {
   defaultValues: () => protoToFormValues(UndeleteBookRequestSchema),
   descriptor: UndeleteBookRequestSchema,
   parseSchema: () => parseProtoSchema(UndeleteBookRequestSchema),
+} as const;
+
+/**
+ * Source documentation for protoform.conformance.v1.ExpungeBookRequest.
+ */
+export const ExpungeBookRequestFormAnnotations = {
+  fields: {
+    "protoform.conformance.v1.ExpungeBookRequest.name": "The name of the soft-deleted book to permanently remove.\n Format: publishers/{publisher}/books/{book}",
+  },
+  messages: {
+    "protoform.conformance.v1.ExpungeBookRequest": "The request for LibraryService.ExpungeBook.",
+  },
+} as const;
+registerProtoAnnotations(ExpungeBookRequestSchema, ExpungeBookRequestFormAnnotations);
+
+/**
+ * Form binding for message protoform.conformance.v1.ExpungeBookRequest.
+ */
+export const ExpungeBookRequestFormBinding = {
+  annotations: ExpungeBookRequestFormAnnotations,
+  createFormSchema: (options?: Parameters<typeof createProtoFormSchema>[1]) => createProtoFormSchema(ExpungeBookRequestSchema, options),
+  defaultValues: () => protoToFormValues(ExpungeBookRequestSchema),
+  descriptor: ExpungeBookRequestSchema,
+  parseSchema: () => parseProtoSchema(ExpungeBookRequestSchema),
 } as const;
 
 /**
@@ -205,7 +374,26 @@ export const BatchGetBooksRequestFormBinding = {
  */
 export const BatchGetBooksResponseFormAnnotations = {
   fields: {
+    "protoform.conformance.v1.Book.name": "The resource name of the book.\n Format: publishers/{publisher}/books/{book}",
+    "protoform.conformance.v1.Book.uid": "The system-assigned UUID for the book.",
+    "protoform.conformance.v1.Book.displayName": "The display name of the book.",
+    "protoform.conformance.v1.Book.createTime": "The time when the book was created.",
+    "protoform.conformance.v1.Book.updateTime": "The time when the book was last updated.",
+    "protoform.conformance.v1.Book.deleteTime": "The time when the book was soft deleted.",
     "protoform.conformance.v1.Book.isbn": "ISBN-13 digits. The CEL rule enforces the alternating 1/3 checksum.",
+    "protoform.conformance.v1.Book.inputToken": "An optional token consumed while creating or updating the book.",
+    "protoform.conformance.v1.Book.note": "An optional note about the book.",
+    "protoform.conformance.v1.Book.etag": "The checksum used for optimistic concurrency control.",
+    "protoform.conformance.v1.Book.expireTime": "The absolute time when the book expires.",
+    "protoform.conformance.v1.Book.ttl": "The duration after creation when the book expires.",
+    "protoform.conformance.v1.Book.state": "The current lifecycle state of the book.",
+    "protoform.conformance.v1.Book.purgeTime": "The time when the soft-deleted book will be permanently removed.",
+  },
+  messages: {
+    "protoform.conformance.v1.Book": "A book managed by the library service.",
+  },
+  oneofs: {
+    "protoform.conformance.v1.Book.expiration": "The requested expiration policy for the book.",
   },
 } as const;
 registerProtoAnnotations(BatchGetBooksResponseSchema, BatchGetBooksResponseFormAnnotations);
@@ -226,7 +414,32 @@ export const BatchGetBooksResponseFormBinding = {
  */
 export const BatchCreateBooksRequestFormAnnotations = {
   fields: {
+    "protoform.conformance.v1.CreateBookRequest.parent": "The publisher in which to create the book.\n Format: publishers/{publisher}",
+    "protoform.conformance.v1.CreateBookRequest.book": "The book to create.",
+    "protoform.conformance.v1.CreateBookRequest.bookId": "The ID to use for the book, which becomes the final resource-name segment.",
+    "protoform.conformance.v1.CreateBookRequest.requestId": "An optional UUID that makes retries idempotent.",
+    "protoform.conformance.v1.CreateBookRequest.validateOnly": "Whether to validate the request without applying it.",
+    "protoform.conformance.v1.Book.name": "The resource name of the book.\n Format: publishers/{publisher}/books/{book}",
+    "protoform.conformance.v1.Book.uid": "The system-assigned UUID for the book.",
+    "protoform.conformance.v1.Book.displayName": "The display name of the book.",
+    "protoform.conformance.v1.Book.createTime": "The time when the book was created.",
+    "protoform.conformance.v1.Book.updateTime": "The time when the book was last updated.",
+    "protoform.conformance.v1.Book.deleteTime": "The time when the book was soft deleted.",
     "protoform.conformance.v1.Book.isbn": "ISBN-13 digits. The CEL rule enforces the alternating 1/3 checksum.",
+    "protoform.conformance.v1.Book.inputToken": "An optional token consumed while creating or updating the book.",
+    "protoform.conformance.v1.Book.note": "An optional note about the book.",
+    "protoform.conformance.v1.Book.etag": "The checksum used for optimistic concurrency control.",
+    "protoform.conformance.v1.Book.expireTime": "The absolute time when the book expires.",
+    "protoform.conformance.v1.Book.ttl": "The duration after creation when the book expires.",
+    "protoform.conformance.v1.Book.state": "The current lifecycle state of the book.",
+    "protoform.conformance.v1.Book.purgeTime": "The time when the soft-deleted book will be permanently removed.",
+  },
+  messages: {
+    "protoform.conformance.v1.CreateBookRequest": "The request for LibraryService.CreateBook.",
+    "protoform.conformance.v1.Book": "A book managed by the library service.",
+  },
+  oneofs: {
+    "protoform.conformance.v1.Book.expiration": "The requested expiration policy for the book.",
   },
 } as const;
 registerProtoAnnotations(BatchCreateBooksRequestSchema, BatchCreateBooksRequestFormAnnotations);
@@ -247,7 +460,26 @@ export const BatchCreateBooksRequestFormBinding = {
  */
 export const BatchCreateBooksResponseFormAnnotations = {
   fields: {
+    "protoform.conformance.v1.Book.name": "The resource name of the book.\n Format: publishers/{publisher}/books/{book}",
+    "protoform.conformance.v1.Book.uid": "The system-assigned UUID for the book.",
+    "protoform.conformance.v1.Book.displayName": "The display name of the book.",
+    "protoform.conformance.v1.Book.createTime": "The time when the book was created.",
+    "protoform.conformance.v1.Book.updateTime": "The time when the book was last updated.",
+    "protoform.conformance.v1.Book.deleteTime": "The time when the book was soft deleted.",
     "protoform.conformance.v1.Book.isbn": "ISBN-13 digits. The CEL rule enforces the alternating 1/3 checksum.",
+    "protoform.conformance.v1.Book.inputToken": "An optional token consumed while creating or updating the book.",
+    "protoform.conformance.v1.Book.note": "An optional note about the book.",
+    "protoform.conformance.v1.Book.etag": "The checksum used for optimistic concurrency control.",
+    "protoform.conformance.v1.Book.expireTime": "The absolute time when the book expires.",
+    "protoform.conformance.v1.Book.ttl": "The duration after creation when the book expires.",
+    "protoform.conformance.v1.Book.state": "The current lifecycle state of the book.",
+    "protoform.conformance.v1.Book.purgeTime": "The time when the soft-deleted book will be permanently removed.",
+  },
+  messages: {
+    "protoform.conformance.v1.Book": "A book managed by the library service.",
+  },
+  oneofs: {
+    "protoform.conformance.v1.Book.expiration": "The requested expiration policy for the book.",
   },
 } as const;
 registerProtoAnnotations(BatchCreateBooksResponseSchema, BatchCreateBooksResponseFormAnnotations);
@@ -268,7 +500,31 @@ export const BatchCreateBooksResponseFormBinding = {
  */
 export const BatchUpdateBooksRequestFormAnnotations = {
   fields: {
+    "protoform.conformance.v1.UpdateBookRequest.book": "The book with updated values. Its name identifies the target.",
+    "protoform.conformance.v1.UpdateBookRequest.updateMask": "The fields to update. Omit to update every populated field.",
+    "protoform.conformance.v1.UpdateBookRequest.requestId": "An optional UUID that makes retries idempotent.",
+    "protoform.conformance.v1.UpdateBookRequest.validateOnly": "Whether to validate the request without applying it.",
+    "protoform.conformance.v1.Book.name": "The resource name of the book.\n Format: publishers/{publisher}/books/{book}",
+    "protoform.conformance.v1.Book.uid": "The system-assigned UUID for the book.",
+    "protoform.conformance.v1.Book.displayName": "The display name of the book.",
+    "protoform.conformance.v1.Book.createTime": "The time when the book was created.",
+    "protoform.conformance.v1.Book.updateTime": "The time when the book was last updated.",
+    "protoform.conformance.v1.Book.deleteTime": "The time when the book was soft deleted.",
     "protoform.conformance.v1.Book.isbn": "ISBN-13 digits. The CEL rule enforces the alternating 1/3 checksum.",
+    "protoform.conformance.v1.Book.inputToken": "An optional token consumed while creating or updating the book.",
+    "protoform.conformance.v1.Book.note": "An optional note about the book.",
+    "protoform.conformance.v1.Book.etag": "The checksum used for optimistic concurrency control.",
+    "protoform.conformance.v1.Book.expireTime": "The absolute time when the book expires.",
+    "protoform.conformance.v1.Book.ttl": "The duration after creation when the book expires.",
+    "protoform.conformance.v1.Book.state": "The current lifecycle state of the book.",
+    "protoform.conformance.v1.Book.purgeTime": "The time when the soft-deleted book will be permanently removed.",
+  },
+  messages: {
+    "protoform.conformance.v1.UpdateBookRequest": "The request for LibraryService.UpdateBook.",
+    "protoform.conformance.v1.Book": "A book managed by the library service.",
+  },
+  oneofs: {
+    "protoform.conformance.v1.Book.expiration": "The requested expiration policy for the book.",
   },
 } as const;
 registerProtoAnnotations(BatchUpdateBooksRequestSchema, BatchUpdateBooksRequestFormAnnotations);
@@ -289,7 +545,26 @@ export const BatchUpdateBooksRequestFormBinding = {
  */
 export const BatchUpdateBooksResponseFormAnnotations = {
   fields: {
+    "protoform.conformance.v1.Book.name": "The resource name of the book.\n Format: publishers/{publisher}/books/{book}",
+    "protoform.conformance.v1.Book.uid": "The system-assigned UUID for the book.",
+    "protoform.conformance.v1.Book.displayName": "The display name of the book.",
+    "protoform.conformance.v1.Book.createTime": "The time when the book was created.",
+    "protoform.conformance.v1.Book.updateTime": "The time when the book was last updated.",
+    "protoform.conformance.v1.Book.deleteTime": "The time when the book was soft deleted.",
     "protoform.conformance.v1.Book.isbn": "ISBN-13 digits. The CEL rule enforces the alternating 1/3 checksum.",
+    "protoform.conformance.v1.Book.inputToken": "An optional token consumed while creating or updating the book.",
+    "protoform.conformance.v1.Book.note": "An optional note about the book.",
+    "protoform.conformance.v1.Book.etag": "The checksum used for optimistic concurrency control.",
+    "protoform.conformance.v1.Book.expireTime": "The absolute time when the book expires.",
+    "protoform.conformance.v1.Book.ttl": "The duration after creation when the book expires.",
+    "protoform.conformance.v1.Book.state": "The current lifecycle state of the book.",
+    "protoform.conformance.v1.Book.purgeTime": "The time when the soft-deleted book will be permanently removed.",
+  },
+  messages: {
+    "protoform.conformance.v1.Book": "A book managed by the library service.",
+  },
+  oneofs: {
+    "protoform.conformance.v1.Book.expiration": "The requested expiration policy for the book.",
   },
 } as const;
 registerProtoAnnotations(BatchUpdateBooksResponseSchema, BatchUpdateBooksResponseFormAnnotations);
@@ -309,6 +584,17 @@ export const BatchUpdateBooksResponseFormBinding = {
  * Source documentation for protoform.conformance.v1.BatchDeleteBooksRequest.
  */
 export const BatchDeleteBooksRequestFormAnnotations = {
+  fields: {
+    "protoform.conformance.v1.DeleteBookRequest.name": "The name of the book to soft delete.\n Format: publishers/{publisher}/books/{book}",
+    "protoform.conformance.v1.DeleteBookRequest.etag": "The etag that must match the current book when provided.",
+    "protoform.conformance.v1.DeleteBookRequest.requestId": "An optional UUID that makes retries idempotent.",
+    "protoform.conformance.v1.DeleteBookRequest.validateOnly": "Whether to validate the request without applying it.",
+    "protoform.conformance.v1.DeleteBookRequest.force": "Whether to delete child resources with the book.",
+    "protoform.conformance.v1.DeleteBookRequest.allowMissing": "Whether repeated deletion succeeds when the book is already soft deleted.",
+  },
+  messages: {
+    "protoform.conformance.v1.DeleteBookRequest": "The request for LibraryService.DeleteBook.",
+  },
 } as const;
 registerProtoAnnotations(BatchDeleteBooksRequestSchema, BatchDeleteBooksRequestFormAnnotations);
 
@@ -328,7 +614,26 @@ export const BatchDeleteBooksRequestFormBinding = {
  */
 export const BatchDeleteBooksResponseFormAnnotations = {
   fields: {
+    "protoform.conformance.v1.Book.name": "The resource name of the book.\n Format: publishers/{publisher}/books/{book}",
+    "protoform.conformance.v1.Book.uid": "The system-assigned UUID for the book.",
+    "protoform.conformance.v1.Book.displayName": "The display name of the book.",
+    "protoform.conformance.v1.Book.createTime": "The time when the book was created.",
+    "protoform.conformance.v1.Book.updateTime": "The time when the book was last updated.",
+    "protoform.conformance.v1.Book.deleteTime": "The time when the book was soft deleted.",
     "protoform.conformance.v1.Book.isbn": "ISBN-13 digits. The CEL rule enforces the alternating 1/3 checksum.",
+    "protoform.conformance.v1.Book.inputToken": "An optional token consumed while creating or updating the book.",
+    "protoform.conformance.v1.Book.note": "An optional note about the book.",
+    "protoform.conformance.v1.Book.etag": "The checksum used for optimistic concurrency control.",
+    "protoform.conformance.v1.Book.expireTime": "The absolute time when the book expires.",
+    "protoform.conformance.v1.Book.ttl": "The duration after creation when the book expires.",
+    "protoform.conformance.v1.Book.state": "The current lifecycle state of the book.",
+    "protoform.conformance.v1.Book.purgeTime": "The time when the soft-deleted book will be permanently removed.",
+  },
+  messages: {
+    "protoform.conformance.v1.Book": "A book managed by the library service.",
+  },
+  oneofs: {
+    "protoform.conformance.v1.Book.expiration": "The requested expiration policy for the book.",
   },
 } as const;
 registerProtoAnnotations(BatchDeleteBooksResponseSchema, BatchDeleteBooksResponseFormAnnotations);
@@ -523,7 +828,26 @@ export const CloudStorageSourceFormBinding = {
  */
 export const InlineSourceFormAnnotations = {
   fields: {
+    "protoform.conformance.v1.Book.name": "The resource name of the book.\n Format: publishers/{publisher}/books/{book}",
+    "protoform.conformance.v1.Book.uid": "The system-assigned UUID for the book.",
+    "protoform.conformance.v1.Book.displayName": "The display name of the book.",
+    "protoform.conformance.v1.Book.createTime": "The time when the book was created.",
+    "protoform.conformance.v1.Book.updateTime": "The time when the book was last updated.",
+    "protoform.conformance.v1.Book.deleteTime": "The time when the book was soft deleted.",
     "protoform.conformance.v1.Book.isbn": "ISBN-13 digits. The CEL rule enforces the alternating 1/3 checksum.",
+    "protoform.conformance.v1.Book.inputToken": "An optional token consumed while creating or updating the book.",
+    "protoform.conformance.v1.Book.note": "An optional note about the book.",
+    "protoform.conformance.v1.Book.etag": "The checksum used for optimistic concurrency control.",
+    "protoform.conformance.v1.Book.expireTime": "The absolute time when the book expires.",
+    "protoform.conformance.v1.Book.ttl": "The duration after creation when the book expires.",
+    "protoform.conformance.v1.Book.state": "The current lifecycle state of the book.",
+    "protoform.conformance.v1.Book.purgeTime": "The time when the soft-deleted book will be permanently removed.",
+  },
+  messages: {
+    "protoform.conformance.v1.Book": "A book managed by the library service.",
+  },
+  oneofs: {
+    "protoform.conformance.v1.Book.expiration": "The requested expiration policy for the book.",
   },
 } as const;
 registerProtoAnnotations(InlineSourceSchema, InlineSourceFormAnnotations);
@@ -544,7 +868,26 @@ export const InlineSourceFormBinding = {
  */
 export const ImportBooksRequestFormAnnotations = {
   fields: {
+    "protoform.conformance.v1.Book.name": "The resource name of the book.\n Format: publishers/{publisher}/books/{book}",
+    "protoform.conformance.v1.Book.uid": "The system-assigned UUID for the book.",
+    "protoform.conformance.v1.Book.displayName": "The display name of the book.",
+    "protoform.conformance.v1.Book.createTime": "The time when the book was created.",
+    "protoform.conformance.v1.Book.updateTime": "The time when the book was last updated.",
+    "protoform.conformance.v1.Book.deleteTime": "The time when the book was soft deleted.",
     "protoform.conformance.v1.Book.isbn": "ISBN-13 digits. The CEL rule enforces the alternating 1/3 checksum.",
+    "protoform.conformance.v1.Book.inputToken": "An optional token consumed while creating or updating the book.",
+    "protoform.conformance.v1.Book.note": "An optional note about the book.",
+    "protoform.conformance.v1.Book.etag": "The checksum used for optimistic concurrency control.",
+    "protoform.conformance.v1.Book.expireTime": "The absolute time when the book expires.",
+    "protoform.conformance.v1.Book.ttl": "The duration after creation when the book expires.",
+    "protoform.conformance.v1.Book.state": "The current lifecycle state of the book.",
+    "protoform.conformance.v1.Book.purgeTime": "The time when the soft-deleted book will be permanently removed.",
+  },
+  messages: {
+    "protoform.conformance.v1.Book": "A book managed by the library service.",
+  },
+  oneofs: {
+    "protoform.conformance.v1.Book.expiration": "The requested expiration policy for the book.",
   },
 } as const;
 registerProtoAnnotations(ImportBooksRequestSchema, ImportBooksRequestFormAnnotations);

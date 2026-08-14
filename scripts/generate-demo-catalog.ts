@@ -536,13 +536,18 @@ function generateDocs(): void {
 function generateRegistryRuntime(): string[] {
   const generatedFiles = [
     "buf/validate/validate_pb.ts",
+    "google/api/annotations_pb.ts",
+    "google/api/client_pb.ts",
     "google/api/field_behavior_pb.ts",
     "google/api/field_info_pb.ts",
+    "google/api/http_pb.ts",
+    "google/api/launch_stage_pb.ts",
     "google/api/resource_pb.ts",
     "google/rpc/status_pb.ts",
     "protoform/conformance/v1/aip_form.ts",
     "protoform/conformance/v1/aip_pb.ts",
     "protoform/conformance/v1/conformance_pb.ts",
+    "protoform/conformance/v1/editions_2024_pb.ts",
     "protoform/conformance/v1/editions_pb.ts",
     "protoform/conformance/v1/predefined_pb.ts",
   ];

@@ -23,6 +23,6 @@ export default defineConfig({
       provider: playwright(),
     },
     include: ["registry/**/*.browser.test.tsx"],
-    setupFiles: ["./vitest.setup.ts"],
+    setupFiles: ["./vitest.browser.setup.ts"],
   },
 });

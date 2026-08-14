@@ -1,6 +1,10 @@
 import { BadRequestSchema } from "@buf/googleapis_googleapis.bufbuild_es/google/rpc/error_details_pb.js";
 import { clone, create } from "@bufbuild/protobuf";
-import { EmptySchema, timestampFromDate } from "@bufbuild/protobuf/wkt";
+import {
+  EmptySchema,
+  timestampFromDate,
+  timestampMs,
+} from "@bufbuild/protobuf/wkt";
 import { Code, ConnectError, type ServiceImpl } from "@connectrpc/connect";
 
 import {
@@ -84,6 +88,17 @@ function isUpdatableBookPath(path: string): path is UpdatableBookPath {
   return UPDATABLE_BOOK_PATHS.some((candidate) => candidate === path);
 }
 
+function populatedUpdatableBookPaths(book: Book): UpdatableBookPath[] {
+  const paths: UpdatableBookPath[] = [];
+  if (book.displayName !== "") {
+    paths.push("display_name");
+  }
+  if (book.note !== undefined) {
+    paths.push("note");
+  }
+  return paths;
+}
+
 export function createLibraryService({
   maxBooks = DEFAULT_MAX_BOOKS,
   maxLibraries = DEFAULT_MAX_LIBRARIES,
@@ -124,6 +139,16 @@ export function createLibraryService({
     for (const [parent, library] of libraries) {
       if (library.expiresAt <= currentTime) {
         libraries.delete(parent);
+        continue;
+      }
+      for (const [name, book] of library.books) {
+        if (
+          book.state === BookState.DELETED &&
+          book.purgeTime &&
+          timestampMs(book.purgeTime) <= currentTime
+        ) {
+          library.books.delete(name);
+        }
       }
     }
   }
@@ -221,15 +246,34 @@ export function createLibraryService({
 
     deleteBook(request) {
       const { book, library } = findBook(request.name);
+      if (book.state === BookState.DELETED) {
+        if (request.allowMissing) {
+          return clone(BookSchema, book);
+        }
+        throw connectError(Code.NotFound, `Book ${request.name} was deleted.`);
+      }
       if (request.etag && request.etag !== book.etag) {
         throw connectError(
-          Code.FailedPrecondition,
+          Code.Aborted,
           "This book changed. Refresh it before deleting."
         );
       }
+      const deletionTime = timestampFromDate(new Date(now()));
+      const deleted = clone(BookSchema, book);
+      deleted.deleteTime = deletionTime;
+      deleted.etag = nextEtag();
+      deleted.purgeTime = timestampFromDate(new Date(now() + ttlMs));
+      deleted.state = BookState.DELETED;
+      deleted.updateTime = deletionTime;
       if (!request.validateOnly) {
-        library.books.delete(request.name);
+        library.books.set(request.name, deleted);
       }
+      return clone(BookSchema, deleted);
+    },
+
+    expungeBook(request) {
+      const { library } = findBook(request.name);
+      library.books.delete(request.name);
       return create(EmptySchema);
     },
 
@@ -243,12 +287,31 @@ export function createLibraryService({
       const books = [...library.books.values()]
         .filter(
           (book) =>
-            !filter ||
-            book.displayName.toLowerCase().includes(filter) ||
-            book.isbn.includes(filter)
+            (request.showDeleted || book.state !== BookState.DELETED) &&
+            (!filter ||
+              book.displayName.toLowerCase().includes(filter) ||
+              book.isbn.includes(filter))
         )
         .map((book) => clone(BookSchema, book));
       return { books };
+    },
+
+    undeleteBook(request) {
+      const { book, library } = findBook(request.name);
+      if (book.state !== BookState.DELETED) {
+        throw connectError(
+          Code.AlreadyExists,
+          `Book ${request.name} is not deleted.`
+        );
+      }
+      const restored = clone(BookSchema, book);
+      restored.deleteTime = undefined;
+      restored.etag = nextEtag();
+      restored.purgeTime = undefined;
+      restored.state = BookState.ACTIVE;
+      restored.updateTime = timestampFromDate(new Date(now()));
+      library.books.set(request.name, restored);
+      return clone(BookSchema, restored);
     },
 
     updateBook(request) {
@@ -256,13 +319,18 @@ export function createLibraryService({
         throw fieldError("book", "Enter the book to update.");
       }
       const { book: current, library } = findBook(request.book.name);
-      const paths = request.updateMask?.paths ?? [];
-      if (paths.length === 0) {
-        throw fieldError(
-          "update_mask",
-          "Change at least one editable book field."
+      if (current.state === BookState.DELETED) {
+        throw connectError(
+          Code.FailedPrecondition,
+          "Restore this book before updating it."
         );
       }
+      const requestedPaths = request.updateMask?.paths;
+      const paths = request.updateMask
+        ? requestedPaths?.includes("*")
+          ? [...UPDATABLE_BOOK_PATHS]
+          : (requestedPaths ?? [])
+        : populatedUpdatableBookPaths(request.book);
       const normalizedPaths = paths.map((path) =>
         path === "displayName" ? "display_name" : path
       );
@@ -281,6 +349,9 @@ export function createLibraryService({
           Code.FailedPrecondition,
           "This book changed. Refresh it before saving."
         );
+      }
+      if (updatablePaths.length === 0) {
+        return clone(BookSchema, current);
       }
       const next = clone(BookSchema, current);
       for (const path of updatablePaths) {

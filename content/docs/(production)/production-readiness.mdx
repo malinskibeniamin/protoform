@@ -5,10 +5,9 @@ description: "Inspect the complete evidence-backed capability profile and its ow
 
 <span aria-hidden="true" data-docs-layout="wide" hidden />
 
-The **Production Readiness Profile v2** turns Protoform's support claims into a versioned,
+The Capability Evidence Profile v3 turns Protoform's support claims into a versioned,
 machine-readable capability ledger. It covers form-relevant Protobuf features, every current
-Protovalidate rule family, CEL behavior, form-relevant Google AIP guidance, and production runtime
-quality.
+Protovalidate rule family, CEL behavior, form-relevant Google AIP guidance, and runtime quality.
 
 The catalog is grounded in the current [Protobuf language guides](https://protobuf.dev/programming-guides/),
 [Protovalidate standard rules](https://buf.build/docs/reference/protovalidate/rules/),
@@ -16,11 +15,11 @@ The catalog is grounded in the current [Protobuf language guides](https://protob
 [general AIP catalog](https://google.aip.dev/general). The profile narrows those broad specifications
 to behavior a TypeScript form library can own and shows excluded responsibilities explicitly.
 
-The current Profile v2 score is **100%: 174 of 174 applicable checks verified**. Another 16 excluded
+The current Profile v3 is complete: 175 of 175 applicable checks have evidence. Another 16 excluded
 checks stay visible without affecting the percentage: 13 external, 1 verified optional, 1 out of
-target, and 1 superseded. Protoform is therefore **production ready** by the profile's strict
-definition. The maintained Protobuf-ES v1 bridge is verified optional migration support, but it
-remains outside that claim; the canonical runtime target is Protobuf-ES v2.
+target, and 1 superseded. Profile completeness does not certify production readiness or prove that
+the current checkout passes its release verification. The maintained Protobuf-ES v1 bridge is
+verified optional migration support; the canonical runtime target is Protobuf-ES v2.
 
 <ReadinessDashboard />
 
@@ -38,14 +37,10 @@ The overall percentage is `verified / applicable`:
 - **Superseded** was removed or replaced upstream and is excluded from the denominator.
 - The **required profile** highlights the non-negotiable subset.
 
-`Production ready: yes` requires every applicable check to be verified and the referenced test
-suites to pass. Documentation, implementation code, or a manual claim alone cannot increase the score.
-The evidence-integrity test also fails if a verified row points to a missing test.
-
-The release gate is narrower than the production-readiness claim. It passes when there are no
-unplanned `missing` rows and every verified evidence reference remains valid. Approved deferred and
-unsupported rows remain visible and reduce readiness, but do not make every current build fail. A
-passing release gate must not be read as `Production ready: yes`.
+`Profile complete: yes` means every applicable row is marked verified. Documentation, implementation
+code, or a manual claim alone cannot increase the score. The evidence-integrity test also fails if a
+verified row points to a missing test. The profile does not execute those suites and does not certify
+deployment, operational, security, or release readiness.
 
 This prevents a broad claim such as "supports Protobuf" from hiding untested scalar families, presence
 semantics, well-known types, validation operators, or error-path behavior.
@@ -62,14 +57,21 @@ Get the complete profile as JSON for another dashboard or CI artifact:
 bun run readiness:report -- --json
 ```
 
-Run the same release gate used by CI:
+Check profile completeness only:
 
 ```bash
 bun run readiness:gate
 ```
 
-CI runs `readiness:gate` after the conformance suite. It exits non-zero when an unplanned gap enters
-the profile. The evidence-integrity test separately rejects missing evidence files or test names.
+`readiness:gate` exits non-zero when an applicable row is missing, deferred, or unsupported. It is a
+profile gate, not a release gate. Run the complete local release verification separately:
+
+```bash
+bun run release:gate
+```
+
+`release:gate` runs the full quality gate, including conformance, unit, integration, browser, and
+end-to-end tests, builds, consumer smoke tests, type checks, and linting.
 
 Run the same AIP-180 compatibility check against the target branch:
 
@@ -93,16 +95,16 @@ bun run registry:consumer-smoke
 That serves the built registry, installs the bookstore plus both form engines into a clean consumer,
 and type-checks only the copied source and public third-party dependencies.
 
-## Scope of Profile v2
+## Scope of Profile v3
 
 The denominator is explicit rather than pretending every Protobuf or AIP feature belongs in a form library:
 
 | Area | Verified | Applicable open work | Excluded |
 | --- | --- | --- | --- |
-| Protobuf | Canonical v2 behavior, Editions 2023 descriptors, unknown-field preservation, and service/RPC workflow classification | None | The maintained Protobuf-ES v1 bridge is verified optional; extension and deprecated group discovery are out of target; binary codec compatibility remains Protobuf-ES-owned |
+| Protobuf | Canonical v2 behavior, Editions 2023 and 2024 descriptors, strict symbol visibility, option-only imports, unknown-field preservation, and service/RPC workflow classification | None | The maintained Protobuf-ES v1 bridge is verified optional; extension and deprecated group discovery are out of target; binary codec compatibility remains Protobuf-ES-owned |
 | Protovalidate | Required/ignore behavior and every current scalar, collection, well-known-type, example, and predefined-rule family | None | Removed `disabled`/`skip` options are superseded by current ignore semantics |
 | CEL | Field/message results, nested paths, multiple violations, partial unknowns, cost limits, failures, and UI expressions | None | Backend authorization and policy enforcement remain server-owned |
-| AIP | Resource metadata, standard request shapes, transcoding roles, method classification, long-running operations, job/import/export workflows, quantity and standardized-code fields, ranges, partial results, retries, policy preview, masks, etags, structured errors, and compatibility enforcement | None | AIP governance, launch review, authorization enforcement, and repository ownership |
+| AIP-aware client coverage | Resource metadata, standard request shapes, transcoding roles, method classification, long-running operations, job/import/export workflows, quantity and standardized-code fields, ranges, partial results, retries, policy preview, masks, etags, structured errors, and compatibility enforcement | None | Server and organization conformance, AIP governance, launch review, authorization enforcement, and repository ownership |
 | Production runtime | Form-framework integrations, generated forms, steppers, accessibility, resilience, browsers, compatibility, security, and performance | None | None |
 
 Runtime evidence includes axe checks across representative form states, keyboard-only step recovery,
@@ -113,9 +115,9 @@ budgets, registry-only consumer installation, and malformed-input/HTML-injection
 The profile is deliberately granular. A table-driven test may verify many values inside one capability,
 but a single broad integration test cannot mark unrelated feature families as complete.
 
-## How to maintain 100%
+## How to maintain the evidence
 
-Profile v2 counts client-owned deferred and unsupported work instead of hiding it behind a broad
+Profile v3 counts client-owned deferred and unsupported work instead of hiding it behind a broad
 not-applicable label. Future work should deepen evidence without weakening the denominator:
 
 - **Evidence depth, not a boolean.** Require the relevant combination of unit, conformance, browser,

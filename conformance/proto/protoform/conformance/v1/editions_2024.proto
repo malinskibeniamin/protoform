@@ -1,0 +1,19 @@
+edition = "2024";
+
+package protoform.conformance.v1;
+
+import option "buf/validate/validate.proto";
+
+option features.default_symbol_visibility = STRICT;
+
+// Exercises Edition 2024 strict visibility and option-only imports.
+export message Editions2024Matrix {
+  // A display name validated by an option-only dependency.
+  string display_name = 1 [(buf.validate.field).string.min_len = 1];
+}
+
+// A file-local helper that remains unavailable to importing protobuf files.
+local message Editions2024Local {
+  // Internal notes for the fixture.
+  string note = 1;
+}

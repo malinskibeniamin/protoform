@@ -4,10 +4,13 @@ import { Code, ConnectError } from "@connectrpc/connect";
 import { describe, expect, it } from "vitest";
 import {
   BookSchema,
+  BookState,
   CreateBookRequestSchema,
   DeleteBookRequestSchema,
+  ExpungeBookRequestSchema,
   GetBookRequestSchema,
   ListBooksRequestSchema,
+  UndeleteBookRequestSchema,
   UpdateBookRequestSchema,
 } from "../../conformance/gen/protoform/conformance/v1/aip_pb.js";
 import {
@@ -15,6 +18,18 @@ import {
   SubmitComplexFormRequestSchema,
 } from "../gen/protoform/examples/v1/forms_pb.js";
 import { createLibraryService, formExamplesService } from "./service.js";
+
+async function expectConnectCode(
+  action: () => unknown | Promise<unknown>,
+  code: Code
+): Promise<void> {
+  try {
+    await action();
+    throw new Error(`Expected Connect error ${code}.`);
+  } catch (error) {
+    expect(ConnectError.from(error).code).toBe(code);
+  }
+}
 
 describe("form example service", () => {
   it("accepts the basic form and returns a stable profile id", async () => {
@@ -105,18 +120,74 @@ describe("library demo service", () => {
     expect(updated.isbn).toBe(created.isbn);
     expect(updated.etag).not.toBe(created.etag);
 
-    await service.deleteBook(
-      create(DeleteBookRequestSchema, {
-        etag: updated.etag,
-        name: updated.name,
+    const unmasked = await service.updateBook(
+      create(UpdateBookRequestSchema, {
+        book: create(BookSchema, {
+          ...updated,
+          displayName: "The Protoform reference",
+        }),
       })
     );
-    try {
-      service.getBook(create(GetBookRequestSchema, { name: updated.name }));
-      throw new Error("Expected the deleted book lookup to fail.");
-    } catch (error) {
-      expect(ConnectError.from(error).code).toBe(Code.NotFound);
-    }
+    expect(unmasked.displayName).toBe("The Protoform reference");
+    expect(unmasked.note).toBe(updated.note);
+
+    const sparselyUnmasked = await service.updateBook(
+      create(UpdateBookRequestSchema, {
+        book: create(BookSchema, {
+          displayName: "The sparse Protoform reference",
+          etag: unmasked.etag,
+          name: unmasked.name,
+        }),
+      })
+    );
+    expect(sparselyUnmasked.displayName).toBe("The sparse Protoform reference");
+    expect(sparselyUnmasked.note).toBe(unmasked.note);
+
+    const deleted = await service.deleteBook(
+      create(DeleteBookRequestSchema, {
+        etag: sparselyUnmasked.etag,
+        name: sparselyUnmasked.name,
+      })
+    );
+    expect(deleted).toMatchObject({
+      name: sparselyUnmasked.name,
+      state: BookState.DELETED,
+    });
+    expect(deleted.deleteTime).toBeDefined();
+    expect(deleted.purgeTime).toBeDefined();
+    expect(
+      service.getBook(
+        create(GetBookRequestSchema, { name: sparselyUnmasked.name })
+      ).state
+    ).toBe(BookState.DELETED);
+    expect(
+      (
+        await service.listBooks(create(ListBooksRequestSchema, { parent }))
+      ).books.some((book) => book.name === sparselyUnmasked.name)
+    ).toBe(false);
+    expect(
+      (
+        await service.listBooks(
+          create(ListBooksRequestSchema, { parent, showDeleted: true })
+        )
+      ).books.some((book) => book.name === sparselyUnmasked.name)
+    ).toBe(true);
+
+    const restored = await service.undeleteBook(
+      create(UndeleteBookRequestSchema, { name: sparselyUnmasked.name })
+    );
+    expect(restored.state).toBe(BookState.ACTIVE);
+    expect(restored.deleteTime).toBeUndefined();
+    expect(restored.purgeTime).toBeUndefined();
+
+    await service.expungeBook(
+      create(ExpungeBookRequestSchema, { name: sparselyUnmasked.name })
+    );
+    expect(() =>
+      service.getBook(
+        create(GetBookRequestSchema, { name: sparselyUnmasked.name })
+      )
+    ).toThrowError(ConnectError);
   });
 
   it("isolates visitor libraries and rejects stale or immutable updates", async () => {
@@ -151,5 +222,66 @@ describe("library demo service", () => {
     } catch (error) {
       expect(ConnectError.from(error).code).toBe(Code.InvalidArgument);
     }
+  });
+
+  it("uses current AIP lifecycle error codes for soft deletion", async () => {
+    const service = createLibraryService();
+    const parent = "publishers/visitor-a";
+    const [book] = (
+      await service.listBooks(create(ListBooksRequestSchema, { parent }))
+    ).books;
+    if (!book) {
+      throw new Error("Expected a seeded book.");
+    }
+
+    await expectConnectCode(
+      () =>
+        service.deleteBook(
+          create(DeleteBookRequestSchema, {
+            etag: "stale",
+            name: book.name,
+          })
+        ),
+      Code.Aborted
+    );
+    const deleted = await service.deleteBook(
+      create(DeleteBookRequestSchema, { etag: book.etag, name: book.name })
+    );
+    await expectConnectCode(
+      () =>
+        service.deleteBook(
+          create(DeleteBookRequestSchema, { name: book.name })
+        ),
+      Code.NotFound
+    );
+    expect(
+      await service.deleteBook(
+        create(DeleteBookRequestSchema, {
+          allowMissing: true,
+          name: book.name,
+        })
+      )
+    ).toEqual(deleted);
+
+    await service.undeleteBook(
+      create(UndeleteBookRequestSchema, { name: book.name })
+    );
+    await expectConnectCode(
+      () =>
+        service.undeleteBook(
+          create(UndeleteBookRequestSchema, { name: book.name })
+        ),
+      Code.AlreadyExists
+    );
+    await service.expungeBook(
+      create(ExpungeBookRequestSchema, { name: book.name })
+    );
+    await expectConnectCode(
+      () =>
+        service.expungeBook(
+          create(ExpungeBookRequestSchema, { name: book.name })
+        ),
+      Code.NotFound
+    );
   });
 });

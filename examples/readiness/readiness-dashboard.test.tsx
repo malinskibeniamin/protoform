@@ -15,7 +15,7 @@ describe("ReadinessDashboard", () => {
 
     const ledger = screen.getByRole("region", { name: "Capability ledger" });
     const rangeLabel = within(ledger).getByText(
-      `Showing 1–25 of 174 matching checks. ${readinessRequirements.length} profile checks total.`
+      `Showing 1–25 of 175 matching checks. ${readinessRequirements.length} profile checks total.`
     );
     expect(rangeLabel).toBeVisible();
     expect(rangeLabel.childNodes).toHaveLength(1);
