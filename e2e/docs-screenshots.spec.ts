@@ -2,8 +2,6 @@ import { mkdir } from "node:fs/promises";
 import { join } from "node:path";
 import { expect, test } from "@playwright/test";
 
-import { demoCatalog } from "../examples/catalog/demo-catalog.js";
-
 const screenshotDir = "artifacts/screenshots";
 const productionComplexChunkPattern = /\/_astro\/complex-form\.[^/]+\.js$/;
 const focusedExamplePaths = [
@@ -19,12 +17,6 @@ const wideDemoExamples = [
     label: "bookstore workspace",
     path: "/docs/bookstore",
     selector: "#blume-content article > [data-bookstore-workspace]",
-  },
-  {
-    label: "iframe preview",
-    path: "/docs/aip-133-standard-methods-create",
-    selector:
-      "#blume-content article > div:has(iframe[data-blume-example-frame])",
   },
   {
     label: "direct island",
@@ -55,25 +47,21 @@ const sidebarHierarchy = [
       "Server-error form",
       "AIP resource form",
       "Kitchen sink",
+      "Complex end-to-end example",
     ],
   },
   {
     label: "Feature examples",
     pages: [
-      "Feature demo catalog",
-      ...demoCatalog
-        .filter((demo) => demo.category !== "aip")
-        .map((demo) => demo.title),
+      "Protobuf examples",
+      "Protovalidate examples",
+      "CEL examples",
+      "Production examples",
     ],
   },
   {
     label: "AIP examples",
-    pages: [
-      "AIP demo catalog",
-      ...demoCatalog
-        .filter((demo) => demo.category === "aip")
-        .map((demo) => demo.title),
-    ],
+    pages: ["AIP examples"],
   },
   {
     label: "Build forms",
@@ -192,46 +180,6 @@ const pages: DocsPage[] = [
     heading: "AIP resource form",
     name: "aip-resource-form",
     path: "/docs/aip-resource-form",
-  },
-  {
-    heading: "Feature demo catalog",
-    name: "feature-demo-catalog",
-    path: "/docs/feature-example-catalog",
-  },
-  {
-    heading: "Bufbuild service descriptors",
-    name: "bufbuild-descriptors",
-    path: "/docs/example-bufbuild-descriptors",
-  },
-  {
-    heading: "Well-known types",
-    name: "well-known-types",
-    path: "/docs/example-protobuf-well-known-types",
-  },
-  {
-    heading: "Dynamic JSON and Any",
-    name: "dynamic-json-any",
-    path: "/docs/example-protobuf-dynamic-json-any",
-  },
-  {
-    heading: "CEL strings and RE2",
-    name: "cel-re2",
-    path: "/docs/example-cel-re2",
-  },
-  {
-    heading: "Linear stepper",
-    name: "linear-stepper",
-    path: "/docs/example-stepper",
-  },
-  {
-    heading: "AIP demo catalog",
-    name: "aip-demo-catalog",
-    path: "/docs/aip-example-catalog",
-  },
-  {
-    heading: "AIP-133 Standard methods: Create",
-    name: "aip-133-create",
-    path: "/docs/aip-133-standard-methods-create",
   },
   {
     heading: "React Hook Form",
@@ -724,8 +672,7 @@ for (const example of wideDemoExamples) {
 }
 
 test("shows line numbers in component code previews", async ({ page }) => {
-  await page.goto("/docs/aip-133-standard-methods-create");
-  await page.getByRole("tab", { name: "Code" }).click();
+  await page.goto("/docs/bookstore");
 
   const source = page.locator("pre.blume-source").first();
   await expect(source.locator(".line").first()).toBeVisible();
@@ -751,11 +698,11 @@ test("shows line numbers in component code previews", async ({ page }) => {
   });
 });
 
-test("shows the Profile v2 score and maintenance roadmap", async ({ page }) => {
+test("shows the Profile v3 evidence roadmap", async ({ page }) => {
   await page.goto("/docs/production-readiness");
 
   await expect(
-    page.getByRole("heading", { name: "How to maintain 100%" })
+    page.getByRole("heading", { name: "How to maintain the evidence" })
   ).toBeVisible();
   await expect(page.getByText("Consumer deployment matrix")).toBeVisible();
   await expect(page.getByText("Schema evolution and drafts")).toBeVisible();

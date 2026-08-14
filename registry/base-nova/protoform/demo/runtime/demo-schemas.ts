@@ -42,7 +42,7 @@ import {
   ValidationMatrixSchema,
   WellKnownRuleMatrixSchema,
 } from "./gen/protoform/conformance/v1/conformance_pb.js";
-import { EditionsMatrixSchema } from "./gen/protoform/conformance/v1/editions_pb.js";
+import { Editions2024MatrixSchema } from "./gen/protoform/conformance/v1/editions_2024_pb.js";
 export type DemoSchemaKey =
   | "any"
   | "batch-create"
@@ -94,7 +94,7 @@ const schemas = {
   "create-book": CreateBookRequestSchema,
   "delete-book": DeleteBookRequestSchema,
   "dynamic-json": DynamicJsonMatrixSchema,
-  editions: EditionsMatrixSchema,
+  editions: Editions2024MatrixSchema,
   "export-books": ExportBooksRequestSchema,
   "get-book": GetBookRequestSchema,
   "import-books": ImportBooksRequestSchema,
@@ -229,11 +229,7 @@ function buildDefaults(schemaKey: DemoSchemaKey): Record<string, unknown> {
     }
     case "editions":
       return {
-        delimitedChild: { note: "Editions message encoding" },
-        expandedValues: [1, 2, 3],
-        explicitName: "protoform-editions",
-        implicitLabel: "edition-2023",
-        state: 1,
+        displayName: "Protoform Editions 2024",
       };
     case "export-books":
       return {

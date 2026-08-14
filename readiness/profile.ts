@@ -6,13 +6,17 @@ export type ReadinessCategoryId =
   | "protovalidate";
 
 export type ReadinessLevel = "required" | "recommended";
+export type AipEvidenceScope = "client" | "external";
+export type AipStandardState = "approved" | "draft" | "reviewing";
 
 interface RequirementBase {
   category: ReadinessCategoryId;
   description?: string;
+  evidenceScope?: AipEvidenceScope;
   id: string;
   level: ReadinessLevel;
   sourceUrl?: string;
+  standardState?: AipStandardState;
   title: string;
 }
 
@@ -64,8 +68,7 @@ export interface ReadinessSummary {
   optional: number;
   outOfTarget: number;
   percentage: number;
-  productionReady: boolean;
-  releaseReady: boolean;
+  profileComplete: boolean;
   superseded: number;
   unsupported: number;
   verified: number;
@@ -92,8 +95,8 @@ export const readinessProfile = {
     "react-final-form": "^7.0.1",
     "react-hook-form": "^7.84.0",
   },
-  reviewedAt: "2026-08-10",
-  version: 2,
+  reviewedAt: "2026-08-14",
+  version: 3,
 };
 
 export const readinessCategories: readonly ReadinessCategory[] = [
@@ -123,11 +126,11 @@ export const readinessCategories: readonly ReadinessCategory[] = [
   },
   {
     description:
-      "Form-relevant resource, standard-method, field-behavior, and error guidance.",
+      "Verified form and client behavior derived from AIPs; server and organizational conformance remain external.",
     id: "aip",
     sourceLabel: "General API Improvement Proposals",
     sourceUrl: "https://google.aip.dev/general",
-    title: "Google AIP",
+    title: "AIP-aware client coverage",
   },
   {
     description:
@@ -444,6 +447,13 @@ const protobufRequirements: readonly ReadinessRequirement[] = [
     "Editions 2023 descriptor compatibility",
     "conformance/protobuf-editions.conformance.test.ts",
     "accepts Editions descriptors and honors field presence controls"
+  ),
+  verified(
+    "protobuf",
+    "protobuf.editions-2024",
+    "Edition 2024 visibility and option imports",
+    "conformance/protobuf-editions.conformance.test.ts",
+    "supports Edition 2024 visibility and option-only imports"
   ),
 ];
 
@@ -874,7 +884,8 @@ function aipVerified(
   title: string,
   file: string,
   testName: string,
-  description?: string
+  description?: string,
+  standardState: AipStandardState = "approved"
 ): VerifiedRequirement {
   return {
     ...verified(
@@ -886,7 +897,9 @@ function aipVerified(
       required,
       description
     ),
+    evidenceScope: "client",
     sourceUrl: `https://google.aip.dev/${number}`,
+    standardState,
   };
 }
 
@@ -894,7 +907,8 @@ function aipExcluded(
   number: number,
   title: string,
   status: ExcludedRequirement["status"],
-  rationale: string
+  rationale: string,
+  standardState: AipStandardState = "approved"
 ): ExcludedRequirement {
   return {
     ...excluded(
@@ -904,7 +918,9 @@ function aipExcluded(
       status,
       rationale
     ),
+    evidenceScope: "external",
     sourceUrl: `https://google.aip.dev/${number}`,
+    standardState,
   };
 }
 
@@ -1195,7 +1211,8 @@ const aipRequirements: readonly ReadinessRequirement[] = [
     "Resource revisions",
     "conformance/aip.conformance.test.ts",
     "models AIP-162 revisions as nested, server-produced snapshot resources",
-    "The draft revision shape is tracked explicitly and may change with the upstream AIP."
+    "The draft revision shape is tracked explicitly and may change with the upstream AIP.",
+    "draft"
   ),
   aipVerified(
     163,
@@ -1235,7 +1252,8 @@ const aipRequirements: readonly ReadinessRequirement[] = [
     "External software dependencies",
     "scripts/registry-only-distribution.test.ts",
     "ships Protoform under MIT without private package workspaces",
-    "Every external runtime dependency is declared by a public source-copy registry item."
+    "Every external runtime dependency is declared by a public source-copy registry item.",
+    "reviewing"
   ),
   aipVerified(
     185,
@@ -1571,12 +1589,11 @@ export function getReadinessSummary(
     optional: optionalCount,
     outOfTarget: outOfTargetCount,
     percentage,
-    productionReady:
+    profileComplete:
       applicable > 0 &&
       missingCount === 0 &&
       deferredCount === 0 &&
       unsupportedCount === 0,
-    releaseReady: applicable > 0 && missingCount === 0,
     superseded: supersededCount,
     unsupported: unsupportedCount,
     verified: verifiedCount,

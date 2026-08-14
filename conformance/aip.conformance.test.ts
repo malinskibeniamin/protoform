@@ -1,6 +1,9 @@
 // @vitest-environment node
 
+import { method_signature } from "@buf/googleapis_googleapis.bufbuild_es/google/api/client_pb.js";
 import { FieldBehavior } from "@buf/googleapis_googleapis.bufbuild_es/google/api/field_behavior_pb.js";
+import { create, getExtension } from "@bufbuild/protobuf";
+import { MethodOptionsSchema } from "@bufbuild/protobuf/wkt";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -11,6 +14,7 @@ import {
   isSingletonProtoResource,
   parseProtoSchema,
 } from "../registry/base-nova/protoform/lib/protobuf-provider/index.js";
+import { getProtoMethodWorkflow } from "../registry/base-nova/protoform/lib/protobuf-provider/method-workflow.js";
 import {
   BatchCreateBooksRequestSchema,
   BatchCreateBooksResponseSchema,
@@ -27,6 +31,7 @@ import {
   DeleteBookRequestSchema,
   GetBookRequestSchema,
   GetProjectSettingsRequestSchema,
+  LibraryService,
   ListBooksRequestSchema,
   ListBooksResponseSchema,
   ProjectSettingsSchema,
@@ -44,6 +49,87 @@ function field(schema: ReturnType<typeof parseProtoSchema>, key: string) {
 }
 
 describe("Google AIP form conformance", () => {
+  it("publishes current standard and soft-delete HTTP contracts", () => {
+    const contracts = Object.fromEntries(
+      Object.entries(LibraryService.method).map(([name, method]) => {
+        const workflow = getProtoMethodWorkflow(method);
+        const [binding] = workflow.httpBindings;
+        return [
+          name,
+          {
+            bodyFields: binding?.bodyFields ?? [],
+            httpMethod: binding?.method,
+            outputType: method.output.typeName,
+            path: binding?.path,
+          },
+        ];
+      })
+    );
+    const signatures = Object.fromEntries(
+      Object.entries(LibraryService.method).map(([name, method]) => [
+        name,
+        getExtension(
+          method.proto.options ?? create(MethodOptionsSchema),
+          method_signature
+        ),
+      ])
+    );
+
+    expect(contracts).toEqual({
+      createBook: {
+        bodyFields: ["book"],
+        httpMethod: "POST",
+        outputType: "protoform.conformance.v1.Book",
+        path: "/v1/{parent=publishers/*}/books",
+      },
+      deleteBook: {
+        bodyFields: [],
+        httpMethod: "DELETE",
+        outputType: "protoform.conformance.v1.Book",
+        path: "/v1/{name=publishers/*/books/*}",
+      },
+      expungeBook: {
+        bodyFields: [],
+        httpMethod: "POST",
+        outputType: "google.protobuf.Empty",
+        path: "/v1/{name=publishers/*/books/*}:expunge",
+      },
+      getBook: {
+        bodyFields: [],
+        httpMethod: "GET",
+        outputType: "protoform.conformance.v1.Book",
+        path: "/v1/{name=publishers/*/books/*}",
+      },
+      listBooks: {
+        bodyFields: [],
+        httpMethod: "GET",
+        outputType: "protoform.conformance.v1.ListBooksResponse",
+        path: "/v1/{parent=publishers/*}/books",
+      },
+      undeleteBook: {
+        bodyFields: [],
+        httpMethod: "POST",
+        outputType: "protoform.conformance.v1.Book",
+        path: "/v1/{name=publishers/*/books/*}:undelete",
+      },
+      updateBook: {
+        bodyFields: ["book"],
+        httpMethod: "PATCH",
+        outputType: "protoform.conformance.v1.Book",
+        path: "/v1/{book.name=publishers/*/books/*}",
+      },
+    });
+    expect(signatures).toEqual({
+      createBook: ["parent,book,book_id"],
+      deleteBook: ["name"],
+      expungeBook: ["name"],
+      getBook: ["name"],
+      listBooks: ["parent"],
+      undeleteBook: ["name"],
+      updateBook: ["book,update_mask"],
+    });
+  });
+
   it("parses AIP-121/123 resource type, pattern, singular, and plural metadata", () => {
     expect(getProtoResourceMetadata(BookSchema)).toEqual({
       nameField: "name",
@@ -181,6 +267,21 @@ describe("Google AIP form conformance", () => {
     expect(getProtoFieldCustomData(field(updateFields, "uid"))?.hidden).toBe(
       true
     );
+
+    for (const method of Object.values(LibraryService.method)) {
+      for (const requestField of method.input.fields) {
+        expect(
+          getProtoFieldBehaviors(requestField).some((behavior) =>
+            [
+              FieldBehavior.OPTIONAL,
+              FieldBehavior.OUTPUT_ONLY,
+              FieldBehavior.REQUIRED,
+            ].includes(behavior)
+          ),
+          `${method.name}.${requestField.name} needs explicit request behavior`
+        ).toBe(true);
+      }
+    }
   });
 
   it("models AIP-133 Create with parent, body, resource ID, and no body name input", () => {
@@ -242,6 +343,7 @@ describe("Google AIP form conformance", () => {
       "filter",
       "orderBy",
       "returnPartialSuccess",
+      "showDeleted",
     ]);
     expect(
       parseProtoSchema(ListBooksResponseSchema).fields.map(
@@ -291,9 +393,20 @@ describe("Google AIP form conformance", () => {
       "etag",
       "requestId",
       "validateOnly",
+      "force",
+      "allowMissing",
     ]);
     expect(field(parsed, "name").required).toBe(true);
     expect(field(parsed, "etag").required).toBe(false);
+  });
+
+  it("keeps AIP-134 update masks optional", () => {
+    expect(
+      field(parseProtoSchema(UpdateBookRequestSchema), "updateMask")
+    ).toMatchObject({ required: false });
+    expect(
+      field(parseProtoSchema(UpdateProjectSettingsRequestSchema), "updateMask")
+    ).toMatchObject({ required: false });
   });
 
   it("recognizes AIP-156 singleton resources and their Get/Update-only shapes", () => {

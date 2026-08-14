@@ -106,6 +106,7 @@ describe("AIP workflow form conformance", () => {
       "filter",
       "orderBy",
       "returnPartialSuccess",
+      "showDeleted",
     ]);
     expect(
       await issues(ListBooksRequestSchema, {

@@ -225,11 +225,11 @@ const featureDemoDefinitions: readonly FeatureDemoDefinition[] = [
   {
     category: "protobuf",
     description:
-      "Use Editions 2023 descriptors through the same field model as proto3 forms.",
-    requirementIds: ["protobuf.editions"],
+      "Use Editions 2023 and 2024 descriptors, including strict symbol visibility, through the same field model as proto3 forms.",
+    requirementIds: ["protobuf.editions", "protobuf.editions-2024"],
     schemaKey: "editions",
     slug: "protobuf-editions",
-    title: "Protobuf Editions 2023",
+    title: "Protobuf Editions 2024",
     tryIt:
       "Edit edition-backed fields and submit them through the standard AutoForm surface.",
   },

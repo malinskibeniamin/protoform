@@ -12,6 +12,8 @@ import { formatReadinessReport } from "../readiness/report.js";
 
 const HTTPS_URL_PATTERN = /^https:\/\//;
 const ISO_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+const PRODUCTION_SELF_CERTIFICATION_PATTERN =
+  /is therefore.{0,8}production ready/i;
 const GENERAL_AIP_NUMBERS = [
   1, 2, 3, 8, 9, 100, 111, 121, 122, 123, 124, 126, 127, 128, 129, 130, 131,
   132, 133, 134, 135, 136, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149,
@@ -86,8 +88,7 @@ describe("readiness scoring", () => {
       external: 1,
       missing: 1,
       percentage: 25,
-      productionReady: false,
-      releaseReady: false,
+      profileComplete: false,
       superseded: 1,
       unsupported: 1,
       verified: 1,
@@ -115,12 +116,11 @@ describe("readiness scoring", () => {
     }
   });
 
-  it("reaches production readiness while preserving the release gate", () => {
+  it("completes the capability profile without self-certifying release", () => {
     const summary = getReadinessSummary(readinessRequirements);
 
     expect(summary.percentage).toBe(100);
-    expect(summary.productionReady).toBe(true);
-    expect(summary.releaseReady).toBe(true);
+    expect(summary.profileComplete).toBe(true);
     expect(summary.deferred).toBe(0);
     expect(summary.unsupported).toBe(0);
     expect(
@@ -134,6 +134,10 @@ describe("readiness scoring", () => {
     };
     expect(workflow).toContain("bun run ci:gate");
     expect(manifest.scripts?.["ci:gate"]).toContain("bun run readiness:gate");
+    expect(manifest.scripts?.["readiness:gate"]).toContain(
+      "--require-profile-complete"
+    );
+    expect(manifest.scripts?.["release:gate"]).toBe("bun run quality:gate");
   });
 
   it("rejects a profile gate with a recommended gap", () => {
@@ -148,7 +152,7 @@ describe("readiness scoring", () => {
       },
     ];
 
-    expect(getReadinessSummary(requirements).productionReady).toBe(false);
+    expect(getReadinessSummary(requirements).profileComplete).toBe(false);
   });
 
   it("backs every verified and optional capability with a discoverable test", () => {
@@ -258,10 +262,22 @@ describe("readiness scoring", () => {
       GENERAL_AIP_NUMBERS.map((number) => `aip.${number}`)
     );
     for (const requirement of aipRequirements) {
+      let expectedStandardState = "approved";
+      if (requirement.id === "aip.162") {
+        expectedStandardState = "draft";
+      } else if (requirement.id === "aip.182") {
+        expectedStandardState = "reviewing";
+      }
       expect(requirement).toMatchObject({
+        evidenceScope:
+          requirement.status === "verified" ? "client" : "external",
         sourceUrl: `https://google.aip.dev/${requirement.id.replace("aip.", "")}`,
+        standardState: expectedStandardState,
       });
     }
+    expect(
+      readinessCategories.find((category) => category.id === "aip")?.title
+    ).toBe("AIP-aware client coverage");
     expect(
       readinessRequirements
         .filter(
@@ -295,13 +311,24 @@ describe("readiness scoring", () => {
     });
 
     expect(getReadinessSummary(readinessRequirements)).toMatchObject({
-      applicable: 174,
+      applicable: 175,
       excluded: 16,
       optional: 1,
       outOfTarget: 1,
       percentage: 100,
       superseded: 1,
-      verified: 174,
+      verified: 175,
+    });
+    expect(
+      readinessRequirements.find(
+        (requirement) => requirement.id === "protobuf.editions-2024"
+      )
+    ).toMatchObject({
+      evidence: {
+        file: "conformance/protobuf-editions.conformance.test.ts",
+        testName: "supports Edition 2024 visibility and option-only imports",
+      },
+      status: "verified",
     });
   });
 
@@ -310,13 +337,27 @@ describe("readiness scoring", () => {
       readFileSync(new URL("../package.json", import.meta.url), "utf8")
     ) as { dependencies?: Record<string, string> };
 
-    expect(readinessProfile.version).toBe(2);
+    expect(readinessProfile.version).toBe(3);
     expect(readinessProfile.reviewedAt).toMatch(ISO_DATE_PATTERN);
     for (const [name, range] of Object.entries(
       readinessProfile.dependencyRanges
     )) {
       expect(manifest.dependencies?.[name]).toBe(range);
     }
+  });
+
+  it("does not turn profile completeness into a release claim", () => {
+    const guide = readFileSync(
+      new URL(
+        "../content/docs/(production)/production-readiness.mdx",
+        import.meta.url
+      ),
+      "utf8"
+    );
+
+    expect(guide).toContain("does not certify production readiness");
+    expect(guide).toContain("bun run release:gate");
+    expect(guide).not.toMatch(PRODUCTION_SELF_CERTIFICATION_PATTERN);
   });
 
   it("formats a report with the score and next tests", () => {
@@ -330,10 +371,10 @@ describe("readiness scoring", () => {
       `Overall: ${summary.percentage}% (${summary.verified}/${summary.applicable})`
     );
     expect(report).toContain(
-      `Production ready: ${summary.productionReady ? "yes" : "no"}`
+      `Profile complete: ${summary.profileComplete ? "yes" : "no"}`
     );
     expect(report).toContain(
-      `Release gate: ${summary.releaseReady ? "passing" : "failing"}`
+      "Release verification: not run (use `bun run release:gate`)"
     );
     expect(report).toContain(
       `Excluded: ${summary.external} external, ${summary.optional} optional, ${summary.outOfTarget} out of target, ${summary.superseded} superseded`

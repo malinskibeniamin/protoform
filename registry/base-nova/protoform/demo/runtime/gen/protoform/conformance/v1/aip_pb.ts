@@ -5,6 +5,8 @@
 import type { GenEnum, GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegenv2";
 import { enumDesc, fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
 import { file_buf_validate_validate } from "../../../buf/validate/validate_pb.js";
+import { file_google_api_annotations } from "../../../google/api/annotations_pb.js";
+import { file_google_api_client } from "../../../google/api/client_pb.js";
 import { file_google_api_field_behavior } from "../../../google/api/field_behavior_pb.js";
 import { file_google_api_field_info } from "../../../google/api/field_info_pb.js";
 import { file_google_api_resource } from "../../../google/api/resource_pb.js";
@@ -18,38 +20,53 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file protoform/conformance/v1/aip.proto.
  */
 export const file_protoform_conformance_v1_aip: GenFile = /*@__PURE__*/
-  fileDesc("CiJwcm90b2Zvcm0vY29uZm9ybWFuY2UvdjEvYWlwLnByb3RvEhhwcm90b2Zvcm0uY29uZm9ybWFuY2UudjEikwkKBEJvb2sSEQoEbmFtZRgBIAEoCUID4EEIEhAKA3VpZBgCIAEoCUID4EEDEhkKDGRpc3BsYXlfbmFtZRgDIAEoCUID4EECEjQKC2NyZWF0ZV90aW1lGAQgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEID4EEDEjQKC3VwZGF0ZV90aW1lGAUgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEID4EEDEjQKC2RlbGV0ZV90aW1lGAYgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEID4EEDEqkECgRpc2JuGAcgASgJQpoE4EEFukiTBLoB/QMKF2Jvb2suaXNibjEzX2NoZWNrX2RpZ2l0EitJU0JOIG11c3QgaGF2ZSBhIHZhbGlkIElTQk4tMTMgY2hlY2sgZGlnaXQuGrQDIXRoaXMubWF0Y2hlcygnXlswLTldezEzfSQnKSB8fCAoaW50KHRoaXMuc3Vic3RyaW5nKDAsIDEpKSArIGludCh0aGlzLnN1YnN0cmluZygxLCAyKSkgKiAzICsgaW50KHRoaXMuc3Vic3RyaW5nKDIsIDMpKSArIGludCh0aGlzLnN1YnN0cmluZygzLCA0KSkgKiAzICsgaW50KHRoaXMuc3Vic3RyaW5nKDQsIDUpKSArIGludCh0aGlzLnN1YnN0cmluZyg1LCA2KSkgKiAzICsgaW50KHRoaXMuc3Vic3RyaW5nKDYsIDcpKSArIGludCh0aGlzLnN1YnN0cmluZyg3LCA4KSkgKiAzICsgaW50KHRoaXMuc3Vic3RyaW5nKDgsIDkpKSArIGludCh0aGlzLnN1YnN0cmluZyg5LCAxMCkpICogMyArIGludCh0aGlzLnN1YnN0cmluZygxMCwgMTEpKSArIGludCh0aGlzLnN1YnN0cmluZygxMSwgMTIpKSAqIDMgKyBpbnQodGhpcy5zdWJzdHJpbmcoMTIsIDEzKSkpICUgMTAgPT0gMMgBAXINMgteWzAtOV17MTN9JBIYCgtpbnB1dF90b2tlbhgIIAEoCUID4EEEEhYKBG5vdGUYCSABKAlCA+BBAUgBiAEBEhEKBGV0YWcYCiABKAlCA+BBAxIxCgtleHBpcmVfdGltZRgLIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBIABItCgN0dGwYDCABKAsyGS5nb29nbGUucHJvdG9idWYuRHVyYXRpb25CA+BBBEgAEjcKBXN0YXRlGA0gASgOMiMucHJvdG9mb3JtLmNvbmZvcm1hbmNlLnYxLkJvb2tTdGF0ZUID4EEDEjMKCnB1cmdlX3RpbWUYDiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQgPgQQM6UepBTgoabGlicmFyeS5wcm90b2Zvcm0uZGV2L0Jvb2sSI3B1Ymxpc2hlcnMve3B1Ymxpc2hlcn0vYm9va3Mve2Jvb2t9KgVib29rczIEYm9va0IMCgpleHBpcmF0aW9uQgcKBV9ub3RlIqoCCgxCb29rUmV2aXNpb24SEQoEbmFtZRgBIAEoCUID4EEIEjUKCHNuYXBzaG90GAIgASgLMh4ucHJvdG9mb3JtLmNvbmZvcm1hbmNlLnYxLkJvb2tCA+BBAxI0CgtjcmVhdGVfdGltZRgDIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCA+BBAxIaCg1hbHRlcm5hdGVfaWRzGAQgAygJQgPgQQM6fupBewoibGlicmFyeS5wcm90b2Zvcm0uZGV2L0Jvb2tSZXZpc2lvbhI4cHVibGlzaGVycy97cHVibGlzaGVyfS9ib29rcy97Ym9va30vcmV2aXNpb25zL3tyZXZpc2lvbn0qDWJvb2tSZXZpc2lvbnMyDGJvb2tSZXZpc2lvbiLFAQoRQ3JlYXRlQm9va1JlcXVlc3QSMgoGcGFyZW50GAEgASgJQiLgQQL6QRwSGmxpYnJhcnkucHJvdG9mb3JtLmRldi9Cb29rEjEKBGJvb2sYAiABKAsyHi5wcm90b2Zvcm0uY29uZm9ybWFuY2UudjEuQm9va0ID4EECEhQKB2Jvb2tfaWQYAyABKAlCA+BBAhIcCgpyZXF1ZXN0X2lkGAQgASgJQgjijM/XCAIIARIVCg12YWxpZGF0ZV9vbmx5GAUgASgIIkIKDkdldEJvb2tSZXF1ZXN0EjAKBG5hbWUYASABKAlCIuBBAvpBHAoabGlicmFyeS5wcm90b2Zvcm0uZGV2L0Jvb2si5QMKEExpc3RCb29rc1JlcXVlc3QSMgoGcGFyZW50GAEgASgJQiLgQQL6QRwSGmxpYnJhcnkucHJvdG9mb3JtLmRldi9Cb29rEhEKCXBhZ2Vfc2l6ZRgCIAEoBRISCgpwYWdlX3Rva2VuGAMgASgJEg4KBmZpbHRlchgEIAEoCRIQCghvcmRlcl9ieRgFIAEoCRIeChZyZXR1cm5fcGFydGlhbF9zdWNjZXNzGAYgASgIOrMCukivAhqMAQodYWlwMTU5LmNyb3NzX2NvbGxlY3Rpb25fb3JkZXISN29yZGVyIGJ5IGlzIHVuYXZhaWxhYmxlIHdoZW4gcmVhZGluZyBhY3Jvc3MgY29sbGVjdGlvbnMaMiF0aGlzLnBhcmVudC5lbmRzV2l0aCgnLy0nKSB8fCB0aGlzLm9yZGVyX2J5ID09ICcnGp0BChxhaXAyMTcucGFydGlhbF9zdWNjZXNzX3Njb3BlEkFwYXJ0aWFsIHN1Y2Nlc3MgaXMgYXZhaWxhYmxlIG9ubHkgd2hlbiByZWFkaW5nIGFjcm9zcyBjb2xsZWN0aW9ucxo6IXRoaXMucmV0dXJuX3BhcnRpYWxfc3VjY2VzcyB8fCB0aGlzLnBhcmVudC5lbmRzV2l0aCgnLy0nKSJ1ChFMaXN0Qm9va3NSZXNwb25zZRItCgVib29rcxgBIAMoCzIeLnByb3RvZm9ybS5jb25mb3JtYW5jZS52MS5Cb29rEhcKD25leHRfcGFnZV90b2tlbhgCIAEoCRIYCgt1bnJlYWNoYWJsZRgDIAMoCUID4EEGIrEBChFVcGRhdGVCb29rUmVxdWVzdBIxCgRib29rGAEgASgLMh4ucHJvdG9mb3JtLmNvbmZvcm1hbmNlLnYxLkJvb2tCA+BBAhI0Cgt1cGRhdGVfbWFzaxgCIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5GaWVsZE1hc2tCA+BBAhIcCgpyZXF1ZXN0X2lkGAMgASgJQgjijM/XCAIIARIVCg12YWxpZGF0ZV9vbmx5GAQgASgIIo0BChFEZWxldGVCb29rUmVxdWVzdBIwCgRuYW1lGAEgASgJQiLgQQL6QRwKGmxpYnJhcnkucHJvdG9mb3JtLmRldi9Cb29rEhEKBGV0YWcYAiABKAlCA+BBARIcCgpyZXF1ZXN0X2lkGAMgASgJQgjijM/XCAIIARIVCg12YWxpZGF0ZV9vbmx5GAQgASgIIkcKE1VuZGVsZXRlQm9va1JlcXVlc3QSMAoEbmFtZRgBIAEoCUIi4EEC+kEcChpsaWJyYXJ5LnByb3RvZm9ybS5kZXYvQm9vayJ6ChRCYXRjaEdldEJvb2tzUmVxdWVzdBIvCgZwYXJlbnQYASABKAlCH/pBHBIabGlicmFyeS5wcm90b2Zvcm0uZGV2L0Jvb2sSMQoFbmFtZXMYAiADKAlCIuBBAvpBHAoabGlicmFyeS5wcm90b2Zvcm0uZGV2L0Jvb2siRgoVQmF0Y2hHZXRCb29rc1Jlc3BvbnNlEi0KBWJvb2tzGAEgAygLMh4ucHJvdG9mb3JtLmNvbmZvcm1hbmNlLnYxLkJvb2sijgEKF0JhdGNoQ3JlYXRlQm9va3NSZXF1ZXN0Ei8KBnBhcmVudBgBIAEoCUIf+kEcEhpsaWJyYXJ5LnByb3RvZm9ybS5kZXYvQm9vaxJCCghyZXF1ZXN0cxgCIAMoCzIrLnByb3RvZm9ybS5jb25mb3JtYW5jZS52MS5DcmVhdGVCb29rUmVxdWVzdEID4EECIkkKGEJhdGNoQ3JlYXRlQm9va3NSZXNwb25zZRItCgVib29rcxgBIAMoCzIeLnByb3RvZm9ybS5jb25mb3JtYW5jZS52MS5Cb29rIo4BChdCYXRjaFVwZGF0ZUJvb2tzUmVxdWVzdBIvCgZwYXJlbnQYASABKAlCH/pBHBIabGlicmFyeS5wcm90b2Zvcm0uZGV2L0Jvb2sSQgoIcmVxdWVzdHMYAiADKAsyKy5wcm90b2Zvcm0uY29uZm9ybWFuY2UudjEuVXBkYXRlQm9va1JlcXVlc3RCA+BBAiJJChhCYXRjaFVwZGF0ZUJvb2tzUmVzcG9uc2USLQoFYm9va3MYASADKAsyHi5wcm90b2Zvcm0uY29uZm9ybWFuY2UudjEuQm9vayKOAQoXQmF0Y2hEZWxldGVCb29rc1JlcXVlc3QSLwoGcGFyZW50GAEgASgJQh/6QRwSGmxpYnJhcnkucHJvdG9mb3JtLmRldi9Cb29rEkIKCHJlcXVlc3RzGAIgAygLMisucHJvdG9mb3JtLmNvbmZvcm1hbmNlLnYxLkRlbGV0ZUJvb2tSZXF1ZXN0QgPgQQIiSQoYQmF0Y2hEZWxldGVCb29rc1Jlc3BvbnNlEi0KBWJvb2tzGAEgAygLMh4ucHJvdG9mb3JtLmNvbmZvcm1hbmNlLnYxLkJvb2siowEKD1Byb2plY3RTZXR0aW5ncxIRCgRuYW1lGAEgASgJQgPgQQgSEgoFdGhlbWUYAiABKAlCA+BBAjpp6kFmCiVsaWJyYXJ5LnByb3RvZm9ybS5kZXYvUHJvamVjdFNldHRpbmdzEhtwcm9qZWN0cy97cHJvamVjdH0vc2V0dGluZ3MqD3Byb2plY3RTZXR0aW5nczIPcHJvamVjdFNldHRpbmdzIlgKGUdldFByb2plY3RTZXR0aW5nc1JlcXVlc3QSOwoEbmFtZRgBIAEoCUIt4EEC+kEnCiVsaWJyYXJ5LnByb3RvZm9ybS5kZXYvUHJvamVjdFNldHRpbmdzIp4BChxVcGRhdGVQcm9qZWN0U2V0dGluZ3NSZXF1ZXN0EkgKEHByb2plY3Rfc2V0dGluZ3MYASABKAsyKS5wcm90b2Zvcm0uY29uZm9ybWFuY2UudjEuUHJvamVjdFNldHRpbmdzQgPgQQISNAoLdXBkYXRlX21hc2sYAiABKAsyGi5nb29nbGUucHJvdG9idWYuRmllbGRNYXNrQgPgQQIilAMKGFByb3Zpc2lvbkNhcGFjaXR5UmVxdWVzdBIlChFzdG9yYWdlX2dpYmlieXRlcxgBIAEoA0IK4EECukgEIgIoABIhCg1yZXBsaWNhX2NvdW50GAIgASgFQgrgQQK6SAQaAigAEjAKDWN1cnJlbmN5X2NvZGUYAyABKAlCFLpIEXIPMg1eW0EtWmEtel17M30kSACIAQESRgoNbGFuZ3VhZ2VfY29kZRgEIAEoCUIqukgnciUyI15bQS1aYS16XXsyLDh9KC1bQS1aYS16MC05XXsxLDh9KSokSAGIAQESLgoLcmVnaW9uX2NvZGUYBSABKAlCFLpIEXIPMg1eW0EtWmEtel17Mn0kSAKIAQESQgoJdGltZV96b25lGAYgASgJQiq6SCdyJTIjXltBLVphLXouXystXSsoL1tBLVphLXowLTkuXystXSspKyRIA4gBAUIQCg5fY3VycmVuY3lfY29kZUIQCg5fbGFuZ3VhZ2VfY29kZUIOCgxfcmVnaW9uX2NvZGVCDAoKX3RpbWVfem9uZSKlAgoJVGltZVJhbmdlEjMKCnN0YXJ0X3RpbWUYASABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wSACIAQESMQoIZW5kX3RpbWUYAiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wSAGIAQE6kwG6SI8BGowBChFhaXAxNDUudGltZV9yYW5nZRImZW5kIHRpbWUgbXVzdCBiZSBsYXRlciB0aGFuIHN0YXJ0IHRpbWUaTyFoYXModGhpcy5zdGFydF90aW1lKSB8fCAhaGFzKHRoaXMuZW5kX3RpbWUpIHx8IHRoaXMuc3RhcnRfdGltZSA8IHRoaXMuZW5kX3RpbWVCDQoLX3N0YXJ0X3RpbWVCCwoJX2VuZF90aW1lItABCgxXcml0ZUJvb2tKb2ISEQoEbmFtZRgBIAEoCUID4EEIEhkKDGRpc3BsYXlfbmFtZRgCIAEoCUID4EECEhUKCHNjaGVkdWxlGAMgASgJQgPgQQE6e+pBeAoibGlicmFyeS5wcm90b2Zvcm0uZGV2L1dyaXRlQm9va0pvYhI1cHVibGlzaGVycy97cHVibGlzaGVyfS93cml0ZUJvb2tKb2JzL3t3cml0ZV9ib29rX2pvYn0qDXdyaXRlQm9va0pvYnMyDHdyaXRlQm9va0pvYiK8AQoZQ3JlYXRlV3JpdGVCb29rSm9iUmVxdWVzdBI6CgZwYXJlbnQYASABKAlCKuBBAvpBJBIibGlicmFyeS5wcm90b2Zvcm0uZGV2L1dyaXRlQm9va0pvYhJDCg53cml0ZV9ib29rX2pvYhgCIAEoCzImLnByb3RvZm9ybS5jb25mb3JtYW5jZS52MS5Xcml0ZUJvb2tKb2JCA+BBAhIeChF3cml0ZV9ib29rX2pvYl9pZBgDIAEoCUID4EECIlIKFlJ1bldyaXRlQm9va0pvYlJlcXVlc3QSOAoEbmFtZRgBIAEoCUIq4EEC+kEkCiJsaWJyYXJ5LnByb3RvZm9ybS5kZXYvV3JpdGVCb29rSm9iIjwKEkNsb3VkU3RvcmFnZVNvdXJjZRImCgN1cmkYASABKAlCGeBBArpIE3IRMg9eZ3M6Ly9bXi9dKy8uKyQiRwoMSW5saW5lU291cmNlEjcKBWJvb2tzGAEgAygLMh4ucHJvdG9mb3JtLmNvbmZvcm1hbmNlLnYxLkJvb2tCCLpIBZIBAggBIv0BChJJbXBvcnRCb29rc1JlcXVlc3QSMgoGcGFyZW50GAEgASgJQiLgQQL6QRwSGmxpYnJhcnkucHJvdG9mb3JtLmRldi9Cb29rEkwKFGNsb3VkX3N0b3JhZ2Vfc291cmNlGAIgASgLMiwucHJvdG9mb3JtLmNvbmZvcm1hbmNlLnYxLkNsb3VkU3RvcmFnZVNvdXJjZUgAEj8KDWlubGluZV9zb3VyY2UYAyABKAsyJi5wcm90b2Zvcm0uY29uZm9ybWFuY2UudjEuSW5saW5lU291cmNlSAASEwoLaXNibl9wcmVmaXgYBCABKAlCDwoGc291cmNlEgW6SAIIASJBChdDbG91ZFN0b3JhZ2VEZXN0aW5hdGlvbhImCgN1cmkYASABKAlCGeBBArpIE3IRMg9eZ3M6Ly9bXi9dKy8uKyQiLwoSQXJjaGl2ZURlc3RpbmF0aW9uEhkKDGFyY2hpdmVfbmFtZRgBIAEoCUID4EECIpMCChJFeHBvcnRCb29rc1JlcXVlc3QSMgoGcGFyZW50GAEgASgJQiLgQQL6QRwSGmxpYnJhcnkucHJvdG9mb3JtLmRldi9Cb29rElYKGWNsb3VkX3N0b3JhZ2VfZGVzdGluYXRpb24YAiABKAsyMS5wcm90b2Zvcm0uY29uZm9ybWFuY2UudjEuQ2xvdWRTdG9yYWdlRGVzdGluYXRpb25IABJLChNhcmNoaXZlX2Rlc3RpbmF0aW9uGAMgASgLMiwucHJvdG9mb3JtLmNvbmZvcm1hbmNlLnYxLkFyY2hpdmVEZXN0aW5hdGlvbkgAEg4KBmZpbHRlchgEIAEoCUIUCgtkZXN0aW5hdGlvbhIFukgCCAEiSAoTSW1wb3J0Qm9va3NNZXRhZGF0YRIxChBwYXJ0aWFsX2ZhaWx1cmVzGAEgAygLMhIuZ29vZ2xlLnJwYy5TdGF0dXNCA+BBAyJyChFQdXJnZUJvb2tzUmVxdWVzdBIyCgZwYXJlbnQYASABKAlCIuBBAvpBHBIabGlicmFyeS5wcm90b2Zvcm0uZGV2L0Jvb2sSGgoGZmlsdGVyGAIgASgJQgrgQQK6SARyAhABEg0KBWZvcmNlGAMgASgIImAKElB1cmdlQm9va3NSZXNwb25zZRITCgtwdXJnZV9jb3VudBgBIAEoBRI1CgxwdXJnZV9zYW1wbGUYAiADKAlCH/pBHAoabGlicmFyeS5wcm90b2Zvcm0uZGV2L0Jvb2siugEKBlBvbGljeRIRCgRuYW1lGAEgASgJQgPgQQgSGgoSYWxsb3dlZF9wdWJsaXNoZXJzGAIgAygJEhEKBGV0YWcYAyABKAlCA+BBAzpu6kFrChxsaWJyYXJ5LnByb3RvZm9ybS5kZXYvUG9saWN5Ejlwcm9qZWN0cy97cHJvamVjdH0vbG9jYXRpb25zL3tsb2NhdGlvbn0vcG9saWNpZXMve3BvbGljeX0qCHBvbGljaWVzMgZwb2xpY3ki2wEKFVBvbGljeVByZXZpZXdNZXRhZGF0YRJACgVzdGF0ZRgBIAEoDjIsLnByb3RvZm9ybS5jb25mb3JtYW5jZS52MS5Qb2xpY3lQcmV2aWV3U3RhdGVCA+BBAxIXCgpsb2dfcHJlZml4GAIgASgJQgPgQQMSMwoKc3RhcnRfdGltZRgDIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCA+BBAxIyCglzdG9wX3RpbWUYBCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQgPgQQMi7QMKEFBvbGljeUV4cGVyaW1lbnQSEQoEbmFtZRgBIAEoCUID4EEIEjUKBnBvbGljeRgCIAEoCzIgLnByb3RvZm9ybS5jb25mb3JtYW5jZS52MS5Qb2xpY3lCA+BBAhJOChBwcmV2aWV3X21ldGFkYXRhGAMgASgLMi8ucHJvdG9mb3JtLmNvbmZvcm1hbmNlLnYxLlBvbGljeVByZXZpZXdNZXRhZGF0YUID4EEDElAKC2Fubm90YXRpb25zGAQgAygLMjsucHJvdG9mb3JtLmNvbmZvcm1hbmNlLnYxLlBvbGljeUV4cGVyaW1lbnQuQW5ub3RhdGlvbnNFbnRyeRIRCgRldGFnGAUgASgJQgPgQQMaMgoQQW5ub3RhdGlvbnNFbnRyeRILCgNrZXkYASABKAkSDQoFdmFsdWUYAiABKAk6AjgBOqUB6kGhAQombGlicmFyeS5wcm90b2Zvcm0uZGV2L1BvbGljeUV4cGVyaW1lbnQSUnByb2plY3RzL3twcm9qZWN0fS9sb2NhdGlvbnMve2xvY2F0aW9ufS9wb2xpY2llcy97cG9saWN5fS9leHBlcmltZW50cy97ZXhwZXJpbWVudH0qEXBvbGljeUV4cGVyaW1lbnRzMhBwb2xpY3lFeHBlcmltZW50ImMKI1N0YXJ0UHJldmlld1BvbGljeUV4cGVyaW1lbnRSZXF1ZXN0EjwKBG5hbWUYASABKAlCLuBBAvpBKAombGlicmFyeS5wcm90b2Zvcm0uZGV2L1BvbGljeUV4cGVyaW1lbnQiYgoiU3RvcFByZXZpZXdQb2xpY3lFeHBlcmltZW50UmVxdWVzdBI8CgRuYW1lGAEgASgJQi7gQQL6QSgKJmxpYnJhcnkucHJvdG9mb3JtLmRldi9Qb2xpY3lFeHBlcmltZW50IpEBCh1Db21taXRQb2xpY3lFeHBlcmltZW50UmVxdWVzdBI8CgRuYW1lGAEgASgJQi7gQQL6QSgKJmxpYnJhcnkucHJvdG9mb3JtLmRldi9Qb2xpY3lFeHBlcmltZW50EhgKBGV0YWcYAiABKAlCCuBBArpIBHICEAESGAoLcGFyZW50X2V0YWcYAyABKAlCA+BBASpvCglCb29rU3RhdGUSGgoWQk9PS19TVEFURV9VTlNQRUNJRklFRBAAEhUKEUJPT0tfU1RBVEVfQUNUSVZFEAESFwoTQk9PS19TVEFURV9ERUxFVElORxACEhYKEkJPT0tfU1RBVEVfREVMRVRFRBADKn8KElBvbGljeVByZXZpZXdTdGF0ZRIkCiBQT0xJQ1lfUFJFVklFV19TVEFURV9VTlNQRUNJRklFRBAAEh8KG1BPTElDWV9QUkVWSUVXX1NUQVRFX0FDVElWRRABEiIKHlBPTElDWV9QUkVWSUVXX1NUQVRFX1NVU1BFTkRFRBACMtQDCg5MaWJyYXJ5U2VydmljZRJTCgdHZXRCb29rEigucHJvdG9mb3JtLmNvbmZvcm1hbmNlLnYxLkdldEJvb2tSZXF1ZXN0Gh4ucHJvdG9mb3JtLmNvbmZvcm1hbmNlLnYxLkJvb2sSZAoJTGlzdEJvb2tzEioucHJvdG9mb3JtLmNvbmZvcm1hbmNlLnYxLkxpc3RCb29rc1JlcXVlc3QaKy5wcm90b2Zvcm0uY29uZm9ybWFuY2UudjEuTGlzdEJvb2tzUmVzcG9uc2USWQoKQ3JlYXRlQm9vaxIrLnByb3RvZm9ybS5jb25mb3JtYW5jZS52MS5DcmVhdGVCb29rUmVxdWVzdBoeLnByb3RvZm9ybS5jb25mb3JtYW5jZS52MS5Cb29rElkKClVwZGF0ZUJvb2sSKy5wcm90b2Zvcm0uY29uZm9ybWFuY2UudjEuVXBkYXRlQm9va1JlcXVlc3QaHi5wcm90b2Zvcm0uY29uZm9ybWFuY2UudjEuQm9vaxJRCgpEZWxldGVCb29rEisucHJvdG9mb3JtLmNvbmZvcm1hbmNlLnYxLkRlbGV0ZUJvb2tSZXF1ZXN0GhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5YgZwcm90bzM", [file_buf_validate_validate, file_google_api_field_behavior, file_google_api_field_info, file_google_api_resource, file_google_protobuf_duration, file_google_protobuf_empty, file_google_protobuf_field_mask, file_google_protobuf_timestamp, file_google_rpc_status]);
+  fileDesc("CiJwcm90b2Zvcm0vY29uZm9ybWFuY2UvdjEvYWlwLnByb3RvEhhwcm90b2Zvcm0uY29uZm9ybWFuY2UudjEinAkKBEJvb2sSEQoEbmFtZRgBIAEoCUID4EEIEhAKA3VpZBgCIAEoCUID4EEDEhkKDGRpc3BsYXlfbmFtZRgDIAEoCUID4EECEjQKC2NyZWF0ZV90aW1lGAQgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEID4EEDEjQKC3VwZGF0ZV90aW1lGAUgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEID4EEDEjQKC2RlbGV0ZV90aW1lGAYgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEID4EEDEqwECgRpc2JuGAcgASgJQp0E4EEC4EEFukiTBLoB/QMKF2Jvb2suaXNibjEzX2NoZWNrX2RpZ2l0EitJU0JOIG11c3QgaGF2ZSBhIHZhbGlkIElTQk4tMTMgY2hlY2sgZGlnaXQuGrQDIXRoaXMubWF0Y2hlcygnXlswLTldezEzfSQnKSB8fCAoaW50KHRoaXMuc3Vic3RyaW5nKDAsIDEpKSArIGludCh0aGlzLnN1YnN0cmluZygxLCAyKSkgKiAzICsgaW50KHRoaXMuc3Vic3RyaW5nKDIsIDMpKSArIGludCh0aGlzLnN1YnN0cmluZygzLCA0KSkgKiAzICsgaW50KHRoaXMuc3Vic3RyaW5nKDQsIDUpKSArIGludCh0aGlzLnN1YnN0cmluZyg1LCA2KSkgKiAzICsgaW50KHRoaXMuc3Vic3RyaW5nKDYsIDcpKSArIGludCh0aGlzLnN1YnN0cmluZyg3LCA4KSkgKiAzICsgaW50KHRoaXMuc3Vic3RyaW5nKDgsIDkpKSArIGludCh0aGlzLnN1YnN0cmluZyg5LCAxMCkpICogMyArIGludCh0aGlzLnN1YnN0cmluZygxMCwgMTEpKSArIGludCh0aGlzLnN1YnN0cmluZygxMSwgMTIpKSAqIDMgKyBpbnQodGhpcy5zdWJzdHJpbmcoMTIsIDEzKSkpICUgMTAgPT0gMMgBAXINMgteWzAtOV17MTN9JBIbCgtpbnB1dF90b2tlbhgIIAEoCUIG4EEB4EEEEhYKBG5vdGUYCSABKAlCA+BBAUgBiAEBEhEKBGV0YWcYCiABKAlCA+BBAxIxCgtleHBpcmVfdGltZRgLIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBIABIwCgN0dGwYDCABKAsyGS5nb29nbGUucHJvdG9idWYuRHVyYXRpb25CBuBBAeBBBEgAEjcKBXN0YXRlGA0gASgOMiMucHJvdG9mb3JtLmNvbmZvcm1hbmNlLnYxLkJvb2tTdGF0ZUID4EEDEjMKCnB1cmdlX3RpbWUYDiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQgPgQQM6UepBTgoabGlicmFyeS5wcm90b2Zvcm0uZGV2L0Jvb2sSI3B1Ymxpc2hlcnMve3B1Ymxpc2hlcn0vYm9va3Mve2Jvb2t9KgVib29rczIEYm9va0IMCgpleHBpcmF0aW9uQgcKBV9ub3RlIqoCCgxCb29rUmV2aXNpb24SEQoEbmFtZRgBIAEoCUID4EEIEjUKCHNuYXBzaG90GAIgASgLMh4ucHJvdG9mb3JtLmNvbmZvcm1hbmNlLnYxLkJvb2tCA+BBAxI0CgtjcmVhdGVfdGltZRgDIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCA+BBAxIaCg1hbHRlcm5hdGVfaWRzGAQgAygJQgPgQQM6fupBewoibGlicmFyeS5wcm90b2Zvcm0uZGV2L0Jvb2tSZXZpc2lvbhI4cHVibGlzaGVycy97cHVibGlzaGVyfS9ib29rcy97Ym9va30vcmV2aXNpb25zL3tyZXZpc2lvbn0qDWJvb2tSZXZpc2lvbnMyDGJvb2tSZXZpc2lvbiLNAQoRQ3JlYXRlQm9va1JlcXVlc3QSMgoGcGFyZW50GAEgASgJQiLgQQL6QRwSGmxpYnJhcnkucHJvdG9mb3JtLmRldi9Cb29rEjEKBGJvb2sYAiABKAsyHi5wcm90b2Zvcm0uY29uZm9ybWFuY2UudjEuQm9va0ID4EECEhQKB2Jvb2tfaWQYAyABKAlCA+BBAhIfCgpyZXF1ZXN0X2lkGAQgASgJQgvgQQHijM/XCAIIARIaCg12YWxpZGF0ZV9vbmx5GAUgASgIQgPgQQEiQgoOR2V0Qm9va1JlcXVlc3QSMAoEbmFtZRgBIAEoCUIi4EEC+kEcChpsaWJyYXJ5LnByb3RvZm9ybS5kZXYvQm9vayKZBAoQTGlzdEJvb2tzUmVxdWVzdBIyCgZwYXJlbnQYASABKAlCIuBBAvpBHBIabGlicmFyeS5wcm90b2Zvcm0uZGV2L0Jvb2sSFgoJcGFnZV9zaXplGAIgASgFQgPgQQESFwoKcGFnZV90b2tlbhgDIAEoCUID4EEBEhMKBmZpbHRlchgEIAEoCUID4EEBEhUKCG9yZGVyX2J5GAUgASgJQgPgQQESIwoWcmV0dXJuX3BhcnRpYWxfc3VjY2VzcxgGIAEoCEID4EEBEhkKDHNob3dfZGVsZXRlZBgHIAEoCEID4EEBOrMCukivAhqMAQodYWlwMTU5LmNyb3NzX2NvbGxlY3Rpb25fb3JkZXISN29yZGVyIGJ5IGlzIHVuYXZhaWxhYmxlIHdoZW4gcmVhZGluZyBhY3Jvc3MgY29sbGVjdGlvbnMaMiF0aGlzLnBhcmVudC5lbmRzV2l0aCgnLy0nKSB8fCB0aGlzLm9yZGVyX2J5ID09ICcnGp0BChxhaXAyMTcucGFydGlhbF9zdWNjZXNzX3Njb3BlEkFwYXJ0aWFsIHN1Y2Nlc3MgaXMgYXZhaWxhYmxlIG9ubHkgd2hlbiByZWFkaW5nIGFjcm9zcyBjb2xsZWN0aW9ucxo6IXRoaXMucmV0dXJuX3BhcnRpYWxfc3VjY2VzcyB8fCB0aGlzLnBhcmVudC5lbmRzV2l0aCgnLy0nKSJ1ChFMaXN0Qm9va3NSZXNwb25zZRItCgVib29rcxgBIAMoCzIeLnByb3RvZm9ybS5jb25mb3JtYW5jZS52MS5Cb29rEhcKD25leHRfcGFnZV90b2tlbhgCIAEoCRIYCgt1bnJlYWNoYWJsZRgDIAMoCUID4EEGIrkBChFVcGRhdGVCb29rUmVxdWVzdBIxCgRib29rGAEgASgLMh4ucHJvdG9mb3JtLmNvbmZvcm1hbmNlLnYxLkJvb2tCA+BBAhI0Cgt1cGRhdGVfbWFzaxgCIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5GaWVsZE1hc2tCA+BBARIfCgpyZXF1ZXN0X2lkGAMgASgJQgvgQQHijM/XCAIIARIaCg12YWxpZGF0ZV9vbmx5GAQgASgIQgPgQQEixQEKEURlbGV0ZUJvb2tSZXF1ZXN0EjAKBG5hbWUYASABKAlCIuBBAvpBHAoabGlicmFyeS5wcm90b2Zvcm0uZGV2L0Jvb2sSEQoEZXRhZxgCIAEoCUID4EEBEh8KCnJlcXVlc3RfaWQYAyABKAlCC+BBAeKMz9cIAggBEhoKDXZhbGlkYXRlX29ubHkYBCABKAhCA+BBARISCgVmb3JjZRgFIAEoCEID4EEBEhoKDWFsbG93X21pc3NpbmcYBiABKAhCA+BBASJHChNVbmRlbGV0ZUJvb2tSZXF1ZXN0EjAKBG5hbWUYASABKAlCIuBBAvpBHAoabGlicmFyeS5wcm90b2Zvcm0uZGV2L0Jvb2siRgoSRXhwdW5nZUJvb2tSZXF1ZXN0EjAKBG5hbWUYASABKAlCIuBBAvpBHAoabGlicmFyeS5wcm90b2Zvcm0uZGV2L0Jvb2siegoUQmF0Y2hHZXRCb29rc1JlcXVlc3QSLwoGcGFyZW50GAEgASgJQh/6QRwSGmxpYnJhcnkucHJvdG9mb3JtLmRldi9Cb29rEjEKBW5hbWVzGAIgAygJQiLgQQL6QRwKGmxpYnJhcnkucHJvdG9mb3JtLmRldi9Cb29rIkYKFUJhdGNoR2V0Qm9va3NSZXNwb25zZRItCgVib29rcxgBIAMoCzIeLnByb3RvZm9ybS5jb25mb3JtYW5jZS52MS5Cb29rIo4BChdCYXRjaENyZWF0ZUJvb2tzUmVxdWVzdBIvCgZwYXJlbnQYASABKAlCH/pBHBIabGlicmFyeS5wcm90b2Zvcm0uZGV2L0Jvb2sSQgoIcmVxdWVzdHMYAiADKAsyKy5wcm90b2Zvcm0uY29uZm9ybWFuY2UudjEuQ3JlYXRlQm9va1JlcXVlc3RCA+BBAiJJChhCYXRjaENyZWF0ZUJvb2tzUmVzcG9uc2USLQoFYm9va3MYASADKAsyHi5wcm90b2Zvcm0uY29uZm9ybWFuY2UudjEuQm9vayKOAQoXQmF0Y2hVcGRhdGVCb29rc1JlcXVlc3QSLwoGcGFyZW50GAEgASgJQh/6QRwSGmxpYnJhcnkucHJvdG9mb3JtLmRldi9Cb29rEkIKCHJlcXVlc3RzGAIgAygLMisucHJvdG9mb3JtLmNvbmZvcm1hbmNlLnYxLlVwZGF0ZUJvb2tSZXF1ZXN0QgPgQQIiSQoYQmF0Y2hVcGRhdGVCb29rc1Jlc3BvbnNlEi0KBWJvb2tzGAEgAygLMh4ucHJvdG9mb3JtLmNvbmZvcm1hbmNlLnYxLkJvb2sijgEKF0JhdGNoRGVsZXRlQm9va3NSZXF1ZXN0Ei8KBnBhcmVudBgBIAEoCUIf+kEcEhpsaWJyYXJ5LnByb3RvZm9ybS5kZXYvQm9vaxJCCghyZXF1ZXN0cxgCIAMoCzIrLnByb3RvZm9ybS5jb25mb3JtYW5jZS52MS5EZWxldGVCb29rUmVxdWVzdEID4EECIkkKGEJhdGNoRGVsZXRlQm9va3NSZXNwb25zZRItCgVib29rcxgBIAMoCzIeLnByb3RvZm9ybS5jb25mb3JtYW5jZS52MS5Cb29rIqMBCg9Qcm9qZWN0U2V0dGluZ3MSEQoEbmFtZRgBIAEoCUID4EEIEhIKBXRoZW1lGAIgASgJQgPgQQI6aepBZgolbGlicmFyeS5wcm90b2Zvcm0uZGV2L1Byb2plY3RTZXR0aW5ncxIbcHJvamVjdHMve3Byb2plY3R9L3NldHRpbmdzKg9wcm9qZWN0U2V0dGluZ3MyD3Byb2plY3RTZXR0aW5ncyJYChlHZXRQcm9qZWN0U2V0dGluZ3NSZXF1ZXN0EjsKBG5hbWUYASABKAlCLeBBAvpBJwolbGlicmFyeS5wcm90b2Zvcm0uZGV2L1Byb2plY3RTZXR0aW5ncyKeAQocVXBkYXRlUHJvamVjdFNldHRpbmdzUmVxdWVzdBJIChBwcm9qZWN0X3NldHRpbmdzGAEgASgLMikucHJvdG9mb3JtLmNvbmZvcm1hbmNlLnYxLlByb2plY3RTZXR0aW5nc0ID4EECEjQKC3VwZGF0ZV9tYXNrGAIgASgLMhouZ29vZ2xlLnByb3RvYnVmLkZpZWxkTWFza0ID4EEBIpQDChhQcm92aXNpb25DYXBhY2l0eVJlcXVlc3QSJQoRc3RvcmFnZV9naWJpYnl0ZXMYASABKANCCuBBArpIBCICKAASIQoNcmVwbGljYV9jb3VudBgCIAEoBUIK4EECukgEGgIoABIwCg1jdXJyZW5jeV9jb2RlGAMgASgJQhS6SBFyDzINXltBLVphLXpdezN9JEgAiAEBEkYKDWxhbmd1YWdlX2NvZGUYBCABKAlCKrpIJ3IlMiNeW0EtWmEtel17Miw4fSgtW0EtWmEtejAtOV17MSw4fSkqJEgBiAEBEi4KC3JlZ2lvbl9jb2RlGAUgASgJQhS6SBFyDzINXltBLVphLXpdezJ9JEgCiAEBEkIKCXRpbWVfem9uZRgGIAEoCUIqukgnciUyI15bQS1aYS16Ll8rLV0rKC9bQS1aYS16MC05Ll8rLV0rKSskSAOIAQFCEAoOX2N1cnJlbmN5X2NvZGVCEAoOX2xhbmd1YWdlX2NvZGVCDgoMX3JlZ2lvbl9jb2RlQgwKCl90aW1lX3pvbmUipQIKCVRpbWVSYW5nZRIzCgpzdGFydF90aW1lGAEgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEgAiAEBEjEKCGVuZF90aW1lGAIgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEgBiAEBOpMBukiPARqMAQoRYWlwMTQ1LnRpbWVfcmFuZ2USJmVuZCB0aW1lIG11c3QgYmUgbGF0ZXIgdGhhbiBzdGFydCB0aW1lGk8haGFzKHRoaXMuc3RhcnRfdGltZSkgfHwgIWhhcyh0aGlzLmVuZF90aW1lKSB8fCB0aGlzLnN0YXJ0X3RpbWUgPCB0aGlzLmVuZF90aW1lQg0KC19zdGFydF90aW1lQgsKCV9lbmRfdGltZSLQAQoMV3JpdGVCb29rSm9iEhEKBG5hbWUYASABKAlCA+BBCBIZCgxkaXNwbGF5X25hbWUYAiABKAlCA+BBAhIVCghzY2hlZHVsZRgDIAEoCUID4EEBOnvqQXgKImxpYnJhcnkucHJvdG9mb3JtLmRldi9Xcml0ZUJvb2tKb2ISNXB1Ymxpc2hlcnMve3B1Ymxpc2hlcn0vd3JpdGVCb29rSm9icy97d3JpdGVfYm9va19qb2J9Kg13cml0ZUJvb2tKb2JzMgx3cml0ZUJvb2tKb2IivAEKGUNyZWF0ZVdyaXRlQm9va0pvYlJlcXVlc3QSOgoGcGFyZW50GAEgASgJQirgQQL6QSQSImxpYnJhcnkucHJvdG9mb3JtLmRldi9Xcml0ZUJvb2tKb2ISQwoOd3JpdGVfYm9va19qb2IYAiABKAsyJi5wcm90b2Zvcm0uY29uZm9ybWFuY2UudjEuV3JpdGVCb29rSm9iQgPgQQISHgoRd3JpdGVfYm9va19qb2JfaWQYAyABKAlCA+BBAiJSChZSdW5Xcml0ZUJvb2tKb2JSZXF1ZXN0EjgKBG5hbWUYASABKAlCKuBBAvpBJAoibGlicmFyeS5wcm90b2Zvcm0uZGV2L1dyaXRlQm9va0pvYiI8ChJDbG91ZFN0b3JhZ2VTb3VyY2USJgoDdXJpGAEgASgJQhngQQK6SBNyETIPXmdzOi8vW14vXSsvLiskIkcKDElubGluZVNvdXJjZRI3CgVib29rcxgBIAMoCzIeLnByb3RvZm9ybS5jb25mb3JtYW5jZS52MS5Cb29rQgi6SAWSAQIIASL9AQoSSW1wb3J0Qm9va3NSZXF1ZXN0EjIKBnBhcmVudBgBIAEoCUIi4EEC+kEcEhpsaWJyYXJ5LnByb3RvZm9ybS5kZXYvQm9vaxJMChRjbG91ZF9zdG9yYWdlX3NvdXJjZRgCIAEoCzIsLnByb3RvZm9ybS5jb25mb3JtYW5jZS52MS5DbG91ZFN0b3JhZ2VTb3VyY2VIABI/Cg1pbmxpbmVfc291cmNlGAMgASgLMiYucHJvdG9mb3JtLmNvbmZvcm1hbmNlLnYxLklubGluZVNvdXJjZUgAEhMKC2lzYm5fcHJlZml4GAQgASgJQg8KBnNvdXJjZRIFukgCCAEiQQoXQ2xvdWRTdG9yYWdlRGVzdGluYXRpb24SJgoDdXJpGAEgASgJQhngQQK6SBNyETIPXmdzOi8vW14vXSsvLiskIi8KEkFyY2hpdmVEZXN0aW5hdGlvbhIZCgxhcmNoaXZlX25hbWUYASABKAlCA+BBAiKTAgoSRXhwb3J0Qm9va3NSZXF1ZXN0EjIKBnBhcmVudBgBIAEoCUIi4EEC+kEcEhpsaWJyYXJ5LnByb3RvZm9ybS5kZXYvQm9vaxJWChljbG91ZF9zdG9yYWdlX2Rlc3RpbmF0aW9uGAIgASgLMjEucHJvdG9mb3JtLmNvbmZvcm1hbmNlLnYxLkNsb3VkU3RvcmFnZURlc3RpbmF0aW9uSAASSwoTYXJjaGl2ZV9kZXN0aW5hdGlvbhgDIAEoCzIsLnByb3RvZm9ybS5jb25mb3JtYW5jZS52MS5BcmNoaXZlRGVzdGluYXRpb25IABIOCgZmaWx0ZXIYBCABKAlCFAoLZGVzdGluYXRpb24SBbpIAggBIkgKE0ltcG9ydEJvb2tzTWV0YWRhdGESMQoQcGFydGlhbF9mYWlsdXJlcxgBIAMoCzISLmdvb2dsZS5ycGMuU3RhdHVzQgPgQQMicgoRUHVyZ2VCb29rc1JlcXVlc3QSMgoGcGFyZW50GAEgASgJQiLgQQL6QRwSGmxpYnJhcnkucHJvdG9mb3JtLmRldi9Cb29rEhoKBmZpbHRlchgCIAEoCUIK4EECukgEcgIQARINCgVmb3JjZRgDIAEoCCJgChJQdXJnZUJvb2tzUmVzcG9uc2USEwoLcHVyZ2VfY291bnQYASABKAUSNQoMcHVyZ2Vfc2FtcGxlGAIgAygJQh/6QRwKGmxpYnJhcnkucHJvdG9mb3JtLmRldi9Cb29rIroBCgZQb2xpY3kSEQoEbmFtZRgBIAEoCUID4EEIEhoKEmFsbG93ZWRfcHVibGlzaGVycxgCIAMoCRIRCgRldGFnGAMgASgJQgPgQQM6bupBawocbGlicmFyeS5wcm90b2Zvcm0uZGV2L1BvbGljeRI5cHJvamVjdHMve3Byb2plY3R9L2xvY2F0aW9ucy97bG9jYXRpb259L3BvbGljaWVzL3twb2xpY3l9Kghwb2xpY2llczIGcG9saWN5ItsBChVQb2xpY3lQcmV2aWV3TWV0YWRhdGESQAoFc3RhdGUYASABKA4yLC5wcm90b2Zvcm0uY29uZm9ybWFuY2UudjEuUG9saWN5UHJldmlld1N0YXRlQgPgQQMSFwoKbG9nX3ByZWZpeBgCIAEoCUID4EEDEjMKCnN0YXJ0X3RpbWUYAyABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQgPgQQMSMgoJc3RvcF90aW1lGAQgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEID4EEDIu0DChBQb2xpY3lFeHBlcmltZW50EhEKBG5hbWUYASABKAlCA+BBCBI1CgZwb2xpY3kYAiABKAsyIC5wcm90b2Zvcm0uY29uZm9ybWFuY2UudjEuUG9saWN5QgPgQQISTgoQcHJldmlld19tZXRhZGF0YRgDIAEoCzIvLnByb3RvZm9ybS5jb25mb3JtYW5jZS52MS5Qb2xpY3lQcmV2aWV3TWV0YWRhdGFCA+BBAxJQCgthbm5vdGF0aW9ucxgEIAMoCzI7LnByb3RvZm9ybS5jb25mb3JtYW5jZS52MS5Qb2xpY3lFeHBlcmltZW50LkFubm90YXRpb25zRW50cnkSEQoEZXRhZxgFIAEoCUID4EEDGjIKEEFubm90YXRpb25zRW50cnkSCwoDa2V5GAEgASgJEg0KBXZhbHVlGAIgASgJOgI4ATqlAepBoQEKJmxpYnJhcnkucHJvdG9mb3JtLmRldi9Qb2xpY3lFeHBlcmltZW50ElJwcm9qZWN0cy97cHJvamVjdH0vbG9jYXRpb25zL3tsb2NhdGlvbn0vcG9saWNpZXMve3BvbGljeX0vZXhwZXJpbWVudHMve2V4cGVyaW1lbnR9KhFwb2xpY3lFeHBlcmltZW50czIQcG9saWN5RXhwZXJpbWVudCJjCiNTdGFydFByZXZpZXdQb2xpY3lFeHBlcmltZW50UmVxdWVzdBI8CgRuYW1lGAEgASgJQi7gQQL6QSgKJmxpYnJhcnkucHJvdG9mb3JtLmRldi9Qb2xpY3lFeHBlcmltZW50ImIKIlN0b3BQcmV2aWV3UG9saWN5RXhwZXJpbWVudFJlcXVlc3QSPAoEbmFtZRgBIAEoCUIu4EEC+kEoCiZsaWJyYXJ5LnByb3RvZm9ybS5kZXYvUG9saWN5RXhwZXJpbWVudCKRAQodQ29tbWl0UG9saWN5RXhwZXJpbWVudFJlcXVlc3QSPAoEbmFtZRgBIAEoCUIu4EEC+kEoCiZsaWJyYXJ5LnByb3RvZm9ybS5kZXYvUG9saWN5RXhwZXJpbWVudBIYCgRldGFnGAIgASgJQgrgQQK6SARyAhABEhgKC3BhcmVudF9ldGFnGAMgASgJQgPgQQEqbwoJQm9va1N0YXRlEhoKFkJPT0tfU1RBVEVfVU5TUEVDSUZJRUQQABIVChFCT09LX1NUQVRFX0FDVElWRRABEhcKE0JPT0tfU1RBVEVfREVMRVRJTkcQAhIWChJCT09LX1NUQVRFX0RFTEVURUQQAyp/ChJQb2xpY3lQcmV2aWV3U3RhdGUSJAogUE9MSUNZX1BSRVZJRVdfU1RBVEVfVU5TUEVDSUZJRUQQABIfChtQT0xJQ1lfUFJFVklFV19TVEFURV9BQ1RJVkUQARIiCh5QT0xJQ1lfUFJFVklFV19TVEFURV9TVVNQRU5ERUQQAjKsCAoOTGlicmFyeVNlcnZpY2USgwEKB0dldEJvb2sSKC5wcm90b2Zvcm0uY29uZm9ybWFuY2UudjEuR2V0Qm9va1JlcXVlc3QaHi5wcm90b2Zvcm0uY29uZm9ybWFuY2UudjEuQm9vayIu2kEEbmFtZYLT5JMCIRIfL3YxL3tuYW1lPXB1Ymxpc2hlcnMvKi9ib29rcy8qfRKWAQoJTGlzdEJvb2tzEioucHJvdG9mb3JtLmNvbmZvcm1hbmNlLnYxLkxpc3RCb29rc1JlcXVlc3QaKy5wcm90b2Zvcm0uY29uZm9ybWFuY2UudjEuTGlzdEJvb2tzUmVzcG9uc2UiMNpBBnBhcmVudILT5JMCIRIfL3YxL3twYXJlbnQ9cHVibGlzaGVycy8qfS9ib29rcxKeAQoKQ3JlYXRlQm9vaxIrLnByb3RvZm9ybS5jb25mb3JtYW5jZS52MS5DcmVhdGVCb29rUmVxdWVzdBoeLnByb3RvZm9ybS5jb25mb3JtYW5jZS52MS5Cb29rIkPaQRNwYXJlbnQsYm9vayxib29rX2lkgtPkkwInOgRib29rIh8vdjEve3BhcmVudD1wdWJsaXNoZXJzLyp9L2Jvb2tzEqABCgpVcGRhdGVCb29rEisucHJvdG9mb3JtLmNvbmZvcm1hbmNlLnYxLlVwZGF0ZUJvb2tSZXF1ZXN0Gh4ucHJvdG9mb3JtLmNvbmZvcm1hbmNlLnYxLkJvb2siRdpBEGJvb2ssdXBkYXRlX21hc2uC0+STAiw6BGJvb2syJC92MS97Ym9vay5uYW1lPXB1Ymxpc2hlcnMvKi9ib29rcy8qfRKJAQoKRGVsZXRlQm9vaxIrLnByb3RvZm9ybS5jb25mb3JtYW5jZS52MS5EZWxldGVCb29rUmVxdWVzdBoeLnByb3RvZm9ybS5jb25mb3JtYW5jZS52MS5Cb29rIi7aQQRuYW1lgtPkkwIhKh8vdjEve25hbWU9cHVibGlzaGVycy8qL2Jvb2tzLyp9EpkBCgxVbmRlbGV0ZUJvb2sSLS5wcm90b2Zvcm0uY29uZm9ybWFuY2UudjEuVW5kZWxldGVCb29rUmVxdWVzdBoeLnByb3RvZm9ybS5jb25mb3JtYW5jZS52MS5Cb29rIjraQQRuYW1lgtPkkwItOgEqIigvdjEve25hbWU9cHVibGlzaGVycy8qL2Jvb2tzLyp9OnVuZGVsZXRlEo4BCgtFeHB1bmdlQm9vaxIsLnByb3RvZm9ybS5jb25mb3JtYW5jZS52MS5FeHB1bmdlQm9va1JlcXVlc3QaFi5nb29nbGUucHJvdG9idWYuRW1wdHkiOdpBBG5hbWWC0+STAiw6ASoiJy92MS97bmFtZT1wdWJsaXNoZXJzLyovYm9va3MvKn06ZXhwdW5nZWIGcHJvdG8z", [file_buf_validate_validate, file_google_api_annotations, file_google_api_client, file_google_api_field_behavior, file_google_api_field_info, file_google_api_resource, file_google_protobuf_duration, file_google_protobuf_empty, file_google_protobuf_field_mask, file_google_protobuf_timestamp, file_google_rpc_status]);
 
 /**
+ * A book managed by the library service.
+ *
  * @generated from message protoform.conformance.v1.Book
  */
 export type Book = Message<"protoform.conformance.v1.Book"> & {
   /**
+   * The resource name of the book.
+   * Format: publishers/{publisher}/books/{book}
+   *
    * @generated from field: string name = 1;
    */
   name: string;
 
   /**
+   * The system-assigned UUID for the book.
+   *
    * @generated from field: string uid = 2;
    */
   uid: string;
 
   /**
+   * The display name of the book.
+   *
    * @generated from field: string display_name = 3;
    */
   displayName: string;
 
   /**
+   * The time when the book was created.
+   *
    * @generated from field: google.protobuf.Timestamp create_time = 4;
    */
   createTime?: Timestamp | undefined;
 
   /**
+   * The time when the book was last updated.
+   *
    * @generated from field: google.protobuf.Timestamp update_time = 5;
    */
   updateTime?: Timestamp | undefined;
 
   /**
+   * The time when the book was soft deleted.
+   *
    * @generated from field: google.protobuf.Timestamp delete_time = 6;
    */
   deleteTime?: Timestamp | undefined;
@@ -62,31 +79,43 @@ export type Book = Message<"protoform.conformance.v1.Book"> & {
   isbn: string;
 
   /**
+   * An optional token consumed while creating or updating the book.
+   *
    * @generated from field: string input_token = 8;
    */
   inputToken: string;
 
   /**
+   * An optional note about the book.
+   *
    * @generated from field: optional string note = 9;
    */
   note?: string | undefined;
 
   /**
+   * The checksum used for optimistic concurrency control.
+   *
    * @generated from field: string etag = 10;
    */
   etag: string;
 
   /**
+   * The requested expiration policy for the book.
+   *
    * @generated from oneof protoform.conformance.v1.Book.expiration
    */
   expiration: {
     /**
+     * The absolute time when the book expires.
+     *
      * @generated from field: google.protobuf.Timestamp expire_time = 11;
      */
     value: Timestamp;
     case: "expireTime";
   } | {
     /**
+     * The duration after creation when the book expires.
+     *
      * @generated from field: google.protobuf.Duration ttl = 12;
      */
     value: Duration;
@@ -94,11 +123,15 @@ export type Book = Message<"protoform.conformance.v1.Book"> & {
   } | { case: undefined; value?: undefined };
 
   /**
+   * The current lifecycle state of the book.
+   *
    * @generated from field: protoform.conformance.v1.BookState state = 13;
    */
   state: BookState;
 
   /**
+   * The time when the soft-deleted book will be permanently removed.
+   *
    * @generated from field: google.protobuf.Timestamp purge_time = 14;
    */
   purgeTime?: Timestamp | undefined;
@@ -144,30 +177,43 @@ export const BookRevisionSchema: GenMessage<BookRevision> = /*@__PURE__*/
   messageDesc(file_protoform_conformance_v1_aip, 1);
 
 /**
+ * The request for LibraryService.CreateBook.
+ *
  * @generated from message protoform.conformance.v1.CreateBookRequest
  */
 export type CreateBookRequest = Message<"protoform.conformance.v1.CreateBookRequest"> & {
   /**
+   * The publisher in which to create the book.
+   * Format: publishers/{publisher}
+   *
    * @generated from field: string parent = 1;
    */
   parent: string;
 
   /**
+   * The book to create.
+   *
    * @generated from field: protoform.conformance.v1.Book book = 2;
    */
   book?: Book | undefined;
 
   /**
+   * The ID to use for the book, which becomes the final resource-name segment.
+   *
    * @generated from field: string book_id = 3;
    */
   bookId: string;
 
   /**
+   * An optional UUID that makes retries idempotent.
+   *
    * @generated from field: string request_id = 4;
    */
   requestId: string;
 
   /**
+   * Whether to validate the request without applying it.
+   *
    * @generated from field: bool validate_only = 5;
    */
   validateOnly: boolean;
@@ -181,10 +227,15 @@ export const CreateBookRequestSchema: GenMessage<CreateBookRequest> = /*@__PURE_
   messageDesc(file_protoform_conformance_v1_aip, 2);
 
 /**
+ * The request for LibraryService.GetBook.
+ *
  * @generated from message protoform.conformance.v1.GetBookRequest
  */
 export type GetBookRequest = Message<"protoform.conformance.v1.GetBookRequest"> & {
   /**
+   * The name of the book to retrieve.
+   * Format: publishers/{publisher}/books/{book}
+   *
    * @generated from field: string name = 1;
    */
   name: string;
@@ -198,38 +249,60 @@ export const GetBookRequestSchema: GenMessage<GetBookRequest> = /*@__PURE__*/
   messageDesc(file_protoform_conformance_v1_aip, 3);
 
 /**
+ * The request for LibraryService.ListBooks.
+ *
  * @generated from message protoform.conformance.v1.ListBooksRequest
  */
 export type ListBooksRequest = Message<"protoform.conformance.v1.ListBooksRequest"> & {
   /**
+   * The publisher whose books are listed.
+   * Format: publishers/{publisher}
+   *
    * @generated from field: string parent = 1;
    */
   parent: string;
 
   /**
+   * The maximum number of books to return.
+   *
    * @generated from field: int32 page_size = 2;
    */
   pageSize: number;
 
   /**
+   * A token identifying the next result page.
+   *
    * @generated from field: string page_token = 3;
    */
   pageToken: string;
 
   /**
+   * An optional filter applied to the books.
+   *
    * @generated from field: string filter = 4;
    */
   filter: string;
 
   /**
+   * An optional ordering expression for the books.
+   *
    * @generated from field: string order_by = 5;
    */
   orderBy: string;
 
   /**
+   * Whether cross-collection reads may return partial results.
+   *
    * @generated from field: bool return_partial_success = 6;
    */
   returnPartialSuccess: boolean;
+
+  /**
+   * Whether soft-deleted books are included.
+   *
+   * @generated from field: bool show_deleted = 7;
+   */
+  showDeleted: boolean;
 };
 
 /**
@@ -240,20 +313,28 @@ export const ListBooksRequestSchema: GenMessage<ListBooksRequest> = /*@__PURE__*
   messageDesc(file_protoform_conformance_v1_aip, 4);
 
 /**
+ * The response from LibraryService.ListBooks.
+ *
  * @generated from message protoform.conformance.v1.ListBooksResponse
  */
 export type ListBooksResponse = Message<"protoform.conformance.v1.ListBooksResponse"> & {
   /**
+   * The books in the requested page.
+   *
    * @generated from field: repeated protoform.conformance.v1.Book books = 1;
    */
   books: Book[];
 
   /**
+   * A token that retrieves the next page, or empty when no page remains.
+   *
    * @generated from field: string next_page_token = 2;
    */
   nextPageToken: string;
 
   /**
+   * Locations that could not be reached for a partial-success request.
+   *
    * @generated from field: repeated string unreachable = 3;
    */
   unreachable: string[];
@@ -267,25 +348,35 @@ export const ListBooksResponseSchema: GenMessage<ListBooksResponse> = /*@__PURE_
   messageDesc(file_protoform_conformance_v1_aip, 5);
 
 /**
+ * The request for LibraryService.UpdateBook.
+ *
  * @generated from message protoform.conformance.v1.UpdateBookRequest
  */
 export type UpdateBookRequest = Message<"protoform.conformance.v1.UpdateBookRequest"> & {
   /**
+   * The book with updated values. Its name identifies the target.
+   *
    * @generated from field: protoform.conformance.v1.Book book = 1;
    */
   book?: Book | undefined;
 
   /**
+   * The fields to update. Omit to update every populated field.
+   *
    * @generated from field: google.protobuf.FieldMask update_mask = 2;
    */
   updateMask?: FieldMask | undefined;
 
   /**
+   * An optional UUID that makes retries idempotent.
+   *
    * @generated from field: string request_id = 3;
    */
   requestId: string;
 
   /**
+   * Whether to validate the request without applying it.
+   *
    * @generated from field: bool validate_only = 4;
    */
   validateOnly: boolean;
@@ -299,28 +390,53 @@ export const UpdateBookRequestSchema: GenMessage<UpdateBookRequest> = /*@__PURE_
   messageDesc(file_protoform_conformance_v1_aip, 6);
 
 /**
+ * The request for LibraryService.DeleteBook.
+ *
  * @generated from message protoform.conformance.v1.DeleteBookRequest
  */
 export type DeleteBookRequest = Message<"protoform.conformance.v1.DeleteBookRequest"> & {
   /**
+   * The name of the book to soft delete.
+   * Format: publishers/{publisher}/books/{book}
+   *
    * @generated from field: string name = 1;
    */
   name: string;
 
   /**
+   * The etag that must match the current book when provided.
+   *
    * @generated from field: string etag = 2;
    */
   etag: string;
 
   /**
+   * An optional UUID that makes retries idempotent.
+   *
    * @generated from field: string request_id = 3;
    */
   requestId: string;
 
   /**
+   * Whether to validate the request without applying it.
+   *
    * @generated from field: bool validate_only = 4;
    */
   validateOnly: boolean;
+
+  /**
+   * Whether to delete child resources with the book.
+   *
+   * @generated from field: bool force = 5;
+   */
+  force: boolean;
+
+  /**
+   * Whether repeated deletion succeeds when the book is already soft deleted.
+   *
+   * @generated from field: bool allow_missing = 6;
+   */
+  allowMissing: boolean;
 };
 
 /**
@@ -331,10 +447,15 @@ export const DeleteBookRequestSchema: GenMessage<DeleteBookRequest> = /*@__PURE_
   messageDesc(file_protoform_conformance_v1_aip, 7);
 
 /**
+ * The request for LibraryService.UndeleteBook.
+ *
  * @generated from message protoform.conformance.v1.UndeleteBookRequest
  */
 export type UndeleteBookRequest = Message<"protoform.conformance.v1.UndeleteBookRequest"> & {
   /**
+   * The name of the soft-deleted book to restore.
+   * Format: publishers/{publisher}/books/{book}
+   *
    * @generated from field: string name = 1;
    */
   name: string;
@@ -346,6 +467,28 @@ export type UndeleteBookRequest = Message<"protoform.conformance.v1.UndeleteBook
  */
 export const UndeleteBookRequestSchema: GenMessage<UndeleteBookRequest> = /*@__PURE__*/
   messageDesc(file_protoform_conformance_v1_aip, 8);
+
+/**
+ * The request for LibraryService.ExpungeBook.
+ *
+ * @generated from message protoform.conformance.v1.ExpungeBookRequest
+ */
+export type ExpungeBookRequest = Message<"protoform.conformance.v1.ExpungeBookRequest"> & {
+  /**
+   * The name of the soft-deleted book to permanently remove.
+   * Format: publishers/{publisher}/books/{book}
+   *
+   * @generated from field: string name = 1;
+   */
+  name: string;
+};
+
+/**
+ * Describes the message protoform.conformance.v1.ExpungeBookRequest.
+ * Use `create(ExpungeBookRequestSchema)` to create a new message.
+ */
+export const ExpungeBookRequestSchema: GenMessage<ExpungeBookRequest> = /*@__PURE__*/
+  messageDesc(file_protoform_conformance_v1_aip, 9);
 
 /**
  * @generated from message protoform.conformance.v1.BatchGetBooksRequest
@@ -367,7 +510,7 @@ export type BatchGetBooksRequest = Message<"protoform.conformance.v1.BatchGetBoo
  * Use `create(BatchGetBooksRequestSchema)` to create a new message.
  */
 export const BatchGetBooksRequestSchema: GenMessage<BatchGetBooksRequest> = /*@__PURE__*/
-  messageDesc(file_protoform_conformance_v1_aip, 9);
+  messageDesc(file_protoform_conformance_v1_aip, 10);
 
 /**
  * @generated from message protoform.conformance.v1.BatchGetBooksResponse
@@ -384,7 +527,7 @@ export type BatchGetBooksResponse = Message<"protoform.conformance.v1.BatchGetBo
  * Use `create(BatchGetBooksResponseSchema)` to create a new message.
  */
 export const BatchGetBooksResponseSchema: GenMessage<BatchGetBooksResponse> = /*@__PURE__*/
-  messageDesc(file_protoform_conformance_v1_aip, 10);
+  messageDesc(file_protoform_conformance_v1_aip, 11);
 
 /**
  * @generated from message protoform.conformance.v1.BatchCreateBooksRequest
@@ -406,7 +549,7 @@ export type BatchCreateBooksRequest = Message<"protoform.conformance.v1.BatchCre
  * Use `create(BatchCreateBooksRequestSchema)` to create a new message.
  */
 export const BatchCreateBooksRequestSchema: GenMessage<BatchCreateBooksRequest> = /*@__PURE__*/
-  messageDesc(file_protoform_conformance_v1_aip, 11);
+  messageDesc(file_protoform_conformance_v1_aip, 12);
 
 /**
  * @generated from message protoform.conformance.v1.BatchCreateBooksResponse
@@ -423,7 +566,7 @@ export type BatchCreateBooksResponse = Message<"protoform.conformance.v1.BatchCr
  * Use `create(BatchCreateBooksResponseSchema)` to create a new message.
  */
 export const BatchCreateBooksResponseSchema: GenMessage<BatchCreateBooksResponse> = /*@__PURE__*/
-  messageDesc(file_protoform_conformance_v1_aip, 12);
+  messageDesc(file_protoform_conformance_v1_aip, 13);
 
 /**
  * @generated from message protoform.conformance.v1.BatchUpdateBooksRequest
@@ -445,7 +588,7 @@ export type BatchUpdateBooksRequest = Message<"protoform.conformance.v1.BatchUpd
  * Use `create(BatchUpdateBooksRequestSchema)` to create a new message.
  */
 export const BatchUpdateBooksRequestSchema: GenMessage<BatchUpdateBooksRequest> = /*@__PURE__*/
-  messageDesc(file_protoform_conformance_v1_aip, 13);
+  messageDesc(file_protoform_conformance_v1_aip, 14);
 
 /**
  * @generated from message protoform.conformance.v1.BatchUpdateBooksResponse
@@ -462,7 +605,7 @@ export type BatchUpdateBooksResponse = Message<"protoform.conformance.v1.BatchUp
  * Use `create(BatchUpdateBooksResponseSchema)` to create a new message.
  */
 export const BatchUpdateBooksResponseSchema: GenMessage<BatchUpdateBooksResponse> = /*@__PURE__*/
-  messageDesc(file_protoform_conformance_v1_aip, 14);
+  messageDesc(file_protoform_conformance_v1_aip, 15);
 
 /**
  * @generated from message protoform.conformance.v1.BatchDeleteBooksRequest
@@ -484,7 +627,7 @@ export type BatchDeleteBooksRequest = Message<"protoform.conformance.v1.BatchDel
  * Use `create(BatchDeleteBooksRequestSchema)` to create a new message.
  */
 export const BatchDeleteBooksRequestSchema: GenMessage<BatchDeleteBooksRequest> = /*@__PURE__*/
-  messageDesc(file_protoform_conformance_v1_aip, 15);
+  messageDesc(file_protoform_conformance_v1_aip, 16);
 
 /**
  * @generated from message protoform.conformance.v1.BatchDeleteBooksResponse
@@ -501,7 +644,7 @@ export type BatchDeleteBooksResponse = Message<"protoform.conformance.v1.BatchDe
  * Use `create(BatchDeleteBooksResponseSchema)` to create a new message.
  */
 export const BatchDeleteBooksResponseSchema: GenMessage<BatchDeleteBooksResponse> = /*@__PURE__*/
-  messageDesc(file_protoform_conformance_v1_aip, 16);
+  messageDesc(file_protoform_conformance_v1_aip, 17);
 
 /**
  * @generated from message protoform.conformance.v1.ProjectSettings
@@ -523,7 +666,7 @@ export type ProjectSettings = Message<"protoform.conformance.v1.ProjectSettings"
  * Use `create(ProjectSettingsSchema)` to create a new message.
  */
 export const ProjectSettingsSchema: GenMessage<ProjectSettings> = /*@__PURE__*/
-  messageDesc(file_protoform_conformance_v1_aip, 17);
+  messageDesc(file_protoform_conformance_v1_aip, 18);
 
 /**
  * @generated from message protoform.conformance.v1.GetProjectSettingsRequest
@@ -540,7 +683,7 @@ export type GetProjectSettingsRequest = Message<"protoform.conformance.v1.GetPro
  * Use `create(GetProjectSettingsRequestSchema)` to create a new message.
  */
 export const GetProjectSettingsRequestSchema: GenMessage<GetProjectSettingsRequest> = /*@__PURE__*/
-  messageDesc(file_protoform_conformance_v1_aip, 18);
+  messageDesc(file_protoform_conformance_v1_aip, 19);
 
 /**
  * @generated from message protoform.conformance.v1.UpdateProjectSettingsRequest
@@ -562,7 +705,7 @@ export type UpdateProjectSettingsRequest = Message<"protoform.conformance.v1.Upd
  * Use `create(UpdateProjectSettingsRequestSchema)` to create a new message.
  */
 export const UpdateProjectSettingsRequestSchema: GenMessage<UpdateProjectSettingsRequest> = /*@__PURE__*/
-  messageDesc(file_protoform_conformance_v1_aip, 19);
+  messageDesc(file_protoform_conformance_v1_aip, 20);
 
 /**
  * @generated from message protoform.conformance.v1.ProvisionCapacityRequest
@@ -620,7 +763,7 @@ export type ProvisionCapacityRequest = Message<"protoform.conformance.v1.Provisi
  * Use `create(ProvisionCapacityRequestSchema)` to create a new message.
  */
 export const ProvisionCapacityRequestSchema: GenMessage<ProvisionCapacityRequest> = /*@__PURE__*/
-  messageDesc(file_protoform_conformance_v1_aip, 20);
+  messageDesc(file_protoform_conformance_v1_aip, 21);
 
 /**
  * @generated from message protoform.conformance.v1.TimeRange
@@ -646,7 +789,7 @@ export type TimeRange = Message<"protoform.conformance.v1.TimeRange"> & {
  * Use `create(TimeRangeSchema)` to create a new message.
  */
 export const TimeRangeSchema: GenMessage<TimeRange> = /*@__PURE__*/
-  messageDesc(file_protoform_conformance_v1_aip, 21);
+  messageDesc(file_protoform_conformance_v1_aip, 22);
 
 /**
  * @generated from message protoform.conformance.v1.WriteBookJob
@@ -673,7 +816,7 @@ export type WriteBookJob = Message<"protoform.conformance.v1.WriteBookJob"> & {
  * Use `create(WriteBookJobSchema)` to create a new message.
  */
 export const WriteBookJobSchema: GenMessage<WriteBookJob> = /*@__PURE__*/
-  messageDesc(file_protoform_conformance_v1_aip, 22);
+  messageDesc(file_protoform_conformance_v1_aip, 23);
 
 /**
  * @generated from message protoform.conformance.v1.CreateWriteBookJobRequest
@@ -700,7 +843,7 @@ export type CreateWriteBookJobRequest = Message<"protoform.conformance.v1.Create
  * Use `create(CreateWriteBookJobRequestSchema)` to create a new message.
  */
 export const CreateWriteBookJobRequestSchema: GenMessage<CreateWriteBookJobRequest> = /*@__PURE__*/
-  messageDesc(file_protoform_conformance_v1_aip, 23);
+  messageDesc(file_protoform_conformance_v1_aip, 24);
 
 /**
  * @generated from message protoform.conformance.v1.RunWriteBookJobRequest
@@ -717,7 +860,7 @@ export type RunWriteBookJobRequest = Message<"protoform.conformance.v1.RunWriteB
  * Use `create(RunWriteBookJobRequestSchema)` to create a new message.
  */
 export const RunWriteBookJobRequestSchema: GenMessage<RunWriteBookJobRequest> = /*@__PURE__*/
-  messageDesc(file_protoform_conformance_v1_aip, 24);
+  messageDesc(file_protoform_conformance_v1_aip, 25);
 
 /**
  * @generated from message protoform.conformance.v1.CloudStorageSource
@@ -734,7 +877,7 @@ export type CloudStorageSource = Message<"protoform.conformance.v1.CloudStorageS
  * Use `create(CloudStorageSourceSchema)` to create a new message.
  */
 export const CloudStorageSourceSchema: GenMessage<CloudStorageSource> = /*@__PURE__*/
-  messageDesc(file_protoform_conformance_v1_aip, 25);
+  messageDesc(file_protoform_conformance_v1_aip, 26);
 
 /**
  * @generated from message protoform.conformance.v1.InlineSource
@@ -751,7 +894,7 @@ export type InlineSource = Message<"protoform.conformance.v1.InlineSource"> & {
  * Use `create(InlineSourceSchema)` to create a new message.
  */
 export const InlineSourceSchema: GenMessage<InlineSource> = /*@__PURE__*/
-  messageDesc(file_protoform_conformance_v1_aip, 26);
+  messageDesc(file_protoform_conformance_v1_aip, 27);
 
 /**
  * @generated from message protoform.conformance.v1.ImportBooksRequest
@@ -790,7 +933,7 @@ export type ImportBooksRequest = Message<"protoform.conformance.v1.ImportBooksRe
  * Use `create(ImportBooksRequestSchema)` to create a new message.
  */
 export const ImportBooksRequestSchema: GenMessage<ImportBooksRequest> = /*@__PURE__*/
-  messageDesc(file_protoform_conformance_v1_aip, 27);
+  messageDesc(file_protoform_conformance_v1_aip, 28);
 
 /**
  * @generated from message protoform.conformance.v1.CloudStorageDestination
@@ -807,7 +950,7 @@ export type CloudStorageDestination = Message<"protoform.conformance.v1.CloudSto
  * Use `create(CloudStorageDestinationSchema)` to create a new message.
  */
 export const CloudStorageDestinationSchema: GenMessage<CloudStorageDestination> = /*@__PURE__*/
-  messageDesc(file_protoform_conformance_v1_aip, 28);
+  messageDesc(file_protoform_conformance_v1_aip, 29);
 
 /**
  * @generated from message protoform.conformance.v1.ArchiveDestination
@@ -824,7 +967,7 @@ export type ArchiveDestination = Message<"protoform.conformance.v1.ArchiveDestin
  * Use `create(ArchiveDestinationSchema)` to create a new message.
  */
 export const ArchiveDestinationSchema: GenMessage<ArchiveDestination> = /*@__PURE__*/
-  messageDesc(file_protoform_conformance_v1_aip, 29);
+  messageDesc(file_protoform_conformance_v1_aip, 30);
 
 /**
  * @generated from message protoform.conformance.v1.ExportBooksRequest
@@ -863,7 +1006,7 @@ export type ExportBooksRequest = Message<"protoform.conformance.v1.ExportBooksRe
  * Use `create(ExportBooksRequestSchema)` to create a new message.
  */
 export const ExportBooksRequestSchema: GenMessage<ExportBooksRequest> = /*@__PURE__*/
-  messageDesc(file_protoform_conformance_v1_aip, 30);
+  messageDesc(file_protoform_conformance_v1_aip, 31);
 
 /**
  * @generated from message protoform.conformance.v1.ImportBooksMetadata
@@ -880,7 +1023,7 @@ export type ImportBooksMetadata = Message<"protoform.conformance.v1.ImportBooksM
  * Use `create(ImportBooksMetadataSchema)` to create a new message.
  */
 export const ImportBooksMetadataSchema: GenMessage<ImportBooksMetadata> = /*@__PURE__*/
-  messageDesc(file_protoform_conformance_v1_aip, 31);
+  messageDesc(file_protoform_conformance_v1_aip, 32);
 
 /**
  * @generated from message protoform.conformance.v1.PurgeBooksRequest
@@ -907,7 +1050,7 @@ export type PurgeBooksRequest = Message<"protoform.conformance.v1.PurgeBooksRequ
  * Use `create(PurgeBooksRequestSchema)` to create a new message.
  */
 export const PurgeBooksRequestSchema: GenMessage<PurgeBooksRequest> = /*@__PURE__*/
-  messageDesc(file_protoform_conformance_v1_aip, 32);
+  messageDesc(file_protoform_conformance_v1_aip, 33);
 
 /**
  * @generated from message protoform.conformance.v1.PurgeBooksResponse
@@ -929,7 +1072,7 @@ export type PurgeBooksResponse = Message<"protoform.conformance.v1.PurgeBooksRes
  * Use `create(PurgeBooksResponseSchema)` to create a new message.
  */
 export const PurgeBooksResponseSchema: GenMessage<PurgeBooksResponse> = /*@__PURE__*/
-  messageDesc(file_protoform_conformance_v1_aip, 33);
+  messageDesc(file_protoform_conformance_v1_aip, 34);
 
 /**
  * @generated from message protoform.conformance.v1.Policy
@@ -956,7 +1099,7 @@ export type Policy = Message<"protoform.conformance.v1.Policy"> & {
  * Use `create(PolicySchema)` to create a new message.
  */
 export const PolicySchema: GenMessage<Policy> = /*@__PURE__*/
-  messageDesc(file_protoform_conformance_v1_aip, 34);
+  messageDesc(file_protoform_conformance_v1_aip, 35);
 
 /**
  * @generated from message protoform.conformance.v1.PolicyPreviewMetadata
@@ -988,7 +1131,7 @@ export type PolicyPreviewMetadata = Message<"protoform.conformance.v1.PolicyPrev
  * Use `create(PolicyPreviewMetadataSchema)` to create a new message.
  */
 export const PolicyPreviewMetadataSchema: GenMessage<PolicyPreviewMetadata> = /*@__PURE__*/
-  messageDesc(file_protoform_conformance_v1_aip, 35);
+  messageDesc(file_protoform_conformance_v1_aip, 36);
 
 /**
  * @generated from message protoform.conformance.v1.PolicyExperiment
@@ -1025,7 +1168,7 @@ export type PolicyExperiment = Message<"protoform.conformance.v1.PolicyExperimen
  * Use `create(PolicyExperimentSchema)` to create a new message.
  */
 export const PolicyExperimentSchema: GenMessage<PolicyExperiment> = /*@__PURE__*/
-  messageDesc(file_protoform_conformance_v1_aip, 36);
+  messageDesc(file_protoform_conformance_v1_aip, 37);
 
 /**
  * @generated from message protoform.conformance.v1.StartPreviewPolicyExperimentRequest
@@ -1042,7 +1185,7 @@ export type StartPreviewPolicyExperimentRequest = Message<"protoform.conformance
  * Use `create(StartPreviewPolicyExperimentRequestSchema)` to create a new message.
  */
 export const StartPreviewPolicyExperimentRequestSchema: GenMessage<StartPreviewPolicyExperimentRequest> = /*@__PURE__*/
-  messageDesc(file_protoform_conformance_v1_aip, 37);
+  messageDesc(file_protoform_conformance_v1_aip, 38);
 
 /**
  * @generated from message protoform.conformance.v1.StopPreviewPolicyExperimentRequest
@@ -1059,7 +1202,7 @@ export type StopPreviewPolicyExperimentRequest = Message<"protoform.conformance.
  * Use `create(StopPreviewPolicyExperimentRequestSchema)` to create a new message.
  */
 export const StopPreviewPolicyExperimentRequestSchema: GenMessage<StopPreviewPolicyExperimentRequest> = /*@__PURE__*/
-  messageDesc(file_protoform_conformance_v1_aip, 38);
+  messageDesc(file_protoform_conformance_v1_aip, 39);
 
 /**
  * @generated from message protoform.conformance.v1.CommitPolicyExperimentRequest
@@ -1086,28 +1229,38 @@ export type CommitPolicyExperimentRequest = Message<"protoform.conformance.v1.Co
  * Use `create(CommitPolicyExperimentRequestSchema)` to create a new message.
  */
 export const CommitPolicyExperimentRequestSchema: GenMessage<CommitPolicyExperimentRequest> = /*@__PURE__*/
-  messageDesc(file_protoform_conformance_v1_aip, 39);
+  messageDesc(file_protoform_conformance_v1_aip, 40);
 
 /**
+ * The lifecycle state of a book.
+ *
  * @generated from enum protoform.conformance.v1.BookState
  */
 export enum BookState {
   /**
+   * The book state is not specified.
+   *
    * @generated from enum value: BOOK_STATE_UNSPECIFIED = 0;
    */
   UNSPECIFIED = 0,
 
   /**
+   * The book is available.
+   *
    * @generated from enum value: BOOK_STATE_ACTIVE = 1;
    */
   ACTIVE = 1,
 
   /**
+   * The book is being deleted.
+   *
    * @generated from enum value: BOOK_STATE_DELETING = 2;
    */
   DELETING = 2,
 
   /**
+   * The book is soft deleted.
+   *
    * @generated from enum value: BOOK_STATE_DELETED = 3;
    */
   DELETED = 3,
@@ -1146,6 +1299,8 @@ export const PolicyPreviewStateSchema: GenEnum<PolicyPreviewState> = /*@__PURE__
   enumDesc(file_protoform_conformance_v1_aip, 1);
 
 /**
+ * Manages books in the library catalog.
+ *
  * @generated from service protoform.conformance.v1.LibraryService
  */
 export const LibraryService: GenService<{
@@ -1162,6 +1317,8 @@ export const LibraryService: GenService<{
     output: typeof BookSchema;
   },
   /**
+   * Lists books in a publisher.
+   *
    * @generated from rpc protoform.conformance.v1.LibraryService.ListBooks
    */
   listBooks: {
@@ -1194,13 +1351,38 @@ export const LibraryService: GenService<{
     output: typeof BookSchema;
   },
   /**
+   * buf:lint:ignore RPC_REQUEST_RESPONSE_UNIQUE
    * buf:lint:ignore RPC_RESPONSE_STANDARD_NAME
+   * Soft deletes a book and returns its updated state.
    *
    * @generated from rpc protoform.conformance.v1.LibraryService.DeleteBook
    */
   deleteBook: {
     methodKind: "unary";
     input: typeof DeleteBookRequestSchema;
+    output: typeof BookSchema;
+  },
+  /**
+   * buf:lint:ignore RPC_REQUEST_RESPONSE_UNIQUE
+   * buf:lint:ignore RPC_RESPONSE_STANDARD_NAME
+   * Restores a soft-deleted book.
+   *
+   * @generated from rpc protoform.conformance.v1.LibraryService.UndeleteBook
+   */
+  undeleteBook: {
+    methodKind: "unary";
+    input: typeof UndeleteBookRequestSchema;
+    output: typeof BookSchema;
+  },
+  /**
+   * buf:lint:ignore RPC_RESPONSE_STANDARD_NAME
+   * Permanently deletes a soft-deleted book.
+   *
+   * @generated from rpc protoform.conformance.v1.LibraryService.ExpungeBook
+   */
+  expungeBook: {
+    methodKind: "unary";
+    input: typeof ExpungeBookRequestSchema;
     output: typeof EmptySchema;
   },
 }> = /*@__PURE__*/

@@ -1,5 +1,10 @@
 import { isFieldSet } from "@bufbuild/protobuf";
-import { Edition, FeatureSet_FieldPresence } from "@bufbuild/protobuf/wkt";
+import {
+  Edition,
+  FeatureSet_FieldPresence,
+  FeatureSet_VisibilityFeature_DefaultSymbolVisibility,
+  SymbolVisibility,
+} from "@bufbuild/protobuf/wkt";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -7,11 +12,34 @@ import {
   protoToFormValues,
 } from "../registry/base-nova/protoform/lib/protobuf-provider/index.js";
 import {
+  Editions2024LocalSchema,
+  Editions2024MatrixSchema,
+} from "./gen/protoform/conformance/v1/editions_2024_pb.js";
+import {
   EditionStateSchema,
   EditionsMatrixSchema,
 } from "./gen/protoform/conformance/v1/editions_pb.js";
 
 describe("Protobuf Editions conformance", () => {
+  it("supports Edition 2024 visibility and option-only imports", async () => {
+    expect(Editions2024MatrixSchema.file.edition).toBe(Edition.EDITION_2024);
+    expect(
+      Editions2024MatrixSchema.file.proto.options?.features
+        ?.defaultSymbolVisibility
+    ).toBe(FeatureSet_VisibilityFeature_DefaultSymbolVisibility.STRICT);
+    expect(Editions2024MatrixSchema.proto.visibility).toBe(
+      SymbolVisibility.VISIBILITY_EXPORT
+    );
+    expect(Editions2024LocalSchema.proto.visibility).toBe(
+      SymbolVisibility.VISIBILITY_LOCAL
+    );
+
+    const result = await createProtoFormSchema(Editions2024MatrixSchema)[
+      "~standard"
+    ].validate({ displayName: "" });
+    expect(result.issues).toMatchObject([{ path: ["displayName"] }]);
+  });
+
   it("accepts Editions descriptors and honors field presence controls", async () => {
     expect(EditionsMatrixSchema.file.edition).toBe(Edition.EDITION_2023);
     expect(EditionsMatrixSchema.field.explicitName.presence).toBe(

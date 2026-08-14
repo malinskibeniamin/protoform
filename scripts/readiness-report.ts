@@ -7,8 +7,9 @@ import {
 import { formatReadinessReport } from "../readiness/report.js";
 
 const asJson = process.argv.includes("--json");
-const requireReady = process.argv.includes("--require-ready");
-const requireReleaseReady = process.argv.includes("--require-release-ready");
+const requireProfileComplete = process.argv.includes(
+  "--require-profile-complete"
+);
 const summary = getReadinessSummary(readinessRequirements);
 
 if (asJson) {
@@ -37,10 +38,6 @@ if (asJson) {
   );
 }
 
-if (requireReady && !summary.productionReady) {
-  process.exitCode = 1;
-}
-
-if (requireReleaseReady && !summary.releaseReady) {
+if (requireProfileComplete && !summary.profileComplete) {
   process.exitCode = 1;
 }

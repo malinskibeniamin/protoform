@@ -160,7 +160,13 @@ describe("getProtoMethodWorkflow", () => {
       },
     });
     expect(workflow.httpBindings[0]).toMatchObject({
-      bodyFields: ["etag", "request_id", "validate_only"],
+      bodyFields: [
+        "etag",
+        "request_id",
+        "validate_only",
+        "force",
+        "allow_missing",
+      ],
       pathFields: ["name"],
       queryFields: [],
     });

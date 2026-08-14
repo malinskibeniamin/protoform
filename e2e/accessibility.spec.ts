@@ -120,10 +120,10 @@ test("has no serious accessibility violations across representative form states"
   await expectNoSeriousViolations(page);
 
   await page.goto("/docs/aip-133-standard-methods-create");
+  const preview = page.getByRole("tabpanel", { name: "Preview" });
   await expect(
-    page
-      .getByRole("tabpanel", { name: "Preview" })
-      .getByText("React Hook Form", { exact: true })
+    preview.getByText("React Hook Form", { exact: true })
   ).toBeVisible({ timeout: 30_000 });
+  await expect(preview).toHaveCSS("opacity", "1");
   await expectNoSeriousViolations(page);
 });
