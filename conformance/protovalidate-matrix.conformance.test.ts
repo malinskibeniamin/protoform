@@ -6,10 +6,7 @@ import { anyPack, StructSchema, ValueSchema } from "@bufbuild/protobuf/wkt";
 import { describe, expect, it } from "vitest";
 
 import { createProtoFormSchema } from "../registry/base-nova/protoform/lib/protobuf-provider/index.js";
-import {
-  AnyMatrixSchema,
-  ValidationMatrixSchema,
-} from "./gen/protoform/conformance/v1/conformance_pb.js";
+import { AnyMatrixSchema, ValidationMatrixSchema } from "./gen/protoform/conformance/v1/conformance_pb.js";
 
 type FormInput = Record<string, unknown>;
 
@@ -40,17 +37,13 @@ const validValidationInput: FormInput = {
 function issuePaths(
   issues:
     | readonly {
-        path?: readonly (PropertyKey | { key: PropertyKey })[];
+        path?: readonly (PropertyKey | { key: PropertyKey })[] | undefined;
       }[]
     | undefined
 ): string[][] | undefined {
   return issues?.map((issue) =>
     (issue.path ?? []).map((segment) =>
-      String(
-        typeof segment === "object" && segment !== null && "key" in segment
-          ? segment.key
-          : segment
-      )
+      String(typeof segment === "object" && segment !== null && "key" in segment ? segment.key : segment)
     )
   );
 }
@@ -62,14 +55,7 @@ describe("Protovalidate scalar rule conformance", () => {
     const invalidCases = [
       [{ ...validValidationInput, mustBeTrue: false }, "mustBeTrue"],
       [{ ...validValidationInput, mustBeFalse: true }, "mustBeFalse"],
-      [
-        Object.fromEntries(
-          Object.entries(validValidationInput).filter(
-            ([key]) => key !== "mustBeTrue"
-          )
-        ),
-        "mustBeTrue",
-      ],
+      [Object.fromEntries(Object.entries(validValidationInput).filter(([key]) => key !== "mustBeTrue")), "mustBeTrue"],
     ] as const;
     const invalidResults = await Promise.all(
       invalidCases.map(async ([input, field]) => ({
@@ -109,10 +95,7 @@ describe("Protovalidate scalar rule conformance", () => {
       }))
     );
     for (const { field, result, value } of invalidResults) {
-      expect(
-        issuePaths(result.issues),
-        `${field} accepted ${value}`
-      ).toContainEqual([field]);
+      expect(issuePaths(result.issues), `${field} accepted ${value}`).toContainEqual([field]);
     }
   });
 

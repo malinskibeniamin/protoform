@@ -1,21 +1,6 @@
-import {
-  create,
-  type DescMessage,
-  isMessage,
-  type MessageInitShape,
-  type MessageShape,
-} from "@bufbuild/protobuf";
+import { create, type DescMessage, isMessage, type MessageInitShape, type MessageShape } from "@bufbuild/protobuf";
 import type { FieldMask } from "@bufbuild/protobuf/wkt";
 import { ConnectError } from "@connectrpc/connect";
-import {
-  type ConnectErrorContext,
-  createUpdateMask as createDirtyUpdateMask,
-  extractConnectErrorContext,
-  extractFieldViolations,
-  formValuesToProto,
-  humanizeServerFieldError,
-  type ProtoConversionOptions,
-} from "../../lib/protobuf-provider/index.js";
 import { useState } from "react";
 import {
   type FieldPath,
@@ -25,6 +10,15 @@ import {
   type UseFormReturn,
   useForm,
 } from "react-hook-form-v8";
+import {
+  type ConnectErrorContext,
+  createUpdateMask as createDirtyUpdateMask,
+  extractConnectErrorContext,
+  extractFieldViolations,
+  formValuesToProto,
+  humanizeServerFieldError,
+  type ProtoConversionOptions,
+} from "../../lib/protobuf-provider/index.js";
 
 import { protoPathToFormPath } from "./proto-error-path.js";
 import type { FlattenProtoOneofs } from "./proto-paths.js";
@@ -33,19 +27,14 @@ import { createProtoResolver } from "./proto-resolver.js";
 export type { ConnectErrorContext } from "../../lib/protobuf-provider/index.js";
 
 /** MessageShape with proto oneofs flattened so react-hook-form Path<T> works. */
-type FormShape<Desc extends DescMessage> = FlattenProtoOneofs<
-  MessageShape<Desc>
->;
+type FormShape<Desc extends DescMessage> = FlattenProtoOneofs<MessageShape<Desc>>;
 
 /** Extract nested error shape for a given path (e.g. oneof error drilling). */
 type NestedErrors<T> = {
-  [K in keyof T]?: T[K] extends object
-    ? NestedErrors<T[K]> & { message?: string }
-    : { message?: string };
+  [K in keyof T]?: T[K] extends object ? NestedErrors<T[K]> & { message?: string } : { message?: string };
 };
 
-export interface UseProtoFormOptions<Desc extends DescMessage>
-  extends Omit<UseFormProps<FormShape<Desc>>, "resolver"> {
+export interface UseProtoFormOptions<Desc extends DescMessage> extends Omit<UseFormProps<FormShape<Desc>>, "resolver"> {
   /** Per-field repeated-string conversion overrides keyed by descriptor path. */
   emptyRepeatedStringPolicies?: ProtoConversionOptions["emptyRepeatedStringPolicies"];
   /**
@@ -56,9 +45,7 @@ export interface UseProtoFormOptions<Desc extends DescMessage>
   serverPathPrefix?: string;
 }
 
-export type UseProtoFormReturn<Desc extends DescMessage> = UseFormReturn<
-  FormShape<Desc>
-> & {
+export type UseProtoFormReturn<Desc extends DescMessage> = UseFormReturn<FormShape<Desc>> & {
   /** Build a fully-typed protobuf message from current or provided form values. */
   createMessage: (values?: FormShape<Desc>) => MessageShape<Desc>;
   /** Build an AIP-safe FieldMask from the fields changed since the last reset. */
@@ -68,16 +55,9 @@ export type UseProtoFormReturn<Desc extends DescMessage> = UseFormReturn<
    * switching branches is visible to `dirtyFields`-driven FieldMask builders.
    * @example form.setOneofValue('delivery', 'webhook', create(WebhookDeliverySchema, { signingSecretRef: '' }));
    */
-  setOneofValue: (
-    path: string,
-    oneofCase: string,
-    value: unknown,
-    options?: SetValueConfig
-  ) => void;
+  setOneofValue: (path: string, oneofCase: string, value: unknown, options?: SetValueConfig) => void;
   /** Drill nested errors by form path (e.g. `'delivery.value'`) without casts. */
-  getNestedErrors: <T = Record<string, { message?: string }>>(
-    path: string
-  ) => NestedErrors<T> | undefined;
+  getNestedErrors: <T = Record<string, { message?: string }>>(path: string) => NestedErrors<T> | undefined;
   /**
    * Map a `ConnectError` with `BadRequest.FieldViolation` details onto the form
    * by walking the proto descriptor. Snake_case field paths are converted to
@@ -138,54 +118,29 @@ export function useProtoForm<Desc extends DescMessage>(
   schema: Desc,
   options?: UseProtoFormOptions<Desc>
 ): UseProtoFormReturn<Desc> {
-  const {
-    emptyRepeatedStringPolicies,
-    serverPathPrefix,
-    mode = "onChange",
-    ...rest
-  } = options ?? {};
+  const { emptyRepeatedStringPolicies, serverPathPrefix, mode = "onChange", ...rest } = options ?? {};
   const conversionOptions: ProtoConversionOptions = {
     emptyRepeatedStringPolicies,
   };
-  const sourceMessage = isMessage(rest.defaultValues, schema)
-    ? rest.defaultValues
-    : undefined;
+  const sourceMessage = isMessage(rest.defaultValues, schema) ? rest.defaultValues : undefined;
 
   const form = useForm({
     ...rest,
     mode,
     resolver: createProtoResolver(schema, conversionOptions, sourceMessage),
-  } as unknown as UseFormProps<FormShape<Desc>>) as UseFormReturn<
-    FormShape<Desc>
-  >;
+  } as unknown as UseFormProps<FormShape<Desc>>) as UseFormReturn<FormShape<Desc>>;
   // Read during render so react-hook-form subscribes this hook to error updates.
-  const formErrors = form.formState.errors;
-  const dirtyFields = form.formState.dirtyFields;
-  const initialValues = form.formState.defaultValues;
+  const { defaultValues: initialValues, dirtyFields, errors: formErrors } = form.formState;
   const createMessage = (values?: FormShape<Desc>): MessageShape<Desc> => {
     const raw = values ?? form.getValues();
-    return formValuesToProto(
-      schema,
-      raw as Record<string, unknown>,
-      sourceMessage,
-      conversionOptions
-    );
+    return formValuesToProto(schema, raw as Record<string, unknown>, sourceMessage, conversionOptions);
   };
 
-  const createUpdateMask = (): FieldMask =>
-    createDirtyUpdateMask(schema, dirtyFields, form.getValues(), initialValues);
+  const createUpdateMask = (): FieldMask => createDirtyUpdateMask(schema, dirtyFields, form.getValues(), initialValues);
 
-  const setOneofValue = (
-    path: string,
-    oneofCase: string,
-    value: unknown,
-    setValueOptions?: SetValueConfig
-  ) => {
+  const setOneofValue = (path: string, oneofCase: string, value: unknown, setValueOptions?: SetValueConfig) => {
     const current = form.getValues(path as Path<FormShape<Desc>>);
-    const isOneof =
-      current === undefined ||
-      current === null ||
-      (typeof current === "object" && "case" in current);
+    const isOneof = current === undefined || current === null || (typeof current === "object" && "case" in current);
     if (!isOneof) {
       throw new Error(
         `setOneofValue("${path}"): target is not a oneof field. ` +
@@ -194,26 +149,17 @@ export function useProtoForm<Desc extends DescMessage>(
     }
     const prev = current as { case?: string; value?: unknown } | undefined;
     if (prev?.case && prev.case !== oneofCase) {
-      form.setValue(
-        path as Path<FormShape<Desc>>,
-        { case: "", value: {} } as never
-      );
+      form.setValue(path as Path<FormShape<Desc>>, { case: "", value: {} } as never);
     }
     // `shouldDirty: true` default: switching a branch is a meaningful edit.
-    form.setValue(
-      path as Path<FormShape<Desc>>,
-      { case: oneofCase, value } as never,
-      {
-        shouldDirty: true,
-        shouldValidate: true,
-        ...setValueOptions,
-      }
-    );
+    form.setValue(path as Path<FormShape<Desc>>, { case: oneofCase, value } as never, {
+      shouldDirty: true,
+      shouldValidate: true,
+      ...setValueOptions,
+    });
   };
 
-  const getNestedErrors = <T = Record<string, { message?: string }>>(
-    path: string
-  ): NestedErrors<T> | undefined => {
+  const getNestedErrors = <T = Record<string, { message?: string }>>(path: string): NestedErrors<T> | undefined => {
     const segments = path.split(".");
     let current: unknown = formErrors;
     for (const segment of segments) {
@@ -225,9 +171,7 @@ export function useProtoForm<Desc extends DescMessage>(
     return current as NestedErrors<T> | undefined;
   };
 
-  const [serverErrorContext, setServerErrorContext] = useState<
-    ConnectErrorContext | undefined
-  >(undefined);
+  const [serverErrorContext, setServerErrorContext] = useState<ConnectErrorContext | undefined>(undefined);
   const clearServerErrorContext = () => setServerErrorContext(undefined);
 
   const setServerErrors = (error: unknown) => {
@@ -282,10 +226,7 @@ export function useProtoFormDefaults<Desc extends DescMessage>(
   schema: Desc,
   init?: MessageInitShape<Desc>
 ): FormShape<Desc> {
-  return create(
-    schema,
-    init ?? ({} as MessageInitShape<Desc>)
-  ) as unknown as FormShape<Desc>;
+  return create(schema, init ?? ({} as MessageInitShape<Desc>)) as unknown as FormShape<Desc>;
 }
 
 function stripPrefix(field: string, prefix?: string): string {

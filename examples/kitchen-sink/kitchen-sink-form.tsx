@@ -4,19 +4,9 @@ import { create, isMessage } from "@bufbuild/protobuf";
 import { timestampFromDate } from "@bufbuild/protobuf/wkt";
 import React from "react";
 
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-} from "@/registry/base-nova/protoform/components/alert";
-import {
-  AutoForm,
-  type AutoFormStep,
-} from "@/registry/base-nova/protoform/components/auto-form";
-import {
-  Heading,
-  Text,
-} from "@/registry/base-nova/protoform/components/typography";
+import { Alert, AlertDescription, AlertTitle } from "@/registry/base-nova/protoform/components/alert";
+import { AutoForm, type AutoFormStep } from "@/registry/base-nova/protoform/components/auto-form";
+import { Heading, Text } from "@/registry/base-nova/protoform/components/typography";
 
 import {
   KitchenSinkEnvironment,
@@ -38,8 +28,7 @@ const steps: AutoFormStep[] = [
     title: "Topology",
   },
   {
-    description:
-      "Apply labels, rate limits, budget, and dynamic policy context.",
+    description: "Apply labels, rate limits, budget, and dynamic policy context.",
     id: "policy",
     title: "Policy",
   },
@@ -127,9 +116,7 @@ function KitchenSinkSummary({ payload }: { payload: unknown }) {
           <Text className="text-muted-foreground" variant="small">
             Rollout stages
           </Text>
-          <p className="font-medium">
-            {payload.rolloutPercentages.join(" → ")}%
-          </p>
+          <p className="font-medium">{payload.rolloutPercentages.join(" → ")}%</p>
         </div>
       </div>
     </div>
@@ -137,8 +124,7 @@ function KitchenSinkSummary({ payload }: { payload: unknown }) {
 }
 
 export default function KitchenSinkFormExample() {
-  const [acceptedOrganization, setAcceptedOrganization] =
-    React.useState<string>();
+  const [acceptedOrganization, setAcceptedOrganization] = React.useState<string>();
 
   return (
     <div className="space-y-6">
@@ -158,9 +144,7 @@ export default function KitchenSinkFormExample() {
       {acceptedOrganization ? (
         <Alert role="status">
           <AlertTitle>Policy accepted</AlertTitle>
-          <AlertDescription>
-            {acceptedOrganization} satisfies every kitchen-sink rule.
-          </AlertDescription>
+          <AlertDescription>{acceptedOrganization} satisfies every kitchen-sink rule.</AlertDescription>
         </Alert>
       ) : null}
     </div>

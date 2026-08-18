@@ -62,18 +62,13 @@ describe("bundle budgets", () => {
     });
 
     for (const bundle of bundles) {
-      expect(
-        bundle.size,
-        `${bundle.name} exceeded ${bundle.budget} bytes`
-      ).toBeLessThanOrEqual(bundle.budget);
+      expect(bundle.size, `${bundle.name} exceeded ${bundle.budget} bytes`).toBeLessThanOrEqual(bundle.budget);
     }
     for (const name of ["core", "protobuf"]) {
       const text = bundles.find((bundle) => bundle.name === name)?.text ?? "";
       expect(text).not.toContain("react-hook-form");
       expect(text).not.toContain("@tanstack/react-form");
     }
-    expect(
-      bundles.find((bundle) => bundle.name === "react")?.text
-    ).not.toContain("@tanstack/react-form");
+    expect(bundles.find((bundle) => bundle.name === "react")?.text).not.toContain("@tanstack/react-form");
   });
 });

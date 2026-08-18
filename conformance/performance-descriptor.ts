@@ -1,8 +1,4 @@
-import {
-  create,
-  createFileRegistry,
-  type DescMessage,
-} from "@bufbuild/protobuf";
+import { create, createFileRegistry, type DescMessage } from "@bufbuild/protobuf";
 import {
   FieldDescriptorProto_Label,
   FieldDescriptorProto_Type,
@@ -28,13 +24,9 @@ export function createPerformanceDescriptor(fieldCount: number): DescMessage {
     package: "protoform.performance",
     syntax: "proto3",
   });
-  const descriptor = createFileRegistry(file, () => undefined).getMessage(
-    `protoform.performance.Form${suffix}`
-  );
+  const descriptor = createFileRegistry(file, () => undefined).getMessage(`protoform.performance.Form${suffix}`);
   if (!descriptor) {
-    throw new Error(
-      `Failed to create ${fieldCount}-field performance descriptor.`
-    );
+    throw new Error(`Failed to create ${fieldCount}-field performance descriptor.`);
   }
   return descriptor;
 }

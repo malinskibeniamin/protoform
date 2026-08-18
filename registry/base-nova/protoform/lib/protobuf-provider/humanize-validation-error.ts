@@ -20,23 +20,19 @@ interface PatternDescription {
 
 const KNOWN_PATTERNS: Record<string, PatternDescription> = {
   "^[A-Z][A-Z0-9_]*$": {
-    description:
-      "Must be UPPER_SNAKE_CASE (start with a letter, then uppercase letters, digits, and underscores)",
+    description: "Must be UPPER_SNAKE_CASE (start with a letter, then uppercase letters, digits, and underscores)",
     example: "AWS_ACCESS_KEY_ID",
   },
   "^[a-z][a-z0-9-]*$": {
-    description:
-      "Must be lowercase letters, digits, and hyphens (start with a letter)",
+    description: "Must be lowercase letters, digits, and hyphens (start with a letter)",
     example: "my-resource-name",
   },
   "^[a-z0-9][a-z0-9-]*$": {
-    description:
-      "Must be lowercase letters, digits, and hyphens (start with a letter or digit)",
+    description: "Must be lowercase letters, digits, and hyphens (start with a letter or digit)",
     example: "my-resource-1",
   },
   "^$|^[A-Z][A-Z0-9_]*$": {
-    description:
-      "Must be empty or UPPER_SNAKE_CASE (uppercase letters, digits, and underscores)",
+    description: "Must be empty or UPPER_SNAKE_CASE (uppercase letters, digits, and underscores)",
     example: "MY_API_KEY",
   },
   // Match the URL pattern with or without a trailing `$` anchor. Both
@@ -52,10 +48,7 @@ const KNOWN_PATTERNS: Record<string, PatternDescription> = {
 };
 
 /** Known generic protovalidate messages that should be replaced by custom CEL messages when available. */
-const GENERIC_MESSAGES = new Set([
-  "value is required",
-  "exactly one field is required in oneof",
-]);
+const GENERIC_MESSAGES = new Set(["value is required", "exactly one field is required in oneof"]);
 
 /**
  * Returns true if the message is a generic protovalidate constraint message
@@ -88,9 +81,7 @@ export function isGenericValidationMessage(message: string): boolean {
 function humanizeLengthConstraint(message: string): string | undefined {
   const minLenMatch = MIN_LEN_PATTERN.exec(message);
   if (minLenMatch?.[1]) {
-    return minLenMatch[1] === "1"
-      ? "This field is required."
-      : `Must be at least ${minLenMatch[1]} characters.`;
+    return minLenMatch[1] === "1" ? "This field is required." : `Must be at least ${minLenMatch[1]} characters.`;
   }
   const maxLenMatch = MAX_LEN_PATTERN.exec(message);
   if (maxLenMatch?.[1]) {
@@ -102,15 +93,11 @@ function humanizeLengthConstraint(message: string): string | undefined {
 function humanizeItemConstraint(message: string): string | undefined {
   const minItemsMatch = MIN_ITEMS_PATTERN.exec(message);
   if (minItemsMatch?.[1]) {
-    return minItemsMatch[1] === "1"
-      ? "Add at least one item."
-      : `Add at least ${minItemsMatch[1]} items.`;
+    return minItemsMatch[1] === "1" ? "Add at least one item." : `Add at least ${minItemsMatch[1]} items.`;
   }
   const maxItemsMatch = MAX_ITEMS_PATTERN.exec(message);
   if (maxItemsMatch?.[1]) {
-    return maxItemsMatch[1] === "1"
-      ? "At most one item is allowed."
-      : `At most ${maxItemsMatch[1]} items are allowed.`;
+    return maxItemsMatch[1] === "1" ? "At most one item is allowed." : `At most ${maxItemsMatch[1]} items are allowed.`;
   }
   return;
 }

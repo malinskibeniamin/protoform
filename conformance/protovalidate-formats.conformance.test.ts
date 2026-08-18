@@ -19,42 +19,24 @@ import {
 import { IgnoreRuleMatrixSchema } from "./gen/protoform/conformance/v1/expected_failures_pb.js";
 import { kebab_case } from "./gen/protoform/conformance/v1/predefined_pb.js";
 
-type ValidationResult = Awaited<
-  ReturnType<ReturnType<typeof createProtoFormSchema>["~standard"]["validate"]>
->;
+type ValidationResult = Awaited<ReturnType<ReturnType<typeof createProtoFormSchema>["~standard"]["validate"]>>;
 
 function paths(result: ValidationResult): string[][] {
-  return (result.issues ?? []).map((issue) =>
-    (issue.path ?? []).map((segment) => String(segment))
-  );
+  return (result.issues ?? []).map((issue) => (issue.path ?? []).map((segment) => String(segment)));
 }
 
-async function expectValid(
-  schema: ReturnType<typeof createProtoFormSchema>,
-  field: string,
-  value: unknown
-) {
+async function expectValid(schema: ReturnType<typeof createProtoFormSchema>, field: string, value: unknown) {
   const result = await schema["~standard"].validate({ [field]: value });
   expect(result.issues, `${field} rejected ${String(value)}`).toBeUndefined();
 }
 
-async function expectInvalid(
-  schema: ReturnType<typeof createProtoFormSchema>,
-  field: string,
-  value: unknown
-) {
+async function expectInvalid(schema: ReturnType<typeof createProtoFormSchema>, field: string, value: unknown) {
   const result = await schema["~standard"].validate({ [field]: value });
-  expect(paths(result), `${field} accepted ${String(value)}`).toContainEqual([
-    field,
-  ]);
+  expect(paths(result), `${field} accepted ${String(value)}`).toContainEqual([field]);
 }
 
 function bytes(value: string | readonly number[]): string {
-  return base64Encode(
-    typeof value === "string"
-      ? new TextEncoder().encode(value)
-      : Uint8Array.from(value)
-  );
+  return base64Encode(typeof value === "string" ? new TextEncoder().encode(value) : Uint8Array.from(value));
 }
 
 describe("Protovalidate format rule conformance", () => {
@@ -74,11 +56,7 @@ describe("Protovalidate format rule conformance", () => {
     ["hostAndPort", "api.example.com:443", "api.example.com"],
     ["ulid", "01ARZ3NDEKTSV4RRFFQ69G5FAV", "not-a-ulid"],
     ["protobufFqn", "google.protobuf.Timestamp", ".google.protobuf.Timestamp"],
-    [
-      "protobufDotFqn",
-      ".google.protobuf.Timestamp",
-      "google.protobuf.Timestamp",
-    ],
+    ["protobufDotFqn", ".google.protobuf.Timestamp", "google.protobuf.Timestamp"],
   ])("validates the %s string format", async (field, valid, invalid) => {
     const schema = createProtoFormSchema(StringNetworkRulesSchema);
 
@@ -101,10 +79,7 @@ describe("Protovalidate format rule conformance", () => {
     ["ipv6", bytes(new Array(16).fill(0)), bytes([192, 0, 2, 1])],
     [
       "uuid",
-      bytes([
-        0x12, 0x3e, 0x45, 0x67, 0xe8, 0x9b, 0x12, 0xd3, 0xa4, 0x56, 0x42, 0x66,
-        0x14, 0x17, 0x40, 0x00,
-      ]),
+      bytes([0x12, 0x3e, 0x45, 0x67, 0xe8, 0x9b, 0x12, 0xd3, 0xa4, 0x56, 0x42, 0x66, 0x14, 0x17, 0x40, 0x00]),
       bytes([1, 2, 3]),
     ],
   ])("validates the %s bytes rule", async (field, valid, invalid) => {
@@ -153,26 +128,10 @@ describe("Protovalidate well-known-type rule conformance", () => {
     await expectValid(schema, "reversedTimestamp", "2029-12-31T23:00:00Z");
     await expectValid(schema, "reversedTimestamp", "2030-01-02T01:00:00Z");
     await expectInvalid(schema, "reversedTimestamp", "2030-01-01T12:00:00Z");
-    await expectValid(
-      schema,
-      "recentPast",
-      new Date(now - 3_600_000).toISOString()
-    );
-    await expectInvalid(
-      schema,
-      "recentPast",
-      new Date(now - 172_800_000).toISOString()
-    );
-    await expectValid(
-      schema,
-      "nearFuture",
-      new Date(now + 3_600_000).toISOString()
-    );
-    await expectInvalid(
-      schema,
-      "nearFuture",
-      new Date(now + 172_800_000).toISOString()
-    );
+    await expectValid(schema, "recentPast", new Date(now - 3_600_000).toISOString());
+    await expectInvalid(schema, "recentPast", new Date(now - 172_800_000).toISOString());
+    await expectValid(schema, "nearFuture", new Date(now + 3_600_000).toISOString());
+    await expectInvalid(schema, "nearFuture", new Date(now + 172_800_000).toISOString());
     await expectInvalid(schema, "exactTimestamp", "not-a-date");
   });
 });
@@ -207,12 +166,9 @@ describe("Protovalidate control-plane rule conformance", () => {
       PredefinedRuleMatrixSchema,
       create(PredefinedRuleMatrixSchema, { slug: "Not Kebab" })
     );
-    const standardResult = await createProtoFormSchema(
-      PredefinedRuleMatrixSchema,
-      {
-        registry,
-      }
-    )["~standard"].validate({ slug: "Not Kebab" });
+    const standardResult = await createProtoFormSchema(PredefinedRuleMatrixSchema, {
+      registry,
+    })["~standard"].validate({ slug: "Not Kebab" });
 
     expect(validatorResult).toMatchObject({
       kind: "invalid",
@@ -225,9 +181,7 @@ describe("Protovalidate control-plane rule conformance", () => {
     const schema = createProtoFormSchema(ExampleRuleMatrixSchema);
     const empty = await schema["~standard"].validate({});
     const invalid = await schema["~standard"].validate({ email: "not-email" });
-    const field = parseProtoSchema(ExampleRuleMatrixSchema).fields.find(
-      (candidate) => candidate.key === "email"
-    );
+    const field = parseProtoSchema(ExampleRuleMatrixSchema).fields.find((candidate) => candidate.key === "email");
 
     expect(empty.issues).toBeUndefined();
     expect(paths(invalid)).toContainEqual(["email"]);

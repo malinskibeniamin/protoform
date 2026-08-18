@@ -6,10 +6,7 @@ import {
   createProtoFormSchema,
   parseProtoSchema,
 } from "../registry/base-nova/protoform/lib/protobuf-provider/index.js";
-import {
-  ProvisionCapacityRequestSchema,
-  TimeRangeSchema,
-} from "./gen/protoform/conformance/v1/aip_pb.js";
+import { ProvisionCapacityRequestSchema, TimeRangeSchema } from "./gen/protoform/conformance/v1/aip_pb.js";
 
 function field(schema: ReturnType<typeof parseProtoSchema>, key: string) {
   const match = schema.fields.find((candidate) => candidate.key === key);
@@ -20,23 +17,14 @@ function field(schema: ReturnType<typeof parseProtoSchema>, key: string) {
 }
 
 async function expectValid(values: Record<string, unknown>): Promise<void> {
-  const result = await createProtoFormSchema(ProvisionCapacityRequestSchema)[
-    "~standard"
-  ].validate(values);
+  const result = await createProtoFormSchema(ProvisionCapacityRequestSchema)["~standard"].validate(values);
   expect(result.issues).toBeUndefined();
 }
 
-async function expectInvalid(
-  values: Record<string, unknown>,
-  path: string
-): Promise<void> {
-  const result = await createProtoFormSchema(ProvisionCapacityRequestSchema)[
-    "~standard"
-  ].validate(values);
+async function expectInvalid(values: Record<string, unknown>, path: string): Promise<void> {
+  const result = await createProtoFormSchema(ProvisionCapacityRequestSchema)["~standard"].validate(values);
   expect(result.issues).toEqual(
-    expect.arrayContaining([
-      expect.objectContaining({ path: expect.arrayContaining([path]) }),
-    ])
+    expect.arrayContaining([expect.objectContaining({ path: expect.arrayContaining([path]) })])
   );
 }
 
@@ -72,12 +60,7 @@ describe("AIP field pattern conformance", () => {
   it("models AIP-143 standardized codes as validated strings rather than enums", async () => {
     const parsed = parseProtoSchema(ProvisionCapacityRequestSchema);
 
-    for (const key of [
-      "currencyCode",
-      "languageCode",
-      "regionCode",
-      "timeZone",
-    ]) {
+    for (const key of ["currencyCode", "languageCode", "regionCode", "timeZone"]) {
       expect(field(parsed, key).type).toBe("string");
     }
     await expectValid({

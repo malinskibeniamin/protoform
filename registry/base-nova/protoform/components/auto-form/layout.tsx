@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { cn } from '../../lib/utils';
-import { Button } from '../button';
-import { FieldLabel } from '../field';
-import { Heading, Text } from '../typography';
-import { formSpacing } from './form-spacing';
-import { FormDepthProvider, headingLevelForDepth, useFormDepth } from './layout-context';
+import type React from "react";
+import { cn } from "../../lib/utils";
+import { Button } from "../button";
+import { FieldLabel } from "../field";
+import { Heading, Text } from "../typography";
+import { formSpacing } from "./form-spacing";
+import { FormDepthProvider, headingLevelForDepth, useFormDepth } from "./layout-context";
 
-export interface FormLayoutProps extends Omit<React.ComponentProps<'form'>, 'children'> {
+export interface FormLayoutProps extends Omit<React.ComponentProps<"form">, "children"> {
   children?: React.ReactNode;
   ref?: React.Ref<HTMLFormElement>;
   testId?: string;
@@ -81,6 +81,21 @@ export interface FormFieldProps {
 }
 
 export function FormField({ label, helpText, error, required, htmlFor, testId, className, children }: FormFieldProps) {
+  let feedback: React.ReactNode = null;
+  if (error) {
+    feedback = (
+      <Text as="span" className="text-destructive" variant="small">
+        {error}
+      </Text>
+    );
+  } else if (helpText) {
+    feedback = (
+      <Text as="span" className="text-muted-foreground" variant="small">
+        {helpText}
+      </Text>
+    );
+  }
+
   return (
     <div className={cn(formSpacing.labelStack, className)} data-testid={testId}>
       {label ? (
@@ -96,15 +111,7 @@ export function FormField({ label, helpText, error, required, htmlFor, testId, c
         </FieldLabel>
       ) : null}
       {children}
-      {error ? (
-        <Text as="span" className="text-destructive" variant="small">
-          {error}
-        </Text>
-      ) : helpText ? (
-        <Text as="span" className="text-muted-foreground" variant="small">
-          {helpText}
-        </Text>
-      ) : null}
+      {feedback}
     </div>
   );
 }
@@ -114,7 +121,7 @@ export interface FormSubmitProps extends React.ComponentProps<typeof Button> {
   ref?: React.Ref<HTMLButtonElement>;
 }
 
-export function FormSubmit({ children = 'Submit', type = 'submit', ref, ...props }: FormSubmitProps) {
+export function FormSubmit({ children = "Submit", type = "submit", ref, ...props }: FormSubmitProps) {
   return (
     <Button ref={ref} type={type} {...props}>
       {children}

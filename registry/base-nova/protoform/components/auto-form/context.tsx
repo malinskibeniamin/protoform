@@ -1,30 +1,29 @@
-import React from 'react';
+import React from "react";
 
-import type { AutoFormFieldComponents, AutoFormUIComponents, ParsedField } from './core-types';
-import type { DataProviderRegistry } from './data-providers';
-import { getPathInObject } from './field-utils';
-import type { FieldTypeRegistry } from './registry';
-import type { AutoFormUiRule } from './types';
-import type { DeprecatedFieldPolicy } from './types';
+import type { AutoFormFieldComponents, AutoFormUIComponents, ParsedField } from "./core-types";
+import type { DataProviderRegistry } from "./data-providers";
+import { getPathInObject } from "./field-utils";
+import type { FieldTypeRegistry } from "./registry";
+import type { AutoFormUiRule, DeprecatedFieldPolicy } from "./types";
 
-export type AutoFormContextValue = {
-  uiComponents: AutoFormUIComponents;
+export interface AutoFormContextValue {
+  dataProviders?: DataProviderRegistry | undefined;
+  deprecatedFields: DeprecatedFieldPolicy;
+  evaluateRules: (rules: AutoFormUiRule[] | undefined, fieldValue?: unknown) => boolean;
+  fieldRegistry?: FieldTypeRegistry<string> | undefined;
   formComponents: AutoFormFieldComponents;
   formValues: Record<string, unknown>;
-  evaluateRules: (rules: AutoFormUiRule[] | undefined, fieldValue?: unknown) => boolean;
   getFieldUiConfig: (field: ParsedField) => Record<string, unknown>;
   testIdPrefix: string;
-  fieldRegistry?: FieldTypeRegistry<string>;
-  dataProviders?: DataProviderRegistry;
-  deprecatedFields: DeprecatedFieldPolicy;
-};
+  uiComponents: AutoFormUIComponents;
+}
 
 export const AutoFormContext = React.createContext<AutoFormContextValue | null>(null);
 
 export function useAutoForm(): AutoFormContextValue {
   const context = React.useContext(AutoFormContext);
   if (!context) {
-    throw new Error('useAutoForm must be used inside an AutoForm component.');
+    throw new Error("useAutoForm must be used inside an AutoForm component.");
   }
   return context;
 }
@@ -34,8 +33,8 @@ export function useAutoFormField(path: string[]) {
   const fieldValue = getPathInObject(formValues, path);
 
   return {
-    fieldValue,
     evaluateRules,
+    fieldValue,
     getFieldUiConfig: getUiConfig,
     testIdPrefix,
   };
@@ -46,15 +45,10 @@ export function useAutoFormField(path: string[]) {
 // switch to useAutoForm().
 // ---------------------------------------------------------------------------
 
-export type InternalAutoFormRenderContextValue = Pick<AutoFormContextValue, 'uiComponents' | 'formComponents'>;
+export type InternalAutoFormRenderContextValue = Pick<AutoFormContextValue, "uiComponents" | "formComponents">;
 export type InternalAutoFormRuntimeContextValue = Pick<
   AutoFormContextValue,
-  | 'deprecatedFields'
-  | 'formValues'
-  | 'evaluateRules'
-  | 'fieldRegistry'
-  | 'getFieldUiConfig'
-  | 'testIdPrefix'
+  "deprecatedFields" | "formValues" | "evaluateRules" | "fieldRegistry" | "getFieldUiConfig" | "testIdPrefix"
 >;
 
 export const AutoFormRenderContext = AutoFormContext;

@@ -11,13 +11,8 @@ it("shows the AIP-safe update mask produced by editable changes", async () => {
   const displayName = screen.getByRole("textbox", { name: "Display Name" });
   await user.clear(displayName);
   await user.type(displayName, "Grace Hopper");
-  await user.type(
-    screen.getByRole("textbox", { name: "Biography" }),
-    "Compiler pioneer"
-  );
+  await user.type(screen.getByRole("textbox", { name: "Biography" }), "Compiler pioneer");
   await user.click(screen.getByRole("button", { name: "Submit" }));
 
-  expect(await screen.findByRole("status")).toHaveTextContent(
-    "Update mask: display_name, biography"
-  );
+  expect(await screen.findByRole("status")).toHaveTextContent("Update mask: display_name, biography");
 });

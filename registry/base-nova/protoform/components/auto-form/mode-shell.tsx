@@ -1,17 +1,25 @@
-'use client';
+"use client";
 
-import { MotionConfig } from 'motion/react';
-import React from 'react';
-import { Alert, AlertDescription, AlertTitle } from '../alert';
-import { Button } from '../button';
-import { CopyButton } from '../copy-button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../tabs';
-import { Textarea } from '../textarea';
-import { Heading, Text } from '../typography';
-import { formSpacing } from './form-spacing';
-import { buildAutoFormTestId } from './test-ids';
-import type { AutoFormMode, AutoFormSummaryContext } from './types';
-import { safeStringify } from './utils/serialization';
+import { MotionConfig } from "motion/react";
+import type React from "react";
+import { Alert, AlertDescription, AlertTitle } from "../alert";
+import { Button } from "../button";
+import { CopyButton } from "../copy-button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../tabs";
+import { Textarea } from "../textarea";
+import { Heading, Text } from "../typography";
+
+function getModeLabel(mode: AutoFormMode): string {
+  if (mode === "json") {
+    return "JSON";
+  }
+  return mode === "simple" ? "Simple" : "Advanced";
+}
+
+import { formSpacing } from "./form-spacing";
+import { buildAutoFormTestId } from "./test-ids";
+import type { AutoFormMode, AutoFormSummaryContext } from "./types";
+import { safeStringify } from "./utils/serialization";
 
 function JsonBlock({ description, jsonText, title }: { title: string; description: string; jsonText: string }) {
   return (
@@ -51,7 +59,7 @@ function JsonEditorPanel({
   testIdPrefix,
 }: {
   bestEffort: boolean;
-  editorError?: string;
+  editorError?: string | undefined;
   jsonText: string;
   onFormat: () => void;
   onJsonTextChange: (value: string) => void;
@@ -97,7 +105,7 @@ function JsonEditorPanel({
         className="min-h-[420px] font-mono text-xs leading-5"
         onChange={(event) => onJsonTextChange(event.target.value)}
         resize="vertical"
-        testId={buildAutoFormTestId(testIdPrefix, 'json-editor')}
+        testId={buildAutoFormTestId(testIdPrefix, "json-editor")}
         value={jsonText}
       />
     </div>
@@ -114,7 +122,7 @@ function FormPanel<TNativeForm>({
   children: React.ReactNode;
   context: AutoFormSummaryContext<TNativeForm>;
   payload: unknown;
-  renderSummary?: (payload: unknown, context: AutoFormSummaryContext<TNativeForm>) => React.ReactNode;
+  renderSummary?: ((payload: unknown, context: AutoFormSummaryContext<TNativeForm>) => React.ReactNode) | undefined;
   testIdPrefix: string;
 }) {
   const payloadText = safeStringify(payload);
@@ -132,7 +140,7 @@ function FormPanel<TNativeForm>({
       <div className={`min-w-0 lg:pr-2 ${formSpacing.form}`}>{children}</div>
       <aside
         className="min-w-0 lg:sticky lg:top-6 lg:self-start"
-        data-testid={buildAutoFormTestId(testIdPrefix, 'summary')}
+        data-testid={buildAutoFormTestId(testIdPrefix, "summary")}
       >
         {renderSummary ? (
           renderSummary(payload, context)
@@ -166,7 +174,7 @@ export function AutoFormModeShell<TNativeForm>({
   testIdPrefix,
 }: {
   bestEffort: boolean;
-  jsonEditorError?: string;
+  jsonEditorError?: string | undefined;
   jsonText: string;
   mode: AutoFormMode;
   modes: AutoFormMode[];
@@ -175,14 +183,14 @@ export function AutoFormModeShell<TNativeForm>({
   onModeChange: (mode: AutoFormMode) => void;
   onResetJson: () => void;
   payload: unknown;
-  renderSummary?: (payload: unknown, context: AutoFormSummaryContext<TNativeForm>) => React.ReactNode;
+  renderSummary?: ((payload: unknown, context: AutoFormSummaryContext<TNativeForm>) => React.ReactNode) | undefined;
   summaryContext: AutoFormSummaryContext<TNativeForm>;
-  renderFormMode: (mode: Exclude<AutoFormMode, 'json'>) => React.ReactNode;
+  renderFormMode: (mode: Exclude<AutoFormMode, "json">) => React.ReactNode;
   showSummary: boolean;
   testIdPrefix: string;
 }) {
   function renderModeBody(targetMode: AutoFormMode) {
-    if (targetMode === 'json') {
+    if (targetMode === "json") {
       return (
         <JsonEditorPanel
           bestEffort={bestEffort}
@@ -225,7 +233,7 @@ export function AutoFormModeShell<TNativeForm>({
             onModeChange(value as AutoFormMode);
           }
         }}
-        testId={buildAutoFormTestId(testIdPrefix, 'tabs')}
+        testId={buildAutoFormTestId(testIdPrefix, "tabs")}
         value={mode}
       >
         <TabsList className="w-full justify-start" variant="underline">
@@ -236,7 +244,7 @@ export function AutoFormModeShell<TNativeForm>({
               value={tabMode}
               variant="underline"
             >
-              {tabMode === 'json' ? 'JSON' : tabMode === 'simple' ? 'Simple' : 'Advanced'}
+              {getModeLabel(tabMode)}
             </TabsTrigger>
           ))}
         </TabsList>

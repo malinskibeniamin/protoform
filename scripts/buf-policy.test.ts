@@ -9,11 +9,9 @@ function runBufLint(input = ".") {
 }
 
 function runBufBreaking(input: string, against: string) {
-  return spawnSync(
-    "bunx",
-    ["buf", "breaking", input, "--against", against, "--error-format=json"],
-    { encoding: "utf8" }
-  );
+  return spawnSync("bunx", ["buf", "breaking", input, "--against", against, "--error-format=json"], {
+    encoding: "utf8",
+  });
 }
 
 describe("Buf policy", () => {
@@ -35,9 +33,7 @@ describe("Buf policy", () => {
 
     expect(result.status).not.toBe(0);
     expect(violations.length).toBeGreaterThan(0);
-    expect(new Set(violations.map((violation) => violation.type))).toEqual(
-      new Set(["PROTOVALIDATE"])
-    );
+    expect(new Set(violations.map((violation) => violation.type))).toEqual(new Set(["PROTOVALIDATE"]));
   });
 
   it("runs the complete lint policy in CI", () => {
@@ -59,18 +55,14 @@ describe("Buf policy", () => {
       .map((line) => JSON.parse(line) as { type: string });
 
     expect(result.status).not.toBe(0);
-    expect(violations.map((violation) => violation.type)).toContain(
-      "FIELD_SAME_TYPE"
-    );
+    expect(violations.map((violation) => violation.type)).toContain("FIELD_SAME_TYPE");
 
     const workflow = readFileSync(".github/workflows/ci.yml", "utf8");
     const manifest = JSON.parse(readFileSync("package.json", "utf8")) as {
       scripts?: Record<string, string>;
     };
 
-    expect(manifest.scripts?.["proto:breaking"]).toBe(
-      "bun run scripts/check-proto-breaking.ts"
-    );
+    expect(manifest.scripts?.["proto:breaking"]).toBe("bun run scripts/check-proto-breaking.ts");
     expect(workflow).toContain("fetch-depth: 0");
     expect(workflow).toContain("bun run proto:breaking");
     expect(workflow).toContain("github.event.pull_request.base.sha");

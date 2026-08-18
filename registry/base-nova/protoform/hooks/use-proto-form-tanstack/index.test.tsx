@@ -1,43 +1,59 @@
-import { renderHook } from '@testing-library/react';
-import { act } from 'react';
-import { describe, expect, it, vi } from 'vitest';
+import { renderHook } from "@testing-library/react";
+import { act } from "react";
+import { describe, expect, it, vi } from "vitest";
 
-import '../../lib/protobuf-provider/auto-form-example-annotations';
-import { AutoFormExampleSchema } from '../../lib/protobuf-provider/gen/auto-form-example_pb';
-import { useProtoForm } from '.';
+import "../../lib/protobuf-provider/auto-form-example-annotations";
+import { AutoFormExampleSchema } from "../../lib/protobuf-provider/gen/auto-form-example_pb";
+import { useProtoForm } from ".";
 
-describe('TanStack useProtoForm', () => {
-  it('preserves the native form API and adds protobuf helpers', () => {
+function hasErrors(value: unknown): value is { errors: unknown[] } {
+  return typeof value === "object" && value !== null && "errors" in value && Array.isArray(value.errors);
+}
+
+function hasKey<Key extends PropertyKey>(value: object, key: Key): value is Record<Key, unknown> {
+  return key in value;
+}
+
+function errorsForField(fields: object, fieldName: string): unknown[] {
+  if (!hasKey(fields, fieldName)) {
+    return [];
+  }
+  const field = fields[fieldName];
+  return hasErrors(field) ? field.errors : [];
+}
+
+describe("TanStack useProtoForm", () => {
+  it("preserves the native form API and adds protobuf helpers", () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: {
           age: 0,
-          username: '',
+          username: "",
         },
       })
     );
 
-    expect(result.current.Field).toBeTypeOf('function');
-    expect(result.current.Subscribe).toBeTypeOf('function');
+    expect(result.current.Field).toBeTypeOf("function");
+    expect(result.current.Subscribe).toBeTypeOf("function");
     expect(result.current.store).toBeDefined();
-    expect(result.current.createMessage).toBeTypeOf('function');
-    expect(result.current.createUpdateMask).toBeTypeOf('function');
+    expect(result.current.createMessage).toBeTypeOf("function");
+    expect(result.current.createUpdateMask).toBeTypeOf("function");
 
     act(() => {
-      result.current.setFieldValue('username', 'ada_user');
+      result.current.setFieldValue("username", "ada_user");
     });
 
-    expect(result.current.createMessage().username).toBe('ada_user');
-    expect(result.current.createUpdateMask().paths).toEqual(['username']);
+    expect(result.current.createMessage().username).toBe("ada_user");
+    expect(result.current.createUpdateMask().paths).toEqual(["username"]);
   });
 
-  it('validates the generated protobuf contract before submission', async () => {
+  it("validates the generated protobuf contract before submission", async () => {
     const onSubmit = vi.fn();
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: {
           age: 0,
-          username: 'ab',
+          username: "ab",
         },
         onSubmit,
       })
@@ -51,14 +67,14 @@ describe('TanStack useProtoForm', () => {
     expect(result.current.getAllErrors().fields.username?.errors).not.toHaveLength(0);
   });
 
-  it('composes the caller onSubmit validator instead of replacing it', async () => {
+  it("composes the caller onSubmit validator instead of replacing it", async () => {
     const onSubmit = vi.fn();
-    const nativeValidator = vi.fn(() => 'Native validation failed.');
+    const nativeValidator = vi.fn(() => "Native validation failed.");
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: {
           age: 25,
-          username: 'valid_user',
+          username: "valid_user",
         },
         onSubmit,
         validators: {
@@ -75,32 +91,34 @@ describe('TanStack useProtoForm', () => {
     expect(onSubmit).not.toHaveBeenCalled();
   });
 
-  it('maps Connect field violations onto native TanStack field errors', () => {
+  it("maps Connect field violations onto native TanStack field errors", () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: {
           age: 25,
-          primaryEmail: '',
-          username: 'valid_user',
+          homepageUrl: "",
+          primaryEmail: "",
+          tags: [],
+          username: "valid_user",
         },
       })
     );
-    const error = new ConnectError('Review the highlighted fields.', Code.InvalidArgument, {}, [
+    const error = new ConnectError("Review the highlighted fields.", Code.InvalidArgument, {}, [
       {
         desc: BadRequestSchema,
         value: {
           fieldViolations: [
             {
-              description: 'value is required',
-              field: 'primary_email',
+              description: "value is required",
+              field: "primary_email",
             },
             {
-              description: 'must contain at least 1 item(s)',
-              field: 'tags',
+              description: "must contain at least 1 item(s)",
+              field: "tags",
             },
             {
-              description: '   ',
-              field: 'homepage_url',
+              description: "   ",
+              field: "homepage_url",
             },
           ],
         },
@@ -114,63 +132,54 @@ describe('TanStack useProtoForm', () => {
 
     expect(mapped?.handled).toBe(true);
     expect(mapped?.unmapped).toEqual([]);
-    expect(result.current.getAllErrors().fields.primaryEmail?.errors).toContain(
-      'Enter a value.'
-    );
-    expect(result.current.getAllErrors().fields.tags?.errors).toContain(
-      'Add at least one item.'
-    );
-    expect(result.current.getAllErrors().fields.homepageUrl?.errors).toContain(
-      'Review this value and try again.'
-    );
+    const fieldErrors = result.current.getAllErrors().fields;
+    expect(errorsForField(fieldErrors, "primaryEmail")).toContain("Enter a value.");
+    expect(errorsForField(fieldErrors, "tags")).toContain("Add at least one item.");
+    expect(errorsForField(fieldErrors, "homepageUrl")).toContain("Review this value and try again.");
   });
 
-  it('switches oneof branches without retaining the previous branch value', () => {
+  it("switches oneof branches without retaining the previous branch value", () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: {
           age: 25,
           preferredContact: {
-            case: 'preferredEmail',
-            value: 'ada@example.com',
+            case: "preferredEmail",
+            value: "ada@example.com",
           },
-          username: 'valid_user',
+          username: "valid_user",
         },
       })
     );
 
     act(() => {
-      result.current.setOneofValue(
-        'preferredContact',
-        'preferredPhone',
-        '+48123456789'
-      );
+      result.current.setOneofValue("preferredContact", "preferredPhone", "+48123456789");
     });
 
     expect(result.current.createMessage().preferredContact).toEqual({
-      case: 'preferredPhone',
-      value: '+48123456789',
+      case: "preferredPhone",
+      value: "+48123456789",
     });
   });
 
-  it('drills into nested native errors with the Protoform helper', () => {
+  it("drills into nested native errors with the Protoform helper", () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: {
           age: 25,
-          shippingAddress: { city: '', lineOne: '' },
-          username: 'valid_user',
+          shippingAddress: { city: "", lineOne: "" },
+          username: "valid_user",
         },
       })
     );
-    const error = new ConnectError('Review the highlighted fields.', Code.InvalidArgument, {}, [
+    const error = new ConnectError("Review the highlighted fields.", Code.InvalidArgument, {}, [
       {
         desc: BadRequestSchema,
         value: {
           fieldViolations: [
             {
-              description: 'Choose a supported city.',
-              field: 'shipping_address.city',
+              description: "Choose a supported city.",
+              field: "shipping_address.city",
             },
           ],
         },
@@ -181,10 +190,11 @@ describe('TanStack useProtoForm', () => {
       result.current.setServerErrors(error);
     });
 
-    expect(result.current.getNestedErrors('shippingAddress')).toEqual({
-      city: { message: 'Choose a supported city.' },
+    expect(result.current.getNestedErrors("shippingAddress")).toEqual({
+      city: { message: "Choose a supported city." },
     });
   });
 });
-import { BadRequestSchema } from '@buf/googleapis_googleapis.bufbuild_es/google/rpc/error_details_pb.js';
-import { Code, ConnectError } from '@connectrpc/connect';
+
+import { BadRequestSchema } from "@buf/googleapis_googleapis.bufbuild_es/google/rpc/error_details_pb.js";
+import { Code, ConnectError } from "@connectrpc/connect";

@@ -6,10 +6,7 @@ const CODE_BLOCK_SELECTOR = ".prose pre > code";
 const MANAGED_ATTRIBUTE = "data-keyboard-scrollable";
 
 function isScrollable(element: HTMLElement): boolean {
-  return (
-    element.scrollWidth > element.clientWidth ||
-    element.scrollHeight > element.clientHeight
-  );
+  return element.scrollWidth > element.clientWidth || element.scrollHeight > element.clientHeight;
 }
 
 export function syncScrollableCodeBlocks(root: ParentNode = document): void {
@@ -49,9 +46,7 @@ export function ScrollableCodeBlocks() {
       mutationObserver.disconnect();
       resizeObserver.disconnect();
       document.removeEventListener("astro:page-load", syncCodeBlocks);
-      for (const code of document.querySelectorAll<HTMLElement>(
-        `[${MANAGED_ATTRIBUTE}]`
-      )) {
+      for (const code of document.querySelectorAll<HTMLElement>(`[${MANAGED_ATTRIBUTE}]`)) {
         code.removeAttribute("tabindex");
         code.removeAttribute(MANAGED_ATTRIBUTE);
       }

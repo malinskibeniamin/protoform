@@ -5,10 +5,7 @@ import {
 import { RetryInfoSchema } from "@buf/googleapis_googleapis.bufbuild_es/google/rpc/error_details_pb.js";
 import { StatusSchema } from "@buf/googleapis_googleapis.bufbuild_es/google/rpc/status_pb.js";
 import { create, type DescMethod } from "@bufbuild/protobuf";
-import {
-  AnySchema,
-  MethodOptions_IdempotencyLevel,
-} from "@bufbuild/protobuf/wkt";
+import { AnySchema, MethodOptions_IdempotencyLevel } from "@bufbuild/protobuf/wkt";
 import { Code, ConnectError } from "@connectrpc/connect";
 import { describe, expect, it, vi } from "vitest";
 
@@ -23,11 +20,7 @@ import {
   runProtoOperation,
 } from "./aip-client-workflow.js";
 
-function operation(
-  name: string,
-  done = false,
-  result: Operation["result"] = { case: undefined }
-): Operation {
+function operation(name: string, done = false, result: Operation["result"] = { case: undefined }): Operation {
   return create(OperationSchema, { done, name, result });
 }
 
@@ -55,10 +48,7 @@ describe("runProtoOperation", () => {
       start: async () => operation("operations/123"),
     });
 
-    expect(poll).toHaveBeenCalledWith(
-      "operations/123",
-      expect.any(AbortSignal)
-    );
+    expect(poll).toHaveBeenCalledWith("operations/123", expect.any(AbortSignal));
     expect(updates).toEqual([false, true]);
     expect(result.done).toBe(true);
   });
@@ -88,8 +78,7 @@ describe("runProtoOperation", () => {
     await expect(
       runProtoOperation({
         poll: async () => operation("operations/unused"),
-        start: async () =>
-          operation("operations/123", true, { case: "error", value: status }),
+        start: async () => operation("operations/123", true, { case: "error", value: status }),
       })
     ).rejects.toEqual(expect.any(ProtoOperationError));
   });
@@ -104,18 +93,15 @@ describe("getProtoRetryDecision", () => {
       },
     ]);
 
-    expect(
-      getProtoRetryDecision(
-        method(MethodOptions_IdempotencyLevel.IDEMPOTENT),
-        error
-      )
-    ).toEqual({ delayMs: 2500, reason: "transient", retry: true });
-    expect(
-      getProtoRetryDecision(
-        method(MethodOptions_IdempotencyLevel.IDEMPOTENCY_UNKNOWN),
-        error
-      )
-    ).toEqual({ reason: "unsafe", retry: false });
+    expect(getProtoRetryDecision(method(MethodOptions_IdempotencyLevel.IDEMPOTENT), error)).toEqual({
+      delayMs: 2500,
+      reason: "transient",
+      retry: true,
+    });
+    expect(getProtoRetryDecision(method(MethodOptions_IdempotencyLevel.IDEMPOTENCY_UNKNOWN), error)).toEqual({
+      reason: "unsafe",
+      retry: false,
+    });
     expect(
       getProtoRetryDecision(
         method(MethodOptions_IdempotencyLevel.IDEMPOTENT),
@@ -129,10 +115,7 @@ describe("getProtoPartialResult", () => {
   it("turns AIP-217 unreachable resources into a warning and targeted recovery actions", () => {
     expect(
       getProtoPartialResult({
-        unreachable: [
-          "projects/example/locations/europe-west2",
-          "projects/example/locations/us-east1",
-        ],
+        unreachable: ["projects/example/locations/europe-west2", "projects/example/locations/us-east1"],
       })
     ).toEqual({
       complete: false,
@@ -146,10 +129,7 @@ describe("getProtoPartialResult", () => {
           resourceName: "projects/example/locations/us-east1",
         },
       ],
-      unreachable: [
-        "projects/example/locations/europe-west2",
-        "projects/example/locations/us-east1",
-      ],
+      unreachable: ["projects/example/locations/europe-west2", "projects/example/locations/us-east1"],
       warning: "Some results are unavailable from 2 resources.",
     });
     expect(getProtoPartialResult({ unreachable: [] })).toEqual({
@@ -167,10 +147,7 @@ describe("destructive and preview workflow plans", () => {
         { filter: "state=DELETED", force: false },
         {
           purgeCount: 2,
-          purgeSample: [
-            "publishers/acme/books/old-1",
-            "publishers/acme/books/old-2",
-          ],
+          purgeSample: ["publishers/acme/books/old-1", "publishers/acme/books/old-2"],
         }
       )
     ).toEqual({
@@ -181,10 +158,7 @@ describe("destructive and preview workflow plans", () => {
       warning: "Preview only. No resources will be deleted.",
     });
     expect(
-      getProtoPurgePlan(
-        { filter: "state=DELETED", force: true },
-        { purgeCount: 2, purgeSample: [] }
-      )
+      getProtoPurgePlan({ filter: "state=DELETED", force: true }, { purgeCount: 2, purgeSample: [] })
     ).toMatchObject({
       confirmationRequired: true,
       mode: "execute",
@@ -197,8 +171,7 @@ describe("destructive and preview workflow plans", () => {
       action: "start-preview",
       confirmationRequired: false,
       enforcesPolicy: false,
-      notice:
-        "Preview compares the experiment with live traffic without enforcing it.",
+      notice: "Preview compares the experiment with live traffic without enforcing it.",
     });
     expect(getProtoPolicyPreviewPlan("commit")).toEqual({
       action: "commit",
@@ -217,14 +190,17 @@ describe("getProtoStability", () => {
         typeName: "library.v1alpha1.Book",
       })
     ).toMatchObject({ level: "alpha", preview: true });
-    expect(
-      getProtoStability({ deprecated: false, typeName: "library.v1beta1.Book" })
-    ).toMatchObject({ level: "beta", preview: true });
-    expect(
-      getProtoStability({ deprecated: false, typeName: "library.v1.Book" })
-    ).toEqual({ level: "stable", preview: false });
-    expect(
-      getProtoStability({ deprecated: true, typeName: "library.v1.Book" })
-    ).toMatchObject({ level: "deprecated", preview: false });
+    expect(getProtoStability({ deprecated: false, typeName: "library.v1beta1.Book" })).toMatchObject({
+      level: "beta",
+      preview: true,
+    });
+    expect(getProtoStability({ deprecated: false, typeName: "library.v1.Book" })).toEqual({
+      level: "stable",
+      preview: false,
+    });
+    expect(getProtoStability({ deprecated: true, typeName: "library.v1.Book" })).toMatchObject({
+      level: "deprecated",
+      preview: false,
+    });
   });
 });

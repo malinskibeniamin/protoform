@@ -1,23 +1,8 @@
 "use client";
 
-import {
-  CheckIcon,
-  CopyIcon,
-  ExternalLinkIcon,
-  Maximize2Icon,
-  Minimize2Icon,
-  MoonIcon,
-  SunIcon,
-} from "lucide-react";
-import {
-  type ComponentProps,
-  type CSSProperties,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { CheckIcon, CopyIcon, ExternalLinkIcon, Maximize2Icon, Minimize2Icon, MoonIcon, SunIcon } from "lucide-react";
+import { type ComponentProps, type CSSProperties, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-
 import { AutoForm } from "@/registry/base-nova/protoform/components/auto-form";
 import type {
   FieldWrapperProps,
@@ -25,12 +10,7 @@ import type {
   SchemaValidationError,
 } from "@/registry/base-nova/protoform/components/auto-form/core-types";
 import { Button } from "@/registry/base-nova/protoform/components/button";
-import {
-  Field,
-  FieldContent,
-  FieldError,
-  FieldLabel,
-} from "@/registry/base-nova/protoform/components/field";
+import { Field, FieldContent, FieldError, FieldLabel } from "@/registry/base-nova/protoform/components/field";
 import { cn } from "@/registry/base-nova/protoform/lib/utils";
 
 import {
@@ -51,28 +31,14 @@ type PreviewValues = Record<string, unknown>;
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const isoDatePattern = /^\d{4}-\d{2}-\d{2}$/;
 const environmentValues = new Set(["development", "staging", "production"]);
-const reviewTemplateValues = new Set([
-  "access",
-  "architecture",
-  "compliance",
-  "incident",
-  "launch",
-]);
+const reviewTemplateValues = new Set(["access", "architecture", "compliance", "incident", "launch"]);
 
-function isSupportedValue(
-  value: unknown,
-  supportedValues: Set<string>
-): value is string {
+function isSupportedValue(value: unknown, supportedValues: Set<string>): value is string {
   return typeof value === "string" && supportedValues.has(value);
 }
 
 function isValidCoverageTarget(value: unknown): value is number {
-  return (
-    typeof value === "number" &&
-    Number.isFinite(value) &&
-    value >= 0 &&
-    value <= 100
-  );
+  return typeof value === "number" && Number.isFinite(value) && value >= 0 && value <= 100;
 }
 
 function isValidIsoDate(value: unknown): value is string {
@@ -85,11 +51,7 @@ function isValidIsoDate(value: unknown): value is string {
     return false;
   }
   const date = new Date(Date.UTC(year, month - 1, day));
-  return (
-    date.getUTCFullYear() === year &&
-    date.getUTCMonth() === month - 1 &&
-    date.getUTCDate() === day
-  );
+  return date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day;
 }
 
 function buildPreviewSchema(instanceId: string): SchemaProvider<PreviewValues> {
@@ -268,21 +230,14 @@ function buildPreviewSchema(instanceId: string): SchemaProvider<PreviewValues> {
         });
       }
 
-      return errors.length > 0
-        ? { errors, success: false }
-        : { data: values, success: true };
+      return errors.length > 0 ? { errors, success: false } : { data: values, success: true };
     },
   };
 }
 
 const previewSchema = buildPreviewSchema("preset-preview");
 
-function PreviewForm({
-  children,
-  className,
-  testId,
-  ...props
-}: ComponentProps<"form"> & { testId?: string }) {
+function PreviewForm({ children, className, testId, ...props }: ComponentProps<"form"> & { testId?: string }) {
   return (
     <form
       className={cn(
@@ -297,19 +252,9 @@ function PreviewForm({
   );
 }
 
-function PreviewFieldWrapper({
-  children,
-  error,
-  field,
-  id,
-  label,
-}: FieldWrapperProps) {
+function PreviewFieldWrapper({ children, error, field, id, label }: FieldWrapperProps) {
   return (
-    <Field
-      className="gap-2"
-      data-invalid={Boolean(error)}
-      data-layout="stacked"
-    >
+    <Field className="gap-2" data-invalid={Boolean(error)} data-layout="stacked">
       <FieldLabel className="gap-1.5" htmlFor={id}>
         <span className="font-medium text-sm">{label}</span>
         {field.required ? (
@@ -335,7 +280,7 @@ interface InitialSelection {
   mode: PresetMode;
   preset: PresetDefinition;
   radius: PresetRadius;
-  status?: string;
+  status?: string | undefined;
 }
 
 type PreviewRadiusVariable =
@@ -347,14 +292,10 @@ type PreviewRadiusVariable =
   | "--radius-xl"
   | "--radius-2xl";
 
-type PreviewSelectionVariable =
-  | "--selected"
-  | "--selected-foreground"
-  | "--selection"
-  | "--selection-foreground";
+type PreviewSelectionVariable = "--selected" | "--selected-foreground" | "--selection" | "--selection-foreground";
 
 function readBlumeTheme(): PresetMode {
-  return document.documentElement.dataset.theme === "dark" ? "dark" : "light";
+  return document.documentElement.dataset["theme"] === "dark" ? "dark" : "light";
 }
 
 function readInitialSelection(): InitialSelection {
@@ -369,13 +310,9 @@ function readInitialSelection(): InitialSelection {
   const searchParams = new URLSearchParams(window.location.search);
   const presetCode = searchParams.get("preset");
   const requestedMode = searchParams.get("mode");
-  const supportedPreset = presetCode
-    ? findSupportedPreset(presetCode)
-    : undefined;
+  const supportedPreset = presetCode ? findSupportedPreset(presetCode) : undefined;
   const hasInvalidPreset = Boolean(presetCode && !supportedPreset);
-  const hasInvalidMode = Boolean(
-    requestedMode && requestedMode !== "light" && requestedMode !== "dark"
-  );
+  const hasInvalidMode = Boolean(requestedMode && requestedMode !== "light" && requestedMode !== "dark");
   let mode = readBlumeTheme();
   if (requestedMode === "dark" || requestedMode === "light") {
     mode = requestedMode;
@@ -390,9 +327,7 @@ function readInitialSelection(): InitialSelection {
     );
   }
   if (hasInvalidMode) {
-    statusMessages.push(
-      "This shared preview mode is not supported. Showing the light preview."
-    );
+    statusMessages.push("This shared preview mode is not supported. Showing the light preview.");
   }
 
   return {
@@ -406,9 +341,7 @@ function readInitialSelection(): InitialSelection {
 function buildPreviewStyle(
   variables: PresetCssVariables,
   radius: string
-): CSSProperties &
-  PresetCssVariables &
-  Record<PreviewRadiusVariable | PreviewSelectionVariable, string> {
+): CSSProperties & PresetCssVariables & Record<PreviewRadiusVariable | PreviewSelectionVariable, string> {
   return {
     ...variables,
     "--radius": radius,
@@ -434,7 +367,7 @@ function createWorkspaceHost(): HTMLDivElement | null {
 
   const host = document.createElement("div");
   host.className = "w-full";
-  host.dataset.presetWorkspaceHost = "";
+  host.dataset["presetWorkspaceHost"] = "";
   return host;
 }
 
@@ -490,18 +423,12 @@ function useWorkspaceFullscreen(setStatus: (message: string) => void) {
 
   useEffect(function trackWorkspaceFullscreen() {
     function synchronizeFullscreenState() {
-      setIsNativeFullscreen(
-        document.fullscreenElement === workspaceRef.current
-      );
+      setIsNativeFullscreen(document.fullscreenElement === workspaceRef.current);
     }
 
     synchronizeFullscreenState();
     document.addEventListener("fullscreenchange", synchronizeFullscreenState);
-    return () =>
-      document.removeEventListener(
-        "fullscreenchange",
-        synchronizeFullscreenState
-      );
+    return () => document.removeEventListener("fullscreenchange", synchronizeFullscreenState);
   }, []);
 
   useEffect(
@@ -629,11 +556,8 @@ export function PresetLab() {
   const presetCode = buildPresetCode(activePreset, radius);
   const command = `bunx shadcn@latest create --base base --preset ${presetCode}`;
   const createUrl = `https://ui.shadcn.com/create?base=base&preset=${presetCode}`;
-  const radiusValue =
-    presetRadii.find((candidate) => candidate.value === radius)?.cssValue ??
-    "0.625rem";
-  const previewVariables =
-    mode === "dark" ? activePreset.dark : activePreset.light;
+  const radiusValue = presetRadii.find((candidate) => candidate.value === radius)?.cssValue ?? "0.625rem";
+  const previewVariables = mode === "dark" ? activePreset.dark : activePreset.light;
   const previewStyle = buildPreviewStyle(previewVariables, radiusValue);
 
   useEffect(
@@ -648,7 +572,7 @@ export function PresetLab() {
 
   useEffect(
     function synchronizeBlumeTheme() {
-      document.documentElement.dataset.theme = mode;
+      document.documentElement.dataset["theme"] = mode;
       localStorage.setItem("blume-theme", mode);
     },
     [mode]
@@ -670,11 +594,7 @@ export function PresetLab() {
     setStatus(`${preset.name} preset selected.`);
   }
 
-  async function copyText(
-    value: string,
-    successMessage: string,
-    failureMessage: string
-  ) {
+  async function copyText(value: string, successMessage: string, failureMessage: string) {
     try {
       if (!navigator.clipboard) {
         throw new Error("Clipboard access is unavailable.");
@@ -719,9 +639,7 @@ export function PresetLab() {
                       />
                     ))}
                   </div>
-                  <span className="truncate font-medium text-sm">
-                    {activePreset.name}
-                  </span>
+                  <span className="truncate font-medium text-sm">{activePreset.name}</span>
                   <span
                     className="hidden rounded-full border bg-muted/30 px-2 py-0.5 text-muted-foreground text-xs sm:inline-flex"
                     data-slot="preset-compatibility"
@@ -765,25 +683,15 @@ export function PresetLab() {
                     </Button>
                   </fieldset>
                   <Button
-                    aria-label={
-                      isFullscreen ? "Exit full screen" : "Enter full screen"
-                    }
+                    aria-label={isFullscreen ? "Exit full screen" : "Enter full screen"}
                     onClick={toggleFullscreen}
                     size="sm"
-                    title={
-                      isFullscreen ? "Exit full screen" : "Enter full screen"
-                    }
+                    title={isFullscreen ? "Exit full screen" : "Enter full screen"}
                     type="button"
                     variant="ghost"
                   >
-                    {isFullscreen ? (
-                      <Minimize2Icon aria-hidden="true" />
-                    ) : (
-                      <Maximize2Icon aria-hidden="true" />
-                    )}
-                    <span className="hidden sm:inline">
-                      {isFullscreen ? "Exit full screen" : "Full screen"}
-                    </span>
+                    {isFullscreen ? <Minimize2Icon aria-hidden="true" /> : <Maximize2Icon aria-hidden="true" />}
+                    <span className="hidden sm:inline">{isFullscreen ? "Exit full screen" : "Full screen"}</span>
                   </Button>
                 </div>
               </header>
@@ -791,14 +699,11 @@ export function PresetLab() {
               <div className="grid min-w-0 md:grid-cols-[11.5rem_minmax(0,1fr)] md:group-data-[fullscreen=true]/workspace:h-full md:group-data-[fullscreen=true]/workspace:min-h-0">
                 <div className="min-w-0 border-b bg-muted/15 p-3 md:border-r md:border-b-0 md:group-data-[fullscreen=true]/workspace:overflow-y-auto">
                   <fieldset className="min-w-0">
-                    <legend className="mb-2 px-1 font-medium text-muted-foreground text-xs">
-                      Presets
-                    </legend>
+                    <legend className="mb-2 px-1 font-medium text-muted-foreground text-xs">Presets</legend>
                     <div className="grid min-w-0 grid-cols-3 gap-1 md:grid-cols-1">
                       {presetDefinitions.map((preset) => {
                         const active = activePreset.id === preset.id;
-                        const variables =
-                          mode === "dark" ? preset.dark : preset.light;
+                        const variables = mode === "dark" ? preset.dark : preset.light;
 
                         return (
                           <Button
@@ -821,12 +726,7 @@ export function PresetLab() {
                               }}
                             />
                             {preset.name}
-                            {active ? (
-                              <CheckIcon
-                                aria-hidden="true"
-                                className="ml-auto hidden md:block"
-                              />
-                            ) : null}
+                            {active ? <CheckIcon aria-hidden="true" className="ml-auto hidden md:block" /> : null}
                           </Button>
                         );
                       })}
@@ -834,17 +734,12 @@ export function PresetLab() {
                   </fieldset>
 
                   <fieldset className="mt-3 border-t pt-3">
-                    <legend className="mb-2 px-1 font-medium text-muted-foreground text-xs">
-                      Radius
-                    </legend>
+                    <legend className="mb-2 px-1 font-medium text-muted-foreground text-xs">Radius</legend>
                     <div className="flex flex-wrap gap-1">
                       {presetRadii.map((candidate) => (
                         <Button
                           aria-pressed={radius === candidate.value}
-                          className={cn(
-                            "px-2",
-                            radius === candidate.value && "bg-muted"
-                          )}
+                          className={cn("px-2", radius === candidate.value && "bg-muted")}
                           key={candidate.value}
                           onClick={() => {
                             setRadius(candidate.value);
@@ -852,9 +747,7 @@ export function PresetLab() {
                           }}
                           size="xs"
                           type="button"
-                          variant={
-                            radius === candidate.value ? "outline" : "ghost"
-                          }
+                          variant={radius === candidate.value ? "outline" : "ghost"}
                         >
                           {candidate.label}
                         </Button>
@@ -877,12 +770,8 @@ export function PresetLab() {
                       <div aria-hidden="true" className="h-1.5 bg-primary" />
                       <header className="flex items-center justify-between gap-3 border-b bg-muted/30 px-5 py-4">
                         <div>
-                          <h3 className="m-0! font-semibold! text-lg!">
-                            Create a review
-                          </h3>
-                          <p className="m-0! text-muted-foreground text-xs">
-                            Live Protoform AutoForm
-                          </p>
+                          <h3 className="m-0! font-semibold! text-lg!">Create a review</h3>
+                          <p className="m-0! text-muted-foreground text-xs">Live Protoform AutoForm</p>
                         </div>
                         <span className="rounded-full border bg-background px-2 py-0.5 text-muted-foreground text-xs">
                           {activePreset.name}
@@ -891,11 +780,7 @@ export function PresetLab() {
 
                       <div className="p-4 sm:p-5">
                         <AutoForm<PreviewValues>
-                          onSubmit={() =>
-                            setStatus(
-                              `${activePreset.name} preview form submitted.`
-                            )
-                          }
+                          onSubmit={() => setStatus(`${activePreset.name} preview form submitted.`)}
                           schema={previewSchema}
                           testId="preset-preview-form"
                           uiComponents={previewUiComponents}
@@ -910,16 +795,10 @@ export function PresetLab() {
 
               <footer className="grid gap-3 border-t px-3 py-3 sm:px-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
                 <div className="min-w-0">
-                  <p
-                    aria-live="polite"
-                    className="m-0! text-muted-foreground text-xs"
-                    role="status"
-                  >
+                  <p aria-live="polite" className="m-0! text-muted-foreground text-xs" role="status">
                     {status ?? activePreset.description}
                   </p>
-                  <code className="block break-words text-foreground/70 text-xs">
-                    {command}
-                  </code>
+                  <code className="block break-words text-foreground/70 text-xs">{command}</code>
                 </div>
 
                 <div className="flex flex-wrap gap-1.5">

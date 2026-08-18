@@ -1,6 +1,13 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
-  "extends": ["ultracite/biome/core", "ultracite/biome/react"],
+  "extends": [
+    "ultracite/biome/core",
+    "ultracite/biome/react",
+    "ultracite/biome/astro",
+    "ultracite/biome/type-aware",
+    "ultracite/biome/vitest",
+    "ultracite/biome/tanstack"
+  ],
   "vcs": {
     "enabled": true,
     "clientKind": "git",
@@ -10,24 +17,43 @@
   "files": {
     "ignoreUnknown": true,
     "includes": [
-      "!**/.blume",
-      "!**/.blume-verify",
-      "!**/dist",
-      "!**/build",
-      "!**/public/r",
-      "!**/routeTree.gen.ts",
-      "!conformance/gen",
-      "!examples/gen",
-      "!registry"
+      "!!**/.blume",
+      "!!**/.blume-verify",
+      "!!**/dist",
+      "!!**/build",
+      "!!**/public/r",
+      "!!**/routeTree.gen.ts",
+      "!!**/*_pb.ts",
+      "!!**/*_form.ts",
+      "!!conformance/gen",
+      "!!examples/gen",
+      "!!registry/**/gen",
+      "!!registry/**/__golden__",
+      "!!registry/base-nova/protoform/lib/protobuf-v1-bridge"
     ]
+  },
+  "formatter": {
+    "lineWidth": 120
   },
   "linter": {
     "rules": {
       "complexity": {
-        // Both fight tsconfig's noImplicitReturns: TS requires an explicit
-        // tail return in mixed-return functions; these rules delete it.
+        // TypeScript requires bracket access for values exposed only through index signatures.
+        "useLiteralKeys": "off",
+        // TypeScript's noImplicitReturns requires explicit tail returns in mixed-return functions.
         "noUselessReturn": "off",
         "noUselessUndefined": "off"
+      },
+      "correctness": {
+        // Biome's scanner cannot resolve registry aliases and generated protobuf module paths;
+        // the TypeScript compiler validates both with the consumer-compatible resolver.
+        "noUnresolvedImports": "off",
+        // Extensionless source imports remain portable when registry files are installed into
+        // consumer projects; TypeScript still validates every resolved module.
+        "useImportExtensions": "off"
+      },
+      "suspicious": {
+        "noConsole": "error"
       }
     }
   },
@@ -36,41 +62,294 @@
       "includes": ["scripts/**", "*.config.ts"],
       "linter": {
         "rules": {
-          "suspicious": { "noConsole": "off" },
-          "style": { "noDefaultExport": "off" },
-          "correctness": { "noNodejsModules": "off", "noProcessGlobal": "off" }
-        }
-      }
-    },
-    {
-      // React Compiler stabilizes component-local callbacks in example UI.
-      "includes": ["components/**/*.tsx", "examples/**/*.tsx"],
-      "linter": {
-        "rules": {
-          "performance": { "noJsxPropsBind": "off" }
-        }
-      }
-    },
-    {
-      // Blume's island convention requires PascalCase filenames and default exports.
-      "includes": ["islands/**"],
-      "linter": {
-        "rules": {
-          "performance": { "noBarrelFile": "off" },
+          "correctness": {
+            "noNodejsModules": "off",
+            "noProcessGlobal": "off"
+          },
           "style": {
-            "noDefaultExport": "off",
-            "useFilenamingConvention": "off"
+            "noDefaultExport": "off"
+          },
+          "suspicious": {
+            "noConsole": "off"
           }
         }
       }
     },
     {
-      "includes": ["registry/**"],
+      // React Compiler stabilizes component-local functions without manual memoization.
+      "includes": ["**/*.tsx"],
       "linter": {
-        "enabled": false
-      },
-      "formatter": {
-        "enabled": false
+        "rules": {
+          "performance": {
+            "noJsxPropsBind": "off"
+          }
+        }
+      }
+    },
+    {
+      // The controller contract intentionally uses TypeScript's bivariant callback pattern so
+      // value-specific field adapters remain assignable without weakening values to any.
+      "includes": ["registry/**/components/auto-form/core-types.ts"],
+      "linter": {
+        "rules": {
+          "style": {
+            "useConsistentMethodSignatures": "off"
+          }
+        }
+      }
+    },
+    {
+      // Keep runtime guards around React refs, browser APIs, and supported third-party package
+      // versions even when the currently installed declarations model them as always present.
+      "includes": [
+        "registry/base-nova/protoform/components/auto-form/adapters/tanstack-v2.tsx",
+        "registry/base-nova/protoform/components/auto-form/adapters/tanstack.tsx",
+        "registry/base-nova/protoform/components/auto-form/auto-form-core.tsx",
+        "registry/base-nova/protoform/components/auto-form/fields/slider.tsx",
+        "registry/base-nova/protoform/components/auto-form/renderers/array.tsx",
+        "registry/base-nova/protoform/components/combobox/index.tsx",
+        "registry/base-nova/protoform/components/input-group/index.tsx",
+        "registry/base-nova/protoform/components/json-field/index.tsx",
+        "registry/base-nova/protoform/components/tabs/index.tsx",
+        "registry/base-nova/protoform/components/tags/index.tsx",
+        "registry/base-nova/protoform/components/toggle-group/index.tsx",
+        "registry/base-nova/protoform/hooks/use-controllable-state/index.ts",
+        "registry/base-nova/protoform/lib/input-utils/index.ts"
+      ],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noUnnecessaryConditions": "off"
+          }
+        }
+      }
+    },
+    {
+      // Registry primitives preserve the ref-forwarding API expected by installed consumers.
+      "includes": ["registry/**/*.tsx"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noReactForwardRef": "off"
+          }
+        }
+      }
+    },
+    {
+      // Registry entrypoints are the public install units consumed by shadcn-compatible clients.
+      "includes": [
+        "registry/**/index.ts",
+        "registry/**/index.tsx",
+        "registry/**/core-types.ts"
+      ],
+      "linter": {
+        "rules": {
+          "performance": {
+            "noBarrelFile": "off"
+          }
+        }
+      }
+    },
+    {
+      // These modules are intentional public facades rather than accidental barrels.
+      "includes": [
+        "examples/server/service.ts",
+        "lib/protobuf-provider/index.ts",
+        "registry/**/components/auto-form/proto/schema.ts",
+        "registry/**/components/auto-form/proto/conversion.ts",
+        "registry/**/components/auto-form/schema.ts"
+      ],
+      "linter": {
+        "rules": {
+          "performance": {
+            "noBarrelFile": "off"
+          }
+        }
+      }
+    },
+    {
+      // Registry demo modules are discovered through their required default-export contract.
+      "includes": ["registry/**/demo/**/*.tsx"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noRedundantDefaultExport": "off"
+          }
+        }
+      }
+    },
+    {
+      // Test-local regexes and assertion helpers are isolated to a single test process.
+      "includes": [
+        "**/*.test.ts",
+        "**/*.test.tsx",
+        "**/*.spec.ts",
+        "**/*.spec.tsx"
+      ],
+      "linter": {
+        "rules": {
+          "performance": {
+            "useTopLevelRegex": "off"
+          },
+          "suspicious": {
+            "noMisplacedAssertion": "off"
+          }
+        }
+      }
+    },
+    {
+      // These exhaustive parsers and interpreters encode branch-heavy external specifications.
+      "includes": [
+        "registry/**/components/auto-form/**",
+        "registry/**/components/input/index.tsx",
+        "registry/**/components/json-field/index.tsx",
+        "registry/**/lib/protobuf-provider/**",
+        "registry/**/demo/bookstore/library-service.ts",
+        "registry/**/hooks/use-proto-form*/proto-resolver.ts"
+      ],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveCognitiveComplexity": "off"
+          }
+        }
+      }
+    },
+    {
+      // Recursive field renderers intentionally dispatch back into the renderer graph.
+      "includes": ["registry/**/components/auto-form/renderers/**"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noImportCycles": "off"
+          }
+        }
+      }
+    },
+    {
+      // These workflows are intentionally sequential because each iteration mutates shared
+      // browser or request state before the next one starts.
+      "includes": [
+        "e2e/docs-screenshots.spec.ts",
+        "registry/**/lib/protobuf-provider/aip-client-workflow.ts"
+      ],
+      "linter": {
+        "rules": {
+          "performance": {
+            "noAwaitInLoops": "off"
+          }
+        }
+      }
+    },
+    {
+      // React error boundaries still require a class component.
+      "includes": ["registry/**/components/auto-form/auto-form-core.tsx"],
+      "linter": {
+        "rules": {
+          "style": {
+            "useReactFunctionComponents": "off"
+          }
+        }
+      }
+    },
+    {
+      // The reusable label primitive is associated by consumers through htmlFor or nesting.
+      "includes": ["registry/**/components/label/index.tsx"],
+      "linter": {
+        "rules": {
+          "a11y": {
+            "noLabelWithoutControl": "off"
+          }
+        }
+      }
+    },
+    {
+      // Astro imports are referenced by the template compiler rather than the frontmatter AST.
+      "includes": ["**/*.astro"],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noUndeclaredVariables": "off",
+            "noUnusedImports": "off",
+            "useJsxKeyInIterable": "off"
+          },
+          "style": {
+            "useImportType": "off"
+          },
+          "suspicious": {
+            "noUnknownAttribute": "off"
+          }
+        }
+      }
+    },
+    {
+      // These controlled positional editors and composition slots intentionally preserve
+      // index identity because their public values do not contain domain identifiers.
+      "includes": [
+        "registry/**/components/auto-form/renderers/index.tsx",
+        "registry/**/components/json-field/index.tsx",
+        "registry/**/components/key-value-field/index.tsx"
+      ],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noArrayIndexKey": "off"
+          }
+        }
+      }
+    },
+    {
+      // The input addon offers pointer focus as a convenience; the associated input remains
+      // directly keyboard-focusable, so the decorative addon must not become another tab stop.
+      "includes": ["registry/**/components/input-group/index.tsx"],
+      "linter": {
+        "rules": {
+          "a11y": {
+            "noNoninteractiveElementInteractions": "off",
+            "noStaticElementInteractions": "off",
+            "useKeyWithClickEvents": "off"
+          }
+        }
+      }
+    },
+    {
+      // Container blur is used only for bubbled field validation and does not make the
+      // schema editor itself interactive.
+      "includes": ["registry/**/components/json-field/index.tsx"],
+      "linter": {
+        "rules": {
+          "a11y": {
+            "noNoninteractiveElementInteractions": "off",
+            "noStaticElementInteractions": "off"
+          }
+        }
+      }
+    },
+    {
+      // This composite trigger contains removable tag buttons, so using a native button would
+      // create invalid nested interactive controls; Base UI supplies keyboard behavior.
+      "includes": ["registry/**/components/multi-select/index.tsx"],
+      "linter": {
+        "rules": {
+          "a11y": {
+            "useSemanticElements": "off"
+          }
+        }
+      }
+    },
+    {
+      // Blume islands require PascalCase filenames and default exports.
+      "includes": ["islands/**"],
+      "linter": {
+        "rules": {
+          "performance": {
+            "noBarrelFile": "off"
+          },
+          "style": {
+            "noDefaultExport": "off",
+            "useFilenamingConvention": "off"
+          }
+        }
       }
     }
   ]

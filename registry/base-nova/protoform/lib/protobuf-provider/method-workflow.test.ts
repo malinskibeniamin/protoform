@@ -5,16 +5,8 @@ import {
   OperationSchema,
   operation_info,
 } from "@buf/googleapis_googleapis.bufbuild_es/google/longrunning/operations_pb.js";
-import {
-  create,
-  type DescMessage,
-  type DescMethod,
-  setExtension,
-} from "@bufbuild/protobuf";
-import {
-  MethodDescriptorProtoSchema,
-  MethodOptionsSchema,
-} from "@bufbuild/protobuf/wkt";
+import { create, type DescMessage, type DescMethod, setExtension } from "@bufbuild/protobuf";
+import { MethodDescriptorProtoSchema, MethodOptionsSchema } from "@bufbuild/protobuf/wkt";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -53,17 +45,13 @@ function createMethodFixture({
       options,
       http,
       create(HttpRuleSchema, {
-        body,
+        body: body ?? "",
         pattern: { case: verb, value: path },
       })
     );
   }
   if (operation) {
-    setExtension(
-      options,
-      operation_info,
-      create(OperationInfoSchema, operation)
-    );
+    setExtension(options, operation_info, create(OperationInfoSchema, operation));
   }
 
   return {
@@ -160,13 +148,7 @@ describe("getProtoMethodWorkflow", () => {
       },
     });
     expect(workflow.httpBindings[0]).toMatchObject({
-      bodyFields: [
-        "etag",
-        "request_id",
-        "validate_only",
-        "force",
-        "allow_missing",
-      ],
+      bodyFields: ["etag", "request_id", "validate_only", "force", "allow_missing"],
       pathFields: ["name"],
       queryFields: [],
     });

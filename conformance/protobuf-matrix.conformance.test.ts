@@ -1,10 +1,6 @@
 import { create, fromBinary, fromJson, toBinary } from "@bufbuild/protobuf";
 import { fromText, mergeFromText, toText } from "@bufbuild/protobuf/txtpb";
-import {
-  base64Encode,
-  sizeDelimitedDecodeStream,
-  sizeDelimitedEncode,
-} from "@bufbuild/protobuf/wire";
+import { base64Encode, sizeDelimitedDecodeStream, sizeDelimitedEncode } from "@bufbuild/protobuf/wire";
 import { anyPack, anyUnpack, StructSchema } from "@bufbuild/protobuf/wkt";
 import { describe, expect, it } from "vitest";
 
@@ -23,35 +19,26 @@ import {
 function issuePaths(
   issues:
     | readonly {
-        path?: readonly (PropertyKey | { key: PropertyKey })[];
+        path?: readonly (PropertyKey | { key: PropertyKey })[] | undefined;
       }[]
     | undefined
 ): string[][] | undefined {
   return issues?.map((issue) =>
     (issue.path ?? []).map((segment) =>
-      String(
-        typeof segment === "object" && segment !== null && "key" in segment
-          ? segment.key
-          : segment
-      )
+      String(typeof segment === "object" && segment !== null && "key" in segment ? segment.key : segment)
     )
   );
 }
 
 describe("Protobuf text and streaming conformance", () => {
   it("round-trips form messages through the protobuf text format", () => {
-    const parsed = fromText(
-      NumericMatrixSchema,
-      "enabled: true\nint32_value: -7\n"
-    );
+    const parsed = fromText(NumericMatrixSchema, "enabled: true\nint32_value: -7\n");
     const values = protoToFormValues(NumericMatrixSchema, parsed);
 
-    values.int32Value = 8;
+    values["int32Value"] = 8;
     const edited = formValuesToProto(NumericMatrixSchema, values, parsed);
 
-    expect(toText(NumericMatrixSchema, edited)).toBe(
-      "enabled: true\nint32_value: 8\n"
-    );
+    expect(toText(NumericMatrixSchema, edited)).toBe("enabled: true\nint32_value: 8\n");
   });
 
   it("merges protobuf text into an existing message", () => {
@@ -60,20 +47,13 @@ describe("Protobuf text and streaming conformance", () => {
       int32Value: 1,
     });
 
-    const merged = mergeFromText(
-      NumericMatrixSchema,
-      target,
-      "int32_value: 2\n"
-    );
+    const merged = mergeFromText(NumericMatrixSchema, target, "int32_value: 2\n");
 
     expect(merged).toMatchObject({ enabled: true, int32Value: 2 });
   });
 
   it("bounds size-delimited decoding with readMaxBytes", async () => {
-    const encoded = sizeDelimitedEncode(
-      NumericMatrixSchema,
-      create(NumericMatrixSchema, { enabled: true })
-    );
+    const encoded = sizeDelimitedEncode(NumericMatrixSchema, create(NumericMatrixSchema, { enabled: true }));
     const chunks = new ReadableStream<Uint8Array>({
       start(controller) {
         controller.enqueue(encoded);
@@ -90,26 +70,18 @@ describe("Protobuf text and streaming conformance", () => {
 
 describe("Protobuf scalar conformance", () => {
   it("preserves unknown fields when editing a parsed message", () => {
-    const originalBytes = toBinary(
-      NumericMatrixSchema,
-      create(NumericMatrixSchema, { int32Value: 1 })
-    );
+    const originalBytes = toBinary(NumericMatrixSchema, create(NumericMatrixSchema, { int32Value: 1 }));
     const unknownFieldBytes = [0xb8, 0x3e, 0x07];
-    const parsed = fromBinary(
-      NumericMatrixSchema,
-      Uint8Array.from([...originalBytes, ...unknownFieldBytes])
-    );
+    const parsed = fromBinary(NumericMatrixSchema, Uint8Array.from([...originalBytes, ...unknownFieldBytes]));
     const values = protoToFormValues(NumericMatrixSchema, parsed);
 
-    values.int32Value = 2;
+    values["int32Value"] = 2;
     const edited = formValuesToProto(NumericMatrixSchema, values, parsed);
     const editedBytes = toBinary(NumericMatrixSchema, edited);
 
     expect(edited.int32Value).toBe(2);
     expect(edited.$unknown).toEqual(parsed.$unknown);
-    expect(Array.from(editedBytes.slice(-unknownFieldBytes.length))).toEqual(
-      unknownFieldBytes
-    );
+    expect(Array.from(editedBytes.slice(-unknownFieldBytes.length))).toEqual(unknownFieldBytes);
   });
 
   it("round-trips explicit and implicit boolean values", async () => {
@@ -122,9 +94,7 @@ describe("Protobuf scalar conformance", () => {
     if (!("value" in explicit)) {
       throw new Error("Expected the boolean matrix to validate.");
     }
-    expect(
-      protoToFormValues(NumericMatrixSchema, explicit.value)
-    ).toMatchObject({ enabled: true });
+    expect(protoToFormValues(NumericMatrixSchema, explicit.value)).toMatchObject({ enabled: true });
   });
 
   it("enforces signed 32-bit boundaries across int32, sint32, and sfixed32", async () => {
@@ -150,9 +120,7 @@ describe("Protobuf scalar conformance", () => {
       }))
     );
     for (const { field, result, value } of invalidResults) {
-      expect(issuePaths(result.issues), `${field} accepted ${value}`).toEqual([
-        [field],
-      ]);
+      expect(issuePaths(result.issues), `${field} accepted ${value}`).toEqual([[field]]);
     }
   });
 
@@ -178,9 +146,7 @@ describe("Protobuf scalar conformance", () => {
       }))
     );
     for (const { field, result, value } of invalidResults) {
-      expect(issuePaths(result.issues), `${field} accepted ${value}`).toEqual([
-        [field],
-      ]);
+      expect(issuePaths(result.issues), `${field} accepted ${value}`).toEqual([[field]]);
     }
   });
 
@@ -214,9 +180,7 @@ describe("Protobuf scalar conformance", () => {
       }))
     );
     for (const { field, result, value } of invalidResults) {
-      expect(issuePaths(result.issues), `${field} accepted ${value}`).toEqual([
-        [field],
-      ]);
+      expect(issuePaths(result.issues), `${field} accepted ${value}`).toEqual([[field]]);
     }
   });
 
@@ -240,9 +204,7 @@ describe("Protobuf scalar conformance", () => {
     expect(Object.is(decimals.value.doubleValue, -0)).toBe(true);
     expect(Number.isNaN(specials.value.floatValue)).toBe(true);
     expect(specials.value.doubleValue).toBe(Number.NEGATIVE_INFINITY);
-    expect(
-      protoToFormValues(NumericMatrixSchema, specials.value)
-    ).toMatchObject({
+    expect(protoToFormValues(NumericMatrixSchema, specials.value)).toMatchObject({
       doubleValue: Number.NEGATIVE_INFINITY,
     });
   });
@@ -269,15 +231,10 @@ describe("Protobuf collection conformance", () => {
       [1, 2, 3],
       [4, 5],
     ]);
-    expect(result.value.identifiers).toEqual([
-      -9_223_372_036_854_775_808n,
-      9_223_372_036_854_775_807n,
-    ]);
+    expect(result.value.identifiers).toEqual([-9_223_372_036_854_775_808n, 9_223_372_036_854_775_807n]);
     expect(Number.isNaN(result.value.ratios[1])).toBe(true);
     expect(result.value.amounts[1]).toBe(Number.POSITIVE_INFINITY);
-    expect(
-      protoToFormValues(CollectionMatrixSchema, result.value)
-    ).toMatchObject({
+    expect(protoToFormValues(CollectionMatrixSchema, result.value)).toMatchObject({
       blobs: ["AQID", "BAU="],
       identifiers: ["-9223372036854775808", "9223372036854775807"],
     });
@@ -302,9 +259,7 @@ describe("Protobuf collection conformance", () => {
       ["children", "0", "name"],
       ["children", "1", "name"],
     ]);
-    expect(issuePaths(afterRemoval.issues)).toEqual([
-      ["children", "0", "name"],
-    ]);
+    expect(issuePaths(afterRemoval.issues)).toEqual([["children", "0", "name"]]);
   });
 
   it("round-trips every legal boolean and integer map key type", async () => {
@@ -336,18 +291,14 @@ describe("Protobuf collection conformance", () => {
     });
 
     const formValues = protoToFormValues(CollectionMatrixSchema, result.value);
-    expect(formValues.boolKeys).toEqual(
+    expect(formValues["boolKeys"]).toEqual(
       expect.arrayContaining([
         { key: false, value: "no" },
         { key: true, value: "yes" },
       ])
     );
-    expect(formValues.int32Keys).toEqual([
-      { key: -2_147_483_648, value: "min" },
-    ]);
-    expect(formValues.uint64Keys).toEqual([
-      { key: "18446744073709551615", value: "max" },
-    ]);
+    expect(formValues["int32Keys"]).toEqual([{ key: -2_147_483_648, value: "min" }]);
+    expect(formValues["uint64Keys"]).toEqual([{ key: "18446744073709551615", value: "max" }]);
   });
 });
 
@@ -421,9 +372,7 @@ describe("Protobuf presence and well-known-type conformance", () => {
       uint64Wrapper: 0n,
     });
     expect(Object.is(defaults.value.floatWrapper, -0)).toBe(true);
-    expect(
-      protoToFormValues(PresenceMatrixSchema, defaults.value)
-    ).toMatchObject({
+    expect(protoToFormValues(PresenceMatrixSchema, defaults.value)).toMatchObject({
       bytesWrapper: "",
       int64Wrapper: "0",
       uint64Wrapper: "0",
@@ -449,12 +398,11 @@ describe("Protobuf presence and well-known-type conformance", () => {
     if (!("value" in result && result.value.allowedPayload)) {
       throw new Error("Expected the Any payload to validate.");
     }
-    expect(
-      protoToFormValues(AnyMatrixSchema, result.value).allowedPayload
-    ).toEqual({ typeUrl: packed.typeUrl, valueBase64 });
-    expect(anyUnpack(result.value.allowedPayload, StructSchema)).toStrictEqual(
-      struct
-    );
+    expect(protoToFormValues(AnyMatrixSchema, result.value)["allowedPayload"]).toEqual({
+      typeUrl: packed.typeUrl,
+      valueBase64,
+    });
+    expect(anyUnpack(result.value.allowedPayload, StructSchema)).toStrictEqual(struct);
     expect(issuePaths(malformed.issues)).toEqual([["allowedPayload"]]);
   });
 });

@@ -1,19 +1,19 @@
-'use client';
+"use client";
 
-import { TrashIcon } from 'lucide-react';
-import React from 'react';
-import { Button } from '../../button';
-import { useAutoFormRenderContext, useAutoFormRuntimeContext } from '../context';
-import type { ParsedField } from '../core-types';
-import { useAutoFormEngine } from '../engine';
-import { formSpacing } from '../form-spacing';
-import { createEmptyFieldValue, getFieldErrorMessage } from '../helpers';
-import { getAutoFormCollectionRemoveTestId, getAutoFormCollectionRowTestId, getAutoFormFieldTestId } from '../test-ids';
-import { AutoFormFieldRenderer } from './index';
-import { cloneFieldForCompactRow, getRenderedLabel, isComplexCollectionField, useFieldPresentation } from './shared';
+import { TrashIcon } from "lucide-react";
+import type React from "react";
+import { Button } from "../../button";
+import { useAutoFormRenderContext, useAutoFormRuntimeContext } from "../context";
+import type { ParsedField } from "../core-types";
+import { useAutoFormEngine } from "../engine";
+import { formSpacing } from "../form-spacing";
+import { createEmptyFieldValue, getFieldErrorMessage } from "../helpers";
+import { getAutoFormCollectionRemoveTestId, getAutoFormCollectionRowTestId, getAutoFormFieldTestId } from "../test-ids";
+import { AutoFormFieldRenderer } from ".";
+import { cloneFieldForCompactRow, getRenderedLabel, isComplexCollectionField, useFieldPresentation } from "./shared";
 
-const COMPACT_PAIR_GRID = 'grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] items-center gap-3';
-const KEY_REMOVE_GRID = 'grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3';
+const COMPACT_PAIR_GRID = "grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] items-center gap-3";
+const KEY_REMOVE_GRID = "grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3";
 
 export function MapFieldRenderer({
   field,
@@ -27,7 +27,7 @@ export function MapFieldRenderer({
   const { uiComponents } = useAutoFormRenderContext();
   const { ArrayController, errors } = useAutoFormEngine();
   const { testIdPrefix } = useAutoFormRuntimeContext();
-  const fullPath = path.join('.');
+  const fullPath = path.join(".");
   const keyField = field.schema?.[0];
   const valueField = field.schema?.[1];
   const error = getFieldErrorMessage(errors, path);
@@ -53,15 +53,15 @@ export function MapFieldRenderer({
       <ArrayController name={fullPath}>
         {(controller) => (
           <ArrayWrapperComponent
-            addButtonTestId={getAutoFormFieldTestId(testIdPrefix, fullPath, 'add')}
+            addButtonTestId={getAutoFormFieldTestId(testIdPrefix, fullPath, "add")}
             field={renderField}
             label={String(label)}
             onAddItem={() => {
               if (!isDisabled) {
-                controller.append({ key: '', value: createEmptyFieldValue(valueField) });
+                controller.append({ key: "", value: createEmptyFieldValue(valueField) });
               }
             }}
-            testId={getAutoFormFieldTestId(testIdPrefix, fullPath, 'items')}
+            testId={getAutoFormFieldTestId(testIdPrefix, fullPath, "items")}
           >
             {controller.items.map((item, index) => {
               const rowTestId = getAutoFormCollectionRowTestId(testIdPrefix, fullPath, index);
@@ -82,12 +82,12 @@ export function MapFieldRenderer({
                     <AutoFormFieldRenderer
                       field={compactKeyField}
                       inheritedDisabled={isDisabled}
-                      path={[...path, String(index), 'key']}
+                      path={[...path, String(index), "key"]}
                     />
                     <AutoFormFieldRenderer
                       field={compactValueField}
                       inheritedDisabled={isDisabled}
-                      path={[...path, String(index), 'value']}
+                      path={[...path, String(index), "value"]}
                     />
                     <Button
                       aria-label="Remove item"
@@ -119,7 +119,7 @@ export function MapFieldRenderer({
                       <AutoFormFieldRenderer
                         field={compactKeyField}
                         inheritedDisabled={isDisabled}
-                        path={[...path, String(index), 'key']}
+                        path={[...path, String(index), "key"]}
                       />
                     ) : null}
                     <Button
@@ -138,7 +138,7 @@ export function MapFieldRenderer({
                     <AutoFormFieldRenderer
                       field={compactValueField ?? valueField}
                       inheritedDisabled={isDisabled}
-                      path={[...path, String(index), 'value']}
+                      path={[...path, String(index), "value"]}
                     />
                   ) : null}
                 </div>

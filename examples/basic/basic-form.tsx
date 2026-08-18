@@ -4,11 +4,7 @@ import { TransportProvider, useMutation } from "@connectrpc/connect-query";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
 import type { UseFormReturn } from "react-hook-form";
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-} from "@/registry/base-nova/protoform/components/alert";
+import { Alert, AlertDescription, AlertTitle } from "@/registry/base-nova/protoform/components/alert";
 import { AutoForm } from "@/registry/base-nova/protoform/components/auto-form";
 import { applyServerFieldErrors } from "../apply-server-errors.js";
 import { createFormExamplesTransport } from "../browser-transport.js";
@@ -20,15 +16,9 @@ import {
 
 export const client = "only";
 
-export default function ServerErrorFormExample({
-  baseUrl,
-}: {
-  baseUrl?: string;
-}) {
+export default function ServerErrorFormExample({ baseUrl }: { baseUrl?: string }) {
   const [queryClient] = React.useState(() => new QueryClient());
-  const [transport] = React.useState(() =>
-    createFormExamplesTransport(baseUrl)
-  );
+  const [transport] = React.useState(() => createFormExamplesTransport(baseUrl));
 
   return (
     <TransportProvider transport={transport}>
@@ -45,11 +35,7 @@ function ServerErrorFormMutation() {
 
   async function handleSubmit(
     values: SubmitBasicFormRequest,
-    form: UseFormReturn<
-      Record<string, unknown>,
-      unknown,
-      SubmitBasicFormRequest
-    >
+    form: UseFormReturn<Record<string, unknown>, unknown, SubmitBasicFormRequest>
   ) {
     setProfileId(undefined);
     try {
@@ -64,11 +50,7 @@ function ServerErrorFormMutation() {
 
   return (
     <div aria-busy={mutation.isPending} className="space-y-6">
-      <AutoForm<SubmitBasicFormRequest>
-        onSubmit={handleSubmit}
-        schema={SubmitBasicFormRequestSchema}
-        withSubmit
-      />
+      <AutoForm<SubmitBasicFormRequest> onSubmit={handleSubmit} schema={SubmitBasicFormRequestSchema} withSubmit />
       {profileId ? (
         <Alert role="status">
           <AlertTitle>Profile created</AlertTitle>

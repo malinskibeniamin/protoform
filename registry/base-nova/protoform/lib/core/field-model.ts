@@ -13,13 +13,13 @@
 
 /** A conditional UI rule evaluated against current form values (CEL today). */
 export interface UiRule {
-  expression?: string;
-  id?: string;
-  message?: string;
+  expression?: string | undefined;
+  id?: string | undefined;
+  message?: string | undefined;
 }
 
 export interface OptionGroup {
-  label?: string;
+  label?: string | undefined;
   options: [value: string, label: string][];
 }
 
@@ -38,7 +38,7 @@ export interface InputProps {
  */
 export interface ProviderCustomData {
   /** Discriminator naming the provider that produced this field (for example "proto"). */
-  source?: string;
+  source?: string | undefined;
   [key: string]: unknown;
 }
 
@@ -58,71 +58,68 @@ export type EmptyRepeatedStringPolicy = "discard" | "preserve";
  */
 export interface FieldRenderHints {
   /** Explicit simple/advanced classification override. */
-  advanced?: boolean;
+  advanced?: boolean | undefined;
   /** Restrict JSON/field-mask style inputs to these paths. */
-  allowedPaths?: string[];
+  allowedPaths?: string[] | undefined;
   /** Control-type override; a key into the consumer's control registry. */
-  control?: string;
+  control?: string | undefined;
   /** Named data source id for dropdown-style controls. */
-  dataProvider?: string;
+  dataProvider?: string | undefined;
   /** The schema marks this field as deprecated. */
-  deprecated?: boolean;
+  deprecated?: boolean | undefined;
   /** Concise one-liner shown below the input. */
-  description?: string;
-  disabledWhen?: UiRule[];
-  docsUrl?: string;
+  description?: string | undefined;
+  disabledWhen?: UiRule[] | undefined;
+  docsUrl?: string | undefined;
   /** Enable file drag-and-drop into the field value. */
-  dropzone?: boolean;
+  dropzone?: boolean | undefined;
   /** Keep blank repeated-string rows instead of discarding them during conversion. */
-  emptyRepeatedStringPolicy?: EmptyRepeatedStringPolicy;
-  example?: string;
+  emptyRepeatedStringPolicy?: EmptyRepeatedStringPolicy | undefined;
+  example?: string | undefined;
   /** Detailed help text (tooltip). */
-  help?: string;
+  help?: string | undefined;
   /** HTML input `type` hint (for example `email`, `url`, `number`). */
-  inputType?: string;
+  inputType?: string | undefined;
   /** JSON-ish payload rendering mode for structured values. */
-  jsonKind?: "struct" | "value" | "listValue" | "any";
-  maxItems?: number;
-  maxPairs?: number;
-  minItems?: number;
-  minPairs?: number;
-  optionGroups?: OptionGroup[];
-  optionLabels?: Record<string, string>;
-  placeholder?: string;
-  secretScope?: string;
-  sensitive?: boolean;
+  jsonKind?: "struct" | "value" | "listValue" | "any" | undefined;
+  maxItems?: number | undefined;
+  maxPairs?: number | undefined;
+  minItems?: number | undefined;
+  minPairs?: number | undefined;
+  optionGroups?: OptionGroup[] | undefined;
+  optionLabels?: Record<string, string> | undefined;
+  placeholder?: string | undefined;
+  secretScope?: string | undefined;
+  sensitive?: boolean | undefined;
   /** Stepper step id this field belongs to. */
-  step?: string;
+  step?: string | undefined;
   /** Label used in review/summary contexts instead of the field label. */
-  summaryLabel?: string;
+  summaryLabel?: string | undefined;
   /** Tri-state controls: the unset state is meaningful and selectable. */
-  supportsUnset?: boolean;
-  visibleWhen?: UiRule[];
+  supportsUnset?: boolean | undefined;
+  visibleWhen?: UiRule[] | undefined;
 }
 
-export interface FieldConfig<
-  FieldTypes = string,
-  CustomData extends ProviderCustomData = ProviderCustomData,
-> {
-  customData?: CustomData;
+export interface FieldConfig<FieldTypes = string, CustomData extends ProviderCustomData = ProviderCustomData> {
+  customData?: CustomData | undefined;
   description?: Renderable;
   /** Keep blank repeated-string rows instead of discarding them during conversion. */
-  emptyRepeatedStringPolicy?: EmptyRepeatedStringPolicy;
-  fieldType?: FieldTypes;
-  inputProps?: InputProps;
+  emptyRepeatedStringPolicy?: EmptyRepeatedStringPolicy | undefined;
+  fieldType?: FieldTypes | undefined;
+  inputProps?: InputProps | undefined;
   label?: Renderable;
-  order?: number;
+  order?: number | undefined;
 }
 
 export interface ParsedField<FieldTypes = string> {
   default?: unknown;
   description?: Renderable;
-  fieldConfig?: FieldConfig<FieldTypes>;
-  hints?: FieldRenderHints;
+  fieldConfig?: FieldConfig<FieldTypes> | undefined;
+  hints?: FieldRenderHints | undefined;
   key: string;
-  options?: [value: string, label: string][];
+  options?: [value: string, label: string][] | undefined;
   required: boolean;
-  schema?: ParsedField<FieldTypes>[];
+  schema?: ParsedField<FieldTypes>[] | undefined;
   type: string;
 }
 
@@ -135,9 +132,7 @@ export interface SchemaValidationError {
   path: (string | number)[];
 }
 
-export type SchemaValidation =
-  | { success: true; data: unknown }
-  | { success: false; errors: SchemaValidationError[] };
+export type SchemaValidation = { success: true; data: unknown } | { success: false; errors: SchemaValidationError[] };
 
 export interface SchemaValidationContext {
   /** Aborted when a newer validation supersedes this run or its form unmounts. */
@@ -147,15 +142,10 @@ export interface SchemaValidationContext {
 export interface SchemaProvider<Values extends FormValues = FormValues> {
   getDefaultValues: () => FormValues;
   parseSchema: () => ParsedSchema;
-  validateSchema: (
-    values: Values,
-    context?: SchemaValidationContext
-  ) => SchemaValidation | Promise<SchemaValidation>;
+  validateSchema: (values: Values, context?: SchemaValidationContext) => SchemaValidation | Promise<SchemaValidation>;
 }
 
 /** Read a field's render hints; single accessor so call sites never reach into provider customData. */
-export function getFieldHints<FieldTypes>(
-  field: ParsedField<FieldTypes>
-): FieldRenderHints | undefined {
+export function getFieldHints<FieldTypes>(field: ParsedField<FieldTypes>): FieldRenderHints | undefined {
   return field.hints;
 }

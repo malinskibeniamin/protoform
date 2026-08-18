@@ -1,32 +1,31 @@
-import { isMessage, type DescMessage, type MessageShape } from '@bufbuild/protobuf';
-import { getFieldHints } from '../../../lib/core';
+import { type DescMessage, isMessage, type MessageShape } from "@bufbuild/protobuf";
+import { getFieldHints } from "../../../lib/core";
 
-import type { ParsedField } from '../../../lib/form-types';
-import {
-  type ProtoMapFormEntry,
+import type { ParsedField } from "../../../lib/form-types";
+import { type ProtoMapFormEntry, protoToFormValues } from "../../../lib/protobuf-provider";
+
+export {
   protoFormValuesToPayload,
   protoPayloadToFormValues,
   protoToFormValues,
-} from '../../../lib/protobuf-provider';
-
-export { protoFormValuesToPayload, protoPayloadToFormValues, protoToFormValues };
+} from "../../../lib/protobuf-provider";
 
 export function getProtoJsonSchema(field: ParsedField): Record<string, unknown> {
   const hints = getFieldHints(field);
 
   switch (hints?.jsonKind) {
-    case 'listValue':
-      return { type: 'array' };
-    case 'any':
+    case "listValue":
+      return { type: "array" };
+    case "any":
       return {
-        type: 'object',
         properties: {
-          typeUrl: { type: 'string', title: 'Type URL' },
-          valueBase64: { type: 'string', title: 'Base64 Payload' },
+          typeUrl: { title: "Type URL", type: "string" },
+          valueBase64: { title: "Base64 Payload", type: "string" },
         },
+        type: "object",
       };
     default:
-      return { type: 'object' };
+      return { type: "object" };
   }
 }
 
@@ -35,7 +34,7 @@ export function isProtoMapEntries(value: unknown): value is ProtoMapFormEntry[] 
 }
 
 function isProtoMessageShape(value: unknown): boolean {
-  return Boolean(value && typeof value === 'object' && '$typeName' in (value as Record<string, unknown>));
+  return Boolean(value && typeof value === "object" && "$typeName" in (value as Record<string, unknown>));
 }
 
 export function resolveProtoSourceMessage<Desc extends DescMessage>(

@@ -1,9 +1,4 @@
-import {
-  Code,
-  ConnectError,
-  createClient,
-  createRouterTransport,
-} from "@connectrpc/connect";
+import { Code, ConnectError, createClient, createRouterTransport } from "@connectrpc/connect";
 import { createConnectTransport } from "@connectrpc/connect-node";
 import { callUnaryMethod } from "@connectrpc/connect-query";
 import { createValidateInterceptor } from "@connectrpc/validate";
@@ -32,9 +27,7 @@ describe("form example Connect server", () => {
     });
 
     await expect(response.json()).resolves.toEqual({ status: "ok" });
-    expect(response.headers.get("access-control-allow-origin")).toBe(
-      "https://protoform.pages.dev"
-    );
+    expect(response.headers.get("access-control-allow-origin")).toBe("https://protoform.pages.dev");
 
     const preflight = await fetch(`${address}/health`, {
       headers: {
@@ -45,12 +38,8 @@ describe("form example Connect server", () => {
       method: "OPTIONS",
     });
     expect(preflight.status).toBe(204);
-    expect(preflight.headers.get("access-control-allow-methods")).toBe(
-      "GET,HEAD,POST"
-    );
-    expect(preflight.headers.get("access-control-allow-headers")).toBe(
-      "Content-Type, X-Protoform-Test"
-    );
+    expect(preflight.headers.get("access-control-allow-methods")).toBe("GET,HEAD,POST");
+    expect(preflight.headers.get("access-control-allow-headers")).toBe("Content-Type, X-Protoform-Test");
 
     const invalidPreflight = await fetch(`${address}/health`, {
       headers: { Origin: "https://protoform.pages.dev" },
@@ -60,16 +49,14 @@ describe("form example Connect server", () => {
   });
 
   it("runs the generated route and validation interceptor in process", async () => {
-    const transport = createRouterTransport(
-      (router) => router.service(FormExamplesService, formExamplesService),
-      { router: { interceptors: [createValidateInterceptor()] } }
-    );
+    const transport = createRouterTransport((router) => router.service(FormExamplesService, formExamplesService), {
+      router: { interceptors: [createValidateInterceptor()] },
+    });
 
-    const response = await callUnaryMethod(
-      transport,
-      FormExamplesService.method.submitBasicForm,
-      { displayName: "Ada Lovelace", email: "ada@example.com" }
-    );
+    const response = await callUnaryMethod(transport, FormExamplesService.method.submitBasicForm, {
+      displayName: "Ada Lovelace",
+      email: "ada@example.com",
+    });
     expect(response.profileId).toBe("profiles/ada-lovelace");
 
     await expect(
@@ -84,10 +71,7 @@ describe("form example Connect server", () => {
     const server = await buildExampleServer();
     const address = await server.listen({ host: "127.0.0.1", port: 0 });
     closeServer = () => server.close();
-    const client = createClient(
-      FormExamplesService,
-      createConnectTransport({ baseUrl: address, httpVersion: "1.1" })
-    );
+    const client = createClient(FormExamplesService, createConnectTransport({ baseUrl: address, httpVersion: "1.1" }));
 
     const response = await client.submitBasicForm({
       displayName: "Ada Lovelace",
@@ -95,19 +79,16 @@ describe("form example Connect server", () => {
     });
     expect(response.profileId).toBe("profiles/ada-lovelace");
 
-    await expect(
-      client.submitBasicForm({ displayName: "", email: "not-an-email" })
-    ).rejects.toBeInstanceOf(ConnectError);
+    await expect(client.submitBasicForm({ displayName: "", email: "not-an-email" })).rejects.toBeInstanceOf(
+      ConnectError
+    );
   });
 
   it("serves the LibraryService CRUD API and enforces the ISBN-13 CEL rule", async () => {
     const server = await buildExampleServer();
     const address = await server.listen({ host: "127.0.0.1", port: 0 });
     closeServer = () => server.close();
-    const client = createClient(
-      LibraryService,
-      createConnectTransport({ baseUrl: address, httpVersion: "1.1" })
-    );
+    const client = createClient(LibraryService, createConnectTransport({ baseUrl: address, httpVersion: "1.1" }));
 
     const response = await client.createBook({
       book: {
@@ -134,8 +115,6 @@ describe("form example Connect server", () => {
 
     const listed = await client.listBooks({ parent: "publishers/acme" });
     expect(listed.books.map((book) => book.name)).toContain(response.name);
-    await expect(
-      client.getBook({ name: response.name })
-    ).resolves.toMatchObject({ isbn: "9783161484100" });
+    await expect(client.getBook({ name: response.name })).resolves.toMatchObject({ isbn: "9783161484100" });
   });
 });

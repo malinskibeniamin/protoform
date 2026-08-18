@@ -10,11 +10,7 @@ const DemoHub = lazy(async () => {
   return { default: module.DemoHub };
 });
 
-export default function DemoHubIsland({
-  category,
-}: {
-  category: DemoHubCategory;
-}) {
+export default function DemoHubIsland({ category }: { category: DemoHubCategory }) {
   return (
     <Suspense fallback={<ExampleLoading label="Loading demo catalog" />}>
       <DemoHub category={category} />

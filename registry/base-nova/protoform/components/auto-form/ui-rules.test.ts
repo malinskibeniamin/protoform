@@ -29,12 +29,7 @@ describe("AutoForm UI CEL profile", () => {
     const expressions = ["(", "unknown_name", "1 / 0", "'visible'"];
 
     for (const expression of expressions) {
-      expect(
-        evaluateUiRules(
-          [{ expression, id: `ui.${expression}`, message: "" }],
-          context
-        )
-      ).toBe(false);
+      expect(evaluateUiRules([{ expression, id: `ui.${expression}`, message: "" }], context)).toBe(false);
     }
   });
 

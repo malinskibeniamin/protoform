@@ -1,86 +1,88 @@
-'use client';
+"use client";
 
-import type { DescMessage } from '@bufbuild/protobuf';
-import React from 'react';
-import type { ProtoConversionOptions } from '../../lib/protobuf-provider';
+import type { DescMessage } from "@bufbuild/protobuf";
+import React from "react";
+import type { ProtoConversionOptions } from "../../lib/protobuf-provider";
 
-import { AutoFormContext, type AutoFormContextValue } from './context';
+import { AutoFormContext, type AutoFormContextValue } from "./context";
 import type {
   AutoFormFieldComponents,
   AutoFormUIComponents,
   ParsedField,
   ParsedSchema,
   SchemaProvider,
-} from './core-types';
-import type { DataProviderRegistry } from './data-providers';
-import { type AutoFormEngine, useAutoFormEngine } from './engine';
-import { getFieldUiConfig, isRecord, isValidationSuccess } from './helpers';
-import { protoFormValuesToPayload, protoPayloadToFormValues } from './proto';
-import type { FieldTypeRegistry } from './registry';
+} from "./core-types";
+import type { DataProviderRegistry } from "./data-providers";
+import { type AutoFormEngine, useAutoFormEngine } from "./engine";
+import { getFieldUiConfig, isRecord, isValidationSuccess } from "./helpers";
+import { protoFormValuesToPayload, protoPayloadToFormValues } from "./proto";
+import type { FieldTypeRegistry } from "./registry";
 import type {
   AutoFormMode,
   AutoFormPayloadBuilderContext,
   AutoFormSummaryContext,
   AutoFormUiRule,
   DeprecatedFieldPolicy,
-} from './types';
-import { evaluateUiRules } from './ui-rules';
-import { isPromiseLike, safeStringify } from './utils/serialization';
+} from "./types";
+import { evaluateUiRules } from "./ui-rules";
+import { isPromiseLike, safeStringify } from "./utils/serialization";
 
-type PayloadBag<TNativeForm> = {
-  payloadState: { bestEffort: boolean; payload: unknown };
-  jsonEditorText: string;
-  jsonEditorError: string | undefined;
-  payloadText: string;
-  summaryContext: AutoFormSummaryContext<TNativeForm>;
+interface PayloadBag<TNativeForm> {
+  handleFormatJson: () => void;
   handleJsonTextChange: (value: string) => void;
   handleResetJson: () => void;
-  handleFormatJson: () => void;
-};
+  jsonEditorError: string | undefined;
+  jsonEditorText: string;
+  payloadState: { bestEffort: boolean; payload: unknown };
+  payloadText: string;
+  summaryContext: AutoFormSummaryContext<TNativeForm>;
+}
 
-type AutoFormRuntimeProviderProps<TNativeForm> = {
+interface AutoFormRuntimeProviderProps<TNativeForm> {
+  advancedFields: ParsedField[];
   children: React.ReactNode;
-  uiComponents: AutoFormUIComponents;
-  formComponents: AutoFormFieldComponents;
-  testIdPrefix: string;
-  fieldRegistry?: FieldTypeRegistry<string>;
-  conversionOptions?: ProtoConversionOptions;
-  dataProviders?: DataProviderRegistry;
+  conversionOptions?: ProtoConversionOptions | undefined;
+  dataProviders?: DataProviderRegistry | undefined;
   deprecatedFields: DeprecatedFieldPolicy;
+  fieldRegistry?: FieldTypeRegistry<string> | undefined;
+  formComponents: AutoFormFieldComponents;
+  mode: AutoFormMode;
+  onFieldChange?: ((fieldPath: string, value: unknown, form: TNativeForm) => void | Promise<void>) | undefined;
+  payloadBuilder?:
+    | ((values: Record<string, unknown>, context: AutoFormPayloadBuilderContext<TNativeForm>) => unknown)
+    | undefined;
+  payloadParser?:
+    | ((
+        payload: unknown,
+        context: AutoFormPayloadBuilderContext<TNativeForm>
+      ) => Record<string, unknown> | undefined | Promise<Record<string, unknown> | undefined>)
+    | undefined;
+  payloadSchema?:
+    | {
+        safeParse: (data: unknown) => {
+          success: boolean;
+          error?: { issues: Array<{ path: unknown[]; message: string }> };
+        };
+      }
+    | undefined;
+  renderContent: (bag: PayloadBag<TNativeForm>) => React.ReactNode;
   resolvedSchema: {
     provider: SchemaProvider<Record<string, unknown>>;
     parsedSchema: ParsedSchema;
     isProto: boolean;
-    protoDesc?: DescMessage;
-    resolver?: unknown;
+    protoDesc?: DescMessage | undefined;
+    resolver?: unknown | undefined;
   };
-  mode: AutoFormMode;
   simpleFields: ParsedField[];
-  advancedFields: ParsedField[];
-  payloadBuilder?: (
-    values: Record<string, unknown>,
-    context: AutoFormPayloadBuilderContext<TNativeForm>
-  ) => unknown;
-  payloadParser?: (
-    payload: unknown,
-    context: AutoFormPayloadBuilderContext<TNativeForm>
-  ) => Record<string, unknown> | undefined | Promise<Record<string, unknown> | undefined>;
-  payloadSchema?: {
-    safeParse: (data: unknown) => { success: boolean; error?: { issues: Array<{ path: unknown[]; message: string }> } };
-  };
-  renderContent: (bag: PayloadBag<TNativeForm>) => React.ReactNode;
-  onFieldChange?: (
-    fieldPath: string,
-    value: unknown,
-    form: TNativeForm
-  ) => void | Promise<void>;
-};
+  testIdPrefix: string;
+  uiComponents: AutoFormUIComponents;
+}
 
-// ---------------------------------------------------------------------------
+//  -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1-
 // AutoFormPayloadController — leaf component that owns payload/JSON state.
 // Uses useDeferredValue so expensive payload computation (SchemaProvider
 // validation, proto conversion, payloadBuilder) doesn't block typing on large forms.
-// ---------------------------------------------------------------------------
+//  -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1-
 
 function AutoFormPayloadController<TNativeForm>({
   watchedValues,
@@ -97,21 +99,18 @@ function AutoFormPayloadController<TNativeForm>({
 }: {
   watchedValues: Record<string, unknown>;
   methods: AutoFormEngine;
-  resolvedSchema: AutoFormRuntimeProviderProps<TNativeForm>['resolvedSchema'];
+  resolvedSchema: AutoFormRuntimeProviderProps<TNativeForm>["resolvedSchema"];
   mode: AutoFormMode;
   simpleFields: ParsedField[];
   advancedFields: ParsedField[];
-  payloadBuilder: AutoFormRuntimeProviderProps<TNativeForm>['payloadBuilder'];
-  payloadParser: AutoFormRuntimeProviderProps<TNativeForm>['payloadParser'];
-  payloadSchema: AutoFormRuntimeProviderProps<TNativeForm>['payloadSchema'];
-  conversionOptions: AutoFormRuntimeProviderProps<TNativeForm>['conversionOptions'];
-  renderContent: AutoFormRuntimeProviderProps<TNativeForm>['renderContent'];
+  payloadBuilder: AutoFormRuntimeProviderProps<TNativeForm>["payloadBuilder"];
+  payloadParser: AutoFormRuntimeProviderProps<TNativeForm>["payloadParser"];
+  payloadSchema: AutoFormRuntimeProviderProps<TNativeForm>["payloadSchema"];
+  conversionOptions: AutoFormRuntimeProviderProps<TNativeForm>["conversionOptions"];
+  renderContent: AutoFormRuntimeProviderProps<TNativeForm>["renderContent"];
 }) {
   const deferredValues = React.useDeferredValue(watchedValues);
-  const payloadValidationController = React.useMemo(
-    () => new AbortController(),
-    [deferredValues, resolvedSchema.provider]
-  );
+  const payloadValidationController = React.useMemo(() => new AbortController(), []);
 
   React.useEffect(
     function abortPayloadValidation() {
@@ -122,14 +121,14 @@ function AutoFormPayloadController<TNativeForm>({
 
   const payloadContextBase = React.useMemo(
     () => ({
-      form: methods.nativeForm as TNativeForm,
-      autoForm: methods,
-      schema: resolvedSchema.parsedSchema,
-      isProto: resolvedSchema.isProto,
-      protoDesc: resolvedSchema.protoDesc,
-      mode,
-      simpleFields,
       advancedFields,
+      autoForm: methods,
+      form: methods.nativeForm as TNativeForm,
+      isProto: resolvedSchema.isProto,
+      mode,
+      protoDesc: resolvedSchema.protoDesc,
+      schema: resolvedSchema.parsedSchema,
+      simpleFields,
     }),
     [
       advancedFields,
@@ -154,7 +153,7 @@ function AutoFormPayloadController<TNativeForm>({
       if (isPromiseLike(validationResult)) {
         // Payload preview is best-effort; the engine's awaited validation path
         // owns user-visible errors. Observe rejection here to avoid leaking it.
-        void Promise.resolve(validationResult).catch(() => undefined);
+        Promise.resolve(validationResult).catch(() => undefined);
         bestEffort = true;
       } else if (isValidationSuccess(validationResult)) {
         validationSuccess = true;
@@ -170,23 +169,15 @@ function AutoFormPayloadController<TNativeForm>({
 
     if (payloadBuilder) {
       try {
-        payload = payloadBuilder(
-          deferredValues,
-          payloadContextBase as AutoFormPayloadBuilderContext<TNativeForm>
-        );
-      } catch (error) {
-        console.warn('[AutoForm] payloadBuilder threw:', error);
+        payload = payloadBuilder(deferredValues, payloadContextBase as AutoFormPayloadBuilderContext<TNativeForm>);
+      } catch {
         bestEffort = true;
       }
     }
 
     if (payload === undefined) {
       if (resolvedSchema.isProto && resolvedSchema.protoDesc) {
-        payload = protoFormValuesToPayload(
-          resolvedSchema.protoDesc,
-          deferredValues,
-          conversionOptions
-        );
+        payload = protoFormValuesToPayload(resolvedSchema.protoDesc, deferredValues, conversionOptions);
         bestEffort ||= !validationSuccess;
       } else if (validationSuccess) {
         payload = validatedData;
@@ -198,11 +189,8 @@ function AutoFormPayloadController<TNativeForm>({
 
     if (payloadSchema && payload !== undefined) {
       const validation = payloadSchema.safeParse(payload);
-      if (!validation.success && validation.error) {
-        console.warn(
-          '[AutoForm] payloadSchema validation failed:',
-          validation.error.issues.map((issue) => `${issue.path.join('.')}: ${issue.message}`).join(', ')
-        );
+      if (!validation.success) {
+        bestEffort = true;
       }
     }
 
@@ -233,15 +221,13 @@ function AutoFormPayloadController<TNativeForm>({
 
   const applyPayloadToForm = React.useCallback(
     async (incoming: unknown) => {
-      const seq = ++applySeqRef.current;
+      applySeqRef.current += 1;
+      const seq = applySeqRef.current;
       try {
         let nextValues: Record<string, unknown> | undefined;
 
         if (payloadParser) {
-          const parsed = payloadParser(
-            incoming,
-            payloadContextBase as AutoFormPayloadBuilderContext<TNativeForm>
-          );
+          const parsed = payloadParser(incoming, payloadContextBase as AutoFormPayloadBuilderContext<TNativeForm>);
           nextValues = isPromiseLike(parsed) ? await parsed : parsed;
         } else if (resolvedSchema.isProto && resolvedSchema.protoDesc) {
           nextValues = protoPayloadToFormValues(resolvedSchema.protoDesc, incoming);
@@ -254,7 +240,7 @@ function AutoFormPayloadController<TNativeForm>({
         }
 
         if (!nextValues) {
-          setJsonEditorError('AutoForm could not map this JSON payload back into the form.');
+          setJsonEditorError("AutoForm could not map this JSON payload back into the form.");
           return;
         }
 
@@ -264,7 +250,7 @@ function AutoFormPayloadController<TNativeForm>({
         if (applySeqRef.current !== seq) {
           return;
         }
-        setJsonEditorError(error instanceof Error ? error.message : 'AutoForm could not apply this payload.');
+        setJsonEditorError(error instanceof Error ? error.message : "AutoForm could not apply this payload.");
       }
     },
     [methods, payloadContextBase, payloadParser, resolvedSchema.isProto, resolvedSchema.protoDesc]
@@ -276,9 +262,11 @@ function AutoFormPayloadController<TNativeForm>({
       try {
         const parsed = JSON.parse(value);
         setJsonEditorError(undefined);
-        void applyPayloadToForm(parsed);
+        applyPayloadToForm(parsed).catch((error: unknown) => {
+          setJsonEditorError(error instanceof Error ? error.message : "AutoForm could not apply this payload.");
+        });
       } catch (error) {
-        setJsonEditorError(error instanceof Error ? error.message : 'Invalid JSON');
+        setJsonEditorError(error instanceof Error ? error.message : "Invalid JSON");
       }
     },
     [applyPayloadToForm]
@@ -295,17 +283,19 @@ function AutoFormPayloadController<TNativeForm>({
       const formatted = JSON.stringify(parsed, null, 2);
       setJsonEditorText(formatted);
       setJsonEditorError(undefined);
-      void applyPayloadToForm(parsed);
+      applyPayloadToForm(parsed).catch((error: unknown) => {
+        setJsonEditorError(error instanceof Error ? error.message : "AutoForm could not apply this payload.");
+      });
     } catch (error) {
-      setJsonEditorError(error instanceof Error ? error.message : 'Invalid JSON');
+      setJsonEditorError(error instanceof Error ? error.message : "Invalid JSON");
     }
   }, [applyPayloadToForm, jsonEditorText]);
 
   const summaryContext = React.useMemo<AutoFormSummaryContext<TNativeForm>>(
     () => ({
       ...(payloadContextBase as AutoFormPayloadBuilderContext<TNativeForm>),
-      payload: payloadState.payload,
       bestEffort: payloadState.bestEffort,
+      payload: payloadState.payload,
     }),
     [payloadContextBase, payloadState.bestEffort, payloadState.payload]
   );
@@ -313,23 +303,23 @@ function AutoFormPayloadController<TNativeForm>({
   return (
     <>
       {renderContent({
-        payloadState,
-        jsonEditorText,
-        jsonEditorError,
-        payloadText,
-        summaryContext,
+        handleFormatJson,
         handleJsonTextChange,
         handleResetJson,
-        handleFormatJson,
+        jsonEditorError,
+        jsonEditorText,
+        payloadState,
+        payloadText,
+        summaryContext,
       })}
     </>
   );
 }
 
-// ---------------------------------------------------------------------------
+//  -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1-
 // AutoFormRuntimeProvider — provides the AutoFormContext with live form values.
 // Payload computation is delegated to the AutoFormPayloadController child.
-// ---------------------------------------------------------------------------
+//  -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1-
 
 export function AutoFormRuntimeProvider<TNativeForm>({
   children: _children,
@@ -358,11 +348,17 @@ export function AutoFormRuntimeProvider<TNativeForm>({
   React.useEffect(() => {
     // Note: only fires for root-level field keys. Nested changes (e.g. address.city)
     // fire as onFieldChange("address", ...) when the parent object reference changes.
-    if (!onFieldChange) return;
+    if (!onFieldChange) {
+      return;
+    }
     const prev = prevValuesRef.current;
     for (const key of Object.keys(watchedValues)) {
       if (watchedValues[key] !== prev[key]) {
-        void onFieldChange(key, watchedValues[key], methods.nativeForm as TNativeForm);
+        Promise.resolve()
+          .then(() => onFieldChange(key, watchedValues[key], methods.nativeForm as TNativeForm))
+          .catch((error: unknown) => {
+            methods.setRootError(error instanceof Error ? error.message : "Field change handler failed.");
+          });
       }
     }
     prevValuesRef.current = { ...watchedValues };
@@ -370,16 +366,16 @@ export function AutoFormRuntimeProvider<TNativeForm>({
 
   const contextValue = React.useMemo<AutoFormContextValue>(
     () => ({
-      uiComponents,
-      formComponents,
-      formValues: watchedValues,
-      evaluateRules: (rules: AutoFormUiRule[] | undefined, fieldValue?: unknown) =>
-        evaluateUiRules(rules, { form: watchedValues, thisValue: fieldValue }),
-      getFieldUiConfig,
-      testIdPrefix,
-      fieldRegistry,
       dataProviders,
       deprecatedFields,
+      evaluateRules: (rules: AutoFormUiRule[] | undefined, fieldValue?: unknown) =>
+        evaluateUiRules(rules, { form: watchedValues, thisValue: fieldValue }),
+      fieldRegistry,
+      formComponents,
+      formValues: watchedValues,
+      getFieldUiConfig,
+      testIdPrefix,
+      uiComponents,
     }),
     [dataProviders, deprecatedFields, fieldRegistry, formComponents, uiComponents, testIdPrefix, watchedValues]
   );

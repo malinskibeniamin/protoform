@@ -1,7 +1,17 @@
-'use client';
+"use client";
 
-import { isMessage, type DescMessage, type MessageShape } from '@bufbuild/protobuf';
-import type { FieldMask } from '@bufbuild/protobuf/wkt';
+import { type DescMessage, isMessage, type MessageShape } from "@bufbuild/protobuf";
+import type { FieldMask } from "@bufbuild/protobuf/wkt";
+import { ConnectError } from "@connectrpc/connect";
+import {
+  type FormAsyncValidateOrFn,
+  type FormOptions,
+  type FormValidateOrFn,
+  type ReactFormExtendedApi,
+  type UpdateMetaOptions,
+  useForm,
+} from "@tanstack/react-form";
+import { useState } from "react";
 import {
   type ConnectErrorContext,
   createUpdateMask as createDirtyUpdateMask,
@@ -12,19 +22,20 @@ import {
   humanizeServerFieldError,
   type ProtoConversionOptions,
   protoPathToFormPath,
-} from '../../lib/protobuf-provider';
-import { ConnectError } from '@connectrpc/connect';
-import {
-  type FormAsyncValidateOrFn,
-  type FormOptions,
-  type FormValidateOrFn,
-  type ReactFormExtendedApi,
-  type UpdateMetaOptions,
-  useForm,
-} from '@tanstack/react-form';
-import { useState } from 'react';
+} from "../../lib/protobuf-provider";
 
 type FormValues = Record<string, unknown>;
+
+function getErrorMessage(error: unknown): string | undefined {
+  if (typeof error === "string") {
+    return error;
+  }
+  if (error && typeof error === "object") {
+    const message = Reflect.get(error, "message");
+    return typeof message === "string" ? message : undefined;
+  }
+  return undefined;
+}
 
 export type UseProtoFormReturn<
   Values extends FormValues,
@@ -63,12 +74,7 @@ export type UseProtoFormReturn<
     handled: boolean;
     unmapped: { field: string; description: string }[];
   };
-  setOneofValue: (
-    path: string,
-    oneofCase: string,
-    value: unknown,
-    options?: UpdateMetaOptions
-  ) => void;
+  setOneofValue: (path: string, oneofCase: string, value: unknown, options?: UpdateMetaOptions) => void;
 };
 
 function composeSubmitAsyncValidator<Values extends FormValues>(
@@ -78,13 +84,13 @@ function composeSubmitAsyncValidator<Values extends FormValues>(
   return async ({ value, formApi }) => {
     if (nativeValidator) {
       const nativeError = await formApi.runValidator({
+        type: "validateAsync",
         validate: nativeValidator,
         value: {
           formApi,
-          validationSource: 'form',
+          validationSource: "form",
           value,
         },
-        type: 'validateAsync',
       });
       if (nativeError) {
         return nativeError;
@@ -92,19 +98,19 @@ function composeSubmitAsyncValidator<Values extends FormValues>(
     }
 
     return await formApi.runValidator({
+      type: "validateAsync",
       validate: protoValidator,
       value: {
         formApi,
-        validationSource: 'form',
+        validationSource: "form",
         value,
       },
-      type: 'validateAsync',
     });
   };
 }
 
 function setDirtyPath(target: Record<string, unknown>, path: string) {
-  const segments = path.replaceAll('[', '.').replaceAll(']', '').split('.').filter(Boolean);
+  const segments = path.replaceAll("[", ".").replaceAll("]", "").split(".").filter(Boolean);
   let current = target;
   for (const [index, segment] of segments.entries()) {
     if (index === segments.length - 1) {
@@ -112,7 +118,7 @@ function setDirtyPath(target: Record<string, unknown>, path: string) {
       return;
     }
     const existing = current[segment];
-    if (typeof existing === 'object' && existing !== null && !Array.isArray(existing)) {
+    if (typeof existing === "object" && existing !== null && !Array.isArray(existing)) {
       current = existing as Record<string, unknown>;
     } else {
       const next: Record<string, unknown> = {};
@@ -126,10 +132,10 @@ function dirtyFieldsFromMeta(fieldMeta: Record<string, unknown>): Record<string,
   const dirtyFields: Record<string, unknown> = {};
   for (const [path, meta] of Object.entries(fieldMeta)) {
     if (
-      typeof meta === 'object' &&
+      typeof meta === "object" &&
       meta !== null &&
-      Reflect.get(meta, 'isDirty') === true &&
-      Reflect.get(meta, 'isDefaultValue') !== true
+      Reflect.get(meta, "isDirty") === true &&
+      Reflect.get(meta, "isDefaultValue") !== true
     ) {
       setDirtyPath(dirtyFields, path);
     }
@@ -184,22 +190,12 @@ export function useProtoForm<
   TOnServer,
   TSubmitMeta
 > {
-  const {
-    emptyRepeatedStringPolicies,
-    serverPathPrefix,
-    ...nativeOptions
-  } = options;
+  const { emptyRepeatedStringPolicies, serverPathPrefix, ...nativeOptions } = options;
   const conversionOptions: ProtoConversionOptions = {
     emptyRepeatedStringPolicies,
   };
-  const protoSchema = createProtoFormSchema<Values, Desc>(
-    schema,
-    conversionOptions
-  );
-  const onSubmitAsyncValidator = composeSubmitAsyncValidator(
-    nativeOptions.validators?.onSubmitAsync,
-    protoSchema
-  );
+  const protoSchema = createProtoFormSchema<Values, Desc>(schema, conversionOptions);
+  const onSubmitAsyncValidator = composeSubmitAsyncValidator(nativeOptions.validators?.onSubmitAsync, protoSchema);
   const composedOptions = {
     ...nativeOptions,
     validators: {
@@ -226,9 +222,7 @@ export function useProtoForm<
     value: unknown,
     options?: UpdateMetaOptions
   ) => void;
-  const sourceMessage = isMessage(nativeOptions.defaultValues, schema)
-    ? nativeOptions.defaultValues
-    : undefined;
+  const sourceMessage = isMessage(nativeOptions.defaultValues, schema) ? nativeOptions.defaultValues : undefined;
   const [serverErrorContext, setServerErrorContext] = useState<ConnectErrorContext>();
 
   const setServerErrors = (error: unknown) => {
@@ -270,7 +264,7 @@ export function useProtoForm<
           },
           errorSourceMap: {
             ...meta.errorSourceMap,
-            onServer: 'form',
+            onServer: "form",
           },
           isTouched: true,
         };
@@ -279,17 +273,9 @@ export function useProtoForm<
     }
     return { context, handled, unmapped };
   };
-  const setOneofValue = (
-    path: string,
-    oneofCase: string,
-    value: unknown,
-    updateOptions?: UpdateMetaOptions
-  ) => {
+  const setOneofValue = (path: string, oneofCase: string, value: unknown, updateOptions?: UpdateMetaOptions) => {
     const current = form.getFieldValue(path);
-    const isOneof =
-      current === undefined ||
-      current === null ||
-      (typeof current === 'object' && 'case' in current);
+    const isOneof = current === undefined || current === null || (typeof current === "object" && "case" in current);
     if (!isOneof) {
       throw new Error(
         `setOneofValue("${path}"): target is not a oneof field. Expected { case, value } shape. Use setFieldValue() for regular fields.`
@@ -299,15 +285,9 @@ export function useProtoForm<
     if (previous?.case && previous.case !== oneofCase) {
       setDynamicFieldValue(path, { case: undefined, value: undefined });
     }
-    setDynamicFieldValue(
-      path,
-      { case: oneofCase, value },
-      { dontUpdateMeta: false, ...updateOptions }
-    );
+    setDynamicFieldValue(path, { case: oneofCase, value }, { dontUpdateMeta: false, ...updateOptions });
   };
-  const getNestedErrors = <T = Record<string, { message?: string }>>(
-    path: string
-  ): T | undefined => {
+  const getNestedErrors = <T = Record<string, { message?: string }>>(path: string): T | undefined => {
     const nested: Record<string, unknown> = {};
     let found = false;
     const fieldErrors = form.getAllErrors().fields as Record<string, { errors: unknown[] }>;
@@ -315,24 +295,19 @@ export function useProtoForm<
       if (!(fieldPath === path || fieldPath.startsWith(`${path}.`))) {
         continue;
       }
-      const messages = fieldError.errors
-        .map((error) =>
-          typeof error === 'string'
-            ? error
-            : error && typeof error === 'object' && typeof Reflect.get(error, 'message') === 'string'
-              ? String(Reflect.get(error, 'message'))
-              : undefined
-        )
-        .filter((message): message is string => Boolean(message));
+      const messages = fieldError.errors.flatMap((error) => {
+        const message = getErrorMessage(error);
+        return message ? [message] : [];
+      });
       if (messages.length === 0) {
         continue;
       }
       found = true;
-      const relativePath = fieldPath === path ? [] : fieldPath.slice(path.length + 1).split('.');
+      const relativePath = fieldPath === path ? [] : fieldPath.slice(path.length + 1).split(".");
       if (relativePath.length === 0) {
-        return { message: messages.join('\n') } as T;
+        return { message: messages.join("\n") } as T;
       }
-      setNestedMessage(nested, relativePath, messages.join('\n'));
+      setNestedMessage(nested, relativePath, messages.join("\n"));
     }
     return found ? (nested as T) : undefined;
   };
@@ -340,12 +315,7 @@ export function useProtoForm<
   return Object.assign(form, {
     clearServerErrorContext: () => setServerErrorContext(undefined),
     createMessage: (values?: Values) =>
-      formValuesToProto(
-        schema,
-        values ?? form.state.values,
-        sourceMessage,
-        conversionOptions
-      ),
+      formValuesToProto(schema, values ?? form.state.values, sourceMessage, conversionOptions),
     createUpdateMask: () =>
       createDirtyUpdateMask(
         schema,
@@ -368,7 +338,7 @@ function setNestedMessage(target: Record<string, unknown>, path: string[], messa
       return;
     }
     const existing = current[segment];
-    if (existing && typeof existing === 'object' && !Array.isArray(existing)) {
+    if (existing && typeof existing === "object" && !Array.isArray(existing)) {
       current = existing as Record<string, unknown>;
     } else {
       const nested: Record<string, unknown> = {};

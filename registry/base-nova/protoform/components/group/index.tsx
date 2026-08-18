@@ -1,21 +1,26 @@
-'use client';
-import React, { createContext, useContext } from 'react';
+"use client";
+import React, { createContext, useContext } from "react";
 
-import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
+import { cn, type SharedProps } from "@/registry/base-nova/protoform/lib/utils";
 
-type GroupPosition = 'first' | 'middle' | 'last';
+type GroupPosition = "first" | "middle" | "last";
 
-type GroupContextValue = {
-  position?: GroupPosition;
+interface GroupContextValue {
   attached: boolean;
-};
+  position?: GroupPosition | undefined;
+}
 
 const GroupContext = createContext<GroupContextValue>({
-  position: undefined,
   attached: false,
+  position: undefined,
 });
 
 const useGroup = () => useContext(GroupContext);
+
+function GroupItemContext({ attached, children, position }: GroupContextValue & { children: React.ReactNode }) {
+  const value = React.useMemo(() => ({ attached, position }), [attached, position]);
+  return <GroupContext.Provider value={value}>{children}</GroupContext.Provider>;
+}
 
 const Group = ({
   children,
@@ -36,12 +41,12 @@ const Group = ({
         return;
       }
       if (index === 0) {
-        return 'first';
+        return "first";
       }
       if (index === childCount - 1) {
-        return 'last';
+        return "last";
       }
-      return 'middle';
+      return "middle";
     };
 
     const position = getPosition();
@@ -49,20 +54,14 @@ const Group = ({
     const key = element.key || `group-item-${index}`;
 
     return (
-      <GroupContext.Provider
-        key={key}
-        value={{
-          position,
-          attached,
-        }}
-      >
+      <GroupItemContext attached={attached} key={key} position={position}>
         {child}
-      </GroupContext.Provider>
+      </GroupItemContext>
     );
   });
 
   return (
-    <div className={cn('flex w-full items-stretch', !attached && 'items-end gap-1.5', className)} data-testid={testId}>
+    <div className={cn("flex w-full items-stretch", !attached && "items-end gap-1.5", className)} data-testid={testId}>
       {content}
     </div>
   );

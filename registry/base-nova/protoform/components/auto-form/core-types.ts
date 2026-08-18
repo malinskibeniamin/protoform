@@ -1,5 +1,5 @@
-import type React from 'react';
-import type { ReactNode } from 'react';
+import type React from "react";
+import type { ReactNode } from "react";
 
 // Re-export schema contract types from shared lib so existing consumers
 // can continue importing from './core-types' without changes.
@@ -14,54 +14,93 @@ export type {
   SchemaValidationContext,
   SchemaValidationError,
   UiRenderable,
-} from '../../lib/form-types';
+} from "../../lib/form-types";
 
-import type { FieldWrapperProps, ParsedField, UiRenderable } from '../../lib/form-types';
-export { getFieldHints } from '../../lib/form-types';
+import type { FieldWrapperProps, ParsedField, UiRenderable } from "../../lib/form-types";
+
+export { getFieldHints } from "../../lib/form-types";
 
 // ---------------------------------------------------------------------------
 // UI component contracts — AutoForm-specific wrapper and field props.
 // ---------------------------------------------------------------------------
 
-export type ObjectWrapperProps = {
-  label: UiRenderable;
+export interface ObjectWrapperProps {
   children: ReactNode;
   field: ParsedField;
-  hasError?: boolean;
-};
+  hasError?: boolean | undefined;
+  label: UiRenderable;
+}
 
-export type ArrayWrapperProps = {
-  label: UiRenderable;
+export interface ArrayWrapperProps {
   children: ReactNode;
   field: ParsedField;
+  label: UiRenderable;
   onAddItem: () => void;
-};
+}
 
-export type ArrayElementWrapperProps = {
+export interface ArrayElementWrapperProps {
   children: ReactNode;
-  onRemove: () => void;
   index: number;
-};
+  onRemove: () => void;
+}
 
-export type AutoFormUIComponents = {
-  Form: React.ComponentType<React.ComponentProps<'form'>>;
-  FieldWrapper: React.ComponentType<FieldWrapperProps>;
-  ErrorMessage: React.ComponentType<{ error: string }>;
-  SubmitButton: React.ComponentType<{ children: ReactNode; disabled?: boolean; testId?: string }>;
-  ObjectWrapper: React.ComponentType<ObjectWrapperProps>;
-  ArrayWrapper: React.ComponentType<ArrayWrapperProps>;
+export interface AutoFormUIComponents {
   ArrayElementWrapper: React.ComponentType<ArrayElementWrapperProps>;
-};
+  ArrayWrapper: React.ComponentType<ArrayWrapperProps>;
+  ErrorMessage: React.ComponentType<{ error: string }>;
+  FieldWrapper: React.ComponentType<FieldWrapperProps>;
+  Form: React.ComponentType<React.ComponentProps<"form">>;
+  ObjectWrapper: React.ComponentType<ObjectWrapperProps>;
+  SubmitButton: React.ComponentType<{
+    children: ReactNode;
+    disabled?: boolean | undefined;
+    testId?: string | undefined;
+  }>;
+}
 
-export type AutoFormFieldProps = {
-  label: UiRenderable;
+export interface AutoFormInputProps {
+  checked?: boolean;
+  disabled?: boolean;
+  indeterminate?: boolean;
+  max?: number | string;
+  min?: number | string;
+  name?: string;
+  onBlur: () => void;
+  onChange: AutoFormValueHandler;
+  onCheckedChange: AutoFormCheckedHandler;
+  onValueChange: AutoFormValueHandler;
+  placeholder?: string;
+  ref?: React.Ref<HTMLInputElement>;
+  required?: boolean;
+  step?: number | string;
+  testId?: string;
+  value?: unknown;
+  [name: string]: unknown;
+}
+
+interface AutoFormSetValueOptions {
+  shouldDirty?: boolean;
+  shouldTouch?: boolean;
+  shouldValidate?: boolean;
+}
+
+type AutoFormValueHandler = {
+  bivarianceHack(value: unknown, options?: AutoFormSetValueOptions): void;
+}["bivarianceHack"];
+
+type AutoFormCheckedHandler = {
+  bivarianceHack(value: boolean): void;
+}["bivarianceHack"];
+
+export interface AutoFormFieldProps {
+  error?: string | undefined;
   field: ParsedField;
-  value: any;
-  error?: string;
   id: string;
+  inputProps: AutoFormInputProps;
+  label: UiRenderable;
   path: string[];
-  inputProps: Record<string, any>;
-};
+  value: unknown;
+}
 
 export type AutoFormFieldComponents<TFieldType extends string = string> = {
   fallback: React.ComponentType<AutoFormFieldProps>;

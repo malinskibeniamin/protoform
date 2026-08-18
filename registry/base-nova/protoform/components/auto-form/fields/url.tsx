@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { Link2Icon } from 'lucide-react';
-import type { AutoFormFieldProps } from '../core-types';
-import { getFieldUiConfig, URL_FIELD_PATTERN } from '../helpers';
-import type { FieldTypeDefinition } from '../registry';
-import { StringLikeInput, useFieldTestIds } from './shared';
+import { Link2Icon } from "lucide-react";
+import type { AutoFormFieldProps } from "../core-types";
+import { getFieldUiConfig, URL_FIELD_PATTERN } from "../helpers";
+import type { FieldTypeDefinition } from "../registry";
+import { StringLikeInput, useFieldTestIds } from "./shared";
 
 function UrlFieldComponent(props: AutoFormFieldProps) {
   const testIds = useFieldTestIds(props.id);
@@ -15,7 +15,7 @@ function UrlFieldComponent(props: AutoFormFieldProps) {
       icon={<Link2Icon className="h-4 w-4" />}
       id={props.id}
       inputProps={props.inputProps}
-      placeholder={getFieldUiConfig(props.field).placeholder || 'https://'}
+      placeholder={getFieldUiConfig(props.field).placeholder || "https://"}
       testId={testIds.control}
       type="url"
     />
@@ -25,9 +25,9 @@ function UrlFieldComponent(props: AutoFormFieldProps) {
 export { UrlFieldComponent };
 
 export const urlFieldDefinition: FieldTypeDefinition = {
-  name: 'url',
-  priority: 20,
-  match: (field, context) =>
-    field.type === 'string' && (context.inputType === 'url' || URL_FIELD_PATTERN.test(context.identity)),
   component: UrlFieldComponent,
+  match: (field, context) =>
+    field.type === "string" && (context.inputType === "url" || URL_FIELD_PATTERN.test(context.identity)),
+  name: "url",
+  priority: 20,
 };

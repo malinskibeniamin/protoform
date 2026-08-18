@@ -1,9 +1,4 @@
-export type ReadinessCategoryId =
-  | "aip"
-  | "cel"
-  | "production"
-  | "protobuf"
-  | "protovalidate";
+export type ReadinessCategoryId = "aip" | "cel" | "production" | "protobuf" | "protovalidate";
 
 export type ReadinessLevel = "required" | "recommended";
 export type AipEvidenceScope = "client" | "external";
@@ -11,7 +6,7 @@ export type AipStandardState = "approved" | "draft" | "reviewing";
 
 interface RequirementBase {
   category: ReadinessCategoryId;
-  description?: string;
+  description?: string | undefined;
   evidenceScope?: AipEvidenceScope;
   id: string;
   level: ReadinessLevel;
@@ -101,24 +96,21 @@ export const readinessProfile = {
 
 export const readinessCategories: readonly ReadinessCategory[] = [
   {
-    description:
-      "Form-relevant canonical v2 behavior plus explicitly isolated migration profiles.",
+    description: "Form-relevant canonical v2 behavior plus explicitly isolated migration profiles.",
     id: "protobuf",
     sourceLabel: "Protocol Buffers language guide",
     sourceUrl: "https://protobuf.dev/programming-guides/",
     title: "Protobuf",
   },
   {
-    description:
-      "Every standard rule family exposed by the installed Protovalidate schema.",
+    description: "Every standard rule family exposed by the installed Protovalidate schema.",
     id: "protovalidate",
     sourceLabel: "Protovalidate standard rules",
     sourceUrl: "https://buf.build/docs/reference/protovalidate/rules/",
     title: "Protovalidate",
   },
   {
-    description:
-      "Contract validation expressions and descriptor-provided UI expressions.",
+    description: "Contract validation expressions and descriptor-provided UI expressions.",
     id: "cel",
     sourceLabel: "Common Expression Language overview",
     sourceUrl: "https://cel.dev/overview/cel-overview",
@@ -133,8 +125,7 @@ export const readinessCategories: readonly ReadinessCategory[] = [
     title: "AIP-aware client coverage",
   },
   {
-    description:
-      "Framework interoperability, accessibility, resilience, compatibility, and release evidence.",
+    description: "Framework interoperability, accessibility, resilience, compatibility, and release evidence.",
     id: "production",
     sourceLabel: "Web Content Accessibility Guidelines 2.2",
     sourceUrl: "https://www.w3.org/WAI/WCAG22/quickref/",
@@ -888,15 +879,7 @@ function aipVerified(
   standardState: AipStandardState = "approved"
 ): VerifiedRequirement {
   return {
-    ...verified(
-      "aip",
-      `aip.${number}`,
-      `AIP-${number} ${title}`,
-      file,
-      testName,
-      required,
-      description
-    ),
+    ...verified("aip", `aip.${number}`, `AIP-${number} ${title}`, file, testName, required, description),
     evidenceScope: "client",
     sourceUrl: `https://google.aip.dev/${number}`,
     standardState,
@@ -911,13 +894,7 @@ function aipExcluded(
   standardState: AipStandardState = "approved"
 ): ExcludedRequirement {
   return {
-    ...excluded(
-      "aip",
-      `aip.${number}`,
-      `AIP-${number} ${title}`,
-      status,
-      rationale
-    ),
+    ...excluded("aip", `aip.${number}`, `AIP-${number} ${title}`, status, rationale),
     evidenceScope: "external",
     sourceUrl: `https://google.aip.dev/${number}`,
     standardState,
@@ -1562,9 +1539,7 @@ export const readinessRequirements: readonly ReadinessRequirement[] = [
   ...productionRequirements,
 ];
 
-export function getReadinessSummary(
-  requirements: readonly ReadinessRequirement[]
-): ReadinessSummary {
+export function getReadinessSummary(requirements: readonly ReadinessRequirement[]): ReadinessSummary {
   const count = (status: ReadinessRequirement["status"]): number =>
     requirements.filter((requirement) => requirement.status === status).length;
   const verifiedCount = count("verified");
@@ -1575,25 +1550,18 @@ export function getReadinessSummary(
   const optionalCount = count("optional");
   const outOfTargetCount = count("out-of-target");
   const supersededCount = count("superseded");
-  const applicable =
-    verifiedCount + missingCount + deferredCount + unsupportedCount;
-  const percentage =
-    applicable === 0 ? 0 : Math.round((verifiedCount / applicable) * 100);
+  const applicable = verifiedCount + missingCount + deferredCount + unsupportedCount;
+  const percentage = applicable === 0 ? 0 : Math.round((verifiedCount / applicable) * 100);
   return {
     applicable,
     deferred: deferredCount,
-    excluded:
-      externalCount + optionalCount + outOfTargetCount + supersededCount,
+    excluded: externalCount + optionalCount + outOfTargetCount + supersededCount,
     external: externalCount,
     missing: missingCount,
     optional: optionalCount,
     outOfTarget: outOfTargetCount,
     percentage,
-    profileComplete:
-      applicable > 0 &&
-      missingCount === 0 &&
-      deferredCount === 0 &&
-      unsupportedCount === 0,
+    profileComplete: applicable > 0 && missingCount === 0 && deferredCount === 0 && unsupportedCount === 0,
     superseded: supersededCount,
     unsupported: unsupportedCount,
     verified: verifiedCount,

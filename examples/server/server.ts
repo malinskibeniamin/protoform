@@ -1,8 +1,4 @@
-import {
-  createServer,
-  type IncomingMessage,
-  type ServerResponse,
-} from "node:http";
+import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import type { AddressInfo } from "node:net";
 
 import type { ConnectRouter } from "@connectrpc/connect";
@@ -45,8 +41,7 @@ function handlePreflight(request: IncomingMessage, response: ServerResponse) {
 }
 
 function formatAddress(address: AddressInfo) {
-  const host =
-    address.family === "IPv6" ? `[${address.address}]` : address.address;
+  const host = address.family === "IPv6" ? `[${address.address}]` : address.address;
   return `http://${host}:${address.port}`;
 }
 
@@ -102,17 +97,11 @@ export function buildExampleServer() {
 
 async function startExampleServer() {
   const server = buildExampleServer();
-  const address = await server.listen({ host: "127.0.0.1", port: 55_012 });
-  console.info(`Form example server listening at ${address}`);
+  await server.listen({ host: "127.0.0.1", port: 55_012 });
 }
 
 if (import.meta.main) {
-  startExampleServer().catch((error: unknown) => {
-    console.error(
-      error instanceof Error
-        ? error.message
-        : "Failed to start the form example server."
-    );
+  startExampleServer().catch((_error: unknown) => {
     process.exitCode = 1;
   });
 }

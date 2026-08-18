@@ -6,10 +6,9 @@ import { compileCelExpression } from "../registry/base-nova/protoform/components
 
 describe("CEL guarded runtime conformance", () => {
   it("propagates partial unknown attributes separately from evaluation errors", () => {
-    const evaluate = compileCelExpression(
-      "form.enabled && form.restricted_region == 'eu-central1'",
-      { unknownAttributes: ["form.restricted_region"] }
-    );
+    const evaluate = compileCelExpression("form.enabled && form.restricted_region == 'eu-central1'", {
+      unknownAttributes: ["form.restricted_region"],
+    });
 
     expect(
       evaluate({
@@ -31,12 +30,9 @@ describe("CEL guarded runtime conformance", () => {
   });
 
   it("merges unknown sets and preserves logical short circuit", () => {
-    const evaluate = compileCelExpression(
-      "form.primary == 'ready' || form['backup-region'] == 'eu-west1'",
-      {
-        unknownAttributes: ["form.primary", 'form["backup-region"]'],
-      }
-    );
+    const evaluate = compileCelExpression("form.primary == 'ready' || form['backup-region'] == 'eu-west1'", {
+      unknownAttributes: ["form.primary", 'form["backup-region"]'],
+    });
 
     expect(evaluate({ form: {} })).toMatchObject({
       attributes: ["form.primary", 'form["backup-region"]'],
@@ -55,12 +51,9 @@ describe("CEL guarded runtime conformance", () => {
   });
 
   it("enforces a configurable execution budget and fails safely", () => {
-    const withinBudget = compileCelExpression(
-      "[1, 2, 3].all(value, value > 0)",
-      {
-        maxCost: 100,
-      }
-    );
+    const withinBudget = compileCelExpression("[1, 2, 3].all(value, value > 0)", {
+      maxCost: 100,
+    });
     expect(withinBudget()).toMatchObject({ kind: "value", value: true });
 
     const overBudget = compileCelExpression("[1, 2, 3].all(value, value > 0)", {
@@ -73,10 +66,7 @@ describe("CEL guarded runtime conformance", () => {
       limit: 2,
     });
 
-    const repeatedWork = compileCelExpression(
-      "form.items.all(item, item > 0.0)",
-      { maxCost: 100 }
-    );
+    const repeatedWork = compileCelExpression("form.items.all(item, item > 0.0)", { maxCost: 100 });
     const oneItem = repeatedWork({ form: { items: [1] } });
     const threeItems = repeatedWork({ form: { items: [1, 2, 3] } });
     expect(threeItems.cost).toBeGreaterThan(oneItem.cost);

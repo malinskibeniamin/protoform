@@ -9,14 +9,13 @@
  * extra optional property keeps both directions structurally assignable.
  */
 
+import type { ComponentType, ReactNode } from "react";
 import type {
   FieldConfig as CoreFieldConfig,
   ParsedField as CoreParsedField,
   ProviderCustomData,
   Renderable,
-} from '../core';
-import type { ComponentType, ReactNode } from 'react';
-export { getFieldHints } from '../core';
+} from "../core";
 
 export type {
   EmptyRepeatedStringPolicy,
@@ -31,28 +30,29 @@ export type {
   SchemaValidationContext,
   SchemaValidationError,
   UiRule,
-} from '../core';
+} from "../core";
+export { getFieldHints } from "../core";
 
 /** Core's schema-layer Renderable widened with ReactNode for the React layer. */
 export type UiRenderable = Renderable | ReactNode;
 
 export interface FieldWrapperProps {
-  label: UiRenderable;
-  error?: UiRenderable;
   children: ReactNode;
-  id: string;
+  error?: UiRenderable | undefined;
   field: ParsedField;
+  id: string;
+  label: UiRenderable;
 }
 
 export interface FieldConfig<FieldTypes = string, CustomData extends ProviderCustomData = ProviderCustomData>
   extends CoreFieldConfig<FieldTypes, CustomData> {
   /** Per-field React wrapper override; React-layer concern, absent from the core IR. */
-  fieldWrapper?: ComponentType<FieldWrapperProps>;
+  fieldWrapper?: ComponentType<FieldWrapperProps> | undefined;
 }
 
 export interface ParsedField<FieldTypes = string> extends CoreParsedField<FieldTypes> {
-  fieldConfig?: FieldConfig<FieldTypes>;
-  schema?: ParsedField<FieldTypes>[];
+  fieldConfig?: FieldConfig<FieldTypes> | undefined;
+  schema?: ParsedField<FieldTypes>[] | undefined;
 }
 
 export interface ParsedSchema<FieldTypes = string> {

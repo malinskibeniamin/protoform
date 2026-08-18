@@ -52,12 +52,7 @@ const sidebarHierarchy = [
   },
   {
     label: "Feature examples",
-    pages: [
-      "Protobuf examples",
-      "Protovalidate examples",
-      "CEL examples",
-      "Production examples",
-    ],
+    pages: ["Protobuf examples", "Protovalidate examples", "CEL examples", "Production examples"],
   },
   {
     label: "AIP examples",
@@ -88,22 +83,11 @@ const sidebarHierarchy = [
   },
   {
     label: "Migrations",
-    pages: [
-      "Migrating to Protobuf-ES v2",
-      "Migrating from Zod",
-      "Migrating from Yup",
-      "LLM migration playbook",
-    ],
+    pages: ["Migrating to Protobuf-ES v2", "Migrating from Zod", "Migrating from Yup", "LLM migration playbook"],
   },
   {
     label: "Production",
-    pages: [
-      "Testing forms",
-      "Conformance suite",
-      "Production readiness",
-      "Deployment",
-      "Port audit",
-    ],
+    pages: ["Testing forms", "Conformance suite", "Production readiness", "Deployment", "Port audit"],
   },
   {
     label: "Reference",
@@ -289,40 +273,24 @@ test("organizes the docs sidebar by reader task", async ({ page }) => {
   const sidebar = page.locator('aside[aria-label="Primary"] nav');
   const groups = sidebar.locator(":scope > ul > li > details");
 
-  await expect(groups.locator(":scope > summary")).toHaveText(
-    sidebarHierarchy.map((group) => group.label)
-  );
+  await expect(groups.locator(":scope > summary")).toHaveText(sidebarHierarchy.map((group) => group.label));
 
   await Promise.all(
     sidebarHierarchy.map((group, index) =>
-      expect(groups.nth(index).locator(":scope > div a")).toHaveText(
-        Array.from(group.pages)
-      )
+      expect(groups.nth(index).locator(":scope > div a")).toHaveText(Array.from(group.pages))
     )
   );
 
-  const startHere = groups.nth(
-    sidebarHierarchy.findIndex((group) => group.label === "Start here")
-  );
+  const startHere = groups.nth(sidebarHierarchy.findIndex((group) => group.label === "Start here"));
   await expect(startHere).toHaveAttribute("open", "");
-  await expect(
-    startHere.getByRole("link", { name: "Getting started" })
-  ).toHaveAttribute("aria-current", "page");
-  const examples = groups.nth(
-    sidebarHierarchy.findIndex((group) => group.label === "Examples")
-  );
+  await expect(startHere.getByRole("link", { name: "Getting started" })).toHaveAttribute("aria-current", "page");
+  const examples = groups.nth(sidebarHierarchy.findIndex((group) => group.label === "Examples"));
   await examples.locator(":scope > summary").click();
-  await expect(
-    examples.getByRole("link", { name: "Bare-bones form" })
-  ).toBeVisible();
+  await expect(examples.getByRole("link", { name: "Bare-bones form" })).toBeVisible();
 
-  const production = groups.nth(
-    sidebarHierarchy.findIndex((group) => group.label === "Production")
-  );
+  const production = groups.nth(sidebarHierarchy.findIndex((group) => group.label === "Production"));
   await production.locator(":scope > summary").click();
-  await expect(
-    production.getByRole("link", { name: "Production readiness" })
-  ).toBeVisible();
+  await expect(production.getByRole("link", { name: "Production readiness" })).toBeVisible();
 });
 
 test("syntax-highlights protobuf field declarations", async ({ page }) => {
@@ -334,9 +302,7 @@ test("syntax-highlights protobuf field declarations", async ({ page }) => {
   const projectField = proto.locator(".line", { hasText: "project_id" });
 
   await expect(proto).toBeVisible();
-  expect(await projectField.locator(":scope > span").count()).toBeGreaterThan(
-    1
-  );
+  expect(await projectField.locator(":scope > span").count()).toBeGreaterThan(1);
 });
 
 test("syntax-highlights standalone CEL expressions", async ({ page }) => {
@@ -352,9 +318,7 @@ test("syntax-highlights standalone CEL expressions", async ({ page }) => {
   expect(await firstLine.locator(":scope > span").count()).toBeGreaterThan(1);
 });
 
-test("opens diagrams in an accessible full-viewport viewer", async ({
-  page,
-}) => {
+test("opens diagrams in an accessible full-viewport viewer", async ({ page }) => {
   await page.addInitScript(() => {
     Object.defineProperty(Element.prototype, "requestFullscreen", {
       configurable: true,
@@ -364,9 +328,7 @@ test("opens diagrams in an accessible full-viewport viewer", async ({
   await page.goto("/docs");
 
   const diagram = page.locator("blume-mermaid").first();
-  await expect(
-    diagram.locator(":scope > div:not([data-diagram-controls]) svg").first()
-  ).toBeVisible();
+  await expect(diagram.locator(":scope > div:not([data-diagram-controls]) svg").first()).toBeVisible();
   const maximize = page.getByRole("button", {
     name: "View diagram full screen",
   });
@@ -376,9 +338,7 @@ test("opens diagrams in an accessible full-viewport viewer", async ({
 
   const viewer = page.getByRole("dialog", { name: "Diagram" });
   await expect(viewer).toBeVisible();
-  await expect(
-    viewer.locator("[data-diagram-preview] svg").first()
-  ).toBeVisible();
+  await expect(viewer.locator("[data-diagram-preview] svg").first()).toBeVisible();
   const box = await viewer.boundingBox();
   const viewport = page.viewportSize();
   expect(box?.width).toBeGreaterThanOrEqual((viewport?.width ?? 0) - 2);
@@ -400,8 +360,7 @@ test("complex example exposes its loading state", async ({ page }) => {
     const requestPath = new URL(route.request().url()).pathname;
     if (
       !delayedExampleChunk &&
-      (requestPath.includes("/examples/complex/complex-form") ||
-        productionComplexChunkPattern.test(requestPath))
+      (requestPath.includes("/examples/complex/complex-form") || productionComplexChunkPattern.test(requestPath))
     ) {
       delayedExampleChunk = true;
       await exampleChunkGate;
@@ -413,9 +372,7 @@ test("complex example exposes its loading state", async ({ page }) => {
     await page.goto("/docs/complex-example", {
       waitUntil: "domcontentloaded",
     });
-    await expect(
-      page.getByRole("status", { name: "Loading complex example" })
-    ).toBeVisible();
+    await expect(page.getByRole("status", { name: "Loading complex example" })).toBeVisible();
     expect(delayedExampleChunk).toBe(true);
   } finally {
     releaseExampleChunk?.();
@@ -426,26 +383,17 @@ test("complex example exposes its loading state", async ({ page }) => {
   });
 });
 
-test("keeps the complex stepper usable at a narrow viewport", async ({
-  browserName,
-  page,
-}) => {
+test("keeps the complex stepper usable at a narrow viewport", async ({ browserName, page }) => {
   await page.setViewportSize({ height: 844, width: 390 });
   await page.goto("/docs/complex-example");
 
   const projectId = page.getByRole("textbox", { name: "Project ID" });
   await expect(projectId).toBeVisible({ timeout: 30_000 });
-  await expect(
-    page.getByRole("navigation", { name: "Form progress" })
-  ).toBeVisible();
+  await expect(page.getByRole("navigation", { name: "Form progress" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Continue" })).toBeVisible();
-  expect(
-    await page.evaluate(
-      () =>
-        document.documentElement.scrollWidth <=
-        document.documentElement.clientWidth
-    )
-  ).toBe(true);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(
+    true
+  );
 
   await page.screenshot({
     fullPage: true,
@@ -477,9 +425,7 @@ test("adapts five-step progress without wrapping", async ({ page }) => {
   const mediumLabel = await labels.first().boundingBox();
   expect(mediumMarker).not.toBeNull();
   expect(mediumLabel).not.toBeNull();
-  expect(mediumLabel?.y).toBeGreaterThan(
-    (mediumMarker?.y ?? 0) + (mediumMarker?.height ?? 0)
-  );
+  expect(mediumLabel?.y).toBeGreaterThan((mediumMarker?.y ?? 0) + (mediumMarker?.height ?? 0));
 
   await page.setViewportSize({ height: 900, width: 1440 });
   await progress.evaluate((element) => {
@@ -494,18 +440,12 @@ test("adapts five-step progress without wrapping", async ({ page }) => {
     element.style.removeProperty("width");
   });
 
-  expect(
-    await page.evaluate(
-      () =>
-        document.documentElement.scrollWidth <=
-        document.documentElement.clientWidth
-    )
-  ).toBe(true);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(
+    true
+  );
 });
 
-test("positions vertical progress above or beside its panel", async ({
-  page,
-}) => {
+test("positions vertical progress above or beside its panel", async ({ page }) => {
   await page.setViewportSize({ height: 900, width: 390 });
   await page.goto("/docs/two-step-form");
 
@@ -525,9 +465,7 @@ test("positions vertical progress above or beside its panel", async ({
   expect(wideProgress).not.toBeNull();
   expect(widePanel).not.toBeNull();
   expect(wideProgress?.x).toBeLessThan(widePanel?.x ?? 0);
-  expect(Math.abs((wideProgress?.y ?? 0) - (widePanel?.y ?? 0))).toBeLessThan(
-    2
-  );
+  expect(Math.abs((wideProgress?.y ?? 0) - (widePanel?.y ?? 0))).toBeLessThan(2);
 });
 
 for (const path of focusedExamplePaths) {
@@ -536,35 +474,22 @@ for (const path of focusedExamplePaths) {
     await page.goto(path);
     await expect(page.locator("h1")).toBeVisible();
     expect(
-      await page.evaluate(
-        () =>
-          document.documentElement.scrollWidth <=
-          document.documentElement.clientWidth
-      ),
+      await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth),
       path
     ).toBe(true);
   });
 }
 
-test("keeps the Standard Schema guide inside a mobile viewport", async ({
-  browserName,
-  page,
-}) => {
+test("keeps the Standard Schema guide inside a mobile viewport", async ({ browserName, page }) => {
   await page.setViewportSize({ height: 844, width: 390 });
   await page.goto("/docs/standard-schema");
 
-  await expect(
-    page.getByRole("heading", { level: 1, name: "Standard Schema" })
-  ).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Standard Schema" })).toBeVisible();
   await expect(page.getByRole("table").first()).toBeVisible();
   await expect(page.locator("blume-mermaid svg").first()).toBeVisible();
-  expect(
-    await page.evaluate(
-      () =>
-        document.documentElement.scrollWidth <=
-        document.documentElement.clientWidth
-    )
-  ).toBe(true);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(
+    true
+  );
 
   await page.screenshot({
     fullPage: true,
@@ -572,22 +497,16 @@ test("keeps the Standard Schema guide inside a mobile viewport", async ({
   });
 });
 
-test("uses a wider content column for the readiness dashboard", async ({
-  page,
-}) => {
+test("uses a wider content column for the readiness dashboard", async ({ page }) => {
   await page.setViewportSize({ height: 1000, width: 1600 });
   await page.goto("/docs/production-readiness");
 
   const article = page.locator("#blume-content > article");
-  await expect(
-    page.getByRole("progressbar", { name: "Overall readiness" })
-  ).toBeVisible();
+  await expect(page.getByRole("progressbar", { name: "Overall readiness" })).toBeVisible();
   expect((await article.boundingBox())?.width).toBeGreaterThan(800);
 });
 
-test("keeps the bookstore demo readable inside the docs column", async ({
-  page,
-}) => {
+test("keeps the bookstore demo readable inside the docs column", async ({ page }) => {
   await page.setViewportSize({ height: 1000, width: 1440 });
   await page.goto("/docs/bookstore");
 
@@ -601,10 +520,8 @@ test("keeps the bookstore demo readable inside the docs column", async ({
   const sourceBox = await source.boundingBox();
   expect(sourceBox?.x).toBeGreaterThan((headingBox?.x ?? 0) + 200);
   const sourceColors = await source.evaluate((element) => ({
-    background: getComputedStyle(element.parentElement as HTMLElement)
-      .backgroundColor,
-    foreground: getComputedStyle(element.querySelector("code") as HTMLElement)
-      .color,
+    background: getComputedStyle(element.parentElement as HTMLElement).backgroundColor,
+    foreground: getComputedStyle(element.querySelector("code") as HTMLElement).color,
   }));
   expect(sourceColors.foreground).not.toBe(sourceColors.background);
 });
@@ -629,7 +546,6 @@ test("syntax-highlights every bookstore source language", async ({ page }) => {
   ] as const;
 
   for (const syntaxCase of cases) {
-    // biome-ignore lint/performance/noAwaitInLoops: each tab must be active before its panel can be inspected
     await page.getByRole("tab", { name: syntaxCase.file }).click();
     const highlightedLine = source
       .locator(".line", {
@@ -638,19 +554,12 @@ test("syntax-highlights every bookstore source language", async ({ page }) => {
       .first();
 
     await expect(highlightedLine).toBeVisible();
-    expect
-      .soft(
-        await highlightedLine.locator(":scope > span").count(),
-        syntaxCase.file
-      )
-      .toBeGreaterThan(1);
+    expect.soft(await highlightedLine.locator(":scope > span").count(), syntaxCase.file).toBeGreaterThan(1);
   }
 });
 
 for (const example of wideDemoExamples) {
-  test(`gives each ${example.label} more room than the prose column`, async ({
-    page,
-  }) => {
+  test(`gives each ${example.label} more room than the prose column`, async ({ page }) => {
     await page.setViewportSize({ height: 1000, width: 1600 });
     await page.goto(example.path);
 
@@ -661,13 +570,9 @@ for (const example of wideDemoExamples) {
     const proseBox = await prose.boundingBox();
     const demoBox = await demo.boundingBox();
 
-    expect
-      .soft(demoBox?.width, example.path)
-      .toBeGreaterThan((proseBox?.width ?? 0) + 200);
+    expect.soft(demoBox?.width, example.path).toBeGreaterThan((proseBox?.width ?? 0) + 200);
     expect.soft(demoBox?.x, example.path).toBeGreaterThanOrEqual(0);
-    expect
-      .soft((demoBox?.x ?? 0) + (demoBox?.width ?? 0), example.path)
-      .toBeLessThanOrEqual(1600);
+    expect.soft((demoBox?.x ?? 0) + (demoBox?.width ?? 0), example.path).toBeLessThanOrEqual(1600);
   });
 }
 
@@ -701,9 +606,7 @@ test("shows line numbers in component code previews", async ({ page }) => {
 test("shows the Profile v3 evidence roadmap", async ({ page }) => {
   await page.goto("/docs/production-readiness");
 
-  await expect(
-    page.getByRole("heading", { name: "How to maintain the evidence" })
-  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: "How to maintain the evidence" })).toBeVisible();
   await expect(page.getByText("Consumer deployment matrix")).toBeVisible();
   await expect(page.getByText("Schema evolution and drafts")).toBeVisible();
   await expect(page.getByText("Security and misuse resistance")).toBeVisible();
@@ -712,25 +615,19 @@ test("shows the Profile v3 evidence roadmap", async ({ page }) => {
 test("keeps readiness areas readable with enlarged text", async ({ page }) => {
   await page.setViewportSize({ height: 1000, width: 1440 });
   await page.goto("/docs/production-readiness");
-  await expect(
-    page.getByRole("progressbar", { name: "Overall readiness" })
-  ).toBeVisible();
+  await expect(page.getByRole("progressbar", { name: "Overall readiness" })).toBeVisible();
 
   const verifiedCheck = page.getByRole("button", {
     name: "String fields: Verified",
   });
   await verifiedCheck.hover();
-  await expect(page.getByRole("tooltip")).toContainText(
-    "maps $key into the stable field model"
-  );
+  await expect(page.getByRole("tooltip")).toContainText("maps $key into the stable field model");
   await page.mouse.move(0, 0);
   const serviceCheck = page.getByRole("button", {
     name: "Service and RPC descriptors: Verified",
   });
   await serviceCheck.focus();
-  await expect(page.getByRole("tooltip")).toContainText(
-    "Generated service methods now expose request descriptors"
-  );
+  await expect(page.getByRole("tooltip")).toContainText("Generated service methods now expose request descriptors");
 
   await page.evaluate(() => {
     document.documentElement.style.fontSize = "200%";
@@ -749,10 +646,7 @@ test("keeps readiness areas readable with enlarged text", async ({ page }) => {
 });
 
 for (const pageInfo of pages) {
-  test(`hydrates and renders docs screenshot: ${pageInfo.name}`, async ({
-    browserName,
-    page,
-  }) => {
+  test(`hydrates and renders docs screenshot: ${pageInfo.name}`, async ({ browserName, page }) => {
     const consoleErrors: string[] = [];
     page.on("console", (message) => {
       if (message.type() === "error") {
@@ -761,14 +655,10 @@ for (const pageInfo of pages) {
     });
     await page.goto(pageInfo.path);
     await page.waitForLoadState("networkidle");
-    await expect(
-      page.locator("h1", { hasText: pageInfo.heading }).first()
-    ).toBeVisible();
+    await expect(page.locator("h1", { hasText: pageInfo.heading }).first()).toBeVisible();
     if (pageInfo.diagram) {
       await expect(page.locator("blume-mermaid svg").first()).toBeVisible();
-      await expect(
-        page.locator("pre", { hasText: "flowchart TD" })
-      ).toHaveCount(0);
+      await expect(page.locator("pre", { hasText: "flowchart TD" })).toHaveCount(0);
     }
     if (pageInfo.name === "bare-bones-form") {
       await page.getByRole("textbox", { name: "Name" }).fill("Ada");
@@ -780,21 +670,15 @@ for (const pageInfo of pages) {
       await page.getByRole("textbox", { name: "Name" }).fill("Ada");
       await page.getByRole("button", { name: "Continue" }).click();
       await expect(page.getByText("Step 2 of 2")).toBeVisible();
-      await page
-        .getByRole("textbox", { name: "Email" })
-        .fill("ada@example.com");
+      await page.getByRole("textbox", { name: "Email" }).fill("ada@example.com");
       await page.getByRole("button", { name: "Submit" }).click();
-      await expect(page.getByRole("status")).toContainText(
-        "Submitted: Ada, ada@example.com"
-      );
+      await expect(page.getByRole("status")).toContainText("Submitted: Ada, ada@example.com");
     }
     if (pageInfo.name === "cel-re2-form") {
       await page.getByRole("textbox", { name: "Project ID" }).fill("Not valid");
       await page.getByRole("button", { name: "Submit" }).click();
       await expect(
-        page
-          .getByRole("alert")
-          .filter({ hasText: "Use lowercase letters, digits, and hyphens." })
+        page.getByRole("alert").filter({ hasText: "Use lowercase letters, digits, and hyphens." })
       ).toBeVisible();
     }
     if (pageInfo.name === "oneof-form") {
@@ -803,40 +687,28 @@ for (const pageInfo of pages) {
       await page.getByRole("textbox", { name: "Phone" }).fill("+442079460000");
       await expect(page.getByRole("textbox", { name: "Email" })).toHaveCount(0);
       await page.getByRole("button", { name: "Submit" }).click();
-      await expect(page.getByRole("status")).toContainText(
-        "Submitted phone: +442079460000"
-      );
+      await expect(page.getByRole("status")).toContainText("Submitted phone: +442079460000");
     }
     if (pageInfo.name === "server-error-form") {
-      await page
-        .getByRole("textbox", { name: "Display Name" })
-        .fill("Ada Lovelace");
+      await page.getByRole("textbox", { name: "Display Name" }).fill("Ada Lovelace");
       const email = page.getByRole("textbox", { name: "Email" });
       await email.fill("ada@blocked.example");
       await page.getByRole("button", { name: "Submit" }).click();
-      await expect(
-        page.getByText("Use an email address from an approved domain.")
-      ).toBeVisible();
+      await expect(page.getByText("Use an email address from an approved domain.")).toBeVisible();
       await expect(email).toHaveAttribute("aria-invalid", "true");
     }
     if (pageInfo.name === "aip-resource-form") {
       const displayName = page.getByRole("textbox", { name: "Display Name" });
       await displayName.fill("Grace Hopper");
-      await page
-        .getByRole("textbox", { name: "Biography" })
-        .fill("Compiler pioneer");
+      await page.getByRole("textbox", { name: "Biography" }).fill("Compiler pioneer");
       await page.getByRole("button", { name: "Submit" }).click();
-      await expect(page.getByRole("status")).toContainText(
-        "Update mask: display_name, biography"
-      );
+      await expect(page.getByRole("status")).toContainText("Update mask: display_name, biography");
     }
     if (pageInfo.name === "complex-example") {
       const projectId = page.getByRole("textbox", { name: "Project ID" });
       await expect(projectId).toBeVisible();
       await expect(page.getByLabel("Region")).toHaveCount(0);
-      expect((await projectId.boundingBox())?.width).toBeGreaterThanOrEqual(
-        200
-      );
+      expect((await projectId.boundingBox())?.width).toBeGreaterThanOrEqual(200);
     }
     if (pageInfo.name === "kitchen-sink") {
       await expect(
@@ -844,9 +716,7 @@ for (const pageInfo of pages) {
           name: "Production deployment kitchen sink",
         })
       ).toBeVisible();
-      await expect(
-        page.getByRole("navigation", { name: "Form progress" })
-      ).toBeVisible();
+      await expect(page.getByRole("navigation", { name: "Form progress" })).toBeVisible();
       await expect(page.getByText("Step 1 of 5")).toBeVisible();
     }
     if (pageInfo.name === "deeply-nested") {
@@ -855,50 +725,28 @@ for (const pageInfo of pages) {
           name: "Configure a platform blueprint",
         })
       ).toBeVisible();
-      await expect(
-        page.getByLabel("Destination Cidr", { exact: false })
-      ).toBeVisible();
-      await expect(
-        page.getByRole("heading", { name: "Network 1" })
-      ).toBeVisible();
-      await expect(
-        page.getByRole("heading", { name: "Route 1" })
-      ).toBeVisible();
+      await expect(page.getByLabel("Destination Cidr", { exact: false })).toBeVisible();
+      await expect(page.getByRole("heading", { name: "Network 1" })).toBeVisible();
+      await expect(page.getByRole("heading", { name: "Route 1" })).toBeVisible();
       await expect(page.getByRole("heading", { name: "Value" })).toHaveCount(0);
-      await expect(
-        page.getByRole("button", { name: "Add Routes" })
-      ).toBeVisible();
+      await expect(page.getByRole("button", { name: "Add Routes" })).toBeVisible();
     }
     if (pageInfo.name === "tanstack-form") {
-      await expect(
-        page.getByRole("textbox", { name: "Display name" })
-      ).toBeVisible();
+      await expect(page.getByRole("textbox", { name: "Display name" })).toBeVisible();
       await page.getByRole("button", { name: "Create profile" }).click();
       await expect(page.getByText("value is required")).toHaveCount(2);
     }
     if (pageInfo.name === "formik") {
-      await expect(
-        page.getByRole("textbox", { name: "Display name" })
-      ).toBeVisible();
-      await expect(
-        page.getByRole("status", { name: "Loading Formik example" })
-      ).toHaveCount(0);
+      await expect(page.getByRole("textbox", { name: "Display name" })).toBeVisible();
+      await expect(page.getByRole("status", { name: "Loading Formik example" })).toHaveCount(0);
     }
     if (pageInfo.name === "final-form") {
-      await expect(
-        page.getByRole("textbox", { name: "Display name" })
-      ).toBeVisible();
-      await expect(
-        page.getByRole("status", { name: "Loading Final Form example" })
-      ).toHaveCount(0);
+      await expect(page.getByRole("textbox", { name: "Display name" })).toBeVisible();
+      await expect(page.getByRole("status", { name: "Loading Final Form example" })).toHaveCount(0);
     }
     if (pageInfo.name === "production-readiness") {
-      await expect(
-        page.getByRole("progressbar", { name: "Overall readiness" })
-      ).toBeVisible();
-      await expect(
-        page.getByText("100%", { exact: true }).first()
-      ).toBeVisible();
+      await expect(page.getByRole("progressbar", { name: "Overall readiness" })).toBeVisible();
+      await expect(page.getByText("100%", { exact: true }).first()).toBeVisible();
       await expect(
         page.getByRole("button", {
           name: "Service and RPC descriptors: Verified",
@@ -909,28 +757,18 @@ for (const pageInfo of pages) {
       const proto2Groups = ledger.getByRole("heading", {
         name: "Proto2 groups and extensions",
       });
-      await page
-        .getByPlaceholder("Search checks")
-        .fill("Proto2 groups and extensions");
+      await page.getByPlaceholder("Search checks").fill("Proto2 groups and extensions");
       await expect(proto2Groups).toBeVisible();
-      await page
-        .getByPlaceholder("Search checks")
-        .fill("Service and RPC descriptors");
+      await page.getByPlaceholder("Search checks").fill("Service and RPC descriptors");
       await expect(proto2Groups).toHaveCount(0);
-      await expect(
-        ledger.getByRole("heading", { name: "Service and RPC descriptors" })
-      ).toBeVisible();
+      await expect(ledger.getByRole("heading", { name: "Service and RPC descriptors" })).toBeVisible();
     }
     await page.screenshot({
       fullPage: true,
       path: join(screenshotDir, `${browserName}-${pageInfo.name}.png`),
     });
     const unexpectedConsoleErrors = consoleErrors.filter(
-      (message) =>
-        !(
-          pageInfo.name === "server-error-form" &&
-          message.includes("server responded with a status of 400")
-        )
+      (message) => !(pageInfo.name === "server-error-form" && message.includes("server responded with a status of 400"))
     );
     expect(unexpectedConsoleErrors).toEqual([]);
   });

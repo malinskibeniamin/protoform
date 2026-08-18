@@ -1,26 +1,18 @@
 import { expect, test } from "@playwright/test";
 
-const aipCreateHubUrl =
-  /\/docs\/aip-example-catalog#aip-133-standard-methods-create$/u;
-const aipGetHubUrl =
-  /\/docs\/aip-example-catalog#aip-131-standard-methods-get$/u;
+const aipCreateHubUrl = /\/docs\/aip-example-catalog#aip-133-standard-methods-create$/u;
+const aipGetHubUrl = /\/docs\/aip-example-catalog#aip-131-standard-methods-get$/u;
 const bufbuildHubUrl = /\/docs\/protobuf-examples#bufbuild-descriptors$/u;
 const celSafetyHubUrl = /\/docs\/cel-examples#cel-safe-evaluation$/u;
 const formikHubUrl = /\/docs\/production-examples#formik$/u;
 const protobufHubUrl = /\/docs\/protobuf-examples$/u;
 
-test("publishes focused feature and AIP catalogs with working live forms", async ({
-  page,
-}) => {
+test("publishes focused feature and AIP catalogs with working live forms", async ({ page }) => {
   await page.goto("/docs/feature-example-catalog");
   await expect(page).toHaveURL(protobufHubUrl);
   const content = page.locator("#blume-content");
-  await expect(
-    content.getByRole("heading", { name: "Protobuf examples" })
-  ).toBeVisible();
-  await expect(
-    content.getByRole("combobox", { name: "Choose a demo" })
-  ).toBeVisible();
+  await expect(content.getByRole("heading", { name: "Protobuf examples" })).toBeVisible();
+  await expect(content.getByRole("combobox", { name: "Choose a demo" })).toBeVisible();
 
   await page.goto("/docs/aip-133-standard-methods-create");
   await expect(page).toHaveURL(aipCreateHubUrl);
@@ -29,9 +21,7 @@ test("publishes focused feature and AIP catalogs with working live forms", async
       name: "AIP-133 Standard methods: Create",
     })
   ).toBeVisible();
-  await expect(
-    content.getByText("React Hook Form", { exact: true })
-  ).toBeVisible({
+  await expect(content.getByText("React Hook Form", { exact: true })).toBeVisible({
     timeout: 30_000,
   });
 
@@ -52,39 +42,27 @@ test("publishes focused feature and AIP catalogs with working live forms", async
   });
 });
 
-test("keeps a representative generated form within a narrow viewport", async ({
-  page,
-}) => {
+test("keeps a representative generated form within a narrow viewport", async ({ page }) => {
   await page.setViewportSize({ height: 844, width: 390 });
   await page.goto("/docs/aip-131-standard-methods-get");
   await expect(page).toHaveURL(aipGetHubUrl);
   const content = page.locator("#blume-content");
-  await expect(
-    content.getByText("React Hook Form", { exact: true })
-  ).toBeVisible({ timeout: 30_000 });
-  await content
-    .getByRole("textbox", { name: "Name" })
-    .fill("publishers/acme/books/protoform-guide");
+  await expect(content.getByText("React Hook Form", { exact: true })).toBeVisible({ timeout: 30_000 });
+  await content.getByRole("textbox", { name: "Name" }).fill("publishers/acme/books/protoform-guide");
   await content.getByRole("button", { name: "Submit" }).click();
   await expect(content.getByRole("status")).toContainText("protoform-guide", {
     timeout: 30_000,
   });
 
   const overflows = await page.evaluate(
-    () =>
-      document.documentElement.scrollWidth >
-      document.documentElement.clientWidth
+    () => document.documentElement.scrollWidth > document.documentElement.clientWidth
   );
   expect(overflows).toBe(false);
 });
 
-test("fills the submitted-value panel without an empty gutter", async ({
-  page,
-}) => {
+test("fills the submitted-value panel without an empty gutter", async ({ page }) => {
   await page.setViewportSize({ height: 900, width: 900 });
-  await page.goto(
-    "/docs/blume-examples/registry/base-nova/protoform/demo/catalog/aip-133-standard-methods-create"
-  );
+  await page.goto("/docs/blume-examples/registry/base-nova/protoform/demo/catalog/aip-133-standard-methods-create");
   await page.getByRole("button", { name: "Submit" }).click();
 
   const status = page.getByRole("status");
@@ -98,58 +76,36 @@ test("fills the submitted-value panel without an empty gutter", async ({
   expect(submittedValueBox?.width).toBeCloseTo(descriptionBox?.width ?? 0, 0);
 });
 
-test("keeps recursive collection controls clear of their item labels", async ({
-  page,
-}) => {
+test("keeps recursive collection controls clear of their item labels", async ({ page }) => {
   await page.setViewportSize({ height: 900, width: 640 });
-  await page.goto(
-    "/docs/blume-examples/registry/base-nova/protoform/demo/catalog/protobuf-recursive-messages"
-  );
+  await page.goto("/docs/blume-examples/registry/base-nova/protoform/demo/catalog/protobuf-recursive-messages");
   await page.getByRole("button", { name: "Add Children" }).click();
 
   const firstItem = page.getByTestId("autoform-field-children-0");
   await expect(firstItem).toHaveAttribute("data-layout", "stacked");
 
-  const labelBox = await firstItem
-    .getByText("Children 1", { exact: true })
-    .boundingBox();
-  const copyBox = await firstItem
-    .getByRole("button", { name: "Copy JSON" })
-    .boundingBox();
-  const rowBox = await page
-    .getByTestId("autoform-field-children-row-0")
-    .boundingBox();
+  const labelBox = await firstItem.getByText("Children 1", { exact: true }).boundingBox();
+  const copyBox = await firstItem.getByRole("button", { name: "Copy JSON" }).boundingBox();
+  const rowBox = await page.getByTestId("autoform-field-children-row-0").boundingBox();
 
   expect(labelBox).not.toBeNull();
   expect(copyBox).not.toBeNull();
   expect(rowBox).not.toBeNull();
   if (!(labelBox && copyBox && rowBox)) {
-    throw new Error(
-      "Recursive item label, row, or JSON action is not rendered"
-    );
+    throw new Error("Recursive item label, row, or JSON action is not rendered");
   }
   expect(labelBox.y + labelBox.height).toBeLessThanOrEqual(copyBox.y);
   expect(copyBox.x).toBeGreaterThanOrEqual(rowBox.x);
 });
 
-test("labels selected protobuf enum values in the maps demo", async ({
-  page,
-}) => {
-  await page.goto(
-    "/docs/blume-examples/registry/base-nova/protoform/demo/catalog/protobuf-maps"
-  );
+test("labels selected protobuf enum values in the maps demo", async ({ page }) => {
+  await page.goto("/docs/blume-examples/registry/base-nova/protoform/demo/catalog/protobuf-maps");
 
-  await expect(
-    page.getByTestId("autoform-field-statuses-selected-1")
-  ).toHaveText("Active");
-  await expect(
-    page.getByTestId("autoform-field-statuses-selected-2")
-  ).toHaveText("Paused");
+  await expect(page.getByTestId("autoform-field-statuses-selected-1")).toHaveText("Active");
+  await expect(page.getByTestId("autoform-field-statuses-selected-2")).toHaveText("Paused");
 });
 
-test("shows the actual form implementation in the Code preview", async ({
-  page,
-}) => {
+test("shows the actual form implementation in the Code preview", async ({ page }) => {
   await page.goto("/docs/example-cel-safe-evaluation");
   await expect(page).toHaveURL(celSafetyHubUrl);
 
@@ -162,9 +118,7 @@ test("shows the actual form implementation in the Code preview", async ({
   await expect(codePanel).not.toContainText("RegistryCapabilityDemo");
 });
 
-test("serves consolidated catalogs through static Markdown routes", async ({
-  request,
-}) => {
+test("serves consolidated catalogs through static Markdown routes", async ({ request }) => {
   const markdownResponse = await request.get("/docs/aip-example-catalog.md");
   expect(markdownResponse.ok()).toBe(true);
   const markdown = await markdownResponse.text();
@@ -180,33 +134,21 @@ test("serves consolidated catalogs through static Markdown routes", async ({
   expect(rpcMarkdown).not.toContain("LibraryService.method.createBook");
 });
 
-test("serves translated hubs and only offers available page languages", async ({
-  page,
-}) => {
+test("serves translated hubs and only offers available page languages", async ({ page }) => {
   await page.goto("/docs/reference");
   await expect(page.locator('[aria-label="Language"]')).toHaveCount(0);
 
   await page.goto("/docs/zh/protobuf-examples#protobuf-oneof");
   await expect(page.locator("html")).toHaveAttribute("lang", "zh");
-  await expect(
-    page.getByRole("heading", { name: "Protobuf 示例" })
-  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Protobuf 示例" })).toBeVisible();
   await expect(page.locator('[aria-label="语言"]')).toBeVisible();
-  await expect(
-    page.getByRole("heading", { name: "Oneof branch selection" })
-  ).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByRole("heading", { name: "Oneof branch selection" })).toBeVisible({ timeout: 30_000 });
 });
 
-test("renders the native OpenAPI reference and real RPC method shape", async ({
-  page,
-}) => {
+test("renders the native OpenAPI reference and real RPC method shape", async ({ page }) => {
   await page.goto("/docs/reference");
-  await expect(
-    page.getByRole("heading", { name: "Protoform bookstore Connect API" })
-  ).toBeVisible();
-  await expect(
-    page.getByRole("link").filter({ hasText: "Create a book" }).first()
-  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Protoform bookstore Connect API" })).toBeVisible();
+  await expect(page.getByRole("link").filter({ hasText: "Create a book" }).first()).toBeVisible();
 
   await page.goto("/docs/example-bufbuild-descriptors");
   await expect(page).toHaveURL(bufbuildHubUrl);

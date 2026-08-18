@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React from 'react';
+import type React from "react";
 import {
   FormProvider,
   type Resolver,
@@ -11,18 +11,17 @@ import {
   useForm,
   useFormContext,
   useWatch,
-} from 'react-hook-form';
-
-import { getPathInObject } from '../field-utils';
+} from "react-hook-form";
 import {
   type AutoFormArrayController,
   type AutoFormEngine,
   AutoFormEngineProvider,
   type AutoFormFieldController,
   useDirtyStateNotification,
-} from '../engine';
-import { getRootErrorMessage } from '../helpers';
-import { PROTO_FORM_ROOT_ERROR_KEY } from '../proto';
+} from "../engine";
+import { getPathInObject } from "../field-utils";
+import { getRootErrorMessage } from "../helpers";
+import { PROTO_FORM_ROOT_ERROR_KEY } from "../proto";
 
 type FormValues = Record<string, unknown>;
 
@@ -35,10 +34,9 @@ function ReactHookFormFieldController({
 }) {
   const form = useFormContext<FormValues>();
   const { field, fieldState } = useController<FormValues>({ name });
-  const messages = [
-    fieldState.error?.message,
-    ...Object.values(fieldState.error?.types ?? {}),
-  ].filter((message): message is string => typeof message === 'string');
+  const messages = [fieldState.error?.message, ...Object.values(fieldState.error?.types ?? {})].filter(
+    (message): message is string => typeof message === "string"
+  );
 
   return children({
     errors: [...new Set(messages)],
@@ -68,7 +66,7 @@ function ReactHookFormArrayController({
     control: form.control,
     name: name as never,
   });
-  const values = getPathInObject(form.getValues(), name.split('.'));
+  const values = getPathInObject(form.getValues(), name.split("."));
   const items = fields.map((field, index) => ({
     key: field.id,
     value: Array.isArray(values) ? values[index] : undefined,
@@ -95,30 +93,26 @@ function applyValidationErrors<T extends FormValues>(
       continue;
     }
 
-    form.setError(
-      error.path.join('.'),
-      { message: error.message, type: 'validation' },
-      { shouldFocus }
-    );
+    form.setError(error.path.join("."), { message: error.message, type: "validation" }, { shouldFocus });
     shouldFocus = false;
   }
 
   if (rootMessages.length > 0) {
-    form.setError('root', {
-      message: rootMessages.join('\n'),
-      type: 'validation',
+    form.setError("root", {
+      message: rootMessages.join("\n"),
+      type: "validation",
     });
   }
 }
 
-export type ReactHookFormEngineProps<T extends FormValues> = {
+export interface ReactHookFormEngineProps<T extends FormValues> {
   children: (engine: AutoFormEngine) => React.ReactNode;
   defaultValues: FormValues;
-  formOptions?: UseFormProps<FormValues, unknown, T>;
-  resolver?: Resolver<FormValues, unknown, T>;
-  values?: FormValues;
-  onDirtyChange?: (isDirty: boolean) => void;
-};
+  formOptions?: UseFormProps<FormValues, unknown, T> | undefined;
+  onDirtyChange?: ((isDirty: boolean) => void) | undefined;
+  resolver?: Resolver<FormValues, unknown, T> | undefined;
+  values?: FormValues | undefined;
+}
 
 export function ReactHookFormEngine<T extends FormValues>({
   children,
@@ -131,23 +125,22 @@ export function ReactHookFormEngine<T extends FormValues>({
   const form = useForm<FormValues, unknown, T>({
     ...(formOptions ?? {}),
     defaultValues,
-    resolver,
-    values,
+    ...(resolver ? { resolver } : {}),
+    ...(values ? { values } : {}),
   });
   const watchedValues = (useWatch({ control: form.control }) as FormValues | undefined) ?? {};
   const errors = form.formState.errors as Record<string, unknown>;
   const rootError =
-    getRootErrorMessage(form.formState.errors.root) ||
-    getRootErrorMessage(errors[PROTO_FORM_ROOT_ERROR_KEY]);
+    getRootErrorMessage(form.formState.errors.root) || getRootErrorMessage(errors[PROTO_FORM_ROOT_ERROR_KEY]);
   const notifyDirtyChange = useDirtyStateNotification(form.formState.isDirty, onDirtyChange);
 
   const engine: AutoFormEngine = {
     ArrayController: ReactHookFormArrayController,
-    FieldController: ReactHookFormFieldController,
     clearErrors: (paths) => form.clearErrors(paths),
     defaultValues: form.formState.defaultValues,
     dirtyFields: form.formState.dirtyFields,
     errors,
+    FieldController: ReactHookFormFieldController,
     focus: (path) => form.setFocus(path),
     getFieldInvalid: (path) => form.getFieldState(path).invalid,
     getValues: form.getValues,
@@ -161,7 +154,7 @@ export function ReactHookFormEngine<T extends FormValues>({
     nativeForm: form,
     reset: (nextValues, options) => form.reset(nextValues, options),
     rootError,
-    setRootError: (message) => form.setError('root', { message, type: 'submit' }),
+    setRootError: (message) => form.setError("root", { message, type: "submit" }),
     setValidationErrors: (validationErrors) => applyValidationErrors(form, validationErrors),
     setValue: (path, value, options) => form.setValue(path, value, options),
     trigger: async (paths) => form.trigger(paths),

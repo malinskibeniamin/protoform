@@ -13,24 +13,18 @@ describe("CapabilityDemo", () => {
 
     render(<CapabilityDemo demoId="aip.131" />);
 
-    expect(
-      screen.getByText("React Hook Form", { exact: true })
-    ).toBeInTheDocument();
+    expect(screen.getByText("React Hook Form", { exact: true })).toBeInTheDocument();
     expect(screen.getByText(FOCUSED_REQUEST_TEXT)).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Submit" }));
 
-    expect(await screen.findByRole("status")).toHaveTextContent(
-      "publishers/acme/books/protoform-guide"
-    );
+    expect(await screen.findByRole("status")).toHaveTextContent("publishers/acme/books/protoform-guide");
   });
 
   it("renders an explicit not-found state for an unknown demo", () => {
     render(<CapabilityDemo demoId="missing" />);
 
-    expect(screen.getByRole("alert")).toHaveTextContent(
-      "This demo is unavailable."
-    );
+    expect(screen.getByRole("alert")).toHaveTextContent("This demo is unavailable.");
   });
 
   it("redacts sensitive values from submitted previews", async () => {
@@ -53,27 +47,22 @@ describe("CapabilityDemo", () => {
   it("stacks bounded recursive array items inside their collection", () => {
     render(<CapabilityDemo demoId="demo.protobuf-recursive-messages" />);
 
-    expect(
-      screen.getByTestId("demo-protobuf-recursive-messages-field-children-0")
-    ).toHaveAttribute("data-layout", "stacked");
+    expect(screen.getByTestId("demo-protobuf-recursive-messages-field-children-0")).toHaveAttribute(
+      "data-layout",
+      "stacked"
+    );
   });
 
   it("renders repeated enum defaults with their protobuf labels", () => {
     render(<CapabilityDemo demoId="demo.protobuf-maps" />);
 
-    expect(
-      screen.getByTestId("demo-protobuf-maps-field-statuses-selected-1")
-    ).toHaveTextContent("Active");
-    expect(
-      screen.getByTestId("demo-protobuf-maps-field-statuses-selected-2")
-    ).toHaveTextContent("Paused");
+    expect(screen.getByTestId("demo-protobuf-maps-field-statuses-selected-1")).toHaveTextContent("Active");
+    expect(screen.getByTestId("demo-protobuf-maps-field-statuses-selected-2")).toHaveTextContent("Paused");
   });
 
   it.each([
     ...new Map(
-      demoCatalog
-        .filter((demo) => demo.engine === "react-hook-form")
-        .map((demo) => [demo.schemaKey, demo])
+      demoCatalog.filter((demo) => demo.engine === "react-hook-form").map((demo) => [demo.schemaKey, demo])
     ).values(),
   ])("renders the $schemaKey contract", (demo) => {
     render(<CapabilityDemo demoId={demo.id} />);

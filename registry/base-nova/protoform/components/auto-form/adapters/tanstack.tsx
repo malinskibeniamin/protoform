@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   type FormAsyncValidateOrFn,
@@ -7,10 +7,10 @@ import {
   type ReactFormExtendedApi,
   useForm,
   useStore,
-} from '@tanstack/react-form';
-import React from 'react';
+} from "@tanstack/react-form";
+import React from "react";
 
-import type { SchemaValidationError } from '../core-types';
+import type { SchemaValidationError } from "../core-types";
 import {
   type AutoFormArrayController,
   type AutoFormEngine,
@@ -18,8 +18,8 @@ import {
   type AutoFormFieldController,
   errorMessages,
   useDirtyStateNotification,
-} from '../engine';
-import { getPathInObject } from '../field-utils';
+} from "../engine";
+import { getPathInObject } from "../field-utils";
 
 type FormValues = Record<string, unknown>;
 type SyncValidator = FormValidateOrFn<FormValues> | undefined;
@@ -55,21 +55,21 @@ export type TanStackAutoFormApi = ReactFormExtendedApi<
   unknown
 >;
 
-type TanStackSubmitPayload = Parameters<NonNullable<TanStackFormOptions['onSubmit']>>[0];
+type TanStackSubmitPayload = Parameters<NonNullable<TanStackFormOptions["onSubmit"]>>[0];
 
-type TanStackEngineContextValue = {
+interface TanStackEngineContextValue {
   clearFieldErrors: (name: string) => void;
   fieldErrors: Map<string, string[]>;
   form: TanStackAutoFormApi;
   registerRef: (name: string, element: HTMLElement | null) => void;
-};
+}
 
 const TanStackEngineContext = React.createContext<TanStackEngineContextValue | null>(null);
 
 function useTanStackEngineContext() {
   const context = React.useContext(TanStackEngineContext);
   if (!context) {
-    throw new Error('TanStack AutoForm controls must be rendered inside the TanStack engine.');
+    throw new Error("TanStack AutoForm controls must be rendered inside the TanStack engine.");
   }
   return context;
 }
@@ -86,10 +86,7 @@ function TanStackFieldController({
   return (
     <form.Field name={name}>
       {(field) => {
-        const messages = [
-          ...errorMessages(field.state.meta.errors),
-          ...(fieldErrors.get(name) ?? []),
-        ];
+        const messages = [...errorMessages(field.state.meta.errors), ...(fieldErrors.get(name) ?? [])];
         return children({
           errors: [...new Set(messages)],
           name,
@@ -121,22 +118,29 @@ function TanStackArrayController({
   name: string;
 }) {
   const { form } = useTanStackEngineContext();
-  const value = useStore(form.store, (state) => getPathInObject(state.values, name.split('.')));
+  const value = useStore(form.store, (state) => getPathInObject(state.values, name.split(".")));
   const arrayValue = Array.isArray(value) ? value : [];
   const collectionId = React.useId();
   const nextItemId = React.useRef(0);
   const keys = React.useRef<string[]>([]);
 
-  while (keys.current.length < arrayValue.length) {
-    keys.current.push(`${collectionId}-${nextItemId.current++}`);
-  }
-  if (keys.current.length > arrayValue.length) {
-    keys.current.length = arrayValue.length;
-  }
+  React.useEffect(
+    function syncArrayKeys() {
+      while (keys.current.length < arrayValue.length) {
+        nextItemId.current += 1;
+        keys.current.push(`${collectionId}-${nextItemId.current}`);
+      }
+      if (keys.current.length > arrayValue.length) {
+        keys.current.length = arrayValue.length;
+      }
+    },
+    [arrayValue.length, collectionId]
+  );
 
   return children({
     append: (item) => {
-      keys.current.push(`${collectionId}-${nextItemId.current++}`);
+      nextItemId.current += 1;
+      keys.current.push(`${collectionId}-${nextItemId.current}`);
       form.setFieldValue(name, [...arrayValue, item]);
     },
     items: arrayValue.map((item, index) => ({
@@ -157,11 +161,11 @@ function setErrorAtPath(target: Record<string, unknown>, path: string[], message
   let current = target;
   for (const [index, segment] of path.entries()) {
     if (index === path.length - 1) {
-      current[segment] = { message: messages.join('\n') };
+      current[segment] = { message: messages.join("\n") };
       return;
     }
     const existing = current[segment];
-    if (existing && typeof existing === 'object' && !Array.isArray(existing)) {
+    if (existing && typeof existing === "object" && !Array.isArray(existing)) {
       current = existing as Record<string, unknown>;
       continue;
     }
@@ -177,7 +181,7 @@ function validationErrorsByPath(errors: SchemaValidationError[]): Map<string, st
     if (error.path.length === 0) {
       continue;
     }
-    const path = error.path.join('.');
+    const path = error.path.join(".");
     byPath.set(path, [...(byPath.get(path) ?? []), error.message]);
   }
   return byPath;
@@ -191,7 +195,7 @@ function setDirtyAtPath(target: Record<string, unknown>, path: string[]) {
       return;
     }
     const existing = current[segment];
-    if (existing && typeof existing === 'object' && !Array.isArray(existing)) {
+    if (existing && typeof existing === "object" && !Array.isArray(existing)) {
       current = existing as Record<string, unknown>;
     } else {
       const nested: Record<string, unknown> = {};
@@ -201,13 +205,11 @@ function setDirtyAtPath(target: Record<string, unknown>, path: string[]) {
   }
 }
 
-function dirtyFieldsFromMeta(
-  fieldMeta: Record<string, { isDefaultValue?: boolean; isDirty?: boolean } | undefined>
-) {
+function dirtyFieldsFromMeta(fieldMeta: Record<string, { isDefaultValue?: boolean; isDirty?: boolean } | undefined>) {
   const dirtyFields: Record<string, unknown> = {};
   for (const [path, meta] of Object.entries(fieldMeta)) {
     if (meta?.isDirty && !meta.isDefaultValue) {
-      setDirtyAtPath(dirtyFields, path.split('.'));
+      setDirtyAtPath(dirtyFields, path.split("."));
     }
   }
   return dirtyFields;
@@ -217,7 +219,7 @@ function formValuesEqual(left: unknown, right: unknown): boolean {
   if (Object.is(left, right)) {
     return true;
   }
-  if (!left || !right || typeof left !== 'object' || typeof right !== 'object') {
+  if (!(left && right) || typeof left !== "object" || typeof right !== "object") {
     return false;
   }
   if (left instanceof Date && right instanceof Date) {
@@ -227,9 +229,7 @@ function formValuesEqual(left: unknown, right: unknown): boolean {
     if (left.size !== right.size) {
       return false;
     }
-    return [...left].every(
-      ([key, value]) => right.has(key) && formValuesEqual(value, right.get(key))
-    );
+    return [...left].every(([key, value]) => right.has(key) && formValuesEqual(value, right.get(key)));
   }
   if (left instanceof Set && right instanceof Set) {
     return left.size === right.size && [...left].every((value) => right.has(value));
@@ -241,27 +241,19 @@ function formValuesEqual(left: unknown, right: unknown): boolean {
   const rightKeys = Object.keys(rightRecord);
   return (
     leftKeys.length === rightKeys.length &&
-    leftKeys.every(
-      (key) => Object.hasOwn(rightRecord, key) && formValuesEqual(leftRecord[key], rightRecord[key])
-    )
+    leftKeys.every((key) => Object.hasOwn(rightRecord, key) && formValuesEqual(leftRecord[key], rightRecord[key]))
   );
 }
 
-export type TanStackEngineProps = {
+export interface TanStackEngineProps {
   children: (engine: AutoFormEngine) => React.ReactNode;
   defaultValues: FormValues;
-  formOptions?: TanStackFormOptions;
-  values?: FormValues;
-  onDirtyChange?: (isDirty: boolean) => void;
-};
+  formOptions?: TanStackFormOptions | undefined;
+  onDirtyChange?: ((isDirty: boolean) => void) | undefined;
+  values?: FormValues | undefined;
+}
 
-export function TanStackEngine({
-  children,
-  defaultValues,
-  formOptions,
-  values,
-  onDirtyChange,
-}: TanStackEngineProps) {
+export function TanStackEngine({ children, defaultValues, formOptions, values, onDirtyChange }: TanStackEngineProps) {
   const submitRef = React.useRef<((values: FormValues) => void | Promise<void>) | undefined>(undefined);
   const nativeSubmissionRef = React.useRef<TanStackSubmitPayload | undefined>(undefined);
   const formDefaultValuesRef = React.useRef(defaultValues);
@@ -292,7 +284,7 @@ export function TanStackEngine({
   const [validationErrors, setValidationErrors] = React.useState<SchemaValidationError[]>([]);
   const [submitError, setSubmitError] = React.useState<string>();
   const fieldRefs = React.useRef(new Map<string, HTMLElement>());
-  const fieldErrors = validationErrorsByPath(validationErrors);
+  const fieldErrors = React.useMemo(() => validationErrorsByPath(validationErrors), [validationErrors]);
   const dirtyFields = dirtyFieldsFromMeta(state.fieldMeta);
   const isDirty = !formValuesEqual(state.values, cleanValuesRef.current);
   const notifyDirtyChange = useDirtyStateNotification(isDirty, onDirtyChange);
@@ -300,18 +292,21 @@ export function TanStackEngine({
   for (const [path, meta] of Object.entries(state.fieldMeta)) {
     const messages = errorMessages(meta?.errors ?? []);
     if (messages.length > 0) {
-      setErrorAtPath(errors, path.split('.'), messages);
+      setErrorAtPath(errors, path.split("."), messages);
     }
   }
   for (const [path, messages] of fieldErrors) {
-    setErrorAtPath(errors, path.split('.'), messages);
+    setErrorAtPath(errors, path.split("."), messages);
   }
-  const validationRootErrors = validationErrors
-    .filter((error) => error.path.length === 0)
-    .map((error) => error.message);
+  const validationRootErrors: string[] = [];
+  for (const error of validationErrors) {
+    if (error.path.length === 0) {
+      validationRootErrors.push(error.message);
+    }
+  }
   const nativeRootErrors = errorMessages(state.errors);
-  const rootError = [...nativeRootErrors, ...validationRootErrors, ...(submitError ? [submitError] : [])].join('\n') ||
-    undefined;
+  const rootError =
+    [...nativeRootErrors, ...validationRootErrors, ...(submitError ? [submitError] : [])].join("\n") || undefined;
 
   React.useEffect(() => {
     if (values) {
@@ -320,7 +315,7 @@ export function TanStackEngine({
       form.reset(values);
       notifyDirtyChange(false);
     }
-  }, [form, values]);
+  }, [form, values, notifyDirtyChange]);
 
   const clearErrors = (paths?: string[]) => {
     setSubmitError(undefined);
@@ -329,39 +324,41 @@ export function TanStackEngine({
         return [];
       }
       const targets = new Set(paths);
-      return current.filter((error) => !targets.has(error.path.join('.')));
+      return current.filter((error) => !targets.has(error.path.join(".")));
     });
   };
 
-  const contextValue: TanStackEngineContextValue = {
-    clearFieldErrors: (name) =>
-      setValidationErrors((current) => current.filter((error) => error.path.join('.') !== name)),
-    fieldErrors,
-    form,
-    registerRef: (name, element) => {
-      if (element) {
-        fieldRefs.current.set(name, element);
-      } else {
-        fieldRefs.current.delete(name);
-      }
-    },
-  };
+  const clearFieldErrors = React.useCallback((name: string) => {
+    setValidationErrors((current) => current.filter((error) => error.path.join(".") !== name));
+  }, []);
+  const registerRef = React.useCallback((name: string, element: HTMLElement | null) => {
+    if (element) {
+      fieldRefs.current.set(name, element);
+    } else {
+      fieldRefs.current.delete(name);
+    }
+  }, []);
+  const contextValue = React.useMemo<TanStackEngineContextValue>(
+    () => ({ clearFieldErrors, fieldErrors, form, registerRef }),
+    [clearFieldErrors, fieldErrors, form, registerRef]
+  );
 
   const engine: AutoFormEngine = {
     ArrayController: TanStackArrayController,
-    FieldController: TanStackFieldController,
     clearErrors,
     defaultValues: cleanValuesRef.current,
     dirtyFields,
     errors,
+    FieldController: TanStackFieldController,
     focus: (path) => fieldRefs.current.get(path)?.focus(),
-    getFieldInvalid: (path) =>
-      Boolean(state.fieldMeta[path]?.errors.length || fieldErrors.get(path)?.length),
+    getFieldInvalid: (path) => Boolean(state.fieldMeta[path]?.errors.length || fieldErrors.get(path)?.length),
     getValues: () => form.state.values,
     handleSubmit: (onValid) => (event) => {
       event.preventDefault();
       submitRef.current = onValid;
-      void form.handleSubmit();
+      Promise.resolve(form.handleSubmit()).catch((error: unknown) => {
+        setSubmitError(error instanceof Error ? error.message : "Submission failed.");
+      });
     },
     isDirty,
     isSubmitting: state.isSubmitting,
@@ -392,7 +389,7 @@ export function TanStackEngine({
     setRootError: setSubmitError,
     setValidationErrors,
     setValue: (path, value, options) => {
-      setValidationErrors((current) => current.filter((error) => error.path.join('.') !== path));
+      setValidationErrors((current) => current.filter((error) => error.path.join(".") !== path));
       form.setFieldValue(path, value, {
         dontUpdateMeta: options?.shouldDirty === false && options.shouldTouch === false,
         dontValidate: options?.shouldValidate === false,
@@ -400,8 +397,8 @@ export function TanStackEngine({
     },
     trigger: async (paths) => {
       const results = paths
-        ? await Promise.all(paths.map((path) => form.validateField(path, 'submit')))
-        : await form.validateAllFields('submit');
+        ? await Promise.all(paths.map((path) => form.validateField(path, "submit")))
+        : await form.validateAllFields("submit");
       return results.flat().length === 0;
     },
     validatesSchema: false,

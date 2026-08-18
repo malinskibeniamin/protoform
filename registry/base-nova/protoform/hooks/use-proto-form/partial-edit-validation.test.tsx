@@ -28,14 +28,8 @@ function PartialEditHarness() {
   return (
     <>
       <label htmlFor="partial-edit-username">Username</label>
-      <input
-        id="partial-edit-username"
-        {...form.register("username")}
-        aria-invalid={Boolean(usernameError)}
-      />
-      <output aria-label="Update mask">
-        {form.createUpdateMask().paths.join(",")}
-      </output>
+      <input id="partial-edit-username" {...form.register("username")} aria-invalid={Boolean(usernameError)} />
+      <output aria-label="Update mask">{form.createUpdateMask().paths.join(",")}</output>
       {usernameError ? <p role="alert">{usernameError.message}</p> : null}
     </>
   );
@@ -121,9 +115,7 @@ describe("useProtoForm partial-edit validation", () => {
       await result.current.trigger();
     });
 
-    expect(result.current.formState.errors.root?.message).toMatch(
-      /minimum threshold/i
-    );
+    expect(result.current.formState.errors.root?.message).toMatch(/minimum threshold/i);
     expect(result.current.formState.errors.username).toBeUndefined();
   });
 
@@ -150,13 +142,9 @@ describe("useProtoForm partial-edit validation", () => {
     });
 
     await waitFor(() => {
-      expect(
-        result.current.formState.errors.shippingAddress?.city
-      ).toBeDefined();
+      expect(result.current.formState.errors.shippingAddress?.city).toBeDefined();
       expect(result.current.formState.errors.username).toBeUndefined();
-      expect(result.current.createUpdateMask().paths).toEqual([
-        "shipping_address.city",
-      ]);
+      expect(result.current.createUpdateMask().paths).toEqual(["shipping_address.city"]);
     });
   });
 
@@ -171,9 +159,7 @@ describe("useProtoForm partial-edit validation", () => {
 
     await waitFor(() => {
       expect(screen.getByRole("alert")).toBeVisible();
-      expect(screen.getByLabelText("Update mask")).toHaveTextContent(
-        "username"
-      );
+      expect(screen.getByLabelText("Update mask")).toHaveTextContent("username");
     });
   });
 });

@@ -3,8 +3,8 @@
  * Validation message humanization lives in the copied protobuf provider.
  */
 export {
-  humanizeValidationError,
   humanizeServerFieldError,
+  humanizeValidationError,
   isGenericValidationMessage,
   SERVER_FIELD_ERROR_FALLBACK,
-} from '../protobuf-provider';
+} from "../protobuf-provider";

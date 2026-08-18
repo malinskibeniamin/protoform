@@ -11,9 +11,7 @@ const KitchenSinkFormExample = lazy(async () => {
 
 export default function KitchenSinkExampleIsland() {
   return (
-    <Suspense
-      fallback={<ExampleLoading label="Loading kitchen sink example" />}
-    >
+    <Suspense fallback={<ExampleLoading label="Loading kitchen sink example" />}>
       <KitchenSinkFormExample />
     </Suspense>
   );

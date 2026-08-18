@@ -23,16 +23,10 @@ describe("complex form example", () => {
     const user = userEvent.setup();
     render(<ComplexFormExample />);
 
-    expect(
-      screen.getByRole("textbox", { name: projectIdPattern })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "Help for Project ID" })
-    ).toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: projectIdPattern })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Help for Project ID" })).toBeInTheDocument();
     expect(screen.queryByLabelText(regionPattern)).not.toBeInTheDocument();
-    expect(
-      screen.queryByLabelText(approvalTicketPattern)
-    ).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(approvalTicketPattern)).not.toBeInTheDocument();
     expect(screen.queryByText(rawApiKeyPattern)).not.toBeInTheDocument();
     expect(screen.queryByText(redactedPattern)).not.toBeInTheDocument();
 
@@ -49,9 +43,7 @@ describe("complex form example", () => {
     closeServer = () => server.close();
     const user = userEvent.setup();
 
-    render(
-      <ComplexFormExample baseUrl={address} initialProjectId="taken-project" />
-    );
+    render(<ComplexFormExample baseUrl={address} initialProjectId="taken-project" />);
 
     expect(screen.getByText("Step 1 of 4")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Continue" }));
@@ -59,16 +51,8 @@ describe("complex form example", () => {
     await user.click(screen.getByRole("button", { name: "Continue" }));
     await user.click(screen.getByRole("button", { name: "Submit" }));
 
-    expect(
-      await screen.findByText("Step 1 of 4", {}, { timeout: 1000 })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText("Choose a different project id.")
-    ).toBeInTheDocument();
-    await waitFor(() =>
-      expect(
-        screen.getByRole("textbox", { name: projectIdPattern })
-      ).toHaveFocus()
-    );
+    expect(await screen.findByText("Step 1 of 4", {}, { timeout: 1000 })).toBeInTheDocument();
+    expect(screen.getByText("Choose a different project id.")).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByRole("textbox", { name: projectIdPattern })).toHaveFocus());
   });
 });

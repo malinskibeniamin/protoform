@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React from 'react';
+import React from "react";
 
 /**
  * Taken from Radix UI
@@ -11,7 +11,7 @@ import React from 'react';
  * Isomorphic layout effect helper for protoform components.
  * @see https://reactjs.org/docs/hooks-reference.html#uselayouteffect
  */
-const useLayoutEffect = globalThis?.document
+const useLayoutEffect = globalThis.document
   ? React.useLayoutEffect
   : () => {
       // Server-side no-op

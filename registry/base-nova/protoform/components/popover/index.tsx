@@ -1,71 +1,78 @@
-'use client';
+"use client";
 
-import { Popover as PopoverPrimitive } from '@base-ui/react/popover';
-import { AnimatePresence, type HTMLMotionProps, motion, type Transition } from 'motion/react';
-import React from 'react';
+import { Popover as PopoverPrimitive } from "@base-ui/react/popover";
+import { AnimatePresence, type HTMLMotionProps, motion, type Transition } from "motion/react";
+import React from "react";
 
-import { usePortalContainer } from '@/registry/base-nova/protoform/hooks/use-portal-container';
-import { asChildTrigger, narrowOpenChange, renderWithDataState, Slot, useMirroredOpen } from '@/registry/base-nova/protoform/lib/base-ui-compat';
-import { cn, type PortalContentProps, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
+import { usePortalContainer } from "@/registry/base-nova/protoform/hooks/use-portal-container";
+import {
+  asChildTrigger,
+  narrowOpenChange,
+  renderWithDataState,
+  Slot,
+  useMirroredOpen,
+} from "@/registry/base-nova/protoform/lib/base-ui-compat";
+import { cn, type PortalContentProps, type SharedProps } from "@/registry/base-nova/protoform/lib/utils";
 
-type PopoverContextType = {
+interface PopoverContextType {
   isOpen: boolean;
-};
+}
 
 const PopoverContext = React.createContext<PopoverContextType | undefined>(undefined);
 
 const usePopover = (): PopoverContextType => {
   const context = React.useContext(PopoverContext);
   if (!context) {
-    throw new Error('usePopover must be used within a Popover');
+    throw new Error("usePopover must be used within a Popover");
   }
   return context;
 };
 
-type PopoverAnchorContextType = {
+interface PopoverAnchorContextType {
   anchorRef: React.MutableRefObject<Element | null>;
-  setHasAnchor: (hasAnchor: boolean) => void;
   hasAnchor: boolean;
-};
+  setHasAnchor: (hasAnchor: boolean) => void;
+}
 
 const PopoverAnchorContext = React.createContext<PopoverAnchorContextType | undefined>(undefined);
 
-type Side = 'top' | 'bottom' | 'left' | 'right';
-type Align = 'start' | 'center' | 'end';
+type Side = "top" | "bottom" | "left" | "right";
+type Align = "start" | "center" | "end";
 
 const getInitialPosition = (side: Side) => {
   switch (side) {
-    case 'top':
+    case "top":
       return { y: 15 };
-    case 'bottom':
+    case "bottom":
       return { y: -15 };
-    case 'left':
+    case "left":
       return { x: 15 };
-    case 'right':
+    case "right":
       return { x: -15 };
     default:
       return {};
   }
 };
 
-type PopoverProps = Omit<React.ComponentProps<typeof PopoverPrimitive.Root>, 'onOpenChange' | 'children'> &
+type PopoverProps = Omit<React.ComponentProps<typeof PopoverPrimitive.Root>, "onOpenChange" | "children"> &
   SharedProps & {
     onOpenChange?: (open: boolean) => void;
     children?: React.ReactNode;
   };
 
 function Popover({ children, testId, onOpenChange, ...props }: PopoverProps) {
-  const { isOpen, handleOpenChange } = useMirroredOpen(props?.open, props?.defaultOpen, onOpenChange);
+  const { isOpen, handleOpenChange } = useMirroredOpen(props.open, props.defaultOpen, onOpenChange);
   const anchorRef = React.useRef<Element | null>(null);
   const [hasAnchor, setHasAnchor] = React.useState(false);
 
   const anchorCtx = React.useMemo<PopoverAnchorContextType>(
-    () => ({ anchorRef, setHasAnchor, hasAnchor }),
+    () => ({ anchorRef, hasAnchor, setHasAnchor }),
     [hasAnchor]
   );
+  const popoverContextValue = React.useMemo(() => ({ isOpen }), [isOpen]);
 
   return (
-    <PopoverContext.Provider value={{ isOpen }}>
+    <PopoverContext.Provider value={popoverContextValue}>
       <PopoverAnchorContext.Provider value={anchorCtx}>
         <PopoverPrimitive.Root
           data-slot="popover"
@@ -88,7 +95,7 @@ type PopoverTriggerProps = React.ComponentProps<typeof PopoverPrimitive.Trigger>
 function PopoverTrigger({ className, testId, ...props }: PopoverTriggerProps) {
   return (
     <PopoverPrimitive.Trigger
-      className={cn('cursor-pointer', className)}
+      className={cn("cursor-pointer", className)}
       data-slot="popover-trigger"
       data-testid={testId}
       {...asChildTrigger(props)}
@@ -97,9 +104,9 @@ function PopoverTrigger({ className, testId, ...props }: PopoverTriggerProps) {
 }
 
 type PopoverContentProps = React.ComponentProps<typeof PopoverPrimitive.Popup> &
-  HTMLMotionProps<'div'> &
+  HTMLMotionProps<"div"> &
   SharedProps &
-  Pick<PortalContentProps, 'container' | 'onOpenAutoFocus'> & {
+  Pick<PortalContentProps, "container" | "onOpenAutoFocus"> & {
     transition?: Transition;
     side?: Side;
     align?: Align;
@@ -109,11 +116,11 @@ type PopoverContentProps = React.ComponentProps<typeof PopoverPrimitive.Popup> &
 
 function PopoverContent({
   className,
-  align = 'center',
-  side = 'bottom',
+  align = "center",
+  side = "bottom",
   sideOffset = 4,
   alignOffset,
-  transition = { type: 'spring', stiffness: 300, damping: 25 },
+  transition = { damping: 25, stiffness: 300, type: "spring" },
   children,
   testId,
   container,
@@ -137,11 +144,11 @@ function PopoverContent({
             side={side}
             sideOffset={sideOffset}
           >
-            <PopoverPrimitive.Popup render={renderWithDataState('div')} {...props}>
+            <PopoverPrimitive.Popup render={renderWithDataState("div")} {...props}>
               <motion.div
                 animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
                 className={cn(
-                  '!border-input w-72 rounded-lg border bg-popover p-4 text-popover-foreground shadow-md outline-none',
+                  "!border-input w-72 rounded-lg border bg-popover p-4 text-popover-foreground shadow-md outline-none",
                   className
                 )}
                 data-slot="popover-content"
@@ -161,11 +168,11 @@ function PopoverContent({
   );
 }
 
-type PopoverAnchorProps = {
+interface PopoverAnchorProps {
   asChild?: boolean;
   children?: React.ReactNode;
   render?: React.ReactElement;
-};
+}
 
 function PopoverAnchor({ asChild, children, render }: PopoverAnchorProps) {
   const ctx = React.useContext(PopoverAnchorContext);
@@ -180,8 +187,7 @@ function PopoverAnchor({ asChild, children, render }: PopoverAnchorProps) {
     [ctx]
   );
 
-  const renderedChild =
-    render && children !== undefined ? React.cloneElement(render, undefined, children) : render;
+  const renderedChild = render && children !== undefined ? React.cloneElement(render, undefined, children) : render;
   const child = renderedChild ?? (asChild && React.isValidElement(children) ? children : undefined);
 
   if (child) {

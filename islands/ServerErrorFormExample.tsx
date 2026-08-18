@@ -11,9 +11,7 @@ const ServerErrorFormExample = lazy(async () => {
 
 export default function ServerErrorFormExampleIsland() {
   return (
-    <Suspense
-      fallback={<ExampleLoading label="Loading server-error example" />}
-    >
+    <Suspense fallback={<ExampleLoading label="Loading server-error example" />}>
       <ServerErrorFormExample />
     </Suspense>
   );

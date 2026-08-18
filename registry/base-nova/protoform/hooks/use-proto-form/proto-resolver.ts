@@ -1,20 +1,16 @@
-import type {
-  DescMessage,
-  MessageShape,
-  MessageValidType,
-} from "@bufbuild/protobuf";
+import type { DescMessage, MessageShape, MessageValidType } from "@bufbuild/protobuf";
 import type { FieldMask } from "@bufbuild/protobuf/wkt";
 import { toNestErrors, validateFieldsNatively } from "@hookform/resolvers";
+import type { Resolver } from "react-hook-form";
 import type { FormValues } from "../../lib/core/index.js";
 import {
   humanizeValidationError,
   isGenericValidationMessage,
-  type ProtoFormOptions,
   PROTO_FORM_ROOT_ERROR_KEY,
+  type ProtoFormOptions,
   validateFormValuesAgainstProtoSchema,
 } from "../../lib/protobuf-provider/index.js";
 import { createDescriptorAwareStandardSchema } from "../../lib/protobuf-provider/validation-schema.js";
-import type { Resolver } from "react-hook-form";
 
 export interface ProtoResolverOptions {
   /** Resolve the current validation mask. Omit it to validate the full message. */
@@ -30,14 +26,9 @@ export function createProtoResolver<Desc extends DescMessage>(
   const standardSchema = createDescriptorAwareStandardSchema(desc, options);
 
   return async (values, _context, resolverOptions) => {
-    const validationResult = await validateFormValuesAgainstProtoSchema(
-      desc,
-      values,
-      standardSchema,
-      options,
-      source,
-      { validationMask: protoResolverOptions.getValidationMask?.(values) }
-    );
+    const validationResult = await validateFormValuesAgainstProtoSchema(desc, values, standardSchema, options, source, {
+      validationMask: protoResolverOptions.getValidationMask?.(values),
+    });
 
     if (!validationResult.issues) {
       if (resolverOptions.shouldUseNativeValidation) {
@@ -53,8 +44,7 @@ export function createProtoResolver<Desc extends DescMessage>(
     // When a field has both (e.g., `required = true` -> "value is required" AND
     // a CEL -> "Server URL is required."), keep the custom one.
     // Then humanize whatever remains as a safety net.
-    const rawErrors: Record<string, { message: string; isGeneric: boolean }> =
-      {};
+    const rawErrors: Record<string, { message: string; isGeneric: boolean }> = {};
     for (const issue of validationResult.issues) {
       if (issue.path.length === 0) {
         continue;
@@ -79,25 +69,30 @@ export function createProtoResolver<Desc extends DescMessage>(
     }
 
     const nestedErrors = toNestErrors(flatErrors, resolverOptions);
-    const rootMessages = validationResult.issues
-      .filter((issue) => issue.path.length === 0)
-      .map((issue) => humanizeValidationError(issue.message));
+    const rootMessages: string[] = [];
+    for (const issue of validationResult.issues) {
+      if (issue.path.length === 0) {
+        rootMessages.push(humanizeValidationError(issue.message));
+      }
+    }
 
-    if (rootMessages.length > 0) {
+    const [rootMessage] = rootMessages;
+    if (rootMessage) {
       // Object.assign keeps the intersection type: react-hook-form's
       // FieldErrors "root" slot for index-signature form types cannot be
       // satisfied by an annotated object literal.
+      const errors = Object.assign(nestedErrors, {
+        root: {
+          message: rootMessages.join("\n"),
+          type: "validation",
+        },
+        [PROTO_FORM_ROOT_ERROR_KEY]: {
+          message: rootMessage,
+          type: "validation",
+        },
+      });
       return {
-        errors: Object.assign({}, nestedErrors, {
-          root: {
-            message: rootMessages.join("\n"),
-            type: "validation",
-          },
-          [PROTO_FORM_ROOT_ERROR_KEY]: {
-            message: rootMessages[0],
-            type: "validation",
-          },
-        }),
+        errors,
         values: {},
       };
     }

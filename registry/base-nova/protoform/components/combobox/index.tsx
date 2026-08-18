@@ -1,14 +1,26 @@
-'use client';
+"use client";
 
-import { useCommandState } from 'cmdk';
-import { Check, ChevronsUpDown, Plus, Search, X } from 'lucide-react';
-import React, { memo, useCallback, useEffect, useId, useMemo, useReducer, useRef } from 'react';
+import { useCommandState } from "cmdk";
+import { Check, ChevronsUpDown, Plus, Search, X } from "lucide-react";
+import type React from "react";
+import { memo, useCallback, useEffect, useId, useMemo, useReducer, useRef } from "react";
 
-import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList } from '@/registry/base-nova/protoform/components/command';
-import { Input, InputEnd, InputStart } from '@/registry/base-nova/protoform/components/input';
-import { Popover, PopoverContent, PopoverTrigger } from '@/registry/base-nova/protoform/components/popover';
-import { Spinner } from '@/registry/base-nova/protoform/components/spinner';
-import { cn, type PortalContentProps, type PortalRootProps, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+  CommandList,
+} from "@/registry/base-nova/protoform/components/command";
+import { Input, InputEnd, InputStart } from "@/registry/base-nova/protoform/components/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/registry/base-nova/protoform/components/popover";
+import { Spinner } from "@/registry/base-nova/protoform/components/spinner";
+import {
+  cn,
+  type PortalContentProps,
+  type PortalRootProps,
+  type SharedProps,
+} from "@/registry/base-nova/protoform/lib/utils";
 
 import {
   CREATE_ITEM_PREFIX,
@@ -18,15 +30,15 @@ import {
   getNavigableValues,
   groupOptions,
   resolveLabel,
-} from './combobox-utils';
-import { comboboxReducer, createInitialState } from './use-combobox-reducer';
+} from "./combobox-utils";
+import { comboboxReducer, createInitialState } from "./use-combobox-reducer";
 
 /**
  * Sentinel value to prevent cmdk from auto-selecting the first item.
  * cmdk auto-selects when value is falsy, so this truthy value that
  * matches no real option prevents any highlight on open.
  */
-const NO_HIGHLIGHT = '__no_highlight__';
+const NO_HIGHLIGHT = "__no_highlight__";
 
 const preventDefault = (e: { preventDefault: () => void }) => e.preventDefault();
 
@@ -43,66 +55,66 @@ function ActiveDescendantBridge({ onIdChange }: { onIdChange: (id: string | unde
   return null;
 }
 
-export type ComboboxOption = {
-  value: string;
-  label: string;
-  group?: string;
-  groupTestId?: string;
-  testId?: string;
-  /** When true, the option is rendered but cannot be selected. */
-  disabled?: boolean;
+export interface ComboboxOption {
   /** Arbitrary payload passed back to `renderOption` for rich item rendering. */
   data?: unknown;
-};
+  /** When true, the option is rendered but cannot be selected. */
+  disabled?: boolean | undefined;
+  group?: string | undefined;
+  groupTestId?: string | undefined;
+  label: string;
+  testId?: string | undefined;
+  value: string;
+}
 
 export interface ComboboxProps
   extends SharedProps,
-    Pick<PortalRootProps, 'defaultOpen'>,
-    Pick<PortalContentProps, 'container'> {
+    Pick<PortalRootProps, "defaultOpen">,
+    Pick<PortalContentProps, "container"> {
   /** @deprecated No longer used. The combobox now uses list-based navigation. Will be removed in next major version. */
-  autocomplete?: boolean;
-  className?: string;
+  autocomplete?: boolean | undefined;
+  className?: string | undefined;
   /** @default true - Show a clear (X) button when a value is selected */
-  clearable?: boolean;
+  clearable?: boolean | undefined;
   /** If true, the combobox will allow the user to create a new option */
-  creatable?: boolean;
+  creatable?: boolean | undefined;
   /** Noun used in the create prompt (e.g. "option", "context"). @default "option" */
-  createLabel?: string;
-  disabled?: boolean;
+  createLabel?: string | undefined;
+  disabled?: boolean | undefined;
   /**
    * Override the default "No options found." empty state. Ignored when
    * `loading` is true.
    */
-  emptyState?: React.ReactNode;
-  inputTestId?: string;
+  emptyState?: React.ReactNode | undefined;
+  inputTestId?: string | undefined;
   /**
    * When true, an inline spinner is rendered inside the popover and the
    * default "No options found." empty state is suppressed. Useful while
    * async options are being fetched.
    */
-  loading?: boolean;
+  loading?: boolean | undefined;
   onChange: (value: string) => void;
-  onClose?: () => void;
+  onClose?: (() => void) | undefined;
   /** Callback function to create a new option */
-  onCreateOption?: (value: string) => void;
+  onCreateOption?: ((value: string) => void) | undefined;
   /**
    * Called on every keystroke with the current input text. Use to drive an
    * async/remote search; typically paired with a debounced fetch that
    * updates `options`.
    */
-  onInputValueChange?: (value: string) => void;
-  onOpen?: () => void;
+  onInputValueChange?: ((value: string) => void) | undefined;
+  onOpen?: (() => void) | undefined;
   options: ComboboxOption[];
-  placeholder?: string;
-  preventAutoFocusOnOpen?: boolean;
+  placeholder?: string | undefined;
+  preventAutoFocusOnOpen?: boolean | undefined;
   /**
    * Override the rendering of each option row. Defaults to rendering the
    * option label. The active check icon is still rendered by the component.
    */
-  renderOption?: (option: ComboboxOption) => React.ReactNode;
+  renderOption?: ((option: ComboboxOption) => React.ReactNode) | undefined;
   /** Content for the start slot of the input. Defaults to a search icon. Pass `null` to hide. */
   start?: React.ReactNode | null;
-  value?: string;
+  value?: string | undefined;
 }
 
 const DEFAULT_START = <Search className="opacity-50" size={15} />;
@@ -110,13 +122,13 @@ const DEFAULT_START = <Search className="opacity-50" size={15} />;
 export const Combobox = memo(
   ({
     options,
-    value: controlledValue = '',
+    value: controlledValue = "",
     onChange,
     placeholder,
     disabled,
     creatable,
     onCreateOption,
-    createLabel = 'option',
+    createLabel = "option",
     start = DEFAULT_START,
     clearable = true,
     className,
@@ -132,7 +144,7 @@ export const Combobox = memo(
     emptyState,
     renderOption,
   }: ComboboxProps) => {
-    const [state, dispatch] = useReducer(comboboxReducer, { options, controlledValue, defaultOpen }, (init) =>
+    const [state, dispatch] = useReducer(comboboxReducer, { controlledValue, defaultOpen, options }, (init) =>
       createInitialState(init.options, init.controlledValue, init.defaultOpen)
     );
     const { open, inputValue, highlightedValue, activeDescendantId, userHasTyped } = state;
@@ -160,7 +172,7 @@ export const Combobox = memo(
 
     // Sync inputValue when controlled value changes externally
     useEffect(() => {
-      dispatch({ type: 'SYNC_CONTROLLED', controlledLabel });
+      dispatch({ controlledLabel, type: "SYNC_CONTROLLED" });
     }, [controlledLabel]);
 
     // Focus input when popover opens
@@ -171,7 +183,7 @@ export const Combobox = memo(
       const timer = setTimeout(() => {
         if (inputRef.current) {
           inputRef.current.focus();
-          const length = inputRef.current.value.length;
+          const { length } = inputRef.current.value;
           inputRef.current.setSelectionRange(length, length);
         }
       }, 0);
@@ -194,12 +206,12 @@ export const Combobox = memo(
     // ── Handlers ──────────────────────────────────────────────────────
 
     const handleActiveDescendantChange = useCallback(
-      (id: string | undefined) => dispatch({ type: 'SET_ACTIVE_DESCENDANT', id }),
+      (id: string | undefined) => dispatch({ id, type: "SET_ACTIVE_DESCENDANT" }),
       []
     );
 
     const handleHighlightChange = useCallback(
-      (value: string) => dispatch({ type: 'NAVIGATE', nextHighlight: value }),
+      (value: string) => dispatch({ nextHighlight: value, type: "NAVIGATE" }),
       []
     );
 
@@ -209,11 +221,11 @@ export const Combobox = memo(
           return;
         }
         if (controlledValue === option.value) {
-          onChange('');
-          dispatch({ type: 'TOGGLE_OFF' });
+          onChange("");
+          dispatch({ type: "TOGGLE_OFF" });
         } else {
           onChange(option.value);
-          dispatch({ type: 'SELECT', label: option.label });
+          dispatch({ label: option.label, type: "SELECT" });
         }
       },
       [onChange, controlledValue]
@@ -221,15 +233,15 @@ export const Combobox = memo(
 
     const handleCreatableSubmit = useCallback(() => {
       onChange(inputValue);
-      dispatch({ type: 'CREATE_SUBMIT', inputValue });
+      dispatch({ inputValue, type: "CREATE_SUBMIT" });
       onCreateOption?.(inputValue);
     }, [inputValue, onChange, onCreateOption]);
 
     const handleClear = useCallback(
       (e: React.MouseEvent) => {
         e.stopPropagation();
-        onChange('');
-        dispatch({ type: 'CLEAR' });
+        onChange("");
+        dispatch({ type: "CLEAR" });
         inputRef.current?.focus();
       },
       [onChange]
@@ -240,7 +252,7 @@ export const Combobox = memo(
         if (disabled) {
           return;
         }
-        dispatch(newOpen ? { type: 'OPEN' } : { type: 'CLOSE' });
+        dispatch(newOpen ? { type: "OPEN" } : { type: "CLOSE" });
       },
       [disabled]
     );
@@ -248,7 +260,7 @@ export const Combobox = memo(
     const handleInputChange = useCallback(
       (e: React.ChangeEvent<HTMLInputElement>) => {
         const newValue = e.target.value;
-        dispatch({ type: 'TYPE', value: newValue, firstMatch: findFirstMatch(options, newValue) });
+        dispatch({ firstMatch: findFirstMatch(options, newValue), type: "TYPE", value: newValue });
         onInputValueChange?.(newValue);
       },
       [options, onInputValueChange]
@@ -256,18 +268,18 @@ export const Combobox = memo(
 
     const handleInputClick = useCallback(() => {
       if (!open) {
-        dispatch({ type: 'INPUT_CLICK' });
+        dispatch({ type: "INPUT_CLICK" });
       }
     }, [open]);
 
     const handleBlur = useCallback(() => {
-      if (inputValue.trim() === '' && controlledValue && userHasTyped) {
-        onChange('');
-        dispatch({ type: 'BLUR_CLEAR' });
+      if (inputValue.trim() === "" && controlledValue && userHasTyped) {
+        onChange("");
+        dispatch({ type: "BLUR_CLEAR" });
       } else if (inputValue !== controlledLabel) {
         const matchesOption = options.some((opt) => opt.value === inputValue || opt.label === inputValue);
-        if (!creatable || (!matchesOption && inputValue.trim() === '')) {
-          dispatch({ type: 'BLUR_REVERT', controlledLabel });
+        if (!creatable || (!matchesOption && inputValue.trim() === "")) {
+          dispatch({ controlledLabel, type: "BLUR_REVERT" });
         }
       }
     }, [inputValue, controlledValue, controlledLabel, options, creatable, onChange, userHasTyped]);
@@ -278,12 +290,12 @@ export const Combobox = memo(
       (event: React.KeyboardEvent, direction: 1 | -1) => {
         event.preventDefault();
         if (!open) {
-          dispatch({ type: 'ARROW_OPEN' });
+          dispatch({ type: "ARROW_OPEN" });
           return;
         }
         dispatch({
-          type: 'NAVIGATE',
           nextHighlight: computeNextHighlight(navigableValues, highlightedValue, direction),
+          type: "NAVIGATE",
         });
       },
       [open, navigableValues, highlightedValue]
@@ -305,13 +317,13 @@ export const Combobox = memo(
           const option = filteredOptions.find((o) => o.label.toLowerCase() === highlightedValue.toLowerCase());
           if (option) {
             selectOption(option);
-          } else if (inputValue.trim() === '' && controlledValue) {
-            onChange('');
-            dispatch({ type: 'ENTER_CLEAR' });
+          } else if (inputValue.trim() === "" && controlledValue) {
+            onChange("");
+            dispatch({ type: "ENTER_CLEAR" });
           } else if (creatable && canCreate) {
             handleCreatableSubmit();
           } else {
-            dispatch({ type: 'ENTER_REVERT', controlledLabel });
+            dispatch({ controlledLabel, type: "ENTER_REVERT" });
           }
         }
       },
@@ -334,12 +346,12 @@ export const Combobox = memo(
       (event: React.KeyboardEvent) => {
         if (open) {
           event.preventDefault();
-          dispatch({ type: 'CLOSE' });
+          dispatch({ type: "CLOSE" });
         } else if (controlledValue) {
           event.preventDefault();
           event.stopPropagation();
-          onChange('');
-          dispatch({ type: 'ESCAPE_CLEAR' });
+          onChange("");
+          dispatch({ type: "ESCAPE_CLEAR" });
         }
       },
       [open, controlledValue, onChange]
@@ -362,16 +374,18 @@ export const Combobox = memo(
     const handleKeyDown = useCallback(
       (event: React.KeyboardEvent<HTMLInputElement>) => {
         switch (event.key) {
-          case 'ArrowDown':
+          case "ArrowDown":
             return handleArrowKey(event, 1);
-          case 'ArrowUp':
+          case "ArrowUp":
             return handleArrowKey(event, -1);
-          case 'Enter':
+          case "Enter":
             return handleEnterKey(event);
-          case 'Escape':
+          case "Escape":
             return handleEscapeKey(event);
-          case 'ArrowRight':
+          case "ArrowRight":
             return handleArrowRightKey(event);
+          default:
+            return undefined;
         }
       },
       [handleArrowKey, handleEnterKey, handleEscapeKey, handleArrowRightKey]
@@ -382,14 +396,10 @@ export const Combobox = memo(
     const popoverStyle = useMemo(
       () => ({ width: inputRef.current?.clientWidth }),
       // Recalculate when open changes (ref width may have changed)
-      // biome-ignore lint/correctness/useExhaustiveDependencies: inputRef.current?.clientWidth is not reactive
-      [open]
+      []
     );
 
-    const preventAutoFocusHandler = useMemo(
-      () => (preventAutoFocusOnOpen ? preventDefault : undefined),
-      [preventAutoFocusOnOpen]
-    );
+    const preventAutoFocusHandler = preventAutoFocusOnOpen ? preventDefault : undefined;
 
     // ── Render ────────────────────────────────────────────────────────
 
@@ -463,17 +473,17 @@ export const Combobox = memo(
                   <span>Loading…</span>
                 </div>
               ) : (
-                <CommandEmpty>{emptyState ?? 'No options found.'}</CommandEmpty>
+                <CommandEmpty>{emptyState ?? "No options found."}</CommandEmpty>
               )}
-              {(groupedOptions ?? [{ heading: '', options: filteredOptions }]).map((group) => (
+              {(groupedOptions ?? [{ heading: "", options: filteredOptions }]).map((group) => (
                 <CommandGroup
                   heading={group.heading || undefined}
-                  key={group.heading || 'default'}
+                  key={group.heading || "default"}
                   testId={group.testId}
                 >
                   {group.options.map((option) => (
                     <CommandItem
-                      disabled={option.disabled}
+                      disabled={option.disabled ?? false}
                       key={option.value}
                       onSelect={() => selectOption(option)}
                       testId={option.testId}
@@ -481,7 +491,7 @@ export const Combobox = memo(
                     >
                       {renderOption ? renderOption(option) : option.label}
                       <Check
-                        className={cn('ml-auto', controlledValue === option.value ? 'opacity-100' : 'opacity-0')}
+                        className={cn("ml-auto", controlledValue === option.value ? "opacity-100" : "opacity-0")}
                       />
                     </CommandItem>
                   ))}

@@ -4,19 +4,9 @@ import { create } from "@bufbuild/protobuf";
 import { createClient } from "@connectrpc/connect";
 import React from "react";
 import type { UseFormReturn } from "react-hook-form";
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-} from "@/registry/base-nova/protoform/components/alert";
-import {
-  AutoForm,
-  type AutoFormStep,
-} from "@/registry/base-nova/protoform/components/auto-form";
-import {
-  Heading,
-  Text,
-} from "@/registry/base-nova/protoform/components/typography";
+import { Alert, AlertDescription, AlertTitle } from "@/registry/base-nova/protoform/components/alert";
+import { AutoForm, type AutoFormStep } from "@/registry/base-nova/protoform/components/auto-form";
+import { Heading, Text } from "@/registry/base-nova/protoform/components/typography";
 import { applyServerFieldErrors } from "../apply-server-errors.js";
 import { createFormExamplesTransport } from "../browser-transport.js";
 import {
@@ -62,8 +52,8 @@ function redactCredentials(payload: unknown): unknown {
   }
 
   const redacted = structuredClone(payload);
-  if (isRecord(redacted.apiKey)) {
-    redacted.apiKey.apiKey = "[redacted]";
+  if (isRecord(redacted["apiKey"])) {
+    redacted["apiKey"]["apiKey"] = "[redacted]";
   }
   return redacted;
 }
@@ -95,10 +85,7 @@ export default function ComplexFormExample({
     environmentId: string;
     status: string;
   }>();
-  const rpcClient = createClient(
-    FormExamplesService,
-    createFormExamplesTransport(baseUrl)
-  );
+  const rpcClient = createClient(FormExamplesService, createFormExamplesTransport(baseUrl));
   const defaultValues = create(SubmitComplexFormRequestSchema, {
     approvalTicket: "OPS-142",
     credentials: {
@@ -115,11 +102,7 @@ export default function ComplexFormExample({
 
   async function handleSubmit(
     values: SubmitComplexFormRequest,
-    form: UseFormReturn<
-      Record<string, unknown>,
-      unknown,
-      SubmitComplexFormRequest
-    >
+    form: UseFormReturn<Record<string, unknown>, unknown, SubmitComplexFormRequest>
   ) {
     setResult(undefined);
     try {
@@ -129,9 +112,7 @@ export default function ComplexFormExample({
         status: response.status,
       });
     } catch (error) {
-      if (
-        !applyServerFieldErrors(error, SubmitComplexFormRequestSchema, form)
-      ) {
+      if (!applyServerFieldErrors(error, SubmitComplexFormRequestSchema, form)) {
         throw error;
       }
     }

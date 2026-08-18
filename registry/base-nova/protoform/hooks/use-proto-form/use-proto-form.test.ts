@@ -30,9 +30,7 @@ describe("useProtoFormDefaults", () => {
 
     expect(result.username).toBe("default_user");
     expect(result.age).toBe(25);
-    expect((result as Record<string, unknown>).$typeName).toBe(
-      "protoform.v1.AutoFormExample"
-    );
+    expect((result as Record<string, unknown>)["$typeName"]).toBe("protoform.v1.AutoFormExample");
   });
 
   it("works with no init (empty message)", () => {
@@ -48,9 +46,7 @@ describe("useProtoFormDefaults", () => {
 
 describe("useProtoForm", () => {
   it("returns form instance with all proto helpers", () => {
-    const { result } = renderHook(() =>
-      useProtoForm(AutoFormExampleSchema, { defaultValues: defaults() })
-    );
+    const { result } = renderHook(() => useProtoForm(AutoFormExampleSchema, { defaultValues: defaults() }));
 
     expect(result.current.register).toBeDefined();
     expect(result.current.handleSubmit).toBeDefined();
@@ -130,7 +126,7 @@ describe("useProtoForm — update mask", () => {
       })
     );
 
-    await act(async () => {
+    act(() => {
       result.current.setValue("primaryEmail", "new@example.com", {
         shouldDirty: true,
       });
@@ -140,10 +136,7 @@ describe("useProtoForm — update mask", () => {
     });
 
     await waitFor(() => {
-      expect(result.current.createUpdateMask().paths).toEqual([
-        "primary_email",
-        "shipping_address.city",
-      ]);
+      expect(result.current.createUpdateMask().paths).toEqual(["primary_email", "shipping_address.city"]);
     });
   });
 
@@ -157,12 +150,12 @@ describe("useProtoForm — update mask", () => {
       })
     );
 
-    await act(async () => {
+    act(() => {
       result.current.setValue("primaryEmail", "saved@example.com", {
         shouldDirty: true,
       });
     });
-    await act(async () => {
+    act(() => {
       result.current.reset(result.current.getValues());
       result.current.setValue("shippingAddress.city", "Gdansk", {
         shouldDirty: true,
@@ -170,9 +163,7 @@ describe("useProtoForm — update mask", () => {
     });
 
     await waitFor(() => {
-      expect(result.current.createUpdateMask().paths).toEqual([
-        "shipping_address.city",
-      ]);
+      expect(result.current.createUpdateMask().paths).toEqual(["shipping_address.city"]);
     });
   });
 });
@@ -190,14 +181,10 @@ describe("useProtoForm — createMessage", () => {
       })
     );
 
-    expect(result.current.createMessage().tags).toEqual([
-      "alpha",
-      "",
-      "omega",
-    ]);
+    expect(result.current.createMessage().tags).toEqual(["alpha", "", "omega"]);
   });
 
-  it("preserves unknown fields from parsed default values", async () => {
+  it("preserves unknown fields from parsed default values", () => {
     const originalBytes = toBinary(
       AutoFormExampleSchema,
       create(AutoFormExampleSchema, { age: 25, username: "unknown_fields" })
@@ -213,11 +200,9 @@ describe("useProtoForm — createMessage", () => {
       age: parsedDefaultValues.age,
       username: parsedDefaultValues.username,
     });
-    const { result } = renderHook(() =>
-      useProtoForm(AutoFormExampleSchema, { defaultValues })
-    );
+    const { result } = renderHook(() => useProtoForm(AutoFormExampleSchema, { defaultValues }));
 
-    await act(async () => {
+    act(() => {
       result.current.setValue("age", 26, { shouldDirty: true });
     });
 
@@ -225,9 +210,7 @@ describe("useProtoForm — createMessage", () => {
     const editedBytes = toBinary(AutoFormExampleSchema, message);
     expect(message.age).toBe(26);
     expect(message.$unknown).toEqual(parsedDefaultValues.$unknown);
-    expect(Array.from(editedBytes.slice(-unknownFieldBytes.length))).toEqual(
-      unknownFieldBytes
-    );
+    expect(Array.from(editedBytes.slice(-unknownFieldBytes.length))).toEqual(unknownFieldBytes);
   });
 
   it("builds a protobuf message from current form values", () => {
@@ -243,7 +226,7 @@ describe("useProtoForm — createMessage", () => {
     expect(message.age).toBe(25);
   });
 
-  it("strips stale protobuf metadata from RHF internal state", async () => {
+  it("strips stale protobuf metadata from RHF internal state", () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: defaults({
@@ -255,12 +238,8 @@ describe("useProtoForm — createMessage", () => {
 
     // Simulate what RHF does: switch oneof then read back — internal state
     // may carry $typeName from the original message through getValues().
-    await act(async () => {
-      result.current.setOneofValue(
-        "preferredContact",
-        "preferredPhone",
-        "+1555"
-      );
+    act(() => {
+      result.current.setOneofValue("preferredContact", "preferredPhone", "+1555");
     });
 
     // createMessage must produce a clean message even when RHF state has
@@ -337,10 +316,9 @@ describe("useProtoForm — nested messages", () => {
     });
 
     await waitFor(() => {
-      const errors = result.current.formState.errors;
+      const { errors } = result.current.formState;
       const hasNestedErrors =
-        errors.shippingAddress !== undefined ||
-        Object.keys(errors).some((k) => k.startsWith("shippingAddress"));
+        errors.shippingAddress !== undefined || Object.keys(errors).some((k) => k.startsWith("shippingAddress"));
       expect(hasNestedErrors).toBe(true);
     });
   });
@@ -377,7 +355,7 @@ describe("useProtoForm — oneof fields", () => {
     expect(message.preferredContact.case).toBeUndefined();
   });
 
-  it("setOneofValue switches oneof branch without casts", async () => {
+  it("setOneofValue switches oneof branch without casts", () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: defaults({
@@ -386,12 +364,8 @@ describe("useProtoForm — oneof fields", () => {
       })
     );
 
-    await act(async () => {
-      result.current.setOneofValue(
-        "preferredContact",
-        "preferredPhone",
-        "+1234567890"
-      );
+    act(() => {
+      result.current.setOneofValue("preferredContact", "preferredPhone", "+1234567890");
     });
 
     const message = result.current.createMessage();
@@ -425,9 +399,7 @@ describe("useProtoForm — getNestedErrors", () => {
     );
 
     await waitFor(() => {
-      expect(
-        result.current.getNestedErrors("shippingAddress.lineOne")
-      ).toBeUndefined();
+      expect(result.current.getNestedErrors("shippingAddress.lineOne")).toBeUndefined();
     });
   });
 

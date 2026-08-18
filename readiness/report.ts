@@ -1,17 +1,11 @@
-import {
-  getReadinessSummary,
-  type ReadinessCategory,
-  type ReadinessRequirement,
-} from "./profile.js";
+import { getReadinessSummary, type ReadinessCategory, type ReadinessRequirement } from "./profile.js";
 
 export function formatReadinessReport(
   requirements: readonly ReadinessRequirement[],
   categories: readonly ReadinessCategory[]
 ): string {
   const summary = getReadinessSummary(requirements);
-  const requiredSummary = getReadinessSummary(
-    requirements.filter((requirement) => requirement.level === "required")
-  );
+  const requiredSummary = getReadinessSummary(requirements.filter((requirement) => requirement.level === "required"));
   const lines = [
     "Protoform production readiness",
     `Overall: ${summary.percentage}% (${summary.verified}/${summary.applicable})`,
@@ -35,14 +29,8 @@ export function formatReadinessReport(
   lines.push("", "Open work:");
   const initialLineCount = lines.length;
   for (const requirement of requirements) {
-    if (
-      requirement.status === "missing" ||
-      requirement.status === "deferred" ||
-      requirement.status === "unsupported"
-    ) {
-      lines.push(
-        `- ${requirement.id}: [${requirement.status}] ${requirement.nextTest}`
-      );
+    if (requirement.status === "missing" || requirement.status === "deferred" || requirement.status === "unsupported") {
+      lines.push(`- ${requirement.id}: [${requirement.status}] ${requirement.nextTest}`);
     }
   }
   if (lines.length === initialLineCount) {

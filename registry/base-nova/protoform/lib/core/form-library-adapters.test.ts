@@ -104,11 +104,7 @@ describe("form-library Standard Schema adapters", () => {
     await createFormikValidator(schema, { libraryOptions })(values);
     await createFinalFormValidator(schema, { libraryOptions })(values);
 
-    expect(receivedOptions).toEqual([
-      undefined,
-      { libraryOptions },
-      { libraryOptions },
-    ]);
+    expect(receivedOptions).toEqual([undefined, { libraryOptions }, { libraryOptions }]);
   });
 
   it("does not allow issue paths to mutate object prototypes", () => {

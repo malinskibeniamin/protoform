@@ -14,8 +14,5 @@ it("keeps the bare-bones contract to one string field", () => {
 });
 
 it("assigns one simple field to each step", () => {
-  expect(TwoStepFormSchema.fields.map((field) => field.name)).toEqual([
-    "name",
-    "email",
-  ]);
+  expect(TwoStepFormSchema.fields.map((field) => field.name)).toEqual(["name", "email"]);
 });

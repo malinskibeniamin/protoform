@@ -1,11 +1,8 @@
-import { compileCelExpression } from './cel-runtime';
-import type { AutoFormUiRule } from './types';
+import { compileCelExpression } from "./cel-runtime";
+import type { AutoFormUiRule } from "./types";
 
 const CEL_CACHE_MAX_SIZE = 256;
-const compiledRuleCache = new Map<
-  string,
-  ReturnType<typeof compileCelExpression>
->();
+const compiledRuleCache = new Map<string, ReturnType<typeof compileCelExpression>>();
 
 function getCompiledRule(expression: string) {
   const cached = compiledRuleCache.get(expression);
@@ -42,7 +39,7 @@ export function evaluateUiRules(
         form: context.form,
         this: context.thisValue,
       });
-      return result.kind === 'value' && result.value === true;
+      return result.kind === "value" && result.value === true;
     } catch {
       return false;
     }

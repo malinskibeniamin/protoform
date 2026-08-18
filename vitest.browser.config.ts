@@ -6,9 +6,7 @@ export default defineConfig({
   define: {
     // The checked-in reference is Darwin-specific. Linux CI still runs every
     // structural assertion; the macOS lane owns the pixel comparison.
-    "import.meta.env.VISUAL_REGRESSION": JSON.stringify(
-      shouldRunVisualRegression(process.platform)
-    ),
+    "import.meta.env.VISUAL_REGRESSION": JSON.stringify(shouldRunVisualRegression(process.platform)),
   },
   resolve: {
     alias: {

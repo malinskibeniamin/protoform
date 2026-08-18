@@ -11,9 +11,7 @@ const TanStackFormExample = lazy(async () => {
 
 export default function TanStackFormExampleIsland() {
   return (
-    <Suspense
-      fallback={<ExampleLoading label="Loading TanStack Form example" />}
-    >
+    <Suspense fallback={<ExampleLoading label="Loading TanStack Form example" />}>
       <TanStackFormExample />
     </Suspense>
   );

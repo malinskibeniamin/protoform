@@ -23,10 +23,7 @@ const contentTypes: Record<string, string> = {
 async function createFixture() {
   await rm(fixture, { force: true, recursive: true });
   await mkdir(join(fixture, "app"), { recursive: true });
-  await writeFile(
-    join(fixture, ".npmrc"),
-    "@buf:registry=https://buf.build/gen/npm/v1/\n"
-  );
+  await writeFile(join(fixture, ".npmrc"), "@buf:registry=https://buf.build/gen/npm/v1/\n");
   await writeFile(
     join(fixture, "package.json"),
     `${JSON.stringify(
@@ -106,18 +103,13 @@ async function createFixture() {
       2
     )}\n`
   );
-  await writeFile(
-    join(fixture, "app", "globals.css"),
-    "@import 'tailwindcss';\n"
-  );
+  await writeFile(join(fixture, "app", "globals.css"), "@import 'tailwindcss';\n");
 }
 
 function servePublic() {
   const server = createServer(async (request, response) => {
     const url = new URL(request.url ?? "/", registryOrigin);
-    const pathname = decodeURIComponent(
-      url.pathname.replace(leadingSlashes, "")
-    );
+    const pathname = decodeURIComponent(url.pathname.replace(leadingSlashes, ""));
     const filePath = resolve(publicDir, pathname);
     if (!filePath.startsWith(publicDir)) {
       response.writeHead(403);
@@ -127,8 +119,7 @@ function servePublic() {
     try {
       const text = await readFile(filePath, "utf8");
       response.writeHead(200, {
-        "content-type":
-          contentTypes[extname(filePath)] ?? "application/octet-stream",
+        "content-type": contentTypes[extname(filePath)] ?? "application/octet-stream",
       });
       response.end(text);
     } catch {
@@ -167,9 +158,7 @@ async function assertInstalled() {
     "proto/protoform/conformance/v1/aip.proto",
     "THIRD_PARTY_NOTICES.md",
   ];
-  const checks = await Promise.allSettled(
-    expected.map((relativePath) => access(join(fixture, relativePath)))
-  );
+  const checks = await Promise.allSettled(expected.map((relativePath) => access(join(fixture, relativePath))));
   for (const [index, check] of checks.entries()) {
     if (check.status === "rejected") {
       throw new Error(`Expected shadcn to install ${expected[index]}`, {

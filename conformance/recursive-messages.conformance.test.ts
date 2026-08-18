@@ -3,10 +3,7 @@
 import { describe, expect, it } from "vitest";
 
 import { parseProtoSchema } from "../registry/base-nova/protoform/lib/protobuf-provider/index.js";
-import {
-  RecursiveLeftSchema,
-  RecursiveNodeSchema,
-} from "./gen/protoform/conformance/v1/conformance_pb.js";
+import { RecursiveLeftSchema, RecursiveNodeSchema } from "./gen/protoform/conformance/v1/conformance_pb.js";
 
 describe("recursive protobuf descriptor conformance", () => {
   it("bounds self-referential message and repeated-message expansion with a JSON leaf", () => {

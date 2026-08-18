@@ -4,23 +4,11 @@ import { createClient } from "@connectrpc/connect";
 import { FORM_ERROR } from "final-form";
 import React from "react";
 import { Field as FinalField, Form as FinalForm } from "react-final-form";
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-} from "@/registry/base-nova/protoform/components/alert";
+import { Alert, AlertDescription, AlertTitle } from "@/registry/base-nova/protoform/components/alert";
 import { Button } from "@/registry/base-nova/protoform/components/button";
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@/registry/base-nova/protoform/components/field";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/registry/base-nova/protoform/components/field";
 import { Input } from "@/registry/base-nova/protoform/components/input";
-import {
-  createFinalFormValidator,
-  standardSchemaIssuesToFormErrors,
-} from "@/registry/base-nova/protoform/lib/core";
+import { createFinalFormValidator, standardSchemaIssuesToFormErrors } from "@/registry/base-nova/protoform/lib/core";
 import { createFormExamplesTransport } from "../browser-transport.js";
 import { FormExamplesService } from "../gen/protoform/examples/v1/forms_pb.js";
 import {
@@ -60,10 +48,7 @@ function mapSubmissionErrors(error: unknown) {
 export function FinalFormExample({ baseUrl }: { baseUrl?: string }) {
   const idPrefix = React.useId();
   const [profileId, setProfileId] = React.useState<string>();
-  const client = createClient(
-    FormExamplesService,
-    createFormExamplesTransport(baseUrl)
-  );
+  const client = createClient(FormExamplesService, createFormExamplesTransport(baseUrl));
 
   return (
     <FinalForm<BasicFormValues>
@@ -81,9 +66,7 @@ export function FinalFormExample({ baseUrl }: { baseUrl?: string }) {
         } catch (error) {
           const submission = mapSubmissionErrors(error);
           if (submission.firstField) {
-            document
-              .getElementById(`${idPrefix}-${submission.firstField}`)
-              ?.focus();
+            document.getElementById(`${idPrefix}-${submission.firstField}`)?.focus();
           }
           return submission.errors;
         }
@@ -98,17 +81,11 @@ export function FinalFormExample({ baseUrl }: { baseUrl?: string }) {
               <FinalField<string> name="displayName">
                 {({ input, meta }) => {
                   const errors = splitErrorMessages(
-                    meta.submitError ??
-                      (meta.touched || meta.submitFailed
-                        ? meta.error
-                        : undefined)
+                    meta.submitError ?? (meta.touched || meta.submitFailed ? meta.error : undefined)
                   );
                   return (
                     <Field data-invalid={errors.length > 0}>
-                      <FieldLabel
-                        htmlFor={`${idPrefix}-${input.name}`}
-                        required
-                      >
+                      <FieldLabel htmlFor={`${idPrefix}-${input.name}`} required>
                         Display name
                       </FieldLabel>
                       <Input
@@ -126,17 +103,11 @@ export function FinalFormExample({ baseUrl }: { baseUrl?: string }) {
               <FinalField<string> name="email">
                 {({ input, meta }) => {
                   const errors = splitErrorMessages(
-                    meta.submitError ??
-                      (meta.touched || meta.submitFailed
-                        ? meta.error
-                        : undefined)
+                    meta.submitError ?? (meta.touched || meta.submitFailed ? meta.error : undefined)
                   );
                   return (
                     <Field data-invalid={errors.length > 0}>
-                      <FieldLabel
-                        htmlFor={`${idPrefix}-${input.name}`}
-                        required
-                      >
+                      <FieldLabel htmlFor={`${idPrefix}-${input.name}`} required>
                         Email
                       </FieldLabel>
                       <Input

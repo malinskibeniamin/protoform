@@ -17,9 +17,7 @@ describe("KitchenSinkFormExample", () => {
         name: "Production deployment kitchen sink",
       })
     ).toBeInTheDocument();
-    expect(
-      screen.getByRole("navigation", { name: "Form progress" })
-    ).toBeInTheDocument();
+    expect(screen.getByRole("navigation", { name: "Form progress" })).toBeInTheDocument();
     expect(screen.getByText("Step 1 of 5")).toBeInTheDocument();
     expect(screen.getByLabelText(ORGANIZATION_SLUG_LABEL)).toBeInTheDocument();
     expect(
@@ -27,18 +25,12 @@ describe("KitchenSinkFormExample", () => {
         name: "Help for Estimated Events Per Day",
       })
     ).toBeInTheDocument();
-    expect(
-      screen.queryByTestId("kitchen-sink-form-field-regions-items")
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("kitchen-sink-form-field-regions-items")).not.toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Continue" }));
 
     expect(await screen.findByText("Step 2 of 5")).toBeInTheDocument();
-    expect(
-      screen.getByTestId("kitchen-sink-form-field-regions-items")
-    ).toBeInTheDocument();
-    expect(
-      screen.queryByLabelText(ORGANIZATION_SLUG_LABEL)
-    ).not.toBeInTheDocument();
+    expect(screen.getByTestId("kitchen-sink-form-field-regions-items")).toBeInTheDocument();
+    expect(screen.queryByLabelText(ORGANIZATION_SLUG_LABEL)).not.toBeInTheDocument();
   });
 });

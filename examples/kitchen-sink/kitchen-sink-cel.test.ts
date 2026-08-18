@@ -60,17 +60,12 @@ function buildValidRequest() {
 
 describe("kitchen-sink CEL contract", () => {
   it("accepts a request that satisfies every cross-collection policy", () => {
-    const result = createValidator().validate(
-      SubmitKitchenSinkFormRequestSchema,
-      buildValidRequest()
-    );
+    const result = createValidator().validate(SubmitKitchenSinkFormRequestSchema, buildValidRequest());
 
     expect(
       result.kind,
       result.kind === "invalid"
-        ? result.violations
-            .map((violation) => `${violation.ruleId}: ${violation.message}`)
-            .join("\n")
+        ? result.violations.map((violation) => `${violation.ruleId}: ${violation.message}`).join("\n")
         : result.error?.message
     ).toBe("valid");
   });
@@ -82,13 +77,10 @@ describe("kitchen-sink CEL contract", () => {
     name: string;
   }>([
     {
-      expectedMessage:
-        "Services, dependencies, regions, and rate limits must form one valid deployment graph.",
+      expectedMessage: "Services, dependencies, regions, and rate limits must form one valid deployment graph.",
       expectedRule: "kitchen_sink.graph.integrity",
       mutate: (request) => {
-        const worker = request.services.find(
-          (service) => service.name === "worker"
-        );
+        const worker = request.services.find((service) => service.name === "worker");
         if (!worker) {
           throw new Error("Expected the worker fixture.");
         }
@@ -106,8 +98,7 @@ describe("kitchen-sink CEL contract", () => {
       name: "an incomplete production approval",
     },
     {
-      expectedMessage:
-        "Each service must fit within an equal share of the monthly budget.",
+      expectedMessage: "Each service must fit within an equal share of the monthly budget.",
       expectedRule: "kitchen_sink.budget.envelope",
       mutate: (request) => {
         request.monthlyBudget = 1000;
@@ -115,8 +106,7 @@ describe("kitchen-sink CEL contract", () => {
       name: "an over-budget service allocation",
     },
     {
-      expectedMessage:
-        "The change window must include both timestamps, run forward, and last no more than four hours.",
+      expectedMessage: "The change window must include both timestamps, run forward, and last no more than four hours.",
       expectedRule: "kitchen_sink.change.window",
       mutate: (request) => {
         request.windowEnd = timestampFromDate(new Date("2026-08-01T09:00:00Z"));
@@ -144,10 +134,7 @@ describe("kitchen-sink CEL contract", () => {
     const request = buildValidRequest();
     mutate(request);
 
-    const result = createValidator().validate(
-      SubmitKitchenSinkFormRequestSchema,
-      request
-    );
+    const result = createValidator().validate(SubmitKitchenSinkFormRequestSchema, request);
 
     expect(result.kind).toBe("invalid");
     if (result.kind !== "invalid") {

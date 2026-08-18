@@ -3,4 +3,4 @@ export {
   isProtoMessageDescriptor,
   isProtoProvider,
   ProtoProvider,
-} from '../../../lib/protobuf-provider';
+} from "../../../lib/protobuf-provider";

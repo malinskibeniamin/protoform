@@ -1,21 +1,7 @@
-import {
-  FieldBehavior,
-  field_behavior,
-} from "@buf/googleapis_googleapis.bufbuild_es/google/api/field_behavior_pb.js";
-import {
-  resource,
-  resource_reference,
-} from "@buf/googleapis_googleapis.bufbuild_es/google/api/resource_pb.js";
-import {
-  create,
-  type DescField,
-  type DescMessage,
-  getExtension,
-} from "@bufbuild/protobuf";
-import {
-  FieldOptionsSchema,
-  MessageOptionsSchema,
-} from "@bufbuild/protobuf/wkt";
+import { FieldBehavior, field_behavior } from "@buf/googleapis_googleapis.bufbuild_es/google/api/field_behavior_pb.js";
+import { resource, resource_reference } from "@buf/googleapis_googleapis.bufbuild_es/google/api/resource_pb.js";
+import { create, type DescField, type DescMessage, getExtension } from "@bufbuild/protobuf";
+import { FieldOptionsSchema, MessageOptionsSchema } from "@bufbuild/protobuf/wkt";
 
 export interface ProtoResourceMetadata {
   nameField: string;
@@ -26,17 +12,12 @@ export interface ProtoResourceMetadata {
 }
 
 export interface ProtoResourceReference {
-  childType?: string;
-  type?: string;
+  childType?: string | undefined;
+  type?: string | undefined;
 }
 
-export function getProtoResourceMetadata(
-  desc: DescMessage
-): ProtoResourceMetadata | undefined {
-  const metadata = getExtension(
-    desc.proto.options ?? create(MessageOptionsSchema),
-    resource
-  );
+export function getProtoResourceMetadata(desc: DescMessage): ProtoResourceMetadata | undefined {
+  const metadata = getExtension(desc.proto.options ?? create(MessageOptionsSchema), resource);
   if (!metadata.type && metadata.pattern.length === 0) {
     return;
   }
@@ -49,13 +30,8 @@ export function getProtoResourceMetadata(
   };
 }
 
-export function getProtoResourceReference(
-  field: DescField
-): ProtoResourceReference | undefined {
-  const reference = getExtension(
-    field.proto.options ?? create(FieldOptionsSchema),
-    resource_reference
-  );
+export function getProtoResourceReference(field: DescField): ProtoResourceReference | undefined {
+  const reference = getExtension(field.proto.options ?? create(FieldOptionsSchema), resource_reference);
   if (!(reference.type || reference.childType)) {
     return;
   }
@@ -65,13 +41,10 @@ export function getProtoResourceReference(
   };
 }
 
-export function getProtoFieldBehaviors(
-  field: DescField
-): readonly FieldBehavior[] {
-  return getExtension(
-    field.proto.options ?? create(FieldOptionsSchema),
-    field_behavior
-  ).filter((behavior) => behavior !== FieldBehavior.FIELD_BEHAVIOR_UNSPECIFIED);
+export function getProtoFieldBehaviors(field: DescField): readonly FieldBehavior[] {
+  return getExtension(field.proto.options ?? create(FieldOptionsSchema), field_behavior).filter(
+    (behavior) => behavior !== FieldBehavior.FIELD_BEHAVIOR_UNSPECIFIED
+  );
 }
 
 export function isSingletonProtoResource(desc: DescMessage): boolean {

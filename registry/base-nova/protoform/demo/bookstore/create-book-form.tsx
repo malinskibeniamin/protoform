@@ -1,34 +1,21 @@
 "use client";
 
 import { create } from "@bufbuild/protobuf";
-import {
-  createConnectQueryKey,
-  useMutation,
-  useTransport,
-} from "@connectrpc/connect-query";
+import { createConnectQueryKey, useMutation, useTransport } from "@connectrpc/connect-query";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-} from "@/registry/base-nova/protoform/components/alert";
+import { Alert, AlertDescription, AlertTitle } from "@/registry/base-nova/protoform/components/alert";
 import { Button } from "@/registry/base-nova/protoform/components/button";
-import {
-  Field,
-  FieldDescription,
-  FieldError,
-  FieldLabel,
-} from "@/registry/base-nova/protoform/components/field";
+import { Field, FieldDescription, FieldError, FieldLabel } from "@/registry/base-nova/protoform/components/field";
 import { Input } from "@/registry/base-nova/protoform/components/input";
 import { Textarea } from "@/registry/base-nova/protoform/components/textarea";
-import { useProtoForm } from "@/registry/base-nova/protoform/hooks/use-proto-form";
 import { BookFormBinding } from "@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_form";
 import {
   BookSchema,
   LibraryService,
 } from "@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_pb";
+import { useProtoForm } from "@/registry/base-nova/protoform/hooks/use-proto-form";
 
 interface CreateBookFormProps {
   onCancel: () => void;
@@ -37,12 +24,9 @@ interface CreateBookFormProps {
 }
 
 const bookIdInputPattern = String.raw`[a-z][a-z0-9\-]{2,62}[a-z0-9]`;
+const BOOK_ID_PATTERN = /^[a-z][a-z0-9-]{2,62}[a-z0-9]$/;
 
-export function CreateBookForm({
-  onCancel,
-  onCreated,
-  parent,
-}: CreateBookFormProps) {
+export function CreateBookForm({ onCancel, onCreated, parent }: CreateBookFormProps) {
   const [step, setStep] = useState<"book" | "publishing">("book");
   const [bookId, setBookId] = useState("");
   const queryClient = useQueryClient();
@@ -62,7 +46,7 @@ export function CreateBookForm({
   }
 
   async function submitBook() {
-    if (!bookId.match(/^[a-z][a-z0-9-]{2,62}[a-z0-9]$/)) {
+    if (!BOOK_ID_PATTERN.test(bookId)) {
       return;
     }
     form.clearServerErrorContext();
@@ -72,7 +56,7 @@ export function CreateBookForm({
         bookId,
         parent,
       });
-      void queryClient.invalidateQueries({
+      await queryClient.invalidateQueries({
         queryKey: createConnectQueryKey({
           cardinality: undefined,
           input: { parent },
@@ -88,21 +72,17 @@ export function CreateBookForm({
 
   const titleError = form.formState.errors.displayName?.message;
   const isbnError = form.formState.errors.isbn?.message;
-  const bookIdInvalid =
-    bookId.length > 0 && !bookId.match(/^[a-z][a-z0-9-]{2,62}[a-z0-9]$/);
+  const bookIdInvalid = bookId.length > 0 && !BOOK_ID_PATTERN.test(bookId);
 
   return (
     <section aria-labelledby="create-book-title" className="space-y-6">
       <div className="space-y-2">
-        <p className="font-medium text-muted-foreground text-sm">
-          Step {step === "book" ? "1" : "2"} of 2
-        </p>
+        <p className="font-medium text-muted-foreground text-sm">Step {step === "book" ? "1" : "2"} of 2</p>
         <h2 className="font-semibold text-2xl" id="create-book-title">
           Create a book
         </h2>
         <p className="text-muted-foreground text-sm">
-          React Hook Form state, generated Protoform binding, and protobuf CEL
-          validation.
+          React Hook Form state, generated Protoform binding, and protobuf CEL validation.
         </p>
       </div>
 
@@ -110,19 +90,13 @@ export function CreateBookForm({
         <div className="space-y-5">
           <Field data-invalid={Boolean(titleError)}>
             <FieldLabel htmlFor="create-book-title-input">Title</FieldLabel>
-            <Input
-              aria-invalid={Boolean(titleError)}
-              id="create-book-title-input"
-              {...form.register("displayName")}
-            />
+            <Input aria-invalid={Boolean(titleError)} id="create-book-title-input" {...form.register("displayName")} />
             {titleError ? <FieldError>{titleError}</FieldError> : null}
           </Field>
           <Field data-invalid={Boolean(isbnError)}>
             <FieldLabel htmlFor="create-book-isbn">ISBN-13</FieldLabel>
             <Input
-              aria-describedby={
-                isbnError ? undefined : "create-book-isbn-help"
-              }
+              aria-describedby={isbnError ? undefined : "create-book-isbn-help"}
               aria-invalid={Boolean(isbnError)}
               id="create-book-isbn"
               inputMode="numeric"
@@ -133,8 +107,7 @@ export function CreateBookForm({
               <FieldError>{isbnError}</FieldError>
             ) : (
               <FieldDescription id="create-book-isbn-help">
-                Thirteen digits. The check digit is verified by the CEL rule in
-                the proto.
+                Thirteen digits. The check digit is verified by the CEL rule in the proto.
               </FieldDescription>
             )}
           </Field>
@@ -148,10 +121,7 @@ export function CreateBookForm({
           </div>
         </div>
       ) : (
-        <form
-          className="space-y-5"
-          onSubmit={form.handleSubmit(submitBook)}
-        >
+        <form className="space-y-5" onSubmit={form.handleSubmit(submitBook)}>
           <Field data-invalid={bookIdInvalid}>
             <FieldLabel htmlFor="create-book-id">Book id</FieldLabel>
             <Input
@@ -162,11 +132,7 @@ export function CreateBookForm({
               required
               value={bookId}
             />
-            {bookIdInvalid ? (
-              <FieldError>
-                Use lowercase letters, numbers, and hyphens.
-              </FieldError>
-            ) : null}
+            {bookIdInvalid ? <FieldError>Use lowercase letters, numbers, and hyphens.</FieldError> : null}
           </Field>
           <Field>
             <FieldLabel htmlFor="create-book-note">Note</FieldLabel>
@@ -179,18 +145,10 @@ export function CreateBookForm({
             </Alert>
           ) : null}
           <div className="flex flex-wrap justify-between gap-3">
-            <Button
-              onClick={() => setStep("book")}
-              type="button"
-              variant="outline"
-            >
+            <Button onClick={() => setStep("book")} type="button" variant="outline">
               Back
             </Button>
-            <Button
-              disabled={bookIdInvalid || bookId.length === 0}
-              isLoading={mutation.isPending}
-              type="submit"
-            >
+            <Button disabled={bookIdInvalid || bookId.length === 0} isLoading={mutation.isPending} type="submit">
               Create book
             </Button>
           </div>

@@ -3,10 +3,7 @@
 import React from "react";
 import { Badge } from "@/registry/base-nova/protoform/components/badge";
 import { Button } from "@/registry/base-nova/protoform/components/button";
-import {
-  Field,
-  FieldLabel,
-} from "@/registry/base-nova/protoform/components/field";
+import { Field, FieldLabel } from "@/registry/base-nova/protoform/components/field";
 import { Input } from "@/registry/base-nova/protoform/components/input";
 import {
   Tooltip,
@@ -92,9 +89,7 @@ function statusSquareClass(status: ReadinessRequirement["status"]): string {
 
 function requirementExplanation(requirement: ReadinessRequirement): string {
   if (requirement.status === "verified" || requirement.status === "optional") {
-    return (
-      requirement.description ?? `Evidence: ${requirement.evidence.testName}`
-    );
+    return requirement.description ?? `Evidence: ${requirement.evidence.testName}`;
   }
   if (requirement.status === "missing") {
     return `Next test: ${requirement.nextTest}`;
@@ -102,11 +97,7 @@ function requirementExplanation(requirement: ReadinessRequirement): string {
   return requirement.rationale;
 }
 
-function RequirementStatus({
-  status,
-}: {
-  status: ReadinessRequirement["status"];
-}) {
+function RequirementStatus({ status }: { status: ReadinessRequirement["status"] }) {
   if (status === "verified") {
     return <Badge variant="success-inverted">Verified</Badge>;
   }
@@ -131,11 +122,7 @@ function RequirementStatus({
   return <Badge variant="disabled-inverted">Superseded</Badge>;
 }
 
-function RequirementDetail({
-  requirement,
-}: {
-  requirement: ReadinessRequirement;
-}) {
+function RequirementDetail({ requirement }: { requirement: ReadinessRequirement }) {
   if (requirement.status === "verified" || requirement.status === "optional") {
     return (
       <p className="m-0 text-muted-foreground text-xs">
@@ -152,10 +139,7 @@ function RequirementDetail({
       </p>
     );
   }
-  if (
-    requirement.status === "deferred" ||
-    requirement.status === "unsupported"
-  ) {
+  if (requirement.status === "deferred" || requirement.status === "unsupported") {
     return (
       <div className="space-y-2 text-sm">
         <p className="m-0 text-muted-foreground">{requirement.rationale}</p>
@@ -165,39 +149,28 @@ function RequirementDetail({
       </div>
     );
   }
-  return (
-    <p className="m-0 text-muted-foreground text-sm">{requirement.rationale}</p>
-  );
+  return <p className="m-0 text-muted-foreground text-sm">{requirement.rationale}</p>;
 }
 
 export function ReadinessDashboard() {
   const [page, setPage] = React.useState(1);
   const [query, setQuery] = React.useState("");
   const [status, setStatus] = React.useState<StatusFilter>(() =>
-    readinessRequirements.some((requirement) => isGapStatus(requirement.status))
-      ? "gaps"
-      : "verified"
+    readinessRequirements.some((requirement) => isGapStatus(requirement.status)) ? "gaps" : "verified"
   );
   const summary = getReadinessSummary(readinessRequirements);
   const requiredSummary = getReadinessSummary(
-    readinessRequirements.filter(
-      (requirement) => requirement.level === "required"
-    )
+    readinessRequirements.filter((requirement) => requirement.level === "required")
   );
   const normalizedQuery = query.trim().toLowerCase();
   const filteredRequirements = readinessRequirements.filter((requirement) => {
     const matchesStatus =
-      status === "all" ||
-      (status === "gaps"
-        ? isGapStatus(requirement.status)
-        : requirement.status === status);
+      status === "all" || (status === "gaps" ? isGapStatus(requirement.status) : requirement.status === status);
     const searchable = [
       requirement.id,
       requirement.title,
       requirement.description ?? "",
-      requirement.status === "verified" || requirement.status === "optional"
-        ? requirement.evidence.testName
-        : "",
+      requirement.status === "verified" || requirement.status === "optional" ? requirement.evidence.testName : "",
       "nextTest" in requirement ? requirement.nextTest : "",
       "rationale" in requirement ? requirement.rationale : "",
     ]
@@ -205,20 +178,11 @@ export function ReadinessDashboard() {
       .toLowerCase();
     return matchesStatus && searchable.includes(normalizedQuery);
   });
-  const pageCount = Math.max(
-    1,
-    Math.ceil(filteredRequirements.length / PAGE_SIZE)
-  );
+  const pageCount = Math.max(1, Math.ceil(filteredRequirements.length / PAGE_SIZE));
   const pageStart = (page - 1) * PAGE_SIZE;
-  const paginatedRequirements = filteredRequirements.slice(
-    pageStart,
-    pageStart + PAGE_SIZE
-  );
+  const paginatedRequirements = filteredRequirements.slice(pageStart, pageStart + PAGE_SIZE);
   const visibleStart = filteredRequirements.length === 0 ? 0 : pageStart + 1;
-  const visibleEnd = Math.min(
-    pageStart + PAGE_SIZE,
-    filteredRequirements.length
-  );
+  const visibleEnd = Math.min(pageStart + PAGE_SIZE, filteredRequirements.length);
 
   return (
     <div className="not-prose my-8 space-y-8">
@@ -229,22 +193,15 @@ export function ReadinessDashboard() {
               Production Readiness Profile v{readinessProfile.version}
             </p>
             <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2">
-              <p className="m-0 font-semibold text-5xl tracking-tight">
-                {summary.percentage}%
-              </p>
-              <Badge
-                variant={
-                  summary.profileComplete ? "success" : "warning-inverted"
-                }
-              >
+              <p className="m-0 font-semibold text-5xl tracking-tight">{summary.percentage}%</p>
+              <Badge variant={summary.profileComplete ? "success" : "warning-inverted"}>
                 Profile complete: {summary.profileComplete ? "yes" : "not yet"}
               </Badge>
             </div>
             <p className="mt-3 mb-0 text-muted-foreground text-sm">
-              {summary.verified} of {summary.applicable} applicable checks
-              verified. {summary.deferred + summary.unsupported} open checks
-              count against readiness. {summary.excluded} excluded checks stay
-              visible but do not affect the percentage.
+              {summary.verified} of {summary.applicable} applicable checks verified.{" "}
+              {summary.deferred + summary.unsupported} open checks count against readiness. {summary.excluded} excluded
+              checks stay visible but do not affect the percentage.
             </p>
           </div>
 
@@ -261,10 +218,7 @@ export function ReadinessDashboard() {
               className="h-3 overflow-hidden rounded-full bg-muted"
               role="progressbar"
             >
-              <div
-                className="h-full rounded-full bg-primary"
-                style={{ width: `${summary.percentage}%` }}
-              />
+              <div className="h-full rounded-full bg-primary" style={{ width: `${summary.percentage}%` }} />
             </div>
             <div className="flex items-center justify-between gap-4 text-sm">
               <span>Required profile</span>
@@ -278,10 +232,7 @@ export function ReadinessDashboard() {
               className="h-2 overflow-hidden rounded-full bg-muted"
               role="progressbar"
             >
-              <div
-                className="h-full rounded-full bg-primary/70"
-                style={{ width: `${requiredSummary.percentage}%` }}
-              />
+              <div className="h-full rounded-full bg-primary/70" style={{ width: `${requiredSummary.percentage}%` }} />
             </div>
           </div>
         </div>
@@ -310,15 +261,11 @@ export function ReadinessDashboard() {
                     role="tooltip"
                     transition={{ duration: 0 }}
                   >
-                    <span className="block font-semibold">
-                      {requirement.title}
-                    </span>
+                    <span className="block font-semibold">{requirement.title}</span>
                     <span className="mt-1 block text-xs">
                       {statusLabel(requirement.status)} · {requirement.level}
                     </span>
-                    <span className="mt-2 block text-xs">
-                      {requirementExplanation(requirement)}
-                    </span>
+                    <span className="mt-2 block text-xs">{requirementExplanation(requirement)}</span>
                   </TooltipContent>
                 </Tooltip>
               );
@@ -328,33 +275,20 @@ export function ReadinessDashboard() {
       </section>
 
       <section aria-labelledby="category-readiness-heading">
-        <h2
-          className="mb-4 font-semibold text-2xl"
-          id="category-readiness-heading"
-        >
+        <h2 className="mb-4 font-semibold text-2xl" id="category-readiness-heading">
           Readiness by area
         </h2>
         <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,18rem),1fr))] gap-4">
           {readinessCategories.map((category) => {
             const categorySummary = getReadinessSummary(
-              readinessRequirements.filter(
-                (requirement) => requirement.category === category.id
-              )
+              readinessRequirements.filter((requirement) => requirement.category === category.id)
             );
             return (
-              <article
-                className="min-w-0 rounded-lg border bg-card p-5"
-                key={category.id}
-              >
-                <h3 className="m-0 break-words font-semibold text-base">
-                  {category.title}
-                </h3>
-                <p className="mt-3 mb-0 font-semibold text-xl tracking-tight">
-                  {categorySummary.percentage}%
-                </p>
+              <article className="min-w-0 rounded-lg border bg-card p-5" key={category.id}>
+                <h3 className="m-0 break-words font-semibold text-base">{category.title}</h3>
+                <p className="mt-3 mb-0 font-semibold text-xl tracking-tight">{categorySummary.percentage}%</p>
                 <p className="mt-1 mb-4 text-muted-foreground text-xs">
-                  {categorySummary.verified}/{categorySummary.applicable}{" "}
-                  verified
+                  {categorySummary.verified}/{categorySummary.applicable} verified
                 </p>
                 <div
                   aria-label={`${category.title} readiness`}
@@ -364,10 +298,7 @@ export function ReadinessDashboard() {
                   className="h-1.5 overflow-hidden rounded-full bg-muted"
                   role="progressbar"
                 >
-                  <div
-                    className="h-full rounded-full bg-primary"
-                    style={{ width: `${categorySummary.percentage}%` }}
-                  />
+                  <div className="h-full rounded-full bg-primary" style={{ width: `${categorySummary.percentage}%` }} />
                 </div>
               </article>
             );
@@ -378,16 +309,10 @@ export function ReadinessDashboard() {
       <section aria-labelledby="capability-ledger-heading">
         <div className="mb-4 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <h2
-              className="m-0 font-semibold text-2xl"
-              id="capability-ledger-heading"
-            >
+            <h2 className="m-0 font-semibold text-2xl" id="capability-ledger-heading">
               Capability ledger
             </h2>
-            <p
-              aria-live="polite"
-              className="mt-1 mb-0 text-muted-foreground text-sm"
-            >
+            <p aria-live="polite" className="mt-1 mb-0 text-muted-foreground text-sm">
               {`Showing ${visibleStart}–${visibleEnd} of ${filteredRequirements.length} matching checks. ${readinessRequirements.length} profile checks total.`}
             </p>
           </div>
@@ -442,15 +367,9 @@ export function ReadinessDashboard() {
                 return null;
               }
               return (
-                <section
-                  aria-labelledby={`readiness-${category.id}`}
-                  key={category.id}
-                >
+                <section aria-labelledby={`readiness-${category.id}`} key={category.id}>
                   <div className="mb-3 flex flex-wrap items-baseline justify-between gap-3 border-b pb-2">
-                    <h3
-                      className="m-0 font-semibold text-xl"
-                      id={`readiness-${category.id}`}
-                    >
+                    <h3 className="m-0 font-semibold text-xl" id={`readiness-${category.id}`}>
                       {category.title}
                     </h3>
                     <a
@@ -464,15 +383,10 @@ export function ReadinessDashboard() {
                   </div>
                   <ul className="m-0 grid list-none gap-3 p-0">
                     {categoryRequirements.map((requirement) => (
-                      <li
-                        className="rounded-lg border bg-card p-4"
-                        key={requirement.id}
-                      >
+                      <li className="rounded-lg border bg-card p-4" key={requirement.id}>
                         <div className="flex flex-wrap items-start justify-between gap-3">
                           <div>
-                            <p className="m-0 break-all font-mono text-muted-foreground text-xs">
-                              {requirement.id}
-                            </p>
+                            <p className="m-0 break-all font-mono text-muted-foreground text-xs">{requirement.id}</p>
                             <h4 className="mt-1 mb-0 font-semibold text-base">
                               {requirement.sourceUrl ? (
                                 <a
@@ -489,16 +403,12 @@ export function ReadinessDashboard() {
                             </h4>
                           </div>
                           <div className="flex flex-wrap gap-2">
-                            <Badge variant="simple-inverted">
-                              {requirement.level}
-                            </Badge>
+                            <Badge variant="simple-inverted">{requirement.level}</Badge>
                             <RequirementStatus status={requirement.status} />
                           </div>
                         </div>
                         {requirement.description ? (
-                          <p className="mt-3 mb-2 text-muted-foreground text-sm">
-                            {requirement.description}
-                          </p>
+                          <p className="mt-3 mb-2 text-muted-foreground text-sm">{requirement.description}</p>
                         ) : null}
                         <div className="mt-3">
                           <RequirementDetail requirement={requirement} />
@@ -512,10 +422,7 @@ export function ReadinessDashboard() {
           </div>
         )}
         {filteredRequirements.length > 0 ? (
-          <nav
-            aria-label="Capability ledger pagination"
-            className="mt-6 flex items-center justify-center gap-4"
-          >
+          <nav aria-label="Capability ledger pagination" className="mt-6 flex items-center justify-center gap-4">
             <Button
               aria-label="Previous page"
               disabled={page === 1}

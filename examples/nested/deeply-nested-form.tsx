@@ -92,9 +92,7 @@ const defaultValues = create(SubmitDeeplyNestedFormRequestSchema, {
   labels: { owner: "platform-team", tier: "critical" },
   organization: {
     governance: {
-      escalationChain: [
-        { email: "on-call@example.com", name: "Platform on-call" },
-      ],
+      escalationChain: [{ email: "on-call@example.com", name: "Platform on-call" }],
       primaryOwner: {
         email: "owner@example.com",
         name: "Ada Lovelace",

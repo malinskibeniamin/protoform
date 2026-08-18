@@ -1,28 +1,28 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { AutoForm } from '@/registry/base-nova/protoform/components/auto-form';
-import type { SchemaProvider } from '@/registry/base-nova/protoform/components/auto-form/core-types';
+import { useState } from "react";
+import { AutoForm } from "@/registry/base-nova/protoform/components/auto-form";
+import type { SchemaProvider } from "@/registry/base-nova/protoform/components/auto-form/core-types";
 
 const schema: SchemaProvider = {
   getDefaultValues: () => ({
-    email: 'hello@protoform.dev',
+    email: "hello@protoform.dev",
     newsletter: true,
-    notes: 'Start simple: schema in, shadcn form out.',
+    notes: "Start simple: schema in, shadcn form out.",
   }),
   parseSchema: () => ({
     fields: [
-      { key: 'email', type: 'string', required: true, fieldConfig: { fieldType: 'email', label: 'Work email' } },
-      { key: 'newsletter', type: 'boolean', required: false, fieldConfig: { fieldType: 'switch', label: 'Subscribe' } },
+      { fieldConfig: { fieldType: "email", label: "Work email" }, key: "email", required: true, type: "string" },
+      { fieldConfig: { fieldType: "switch", label: "Subscribe" }, key: "newsletter", required: false, type: "boolean" },
       {
-        key: 'notes',
-        type: 'string',
-        required: false,
         fieldConfig: {
-          description: 'AutoForm renders native shadcn-style controls while you keep the source code.',
-          fieldType: 'textarea',
-          label: 'Notes',
+          description: "AutoForm renders native shadcn-style controls while you keep the source code.",
+          fieldType: "textarea",
+          label: "Notes",
         },
+        key: "notes",
+        required: false,
+        type: "string",
       },
     ],
   }),
@@ -42,7 +42,9 @@ export function AutoFormBasicDemo() {
         testId="basic-auto-form"
         withSubmit
       />
-      {submittedValue ? <pre className="overflow-auto rounded-md border bg-muted p-4 text-xs">{submittedValue}</pre> : null}
+      {submittedValue ? (
+        <pre className="overflow-auto rounded-md border bg-muted p-4 text-xs">{submittedValue}</pre>
+      ) : null}
     </div>
   );
 }

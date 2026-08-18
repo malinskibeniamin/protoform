@@ -2,16 +2,10 @@
 
 import { useState } from "react";
 
-import {
-  Alert,
-  AlertDescription,
-} from "@/registry/base-nova/protoform/components/alert";
+import { Alert, AlertDescription } from "@/registry/base-nova/protoform/components/alert";
 import { AutoForm } from "@/registry/base-nova/protoform/components/auto-form";
 
-import {
-  type OneofForm,
-  OneofFormSchema,
-} from "../gen/protoform/examples/v1/oneof_form_pb.js";
+import { type OneofForm, OneofFormSchema } from "../gen/protoform/examples/v1/oneof_form_pb.js";
 
 export const client = "only";
 
@@ -24,9 +18,7 @@ export default function OneofFormExample() {
         onFieldChange={() => setSubmittedContact(undefined)}
         onSubmit={(values) => {
           if (values.contact.case !== undefined) {
-            setSubmittedContact(
-              `${values.contact.case}: ${values.contact.value}`
-            );
+            setSubmittedContact(`${values.contact.case}: ${values.contact.value}`);
           }
         }}
         schema={OneofFormSchema}

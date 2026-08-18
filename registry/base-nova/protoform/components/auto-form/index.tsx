@@ -1,13 +1,12 @@
-'use client';
+"use client";
 
-import { createProtoResolver } from '../../hooks/use-proto-form';
-import type { Resolver, UseFormProps, UseFormReturn } from 'react-hook-form';
-
-import { ReactHookFormEngine } from './adapters/react-hook-form';
-import { AutoFormCore } from './auto-form-core';
-import { isProtoMessageDescriptor, isProtoProvider } from './proto';
-import { protoConversionOptionsFromFieldConfig } from './schema';
-import type { AutoFormProps as BaseAutoFormProps } from './types';
+import type { Resolver, UseFormProps, UseFormReturn } from "react-hook-form";
+import { createProtoResolver } from "../../hooks/use-proto-form";
+import { ReactHookFormEngine } from "./adapters/react-hook-form";
+import { AutoFormCore } from "./auto-form-core";
+import { isProtoMessageDescriptor, isProtoProvider } from "./proto";
+import { protoConversionOptionsFromFieldConfig } from "./schema";
+import type { AutoFormValidationMode, AutoFormProps as BaseAutoFormProps } from "./types";
 
 type FormValues = Record<string, unknown>;
 
@@ -22,24 +21,27 @@ export type AutoFormProps<
   TCustomFieldType
 >;
 
+export { ShadcnAutoFormFieldComponents } from "./auto-form-core";
 export {
-  compileCelExpression,
-  DEFAULT_CEL_MAX_COST,
   type CelEvaluation,
   type CompileCelExpressionOptions,
   type CompiledCelExpression,
-} from './cel-runtime';
-export { useAutoForm } from './context';
+  compileCelExpression,
+  DEFAULT_CEL_MAX_COST,
+} from "./cel-runtime";
 export {
-  inspectAutoFormConfiguration,
   type AutoFormConfigurationDiagnostic,
   type AutoFormConfigurationDiagnosticCode,
   type InspectAutoFormConfigurationInput,
-} from './configuration';
-export { defaultRegistry } from './fields';
-export { defaultClassifyField } from './helpers';
-export { type FieldMatchContext, type FieldTypeDefinition, FieldTypeRegistry } from './registry';
-export { AutoFormSlot } from './slot';
+  inspectAutoFormConfiguration,
+} from "./configuration";
+export { useAutoForm } from "./context";
+export type { AutoFormFieldComponents, AutoFormFieldProps } from "./core-types";
+export type { AutoFormEngineHandle } from "./engine";
+export { defaultRegistry } from "./fields";
+export { defaultClassifyField } from "./helpers";
+export { type FieldMatchContext, type FieldTypeDefinition, FieldTypeRegistry } from "./registry";
+export { AutoFormSlot } from "./slot";
 export type {
   AutoFormMode,
   AutoFormRevalidationMode,
@@ -53,24 +55,30 @@ export type {
   BuiltInFieldType,
   DeprecatedFieldPolicy,
   FieldTypes,
-} from './types';
-export { ShadcnAutoFormFieldComponents } from './auto-form-core';
-export type { AutoFormFieldComponents, AutoFormFieldProps } from './core-types';
-export type { AutoFormEngineHandle } from './engine';
+} from "./types";
 
-export function AutoForm<
-  T extends FormValues = FormValues,
-  TCustomFieldType extends string = never,
->({
+function toHookFormMode(mode: AutoFormValidationMode): "onBlur" | "onChange" | "onSubmit" {
+  switch (mode) {
+    case "blur":
+      return "onBlur";
+    case "change":
+      return "onChange";
+    case "submit":
+      return "onSubmit";
+    default:
+      throw new TypeError(`Unsupported validation mode: ${mode satisfies never}`);
+  }
+}
+
+export function AutoForm<T extends FormValues = FormValues, TCustomFieldType extends string = never>({
   formOptions,
   resolver,
   ...props
 }: AutoFormProps<T, TCustomFieldType>) {
-  const protoDescriptor = isProtoMessageDescriptor(props.schema)
-    ? props.schema
-    : isProtoProvider(props.schema)
-      ? props.schema.getMessageDescriptor()
-      : undefined;
+  let protoDescriptor = isProtoMessageDescriptor(props.schema) ? props.schema : undefined;
+  if (!protoDescriptor && isProtoProvider(props.schema)) {
+    protoDescriptor = props.schema.getMessageDescriptor();
+  }
   const conversionOptions = protoConversionOptionsFromFieldConfig(props.fieldConfig);
   const resolvedResolver =
     resolver ??
@@ -81,18 +89,12 @@ export function AutoForm<
     ...(formOptions ?? {}),
     ...(props.validationMode
       ? {
-          mode:
-            props.validationMode === 'change'
-              ? 'onChange'
-              : props.validationMode === 'blur'
-                ? 'onBlur'
-                : 'onSubmit',
+          mode: toHookFormMode(props.validationMode),
         }
       : {}),
     ...(props.revalidationMode
       ? {
-          reValidateMode:
-            props.revalidationMode === 'change' ? 'onChange' : 'onBlur',
+          reValidateMode: props.revalidationMode === "change" ? "onChange" : "onBlur",
         }
       : {}),
   };

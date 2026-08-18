@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '../../select';
-import { useAutoForm } from '../context';
-import type { AutoFormFieldProps } from '../core-types';
-import { type DataProviderOption, resolveDataProvider } from '../data-providers';
-import type { FieldTypeDefinition } from '../registry';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "../../select";
+import { useAutoForm } from "../context";
+import type { AutoFormFieldProps } from "../core-types";
+import { type DataProviderOption, resolveDataProvider } from "../data-providers";
+import type { FieldTypeDefinition } from "../registry";
 import {
   getControlLabel,
   getFlatOptions,
@@ -13,7 +13,7 @@ import {
   readDataProviderId,
   renderOptionLabel,
   useFieldTestIds,
-} from './shared';
+} from "./shared";
 
 function SelectFieldComponent({ error, field, id, inputProps, label }: AutoFormFieldProps) {
   const testIds = useFieldTestIds(id);
@@ -21,7 +21,8 @@ function SelectFieldComponent({ error, field, id, inputProps, label }: AutoFormF
   const providerId = readDataProviderId(field);
   const provider = resolveDataProvider(dataProviders, providerId);
   const numericOptions = hasNumericOptions(field);
-  const currentValue = inputProps.value === undefined || inputProps.value === null ? null : String(inputProps.value);
+  const currentValue =
+    inputProps["value"] === undefined || inputProps["value"] === null ? null : String(inputProps["value"]);
   const fieldLabel = getControlLabel(label, field);
   const optionGroups = getGroupedOptions(field);
   const flatOptions = getFlatOptions(field);
@@ -41,20 +42,10 @@ function SelectFieldComponent({ error, field, id, inputProps, label }: AutoFormF
     );
   }
 
-  if (providerId) {
-    // Annotated but no implementation registered — loud dev warning, graceful fallback.
-    if (process.env.NODE_ENV !== 'production') {
-      console.warn(
-        `[AutoForm] Field "${field.key}" is annotated with data_provider="${providerId}" ` +
-          'but no provider is registered. Check the AutoForm dataProviders map.'
-      );
-    }
-  }
-
   return (
     <Select
       items={[
-        ...(field.required ? [] : [{ label: 'Not set', value: null }]),
+        ...(field.required ? [] : [{ label: "Not set", value: null }]),
         ...flatOptions.map((option) => ({
           label: renderOptionLabel(option),
           value: option.value,
@@ -62,17 +53,17 @@ function SelectFieldComponent({ error, field, id, inputProps, label }: AutoFormF
       ]}
       onValueChange={(value) => {
         if (value === null) {
-          inputProps.onValueChange(undefined);
+          inputProps["onValueChange"](undefined);
           return;
         }
-        inputProps.onValueChange(numericOptions ? Number(value) : value);
+        inputProps["onValueChange"](numericOptions ? Number(value) : value);
       }}
       value={currentValue}
     >
       <SelectTrigger
         aria-label={fieldLabel}
-        className={error ? 'border-destructive' : ''}
-        disabled={inputProps.disabled}
+        className={error ? "border-destructive" : ""}
+        disabled={inputProps["disabled"]}
         id={id}
         testId={testIds.control}
       >
@@ -80,15 +71,15 @@ function SelectFieldComponent({ error, field, id, inputProps, label }: AutoFormF
       </SelectTrigger>
       <SelectContent>
         {field.required ? null : (
-          <SelectItem testId={testIds.option('not-set')} value={null}>
+          <SelectItem testId={testIds.option("not-set")} value={null}>
             Not set
           </SelectItem>
         )}
         {optionGroups?.length
-          ? optionGroups.map((group, groupIndex) => (
+          ? optionGroups.map((group) => (
               <SelectGroup
-                key={`${field.key}-group-${groupIndex}`}
-                testId={testIds.group(String(group.label ?? groupIndex))}
+                key={`${field.key}-group-${String(group.label ?? group.options.map((option) => option.value).join("-"))}`}
+                testId={testIds.group(String(group.label ?? group.options.map((option) => option.value).join("-")))}
               >
                 {group.label ? <SelectLabel>{group.label}</SelectLabel> : null}
                 {group.options.map((option) => (
@@ -119,11 +110,11 @@ function SelectFieldFromProvider({
   testIds,
 }: {
   currentValue: string | null;
-  error: AutoFormFieldProps['error'];
-  field: AutoFormFieldProps['field'];
+  error: AutoFormFieldProps["error"];
+  field: AutoFormFieldProps["field"];
   fieldLabel: string;
   id: string;
-  inputProps: AutoFormFieldProps['inputProps'];
+  inputProps: AutoFormFieldProps["inputProps"];
   provider: () => { options: DataProviderOption[]; isLoading?: boolean; error?: unknown };
   testIds: ReturnType<typeof useFieldTestIds>;
 }) {
@@ -144,16 +135,16 @@ function SelectFieldFromProvider({
   }
 
   const grouped = options.reduce<Record<string, DataProviderOption[]>>((acc, option) => {
-    const key = option.group ?? '';
+    const key = option.group ?? "";
     acc[key] = acc[key] ? [...acc[key], option] : [option];
     return acc;
   }, {});
-  const hasGroups = Object.keys(grouped).some((k) => k !== '');
+  const hasGroups = Object.keys(grouped).some((k) => k !== "");
 
   return (
     <Select
       items={[
-        ...(field.required ? [] : [{ label: 'Not set', value: null }]),
+        ...(field.required ? [] : [{ label: "Not set", value: null }]),
         ...options.map((option) => ({
           label: <ProviderOptionLabel option={option} />,
           value: option.value,
@@ -161,36 +152,36 @@ function SelectFieldFromProvider({
       ]}
       onValueChange={(value) => {
         if (value === null) {
-          inputProps.onValueChange(undefined);
+          inputProps["onValueChange"](undefined);
           return;
         }
-        inputProps.onValueChange(value);
+        inputProps["onValueChange"](value);
       }}
       value={currentValue}
     >
       <SelectTrigger
         aria-label={fieldLabel}
-        className={error ? 'border-destructive' : ''}
-        disabled={inputProps.disabled || isLoading}
+        className={error ? "border-destructive" : ""}
+        disabled={inputProps["disabled"] || isLoading}
         id={id}
         testId={testIds.control}
       >
-        <SelectValue placeholder={isLoading ? 'Loading…' : 'Select an option'} />
+        <SelectValue placeholder={isLoading ? "Loading…" : "Select an option"} />
       </SelectTrigger>
       <SelectContent>
         {field.required ? null : (
-          <SelectItem testId={testIds.option('not-set')} value={null}>
+          <SelectItem testId={testIds.option("not-set")} value={null}>
             Not set
           </SelectItem>
         )}
         {options.length === 0 && !isLoading ? (
-          <SelectItem disabled testId={testIds.option('empty')} value="__empty">
+          <SelectItem disabled testId={testIds.option("empty")} value="__empty">
             No options available
           </SelectItem>
         ) : null}
         {hasGroups
           ? Object.entries(grouped).map(([groupLabel, groupOptions]) => (
-              <SelectGroup key={groupLabel || 'ungrouped'} testId={testIds.group(groupLabel || 'ungrouped')}>
+              <SelectGroup key={groupLabel || "ungrouped"} testId={testIds.group(groupLabel || "ungrouped")}>
                 {groupLabel ? <SelectLabel>{groupLabel}</SelectLabel> : null}
                 {groupOptions.map((option) => (
                   <SelectItem key={option.value} testId={testIds.option(option.value)} value={option.value}>
@@ -235,16 +226,16 @@ function ProviderOptionLabel({ option }: { option: DataProviderOption }) {
 export { SelectFieldComponent };
 
 export const selectFieldDefinition: FieldTypeDefinition = {
-  name: 'select',
-  priority: 12,
+  component: SelectFieldComponent,
   match: (field) => {
-    if (field.type !== 'select') {
+    if (field.type !== "select") {
       return false;
     }
     const optionCount = field.options?.length ?? 0;
     return optionCount > 3 && optionCount <= 8;
   },
-  component: SelectFieldComponent,
+  name: "select",
+  priority: 12,
 };
 
 /**
@@ -260,16 +251,16 @@ export const selectFieldDefinition: FieldTypeDefinition = {
  * match under different conditions.
  */
 export const dataProviderSelectFieldDefinition: FieldTypeDefinition = {
-  name: 'dataProviderSelect',
-  priority: 120,
+  component: SelectFieldComponent,
   match: (field) => {
     // Arrays / maps / objects keep their native renderers even when the
     // parent field is annotated with a data provider. Support for
     // array-of-strings multi-select from a data provider is a follow-up.
-    if (field.type !== 'string' && field.type !== 'number') {
+    if (field.type !== "string" && field.type !== "number") {
       return false;
     }
     return readDataProviderId(field) !== undefined;
   },
-  component: SelectFieldComponent,
+  name: "dataProviderSelect",
+  priority: 120,
 };

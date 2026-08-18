@@ -151,16 +151,13 @@ const recommendedValidationCases: ValidationCase[] = [
 function getIssuePaths(
   issues:
     | readonly {
-        path?: readonly (PropertyKey | { key: PropertyKey })[];
+        path?: readonly (PropertyKey | { key: PropertyKey })[] | undefined;
       }[]
     | undefined
 ): (string | number)[][] | undefined {
   return issues?.map((issue) =>
     (issue.path ?? []).map((segment) => {
-      const key =
-        typeof segment === "object" && segment !== null && "key" in segment
-          ? segment.key
-          : segment;
+      const key = typeof segment === "object" && segment !== null && "key" in segment ? segment.key : segment;
       return typeof key === "number" ? key : String(key);
     })
   );
@@ -195,9 +192,7 @@ describe("required Protoform conformance", () => {
     { key: "preferences", required: false, type: "json" },
   ])("maps $key into the stable field model", (expectedField) => {
     const parsedSchema = parseProtoSchema(AutoFormExampleSchema);
-    const field = parsedSchema.fields.find(
-      (candidate) => candidate.key === expectedField.key
-    );
+    const field = parsedSchema.fields.find((candidate) => candidate.key === expectedField.key);
 
     expect(field).toBeDefined();
     expect({
@@ -229,15 +224,12 @@ describe("required Protoform conformance", () => {
     expect(Array.from(result.value.avatarBytes)).toEqual([1, 2, 3, 4]);
   });
 
-  it.each(requiredValidationCases)(
-    "returns form-shaped paths for $name failures",
-    async ({ input, paths }) => {
-      const schema = createProtoFormSchema(AutoFormExampleSchema);
-      const result = await schema["~standard"].validate(input);
+  it.each(requiredValidationCases)("returns form-shaped paths for $name failures", async ({ input, paths }) => {
+    const schema = createProtoFormSchema(AutoFormExampleSchema);
+    const result = await schema["~standard"].validate(input);
 
-      expect(getIssuePaths(result.issues)).toEqual(paths);
-    }
-  );
+    expect(getIssuePaths(result.issues)).toEqual(paths);
+  });
 
   it("returns a root issue for a non-object input instead of throwing", async () => {
     const schema = createProtoFormSchema(AutoFormExampleSchema);
@@ -248,15 +240,12 @@ describe("required Protoform conformance", () => {
 });
 
 describe("recommended Protoform conformance", () => {
-  it.each(recommendedValidationCases)(
-    "reports $name with stable paths",
-    async ({ input, paths }) => {
-      const schema = createProtoFormSchema(AutoFormExampleSchema);
-      const result = await schema["~standard"].validate(input);
+  it.each(recommendedValidationCases)("reports $name with stable paths", async ({ input, paths }) => {
+    const schema = createProtoFormSchema(AutoFormExampleSchema);
+    const result = await schema["~standard"].validate(input);
 
-      expect(getIssuePaths(result.issues)).toEqual(paths);
-    }
-  );
+    expect(getIssuePaths(result.issues)).toEqual(paths);
+  });
 
   it("round-trips optional, wrapper, JSON, map, bytes, and oneof values", async () => {
     const schema = createProtoFormSchema(AutoFormExampleSchema);
@@ -273,14 +262,10 @@ describe("recommended Protoform conformance", () => {
 
     expect(result.issues).toBeUndefined();
     if (result.issues) {
-      throw new Error(
-        "Expected the round-trip conformance fixture to validate."
-      );
+      throw new Error("Expected the round-trip conformance fixture to validate.");
     }
 
-    expect(
-      protoToFormValues(AutoFormExampleSchema, result.value)
-    ).toMatchObject({
+    expect(protoToFormValues(AutoFormExampleSchema, result.value)).toMatchObject({
       avatarBytes: "AQIDBA==",
       betaTester: true,
       bonusPoints: 42,
@@ -302,14 +287,8 @@ describe("recommended Protoform conformance", () => {
 
   it("keeps every oneof branch discoverable in descriptor order", () => {
     const parsedSchema = parseProtoSchema(AutoFormExampleSchema);
-    const oneof = parsedSchema.fields.find(
-      (field) => field.key === "preferredContact"
-    );
+    const oneof = parsedSchema.fields.find((field) => field.key === "preferredContact");
 
-    expect(oneof?.schema?.map((field) => field.key)).toEqual([
-      "preferredEmail",
-      "preferredPhone",
-      "doNotContact",
-    ]);
+    expect(oneof?.schema?.map((field) => field.key)).toEqual(["preferredEmail", "preferredPhone", "doNotContact"]);
   });
 });

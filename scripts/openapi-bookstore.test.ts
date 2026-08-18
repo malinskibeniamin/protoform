@@ -4,17 +4,10 @@ import { describe, expect, it } from "vitest";
 const spec = readFileSync(new URL("../openapi.yaml", import.meta.url), "utf8");
 
 describe("bookstore OpenAPI surface", () => {
-  it.each(["ListBooks", "GetBook", "CreateBook", "UpdateBook", "DeleteBook"])(
-    "documents %s",
-    (method) => {
-      expect(spec).toContain(
-        `/protoform.conformance.v1.LibraryService/${method}:`
-      );
-      expect(spec).toContain(
-        `operationId: protoform.conformance.v1.LibraryService.${method}`
-      );
-    }
-  );
+  it.each(["ListBooks", "GetBook", "CreateBook", "UpdateBook", "DeleteBook"])("documents %s", (method) => {
+    expect(spec).toContain(`/protoform.conformance.v1.LibraryService/${method}:`);
+    expect(spec).toContain(`operationId: protoform.conformance.v1.LibraryService.${method}`);
+  });
 
   it("documents ISBN-13, update masks, and etags", () => {
     expect(spec).toContain("isbn:");

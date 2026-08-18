@@ -1,12 +1,7 @@
 #!/usr/bin/env bun
 export {};
 
-const [
-  ,
-  ,
-  zodFile = "<path-to-zod-form.tsx>",
-  protoFile = "<path-to-target.proto>",
-] = process.argv;
+const [, , zodFile = "<path-to-zod-form.tsx>", protoFile = "<path-to-target.proto>"] = process.argv;
 
 const prompt = `You are migrating a shadcn React Hook Form from Zod to Protoform.
 

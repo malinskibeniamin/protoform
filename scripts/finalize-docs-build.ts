@@ -15,21 +15,12 @@ function requiredMeta(pattern: RegExp, label: string): string {
 }
 
 const title = requiredMeta(/<title>([^<]+)<\/title>/, "a title");
-const description = requiredMeta(
-  /<meta content="([^"]+)" name="description"/,
-  "a meta description"
-);
-const canonical = requiredMeta(
-  /<link href="([^"]+)" rel="canonical"/,
-  "a canonical URL"
-);
+const description = requiredMeta(/<meta content="([^"]+)" name="description"/, "a meta description");
+const canonical = requiredMeta(/<link href="([^"]+)" rel="canonical"/, "a canonical URL");
 
 // Blume 1.3.1 indexes custom Astro pages but only emits content routes in
 // llms.txt. Keep the indexable custom home synchronized with the generated
 // manifest so the audit and agent-facing surface describe the same site.
 if (!llms.includes(`](${canonical})`)) {
-  writeFileSync(
-    llmsPath,
-    `${llms.trimEnd()}\n\n## Home\n\n- [${title}](${canonical}): ${description}\n`
-  );
+  writeFileSync(llmsPath, `${llms.trimEnd()}\n\n## Home\n\n- [${title}](${canonical}): ${description}\n`);
 }

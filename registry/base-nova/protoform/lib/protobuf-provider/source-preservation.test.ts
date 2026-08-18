@@ -1,10 +1,4 @@
-import {
-  create,
-  createFileRegistry,
-  type DescMessage,
-  fromBinary,
-  toBinary,
-} from "@bufbuild/protobuf";
+import { create, createFileRegistry, type DescMessage, fromBinary, toBinary } from "@bufbuild/protobuf";
 import {
   FieldDescriptorProto_Label,
   FieldDescriptorProto_Type,
@@ -116,16 +110,43 @@ function createPreservationFixture(): {
 
 const { nested: NestedSchema, root: RootSchema } = createPreservationFixture();
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function requireRecord(value: unknown, label: string): Record<string, unknown> {
+  if (!isRecord(value)) {
+    throw new Error(`Expected ${label} to be an object.`);
+  }
+  return value;
+}
+
+function requireArray(value: unknown, label: string): unknown[] {
+  if (!Array.isArray(value)) {
+    throw new Error(`Expected ${label} to be an array.`);
+  }
+  return value;
+}
+
+function requireElement<T>(values: readonly T[], index: number, label: string): T {
+  const value = values[index];
+  if (value === undefined) {
+    throw new Error(`Expected ${label} at index ${index}.`);
+  }
+  return value;
+}
+
+function unknownFields(value: unknown, label: string): unknown {
+  return requireRecord(value, label)["$unknown"];
+}
+
 function unknownBytes(marker: number): number[] {
   return [0x98, 0x06, marker];
 }
 
 function nestedWithUnknown(label: string, marker: number) {
   const known = toBinary(NestedSchema, create(NestedSchema, { label }));
-  return fromBinary(
-    NestedSchema,
-    Uint8Array.from([...known, ...unknownBytes(marker)])
-  );
+  return fromBinary(NestedSchema, Uint8Array.from([...known, ...unknownBytes(marker)]));
 }
 
 function sourceMessage() {
@@ -141,91 +162,89 @@ function sourceMessage() {
       second: nestedWithUnknown("map second", 5),
     },
   });
-  return fromBinary(
-    RootSchema,
-    Uint8Array.from([...toBinary(RootSchema, known), ...unknownBytes(7)])
-  );
+  return fromBinary(RootSchema, Uint8Array.from([...toBinary(RootSchema, known), ...unknownBytes(7)]));
 }
 
 describe("source-message preservation", () => {
   it("preserves unknown fields on every surviving message node", () => {
     const source = sourceMessage();
+    const sourceRecord = requireRecord(source, "source message");
+    const sourceChildren = requireArray(sourceRecord["children"], "source children");
+    const sourceMap = requireRecord(sourceRecord["nestedByKey"], "source map");
+    const sourceChoice = requireRecord(sourceRecord["choice"], "source choice");
     const values = protoToFormValues(RootSchema, source);
-    const children = values.children as Record<string, unknown>[];
-    const entries = values.nestedByKey as Array<{
+    const children = values["children"] as Record<string, unknown>[];
+    const entries = values["nestedByKey"] as Array<{
       key: string;
       value: Record<string, unknown>;
     }>;
-    const choice = values.choice as {
+    const choice = values["choice"] as {
       case: string;
       value: Record<string, unknown>;
     };
 
-    (values.nested as Record<string, unknown>).label = "edited nested";
-    children[0].label = "edited first";
-    entries[0].value.label = "edited map first";
-    choice.value.label = "edited choice";
+    requireRecord(values["nested"], "nested form value")["label"] = "edited nested";
+    requireElement(children, 0, "child form value")["label"] = "edited first";
+    requireElement(entries, 0, "map form entry").value["label"] = "edited map first";
+    choice.value["label"] = "edited choice";
 
-    const edited = formValuesToProto(RootSchema, values, source) as Record<
-      string,
-      unknown
-    >;
-    const editedChildren = edited.children as Array<{
+    const edited = formValuesToProto(RootSchema, values, source) as Record<string, unknown>;
+    const editedChildren = edited["children"] as Array<{
       $unknown?: unknown;
     }>;
-    const editedMap = edited.nestedByKey as Record<
-      string,
-      { $unknown?: unknown }
-    >;
-    const editedChoice = edited.choice as {
+    const editedMap = edited["nestedByKey"] as Record<string, { $unknown?: unknown }>;
+    const editedChoice = edited["choice"] as {
       case: string;
       value: { $unknown?: unknown };
     };
 
-    expect(edited.$unknown).toEqual(source.$unknown);
-    expect((edited.nested as { $unknown?: unknown }).$unknown).toEqual(
-      source.nested.$unknown
+    expect(edited["$unknown"]).toEqual(source.$unknown);
+    expect(unknownFields(edited["nested"], "edited nested message")).toEqual(
+      unknownFields(sourceRecord["nested"], "source nested message")
     );
-    expect(editedChildren[0].$unknown).toEqual(source.children[0].$unknown);
-    expect(editedMap.first.$unknown).toEqual(
-      source.nestedByKey.first.$unknown
+    expect(unknownFields(requireElement(editedChildren, 0, "edited child"), "edited child")).toEqual(
+      unknownFields(requireElement(sourceChildren, 0, "source child"), "source child")
     );
-    expect(editedChoice.value.$unknown).toEqual(source.choice.value.$unknown);
+    expect(unknownFields(editedMap["first"], "edited first map value")).toEqual(
+      unknownFields(sourceMap["first"], "source first map value")
+    );
+    expect(unknownFields(editedChoice.value, "edited choice value")).toEqual(
+      unknownFields(sourceChoice["value"], "source choice value")
+    );
   });
 
   it("does not resurrect unknown fields from removed messages or changed oneofs", () => {
     const source = sourceMessage();
+    const sourceRecord = requireRecord(source, "source message");
+    const sourceChildren = requireArray(sourceRecord["children"], "source children");
+    const sourceMap = requireRecord(sourceRecord["nestedByKey"], "source map");
     const values = protoToFormValues(RootSchema, source);
-    const children = values.children as Record<string, unknown>[];
-    const entries = values.nestedByKey as Array<{
+    const children = values["children"] as Record<string, unknown>[];
+    const entries = values["nestedByKey"] as Array<{
       key: string;
       value: Record<string, unknown>;
     }>;
 
-    values.nested = undefined;
-    values.children = [children[1]];
-    values.nestedByKey = entries.filter((entry) => entry.key === "second");
-    values.choice = { case: "textChoice", value: "replacement" };
+    values["nested"] = undefined;
+    values["children"] = [requireElement(children, 1, "second child form value")];
+    values["nestedByKey"] = entries.filter((entry) => entry.key === "second");
+    values["choice"] = { case: "textChoice", value: "replacement" };
 
-    const edited = formValuesToProto(RootSchema, values, source) as Record<
-      string,
-      unknown
-    >;
-    const editedChildren = edited.children as Array<{
+    const edited = formValuesToProto(RootSchema, values, source) as Record<string, unknown>;
+    const editedChildren = edited["children"] as Array<{
       $unknown?: unknown;
     }>;
-    const editedMap = edited.nestedByKey as Record<
-      string,
-      { $unknown?: unknown }
-    >;
+    const editedMap = edited["nestedByKey"] as Record<string, { $unknown?: unknown }>;
 
-    expect(edited.nested).toBeUndefined();
+    expect(edited["nested"]).toBeUndefined();
     expect(editedChildren).toHaveLength(1);
-    expect(editedChildren[0].$unknown).toEqual(source.children[1].$unknown);
-    expect(editedMap).not.toHaveProperty("first");
-    expect(editedMap.second.$unknown).toEqual(
-      source.nestedByKey.second.$unknown
+    expect(unknownFields(requireElement(editedChildren, 0, "edited child"), "edited child")).toEqual(
+      unknownFields(requireElement(sourceChildren, 1, "second source child"), "second source child")
     );
-    expect(edited.choice).toEqual({ case: "textChoice", value: "replacement" });
+    expect(editedMap).not.toHaveProperty("first");
+    expect(unknownFields(editedMap["second"], "edited second map value")).toEqual(
+      unknownFields(sourceMap["second"], "source second map value")
+    );
+    expect(edited["choice"]).toEqual({ case: "textChoice", value: "replacement" });
   });
 });

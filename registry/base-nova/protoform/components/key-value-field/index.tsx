@@ -1,37 +1,39 @@
-'use client';
+"use client";
 
-import { Plus, X } from 'lucide-react';
-import { type ReactNode, useMemo, useRef } from 'react';
+import { Plus, X } from "lucide-react";
+import { type ReactNode, useMemo, useRef } from "react";
 
-import { Button } from '@/registry/base-nova/protoform/components/button';
-import { Combobox, type ComboboxProps } from '@/registry/base-nova/protoform/components/combobox';
-import { Input, type InputProps } from '@/registry/base-nova/protoform/components/input';
-import { Label } from '@/registry/base-nova/protoform/components/label';
-import { findDuplicateIndices, useInputListFocus } from '@/registry/base-nova/protoform/lib/input-utils';
-import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils';
+import { Button } from "@/registry/base-nova/protoform/components/button";
+import { Combobox, type ComboboxProps } from "@/registry/base-nova/protoform/components/combobox";
+import { Input, type InputProps } from "@/registry/base-nova/protoform/components/input";
+import { Label } from "@/registry/base-nova/protoform/components/label";
+import { findDuplicateIndices, useInputListFocus } from "@/registry/base-nova/protoform/lib/input-utils";
+import type { SharedProps } from "@/registry/base-nova/protoform/lib/utils";
 
-export type KeyValuePair = {
+export interface KeyValuePair {
   key: string;
   value: string;
-};
+}
 
-type InputFieldConfig = { mode?: 'input' } & Omit<InputProps, 'value' | 'onChange' | 'disabled' | 'aria-invalid'>;
-type ComboboxFieldConfig = { mode: 'combobox' } & Omit<ComboboxProps, 'value' | 'onChange' | 'disabled'>;
+const EMPTY_KEY_VALUE_PAIRS: KeyValuePair[] = [];
+
+type InputFieldConfig = { mode?: "input" } & Omit<InputProps, "value" | "onChange" | "disabled" | "aria-invalid">;
+type ComboboxFieldConfig = { mode: "combobox" } & Omit<ComboboxProps, "value" | "onChange" | "disabled">;
 export type KeyValueFieldConfig = InputFieldConfig | ComboboxFieldConfig;
 
-export type KeyValueFieldError = {
-  key?: string;
-  value?: string;
-};
+export interface KeyValueFieldError {
+  key?: string | undefined;
+  value?: string | undefined;
+}
 
 export interface KeyValueFieldProps extends SharedProps {
   addButtonLabel?: string;
   description?: ReactNode;
-  disabled?: boolean;
+  disabled?: boolean | undefined;
   errors?: Array<KeyValueFieldError | undefined>;
   keyFieldProps?: KeyValueFieldConfig;
   label?: ReactNode;
-  maxItems?: number;
+  maxItems?: number | undefined;
   onChange?: (value: KeyValuePair[]) => void;
   showAddButton?: boolean;
   value?: KeyValuePair[];
@@ -49,11 +51,11 @@ function FieldRenderer({
   config: KeyValueFieldConfig;
   value: string;
   onChange: (value: string) => void;
-  disabled?: boolean;
+  disabled?: boolean | undefined;
   isInvalid: boolean;
-  testId?: string;
+  testId?: string | undefined;
 }) {
-  if (config.mode === 'combobox') {
+  if (config.mode === "combobox") {
     const { mode: _m, ...comboboxProps } = config;
     return <Combobox {...comboboxProps} disabled={disabled} onChange={onChange} testId={testId} value={value} />;
   }
@@ -71,7 +73,7 @@ function FieldRenderer({
   );
 }
 
-function ErrorRow({ keyError, valueError }: { keyError?: string; valueError?: string }) {
+function ErrorRow({ keyError, valueError }: { keyError?: string | undefined; valueError?: string | undefined }) {
   if (!(keyError || valueError)) {
     return null;
   }
@@ -104,16 +106,16 @@ function KeyValueRow({
   index: number;
   isDuplicate: boolean;
   isLast: boolean;
-  error?: KeyValueFieldError;
-  disabled?: boolean;
+  error?: KeyValueFieldError | undefined;
+  disabled?: boolean | undefined;
   keyFieldProps: KeyValueFieldConfig;
   valueFieldProps: KeyValueFieldConfig;
-  testId?: string;
+  testId?: string | undefined;
   addButtonLabel: string;
   onKeyChange: (index: number, key: string) => void;
   onValueChange: (index: number, val: string) => void;
   onDelete: (index: number) => void;
-  onAdd?: () => void;
+  onAdd?: (() => void) | undefined;
 }) {
   const isKeyInvalid = Boolean(error?.key) || Boolean(pair.value && !pair.key) || isDuplicate;
   const isValueInvalid = Boolean(error?.value) || Boolean(pair.key && !pair.value);
@@ -147,7 +149,7 @@ function KeyValueRow({
       >
         <X size={16} />
       </Button>
-      <ErrorRow keyError={isDuplicate ? 'Duplicate key' : error?.key} valueError={error?.value} />
+      <ErrorRow keyError={isDuplicate ? "Duplicate key" : error?.key} valueError={error?.value} />
       {onAdd && isLast ? (
         <Button
           className="col-span-2"
@@ -168,14 +170,14 @@ function KeyValueRow({
 }
 
 export function KeyValueField({
-  value = [],
+  value = EMPTY_KEY_VALUE_PAIRS,
   onChange,
   errors,
   label,
   description,
-  addButtonLabel = 'Add',
-  keyFieldProps = { placeholder: 'Key' },
-  valueFieldProps = { placeholder: 'Value' },
+  addButtonLabel = "Add",
+  keyFieldProps = { placeholder: "Key" },
+  valueFieldProps = { placeholder: "Value" },
   showAddButton = true,
   disabled,
   maxItems,
@@ -189,7 +191,7 @@ export function KeyValueField({
   const isAtLimit = maxItems !== undefined && value.length >= maxItems;
 
   const handleAdd = () => {
-    onChange?.([...value, { key: '', value: '' }]);
+    onChange?.([...value, { key: "", value: "" }]);
     onAdd();
   };
 
@@ -236,7 +238,7 @@ export function KeyValueField({
           index={index}
           isDuplicate={duplicateIndices.has(index)}
           isLast={index === value.length - 1}
-          key={/* biome-ignore lint/suspicious/noArrayIndexKey: pairs may be duplicated */ index}
+          key={index}
           keyFieldProps={keyFieldProps}
           onAdd={showAddButton && !isAtLimit ? handleAdd : undefined}
           onDelete={handleDelete}

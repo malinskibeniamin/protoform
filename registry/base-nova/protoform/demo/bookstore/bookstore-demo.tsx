@@ -1,19 +1,11 @@
 "use client";
 
 import { createRouterTransport, type Transport } from "@connectrpc/connect";
-import {
-  skipToken,
-  TransportProvider,
-  useQuery,
-} from "@connectrpc/connect-query";
+import { skipToken, TransportProvider, useQuery } from "@connectrpc/connect-query";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-} from "@/registry/base-nova/protoform/components/alert";
+import { Alert, AlertDescription, AlertTitle } from "@/registry/base-nova/protoform/components/alert";
 import { Badge } from "@/registry/base-nova/protoform/components/badge";
 import { Button } from "@/registry/base-nova/protoform/components/button";
 import {
@@ -23,10 +15,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/registry/base-nova/protoform/components/card";
-import {
-  Field,
-  FieldLabel,
-} from "@/registry/base-nova/protoform/components/field";
+import { Field, FieldLabel } from "@/registry/base-nova/protoform/components/field";
 import { Input } from "@/registry/base-nova/protoform/components/input";
 import {
   type Book,
@@ -69,21 +58,12 @@ function initialVisitorId(provided?: string): string {
   return created;
 }
 
-export function BookstoreDemo({
-  transport: providedTransport,
-  visitorId: providedVisitorId,
-}: BookstoreDemoProps) {
+export function BookstoreDemo({ transport: providedTransport, visitorId: providedVisitorId }: BookstoreDemoProps) {
   const [queryClient] = useState(() => new QueryClient());
   const [transport] = useState(
-    () =>
-      providedTransport ??
-      createRouterTransport((router) =>
-        router.service(LibraryService, createLibraryService())
-      )
+    () => providedTransport ?? createRouterTransport((router) => router.service(LibraryService, createLibraryService()))
   );
-  const [visitorId, setVisitorId] = useState(() =>
-    initialVisitorId(providedVisitorId)
-  );
+  const [visitorId, setVisitorId] = useState(() => initialVisitorId(providedVisitorId));
 
   function resetLibrary() {
     const next = newVisitorId();
@@ -97,30 +77,18 @@ export function BookstoreDemo({
   return (
     <TransportProvider transport={transport}>
       <QueryClientProvider client={queryClient}>
-        <BookstoreWorkspace
-          onReset={resetLibrary}
-          parent={`publishers/${visitorId}`}
-        />
+        <BookstoreWorkspace onReset={resetLibrary} parent={`publishers/${visitorId}`} />
       </QueryClientProvider>
     </TransportProvider>
   );
 }
 
-function BookstoreWorkspace({
-  onReset,
-  parent,
-}: {
-  onReset: () => void;
-  parent: string;
-}) {
+function BookstoreWorkspace({ onReset, parent }: { onReset: () => void; parent: string }) {
   const [view, setView] = useState<View>("list");
   const [selectedName, setSelectedName] = useState<string>();
   const [filter, setFilter] = useState("");
   const list = useQuery(LibraryService.method.listBooks, { filter, parent });
-  const detail = useQuery(
-    LibraryService.method.getBook,
-    selectedName ? { name: selectedName } : skipToken
-  );
+  const detail = useQuery(LibraryService.method.getBook, selectedName ? { name: selectedName } : skipToken);
 
   function openBook(name: string) {
     setSelectedName(name);
@@ -140,10 +108,55 @@ function BookstoreWorkspace({
 
   function handleDeleted() {
     returnToList();
-    void list.refetch();
+    return list.refetch();
   }
 
   const selected = detail.data;
+  let listContent: React.ReactNode;
+  if (list.isPending) {
+    listContent = <p aria-live="polite">Loading books…</p>;
+  } else if (list.error) {
+    listContent = (
+      <Alert variant="destructive">
+        <AlertTitle>Books not loaded</AlertTitle>
+        <AlertDescription className="gap-3">
+          {list.error.message}
+          <Button onClick={() => list.refetch()} type="button" variant="outline">
+            Retry
+          </Button>
+        </AlertDescription>
+      </Alert>
+    );
+  } else if (list.data.books.length === 0) {
+    listContent = (
+      <p className="rounded-lg border border-dashed p-6 text-muted-foreground text-sm">No books match this filter.</p>
+    );
+  } else {
+    listContent = (
+      <div className="grid gap-3 sm:grid-cols-2">
+        {list.data.books.map((book) => (
+          <Card key={book.name} size="full" variant="outlined">
+            <CardHeader>
+              <CardTitle level={3}>
+                <Button
+                  className="h-auto justify-start whitespace-normal p-0 text-left text-lg"
+                  onClick={() => openBook(book.name)}
+                  type="button"
+                  variant="link"
+                >
+                  {book.displayName}
+                </Button>
+              </CardTitle>
+              <CardDescription>{book.isbn}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="line-clamp-2 text-muted-foreground text-sm">{book.note || "No note yet."}</p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="w-full space-y-6 rounded-xl border bg-background p-4 sm:p-6">
@@ -156,8 +169,7 @@ function BookstoreWorkspace({
           </div>
           <h1 className="font-semibold text-3xl">Protoform library</h1>
           <p className="max-w-2xl text-muted-foreground text-sm">
-            Create with an RHF stepper, edit with a field mask and etag, and
-            confirm deletion through AutoForm.
+            Create with an RHF stepper, edit with a field mask and etag, and confirm deletion through AutoForm.
           </p>
         </div>
         <Button onClick={resetLibrary} type="button" variant="outline">
@@ -172,9 +184,7 @@ function BookstoreWorkspace({
               <h2 className="font-semibold text-2xl" id="book-list-title">
                 Books
               </h2>
-              <p className="text-muted-foreground text-sm">
-                Live ListBooks results from your temporary library.
-              </p>
+              <p className="text-muted-foreground text-sm">Live ListBooks results from your temporary library.</p>
             </div>
             <Button onClick={() => setView("create")} type="button">
               Create book
@@ -190,57 +200,12 @@ function BookstoreWorkspace({
               value={filter}
             />
           </Field>
-          {list.isPending ? (
-            <p aria-live="polite">Loading books…</p>
-          ) : list.error ? (
-            <Alert variant="destructive">
-              <AlertTitle>Books not loaded</AlertTitle>
-              <AlertDescription className="gap-3">
-                {list.error.message}
-                <Button onClick={() => list.refetch()} type="button" variant="outline">
-                  Retry
-                </Button>
-              </AlertDescription>
-            </Alert>
-          ) : list.data.books.length === 0 ? (
-            <p className="rounded-lg border border-dashed p-6 text-muted-foreground text-sm">
-              No books match this filter.
-            </p>
-          ) : (
-            <div className="grid gap-3 sm:grid-cols-2">
-              {list.data.books.map((book) => (
-                <Card key={book.name} size="full" variant="outlined">
-                  <CardHeader>
-                    <CardTitle level={3}>
-                      <Button
-                        className="h-auto justify-start whitespace-normal p-0 text-left text-lg"
-                        onClick={() => openBook(book.name)}
-                        type="button"
-                        variant="link"
-                      >
-                        {book.displayName}
-                      </Button>
-                    </CardTitle>
-                    <CardDescription>{book.isbn}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="line-clamp-2 text-muted-foreground text-sm">
-                      {book.note || "No note yet."}
-                    </p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
+          {listContent}
         </section>
       ) : null}
 
       {view === "create" ? (
-        <CreateBookForm
-          onCancel={returnToList}
-          onCreated={(name) => openBook(name)}
-          parent={parent}
-        />
+        <CreateBookForm onCancel={returnToList} onCreated={(name) => openBook(name)} parent={parent} />
       ) : null}
 
       {view === "detail" ? (
@@ -256,19 +221,11 @@ function BookstoreWorkspace({
       ) : null}
 
       {view === "edit" && selected ? (
-        <UpdateBookForm
-          book={selected}
-          onCancel={() => setView("detail")}
-          onUpdated={() => setView("detail")}
-        />
+        <UpdateBookForm book={selected} onCancel={() => setView("detail")} onUpdated={() => setView("detail")} />
       ) : null}
 
       {view === "delete" && selected ? (
-        <DeleteBookForm
-          book={selected}
-          onCancel={() => setView("detail")}
-          onDeleted={handleDeleted}
-        />
+        <DeleteBookForm book={selected} onCancel={() => setView("detail")} onDeleted={handleDeleted} />
       ) : null}
     </div>
   );
@@ -283,8 +240,8 @@ function BookDetail({
   onEdit,
   onRetry,
 }: {
-  book?: Book;
-  error?: string;
+  book?: Book | undefined;
+  error?: string | undefined;
   isPending: boolean;
   onBack: () => void;
   onDelete: () => void;

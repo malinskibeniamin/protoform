@@ -2,19 +2,10 @@
 
 import { useState } from "react";
 
-import {
-  Alert,
-  AlertDescription,
-} from "@/registry/base-nova/protoform/components/alert";
-import {
-  AutoForm,
-  type AutoFormStep,
-} from "@/registry/base-nova/protoform/components/auto-form";
+import { Alert, AlertDescription } from "@/registry/base-nova/protoform/components/alert";
+import { AutoForm, type AutoFormStep } from "@/registry/base-nova/protoform/components/auto-form";
 
-import {
-  type TwoStepForm,
-  TwoStepFormSchema,
-} from "../gen/protoform/examples/v1/two_step_pb.js";
+import { type TwoStepForm, TwoStepFormSchema } from "../gen/protoform/examples/v1/two_step_pb.js";
 
 export const client = "only";
 

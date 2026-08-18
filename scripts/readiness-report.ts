@@ -7,9 +7,7 @@ import {
 import { formatReadinessReport } from "../readiness/report.js";
 
 const asJson = process.argv.includes("--json");
-const requireProfileComplete = process.argv.includes(
-  "--require-profile-complete"
-);
+const requireProfileComplete = process.argv.includes("--require-profile-complete");
 const summary = getReadinessSummary(readinessRequirements);
 
 if (asJson) {
@@ -19,9 +17,7 @@ if (asJson) {
         categories: readinessCategories.map((category) => ({
           ...category,
           summary: getReadinessSummary(
-            readinessRequirements.filter(
-              (requirement) => requirement.category === category.id
-            )
+            readinessRequirements.filter((requirement) => requirement.category === category.id)
           ),
         })),
         profile: readinessProfile,
@@ -33,9 +29,7 @@ if (asJson) {
     )
   );
 } else {
-  console.log(
-    formatReadinessReport(readinessRequirements, readinessCategories)
-  );
+  console.log(formatReadinessReport(readinessRequirements, readinessCategories));
 }
 
 if (requireProfileComplete && !summary.profileComplete) {

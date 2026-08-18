@@ -1,20 +1,20 @@
-import { type RefObject, useCallback, useEffect, useRef, useState } from 'react';
-import { z } from 'zod';
+import { type RefObject, useCallback, useEffect, useRef, useState } from "react";
+import { z } from "zod";
 
 // ── Types ──────────────────────────────────────────────────────────────
 
-export type KeyValuePairsSchemaOptions = {
+export interface KeyValuePairsSchemaOptions {
   allowedPattern?: RegExp;
+  maxItems?: number;
   maxKeyLength?: number;
   maxValueLength?: number;
-  maxItems?: number;
-};
+}
 
-export type KeyValueDiffResult = {
+export interface KeyValueDiffResult {
   created: Record<string, string>;
-  updated: Record<string, string>;
   removed: string[];
-};
+  updated: Record<string, string>;
+}
 
 // ── Pure Utilities ─────────────────────────────────────────────────────
 
@@ -56,27 +56,27 @@ function collectPairIssues(
   const { allowedPattern, maxKeyLength, maxValueLength } = options;
 
   if (pair.value && !pair.key.trim()) {
-    issues.push({ message: 'Key is required when a value is provided', path: [index, 'key'] });
+    issues.push({ message: "Key is required when a value is provided", path: [index, "key"] });
   }
 
   if (duplicates.has(index)) {
-    issues.push({ message: `Duplicate key: "${pair.key}"`, path: [index, 'key'] });
+    issues.push({ message: `Duplicate key: "${pair.key}"`, path: [index, "key"] });
   }
 
   if (maxKeyLength && pair.key.length > maxKeyLength) {
-    issues.push({ message: `Key exceeds maximum length of ${maxKeyLength}`, path: [index, 'key'] });
+    issues.push({ message: `Key exceeds maximum length of ${maxKeyLength}`, path: [index, "key"] });
   }
 
   if (maxValueLength && pair.value.length > maxValueLength) {
-    issues.push({ message: `Value exceeds maximum length of ${maxValueLength}`, path: [index, 'value'] });
+    issues.push({ message: `Value exceeds maximum length of ${maxValueLength}`, path: [index, "value"] });
   }
 
   if (allowedPattern && pair.key && !allowedPattern.test(pair.key)) {
-    issues.push({ message: 'Key contains invalid characters', path: [index, 'key'] });
+    issues.push({ message: "Key contains invalid characters", path: [index, "key"] });
   }
 
   if (allowedPattern && pair.value && !allowedPattern.test(pair.value)) {
-    issues.push({ message: 'Value contains invalid characters', path: [index, 'value'] });
+    issues.push({ message: "Value contains invalid characters", path: [index, "value"] });
   }
 
   return issues;
@@ -106,7 +106,7 @@ export function keyValuePairsSchema(options: KeyValuePairsSchemaOptions = {}) {
     }
 
     for (const issue of issues) {
-      ctx.addIssue({ code: 'custom', message: issue.message, path: issue.path });
+      ctx.addIssue({ code: "custom", message: issue.message, path: issue.path });
     }
   });
 }
@@ -153,7 +153,7 @@ export function getKeyValueDiff(
     }
   }
 
-  return { created, updated, removed };
+  return { created, removed, updated };
 }
 
 // ── Hooks ──────────────────────────────────────────────────────────────
@@ -166,14 +166,14 @@ export function getKeyValueDiff(
  * Rows must have a `data-row` attribute for the selector to work.
  */
 export function useInputListFocus(containerRef: RefObject<HTMLElement | null>) {
-  const pendingRef = useRef<'add' | { type: 'remove'; index: number } | null>(null);
+  const pendingRef = useRef<"add" | { type: "remove"; index: number } | null>(null);
 
   const onAdd = useCallback(() => {
-    pendingRef.current = 'add';
+    pendingRef.current = "add";
   }, []);
 
   const onRemove = useCallback((deletedIndex: number) => {
-    pendingRef.current = { type: 'remove', index: deletedIndex };
+    pendingRef.current = { index: deletedIndex, type: "remove" };
   }, []);
 
   // Runs after every render to apply any pending focus action.
@@ -186,9 +186,9 @@ export function useInputListFocus(containerRef: RefObject<HTMLElement | null>) {
     }
     pendingRef.current = null;
 
-    const rows = containerRef.current.querySelectorAll<HTMLElement>('[data-row]');
+    const rows = containerRef.current.querySelectorAll<HTMLElement>("[data-row]");
 
-    if (event === 'add') {
+    if (event === "add") {
       const lastRow = rows.item(rows.length - 1);
       const input = lastRow?.querySelector<HTMLElement>('input, [role="combobox"]');
       input?.focus();
@@ -216,30 +216,32 @@ export function useInputListFocus(containerRef: RefObject<HTMLElement | null>) {
 export function useMemoizedArray<T>(items: T[], isEqual: (a: T, b: T) => boolean = Object.is): T[] {
   const prevRef = useRef(items);
   const prev = prevRef.current;
+  let stableItems = prev;
 
-  if (prev === items) {
-    return prev;
-  }
+  if (prev !== items) {
+    let changed = prev.length !== items.length;
+    const result: T[] = [];
 
-  let changed = prev.length !== items.length;
-  const result: T[] = [];
-
-  for (const [i, item] of items.entries()) {
-    const previousItem = prev[i];
-    if (i < prev.length && previousItem !== undefined && isEqual(previousItem, item)) {
-      result.push(previousItem);
-    } else {
-      result.push(item);
-      changed = true;
+    for (const [i, item] of items.entries()) {
+      const previousItem = prev[i];
+      if (i < prev.length && previousItem !== undefined && isEqual(previousItem, item)) {
+        result.push(previousItem);
+      } else {
+        result.push(item);
+        changed = true;
+      }
     }
+
+    stableItems = changed ? result : prev;
   }
 
-  if (!changed) {
-    return prev;
-  }
-
-  prevRef.current = result;
-  return result;
+  useEffect(
+    function commitMemoizedArray() {
+      prevRef.current = stableItems;
+    },
+    [stableItems]
+  );
+  return stableItems;
 }
 
 /**
@@ -300,5 +302,5 @@ export function useUndoRemoval(timeout = 5000) {
     };
   }, []);
 
-  return { markForRemoval, undoRemoval, isPending, pending };
+  return { isPending, markForRemoval, pending, undoRemoval };
 }

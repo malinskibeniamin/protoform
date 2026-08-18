@@ -30,15 +30,10 @@ it("clears the previous oneof branch before submitting the new one", async () =>
   render(<OneofFormExample />);
 
   await selectContact("Email");
-  await user.type(
-    await screen.findByRole("textbox", { name: "Email" }),
-    "ada@example.com"
-  );
+  await user.type(await screen.findByRole("textbox", { name: "Email" }), "ada@example.com");
 
   await selectContact("Phone");
-  expect(
-    screen.queryByRole("textbox", { name: "Email" })
-  ).not.toBeInTheDocument();
+  expect(screen.queryByRole("textbox", { name: "Email" })).not.toBeInTheDocument();
   const phone = await screen.findByRole("textbox", { name: "Phone" });
   expect(phone).toHaveValue("");
   expect(screen.queryByRole("alert")).not.toBeInTheDocument();
@@ -46,7 +41,5 @@ it("clears the previous oneof branch before submitting the new one", async () =>
   await user.type(phone, "+442079460000");
   await user.click(screen.getByRole("button", { name: "Submit" }));
 
-  expect(await screen.findByRole("status")).toHaveTextContent(
-    "Submitted phone: +442079460000"
-  );
+  expect(await screen.findByRole("status")).toHaveTextContent("Submitted phone: +442079460000");
 });

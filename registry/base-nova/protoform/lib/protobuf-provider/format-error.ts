@@ -45,17 +45,15 @@ export function grpcCodeLabel(code: number): string {
 export function formatConnectError(error: unknown): string {
   if (error instanceof ConnectError) {
     const violations = extractFieldViolations(error);
-    const rawMessage = error.rawMessage;
-    const codeLabel = grpcCodeLabel(error.code);
+    const { code, rawMessage } = error;
+    const codeLabel = grpcCodeLabel(code);
 
     const parts: string[] = [];
     if (rawMessage) {
       parts.push(rawMessage);
     }
     if (violations.length > 0) {
-      parts.push(
-        violations.map((v) => `${v.field}: ${v.description}`).join("; ")
-      );
+      parts.push(violations.map((v) => `${v.field}: ${v.description}`).join("; "));
     }
     if (parts.length === 0) {
       return codeLabel;
@@ -148,7 +146,11 @@ export interface ConnectErrorContext {
   /** Opaque request identifier for support tickets. */
   requestId?: string;
   /** Affected resource, if reported. */
-  resource?: { name?: string; type?: string; description?: string };
+  resource?: {
+    name?: string | undefined;
+    type?: string | undefined;
+    description?: string | undefined;
+  };
   /** Retry hint in seconds. Set on rate-limit / resource-exhausted responses. */
   retryAfterSeconds?: number;
   /** Detail type names not interpreted by Protoform, preserved for fallback UI and telemetry. */
@@ -168,9 +170,7 @@ const MAPPED_DETAIL_TYPES: ReadonlySet<string> = new Set([
   RetryInfoSchema.typeName,
 ]);
 
-function connectDetailTypeName(
-  detail: ConnectError["details"][number]
-): string | undefined {
+function connectDetailTypeName(detail: ConnectError["details"][number]): string | undefined {
   if ("desc" in detail) {
     return detail.desc.typeName;
   }
@@ -187,9 +187,7 @@ function connectDetailTypeName(
  * source of truth and handle both `value` (binary) and `debug` (JSON)
  * representations the Connect runtime surfaces.
  */
-export function extractConnectErrorContext(
-  error: unknown
-): ConnectErrorContext {
+export function extractConnectErrorContext(error: unknown): ConnectErrorContext {
   const context: ConnectErrorContext = {
     helpLinks: [],
     preconditionViolations: [],
@@ -248,7 +246,7 @@ export function extractConnectErrorContext(
       const metaKeys = Object.keys(info.metadata);
       if (metaKeys.length > 0) {
         context.metadata = { ...info.metadata };
-        const metaReq = info.metadata.request_id ?? info.metadata.requestId;
+        const metaReq = info.metadata["request_id"] ?? info.metadata["requestId"];
         if (metaReq && !context.requestId) {
           context.requestId = metaReq;
         }
@@ -266,8 +264,8 @@ export function extractConnectErrorContext(
     // `seconds: bigint` + `nanos: number` in proto v2 generated types.
     for (const retry of error.findDetails(RetryInfoSchema)) {
       if (retry.retryDelay) {
-        const seconds = Number(retry.retryDelay.seconds);
-        const nanos = retry.retryDelay.nanos;
+        const { nanos, seconds: retrySeconds } = retry.retryDelay;
+        const seconds = Number(retrySeconds);
         context.retryAfterSeconds = seconds + nanos / 1e9;
       }
     }

@@ -1,23 +1,23 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from "vitest";
 
-import type { ParsedField } from '../core-types';
-import { sliderFieldDefinition } from '../fields/slider';
-import { buildFieldMatchContext } from '../registry';
+import type { ParsedField } from "../core-types";
+import { sliderFieldDefinition } from "../fields/slider";
+import { buildFieldMatchContext } from "../registry";
 
-function makeField(partial: Partial<ParsedField> & { fieldConfig?: ParsedField['fieldConfig'] } = {}): ParsedField {
+function makeField(partial: Partial<ParsedField> & { fieldConfig?: ParsedField["fieldConfig"] } = {}): ParsedField {
   return {
-    key: 'count',
-    type: 'number',
-    required: false,
     fieldConfig: {},
+    key: "count",
+    required: false,
+    type: "number",
     ...partial,
   } as ParsedField;
 }
 
-describe('sliderFieldDefinition.match', () => {
-  it('does NOT match a numeric field with min/max but no slider annotation', () => {
+describe("sliderFieldDefinition.match", () => {
+  it("does NOT match a numeric field with min/max but no slider annotation", () => {
     const field = makeField({
-      fieldConfig: { inputProps: { min: 0, max: 10 } },
+      fieldConfig: { inputProps: { max: 10, min: 0 } },
     });
     expect(sliderFieldDefinition.match(field, buildFieldMatchContext(field))).toBe(false);
   });
@@ -25,8 +25,8 @@ describe('sliderFieldDefinition.match', () => {
   it('matches when customData.control === "slider"', () => {
     const field = makeField({
       fieldConfig: {
-        inputProps: { min: 0, max: 10 },
-        customData: { control: 'slider' },
+        customData: { control: "slider" },
+        inputProps: { max: 10, min: 0 },
       },
     });
     expect(sliderFieldDefinition.match(field, buildFieldMatchContext(field))).toBe(true);
@@ -35,17 +35,17 @@ describe('sliderFieldDefinition.match', () => {
   it('matches when customData.ui.control === "slider" (proto path)', () => {
     const field = makeField({
       fieldConfig: {
-        inputProps: { min: 0, max: 10 },
-        customData: { ui: { control: 'slider' } },
+        customData: { ui: { control: "slider" } },
+        inputProps: { max: 10, min: 0 },
       },
     });
     expect(sliderFieldDefinition.match(field, buildFieldMatchContext(field))).toBe(true);
   });
 
-  it('does not match non-number fields even with slider annotation', () => {
+  it("does not match non-number fields even with slider annotation", () => {
     const field = makeField({
-      type: 'string',
-      fieldConfig: { customData: { control: 'slider' } },
+      fieldConfig: { customData: { control: "slider" } },
+      type: "string",
     });
     expect(sliderFieldDefinition.match(field, buildFieldMatchContext(field))).toBe(false);
   });

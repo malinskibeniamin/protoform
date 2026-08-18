@@ -190,10 +190,7 @@ const neutralPreset: PresetDefinition = {
   theme: "neutral",
 };
 
-export const presetDefinitions: PresetDefinition[] = [
-  neutralPreset,
-  ...accentDefinitions.map(buildAccentPreset),
-];
+export const presetDefinitions: PresetDefinition[] = [neutralPreset, ...accentDefinitions.map(buildAccentPreset)];
 
 export const presetRadii: Array<{
   label: string;
@@ -210,10 +207,7 @@ export const presetRadii: Array<{
 export const defaultPreset = neutralPreset;
 export const defaultRadius: PresetRadius = "default";
 
-export function buildPresetConfig(
-  preset: PresetDefinition,
-  radius: PresetRadius
-): PresetConfig {
+export function buildPresetConfig(preset: PresetDefinition, radius: PresetRadius): PresetConfig {
   return {
     baseColor: "neutral",
     chartColor: preset.chartColor,
@@ -228,16 +222,11 @@ export function buildPresetConfig(
   };
 }
 
-export function buildPresetCode(
-  preset: PresetDefinition,
-  radius: PresetRadius
-): string {
+export function buildPresetCode(preset: PresetDefinition, radius: PresetRadius): string {
   return encodePreset(buildPresetConfig(preset, radius));
 }
 
-export function findSupportedPreset(
-  code: string
-): { preset: PresetDefinition; radius: PresetRadius } | undefined {
+export function findSupportedPreset(code: string): { preset: PresetDefinition; radius: PresetRadius } | undefined {
   const config = decodePreset(code);
   if (
     config?.style !== "nova" ||
@@ -252,13 +241,9 @@ export function findSupportedPreset(
   }
 
   const preset = presetDefinitions.find(
-    (candidate) =>
-      candidate.theme === config.theme &&
-      candidate.chartColor === config.chartColor
+    (candidate) => candidate.theme === config.theme && candidate.chartColor === config.chartColor
   );
-  const radius = presetRadii.find(
-    (candidate) => candidate.value === config.radius
-  )?.value;
+  const radius = presetRadii.find((candidate) => candidate.value === config.radius)?.value;
 
   if (!(preset && radius) || buildPresetCode(preset, radius) !== code) {
     return;
