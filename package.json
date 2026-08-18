@@ -60,7 +60,8 @@
     "test:unit": "vitest run --config vitest.unit.config.ts --reporter=verbose",
     "test:unit:ci": "vitest run --config vitest.unit.config.ts --maxWorkers=1 --reporter=dot",
     "test:unit:watch": "vitest --config vitest.unit.config.ts --reporter=verbose",
-    "typecheck": "bun run typecheck:source && bun run typecheck:tests && bun run docs:blume:check",
+    "typecheck": "bun run typecheck:coverage && bun run typecheck:source && bun run typecheck:tests && bun run docs:blume:check",
+    "typecheck:coverage": "bun run scripts/check-typescript-coverage.ts",
     "typecheck:source": "tsc --noEmit",
     "typecheck:tests": "tsc --project tsconfig.tests.json --noEmit"
   },

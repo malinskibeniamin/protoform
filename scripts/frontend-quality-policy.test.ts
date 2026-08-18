@@ -1,3 +1,4 @@
+import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, test } from "vitest";
 
@@ -41,6 +42,14 @@ describe("frontend quality policy", () => {
     expect(testTsconfig.exclude ?? []).not.toEqual(
       expect.arrayContaining(["**/*.test.ts", "**/*.test.tsx", "**/__tests__/**"])
     );
+  });
+
+  test("typechecks every tracked authored TypeScript file", () => {
+    expect(manifest.scripts["typecheck:coverage"]).toBe("bun run scripts/check-typescript-coverage.ts");
+    expect(manifest.scripts["typecheck"]).toContain("bun run typecheck:coverage");
+
+    const result = spawnSync("bun", ["run", "typecheck:coverage"], { encoding: "utf8" });
+    expect(result.status, `${result.stdout}${result.stderr}`).toBe(0);
   });
 
   test("checks authored installable registry source", () => {
