@@ -104,18 +104,20 @@ interface DialogContentProps
   showCloseButton?: boolean;
 }
 
-function DialogContent({
-  className,
-  children,
-  showCloseButton = true,
-  showOverlay = true,
-  size,
-  variant,
-  testId,
-  container,
-  onOpenAutoFocus,
-  ...props
-}: DialogContentProps) {
+function DialogContent(contentProps: DialogContentProps) {
+  const {
+    className,
+    children,
+    showCloseButton = true,
+    showOverlay = true,
+    size,
+    variant,
+    testId,
+    container,
+    ...props
+  } = contentProps;
+  const onOpenAutoFocus: unknown = Reflect.get(props, "onOpenAutoFocus");
+  Reflect.deleteProperty(props, "onOpenAutoFocus");
   warnDeprecatedProp(
     "DialogContent",
     "onOpenAutoFocus",

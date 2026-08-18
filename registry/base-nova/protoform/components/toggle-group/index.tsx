@@ -358,7 +358,7 @@ const ToggleGroupItem = React.forwardRef<HTMLButtonElement, ToggleGroupItemProps
         if (typeof ref === "function") {
           ref(el);
         } else if (ref) {
-          (ref as React.MutableRefObject<HTMLButtonElement | null>).current = el;
+          (ref as React.RefObject<HTMLButtonElement | null>).current = el;
         }
       },
       [registerItem, value, ref]

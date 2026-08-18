@@ -14,7 +14,7 @@
     "dev": "blume dev --port 55011",
     "docs:blume:audit": "blume audit --fail-on info --skip url_style",
     "docs:blume:build": "blume build --strict && bun run scripts/finalize-docs-build.ts",
-    "docs:blume:check": "blume check --strict --isolated",
+    "docs:blume:check": "bun run scripts/check-docs-types.ts",
     "docs:blume:dev": "blume dev --port 55011",
     "docs:blume:doctor": "blume doctor",
     "docs:blume:e2e": "blume build --strict --isolated && astro preview --root .blume-verify --host 127.0.0.1 --port 55013",

@@ -53,22 +53,29 @@ function Command({ className, variant, size, testId, ...props }: CommandProps) {
   );
 }
 
-function CommandDialog({
-  title = "Command Palette",
-  description = "Search for a command to run...",
-  children,
-  showOverlay = true,
-  container,
-  onOpenAutoFocus,
-  className,
-  ...props
-}: Omit<React.ComponentProps<typeof Dialog>, "children"> &
+type CommandDialogProps = Omit<React.ComponentProps<typeof Dialog>, "children"> &
   Pick<FixedPositionContentProps, "showOverlay" | "container" | "onOpenAutoFocus"> & {
     title?: string;
     description?: string;
     className?: string;
     children?: React.ReactNode;
-  }) {
+  };
+
+function CommandDialog(commandDialogProps: CommandDialogProps) {
+  const {
+    title = "Command Palette",
+    description = "Search for a command to run...",
+    children,
+    showOverlay = true,
+    container,
+    className,
+    ...props
+  } = commandDialogProps;
+  const onOpenAutoFocus: unknown = Reflect.get(props, "onOpenAutoFocus");
+  Reflect.deleteProperty(props, "onOpenAutoFocus");
+  const openAutoFocusProps =
+    typeof onOpenAutoFocus === "function" ? { onOpenAutoFocus: onOpenAutoFocus as (event: Event) => void } : undefined;
+
   return (
     <Dialog {...props}>
       <DialogHeader className="sr-only">
@@ -78,8 +85,8 @@ function CommandDialog({
       <DialogContent
         className={cn("overflow-hidden p-0", container && "absolute", className)}
         container={container}
-        onOpenAutoFocus={onOpenAutoFocus}
         showOverlay={showOverlay}
+        {...openAutoFocusProps}
       >
         <Command
           className="**:data-[slot=command-input-wrapper]:h-12 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5"
@@ -250,7 +257,7 @@ function CommandSubContent({ className, children }: CommandSubContentProps) {
     <PopoverContent
       align="start"
       className={cn("w-fit p-0", className)}
-      onOpenAutoFocus={(e) => e.preventDefault()}
+      initialFocus={false}
       side="right"
       sideOffset={4}
     >

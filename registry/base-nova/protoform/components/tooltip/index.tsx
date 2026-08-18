@@ -104,20 +104,21 @@ type TooltipContentProps = React.ComponentProps<typeof TooltipPrimitive.Popup> &
     alignOffset?: number;
   };
 
-function TooltipContent({
-  className,
-  side = "top",
-  align = "center",
-  sideOffset = 4,
-  alignOffset,
-  transition = { damping: 25, stiffness: 300, type: "spring" },
-  arrow = true,
-  children,
-  testId,
-  container,
-  onOpenAutoFocus: _onOpenAutoFocus,
-  ...props
-}: TooltipContentProps) {
+function TooltipContent(contentProps: TooltipContentProps) {
+  const {
+    className,
+    side = "top",
+    align = "center",
+    sideOffset = 4,
+    alignOffset,
+    transition = { damping: 25, stiffness: 300, type: "spring" },
+    arrow = true,
+    children,
+    testId,
+    container,
+    ...props
+  } = contentProps;
+  Reflect.deleteProperty(props, "onOpenAutoFocus");
   const { isOpen } = useTooltip();
   const initialPosition = getInitialPosition(side);
   const portalContainer = usePortalContainer();

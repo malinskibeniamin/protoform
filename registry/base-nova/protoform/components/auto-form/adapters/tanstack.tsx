@@ -6,7 +6,7 @@ import {
   type FormValidateOrFn,
   type ReactFormExtendedApi,
   useForm,
-  useStore,
+  useSelector,
 } from "@tanstack/react-form";
 import React from "react";
 
@@ -118,7 +118,7 @@ function TanStackArrayController({
   name: string;
 }) {
   const { form } = useTanStackEngineContext();
-  const value = useStore(form.store, (state) => getPathInObject(state.values, name.split(".")));
+  const value = useSelector(form.store, (state) => getPathInObject(state.values, name.split(".")));
   const arrayValue = Array.isArray(value) ? value : [];
   const collectionId = React.useId();
   const nextItemId = React.useRef(0);
@@ -279,7 +279,7 @@ export function TanStackEngine({ children, defaultValues, formOptions, values, o
       await submitRef.current?.(submission.value);
     },
   });
-  const state = useStore(form.store, (current) => current);
+  const state = useSelector(form.store, (current) => current);
   const cleanValuesRef = React.useRef<FormValues>(defaultValues);
   const [validationErrors, setValidationErrors] = React.useState<SchemaValidationError[]>([]);
   const [submitError, setSubmitError] = React.useState<string>();

@@ -29,7 +29,7 @@ const usePopover = (): PopoverContextType => {
 };
 
 interface PopoverAnchorContextType {
-  anchorRef: React.MutableRefObject<Element | null>;
+  anchorRef: React.RefObject<Element | null>;
   hasAnchor: boolean;
   setHasAnchor: (hasAnchor: boolean) => void;
 }
@@ -114,19 +114,20 @@ type PopoverContentProps = React.ComponentProps<typeof PopoverPrimitive.Popup> &
     alignOffset?: number;
   };
 
-function PopoverContent({
-  className,
-  align = "center",
-  side = "bottom",
-  sideOffset = 4,
-  alignOffset,
-  transition = { damping: 25, stiffness: 300, type: "spring" },
-  children,
-  testId,
-  container,
-  onOpenAutoFocus: _onOpenAutoFocus,
-  ...props
-}: PopoverContentProps) {
+function PopoverContent(contentProps: PopoverContentProps) {
+  const {
+    className,
+    align = "center",
+    side = "bottom",
+    sideOffset = 4,
+    alignOffset,
+    transition = { damping: 25, stiffness: 300, type: "spring" },
+    children,
+    testId,
+    container,
+    ...props
+  } = contentProps;
+  Reflect.deleteProperty(props, "onOpenAutoFocus");
   const { isOpen } = usePopover();
   const initialPosition = getInitialPosition(side);
   const portalContainer = usePortalContainer();

@@ -338,7 +338,9 @@ interface MultiSelectContentProps extends React.ComponentPropsWithoutRef<typeof 
 }
 
 const MultiSelectContent = React.forwardRef<React.ComponentRef<typeof PopoverPrimitive.Popup>, MultiSelectContentProps>(
-  ({ className, children, container, testId, onOpenAutoFocus: _onOpenAutoFocus, ...props }, ref) => {
+  (contentProps, ref) => {
+    const { className, children, container, testId, ...props } = contentProps;
+    Reflect.deleteProperty(props, "onOpenAutoFocus");
     const context = useMultiSelect();
 
     const [fragment] = React.useState<DocumentFragment | null>(() =>
@@ -611,7 +613,6 @@ function SimpleMultiSelect({
   searchable = true,
   width = "md",
   container,
-  onOpenAutoFocus,
   open,
   defaultOpen,
   onOpenChange,
@@ -652,11 +653,7 @@ function SimpleMultiSelect({
           testId={testId}
         />
       </MultiSelectTrigger>
-      <MultiSelectContent
-        container={container}
-        onOpenAutoFocus={onOpenAutoFocus}
-        testId={testId ? `${testId}-content` : undefined}
-      >
+      <MultiSelectContent container={container} testId={testId ? `${testId}-content` : undefined}>
         {searchable ? (
           <MultiSelectSearch placeholder="Search..." testId={testId ? `${testId}-search` : undefined} />
         ) : null}

@@ -154,11 +154,10 @@ type SelectContentProps = React.ComponentProps<typeof SelectPrimitive.Popup> &
   };
 
 const SelectContent = React.forwardRef<React.ComponentRef<typeof SelectPrimitive.Popup>, SelectContentProps>(
-  (
-    {
+  (contentProps, ref) => {
+    const {
       className,
       children,
-      position = "popper",
       testId,
       container,
       side = "bottom",
@@ -167,9 +166,9 @@ const SelectContent = React.forwardRef<React.ComponentRef<typeof SelectPrimitive
       alignOffset,
       alignItemWithTrigger = false,
       ...props
-    },
-    ref
-  ) => {
+    } = contentProps;
+    const position = Reflect.get(props, "position") ?? "popper";
+    Reflect.deleteProperty(props, "position");
     const portalContainer = usePortalContainer();
     return (
       <SelectPrimitive.Portal container={container ?? portalContainer}>

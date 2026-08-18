@@ -391,7 +391,7 @@ function composeRefs<T>(...refs: Array<React.Ref<T> | undefined>): React.RefCall
       if (typeof ref === "function") {
         ref(value);
       } else {
-        (ref as React.MutableRefObject<T>).current = value;
+        (ref as React.RefObject<T>).current = value;
       }
     }
   };

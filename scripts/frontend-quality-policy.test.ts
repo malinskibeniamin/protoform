@@ -52,6 +52,12 @@ describe("frontend quality policy", () => {
     expect(result.status, `${result.stdout}${result.stderr}`).toBe(0);
   });
 
+  test("fails documentation typechecks on every diagnostic severity", () => {
+    expect(manifest.scripts["docs:blume:check"]).toBe("bun run scripts/check-docs-types.ts");
+    expect(manifest.scripts["typecheck"]).toContain("bun run docs:blume:check");
+    expect(existsSync("scripts/check-docs-types.ts")).toBe(true);
+  });
+
   test("checks authored installable registry source", () => {
     expect(tsconfig.exclude ?? []).not.toContain("registry/base-nova");
     expect(biomeConfig).not.toContain('"!registry"');
