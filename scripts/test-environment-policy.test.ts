@@ -3,6 +3,18 @@ import { describe, expect, it } from "@rstest/core";
 
 const repositoryDirectory = new URL("../", import.meta.url);
 const domConfigs = ["rstest.config.ts", "rstest.conformance.config.ts", "rstest.integration.config.ts"] as const;
+const rstestScripts = [
+  "test:browser",
+  "test:browser:update",
+  "test:browser:watch",
+  "test:conformance",
+  "test:integration",
+  "test:integration:smoke",
+  "test:integration:watch",
+  "test:unit",
+  "test:unit:ci",
+  "test:unit:watch",
+] as const;
 
 describe("simulated DOM test environment", () => {
   it("uses Rstest 0.11.9 with happy-dom and no Vitest wiring", () => {
@@ -23,6 +35,11 @@ describe("simulated DOM test environment", () => {
     expect(manifest.devDependencies?.["jsdom"]).toBeUndefined();
     expect(manifest.devDependencies?.["vitest"]).toBeUndefined();
     expect(Object.values(manifest.scripts ?? {}).join("\n")).not.toContain("vitest");
+    for (const script of rstestScripts) {
+      expect(manifest.scripts?.[script]).toMatch(/^node scripts\/run-tests\.mjs /);
+      expect(manifest.scripts?.[script]).not.toContain("rstest");
+    }
+    expect(existsSync(new URL("scripts/run-tests.mjs", repositoryDirectory))).toBe(true);
     expect(existsSync(new URL("vitest.unit.config.ts", repositoryDirectory))).toBe(false);
     expect(existsSync(new URL("vitest.integration.config.ts", repositoryDirectory))).toBe(false);
     expect(existsSync(new URL("vitest.conformance.config.ts", repositoryDirectory))).toBe(false);
