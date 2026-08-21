@@ -1,37 +1,37 @@
-import { cva, type VariantProps } from 'class-variance-authority';
-import { type MotionProps, motion } from 'motion/react';
-import React from 'react';
+import { cva, type VariantProps } from "class-variance-authority";
+import { type MotionProps, motion } from "motion/react";
+import React from "react";
 
-import { Heading, Text } from '@/registry/base-nova/protoform/components/typography';
-import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
+import { Heading, Text } from "@/registry/base-nova/protoform/components/typography";
+import { cn, type SharedProps } from "@/registry/base-nova/protoform/lib/utils";
 
 const cardVariants = cva(
-  'flex min-w-0 flex-col rounded-lg border border-border border-solid bg-card text-card-foreground',
+  "flex min-w-0 flex-col rounded-lg border border-border border-solid bg-card text-card-foreground",
   {
+    defaultVariants: {
+      size: "md",
+      variant: "elevated",
+    },
     variants: {
       size: {
-        sm: 'max-w-sm gap-2 px-6 py-4',
-        md: 'max-w-md gap-4 px-8 py-6',
-        lg: 'max-w-lg gap-4 px-10 py-8',
-        xl: 'max-w-xl gap-6 px-12 py-10',
-        full: 'w-full gap-4 px-8 py-6',
+        full: "w-full gap-4 px-8 py-6",
+        lg: "max-w-lg gap-4 px-10 py-8",
+        md: "max-w-md gap-4 px-8 py-6",
+        sm: "max-w-sm gap-2 px-6 py-4",
+        xl: "max-w-xl gap-6 px-12 py-10",
       },
       variant: {
-        standard: '',
-        elevated: 'shadow-elevated',
-        outlined: 'border-1',
-        ghost: 'border-0 bg-transparent shadow-none dark:bg-transparent',
+        elevated: "shadow-elevated",
+        ghost: "border-0 bg-transparent shadow-none dark:bg-transparent",
+        outlined: "border-1",
+        standard: "",
       },
-    },
-    defaultVariants: {
-      size: 'md',
-      variant: 'elevated',
     },
   }
 );
 
-export type CardVariant = VariantProps<typeof cardVariants>['variant'];
-export type CardSize = VariantProps<typeof cardVariants>['size'];
+export type CardVariant = VariantProps<typeof cardVariants>["variant"];
+export type CardSize = VariantProps<typeof cardVariants>["size"];
 
 type BaseCardProps = SharedProps & {
   size?: CardSize;
@@ -39,7 +39,7 @@ type BaseCardProps = SharedProps & {
   className?: string;
 };
 
-type StaticCardProps = BaseCardProps & Omit<React.ComponentProps<'div'>, keyof BaseCardProps> & { animated?: false };
+type StaticCardProps = BaseCardProps & Omit<React.ComponentProps<"div">, keyof BaseCardProps> & { animated?: false };
 type AnimatedCardProps = BaseCardProps & Omit<MotionProps, keyof BaseCardProps> & { animated: true };
 
 export type CardProps = StaticCardProps | AnimatedCardProps;
@@ -55,7 +55,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
           data-slot="card"
           data-testid={testId}
           ref={ref}
-          {...(props as Omit<AnimatedCardProps, 'animated' | 'className' | 'size' | 'variant' | 'testId'>)}
+          {...(props as Omit<AnimatedCardProps, "animated" | "className" | "size" | "variant" | "testId">)}
         />
       );
     }
@@ -66,43 +66,43 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
         data-slot="card"
         data-testid={testId}
         ref={ref}
-        {...(props as Omit<StaticCardProps, 'animated' | 'className' | 'size' | 'variant' | 'testId'>)}
+        {...(props as Omit<StaticCardProps, "animated" | "className" | "size" | "variant" | "testId">)}
       />
     );
   }
 );
 
-Card.displayName = 'Card';
+Card.displayName = "Card";
 
 const cardHeaderVariants = cva(
-  '@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6',
+  "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6",
   {
-    variants: {
-      spacing: {
-        tight: 'gap-1',
-        normal: 'gap-1.5',
-        loose: 'gap-2',
-      },
-      padding: {
-        none: '',
-        sm: 'px-3',
-        md: 'px-6',
-        lg: 'px-8',
-      },
-    },
     defaultVariants: {
-      spacing: 'normal',
-      padding: 'none',
+      padding: "none",
+      spacing: "normal",
+    },
+    variants: {
+      padding: {
+        lg: "px-8",
+        md: "px-6",
+        none: "",
+        sm: "px-3",
+      },
+      spacing: {
+        loose: "gap-2",
+        normal: "gap-1.5",
+        tight: "gap-1",
+      },
     },
   }
 );
 
-interface CardHeaderProps extends React.ComponentProps<'div'>, VariantProps<typeof cardHeaderVariants>, SharedProps {}
+interface CardHeaderProps extends React.ComponentProps<"div">, VariantProps<typeof cardHeaderVariants>, SharedProps {}
 
 const CardHeader = React.forwardRef<HTMLDivElement, CardHeaderProps>(
   ({ className, spacing, padding, testId, ...props }, ref) => (
     <div
-      className={cn(cardHeaderVariants({ spacing, padding }), className)}
+      className={cn(cardHeaderVariants({ padding, spacing }), className)}
       data-slot="card-header"
       data-testid={testId}
       ref={ref}
@@ -111,15 +111,15 @@ const CardHeader = React.forwardRef<HTMLDivElement, CardHeaderProps>(
   )
 );
 
-CardHeader.displayName = 'CardHeader';
+CardHeader.displayName = "CardHeader";
 
 const CardTitle = React.forwardRef<
   HTMLHeadingElement,
-  React.ComponentProps<'div'> & SharedProps & { level?: 1 | 2 | 3 | 4 }
+  React.ComponentProps<"div"> & SharedProps & { level?: 1 | 2 | 3 | 4 }
 >(({ className, level = 4, testId, children, ...props }, ref) => {
   let content: React.ReactNode = null;
   if (children) {
-    content = typeof children === 'string' ? <Heading level={level}>{children}</Heading> : children;
+    content = typeof children === "string" ? <Heading level={level}>{children}</Heading> : children;
   }
 
   return (
@@ -129,18 +129,18 @@ const CardTitle = React.forwardRef<
   );
 });
 
-CardTitle.displayName = 'CardTitle';
+CardTitle.displayName = "CardTitle";
 
-const CardDescription = React.forwardRef<HTMLDivElement, React.ComponentProps<'div'> & SharedProps>(
+const CardDescription = React.forwardRef<HTMLDivElement, React.ComponentProps<"div"> & SharedProps>(
   ({ className, testId, children, ...props }, ref) => {
     let content: React.ReactNode = null;
     if (children) {
-      content = typeof children === 'string' ? <Text>{children}</Text> : children;
+      content = typeof children === "string" ? <Text>{children}</Text> : children;
     }
 
     return (
       <div
-        className={cn('text-muted-foreground text-sm', className)}
+        className={cn("text-muted-foreground text-sm", className)}
         data-slot="card-description"
         data-testid={testId}
         ref={ref}
@@ -152,12 +152,12 @@ const CardDescription = React.forwardRef<HTMLDivElement, React.ComponentProps<'d
   }
 );
 
-CardDescription.displayName = 'CardDescription';
+CardDescription.displayName = "CardDescription";
 
-const CardAction = React.forwardRef<HTMLDivElement, React.ComponentProps<'div'> & SharedProps>(
+const CardAction = React.forwardRef<HTMLDivElement, React.ComponentProps<"div"> & SharedProps>(
   ({ className, testId, ...props }, ref) => (
     <div
-      className={cn('col-start-2 row-span-2 row-start-1 self-start justify-self-end', className)}
+      className={cn("col-start-2 row-span-2 row-start-1 self-start justify-self-end", className)}
       data-slot="card-action"
       data-testid={testId}
       ref={ref}
@@ -166,30 +166,30 @@ const CardAction = React.forwardRef<HTMLDivElement, React.ComponentProps<'div'> 
   )
 );
 
-CardAction.displayName = 'CardAction';
+CardAction.displayName = "CardAction";
 
-const cardContentVariants = cva('', {
+const cardContentVariants = cva("", {
+  defaultVariants: {
+    padding: "none",
+    space: "md",
+  },
   variants: {
     padding: {
-      none: '',
-      sm: 'px-3',
-      md: 'px-6',
-      lg: 'px-8',
+      lg: "px-8",
+      md: "px-6",
+      none: "",
+      sm: "px-3",
     },
     space: {
-      none: '',
-      sm: 'space-y-2',
-      md: 'space-y-4',
-      lg: 'space-y-6',
+      lg: "space-y-6",
+      md: "space-y-4",
+      none: "",
+      sm: "space-y-2",
     },
-  },
-  defaultVariants: {
-    padding: 'none',
-    space: 'md',
   },
 });
 
-interface CardContentProps extends React.ComponentProps<'div'>, VariantProps<typeof cardContentVariants>, SharedProps {}
+interface CardContentProps extends React.ComponentProps<"div">, VariantProps<typeof cardContentVariants>, SharedProps {}
 
 const CardContent = React.forwardRef<HTMLDivElement, CardContentProps>(
   ({ className, padding, space, testId, ...props }, ref) => (
@@ -203,48 +203,48 @@ const CardContent = React.forwardRef<HTMLDivElement, CardContentProps>(
   )
 );
 
-CardContent.displayName = 'CardContent';
+CardContent.displayName = "CardContent";
 
-const cardFooterVariants = cva('flex items-center [.border-t]:pt-6', {
+const cardFooterVariants = cva("flex items-center [.border-t]:pt-6", {
+  defaultVariants: {
+    direction: "row",
+    gap: "sm",
+    justify: "between",
+    padding: "none",
+  },
   variants: {
     direction: {
-      row: 'flex-row',
-      column: 'flex-col',
-    },
-    justify: {
-      start: 'justify-start',
-      center: 'justify-center',
-      end: 'justify-end',
-      between: 'justify-between',
-      around: 'justify-around',
+      column: "flex-col",
+      row: "flex-row",
     },
     gap: {
-      none: '',
-      sm: 'gap-2',
-      md: 'gap-4',
-      lg: 'gap-6',
+      lg: "gap-6",
+      md: "gap-4",
+      none: "",
+      sm: "gap-2",
+    },
+    justify: {
+      around: "justify-around",
+      between: "justify-between",
+      center: "justify-center",
+      end: "justify-end",
+      start: "justify-start",
     },
     padding: {
-      none: '',
-      sm: 'px-3',
-      md: 'px-6',
-      lg: 'px-8',
+      lg: "px-8",
+      md: "px-6",
+      none: "",
+      sm: "px-3",
     },
-  },
-  defaultVariants: {
-    direction: 'row',
-    justify: 'between',
-    gap: 'sm',
-    padding: 'none',
   },
 });
 
-interface CardFooterProps extends React.ComponentProps<'div'>, VariantProps<typeof cardFooterVariants>, SharedProps {}
+interface CardFooterProps extends React.ComponentProps<"div">, VariantProps<typeof cardFooterVariants>, SharedProps {}
 
 const CardFooter = React.forwardRef<HTMLDivElement, CardFooterProps>(
   ({ className, direction, justify, gap, padding, testId, ...props }, ref) => (
     <div
-      className={cn(cardFooterVariants({ direction, justify, gap, padding }), className)}
+      className={cn(cardFooterVariants({ direction, gap, justify, padding }), className)}
       data-slot="card-footer"
       data-testid={testId}
       ref={ref}
@@ -253,49 +253,49 @@ const CardFooter = React.forwardRef<HTMLDivElement, CardFooterProps>(
   )
 );
 
-CardFooter.displayName = 'CardFooter';
+CardFooter.displayName = "CardFooter";
 
 // Form-specific layout helpers
-const cardFormVariants = cva('grid w-full items-center', {
+const cardFormVariants = cva("grid w-full items-center", {
+  defaultVariants: {
+    gap: "md",
+  },
   variants: {
     gap: {
-      sm: 'gap-2',
-      md: 'gap-4',
-      lg: 'gap-6',
+      lg: "gap-6",
+      md: "gap-4",
+      sm: "gap-2",
     },
-  },
-  defaultVariants: {
-    gap: 'md',
   },
 });
 
-interface CardFormProps extends React.ComponentProps<'div'>, VariantProps<typeof cardFormVariants>, SharedProps {}
+interface CardFormProps extends React.ComponentProps<"div">, VariantProps<typeof cardFormVariants>, SharedProps {}
 
 const CardForm = React.forwardRef<HTMLDivElement, CardFormProps>(({ className, gap, testId, ...props }, ref) => (
   <div className={cn(cardFormVariants({ gap }), className)} data-testid={testId} ref={ref} {...props} />
 ));
 
-CardForm.displayName = 'CardForm';
+CardForm.displayName = "CardForm";
 
-const cardFieldVariants = cva('flex flex-col', {
+const cardFieldVariants = cva("flex flex-col", {
+  defaultVariants: {
+    spacing: "normal",
+  },
   variants: {
     spacing: {
-      tight: 'space-y-1',
-      normal: 'space-y-1.5',
-      loose: 'space-y-2',
+      loose: "space-y-2",
+      normal: "space-y-1.5",
+      tight: "space-y-1",
     },
-  },
-  defaultVariants: {
-    spacing: 'normal',
   },
 });
 
-interface CardFieldProps extends React.ComponentProps<'div'>, VariantProps<typeof cardFieldVariants>, SharedProps {}
+interface CardFieldProps extends React.ComponentProps<"div">, VariantProps<typeof cardFieldVariants>, SharedProps {}
 
 const CardField = React.forwardRef<HTMLDivElement, CardFieldProps>(({ className, spacing, testId, ...props }, ref) => (
   <div className={cn(cardFieldVariants({ spacing }), className)} data-testid={testId} ref={ref} {...props} />
 ));
 
-CardField.displayName = 'CardField';
+CardField.displayName = "CardField";
 
 export { Card, CardAction, CardContent, CardDescription, CardField, CardFooter, CardForm, CardHeader, CardTitle };

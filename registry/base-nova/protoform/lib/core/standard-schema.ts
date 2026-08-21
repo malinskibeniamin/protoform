@@ -10,10 +10,7 @@ export type { StandardSchemaV1 } from "@standard-schema/spec";
  * and future providers (Zod, Valibot, ArkType) already conform natively.
  */
 export function isStandardSchema(value: unknown): value is StandardSchemaV1 {
-  if (
-    (typeof value !== "object" && typeof value !== "function") ||
-    value === null
-  ) {
+  if ((typeof value !== "object" && typeof value !== "function") || value === null) {
     return false;
   }
   const marker = (value as { "~standard"?: unknown })["~standard"];
@@ -21,9 +18,5 @@ export function isStandardSchema(value: unknown): value is StandardSchemaV1 {
     return false;
   }
   const props = marker as Partial<StandardSchemaV1.Props>;
-  return (
-    props.version === 1 &&
-    typeof props.vendor === "string" &&
-    typeof props.validate === "function"
-  );
+  return props.version === 1 && typeof props.vendor === "string" && typeof props.validate === "function";
 }

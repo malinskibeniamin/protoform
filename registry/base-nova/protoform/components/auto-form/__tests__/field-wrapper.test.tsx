@@ -1,11 +1,11 @@
-import { render, screen } from '@testing-library/react';
-import React from 'react';
-import { describe, expect, it } from 'vitest';
+import { render, screen } from "@testing-library/react";
+import type React from "react";
+import { describe, expect, it } from "vitest";
 
-import { AutoFormContext, type AutoFormContextValue } from '../context';
-import type { ParsedField } from '../core-types';
-import { ArrayElementWrapper, ArrayWrapper, FieldWrapper, Form, ObjectWrapper } from '../field-wrapper';
-import { formSpacing } from '../form-spacing';
+import { AutoFormContext, type AutoFormContextValue } from "../context";
+import type { ParsedField } from "../core-types";
+import { ArrayElementWrapper, ArrayWrapper, FieldWrapper, Form, ObjectWrapper } from "../field-wrapper";
+import { formSpacing } from "../form-spacing";
 
 /**
  * Minimal AutoForm context wrapper — just enough for field-wrapper to render.
@@ -13,45 +13,46 @@ import { formSpacing } from '../form-spacing';
  */
 function withAutoFormContext(children: React.ReactNode) {
   const value: AutoFormContextValue = {
-    uiComponents: {} as AutoFormContextValue['uiComponents'],
-    formComponents: {} as AutoFormContextValue['formComponents'],
-    formValues: {},
+    deprecatedFields: "show",
     evaluateRules: () => true,
+    formComponents: {} as AutoFormContextValue["formComponents"],
+    formValues: {},
     getFieldUiConfig: () => ({}),
-    testIdPrefix: 'test',
+    testIdPrefix: "test",
+    uiComponents: {} as AutoFormContextValue["uiComponents"],
   };
   return <AutoFormContext.Provider value={value}>{children}</AutoFormContext.Provider>;
 }
 
 function makeField(partial: Partial<ParsedField> = {}): ParsedField {
   return {
-    key: 'example',
-    type: 'string',
-    required: false,
     fieldConfig: {},
+    key: "example",
+    required: false,
+    type: "string",
     ...partial,
   } as ParsedField;
 }
 
-describe('Form', () => {
-  it('renders with the form spacing token', () => {
+describe("Form", () => {
+  it("renders with the form spacing token", () => {
     render(
       <Form testId="form">
         <div>child</div>
       </Form>
     );
-    const form = screen.getByTestId('form');
+    const form = screen.getByTestId("form");
     expect(form.className).toContain(formSpacing.form);
   });
 });
 
-describe('ObjectWrapper', () => {
-  it('uses a split label rail only for top-level sections', () => {
+describe("ObjectWrapper", () => {
+  it("uses a split label rail only for top-level sections", () => {
     render(
       withAutoFormContext(
         <Form>
-          <ObjectWrapper field={makeField({ key: 'outer' })} label="Outer" testId="outer">
-            <ObjectWrapper field={makeField({ key: 'inner' })} label="Inner" testId="inner">
+          <ObjectWrapper field={makeField({ key: "outer" })} label="Outer" testId="outer">
+            <ObjectWrapper field={makeField({ key: "inner" })} label="Inner" testId="inner">
               <div>body</div>
             </ObjectWrapper>
           </ObjectWrapper>
@@ -59,40 +60,40 @@ describe('ObjectWrapper', () => {
       )
     );
 
-    expect(screen.getByTestId('outer')).toHaveAttribute('data-layout', 'split');
-    expect(screen.getByTestId('inner')).toHaveAttribute('data-layout', 'stacked');
+    expect(screen.getByTestId("outer")).toHaveAttribute("data-layout", "split");
+    expect(screen.getByTestId("inner")).toHaveAttribute("data-layout", "stacked");
   });
 
-  it('at the form root renders the title as an h2', () => {
+  it("at the form root renders the title as an h2", () => {
     render(
       withAutoFormContext(
         <Form>
-          <ObjectWrapper field={makeField({ key: 'basic' })} label="Basic" testId="section">
+          <ObjectWrapper field={makeField({ key: "basic" })} label="Basic" testId="section">
             <div>body</div>
           </ObjectWrapper>
         </Form>
       )
     );
-    expect(screen.getByText('Basic').tagName).toBe('H2');
+    expect(screen.getByText("Basic").tagName).toBe("H2");
   });
 
-  it('nested one level deep renders the title as an h3', () => {
+  it("nested one level deep renders the title as an h3", () => {
     render(
       withAutoFormContext(
         <Form>
-          <ObjectWrapper field={makeField({ key: 'outer' })} label="Outer" testId="outer">
-            <ObjectWrapper field={makeField({ key: 'inner' })} label="Inner" testId="inner">
+          <ObjectWrapper field={makeField({ key: "outer" })} label="Outer" testId="outer">
+            <ObjectWrapper field={makeField({ key: "inner" })} label="Inner" testId="inner">
               <div>body</div>
             </ObjectWrapper>
           </ObjectWrapper>
         </Form>
       )
     );
-    expect(screen.getByText('Outer').tagName).toBe('H2');
-    expect(screen.getByText('Inner').tagName).toBe('H3');
+    expect(screen.getByText("Outer").tagName).toBe("H2");
+    expect(screen.getByText("Inner").tagName).toBe("H3");
   });
 
-  it('renders a divider under the heading when a label is present', () => {
+  it("renders a divider under the heading when a label is present", () => {
     render(
       withAutoFormContext(
         <Form>
@@ -102,12 +103,12 @@ describe('ObjectWrapper', () => {
         </Form>
       )
     );
-    const section = screen.getByTestId('section');
+    const section = screen.getByTestId("section");
     const header = section.firstElementChild as HTMLElement;
-    expect(header.className).toContain('border-b');
+    expect(header.className).toContain("border-b");
   });
 
-  it('suppresses the divider when there is no visible label', () => {
+  it("suppresses the divider when there is no visible label", () => {
     render(
       withAutoFormContext(
         <Form>
@@ -117,13 +118,13 @@ describe('ObjectWrapper', () => {
         </Form>
       )
     );
-    const section = screen.getByTestId('section');
+    const section = screen.getByTestId("section");
     const firstChild = section.firstElementChild as HTMLElement;
     // Without a visible label, no header is rendered — first child is the body wrapper.
-    expect(firstChild.className).not.toContain('border-b');
+    expect(firstChild.className).not.toContain("border-b");
   });
 
-  it('suppresses the divider when customData.showDivider is false', () => {
+  it("suppresses the divider when customData.showDivider is false", () => {
     render(
       withAutoFormContext(
         <Form>
@@ -137,14 +138,14 @@ describe('ObjectWrapper', () => {
         </Form>
       )
     );
-    const section = screen.getByTestId('section');
+    const section = screen.getByTestId("section");
     const header = section.firstElementChild as HTMLElement;
     // Header still renders (label visible) but the divider token is dropped —
     // parity with FormSection's `divider={false}` escape hatch.
-    expect(header.className).not.toContain('border-b');
+    expect(header.className).not.toContain("border-b");
   });
 
-  it('applies the field-spacing token to its children', () => {
+  it("applies the field-spacing token to its children", () => {
     render(
       withAutoFormContext(
         <Form>
@@ -154,40 +155,40 @@ describe('ObjectWrapper', () => {
         </Form>
       )
     );
-    const child = screen.getByTestId('body-child');
+    const child = screen.getByTestId("body-child");
     const wrapper = child.parentElement as HTMLElement;
     expect(wrapper.className).toContain(formSpacing.field);
   });
 });
 
-describe('FieldWrapper', () => {
-  it('uses a responsive label rail for a top-level field', () => {
+describe("FieldWrapper", () => {
+  it("uses a responsive label rail for a top-level field", () => {
     render(
       withAutoFormContext(
         <Form>
-          <FieldWrapper field={makeField({ key: 'name' })} id="name" label="Name">
+          <FieldWrapper field={makeField({ key: "name" })} id="name" label="Name">
             <input id="name" />
           </FieldWrapper>
         </Form>
       )
     );
 
-    expect(screen.getByRole('group')).toHaveAttribute('data-layout', 'split');
+    expect(screen.getByTestId("test-field-name")).toHaveAttribute("data-layout", "split");
   });
 
-  it('renders field help as a named shadcn button with an outline question icon', () => {
+  it("renders field help as a named shadcn button with an outline question icon", () => {
     render(
       withAutoFormContext(
         <Form>
           <FieldWrapper
             field={makeField({
-              key: 'name',
               fieldConfig: {
                 customData: {
-                  description: 'Shown to other workspace members.',
-                  help: 'Use the name people will recognize.',
+                  description: "Shown to other workspace members.",
+                  help: "Use the name people will recognize.",
                 },
               },
+              key: "name",
             })}
             id="name"
             label="Name"
@@ -198,19 +199,19 @@ describe('FieldWrapper', () => {
       )
     );
 
-    const helpButton = screen.getByRole('button', { name: 'Help for Name' });
-    expect(helpButton.className).toContain('focus-visible:ring-3');
-    expect(helpButton.querySelector('svg')).toHaveAttribute('fill', 'none');
+    const helpButton = screen.getByRole("button", { name: "Help for Name" });
+    expect(helpButton.className).toContain("focus-visible:ring-3");
+    expect(helpButton.querySelector("svg")).toHaveAttribute("fill", "none");
   });
 
-  it('keeps help-only annotations in a tooltip instead of duplicating them inline', () => {
+  it("keeps help-only annotations in a tooltip instead of duplicating them inline", () => {
     render(
       withAutoFormContext(
         <Form>
           <FieldWrapper
             field={makeField({
-              key: 'replicas',
-              fieldConfig: { customData: { help: 'Choose between 1 and 12 replicas.' } },
+              fieldConfig: { customData: { help: "Choose between 1 and 12 replicas." } },
+              key: "replicas",
             })}
             id="replicas"
             label="Replicas"
@@ -221,44 +222,44 @@ describe('FieldWrapper', () => {
       )
     );
 
-    expect(screen.getByRole('button', { name: 'Help for Replicas' })).toBeInTheDocument();
-    expect(screen.queryByText('Choose between 1 and 12 replicas.')).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Help for Replicas" })).toBeInTheDocument();
+    expect(screen.queryByText("Choose between 1 and 12 replicas.")).not.toBeInTheDocument();
   });
 });
 
-describe('ArrayWrapper', () => {
-  it('renders with the field-spacing token and an add button', () => {
+describe("ArrayWrapper", () => {
+  it("renders with the field-spacing token and an add button", () => {
     render(
       withAutoFormContext(
-        <ArrayWrapper field={makeField()} label="Seed Brokers" onAddItem={() => {}} testId="array">
+        <ArrayWrapper field={makeField()} label="Seed Brokers" onAddItem={() => undefined} testId="array">
           <div>item</div>
         </ArrayWrapper>
       )
     );
-    const wrapper = screen.getByTestId('array');
+    const wrapper = screen.getByTestId("array");
     expect(wrapper.className).toContain(formSpacing.field);
-    expect(screen.getByRole('button', { name: /add seed brokers/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /add seed brokers/i })).toBeInTheDocument();
   });
 });
 
-describe('ArrayElementWrapper', () => {
-  it('contains each complex repeated item in a distinct native card', () => {
+describe("ArrayElementWrapper", () => {
+  it("contains each complex repeated item in a distinct native card", () => {
     render(
       <>
-        <ArrayElementWrapper index={0} onRemove={() => {}} testId="item-0">
+        <ArrayElementWrapper index={0} onRemove={() => undefined} testId="item-0">
           first
         </ArrayElementWrapper>
-        <ArrayElementWrapper index={1} onRemove={() => {}} testId="item-1">
+        <ArrayElementWrapper index={1} onRemove={() => undefined} testId="item-1">
           second
         </ArrayElementWrapper>
       </>
     );
-    const first = screen.getByTestId('item-0');
-    const second = screen.getByTestId('item-1');
-    expect(first.className).toContain('rounded-xl');
-    expect(first.className).toContain('border');
-    expect(second.className).toContain('rounded-xl');
-    expect(second.className).not.toContain('border-t');
-    expect(screen.getAllByRole('button', { name: 'Remove item' })[0]?.className).toContain('hover:bg-muted');
+    const first = screen.getByTestId("item-0");
+    const second = screen.getByTestId("item-1");
+    expect(first.className).toContain("rounded-xl");
+    expect(first.className).toContain("border");
+    expect(second.className).toContain("rounded-xl");
+    expect(second.className).not.toContain("border-t");
+    expect(screen.getAllByRole("button", { name: "Remove item" })[0]?.className).toContain("hover:bg-muted");
   });
 });

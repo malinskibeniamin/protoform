@@ -20,8 +20,7 @@ import {
   TooltipTrigger,
 } from "@/registry/base-nova/protoform/components/tooltip";
 
-const DIAGRAM_SELECTOR =
-  "blume-mermaid, [data-diagram], [data-architecture-diagram]";
+const DIAGRAM_SELECTOR = "blume-mermaid, [data-diagram], [data-architecture-diagram]";
 
 interface DiagramPortal {
   host: HTMLDivElement;
@@ -38,10 +37,7 @@ interface ActiveDiagram {
 
 interface DiagramControlProps {
   isFullscreen: boolean;
-  onToggle: (
-    portal: DiagramPortal,
-    trigger: HTMLButtonElement
-  ) => Promise<void>;
+  onToggle: (portal: DiagramPortal, trigger: HTMLButtonElement) => Promise<void>;
   portal: DiagramPortal;
 }
 
@@ -62,9 +58,7 @@ function getDiagramLabel(target: HTMLElement): string {
 }
 
 function findDiagramTargets(root: ParentNode = document): HTMLElement[] {
-  return Array.from(
-    root.querySelectorAll<HTMLElement>(DIAGRAM_SELECTOR)
-  ).filter((target) => {
+  return Array.from(root.querySelectorAll<HTMLElement>(DIAGRAM_SELECTOR)).filter((target) => {
     if (target.closest("[data-diagram-dialog]")) {
       return false;
     }
@@ -76,10 +70,10 @@ function findDiagramTargets(root: ParentNode = document): HTMLElement[] {
 function createControlHost(target: HTMLElement): HTMLDivElement {
   const host = document.createElement("div");
   host.className = "absolute top-3 right-3 z-10 w-auto";
-  host.dataset.diagramControls = "";
+  host.dataset["diagramControls"] = "";
   controlId += 1;
-  host.dataset.diagramControlsId = String(controlId);
-  target.dataset.diagramEnhanced = "";
+  host.dataset["diagramControlsId"] = String(controlId);
+  target.dataset["diagramEnhanced"] = "";
   target.append(host);
   return host;
 }
@@ -87,11 +81,7 @@ function createControlHost(target: HTMLElement): HTMLDivElement {
 function samePortals(current: DiagramPortal[], next: DiagramPortal[]): boolean {
   return (
     current.length === next.length &&
-    current.every(
-      (portal, index) =>
-        portal.target === next[index]?.target &&
-        portal.host === next[index]?.host
-    )
+    current.every((portal, index) => portal.target === next[index]?.target && portal.host === next[index]?.host)
   );
 }
 
@@ -107,9 +97,7 @@ function ExpandedDiagramPreview({ target }: { target: HTMLElement }) {
 
       const clone = target.cloneNode(true) as HTMLElement;
       clone.removeAttribute("data-diagram-enhanced");
-      for (const controls of clone.querySelectorAll(
-        "[data-diagram-controls]"
-      )) {
+      for (const controls of clone.querySelectorAll("[data-diagram-controls]")) {
         controls.remove();
       }
       clone.setAttribute("data-diagram-expanded", "");
@@ -132,11 +120,7 @@ function ExpandedDiagramPreview({ target }: { target: HTMLElement }) {
   );
 }
 
-function DiagramControl({
-  isFullscreen,
-  onToggle,
-  portal,
-}: DiagramControlProps) {
+function DiagramControl({ isFullscreen, onToggle, portal }: DiagramControlProps) {
   const action = isFullscreen ? "Exit" : "View";
   const accessibleName = `${action} ${portal.label} full screen`;
 
@@ -156,11 +140,7 @@ function DiagramControl({
           type="button"
           variant="outline"
         >
-          {isFullscreen ? (
-            <Minimize2 aria-hidden="true" />
-          ) : (
-            <Maximize2 aria-hidden="true" />
-          )}
+          {isFullscreen ? <Minimize2 aria-hidden="true" /> : <Maximize2 aria-hidden="true" />}
         </Button>
       </TooltipTrigger>
       <TooltipContent container={portal.host} side="left">
@@ -172,10 +152,8 @@ function DiagramControl({
 
 export function DiagramMaximizer() {
   const [portals, setPortals] = React.useState<DiagramPortal[]>([]);
-  const [activeDiagram, setActiveDiagram] =
-    React.useState<ActiveDiagram | null>(null);
-  const [fullscreenTarget, setFullscreenTarget] =
-    React.useState<Element | null>(null);
+  const [activeDiagram, setActiveDiagram] = React.useState<ActiveDiagram | null>(null);
+  const [fullscreenTarget, setFullscreenTarget] = React.useState<Element | null>(null);
 
   React.useEffect(function discoverDiagrams() {
     const hosts = new Map<HTMLElement, HTMLDivElement>();
@@ -194,21 +172,17 @@ export function DiagramMaximizer() {
 
       const nextPortals = targets.map((target) => {
         const existingHost = hosts.get(target);
-        const host = existingHost?.isConnected
-          ? existingHost
-          : createControlHost(target);
+        const host = existingHost?.isConnected ? existingHost : createControlHost(target);
         hosts.set(target, host);
         return {
           host,
-          id: host.dataset.diagramControlsId ?? getDiagramLabel(target),
+          id: host.dataset["diagramControlsId"] ?? getDiagramLabel(target),
           label: getDiagramLabel(target),
           target,
         };
       });
 
-      setPortals((current) =>
-        samePortals(current, nextPortals) ? current : nextPortals
-      );
+      setPortals((current) => (samePortals(current, nextPortals) ? current : nextPortals));
     }
 
     syncDiagrams();
@@ -233,8 +207,7 @@ export function DiagramMaximizer() {
 
     syncFullscreenElement();
     document.addEventListener("fullscreenchange", syncFullscreenElement);
-    return () =>
-      document.removeEventListener("fullscreenchange", syncFullscreenElement);
+    return () => document.removeEventListener("fullscreenchange", syncFullscreenElement);
   }, []);
 
   function closeFallback() {
@@ -249,10 +222,7 @@ export function DiagramMaximizer() {
     }
   }
 
-  async function toggleFullscreen(
-    portal: DiagramPortal,
-    trigger: HTMLButtonElement
-  ) {
+  async function toggleFullscreen(portal: DiagramPortal, trigger: HTMLButtonElement) {
     if (document.fullscreenElement === portal.target) {
       try {
         await document.exitFullscreen();
@@ -289,20 +259,13 @@ export function DiagramMaximizer() {
         const isFullscreen = fullscreenTarget === portal.target;
 
         return createPortal(
-          <DiagramControl
-            isFullscreen={isFullscreen}
-            onToggle={toggleFullscreen}
-            portal={portal}
-          />,
+          <DiagramControl isFullscreen={isFullscreen} onToggle={toggleFullscreen} portal={portal} />,
           portal.host,
           portal.id
         );
       })}
 
-      <Dialog
-        onOpenChange={handleDialogOpenChange}
-        open={activeDiagram !== null}
-      >
+      <Dialog onOpenChange={handleDialogOpenChange} open={activeDiagram !== null}>
         <DialogContent
           className="inset-0 h-[100dvh] max-h-none w-screen max-w-none translate-x-0 translate-y-0 rounded-none border-0 sm:max-w-none"
           data-diagram-dialog=""
@@ -310,18 +273,13 @@ export function DiagramMaximizer() {
         >
           <DialogHeader className="border-border border-b pr-14">
             <DialogTitle>
-              {activeDiagram?.label === "diagram"
-                ? "Diagram"
-                : (activeDiagram?.label ?? "Diagram")}
+              {activeDiagram?.label === "diagram" ? "Diagram" : (activeDiagram?.label ?? "Diagram")}
             </DialogTitle>
             <DialogDescription className="sr-only">
-              Full-screen diagram view. Press Escape or the close button to
-              return to the page.
+              Full-screen diagram view. Press Escape or the close button to return to the page.
             </DialogDescription>
           </DialogHeader>
-          {activeDiagram ? (
-            <ExpandedDiagramPreview target={activeDiagram.target} />
-          ) : null}
+          {activeDiagram ? <ExpandedDiagramPreview target={activeDiagram.target} /> : null}
         </DialogContent>
       </Dialog>
     </TooltipProvider>

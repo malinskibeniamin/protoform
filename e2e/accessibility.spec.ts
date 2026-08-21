@@ -7,9 +7,7 @@ async function expectNoSeriousViolations(page: Page) {
     // WebKit so VoiceOver's virtual cursor can trigger the focus trap.
     .exclude("[data-base-ui-focus-guard]")
     .analyze();
-  const serious = results.violations.filter((violation) =>
-    ["critical", "serious"].includes(violation.impact ?? "")
-  );
+  const serious = results.violations.filter((violation) => ["critical", "serious"].includes(violation.impact ?? ""));
   expect(
     serious.map((violation) => ({
       help: violation.help,
@@ -20,12 +18,10 @@ async function expectNoSeriousViolations(page: Page) {
 }
 
 for (const theme of ["light", "dark"] as const) {
-  test(`keeps help tooltip text visible in ${theme} theme`, async ({
-    page,
-  }) => {
+  test(`keeps help tooltip text visible in ${theme} theme`, async ({ page }) => {
     await page.goto("/docs/server-error-form");
     await page.evaluate((nextTheme) => {
-      document.documentElement.dataset.theme = nextTheme;
+      document.documentElement.dataset["theme"] = nextTheme;
     }, theme);
 
     const helpButton = page.getByRole("button", {
@@ -34,13 +30,9 @@ for (const theme of ["light", "dark"] as const) {
     await expect(helpButton).toBeVisible({ timeout: 30_000 });
     await helpButton.hover();
 
-    const content = page.getByTestId(
-      "autoform-field-display-name-help-content"
-    );
+    const content = page.getByTestId("autoform-field-display-name-help-content");
     await expect(content).toBeVisible();
-    await expect(content).toContainText(
-      "Use the name teammates will recognize"
-    );
+    await expect(content).toContainText("Use the name teammates will recognize");
 
     const colors = await content.evaluate((element) => {
       const style = getComputedStyle(element);
@@ -56,7 +48,7 @@ for (const theme of ["light", "dark"] as const) {
 test("keeps localized demo hubs readable in dark theme", async ({ page }) => {
   await page.goto("/docs/pl/production-examples#formik");
   await page.evaluate(() => {
-    document.documentElement.dataset.theme = "dark";
+    document.documentElement.dataset["theme"] = "dark";
   });
 
   await expect(page.getByLabel("Email")).toBeVisible({ timeout: 30_000 });
@@ -65,9 +57,7 @@ test("keeps localized demo hubs readable in dark theme", async ({ page }) => {
   await expectNoSeriousViolations(page);
 });
 
-test("has no serious accessibility violations across representative form states", async ({
-  page,
-}) => {
+test("has no serious accessibility violations across representative form states", async ({ page }) => {
   test.setTimeout(120_000);
 
   await page.addInitScript(() => {
@@ -93,18 +83,14 @@ test("has no serious accessibility violations across representative form states"
   await displayName.fill("Ada Lovelace");
   await page.getByLabel("Email").fill("ada@blocked.example");
   await page.getByRole("button", { name: "Submit" }).click();
-  await expect(
-    page.getByText("Use an email address from an approved domain.")
-  ).toBeVisible();
+  await expect(page.getByText("Use an email address from an approved domain.")).toBeVisible();
   const settledSubmit = page.getByRole("button", { name: "Submit" });
   await expect(settledSubmit).toBeEnabled();
   await expect(settledSubmit).toHaveCSS("opacity", "1");
   await expectNoSeriousViolations(page);
 
   await page.goto("/docs/complex-example");
-  await expect(
-    page.getByRole("navigation", { name: "Form progress" })
-  ).toBeVisible();
+  await expect(page.getByRole("navigation", { name: "Form progress" })).toBeVisible();
   await expectNoSeriousViolations(page);
   await page.getByRole("button", { name: "Continue" }).click();
   await page.getByRole("button", { name: "Continue" }).click();
@@ -121,9 +107,7 @@ test("has no serious accessibility violations across representative form states"
 
   await page.goto("/docs/aip-133-standard-methods-create");
   const preview = page.getByRole("tabpanel", { name: "Preview" });
-  await expect(
-    preview.getByText("React Hook Form", { exact: true })
-  ).toBeVisible({ timeout: 30_000 });
+  await expect(preview.getByText("React Hook Form", { exact: true })).toBeVisible({ timeout: 30_000 });
   await expect(preview).toHaveCSS("opacity", "1");
   await expectNoSeriousViolations(page);
 });

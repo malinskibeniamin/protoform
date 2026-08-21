@@ -79,7 +79,6 @@ async function pollUntilDone(
     if (!current.name) {
       throw new Error("An incomplete operation must have a name for polling.");
     }
-    // biome-ignore lint/performance/noAwaitInLoops: each LRO poll must follow the previous response.
     await sleep(pollIntervalMs, signal);
     requireActive(signal);
     current = await poll(current.name, signal);
@@ -103,14 +102,7 @@ export async function runProtoOperation({
     const operation = await start(signal);
     operationName = operation.name || undefined;
     onProgress?.(operation);
-    const completed = await pollUntilDone(
-      operation,
-      poll,
-      sleep,
-      pollIntervalMs,
-      signal,
-      onProgress
-    );
+    const completed = await pollUntilDone(operation, poll, sleep, pollIntervalMs, signal, onProgress);
     return finishOperation(completed);
   } catch (error) {
     if (signal.aborted && operationName && cancel) {
@@ -120,11 +112,7 @@ export async function runProtoOperation({
   }
 }
 
-export type ProtoRetryReason =
-  | "non-retryable-code"
-  | "streaming"
-  | "transient"
-  | "unsafe";
+export type ProtoRetryReason = "non-retryable-code" | "streaming" | "transient" | "unsafe";
 
 export interface ProtoRetryDecision {
   delayMs?: number;
@@ -140,10 +128,7 @@ function getRetryDelayMs(error: ConnectError): number | undefined {
   return Math.max(0, Number(delay.seconds) * 1000 + delay.nanos / 1e6);
 }
 
-export function getProtoRetryDecision(
-  method: DescMethod,
-  reason: unknown
-): ProtoRetryDecision {
+export function getProtoRetryDecision(method: DescMethod, reason: unknown): ProtoRetryDecision {
   if (method.methodKind !== "unary") {
     return { reason: "streaming", retry: false };
   }
@@ -158,9 +143,7 @@ export function getProtoRetryDecision(
     return { reason: "non-retryable-code", retry: false };
   }
   const delayMs = getRetryDelayMs(error);
-  return delayMs === undefined
-    ? { reason: "transient", retry: true }
-    : { delayMs, reason: "transient", retry: true };
+  return delayMs === undefined ? { reason: "transient", retry: true } : { delayMs, reason: "transient", retry: true };
 }
 
 export interface ProtoPartialResultRecovery {
@@ -180,13 +163,9 @@ function resourceLabel(resourceName: string): string {
   return segments.at(-1) || resourceName;
 }
 
-export function getProtoPartialResult(response: {
-  unreachable?: unknown;
-}): ProtoPartialResult {
+export function getProtoPartialResult(response: { unreachable?: unknown }): ProtoPartialResult {
   const unreachable = Array.isArray(response.unreachable)
-    ? response.unreachable.filter(
-        (value): value is string => typeof value === "string" && value !== ""
-      )
+    ? response.unreachable.filter((value): value is string => typeof value === "string" && value !== "")
     : [];
   if (unreachable.length === 0) {
     return { complete: true, recovery: [], unreachable: [] };
@@ -229,10 +208,7 @@ export function getProtoPurgePlan(
   };
 }
 
-export type ProtoPolicyPreviewAction =
-  | "commit"
-  | "start-preview"
-  | "stop-preview";
+export type ProtoPolicyPreviewAction = "commit" | "start-preview" | "stop-preview";
 
 export interface ProtoPolicyPreviewPlan {
   action: ProtoPolicyPreviewAction;
@@ -241,17 +217,14 @@ export interface ProtoPolicyPreviewPlan {
   notice: string;
 }
 
-export function getProtoPolicyPreviewPlan(
-  action: ProtoPolicyPreviewAction
-): ProtoPolicyPreviewPlan {
+export function getProtoPolicyPreviewPlan(action: ProtoPolicyPreviewAction): ProtoPolicyPreviewPlan {
   switch (action) {
     case "start-preview":
       return {
         action,
         confirmationRequired: false,
         enforcesPolicy: false,
-        notice:
-          "Preview compares the experiment with live traffic without enforcing it.",
+        notice: "Preview compares the experiment with live traffic without enforcing it.",
       };
     case "stop-preview":
       return {
@@ -268,9 +241,7 @@ export function getProtoPolicyPreviewPlan(
         notice: "Commit replaces the live policy and deletes the experiment.",
       };
     default:
-      throw new Error(
-        `Unsupported policy preview action: ${action satisfies never}`
-      );
+      throw new Error(`Unsupported policy preview action: ${action satisfies never}`);
   }
 }
 
@@ -287,14 +258,10 @@ export interface ProtoStabilityDescriptor {
   typeName: string;
 }
 
-export function getProtoStability({
-  deprecated,
-  typeName,
-}: ProtoStabilityDescriptor): ProtoStability {
+export function getProtoStability({ deprecated, typeName }: ProtoStabilityDescriptor): ProtoStability {
   if (deprecated) {
     return {
-      guidance:
-        "Deprecated: migrate before the documented support period ends.",
+      guidance: "Deprecated: migrate before the documented support period ends.",
       level: "deprecated",
       preview: false,
     };

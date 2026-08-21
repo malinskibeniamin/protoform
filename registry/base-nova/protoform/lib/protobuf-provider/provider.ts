@@ -33,9 +33,7 @@ import {
   timestampFromDate,
   ValueSchema,
 } from "@bufbuild/protobuf/wkt";
-import {
-  type ValidatorOptions,
-} from "@bufbuild/protovalidate";
+import type { ValidatorOptions } from "@bufbuild/protovalidate";
 import type {
   EmptyRepeatedStringPolicy,
   FieldRenderHints,
@@ -56,25 +54,16 @@ import {
 } from "./aip.js";
 import type { ProtoAnnotations } from "./annotations.js";
 import { getRegisteredProtoAnnotations } from "./annotations.js";
-import type {
-  FieldRules,
-  MessageRules,
-  OneofRules,
-  StringRules,
-} from "./gen/buf/validate/validate_pb.js";
+import type { FieldRules, MessageRules, OneofRules, StringRules } from "./gen/buf/validate/validate_pb.js";
 import {
   field as fieldExtension,
   message as messageExtension,
   oneof as oneofExtension,
 } from "./gen/buf/validate/validate_pb.js";
-import type { ProtoFieldUiConfig, ProtoMessageUiConfig } from "./ui-options.js";
-import {
-  getProtoFieldUi,
-  getProtoMessageUi,
-  getProtoOneofUi,
-} from "./ui-options.js";
-import { createDescriptorAwareStandardSchema } from "./validation-schema.js";
 import { protoPathToFormPath } from "./proto-error-path.js";
+import type { ProtoFieldUiConfig, ProtoMessageUiConfig } from "./ui-options.js";
+import { getProtoFieldUi, getProtoMessageUi, getProtoOneofUi } from "./ui-options.js";
+import { createDescriptorAwareStandardSchema } from "./validation-schema.js";
 
 const GOOGLE_PROTOBUF_PREFIX = "google.protobuf.";
 const TIMESTAMP_TYPE = `${GOOGLE_PROTOBUF_PREFIX}Timestamp`;
@@ -140,34 +129,34 @@ type ParsedProtoField = ParsedField<ProtoFieldRenderType>;
 type ParsedProtoSchema = ParsedSchema<ProtoFieldRenderType>;
 
 export interface ProtoFieldCustomData extends ProviderCustomData {
-  allowedPaths?: string[];
-  deprecated?: boolean;
-  desc?: DescField;
-  fieldBehaviors?: readonly FieldBehavior[];
-  fieldRules?: FieldRules;
-  hidden?: boolean;
-  identifier?: boolean;
-  immutable?: boolean;
-  inputOnly?: boolean;
-  inputType?: string;
-  jsonKind?: ProtoJsonKind;
-  keyField?: ParsedProtoField;
-  maxItems?: number;
-  maxPairs?: number;
-  messageRules?: MessageRules;
-  minItems?: number;
-  minPairs?: number;
-  oneof?: DescOneof;
-  oneofRules?: OneofRules;
-  recursive?: boolean;
-  resource?: ProtoResourceMetadata;
-  resourceReference?: ProtoResourceReference;
-  ruleExample?: string;
-  secretScope?: string;
+  allowedPaths?: string[] | undefined;
+  deprecated?: boolean | undefined;
+  desc?: DescField | undefined;
+  fieldBehaviors?: readonly FieldBehavior[] | undefined;
+  fieldRules?: FieldRules | undefined;
+  hidden?: boolean | undefined;
+  identifier?: boolean | undefined;
+  immutable?: boolean | undefined;
+  inputOnly?: boolean | undefined;
+  inputType?: string | undefined;
+  jsonKind?: ProtoJsonKind | undefined;
+  keyField?: ParsedProtoField | undefined;
+  maxItems?: number | undefined;
+  maxPairs?: number | undefined;
+  messageRules?: MessageRules | undefined;
+  minItems?: number | undefined;
+  minPairs?: number | undefined;
+  oneof?: DescOneof | undefined;
+  oneofRules?: OneofRules | undefined;
+  recursive?: boolean | undefined;
+  resource?: ProtoResourceMetadata | undefined;
+  resourceReference?: ProtoResourceReference | undefined;
+  ruleExample?: string | undefined;
+  secretScope?: string | undefined;
   source: "proto";
-  supportsUnset?: boolean;
-  ui?: ProtoFieldUiConfig;
-  valueField?: ParsedProtoField;
+  supportsUnset?: boolean | undefined;
+  ui?: ProtoFieldUiConfig | undefined;
+  valueField?: ParsedProtoField | undefined;
 }
 
 type ProtoFieldConfig = ParsedProtoField["fieldConfig"] & {
@@ -198,21 +187,17 @@ export interface ProtoConversionOptions {
    * Per-field policies keyed by descriptor path. Empty and whitespace-only
    * repeated strings are discarded unless the field is set to `preserve`.
    */
-  emptyRepeatedStringPolicies?: Readonly<
-    Record<string, EmptyRepeatedStringPolicy>
-  >;
+  emptyRepeatedStringPolicies?: Readonly<Record<string, EmptyRepeatedStringPolicy>> | undefined;
 }
 
-export interface ProtoFormOptions
-  extends ValidatorOptions,
-    ProtoConversionOptions {}
+export interface ProtoFormOptions extends ValidatorOptions, ProtoConversionOptions {}
 
 interface ProtoParserContext {
   ancestors: ReadonlySet<string>;
-  annotations?: ProtoAnnotations;
-  messageUi?: ProtoMessageUiConfig;
-  operation?: "create" | "update";
-  secretScope?: string;
+  annotations?: ProtoAnnotations | undefined;
+  messageUi?: ProtoMessageUiConfig | undefined;
+  operation?: "create" | "update" | undefined;
+  secretScope?: string | undefined;
 }
 
 export function isProtoMessageDescriptor(value: unknown): value is DescMessage {
@@ -228,31 +213,22 @@ export function isProtoMessageDescriptor(value: unknown): value is DescMessage {
   );
 }
 
-export function getProtoFieldCustomData(
-  field: ParsedField
+export function getProtoFieldCustomData<FieldType extends string>(
+  field: ParsedField<FieldType>
 ): ProtoFieldCustomData | undefined {
   return (field.fieldConfig as ProtoFieldConfig | undefined)?.customData;
 }
 
 function getFieldRules(field: DescField): FieldRules {
-  return getExtension(
-    field.proto.options ?? create(FieldOptionsSchema),
-    fieldExtension
-  );
+  return getExtension(field.proto.options ?? create(FieldOptionsSchema), fieldExtension);
 }
 
 function getMessageRules(desc: DescMessage): MessageRules {
-  return getExtension(
-    desc.proto.options ?? create(MessageOptionsSchema),
-    messageExtension
-  );
+  return getExtension(desc.proto.options ?? create(MessageOptionsSchema), messageExtension);
 }
 
 function getOneofRules(oneof: DescOneof): OneofRules {
-  return getExtension(
-    oneof.proto.options ?? create(OneofOptionsSchema),
-    oneofExtension
-  );
+  return getExtension(oneof.proto.options ?? create(OneofOptionsSchema), oneofExtension);
 }
 
 function tracksPresence(field: DescField): boolean {
@@ -278,19 +254,14 @@ const CAMEL_BOUNDARY_PATTERN = /([a-z0-9])([A-Z])/g;
 const WORD_SEPARATOR_PATTERN = /[_.-]+/g;
 const WHITESPACE_PATTERN = /\s+/g;
 
-function isUnspecifiedEnumValue(enumValue: {
-  number: number;
-  localName: string;
-  name?: string;
-}): boolean {
+function isUnspecifiedEnumValue(enumValue: { number: number; localName: string; name?: string }): boolean {
   if (enumValue.number !== 0) {
     return false;
   }
   // Check both localName (camelCase) and name (SCREAMING_SNAKE_CASE) for unspecified/unknown suffix
   return (
     UNSPECIFIED_PATTERN.test(enumValue.localName) ||
-    (typeof enumValue.name === "string" &&
-      UNSPECIFIED_PATTERN.test(enumValue.name))
+    (typeof enumValue.name === "string" && UNSPECIFIED_PATTERN.test(enumValue.name))
   );
 }
 
@@ -320,16 +291,9 @@ const NORMALIZE_SEPARATOR_PATTERN = /[\s_-]+/g;
 function formatEnumLabel(enumLocalName: string, enumTypeName: string): string {
   // Proto-gen-es v2 pre-strips the type prefix from localName in most cases.
   // If the localName still starts with the type name (camelCase), strip it.
-  const typePrefixNormalized = enumTypeName
-    .toLowerCase()
-    .replace(NORMALIZE_SEPARATOR_PATTERN, "");
-  const valueNormalized = enumLocalName
-    .toLowerCase()
-    .replace(NORMALIZE_SEPARATOR_PATTERN, "");
-  if (
-    valueNormalized.startsWith(typePrefixNormalized) &&
-    valueNormalized.length > typePrefixNormalized.length
-  ) {
+  const typePrefixNormalized = enumTypeName.toLowerCase().replace(NORMALIZE_SEPARATOR_PATTERN, "");
+  const valueNormalized = enumLocalName.toLowerCase().replace(NORMALIZE_SEPARATOR_PATTERN, "");
+  if (valueNormalized.startsWith(typePrefixNormalized) && valueNormalized.length > typePrefixNormalized.length) {
     const stripped = enumLocalName.slice(typePrefixNormalized.length);
     if (stripped.length > 0) {
       return humanize(stripped);
@@ -348,18 +312,15 @@ function buildEnumOptions(
 ): [string, string][] {
   const seenNumbers = new Set<number>();
 
-  return values
-    .filter((value) => {
-      if (isUnspecifiedEnumValue(value) || seenNumbers.has(value.number)) {
-        return false;
-      }
-      seenNumbers.add(value.number);
-      return true;
-    })
-    .map((value) => [
-      String(value.number),
-      formatEnumLabel(value.localName, enumTypeName),
-    ]);
+  const options: [string, string][] = [];
+  for (const value of values) {
+    if (isUnspecifiedEnumValue(value) || seenNumbers.has(value.number)) {
+      continue;
+    }
+    seenNumbers.add(value.number);
+    options.push([String(value.number), formatEnumLabel(value.localName, enumTypeName)]);
+  }
+  return options;
 }
 
 function bigIntToNumber(value: bigint | undefined): number | undefined {
@@ -370,19 +331,14 @@ function bigIntToNumber(value: bigint | undefined): number | undefined {
   return Number.isFinite(numericValue) ? numericValue : undefined;
 }
 
-function cloneField(
-  field: DescField,
-  overrides: Partial<DescField>
-): DescField {
+function cloneField(field: DescField, overrides: Partial<DescField>): DescField {
   return {
     ...field,
     ...overrides,
   } as DescField;
 }
 
-function getStringInputType(
-  rules: StringRules | undefined
-): string | undefined {
+function getStringInputType(rules: StringRules | undefined): string | undefined {
   switch (rules?.wellKnown.case) {
     case "email":
       return "email";
@@ -395,20 +351,14 @@ function getStringInputType(
   }
 }
 
-function withFieldUi(
-  customData: ProtoFieldCustomData,
-  field: DescField
-): ProtoFieldCustomData {
+function withFieldUi(customData: ProtoFieldCustomData, field: DescField): ProtoFieldCustomData {
   return {
     ...customData,
     ui: getProtoFieldUi(field),
   };
 }
 
-function withOneofUi(
-  customData: ProtoFieldCustomData,
-  oneof: DescOneof
-): ProtoFieldCustomData {
+function withOneofUi(customData: ProtoFieldCustomData, oneof: DescOneof): ProtoFieldCustomData {
   return {
     ...customData,
     ui: getProtoOneofUi(oneof),
@@ -422,18 +372,13 @@ type ProtoInputProps = Record<string, string | number | boolean | undefined>;
  * proto-private customData. The rendering engine reads hints via
  * `getFieldHints`; customData stays provider-internal.
  */
-function hintsFromCustomData(
-  data: ProtoFieldCustomData | undefined
-): FieldRenderHints | undefined {
+function hintsFromCustomData(data: ProtoFieldCustomData | undefined): FieldRenderHints | undefined {
   if (!data) {
     return undefined;
   }
-  const ui = data.ui;
+  const { ui } = data;
   const hints: FieldRenderHints = {};
-  const assign = <Key extends keyof FieldRenderHints>(
-    key: Key,
-    value: FieldRenderHints[Key] | undefined
-  ) => {
+  const assign = <Key extends keyof FieldRenderHints>(key: Key, value: FieldRenderHints[Key] | undefined) => {
     if (value !== undefined) {
       hints[key] = value;
     }
@@ -468,9 +413,7 @@ function hintsFromCustomData(
 
 /** Attach derived render hints to a parsed field, in place. */
 function attachRenderHints(field: ParsedProtoField): ParsedProtoField {
-  const hints = hintsFromCustomData(
-    (field.fieldConfig as ProtoFieldConfig | undefined)?.customData
-  );
+  const hints = hintsFromCustomData((field.fieldConfig as ProtoFieldConfig | undefined)?.customData);
   if (hints) {
     field.hints = hints;
   }
@@ -489,43 +432,28 @@ function buildFieldConfig(
     description,
     fieldType,
     inputProps: {
-      ...(customData.ui?.placeholder
-        ? { placeholder: customData.ui.placeholder }
-        : {}),
+      ...(customData.ui?.placeholder ? { placeholder: customData.ui.placeholder } : {}),
       ...inputProps,
     },
   };
 }
 
-function getMessageDescription(
-  desc: DescMessage,
-  context: ProtoParserContext
-): string | undefined {
+function getMessageDescription(desc: DescMessage, context: ProtoParserContext): string | undefined {
   return context.annotations?.messages?.[desc.typeName];
 }
 
-function getFieldDescription(
-  field: DescField,
-  context: ProtoParserContext
-): string | undefined {
-  return context.annotations?.fields?.[
-    `${field.parent.typeName}.${field.localName}`
-  ];
+function getFieldDescription(field: DescField, context: ProtoParserContext): string | undefined {
+  return context.annotations?.fields?.[`${field.parent.typeName}.${field.localName}`];
 }
 
-function getOneofDescription(
-  oneof: DescOneof,
-  context: ProtoParserContext
-): string | undefined {
-  return context.annotations?.oneofs?.[
-    `${oneof.parent.typeName}.${oneof.localName}`
-  ];
+function getOneofDescription(oneof: DescOneof, context: ProtoParserContext): string | undefined {
+  return context.annotations?.oneofs?.[`${oneof.parent.typeName}.${oneof.localName}`];
 }
 
 function extractNumericBounds(rules: FieldRules | undefined): {
-  min?: number;
-  max?: number;
-  step?: string;
+  min?: number | undefined;
+  max?: number | undefined;
+  step?: string | undefined;
 } {
   const typeCase = rules?.type.case;
   if (!typeCase) {
@@ -545,18 +473,14 @@ function extractNumericBounds(rules: FieldRules | undefined): {
     min = Number(numericRules.greaterThan.value);
   } else if (numericRules.greaterThan?.case === "gt") {
     const greaterThan = Number(numericRules.greaterThan.value);
-    min = Number.isFinite(greaterThan)
-      ? greaterThan + (step === "1" ? 1 : 0)
-      : undefined;
+    min = Number.isFinite(greaterThan) ? greaterThan + (step === "1" ? 1 : 0) : undefined;
   }
 
   if (numericRules.lessThan?.case === "lte") {
     max = Number(numericRules.lessThan.value);
   } else if (numericRules.lessThan?.case === "lt") {
     const lessThan = Number(numericRules.lessThan.value);
-    max = Number.isFinite(lessThan)
-      ? lessThan - (step === "1" ? 1 : 0)
-      : undefined;
+    max = Number.isFinite(lessThan) ? lessThan - (step === "1" ? 1 : 0) : undefined;
   }
 
   if (min !== undefined && max !== undefined && min > max) {
@@ -566,13 +490,8 @@ function extractNumericBounds(rules: FieldRules | undefined): {
   return { max, min, step };
 }
 
-function buildStringField(
-  field: DescField,
-  rules: FieldRules,
-  context: ProtoParserContext
-): ParsedProtoField {
-  const stringRules =
-    rules.type.case === "string" ? rules.type.value : undefined;
+function buildStringField(field: DescField, rules: FieldRules, context: ProtoParserContext): ParsedProtoField {
+  const stringRules = rules.type.case === "string" ? rules.type.value : undefined;
   const inputType = getStringInputType(stringRules);
 
   return {
@@ -602,11 +521,7 @@ function buildStringField(
   };
 }
 
-function buildNumberField(
-  field: DescField,
-  rules: FieldRules,
-  context: ProtoParserContext
-): ParsedProtoField {
+function buildNumberField(field: DescField, rules: FieldRules, context: ProtoParserContext): ParsedProtoField {
   const { min, max, step } = extractNumericBounds(rules);
   const isInt64 = is64BitScalar(field.scalar);
 
@@ -634,11 +549,7 @@ function buildNumberField(
   };
 }
 
-function buildBooleanField(
-  field: DescField,
-  rules: FieldRules,
-  context: ProtoParserContext
-): ParsedProtoField {
+function buildBooleanField(field: DescField, rules: FieldRules, context: ProtoParserContext): ParsedProtoField {
   return {
     fieldConfig: buildFieldConfig(
       withFieldUi(
@@ -659,11 +570,7 @@ function buildBooleanField(
   };
 }
 
-function buildBytesField(
-  field: DescField,
-  rules: FieldRules,
-  context: ProtoParserContext
-): ParsedProtoField {
+function buildBytesField(field: DescField, rules: FieldRules, context: ProtoParserContext): ParsedProtoField {
   return {
     fieldConfig: buildFieldConfig(
       withFieldUi(
@@ -684,11 +591,7 @@ function buildBytesField(
   };
 }
 
-function buildEnumField(
-  field: EnumField,
-  rules: FieldRules,
-  context: ProtoParserContext
-): ParsedProtoField {
+function buildEnumField(field: EnumField, rules: FieldRules, context: ProtoParserContext): ParsedProtoField {
   return {
     fieldConfig: buildFieldConfig(
       withFieldUi(
@@ -761,11 +664,7 @@ function buildRecursiveField(
   };
 }
 
-function buildMessageField(
-  field: MessageField,
-  rules: FieldRules,
-  context: ProtoParserContext
-): ParsedProtoField {
+function buildMessageField(field: MessageField, rules: FieldRules, context: ProtoParserContext): ParsedProtoField {
   if (isWrapperDesc(field.message)) {
     const wrappedScalar = field.message.fields[0]?.scalar;
     if (wrappedScalar === ScalarType.BOOL) {
@@ -830,10 +729,7 @@ function buildMessageField(
         fieldConfig: buildFieldConfig(
           withFieldUi(
             {
-              allowedPaths:
-                rules.type.case === "fieldMask"
-                  ? rules.type.value.in
-                  : undefined,
+              allowedPaths: rules.type.case === "fieldMask" ? rules.type.value.in : undefined,
               desc: field,
               fieldRules: rules,
               source: "proto",
@@ -886,42 +782,22 @@ function buildMessageField(
   }
 }
 
-function buildListItemField(
-  field: ListField,
-  context: ProtoParserContext,
-  itemRules?: FieldRules
-): ParsedProtoField {
+function buildListItemField(field: ListField, context: ProtoParserContext, itemRules?: FieldRules): ParsedProtoField {
   const syntheticField = cloneField(field, {
     localName: "value",
   });
 
   if (field.listKind === "scalar") {
     if (field.scalar === ScalarType.STRING) {
-      return buildStringField(
-        syntheticField,
-        itemRules ?? getFieldRules(field),
-        context
-      );
+      return buildStringField(syntheticField, itemRules ?? getFieldRules(field), context);
     }
     if (field.scalar === ScalarType.BOOL) {
-      return buildBooleanField(
-        syntheticField,
-        itemRules ?? getFieldRules(field),
-        context
-      );
+      return buildBooleanField(syntheticField, itemRules ?? getFieldRules(field), context);
     }
     if (field.scalar === ScalarType.BYTES) {
-      return buildBytesField(
-        syntheticField,
-        itemRules ?? getFieldRules(field),
-        context
-      );
+      return buildBytesField(syntheticField, itemRules ?? getFieldRules(field), context);
     }
-    return buildNumberField(
-      syntheticField,
-      itemRules ?? getFieldRules(field),
-      context
-    );
+    return buildNumberField(syntheticField, itemRules ?? getFieldRules(field), context);
   }
 
   if (field.listKind === "enum") {
@@ -965,13 +841,8 @@ function buildListItemField(
   };
 }
 
-function buildArrayField(
-  field: ListField,
-  rules: FieldRules,
-  context: ProtoParserContext
-): ParsedProtoField {
-  const repeatedRules =
-    rules.type.case === "repeated" ? rules.type.value : undefined;
+function buildArrayField(field: ListField, rules: FieldRules, context: ProtoParserContext): ParsedProtoField {
+  const repeatedRules = rules.type.case === "repeated" ? rules.type.value : undefined;
   return {
     fieldConfig: buildFieldConfig(
       withFieldUi(
@@ -1007,24 +878,12 @@ function buildMapKeyField(
   });
 
   if (field.mapKey === ScalarType.BOOL) {
-    return buildBooleanField(
-      syntheticField,
-      rules ?? getFieldRules(field),
-      context
-    );
+    return buildBooleanField(syntheticField, rules ?? getFieldRules(field), context);
   }
   if (field.mapKey === ScalarType.STRING) {
-    return buildStringField(
-      syntheticField,
-      rules ?? getFieldRules(field),
-      context
-    );
+    return buildStringField(syntheticField, rules ?? getFieldRules(field), context);
   }
-  return buildNumberField(
-    syntheticField,
-    rules ?? getFieldRules(field),
-    context
-  );
+  return buildNumberField(syntheticField, rules ?? getFieldRules(field), context);
 }
 
 function buildMapValueField(
@@ -1038,31 +897,15 @@ function buildMapValueField(
 
   if (field.mapKind === "scalar") {
     if (field.scalar === ScalarType.STRING) {
-      return buildStringField(
-        syntheticField,
-        rules ?? getFieldRules(field),
-        context
-      );
+      return buildStringField(syntheticField, rules ?? getFieldRules(field), context);
     }
     if (field.scalar === ScalarType.BOOL) {
-      return buildBooleanField(
-        syntheticField,
-        rules ?? getFieldRules(field),
-        context
-      );
+      return buildBooleanField(syntheticField, rules ?? getFieldRules(field), context);
     }
     if (field.scalar === ScalarType.BYTES) {
-      return buildBytesField(
-        syntheticField,
-        rules ?? getFieldRules(field),
-        context
-      );
+      return buildBytesField(syntheticField, rules ?? getFieldRules(field), context);
     }
-    return buildNumberField(
-      syntheticField,
-      rules ?? getFieldRules(field),
-      context
-    );
+    return buildNumberField(syntheticField, rules ?? getFieldRules(field), context);
   }
 
   if (field.mapKind === "enum") {
@@ -1079,18 +922,10 @@ function buildMapValueField(
     };
   }
 
-  return buildMessageField(
-    syntheticField as MessageField,
-    rules ?? getFieldRules(field),
-    context
-  );
+  return buildMessageField(syntheticField as MessageField, rules ?? getFieldRules(field), context);
 }
 
-function buildMapField(
-  field: MapField,
-  rules: FieldRules,
-  context: ProtoParserContext
-): ParsedProtoField {
+function buildMapField(field: MapField, rules: FieldRules, context: ProtoParserContext): ParsedProtoField {
   const mapRules = rules.type.case === "map" ? rules.type.value : undefined;
   const keyField = buildMapKeyField(field, mapRules?.keys, context);
   const valueField = buildMapValueField(field, mapRules?.values, context);
@@ -1119,10 +954,7 @@ function buildMapField(
   };
 }
 
-function buildOneofField(
-  oneof: DescOneof,
-  context: ProtoParserContext
-): ParsedProtoField {
+function buildOneofField(oneof: DescOneof, context: ProtoParserContext): ParsedProtoField {
   const oneofRules = getOneofRules(oneof);
   return attachRenderHints({
     fieldConfig: buildFieldConfig(
@@ -1144,10 +976,7 @@ function buildOneofField(
   });
 }
 
-function buildProtoField(
-  field: DescField,
-  context: ProtoParserContext
-): ParsedProtoField {
+function buildProtoField(field: DescField, context: ProtoParserContext): ParsedProtoField {
   const rules = getFieldRules(field);
 
   let result: ParsedProtoField;
@@ -1181,13 +1010,11 @@ function buildProtoField(
       result = buildMapField(field, rules, context);
       break;
     default:
-      throw new Error(
-        `Unsupported protobuf field kind: ${String((field as DescField).fieldKind)}`
-      );
+      throw new Error(`Unsupported protobuf field kind: ${String((field as DescField).fieldKind)}`);
   }
 
   if (result.fieldConfig) {
-    const customData = (result.fieldConfig as ProtoFieldConfig).customData;
+    const { customData } = result.fieldConfig as ProtoFieldConfig;
     if (customData) {
       if (context.secretScope) {
         customData.secretScope = context.secretScope;
@@ -1200,12 +1027,10 @@ function buildProtoField(
         customData.deprecated = true;
       }
       customData.hidden =
-        fieldBehaviors.includes(FieldBehavior.OUTPUT_ONLY) ||
-        (isIdentifier && context.operation === "create");
+        fieldBehaviors.includes(FieldBehavior.OUTPUT_ONLY) || (isIdentifier && context.operation === "create");
       customData.identifier = isIdentifier;
       customData.immutable =
-        (isImmutable && context.operation !== "create") ||
-        (isIdentifier && context.operation === "update");
+        (isImmutable && context.operation !== "create") || (isIdentifier && context.operation === "update");
       customData.inputOnly = fieldBehaviors.includes(FieldBehavior.INPUT_ONLY);
       customData.resourceReference = getProtoResourceReference(field);
       const messageDesc =
@@ -1214,9 +1039,7 @@ function buildProtoField(
         (field.fieldKind === "map" && field.mapKind === "message")
           ? field.message
           : undefined;
-      customData.resource = messageDesc
-        ? getProtoResourceMetadata(messageDesc)
-        : undefined;
+      customData.resource = messageDesc ? getProtoResourceMetadata(messageDesc) : undefined;
       result.required = Boolean(
         result.required ||
           fieldBehaviors.includes(FieldBehavior.REQUIRED) ||
@@ -1228,9 +1051,7 @@ function buildProtoField(
   return attachRenderHints(result);
 }
 
-export function getProtoMessageUiConfig(
-  desc: DescMessage
-): ProtoMessageUiConfig | undefined {
+export function getProtoMessageUiConfig(desc: DescMessage): ProtoMessageUiConfig | undefined {
   return getProtoMessageUi(desc);
 }
 
@@ -1251,9 +1072,7 @@ function parseProtoSchemaInternal(
   };
   return {
     fields: desc.members.map((member) =>
-      member.kind === "oneof"
-        ? buildOneofField(member, context)
-        : buildProtoField(member, context)
+      member.kind === "oneof" ? buildOneofField(member, context) : buildProtoField(member, context)
     ),
   };
 }
@@ -1263,31 +1082,24 @@ export function parseProtoSchema(
   annotations = getRegisteredProtoAnnotations(desc),
   parentSecretScope?: string
 ): ParsedProtoSchema {
-  return parseProtoSchemaInternal(
-    desc,
-    annotations,
-    parentSecretScope,
-    new Set(),
-    undefined
-  );
+  return parseProtoSchemaInternal(desc, annotations, parentSecretScope, new Set(), undefined);
 }
 
-function inferProtoOperation(
-  desc: DescMessage
-): "create" | "update" | undefined {
+const CREATE_REQUEST_PATTERN = /^Create.+Request$/;
+const UPDATE_REQUEST_PATTERN = /^Update.+Request$/;
+
+function inferProtoOperation(desc: DescMessage): "create" | "update" | undefined {
   const messageName = desc.typeName.split(".").at(-1) ?? "";
-  if (/^Create.+Request$/.test(messageName)) {
+  if (CREATE_REQUEST_PATTERN.test(messageName)) {
     return "create";
   }
-  if (/^Update.+Request$/.test(messageName)) {
+  if (UPDATE_REQUEST_PATTERN.test(messageName)) {
     return "update";
   }
   return;
 }
 
-function toDateTimeLocalValue(
-  timestamp: MessageShape<typeof TimestampSchema> | undefined
-): string | undefined {
+function toDateTimeLocalValue(timestamp: MessageShape<typeof TimestampSchema> | undefined): string | undefined {
   if (!timestamp) {
     return;
   }
@@ -1325,11 +1137,7 @@ function objectHasValues(value: Record<string, unknown>): boolean {
 }
 
 function isJsonValue(value: unknown): value is JsonValue {
-  if (
-    value === null ||
-    typeof value === "string" ||
-    typeof value === "boolean"
-  ) {
+  if (value === null || typeof value === "string" || typeof value === "boolean") {
     return true;
   }
   if (typeof value === "number") {
@@ -1348,9 +1156,7 @@ function fieldToFormValue(field: DescField, value: unknown): unknown {
         return value instanceof Uint8Array ? base64Encode(value) : undefined;
       }
       if (is64BitScalar(field.scalar)) {
-        return typeof value === "bigint"
-          ? value.toString()
-          : (value ?? undefined);
+        return typeof value === "bigint" ? value.toString() : (value ?? undefined);
       }
       return value;
     }
@@ -1363,37 +1169,27 @@ function fieldToFormValue(field: DescField, value: unknown): unknown {
           return value instanceof Uint8Array ? base64Encode(value) : undefined;
         }
         if (is64BitScalar(wrappedScalar)) {
-          return typeof value === "bigint"
-            ? value.toString()
-            : (value ?? undefined);
+          return typeof value === "bigint" ? value.toString() : (value ?? undefined);
         }
         return value;
       }
 
       switch (field.message.typeName) {
         case TIMESTAMP_TYPE:
-          return toDateTimeLocalValue(
-            value as MessageShape<typeof TimestampSchema> | undefined
-          );
+          return toDateTimeLocalValue(value as MessageShape<typeof TimestampSchema> | undefined);
         case DURATION_TYPE:
           return value
-            ? toJsonString(
-                DurationSchema,
-                value as MessageShape<typeof DurationSchema>
-              ).replace(/"/g, "")
+            ? toJsonString(DurationSchema, value as MessageShape<typeof DurationSchema>).replace(/"/g, "")
             : undefined;
         case FIELD_MASK_TYPE:
-          return isPlainObject(value) &&
-            Array.isArray((value as { paths?: unknown[] }).paths)
+          return isPlainObject(value) && Array.isArray((value as { paths?: unknown[] }).paths)
             ? (value as { paths: string[] }).paths
             : undefined;
         case STRUCT_TYPE:
           if (isMessage(value, StructSchema)) {
             return toJson(StructSchema, value);
           }
-          return isPlainObject(value) && isJsonValue(value)
-            ? structuredClone(value)
-            : undefined;
+          return isPlainObject(value) && isJsonValue(value) ? structuredClone(value) : undefined;
         case VALUE_TYPE:
           if (isMessage(value, ValueSchema)) {
             return toJson(ValueSchema, value);
@@ -1403,9 +1199,7 @@ function fieldToFormValue(field: DescField, value: unknown): unknown {
           if (isMessage(value, ListValueSchema)) {
             return toJson(ListValueSchema, value);
           }
-          return Array.isArray(value) && isJsonValue(value)
-            ? structuredClone(value)
-            : undefined;
+          return Array.isArray(value) && isJsonValue(value) ? structuredClone(value) : undefined;
         case ANY_TYPE:
           return value && isPlainObject(value)
             ? {
@@ -1420,15 +1214,11 @@ function fieldToFormValue(field: DescField, value: unknown): unknown {
               }
             : undefined;
         default:
-          return value
-            ? messageToFormValues(field.message, value as AnyObject)
-            : undefined;
+          return value ? messageToFormValues(field.message, value as AnyObject) : undefined;
       }
     }
     case "list":
-      return Array.isArray(value)
-        ? value.map((item) => listItemToFormValue(field, item))
-        : [];
+      return Array.isArray(value) ? value.map((item) => listItemToFormValue(field, item)) : [];
     case "map": {
       if (!isPlainObject(value)) {
         return [];
@@ -1484,10 +1274,7 @@ function mapValueToFormValue(field: MapField, value: unknown): unknown {
   return value;
 }
 
-function mapKeyToFormValue(
-  field: MapField,
-  key: string
-): string | number | boolean {
+function mapKeyToFormValue(field: MapField, key: string): string | number | boolean {
   if (field.mapKey === ScalarType.BOOL) {
     return key === "true";
   }
@@ -1497,38 +1284,26 @@ function mapKeyToFormValue(
   return Number(key);
 }
 
-function messageToFormValues(
-  desc: DescMessage,
-  value: AnyObject
-): Record<string, unknown> {
+function messageToFormValues(desc: DescMessage, value: AnyObject): Record<string, unknown> {
   const result: Record<string, unknown> = {};
 
   for (const member of desc.members) {
     if (member.kind === "oneof") {
-      const oneofValue = value[member.localName] as
-        | { case?: string; value?: unknown }
-        | undefined;
+      const oneofValue = value[member.localName] as { case?: string; value?: unknown } | undefined;
       if (!oneofValue?.case) {
         result[member.localName] = { case: undefined, value: undefined };
         continue;
       }
 
-      const activeField = member.fields.find(
-        (field) => field.localName === oneofValue.case
-      );
+      const activeField = member.fields.find((field) => field.localName === oneofValue.case);
       result[member.localName] = {
         case: oneofValue.case,
-        value: activeField
-          ? fieldToFormValue(activeField, oneofValue.value)
-          : oneofValue.value,
+        value: activeField ? fieldToFormValue(activeField, oneofValue.value) : oneofValue.value,
       };
       continue;
     }
 
-    result[member.localName] = fieldToFormValue(
-      member,
-      value[member.localName]
-    );
+    result[member.localName] = fieldToFormValue(member, value[member.localName]);
   }
 
   return result;
@@ -1651,37 +1426,23 @@ function normalizeMessageFieldValue(
 
   switch (field.message.typeName) {
     case TIMESTAMP_TYPE:
-      return typeof value === "string" && value
-        ? timestampFromDate(new Date(value))
-        : undefined;
+      return typeof value === "string" && value ? timestampFromDate(new Date(value)) : undefined;
     case DURATION_TYPE:
-      return typeof value === "string" && value
-        ? fromJsonString(DurationSchema, JSON.stringify(value))
-        : undefined;
+      return typeof value === "string" && value ? fromJsonString(DurationSchema, JSON.stringify(value)) : undefined;
     case FIELD_MASK_TYPE:
       return Array.isArray(value) && value.length > 0
         ? {
-            paths: value.filter(
-              (entry): entry is string => typeof entry === "string"
-            ),
+            paths: value.filter((entry): entry is string => typeof entry === "string"),
           }
         : undefined;
     case STRUCT_TYPE:
-      return value === undefined
-        ? undefined
-        : fromJson(StructSchema, (value ?? {}) as JsonValue);
+      return value === undefined ? undefined : fromJson(StructSchema, (value ?? {}) as JsonValue);
     case VALUE_TYPE:
-      return value === undefined
-        ? undefined
-        : fromJson(ValueSchema, value as JsonValue);
+      return value === undefined ? undefined : fromJson(ValueSchema, value as JsonValue);
     case LIST_VALUE_TYPE:
-      return value === undefined
-        ? undefined
-        : fromJson(ListValueSchema, value as JsonValue);
+      return value === undefined ? undefined : fromJson(ListValueSchema, value as JsonValue);
     case ANY_TYPE: {
-      const anyValue = isPlainObject(value)
-        ? (value as ProtoAnyFormValue)
-        : undefined;
+      const anyValue = isPlainObject(value) ? (value as ProtoAnyFormValue) : undefined;
       if (!(anyValue?.typeUrl || anyValue?.valueBase64)) {
         return;
       }
@@ -1691,9 +1452,7 @@ function normalizeMessageFieldValue(
       };
     }
     default: {
-      const nested = isPlainObject(value)
-        ? messageToProtoInit(field.message, value, options, path)
-        : undefined;
+      const nested = isPlainObject(value) ? messageToProtoInit(field.message, value, options, path) : undefined;
       if (!(nested && objectHasValues(nested))) {
         return tracksPresence(field) ? undefined : nested;
       }
@@ -1723,9 +1482,7 @@ function listItemToProtoValue(
   if (isWrapperDesc(field.message)) {
     return value;
   }
-  return isPlainObject(value)
-    ? messageToProtoInit(field.message, value, options, path)
-    : undefined;
+  return isPlainObject(value) ? messageToProtoInit(field.message, value, options, path) : undefined;
 }
 
 function mapValueToProtoValue(
@@ -1749,9 +1506,7 @@ function mapValueToProtoValue(
   if (isWrapperDesc(field.message)) {
     return value;
   }
-  return isPlainObject(value)
-    ? messageToProtoInit(field.message, value, options, path)
-    : undefined;
+  return isPlainObject(value) ? messageToProtoInit(field.message, value, options, path) : undefined;
 }
 
 function repeatedListEntries(
@@ -1764,16 +1519,10 @@ function repeatedListEntries(
     return [];
   }
   const policy = options.emptyRepeatedStringPolicies?.[path.join(".")];
-  if (
-    field.listKind !== "scalar" ||
-    field.scalar !== ScalarType.STRING ||
-    policy === "preserve"
-  ) {
+  if (field.listKind !== "scalar" || field.scalar !== ScalarType.STRING || policy === "preserve") {
     return value;
   }
-  return value.filter(
-    (entry) => typeof entry !== "string" || entry.trim().length > 0
-  );
+  return value.filter((entry) => typeof entry !== "string" || entry.trim().length > 0);
 }
 
 function fieldToProtoValue(
@@ -1801,18 +1550,13 @@ function fieldToProtoValue(
                 if (!isPlainObject(entry)) {
                   return null;
                 }
-                const mapKey = entry.key;
+                const mapKey = entry["key"];
                 if (mapKey === undefined || mapKey === null || mapKey === "") {
                   return null;
                 }
-                return [
-                  String(mapKey),
-                  mapValueToProtoValue(field, entry.value, options, path),
-                ] as const;
+                return [String(mapKey), mapValueToProtoValue(field, entry["value"], options, path)] as const;
               })
-              .filter(
-                (entry): entry is readonly [string, unknown] => entry !== null
-              )
+              .filter((entry): entry is readonly [string, unknown] => entry !== null)
           )
         : {};
     default:
@@ -1830,38 +1574,28 @@ function messageToProtoInit(
 
   for (const member of desc.members) {
     if (member.kind === "oneof") {
-      const oneofValue = value[member.localName] as
-        | { case?: string; value?: unknown }
-        | undefined;
+      const oneofValue = value[member.localName] as { case?: string; value?: unknown } | undefined;
       if (!oneofValue?.case) {
         continue;
       }
 
-      const activeField = member.fields.find(
-        (field) => field.localName === oneofValue.case
-      );
+      const activeField = member.fields.find((field) => field.localName === oneofValue.case);
       if (!activeField) {
         continue;
       }
 
       result[member.localName] = {
         case: oneofValue.case,
-        value: fieldToProtoValue(
-          activeField,
-          oneofValue.value,
-          options,
-          [...path, member.localName, activeField.localName]
-        ),
+        value: fieldToProtoValue(activeField, oneofValue.value, options, [
+          ...path,
+          member.localName,
+          activeField.localName,
+        ]),
       };
       continue;
     }
 
-    const normalized = fieldToProtoValue(
-      member,
-      value[member.localName],
-      options,
-      [...path, member.localName]
-    );
+    const normalized = fieldToProtoValue(member, value[member.localName], options, [...path, member.localName]);
     if (normalized === undefined && tracksPresence(member)) {
       continue;
     }
@@ -1879,19 +1613,11 @@ export function formValuesToProtoInit<Desc extends DescMessage>(
   return messageToProtoInit(desc, values, options, []) as MessageInitShape<Desc>;
 }
 
-function knownMessageValuesEqual(
-  desc: DescMessage,
-  left: AnyObject,
-  right: AnyObject
-): boolean {
+function knownMessageValuesEqual(desc: DescMessage, left: AnyObject, right: AnyObject): boolean {
   return toJsonString(desc, left as never) === toJsonString(desc, right as never);
 }
 
-function preserveRepeatedMessageUnknownFields(
-  desc: DescMessage,
-  target: unknown[],
-  source: unknown[]
-): void {
+function preserveRepeatedMessageUnknownFields(desc: DescMessage, target: unknown[], source: unknown[]): void {
   const matchedSourceIndexes = new Set<number>();
   const matchedTargetIndexes = new Set<number>();
 
@@ -1899,11 +1625,11 @@ function preserveRepeatedMessageUnknownFields(
     if (!isPlainObject(targetValue)) {
       continue;
     }
-    const candidates = source.flatMap((sourceValue, sourceIndex) =>
-      !matchedSourceIndexes.has(sourceIndex) &&
-      isPlainObject(sourceValue) &&
-      knownMessageValuesEqual(desc, targetValue, sourceValue)
-        ? [sourceIndex]
+    const candidates = source.flatMap((candidateSourceValue, candidateSourceIndex) =>
+      !matchedSourceIndexes.has(candidateSourceIndex) &&
+      isPlainObject(candidateSourceValue) &&
+      knownMessageValuesEqual(desc, targetValue, candidateSourceValue)
+        ? [candidateSourceIndex]
         : []
     );
     if (candidates.length !== 1) {
@@ -1926,11 +1652,7 @@ function preserveRepeatedMessageUnknownFields(
     if (competingTargetCount !== 1) {
       continue;
     }
-    preserveMessageUnknownFields(
-      desc,
-      targetValue,
-      sourceValue
-    );
+    preserveMessageUnknownFields(desc, targetValue, sourceValue);
     matchedSourceIndexes.add(sourceIndex);
     matchedTargetIndexes.add(targetIndex);
   }
@@ -1953,11 +1675,7 @@ function preserveRepeatedMessageUnknownFields(
   }
 }
 
-function preserveFieldUnknownFields(
-  field: DescField,
-  target: unknown,
-  source: unknown
-): void {
+function preserveFieldUnknownFields(field: DescField, target: unknown, source: unknown): void {
   switch (field.fieldKind) {
     case "message":
       if (isPlainObject(target) && isPlainObject(source)) {
@@ -1965,28 +1683,16 @@ function preserveFieldUnknownFields(
       }
       return;
     case "list":
-      if (
-        field.listKind === "message" &&
-        Array.isArray(target) &&
-        Array.isArray(source)
-      ) {
+      if (field.listKind === "message" && Array.isArray(target) && Array.isArray(source)) {
         preserveRepeatedMessageUnknownFields(field.message, target, source);
       }
       return;
     case "map":
-      if (
-        field.mapKind === "message" &&
-        isPlainObject(target) &&
-        isPlainObject(source)
-      ) {
+      if (field.mapKind === "message" && isPlainObject(target) && isPlainObject(source)) {
         for (const [key, targetValue] of Object.entries(target)) {
           const sourceValue = source[key];
           if (isPlainObject(targetValue) && isPlainObject(sourceValue)) {
-            preserveMessageUnknownFields(
-              field.message,
-              targetValue,
-              sourceValue
-            );
+            preserveMessageUnknownFields(field.message, targetValue, sourceValue);
           }
         }
       }
@@ -1995,17 +1701,13 @@ function preserveFieldUnknownFields(
     case "scalar":
       return;
     default:
-      field satisfies never;
+      throw new TypeError(`Unsupported field: ${String(field satisfies never)}`);
   }
 }
 
-function preserveMessageUnknownFields(
-  desc: DescMessage,
-  target: AnyObject,
-  source: AnyObject
-): void {
-  if (source.$unknown) {
-    target.$unknown = structuredClone(source.$unknown);
+function preserveMessageUnknownFields(desc: DescMessage, target: AnyObject, source: AnyObject): void {
+  if (source["$unknown"]) {
+    target["$unknown"] = structuredClone(source["$unknown"]);
   }
 
   for (const member of desc.members) {
@@ -2015,31 +1717,18 @@ function preserveMessageUnknownFields(
       if (!(isPlainObject(targetOneof) && isPlainObject(sourceOneof))) {
         continue;
       }
-      const targetCase = targetOneof.case;
-      if (
-        typeof targetCase !== "string" ||
-        targetCase !== sourceOneof.case
-      ) {
+      const targetCase = targetOneof["case"];
+      if (typeof targetCase !== "string" || targetCase !== sourceOneof["case"]) {
         continue;
       }
-      const activeField = member.fields.find(
-        (field) => field.localName === targetCase
-      );
+      const activeField = member.fields.find((field) => field.localName === targetCase);
       if (activeField) {
-        preserveFieldUnknownFields(
-          activeField,
-          targetOneof.value,
-          sourceOneof.value
-        );
+        preserveFieldUnknownFields(activeField, targetOneof["value"], sourceOneof["value"]);
       }
       continue;
     }
 
-    preserveFieldUnknownFields(
-      member,
-      target[member.localName],
-      source[member.localName]
-    );
+    preserveFieldUnknownFields(member, target[member.localName], source[member.localName]);
   }
 }
 
@@ -2129,12 +1818,8 @@ function normalizeIssuePath(
   let currentDesc: DescMessage | undefined = desc;
 
   for (let index = 0; index < issue.path.length; index += 1) {
-    const segment: StandardSchemaV1.PathSegment | PropertyKey | undefined =
-      issue.path[index];
-    const key =
-      typeof segment === "object" && segment && "key" in segment
-        ? segment.key
-        : segment;
+    const segment: StandardSchemaV1.PathSegment | PropertyKey | undefined = issue.path[index];
+    const key = typeof segment === "object" && segment && "key" in segment ? segment.key : segment;
 
     if (typeof key === "number") {
       normalizedPath.push(key);
@@ -2147,9 +1832,7 @@ function normalizeIssuePath(
     }
 
     const matchedField: DescField | undefined = currentDesc.field[key];
-    const oneof = currentDesc.oneofs.find(
-      (candidate) => candidate.localName === key
-    );
+    const oneof = currentDesc.oneofs.find((candidate) => candidate.localName === key);
 
     if (oneof) {
       normalizedPath.push(oneof.localName);
@@ -2168,22 +1851,13 @@ function normalizeIssuePath(
     if (matchedField.fieldKind === "map") {
       const nextSegment = issue.path[index + 1];
       const mapKey =
-        typeof nextSegment === "object" && nextSegment && "key" in nextSegment
-          ? nextSegment.key
-          : nextSegment;
+        typeof nextSegment === "object" && nextSegment && "key" in nextSegment ? nextSegment.key : nextSegment;
       const mapEntries = Array.isArray(values[matchedField.localName])
         ? (values[matchedField.localName] as ProtoMapFormEntry[])
         : [];
-      const mapIndex =
-        typeof mapKey === "string"
-          ? mapEntries.findIndex((entry) => entry.key === mapKey)
-          : -1;
+      const mapIndex = typeof mapKey === "string" ? mapEntries.findIndex((entry) => entry.key === mapKey) : -1;
 
-      if (
-        mapIndex !== -1 &&
-        issue.path.length > index + 2 &&
-        matchedField.mapKind === "message"
-      ) {
+      if (mapIndex !== -1 && issue.path.length > index + 2 && matchedField.mapKind === "message") {
         normalizedPath.push(mapIndex, "value");
         currentDesc = matchedField.message;
         index += 1;
@@ -2196,24 +1870,15 @@ function normalizeIssuePath(
     }
 
     if (matchedField.fieldKind === "message") {
-      if (
-        isWrapperDesc(matchedField.message) ||
-        PROTO_JSON_FALLBACK_TYPES.includes(matchedField.message.typeName)
-      ) {
+      if (isWrapperDesc(matchedField.message) || PROTO_JSON_FALLBACK_TYPES.includes(matchedField.message.typeName)) {
         return normalizedPath;
       }
       currentDesc = matchedField.message;
       continue;
     }
 
-    if (
-      matchedField.fieldKind === "list" &&
-      matchedField.listKind === "message"
-    ) {
-      if (
-        isWrapperDesc(matchedField.message) ||
-        PROTO_JSON_FALLBACK_TYPES.includes(matchedField.message.typeName)
-      ) {
+    if (matchedField.fieldKind === "list" && matchedField.listKind === "message") {
+      if (isWrapperDesc(matchedField.message) || PROTO_JSON_FALLBACK_TYPES.includes(matchedField.message.typeName)) {
         return normalizedPath;
       }
       // Guard against stale array indices: if the next segment is a numeric index,
@@ -2221,9 +1886,7 @@ function normalizeIssuePath(
       // the list field itself (same fallback strategy as map fields).
       const nextSegment = issue.path[index + 1];
       const nextKey =
-        typeof nextSegment === "object" && nextSegment && "key" in nextSegment
-          ? nextSegment.key
-          : nextSegment;
+        typeof nextSegment === "object" && nextSegment && "key" in nextSegment ? nextSegment.key : nextSegment;
       if (typeof nextKey === "number") {
         const listEntries = values[matchedField.localName];
         if (!Array.isArray(listEntries) || nextKey >= listEntries.length) {
@@ -2255,20 +1918,12 @@ export interface ProtoValidationContext {
    * Restrict pathful issues to fields overlapping this mask. Message-level
    * issues remain visible because they cannot be attributed safely.
    */
-  validationMask?: FieldMask;
+  validationMask?: FieldMask | undefined;
 }
 
-const SIGNED_32_SCALARS = [
-  ScalarType.INT32,
-  ScalarType.SINT32,
-  ScalarType.SFIXED32,
-];
+const SIGNED_32_SCALARS = [ScalarType.INT32, ScalarType.SINT32, ScalarType.SFIXED32];
 const UNSIGNED_32_SCALARS = [ScalarType.UINT32, ScalarType.FIXED32];
-const SIGNED_64_SCALARS = [
-  ScalarType.INT64,
-  ScalarType.SINT64,
-  ScalarType.SFIXED64,
-];
+const SIGNED_64_SCALARS = [ScalarType.INT64, ScalarType.SINT64, ScalarType.SFIXED64];
 const UNSIGNED_64_SCALARS = [ScalarType.UINT64, ScalarType.FIXED64];
 const SIGNED_32_MIN = -2_147_483_648;
 const SIGNED_32_MAX = 2_147_483_647;
@@ -2277,10 +1932,7 @@ const SIGNED_64_MIN = -9_223_372_036_854_775_808n;
 const SIGNED_64_MAX = 9_223_372_036_854_775_807n;
 const UNSIGNED_64_MAX = 18_446_744_073_709_551_615n;
 
-function getScalarConversionIssue(
-  field: ScalarField,
-  value: unknown
-): string | undefined {
+function getScalarConversionIssue(field: ScalarField, value: unknown): string | undefined {
   if (value === undefined || value === null || value === "") {
     return;
   }
@@ -2308,31 +1960,20 @@ function getScalarConversionIssue(
   }
   if (SIGNED_64_SCALARS.includes(field.scalar)) {
     const bigintValue = normalizeBigIntValue(value);
-    if (
-      bigintValue === undefined ||
-      bigintValue < SIGNED_64_MIN ||
-      bigintValue > SIGNED_64_MAX
-    ) {
+    if (bigintValue === undefined || bigintValue < SIGNED_64_MIN || bigintValue > SIGNED_64_MAX) {
       return "Enter a signed 64-bit integer.";
     }
   }
   if (UNSIGNED_64_SCALARS.includes(field.scalar)) {
     const bigintValue = normalizeBigIntValue(value);
-    if (
-      bigintValue === undefined ||
-      bigintValue < 0n ||
-      bigintValue > UNSIGNED_64_MAX
-    ) {
+    if (bigintValue === undefined || bigintValue < 0n || bigintValue > UNSIGNED_64_MAX) {
       return "Enter an unsigned 64-bit integer.";
     }
   }
   return;
 }
 
-function getMessageConversionIssue(
-  field: MessageField,
-  value: unknown
-): string | undefined {
+function getMessageConversionIssue(field: MessageField, value: unknown): string | undefined {
   if (value === undefined || value === null || value === "") {
     return;
   }
@@ -2355,7 +1996,7 @@ function getMessageConversionIssue(
   if (field.message.typeName !== ANY_TYPE || !isPlainObject(value)) {
     return;
   }
-  const valueBase64 = (value as ProtoAnyFormValue).valueBase64;
+  const { valueBase64 } = value as ProtoAnyFormValue;
   if (valueBase64 === undefined || valueBase64 === "") {
     return;
   }
@@ -2375,18 +2016,13 @@ function getMapConversionIssue(value: unknown): string | undefined {
     if (!isPlainObject(entry)) {
       return [];
     }
-    const key = entry.key;
+    const key = entry["key"];
     return key === undefined || key === null || key === "" ? [] : [String(key)];
   });
-  return new Set(keys).size === keys.length
-    ? undefined
-    : "Map keys must be unique.";
+  return new Set(keys).size === keys.length ? undefined : "Map keys must be unique.";
 }
 
-function getFormConversionIssues(
-  desc: DescMessage,
-  values: Record<string, unknown>
-): NormalizedProtoIssue[] {
+function getFormConversionIssues(desc: DescMessage, values: Record<string, unknown>): NormalizedProtoIssue[] {
   return desc.members.flatMap((member) => {
     if (member.kind === "oneof") {
       return [];
@@ -2409,10 +2045,7 @@ function toFailureResult(error: unknown): {
   return {
     issues: [
       {
-        message:
-          error instanceof Error
-            ? error.message
-            : "Failed to validate protobuf form values.",
+        message: error instanceof Error ? error.message : "Failed to validate protobuf form values.",
         path: [],
       },
     ],
@@ -2467,9 +2100,7 @@ function filterValidationIssues(
     const issuePath = issue.path.join(".");
     return formPaths.some(
       (formPath) =>
-        issuePath === formPath ||
-        issuePath.startsWith(`${formPath}.`) ||
-        formPath.startsWith(`${issuePath}.`)
+        issuePath === formPath || issuePath.startsWith(`${formPath}.`) || formPath.startsWith(`${issuePath}.`)
     );
   });
 }
@@ -2506,19 +2137,11 @@ export function validateFormValuesAgainstProtoSchema<Desc extends DescMessage>(
 
     if (validationResult instanceof Promise) {
       return validationResult
-        .then((result) =>
-          normalizeValidationResult(desc, values, result, message, context)
-        )
+        .then((result) => normalizeValidationResult(desc, values, result, message, context))
         .catch((error: unknown) => toFailureResult(error));
     }
 
-    return normalizeValidationResult(
-      desc,
-      values,
-      validationResult,
-      message,
-      context
-    );
+    return normalizeValidationResult(desc, values, validationResult, message, context);
   } catch (error) {
     return toFailureResult(error);
   }
@@ -2549,30 +2172,18 @@ function validateProtoValues<Desc extends DescMessage>(
   schema: StandardSchemaV1<MessageShape<Desc>, MessageValidType<Desc>>,
   options: ProtoConversionOptions
 ): SchemaValidation | Promise<SchemaValidation> {
-  const result = validateFormValuesAgainstProtoSchema(
-    desc,
-    values,
-    schema,
-    options
-  );
+  const result = validateFormValuesAgainstProtoSchema(desc, values, schema, options);
   if (result instanceof Promise) {
-    return result.then((resolved) =>
-      mapResultToSchemaValidation<Desc>(resolved)
-    );
+    return result.then((resolved) => mapResultToSchemaValidation<Desc>(resolved));
   }
   return mapResultToSchemaValidation<Desc>(result);
 }
 
-export class ProtoProvider<Desc extends DescMessage = DescMessage>
-  implements SchemaProvider<Record<string, unknown>>
-{
+export class ProtoProvider<Desc extends DescMessage = DescMessage> implements SchemaProvider<Record<string, unknown>> {
   private readonly desc: Desc;
   private readonly options: ProtoFormOptions;
   private readonly parsedSchema: ParsedProtoSchema;
-  private readonly standardSchema: StandardSchemaV1<
-    MessageShape<Desc>,
-    MessageValidType<Desc>
-  >;
+  private readonly standardSchema: StandardSchemaV1<MessageShape<Desc>, MessageValidType<Desc>>;
 
   constructor(desc: Desc, options: ProtoFormOptions = {}) {
     this.desc = desc;
@@ -2586,12 +2197,7 @@ export class ProtoProvider<Desc extends DescMessage = DescMessage>
   }
 
   validateSchema(values: Record<string, unknown>): SchemaValidation {
-    const validationResult = validateProtoValues(
-      this.desc,
-      values,
-      this.standardSchema,
-      this.options
-    );
+    const validationResult = validateProtoValues(this.desc, values, this.standardSchema, this.options);
     if (validationResult instanceof Promise) {
       return {
         errors: [

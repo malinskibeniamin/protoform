@@ -13,16 +13,10 @@ import {
   UndeleteBookRequestSchema,
   UpdateBookRequestSchema,
 } from "../../conformance/gen/protoform/conformance/v1/aip_pb.js";
-import {
-  SubmitBasicFormRequestSchema,
-  SubmitComplexFormRequestSchema,
-} from "../gen/protoform/examples/v1/forms_pb.js";
+import { SubmitBasicFormRequestSchema, SubmitComplexFormRequestSchema } from "../gen/protoform/examples/v1/forms_pb.js";
 import { createLibraryService, formExamplesService } from "./service.js";
 
-async function expectConnectCode(
-  action: () => unknown | Promise<unknown>,
-  code: Code
-): Promise<void> {
+async function expectConnectCode(action: () => unknown | Promise<unknown>, code: Code): Promise<void> {
   try {
     await action();
     throw new Error(`Expected Connect error ${code}.`);
@@ -63,9 +57,7 @@ describe("form example service", () => {
     } catch (error) {
       expect(error).toBeInstanceOf(ConnectError);
       const connectError = ConnectError.from(error);
-      expect(
-        connectError.findDetails(BadRequestSchema)[0]?.fieldViolations
-      ).toMatchObject([
+      expect(connectError.findDetails(BadRequestSchema)[0]?.fieldViolations).toMatchObject([
         {
           description: "Choose a different project id.",
           field: "project_id",
@@ -80,9 +72,7 @@ describe("library demo service", () => {
     const service = createLibraryService();
     const parent = "publishers/visitor-a";
 
-    const initial = await service.listBooks(
-      create(ListBooksRequestSchema, { parent })
-    );
+    const initial = await service.listBooks(create(ListBooksRequestSchema, { parent }));
     expect(initial.books).toHaveLength(2);
 
     const created = await service.createBook(
@@ -103,9 +93,7 @@ describe("library demo service", () => {
     });
     expect(created.etag).not.toBe("");
 
-    expect(
-      service.getBook(create(GetBookRequestSchema, { name: created.name }))
-    ).toMatchObject({ uid: created.uid });
+    expect(service.getBook(create(GetBookRequestSchema, { name: created.name }))).toMatchObject({ uid: created.uid });
 
     const updated = await service.updateBook(
       create(UpdateBookRequestSchema, {
@@ -155,51 +143,37 @@ describe("library demo service", () => {
     });
     expect(deleted.deleteTime).toBeDefined();
     expect(deleted.purgeTime).toBeDefined();
+    expect(service.getBook(create(GetBookRequestSchema, { name: sparselyUnmasked.name })).state).toBe(
+      BookState.DELETED
+    );
     expect(
-      service.getBook(
-        create(GetBookRequestSchema, { name: sparselyUnmasked.name })
-      ).state
-    ).toBe(BookState.DELETED);
-    expect(
-      (
-        await service.listBooks(create(ListBooksRequestSchema, { parent }))
-      ).books.some((book) => book.name === sparselyUnmasked.name)
+      (await service.listBooks(create(ListBooksRequestSchema, { parent }))).books.some(
+        (book) => book.name === sparselyUnmasked.name
+      )
     ).toBe(false);
     expect(
-      (
-        await service.listBooks(
-          create(ListBooksRequestSchema, { parent, showDeleted: true })
-        )
-      ).books.some((book) => book.name === sparselyUnmasked.name)
+      (await service.listBooks(create(ListBooksRequestSchema, { parent, showDeleted: true }))).books.some(
+        (book) => book.name === sparselyUnmasked.name
+      )
     ).toBe(true);
 
-    const restored = await service.undeleteBook(
-      create(UndeleteBookRequestSchema, { name: sparselyUnmasked.name })
-    );
+    const restored = await service.undeleteBook(create(UndeleteBookRequestSchema, { name: sparselyUnmasked.name }));
     expect(restored.state).toBe(BookState.ACTIVE);
     expect(restored.deleteTime).toBeUndefined();
     expect(restored.purgeTime).toBeUndefined();
 
-    await service.expungeBook(
-      create(ExpungeBookRequestSchema, { name: sparselyUnmasked.name })
+    await service.expungeBook(create(ExpungeBookRequestSchema, { name: sparselyUnmasked.name }));
+    expect(() => service.getBook(create(GetBookRequestSchema, { name: sparselyUnmasked.name }))).toThrowError(
+      ConnectError
     );
-    expect(() =>
-      service.getBook(
-        create(GetBookRequestSchema, { name: sparselyUnmasked.name })
-      )
-    ).toThrowError(ConnectError);
   });
 
   it("isolates visitor libraries and rejects stale or immutable updates", async () => {
     const service = createLibraryService();
     const firstParent = "publishers/visitor-a";
     const secondParent = "publishers/visitor-b";
-    const first = await service.listBooks(
-      create(ListBooksRequestSchema, { parent: firstParent })
-    );
-    const second = await service.listBooks(
-      create(ListBooksRequestSchema, { parent: secondParent })
-    );
+    const first = await service.listBooks(create(ListBooksRequestSchema, { parent: firstParent }));
+    const second = await service.listBooks(create(ListBooksRequestSchema, { parent: secondParent }));
     expect(first.books[0]?.name).toContain(firstParent);
     expect(second.books[0]?.name).toContain(secondParent);
 
@@ -227,9 +201,7 @@ describe("library demo service", () => {
   it("uses current AIP lifecycle error codes for soft deletion", async () => {
     const service = createLibraryService();
     const parent = "publishers/visitor-a";
-    const [book] = (
-      await service.listBooks(create(ListBooksRequestSchema, { parent }))
-    ).books;
+    const [book] = (await service.listBooks(create(ListBooksRequestSchema, { parent }))).books;
     if (!book) {
       throw new Error("Expected a seeded book.");
     }
@@ -244,14 +216,9 @@ describe("library demo service", () => {
         ),
       Code.Aborted
     );
-    const deleted = await service.deleteBook(
-      create(DeleteBookRequestSchema, { etag: book.etag, name: book.name })
-    );
+    const deleted = await service.deleteBook(create(DeleteBookRequestSchema, { etag: book.etag, name: book.name }));
     await expectConnectCode(
-      () =>
-        service.deleteBook(
-          create(DeleteBookRequestSchema, { name: book.name })
-        ),
+      () => service.deleteBook(create(DeleteBookRequestSchema, { name: book.name })),
       Code.NotFound
     );
     expect(
@@ -263,24 +230,14 @@ describe("library demo service", () => {
       )
     ).toEqual(deleted);
 
-    await service.undeleteBook(
-      create(UndeleteBookRequestSchema, { name: book.name })
-    );
+    await service.undeleteBook(create(UndeleteBookRequestSchema, { name: book.name }));
     await expectConnectCode(
-      () =>
-        service.undeleteBook(
-          create(UndeleteBookRequestSchema, { name: book.name })
-        ),
+      () => service.undeleteBook(create(UndeleteBookRequestSchema, { name: book.name })),
       Code.AlreadyExists
     );
-    await service.expungeBook(
-      create(ExpungeBookRequestSchema, { name: book.name })
-    );
+    await service.expungeBook(create(ExpungeBookRequestSchema, { name: book.name }));
     await expectConnectCode(
-      () =>
-        service.expungeBook(
-          create(ExpungeBookRequestSchema, { name: book.name })
-        ),
+      () => service.expungeBook(create(ExpungeBookRequestSchema, { name: book.name })),
       Code.NotFound
     );
   });

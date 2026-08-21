@@ -1,8 +1,8 @@
-import { getFieldHints } from '../../lib/core';
+import { getFieldHints } from "../../lib/core";
 
-import type { ParsedField, SchemaValidation } from './core-types';
-import { getLabel, getPathInObject, sortFieldsByOrder } from './field-utils';
-import type { AutoFormOptionGroup, AutoFormOptionItem, AutoFormUiRule, FieldTypes } from './types';
+import type { ParsedField, SchemaValidation } from "./core-types";
+import { getLabel, getPathInObject, sortFieldsByOrder } from "./field-utils";
+import type { AutoFormOptionGroup, AutoFormOptionItem, AutoFormUiRule, FieldTypes } from "./types";
 
 export const NUMERIC_OPTION_PATTERN = /^-?\d+$/;
 export const FIELD_MASK_PATH_SPLIT_PATTERN = /[\n,]/;
@@ -15,7 +15,7 @@ export const CURRENCY_FIELD_PATTERN = /(amount|price|cost|balance|budget|revenue
 export const LONG_TEXT_FIELD_PATTERN = /(bio|description|details|notes?|summary|message|comment)/i;
 
 export function isRecord(value: unknown): value is Record<string, unknown> {
-  return Boolean(value && typeof value === 'object' && !Array.isArray(value));
+  return Boolean(value && typeof value === "object" && !Array.isArray(value));
 }
 
 function toUiRules(value: unknown): AutoFormUiRule[] | undefined {
@@ -26,14 +26,14 @@ function toUiRules(value: unknown): AutoFormUiRule[] | undefined {
   const rules: AutoFormUiRule[] = [];
 
   for (const rule of value) {
-    if (!isRecord(rule) || typeof rule.expression !== 'string') {
+    if (!isRecord(rule) || typeof rule["expression"] !== "string") {
       continue;
     }
 
     rules.push({
-      id: typeof rule.id === 'string' ? rule.id : undefined,
-      expression: rule.expression,
-      message: typeof rule.message === 'string' ? rule.message : undefined,
+      expression: rule["expression"],
+      id: typeof rule["id"] === "string" ? rule["id"] : undefined,
+      message: typeof rule["message"] === "string" ? rule["message"] : undefined,
     });
   }
 
@@ -41,14 +41,15 @@ function toUiRules(value: unknown): AutoFormUiRule[] | undefined {
 }
 
 function toOptionItem(value: unknown): AutoFormOptionItem | undefined {
-  if (!isRecord(value) || typeof value.value !== 'string') {
+  if (!isRecord(value) || typeof value["value"] !== "string") {
     return;
   }
 
   return {
-    value: value.value,
-    label: typeof value.label === 'string' || typeof value.label === 'number' ? String(value.label) : undefined,
-    icon: value.icon as AutoFormOptionItem['icon'],
+    icon: value["icon"] as AutoFormOptionItem["icon"],
+    label:
+      typeof value["label"] === "string" || typeof value["label"] === "number" ? String(value["label"]) : undefined,
+    value: value["value"],
   };
 }
 
@@ -60,11 +61,11 @@ function toOptionGroups(value: unknown): AutoFormOptionGroup[] | undefined {
   const groups: AutoFormOptionGroup[] = [];
 
   for (const candidate of value) {
-    if (!(isRecord(candidate) && Array.isArray(candidate.options))) {
+    if (!(isRecord(candidate) && Array.isArray(candidate["options"]))) {
       continue;
     }
 
-    const options = candidate.options
+    const options = candidate["options"]
       .map(toOptionItem)
       .filter((option): option is AutoFormOptionItem => Boolean(option));
     if (options.length === 0) {
@@ -73,8 +74,8 @@ function toOptionGroups(value: unknown): AutoFormOptionGroup[] | undefined {
 
     groups.push({
       label:
-        typeof candidate.label === 'string' || typeof candidate.label === 'number'
-          ? String(candidate.label)
+        typeof candidate["label"] === "string" || typeof candidate["label"] === "number"
+          ? String(candidate["label"])
           : undefined,
       options,
     });
@@ -112,7 +113,7 @@ interface AnnotatedUi {
  * `dataProviderSelect` on its own.
  */
 function isComplexFieldType(type: unknown): boolean {
-  return type === 'array' || type === 'map' || type === 'object';
+  return type === "array" || type === "map" || type === "object";
 }
 
 function deriveAnnotatedControl(
@@ -126,68 +127,73 @@ function deriveAnnotatedControl(
   }
 
   const dataProvider =
-    (typeof direct?.dataProvider === 'string' && direct.dataProvider) ||
-    (typeof nested?.dataProvider === 'string' && nested.dataProvider) ||
-    (typeof protoUi?.dataProvider === 'string' && protoUi.dataProvider) ||
+    (typeof direct?.dataProvider === "string" && direct.dataProvider) ||
+    (typeof nested?.dataProvider === "string" && nested.dataProvider) ||
+    (typeof protoUi?.dataProvider === "string" && protoUi.dataProvider) ||
     undefined;
   if (dataProvider) {
-    return 'dataProviderSelect' as FieldTypes;
+    return "dataProviderSelect" as FieldTypes;
   }
 
   const dropzone = direct?.dropzone === true || nested?.dropzone === true || protoUi?.dropzone === true;
   const control = direct?.control ?? nested?.control ?? protoUi?.control;
-  if (dropzone && control === 'json') {
-    return 'dropzone-json' as FieldTypes;
+  if (dropzone && control === "json") {
+    return "dropzone-json" as FieldTypes;
   }
 
   return;
 }
 
-export function getFieldUiConfig<TFieldType extends string = string>(field: ParsedField<TFieldType>): {
-  control?: FieldTypes<TFieldType>;
-  placeholder?: string;
-  example?: string;
-  help?: string;
-  description?: string;
-  visibleWhen?: AutoFormUiRule[];
-  disabledWhen?: AutoFormUiRule[];
-  summaryLabel?: string;
-  optionGroups?: AutoFormOptionGroup[];
-  optionLabels?: Record<string, string>;
+export function getFieldUiConfig<TFieldType extends string = string>(
+  field: ParsedField<TFieldType>
+): {
+  control?: FieldTypes<TFieldType> | undefined;
+  placeholder?: string | undefined;
+  example?: string | undefined;
+  help?: string | undefined;
+  description?: string | undefined;
+  visibleWhen?: AutoFormUiRule[] | undefined;
+  disabledWhen?: AutoFormUiRule[] | undefined;
+  summaryLabel?: string | undefined;
+  optionGroups?: AutoFormOptionGroup[] | undefined;
+  optionLabels?: Record<string, string> | undefined;
 } {
   const protoUi = getFieldHints(field);
   const customData = isRecord(field.fieldConfig?.customData) ? field.fieldConfig.customData : undefined;
-  const nestedUi = customData && isRecord(customData.ui) ? customData.ui : undefined;
+  const nestedUi = customData && isRecord(customData["ui"]) ? customData["ui"] : undefined;
 
   const direct = customData
     ? {
-        control: typeof customData.control === 'string' ? (customData.control as FieldTypes<TFieldType>) : undefined,
-        placeholder: typeof customData.placeholder === 'string' ? customData.placeholder : undefined,
-        example: typeof customData.example === 'string' ? customData.example : undefined,
-        help: typeof customData.help === 'string' ? customData.help : undefined,
-        description: typeof customData.description === 'string' ? customData.description : undefined,
-        visibleWhen: toUiRules(customData.visibleWhen),
-        disabledWhen: toUiRules(customData.disabledWhen),
-        summaryLabel: typeof customData.summaryLabel === 'string' ? customData.summaryLabel : undefined,
-        optionGroups: toOptionGroups(customData.optionGroups),
-        optionLabels: isRecord(customData.optionLabels)
-          ? (customData.optionLabels as Record<string, string>)
+        control:
+          typeof customData["control"] === "string" ? (customData["control"] as FieldTypes<TFieldType>) : undefined,
+        description: typeof customData["description"] === "string" ? customData["description"] : undefined,
+        disabledWhen: toUiRules(customData["disabledWhen"]),
+        example: typeof customData["example"] === "string" ? customData["example"] : undefined,
+        help: typeof customData["help"] === "string" ? customData["help"] : undefined,
+        optionGroups: toOptionGroups(customData["optionGroups"]),
+        optionLabels: isRecord(customData["optionLabels"])
+          ? (customData["optionLabels"] as Record<string, string>)
           : undefined,
+        placeholder: typeof customData["placeholder"] === "string" ? customData["placeholder"] : undefined,
+        summaryLabel: typeof customData["summaryLabel"] === "string" ? customData["summaryLabel"] : undefined,
+        visibleWhen: toUiRules(customData["visibleWhen"]),
       }
     : undefined;
 
   const nested = nestedUi
     ? {
-        control: typeof nestedUi.control === 'string' ? (nestedUi.control as FieldTypes<TFieldType>) : undefined,
-        placeholder: typeof nestedUi.placeholder === 'string' ? nestedUi.placeholder : undefined,
-        example: typeof nestedUi.example === 'string' ? nestedUi.example : undefined,
-        help: typeof nestedUi.help === 'string' ? nestedUi.help : undefined,
-        description: typeof nestedUi.description === 'string' ? nestedUi.description : undefined,
-        visibleWhen: toUiRules(nestedUi.visibleWhen),
-        disabledWhen: toUiRules(nestedUi.disabledWhen),
-        summaryLabel: typeof nestedUi.summaryLabel === 'string' ? nestedUi.summaryLabel : undefined,
-        optionGroups: toOptionGroups(nestedUi.optionGroups),
-        optionLabels: isRecord(nestedUi.optionLabels) ? (nestedUi.optionLabels as Record<string, string>) : undefined,
+        control: typeof nestedUi["control"] === "string" ? (nestedUi["control"] as FieldTypes<TFieldType>) : undefined,
+        description: typeof nestedUi["description"] === "string" ? nestedUi["description"] : undefined,
+        disabledWhen: toUiRules(nestedUi["disabledWhen"]),
+        example: typeof nestedUi["example"] === "string" ? nestedUi["example"] : undefined,
+        help: typeof nestedUi["help"] === "string" ? nestedUi["help"] : undefined,
+        optionGroups: toOptionGroups(nestedUi["optionGroups"]),
+        optionLabels: isRecord(nestedUi["optionLabels"])
+          ? (nestedUi["optionLabels"] as Record<string, string>)
+          : undefined,
+        placeholder: typeof nestedUi["placeholder"] === "string" ? nestedUi["placeholder"] : undefined,
+        summaryLabel: typeof nestedUi["summaryLabel"] === "string" ? nestedUi["summaryLabel"] : undefined,
+        visibleWhen: toUiRules(nestedUi["visibleWhen"]),
       }
     : undefined;
 
@@ -206,28 +212,28 @@ export function getFieldUiConfig<TFieldType extends string = string>(field: Pars
     ...(nested ?? {}),
     ...(direct ?? {}),
     control:
-      (typeof field.fieldConfig?.fieldType === 'string'
+      (typeof field.fieldConfig?.fieldType === "string"
         ? (field.fieldConfig.fieldType as FieldTypes<TFieldType>)
         : undefined) ||
       annotatedControl ||
       direct?.control ||
       nested?.control ||
       (protoUi?.control as FieldTypes<TFieldType> | undefined),
+    description: direct?.description || nested?.description || protoUi?.description,
+    disabledWhen: direct?.disabledWhen || nested?.disabledWhen || toUiRules(protoUi?.disabledWhen),
+    example: direct?.example || nested?.example || protoUi?.example,
+    help: direct?.help || nested?.help || protoUi?.help,
+    optionGroups: direct?.optionGroups || nested?.optionGroups,
+    optionLabels: direct?.optionLabels || nested?.optionLabels,
     placeholder:
-      (typeof field.fieldConfig?.inputProps?.placeholder === 'string'
-        ? (field.fieldConfig.inputProps.placeholder as string)
+      (typeof field.fieldConfig?.inputProps?.["placeholder"] === "string"
+        ? (field.fieldConfig.inputProps["placeholder"] as string)
         : undefined) ||
       direct?.placeholder ||
       nested?.placeholder ||
       protoUi?.placeholder,
-    example: direct?.example || nested?.example || protoUi?.example,
-    help: direct?.help || nested?.help || protoUi?.help,
-    description: direct?.description || nested?.description || protoUi?.description,
-    visibleWhen: direct?.visibleWhen || nested?.visibleWhen || toUiRules(protoUi?.visibleWhen),
-    disabledWhen: direct?.disabledWhen || nested?.disabledWhen || toUiRules(protoUi?.disabledWhen),
     summaryLabel: direct?.summaryLabel || nested?.summaryLabel || protoUi?.summaryLabel,
-    optionGroups: direct?.optionGroups || nested?.optionGroups,
-    optionLabels: direct?.optionLabels || nested?.optionLabels,
+    visibleWhen: direct?.visibleWhen || nested?.visibleWhen || toUiRules(protoUi?.visibleWhen),
   };
 }
 
@@ -236,20 +242,20 @@ export function getRootErrorMessage(rootError: unknown): string | undefined {
     return;
   }
 
-  if (typeof rootError === 'string') {
+  if (typeof rootError === "string") {
     return rootError;
   }
 
-  if (typeof rootError === 'object') {
+  if (typeof rootError === "object") {
     const errorRecord = rootError as Record<string, unknown>;
-    if (typeof errorRecord.message === 'string') {
-      return errorRecord.message;
+    if (typeof errorRecord["message"] === "string") {
+      return errorRecord["message"];
     }
 
     return Object.values(errorRecord)
       .map((value) => getRootErrorMessage(value))
       .filter((message): message is string => Boolean(message))
-      .join('\n');
+      .join("\n");
   }
 
   return;
@@ -257,8 +263,8 @@ export function getRootErrorMessage(rootError: unknown): string | undefined {
 
 export function getFieldErrorMessage(errors: unknown, path: string[]): string | undefined {
   const nestedError = getPathInObject(errors as Record<string, unknown>, path);
-  const message = nestedError?.message;
-  return typeof message === 'string' ? message : undefined;
+  const message = nestedError && typeof nestedError === "object" ? Reflect.get(nestedError, "message") : undefined;
+  return typeof message === "string" ? message : undefined;
 }
 
 export function createEmptyFieldValue(field: ParsedField | undefined): unknown {
@@ -269,43 +275,43 @@ export function createEmptyFieldValue(field: ParsedField | undefined): unknown {
   const protoData = getFieldHints(field);
 
   switch (field.type) {
-    case 'string':
-    case 'bytes':
-    case 'duration':
-    case 'int64':
-    case 'timestamp':
-      return '';
-    case 'number':
+    case "string":
+    case "bytes":
+    case "duration":
+    case "int64":
+    case "timestamp":
+      return "";
+    case "number":
       return;
-    case 'boolean':
+    case "boolean":
       return protoData?.supportsUnset && !field.required ? undefined : false;
-    case 'select':
+    case "select":
       if (field.required && field.options?.length) {
         const firstOptionValue = field.options[0]?.[0];
         return firstOptionValue ? Number(firstOptionValue) || firstOptionValue : undefined;
       }
       return undefined;
-    case 'fieldMask':
+    case "fieldMask":
       return [];
-    case 'json':
+    case "json":
       switch (protoData?.jsonKind) {
-        case 'listValue':
+        case "listValue":
           return [];
-        case 'any':
-          return { typeUrl: '', valueBase64: '' };
+        case "any":
+          return { typeUrl: "", valueBase64: "" };
         default:
           return {};
       }
-    case 'array':
+    case "array":
       return [];
-    case 'map':
+    case "map":
       return [];
-    case 'oneof':
+    case "oneof":
       return { case: undefined, value: undefined };
-    case 'object':
+    case "object":
       return {};
-    case 'date':
-      return '';
+    case "date":
+      return "";
     default:
       return;
   }
@@ -317,18 +323,18 @@ function isKeyValueScalarField(field: ParsedField | undefined): boolean {
   }
 
   const renderType = resolveRenderFieldType(field);
-  return ['string', 'email', 'url', 'password', 'currency', 'number', 'int64', 'select', 'combobox'].includes(
+  return ["string", "email", "url", "password", "currency", "number", "int64", "select", "combobox"].includes(
     renderType
   );
 }
 
 function isSimpleKeyValueLikeObject(field: ParsedField | undefined): boolean {
-  if (!(field?.type === 'object' && field.schema?.length === 2)) {
+  if (!(field?.type === "object" && field.schema?.length === 2)) {
     return false;
   }
 
-  const keyField = field.schema.find((candidate) => candidate.key === 'key');
-  const valueField = field.schema.find((candidate) => candidate.key === 'value');
+  const keyField = field.schema.find((candidate) => candidate.key === "key");
+  const valueField = field.schema.find((candidate) => candidate.key === "value");
   return Boolean(keyField && valueField && isKeyValueScalarField(keyField) && isKeyValueScalarField(valueField));
 }
 
@@ -342,52 +348,52 @@ export function resolveRenderFieldType<TFieldType extends string = string>(
 
   const label = String(field.fieldConfig?.label ?? getLabel(field));
   const identity = `${field.key} ${label}`.toLowerCase();
-  const inputType = String(field.fieldConfig?.inputProps?.type ?? getFieldHints(field)?.inputType ?? '');
-  const maxLength = Number(field.fieldConfig?.inputProps?.maxLength ?? 0);
+  const inputType = String(field.fieldConfig?.inputProps?.["type"] ?? getFieldHints(field)?.inputType ?? "");
+  const maxLength = Number(field.fieldConfig?.inputProps?.["maxLength"] ?? 0);
 
-  if (field.type === 'boolean') {
+  if (field.type === "boolean") {
     const protoData = getFieldHints(field);
     if (protoData?.supportsUnset && !field.required) {
-      return 'boolean';
+      return "boolean";
     }
     if (CONSENT_FIELD_PATTERN.test(identity)) {
-      return 'checkbox';
+      return "checkbox";
     }
-    return 'switch';
+    return "switch";
   }
 
-  if (field.type === 'select') {
+  if (field.type === "select") {
     const optionCount = field.options?.length ?? 0;
     if (optionCount > 8) {
-      return 'combobox';
+      return "combobox";
     }
     if (optionCount > 0 && optionCount <= 3) {
-      return 'radio';
+      return "radio";
     }
-    return 'select';
+    return "select";
   }
 
-  if (field.type === 'string') {
-    if (SECRET_FIELD_PATTERN.test(identity) || inputType === 'password') {
-      return 'password';
+  if (field.type === "string") {
+    if (SECRET_FIELD_PATTERN.test(identity) || inputType === "password") {
+      return "password";
     }
-    if (inputType === 'email' || EMAIL_FIELD_PATTERN.test(identity)) {
-      return 'email';
+    if (inputType === "email" || EMAIL_FIELD_PATTERN.test(identity)) {
+      return "email";
     }
-    if (inputType === 'url' || URL_FIELD_PATTERN.test(identity)) {
-      return 'url';
+    if (inputType === "url" || URL_FIELD_PATTERN.test(identity)) {
+      return "url";
     }
     if (CURRENCY_FIELD_PATTERN.test(identity)) {
-      return 'currency';
+      return "currency";
     }
-    if (inputType === 'textarea' || maxLength > 120 || LONG_TEXT_FIELD_PATTERN.test(identity)) {
-      return 'textarea';
+    if (inputType === "textarea" || maxLength > 120 || LONG_TEXT_FIELD_PATTERN.test(identity)) {
+      return "textarea";
     }
   }
 
-  if (field.type === 'number') {
-    const min = Number(field.fieldConfig?.inputProps?.min);
-    const max = Number(field.fieldConfig?.inputProps?.max);
+  if (field.type === "number") {
+    const min = Number(field.fieldConfig?.inputProps?.["min"]);
+    const max = Number(field.fieldConfig?.inputProps?.["max"]);
 
     // NOTE: `sliderFieldDefinition.match` no longer auto-promotes number
     // fields with min/max to the slider widget — slider is opt-in via the
@@ -400,25 +406,25 @@ export function resolveRenderFieldType<TFieldType extends string = string>(
     // rendering as plain when you expected a slider, add the proto
     // annotation — don't change this branch.
     if (Number.isFinite(min) && Number.isFinite(max)) {
-      return 'slider';
+      return "slider";
     }
   }
 
-  if (field.type === 'array') {
+  if (field.type === "array") {
     const itemField = field.schema?.[0];
-    if (itemField?.type === 'select' && itemField.options?.length) {
-      return 'multiselect';
+    if (itemField?.type === "select" && itemField.options?.length) {
+      return "multiselect";
     }
     if (isSimpleKeyValueLikeObject(itemField)) {
-      return 'keyValue';
+      return "keyValue";
     }
   }
 
-  if (field.type === 'map') {
+  if (field.type === "map") {
     const keyField = field.schema?.[0];
     const valueField = field.schema?.[1];
     if (isKeyValueScalarField(keyField) && isKeyValueScalarField(valueField)) {
-      return 'keyValue';
+      return "keyValue";
     }
   }
 
@@ -426,8 +432,8 @@ export function resolveRenderFieldType<TFieldType extends string = string>(
 }
 
 function buildRangeHint(field: ParsedField): string | undefined {
-  const min = field.fieldConfig?.inputProps?.min;
-  const max = field.fieldConfig?.inputProps?.max;
+  const min = field.fieldConfig?.inputProps?.["min"];
+  const max = field.fieldConfig?.inputProps?.["max"];
 
   // Number.isFinite() matches resolveRenderFieldType's check — NaN/Infinity
   // passing as `number` would otherwise produce nonsense like
@@ -448,19 +454,19 @@ function buildRangeHint(field: ParsedField): string | undefined {
 function buildFallbackHelp(field: ParsedField): string {
   const renderType = resolveRenderFieldType(field);
   const hints = [
-    field.fieldConfig?.inputProps?.pattern ? 'Follow the expected format for this value.' : undefined,
-    renderType === 'multiselect' ? 'Choose one or more options.' : undefined,
-    renderType === 'radio' || renderType === 'select' || renderType === 'combobox'
-      ? 'Choose one of the available options.'
+    field.fieldConfig?.inputProps?.["pattern"] ? "Follow the expected format for this value." : undefined,
+    renderType === "multiselect" ? "Choose one or more options." : undefined,
+    renderType === "radio" || renderType === "select" || renderType === "combobox"
+      ? "Choose one of the available options."
       : undefined,
-    renderType === 'slider' ? undefined : buildRangeHint(field),
-    renderType === 'keyValue' ? 'Add one or more key-value pairs.' : undefined,
-    renderType === 'json' ? 'Provide valid JSON for this field.' : undefined,
-    field.type === 'duration' ? 'Use protobuf duration syntax like 300s.' : undefined,
-    field.type === 'fieldMask' ? 'Enter one field path per line, or separate them with commas.' : undefined,
+    renderType === "slider" ? undefined : buildRangeHint(field),
+    renderType === "keyValue" ? "Add one or more key-value pairs." : undefined,
+    renderType === "json" ? "Provide valid JSON for this field." : undefined,
+    field.type === "duration" ? "Use protobuf duration syntax like 300s." : undefined,
+    field.type === "fieldMask" ? "Enter one field path per line, or separate them with commas." : undefined,
   ].filter((hint): hint is string => Boolean(hint));
 
-  return hints[0] ?? '';
+  return hints[0] ?? "";
 }
 
 /**
@@ -477,12 +483,12 @@ export function getFieldHelpText(field: ParsedField): string {
     (value): value is string => Boolean(value)
   );
 
-  const tooltip = [...new Set(parts)].join(' ');
+  const tooltip = [...new Set(parts)].join(" ");
 
   // If tooltip would be identical to the inline description, suppress it
   // so the info icon doesn't appear redundantly.
   if (tooltip && tooltip === descriptionText) {
-    return '';
+    return "";
   }
 
   return tooltip;
@@ -496,14 +502,14 @@ export function getFieldHelpText(field: ParsedField): string {
  */
 export function getFieldDocsUrl(field: ParsedField): string | undefined {
   const customData = field.fieldConfig?.customData;
-  if (!(customData && typeof customData === 'object')) {
+  if (!(customData && typeof customData === "object")) {
     return;
   }
   const bag = customData as { docsUrl?: unknown; ui?: { docsUrl?: unknown } };
-  if (typeof bag.docsUrl === 'string' && bag.docsUrl) {
+  if (typeof bag.docsUrl === "string" && bag.docsUrl) {
     return bag.docsUrl;
   }
-  if (bag.ui && typeof bag.ui === 'object' && typeof bag.ui.docsUrl === 'string' && bag.ui.docsUrl) {
+  if (bag.ui && typeof bag.ui === "object" && typeof bag.ui.docsUrl === "string" && bag.ui.docsUrl) {
     return bag.ui.docsUrl;
   }
   return;
@@ -524,7 +530,7 @@ export function getFieldDescriptionText(field: ParsedField): string | undefined 
 
   // 2. Fall back to fieldConfig.description (set programmatically)
   const configDescription =
-    typeof field.fieldConfig?.description === 'string' ? field.fieldConfig.description : undefined;
+    typeof field.fieldConfig?.description === "string" ? field.fieldConfig.description : undefined;
   if (configDescription) {
     return configDescription;
   }
@@ -549,20 +555,20 @@ function hasSimpleRequiredCount(field: ParsedField): boolean {
  * Default classification: required fields are "simple", optional fields are "advanced".
  * Can be overridden via explicit `advanced` metadata in field config or the `classifyField` prop.
  */
-export function defaultClassifyField(field: ParsedField): 'simple' | 'advanced' {
+export function defaultClassifyField(field: ParsedField): "simple" | "advanced" {
   const customData = isRecord(field.fieldConfig?.customData) ? field.fieldConfig.customData : undefined;
-  if (customData?.advanced === true) {
-    return 'advanced';
+  if (customData?.["advanced"] === true) {
+    return "advanced";
   }
-  if (customData?.advanced === false) {
-    return 'simple';
+  if (customData?.["advanced"] === false) {
+    return "simple";
   }
-  return field.required || hasSimpleRequiredCount(field) ? 'simple' : 'advanced';
+  return field.required || hasSimpleRequiredCount(field) ? "simple" : "advanced";
 }
 
 export function deriveSimpleFields<TFieldType extends string = string>(
   fields: ParsedField<TFieldType>[] | undefined,
-  classifyField: (field: ParsedField<TFieldType>) => 'simple' | 'advanced' = defaultClassifyField
+  classifyField: (field: ParsedField<TFieldType>) => "simple" | "advanced" = defaultClassifyField
 ): ParsedField<TFieldType>[] {
   if (!fields) {
     return [];
@@ -573,9 +579,9 @@ export function deriveSimpleFields<TFieldType extends string = string>(
       const simpleChildren = deriveSimpleFields(field.schema, classifyField);
       const hasRequiredDescendants = simpleChildren.length > 0;
       const classification = classifyField(field);
-      const isSimple = classification === 'simple';
+      const isSimple = classification === "simple";
 
-      if (field.type === 'object') {
+      if (field.type === "object") {
         if (isSimple && !hasRequiredDescendants && field.schema?.length) {
           return [{ ...field, schema: field.schema }];
         }
@@ -585,14 +591,14 @@ export function deriveSimpleFields<TFieldType extends string = string>(
         return [];
       }
 
-      if (field.type === 'oneof') {
+      if (field.type === "oneof") {
         if (isSimple || hasRequiredDescendants) {
           return [{ ...field, schema: field.schema }];
         }
         return [];
       }
 
-      if (field.type === 'array' || field.type === 'map') {
+      if (field.type === "array" || field.type === "map") {
         if (isSimple || hasRequiredDescendants) {
           return [{ ...field, schema: hasRequiredDescendants ? simpleChildren : field.schema }];
         }
@@ -609,11 +615,11 @@ export function collectLeafFieldPaths(fields: ParsedField[], path: string[] = []
     const nextPath = [...path, field.key];
     const renderType = resolveRenderFieldType(field);
 
-    if (renderType === 'object' || renderType === 'array' || renderType === 'map' || renderType === 'oneof') {
-      return field.schema?.length ? collectLeafFieldPaths(field.schema, nextPath) : [nextPath.join('.')];
+    if (renderType === "object" || renderType === "array" || renderType === "map" || renderType === "oneof") {
+      return field.schema?.length ? collectLeafFieldPaths(field.schema, nextPath) : [nextPath.join(".")];
     }
 
-    return [nextPath.join('.')];
+    return [nextPath.join(".")];
   });
 }
 
@@ -625,7 +631,7 @@ export function filterFieldsByPaths(fields: ParsedField[], paths: string[], curr
   return sortFieldsByOrder(
     fields.flatMap((field) => {
       const nextPath = [...currentPath, field.key];
-      const fullPath = nextPath.join('.');
+      const fullPath = nextPath.join(".");
       const matchesDirectly = paths.some((path) => path === fullPath);
       const hasDescendantMatch = paths.some((path) => path.startsWith(`${fullPath}.`));
 
@@ -656,7 +662,7 @@ export function projectValuesToFields(values: Record<string, unknown>, fields: P
       continue;
     }
 
-    if (field.type === 'object' && isRecord(value) && field.schema?.length) {
+    if (field.type === "object" && isRecord(value) && field.schema?.length) {
       projected[field.key] = projectValuesToFields(value, field.schema);
       continue;
     }
@@ -671,7 +677,7 @@ export function isMeaningfulValue(value: unknown): boolean {
   if (value === undefined || value === null) {
     return false;
   }
-  if (typeof value === 'string') {
+  if (typeof value === "string") {
     return value.trim().length > 0;
   }
   if (Array.isArray(value)) {
@@ -685,26 +691,26 @@ export function isMeaningfulValue(value: unknown): boolean {
 
 export function stringifySummaryValue(value: unknown): string {
   if (value === undefined || value === null) {
-    return '—';
+    return "—";
   }
-  if (typeof value === 'boolean') {
-    return value ? 'Yes' : 'No';
+  if (typeof value === "boolean") {
+    return value ? "Yes" : "No";
   }
-  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'bigint') {
+  if (typeof value === "string" || typeof value === "number" || typeof value === "bigint") {
     return String(value);
   }
   if (Array.isArray(value)) {
-    return `${value.length} item${value.length === 1 ? '' : 's'}`;
+    return `${value.length} item${value.length === 1 ? "" : "s"}`;
   }
   if (isRecord(value)) {
-    return `${Object.keys(value).length} field${Object.keys(value).length === 1 ? '' : 's'}`;
+    return `${Object.keys(value).length} field${Object.keys(value).length === 1 ? "" : "s"}`;
   }
   return String(value);
 }
 
 export function flattenSummaryEntries(
   payload: unknown,
-  prefix = ''
+  prefix = ""
 ): Array<{ key: string; value: unknown; isComplex: boolean }> {
   if (!isRecord(payload)) {
     return [];
@@ -718,14 +724,14 @@ export function flattenSummaryEntries(
 
     if (isRecord(value)) {
       const nested = flattenSummaryEntries(value, nextKey);
-      return nested.length > 0 ? nested : [{ key: nextKey, value, isComplex: true }];
+      return nested.length > 0 ? nested : [{ isComplex: true, key: nextKey, value }];
     }
 
     if (Array.isArray(value) && value.some((entry) => isRecord(entry) || Array.isArray(entry))) {
-      return [{ key: nextKey, value, isComplex: true }];
+      return [{ isComplex: true, key: nextKey, value }];
     }
 
-    return [{ key: nextKey, value, isComplex: Array.isArray(value) }];
+    return [{ isComplex: Array.isArray(value), key: nextKey, value }];
   });
 }
 
@@ -742,12 +748,12 @@ export function normalizeKeyValueEntries(value: unknown): Array<{ key: string; v
 
   return value.map((entry) => {
     if (!isRecord(entry)) {
-      return { key: '', value: '' };
+      return { key: "", value: "" };
     }
 
     return {
-      key: entry.key === undefined || entry.key === null ? '' : String(entry.key),
-      value: entry.value === undefined || entry.value === null ? '' : String(entry.value),
+      key: entry["key"] === undefined || entry["key"] === null ? "" : String(entry["key"]),
+      value: entry["value"] === undefined || entry["value"] === null ? "" : String(entry["value"]),
     };
   });
 }
@@ -757,9 +763,9 @@ export function denormalizeKeyValueEntries(
   field: ParsedField
 ): Array<{ key: unknown; value: unknown }> {
   const valueField =
-    field.type === 'map'
+    field.type === "map"
       ? field.schema?.[1]
-      : field.schema?.[0]?.schema?.find((candidate) => candidate.key === 'value');
+      : field.schema?.[0]?.schema?.find((candidate) => candidate.key === "value");
 
   return entries.map((entry) => ({
     key: entry.key,
@@ -773,14 +779,14 @@ function normalizeCollectionScalar(value: string, field: ParsedField | undefined
   }
 
   const renderType = resolveRenderFieldType(field);
-  if (renderType === 'number') {
-    return value === '' ? undefined : Number(value);
+  if (renderType === "number") {
+    return value === "" ? undefined : Number(value);
   }
-  if (renderType === 'int64') {
+  if (renderType === "int64") {
     return value;
   }
-  if (renderType === 'select' && field.options?.every(([optionValue]) => NUMERIC_OPTION_PATTERN.test(optionValue))) {
-    return value === '' ? undefined : Number(value);
+  if (renderType === "select" && field.options?.every(([optionValue]) => NUMERIC_OPTION_PATTERN.test(optionValue))) {
+    return value === "" ? undefined : Number(value);
   }
   return value;
 }

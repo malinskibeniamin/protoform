@@ -32,16 +32,11 @@ function findFiles(directory: URL, extension: string): URL[] {
       return findFiles(new URL(`${entry.name}/`, directory), extension);
     }
 
-    return entry.name.endsWith(extension) && !entry.name.includes(".test.")
-      ? [entryUrl]
-      : [];
+    return entry.name.endsWith(extension) && !entry.name.includes(".test.") ? [entryUrl] : [];
   });
 }
 
-function isHiddenInput(
-  node: ts.JsxOpeningLikeElement,
-  sourceFile: ts.SourceFile
-): boolean {
+function isHiddenInput(node: ts.JsxOpeningLikeElement, sourceFile: ts.SourceFile): boolean {
   if (node.tagName.getText(sourceFile) !== "Input") {
     return false;
   }
@@ -60,10 +55,7 @@ function hasFieldAncestor(node: ts.Node, sourceFile: ts.SourceFile): boolean {
   let ancestor = node.parent;
 
   while (ancestor) {
-    if (
-      ts.isJsxElement(ancestor) &&
-      ancestor.openingElement.tagName.getText(sourceFile) === "Field"
-    ) {
+    if (ts.isJsxElement(ancestor) && ancestor.openingElement.tagName.getText(sourceFile) === "Field") {
       return true;
     }
     ancestor = ancestor.parent;
@@ -79,17 +71,8 @@ function findUnwrappedControls(file: URL): string[] {
   return findUnwrappedControlsInSource(source, fileName);
 }
 
-function findUnwrappedControlsInSource(
-  source: string,
-  fileName: string
-): string[] {
-  const sourceFile = ts.createSourceFile(
-    fileName,
-    source,
-    ts.ScriptTarget.Latest,
-    true,
-    ts.ScriptKind.TSX
-  );
+function findUnwrappedControlsInSource(source: string, fileName: string): string[] {
+  const sourceFile = ts.createSourceFile(fileName, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
   const violations: string[] = [];
 
   function visit(node: ts.Node) {
@@ -99,12 +82,8 @@ function findUnwrappedControlsInSource(
       !isHiddenInput(node, sourceFile) &&
       !hasFieldAncestor(node, sourceFile)
     ) {
-      const position = sourceFile.getLineAndCharacterOfPosition(
-        node.getStart()
-      );
-      violations.push(
-        `${fileName}:${position.line + 1} <${node.tagName.getText(sourceFile)}>`
-      );
+      const position = sourceFile.getLineAndCharacterOfPosition(node.getStart());
+      violations.push(`${fileName}:${position.line + 1} <${node.tagName.getText(sourceFile)}>`);
     }
 
     ts.forEachChild(node, visit);
@@ -129,10 +108,7 @@ describe("demo Field policy", () => {
       const fileName = relative(repositoryDirectory.pathname, file.pathname);
 
       return [...content.matchAll(tsxFencePattern)].flatMap((match, index) =>
-        findUnwrappedControlsInSource(
-          match[1] ?? "",
-          `${fileName}#tsx-${index + 1}`
-        )
+        findUnwrappedControlsInSource(match[1] ?? "", `${fileName}#tsx-${index + 1}`)
       );
     });
 

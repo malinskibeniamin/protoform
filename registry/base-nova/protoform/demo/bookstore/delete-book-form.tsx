@@ -6,12 +6,12 @@ import type { ReactNode } from "react";
 
 import { AutoForm } from "@/registry/base-nova/protoform/components/auto-form";
 import { Button } from "@/registry/base-nova/protoform/components/button";
+import { DeleteBookRequestFormBinding } from "@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_form";
 import type { Book } from "@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_pb";
 import {
   DeleteBookRequestSchema,
   LibraryService,
 } from "@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_pb";
-import { DeleteBookRequestFormBinding } from "@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_form";
 
 interface DeleteBookFormProps {
   book: Book;
@@ -24,16 +24,11 @@ function DeleteSubmitButton({
   testId,
 }: {
   children: ReactNode;
-  disabled?: boolean;
-  testId?: string;
+  disabled?: boolean | undefined;
+  testId?: string | undefined;
 }) {
   return (
-    <Button
-      disabled={disabled}
-      testId={testId}
-      type="submit"
-      variant="destructive"
-    >
+    <Button disabled={disabled} testId={testId} type="submit" variant="destructive">
       {disabled ? "Deleting…" : "Delete book"}
     </Button>
   );
@@ -41,11 +36,7 @@ function DeleteSubmitButton({
 
 const deleteUiComponents = { SubmitButton: DeleteSubmitButton };
 
-export function DeleteBookForm({
-  book,
-  onCancel,
-  onDeleted,
-}: DeleteBookFormProps) {
+export function DeleteBookForm({ book, onCancel, onDeleted }: DeleteBookFormProps) {
   const mutation = useMutation(LibraryService.method.deleteBook);
 
   async function deleteBook() {
@@ -60,8 +51,8 @@ export function DeleteBookForm({
           Delete book
         </h2>
         <p className="text-muted-foreground text-sm">
-          Delete <strong>{book.displayName}</strong>? AutoForm renders the
-          generated delete request; app-owned copy provides the confirmation.
+          Delete <strong>{book.displayName}</strong>? AutoForm renders the generated delete request; app-owned copy
+          provides the confirmation.
         </p>
       </div>
       <AutoForm
@@ -83,9 +74,7 @@ export function DeleteBookForm({
       <Button onClick={onCancel} type="button" variant="outline">
         Cancel
       </Button>
-      {mutation.error ? (
-        <p className="text-destructive text-sm">{mutation.error.message}</p>
-      ) : null}
+      {mutation.error ? <p className="text-destructive text-sm">{mutation.error.message}</p> : null}
     </section>
   );
 }

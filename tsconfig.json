@@ -19,9 +19,14 @@
     "noImplicitOverride": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
+    "noPropertyAccessFromIndexSignature": true,
     "noUncheckedIndexedAccess": true,
+    "noUncheckedSideEffectImports": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
+    "exactOptionalPropertyTypes": true,
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
     "noEmit": true,
@@ -33,22 +38,7 @@
       "@/*": ["./*"]
     }
   },
-  "include": [
-    "blume.config.ts",
-    "components.tsx",
-    "components/**/*.ts",
-    "components/**/*.tsx",
-    "e2e/**/*.ts",
-    "examples/**/*.ts",
-    "examples/**/*.tsx",
-    "islands/**/*.ts",
-    "islands/**/*.tsx",
-    "registry/**/*.ts",
-    "registry/**/*.tsx",
-    "scripts/**/*.ts",
-    "vitest*.config.ts",
-    "playwright.config.ts"
-  ],
+  "include": ["**/*.ts", "**/*.tsx"],
   "exclude": [
     "node_modules",
     ".output",
@@ -58,10 +48,16 @@
     ".tmp",
     "test-results",
     "artifacts",
-    "registry/base-nova",
     "registry/base-nova/protoform/lib/protobuf-v1-bridge",
+    "**/gen/**",
+    "**/__browser__/**",
+    "**/__golden__/**",
     "**/*.test.ts",
     "**/*.test.tsx",
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
+    "**/*_form.ts",
+    "**/*_pb.ts",
     "**/__tests__/**"
   ]
 }

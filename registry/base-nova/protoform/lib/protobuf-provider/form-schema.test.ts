@@ -1,8 +1,7 @@
-import { isStandardSchema } from "../core/index.js";
 import { expect, expectTypeOf, test } from "vitest";
-
-import { AutoFormExampleSchema } from "./gen/auto-form-example_pb.js";
+import { isStandardSchema } from "../core/index.js";
 import { createProtoFormSchema } from "./form-schema.js";
+import { AutoFormExampleSchema } from "./gen/auto-form-example_pb.js";
 
 function buildValidProtoFormValues(): Record<string, unknown> {
   return {
@@ -62,21 +61,15 @@ test("createProtoFormSchema can expose a consumer-specific form input", () => {
     username: string;
   }
 
-  const schema = createProtoFormSchema<FormInput, typeof AutoFormExampleSchema>(
-    AutoFormExampleSchema
-  );
+  const schema = createProtoFormSchema<FormInput, typeof AutoFormExampleSchema>(AutoFormExampleSchema);
 
-  expectTypeOf(schema["~standard"].types?.input).toEqualTypeOf<
-    FormInput | undefined
-  >();
+  expectTypeOf(schema["~standard"].types?.input).toEqualTypeOf<FormInput | undefined>();
 });
 
 test("valid form values produce a typed message value", async () => {
   const schema = createProtoFormSchema(AutoFormExampleSchema);
 
-  const result = await schema["~standard"].validate(
-    buildValidProtoFormValues()
-  );
+  const result = await schema["~standard"].validate(buildValidProtoFormValues());
 
   expect(result.issues).toBeUndefined();
   if (result.issues) {
@@ -100,11 +93,7 @@ test("invalid form values produce issues with form-shaped camelCase paths", asyn
 
   const paths = result.issues.map((issue) =>
     (issue.path ?? [])
-      .map((segment) =>
-        typeof segment === "object" && segment !== null && "key" in segment
-          ? segment.key
-          : segment
-      )
+      .map((segment) => (typeof segment === "object" && segment !== null && "key" in segment ? segment.key : segment))
       .join(".")
   );
 

@@ -2,16 +2,10 @@
 
 import { useState } from "react";
 
-import {
-  Alert,
-  AlertDescription,
-} from "@/registry/base-nova/protoform/components/alert";
+import { Alert, AlertDescription } from "@/registry/base-nova/protoform/components/alert";
 import { AutoForm } from "@/registry/base-nova/protoform/components/auto-form";
 
-import {
-  type CelRe2Form,
-  CelRe2FormSchema,
-} from "../gen/protoform/examples/v1/cel_re2_pb.js";
+import { type CelRe2Form, CelRe2FormSchema } from "../gen/protoform/examples/v1/cel_re2_pb.js";
 
 export const client = "only";
 

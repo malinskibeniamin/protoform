@@ -1,4 +1,4 @@
-import type { ParsedField } from '../../lib/form-types';
+import type { ParsedField } from "../../lib/form-types";
 
 // Common protocol / tech acronyms the default title-casing would
 // otherwise emit as mixed-case ("Api Key", "Tls", "Aws Region", etc.).
@@ -7,31 +7,31 @@ import type { ParsedField } from '../../lib/form-types';
 // Matched as whole words (case-insensitive) after the initial
 // camelCase/snake_case split in `beautifyLabel`.
 const ACRONYMS: Record<string, string> = {
-  api: 'API',
-  aws: 'AWS',
-  dsn: 'DSN',
-  gcp: 'GCP',
-  grpc: 'gRPC',
-  http: 'HTTP',
-  https: 'HTTPS',
-  id: 'ID',
-  json: 'JSON',
-  jwt: 'JWT',
-  mcp: 'MCP',
-  oauth: 'OAuth',
-  sasl: 'SASL',
-  sdk: 'SDK',
-  sns: 'SNS',
-  sql: 'SQL',
-  sqs: 'SQS',
-  ssl: 'SSL',
-  tls: 'TLS',
-  tts: 'TTS',
-  url: 'URL',
-  uri: 'URI',
-  uuid: 'UUID',
-  vpc: 'VPC',
-  yaml: 'YAML',
+  api: "API",
+  aws: "AWS",
+  dsn: "DSN",
+  gcp: "GCP",
+  grpc: "gRPC",
+  http: "HTTP",
+  https: "HTTPS",
+  id: "ID",
+  json: "JSON",
+  jwt: "JWT",
+  mcp: "MCP",
+  oauth: "OAuth",
+  sasl: "SASL",
+  sdk: "SDK",
+  sns: "SNS",
+  sql: "SQL",
+  sqs: "SQS",
+  ssl: "SSL",
+  tls: "TLS",
+  tts: "TTS",
+  uri: "URI",
+  url: "URL",
+  uuid: "UUID",
+  vpc: "VPC",
+  yaml: "YAML",
 };
 
 function applyAcronyms(label: string): string {
@@ -40,15 +40,15 @@ function applyAcronyms(label: string): string {
 
 function beautifyLabel(label: string): string {
   if (!label) {
-    return '';
+    return "";
   }
-  let output = label.replace(/([A-Z])/g, ' $1');
+  let output = label.replace(/([A-Z])/g, " $1");
   output = output.charAt(0).toUpperCase() + output.slice(1);
   if (!Number.isNaN(Number(output))) {
-    return '';
+    return "";
   }
-  if (output === '*') {
-    return '';
+  if (output === "*") {
+    return "";
   }
   return applyAcronyms(output);
 }
@@ -68,7 +68,7 @@ export function sortFieldsByOrder<TFieldType extends string = string>(
     .sort((a, b) => (a.fieldConfig?.order ?? 0) - (b.fieldConfig?.order ?? 0));
 }
 
-export function getPathInObject(obj: Record<string, unknown>, path: string[]): any {
+export function getPathInObject(obj: Record<string, unknown>, path: string[]): unknown {
   let current: unknown = obj;
   for (const key of path) {
     if (current === undefined || current === null) {

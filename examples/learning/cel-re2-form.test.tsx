@@ -12,15 +12,11 @@ it("explains and accepts a focused RE2-backed CEL rule", async () => {
   await user.type(projectId, "Not valid");
   await user.click(screen.getByRole("button", { name: "Submit" }));
 
-  expect(
-    await screen.findByText("Use lowercase letters, digits, and hyphens.")
-  ).toBeInTheDocument();
+  expect(await screen.findByText("Use lowercase letters, digits, and hyphens.")).toBeInTheDocument();
 
   await user.clear(projectId);
   await user.type(projectId, "payments-prod");
   await user.click(screen.getByRole("button", { name: "Submit" }));
 
-  expect(await screen.findByRole("status")).toHaveTextContent(
-    "Accepted: payments-prod"
-  );
+  expect(await screen.findByRole("status")).toHaveTextContent("Accepted: payments-prod");
 });

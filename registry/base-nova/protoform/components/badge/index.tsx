@@ -1,92 +1,91 @@
-import { cva, type VariantProps } from 'class-variance-authority';
-import React from 'react';
+import { cva, type VariantProps } from "class-variance-authority";
+import type React from "react";
 
-import { Slot } from '@/registry/base-nova/protoform/lib/base-ui-compat';
-import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
+import { Slot } from "@/registry/base-nova/protoform/lib/base-ui-compat";
+import { cn, type SharedProps } from "@/registry/base-nova/protoform/lib/utils";
 
 const badgeVariants = cva(
-  'inline-flex max-w-full shrink-0 items-center justify-center overflow-hidden truncate text-ellipsis whitespace-nowrap rounded-md border font-medium transition-[color,box-shadow] selection:bg-selected selection:text-selected-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&>svg]:pointer-events-none',
+  "inline-flex max-w-full shrink-0 items-center justify-center overflow-hidden truncate text-ellipsis whitespace-nowrap rounded-md border font-medium transition-[color,box-shadow] selection:bg-selected selection:text-selected-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&>svg]:pointer-events-none",
   {
+    defaultVariants: {
+      size: "md",
+      variant: "neutral",
+    },
     variants: {
+      size: {
+        // Large: 32px height (from Figma)
+        lg: "h-8 gap-1.5 px-3 py-0 text-sm has-[>svg]:px-2 [&_svg]:size-4",
+        // Medium: 24px height (from Figma)
+        md: "h-6 gap-1 px-2 py-0 text-xs has-[>svg]:px-1.5 [&_svg]:size-3.5",
+        // Small: 20px height (from Figma)
+        sm: "h-5 gap-1 px-1.5 py-0 text-[11px] has-[>svg]:px-1 [&_svg]:size-3",
+      },
       variant: {
-        // === NEUTRAL (Grey - semantic tokens) ===
-        neutral:
-          'border-transparent bg-background-inverse-subtle text-inverse [a&]:hover:bg-background-inverse-subtle-hover',
-        'neutral-inverted': 'border-transparent bg-surface-subtle [a&]:hover:bg-background-subtle-hover',
-        'neutral-outline': '!border-outline-inverse border [a&]:hover:bg-background-subtle-hover',
-
-        // === SIMPLE (Light grey - semantic tokens) ===
-        simple: 'text-secondary [a&]:hover:bg-background-subtle-hover',
-        'simple-inverted': 'text-secondary [a&]:hover:bg-background-subtle-hover',
-        'simple-outline': '!border-outline-inverse border text-secondary [a&]:hover:bg-background-subtle-hover',
-
-        // === INFO (Blue - semantic tokens) ===
-        info: 'border-transparent bg-surface-informative text-inverse [a&]:hover:bg-surface-informative-hover',
-        'info-inverted':
-          'border-transparent bg-background-informative-subtle text-info [a&]:hover:bg-background-informative-subtle-hover',
-        'info-outline':
-          'border-outline-informative bg-transparent text-info [a&]:hover:bg-background-informative-subtle',
-
         // === ACCENT (Brand Red - uses theme brand tokens) ===
-        accent: 'border-transparent bg-brand text-inverse [a&]:hover:bg-surface-brand-hover',
-        'accent-inverted': 'border-transparent bg-background-brand-subtle text-brand [a&]:hover:bg-brand-alpha-default',
-        'accent-outline': 'border-outline-brand bg-transparent text-brand [a&]:hover:bg-brand-alpha-subtle',
-
-        // === SUCCESS (Green - semantic tokens) ===
-        success: 'border-transparent bg-surface-success text-inverse [a&]:hover:bg-surface-success-hover',
-        'success-inverted':
-          'border-transparent bg-background-success-subtle text-success [a&]:hover:bg-background-success-subtle-hover',
-        'success-outline': 'border-outline-success bg-transparent text-success [a&]:hover:bg-background-success-subtle',
-
-        // === WARNING (Yellow/Orange - semantic tokens) ===
-        warning: 'border-transparent bg-surface-warning text-inverse [a&]:hover:bg-surface-warning-hover',
-        'warning-inverted': 'border-transparent bg-background-warning-subtle text-warning [a&]:hover:bg-warning-subtle',
-        'warning-outline': 'border-outline-warning bg-transparent text-warning [a&]:hover:bg-background-warning-subtle',
-
-        // === DISABLED (Muted - semantic tokens) ===
-        disabled: 'cursor-not-allowed border-transparent bg-background-disabled text-disabled',
-        'disabled-inverted': 'cursor-not-allowed border-transparent bg-surface-subtle text-disabled',
-        'disabled-outline': 'cursor-not-allowed border-border-strong bg-transparent text-disabled',
+        accent: "border-transparent bg-brand text-inverse [a&]:hover:bg-surface-brand-hover",
+        "accent-inverted": "border-transparent bg-background-brand-subtle text-brand [a&]:hover:bg-brand-alpha-default",
+        "accent-outline": "border-outline-brand bg-transparent text-brand [a&]:hover:bg-brand-alpha-subtle",
 
         // === DESTRUCTIVE/ERROR (Red - semantic tokens) ===
         destructive:
-          'border-transparent bg-surface-error text-inverse focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 [a&]:hover:bg-surface-error-hover',
-        'destructive-inverted':
-          'border-transparent bg-background-error-subtle text-destructive [a&]:hover:bg-destructive-subtle',
-        'destructive-outline':
-          'border-outline-error bg-transparent text-destructive [a&]:hover:bg-background-error-subtle',
+          "border-transparent bg-surface-error text-inverse focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 [a&]:hover:bg-surface-error-hover",
+        "destructive-inverted":
+          "border-transparent bg-background-error-subtle text-destructive [a&]:hover:bg-destructive-subtle",
+        "destructive-outline":
+          "border-outline-error bg-transparent text-destructive [a&]:hover:bg-background-error-subtle",
 
-        // === SECONDARY (Dark Blue) ===
-        secondary: 'border-transparent bg-secondary text-inverse [a&]:hover:bg-secondary/90',
-        'secondary-inverted': 'border-transparent bg-secondary/10 text-secondary [a&]:hover:bg-secondary/20',
-        'secondary-outline': 'border-secondary text-secondary [a&]:hover:bg-secondary/10',
+        // === DISABLED (Muted - semantic tokens) ===
+        disabled: "cursor-not-allowed border-transparent bg-background-disabled text-disabled",
+        "disabled-inverted": "cursor-not-allowed border-transparent bg-surface-subtle text-disabled",
+        "disabled-outline": "cursor-not-allowed border-border-strong bg-transparent text-disabled",
 
-        // === PRIMARY (Indigo) ===
-        primary: 'border-transparent bg-primary text-inverse [a&]:hover:bg-primary/90',
-        'primary-inverted': 'border-transparent bg-primary/10 text-primary [a&]:hover:bg-primary/20',
-        'primary-outline': 'border-primary text-primary [a&]:hover:bg-primary/10',
+        // === INFO (Blue - semantic tokens) ===
+        info: "border-transparent bg-surface-informative text-inverse [a&]:hover:bg-surface-informative-hover",
+        "info-inverted":
+          "border-transparent bg-background-informative-subtle text-info [a&]:hover:bg-background-informative-subtle-hover",
+        "info-outline":
+          "border-outline-informative bg-transparent text-info [a&]:hover:bg-background-informative-subtle",
+        // === NEUTRAL (Grey - semantic tokens) ===
+        neutral:
+          "border-transparent bg-background-inverse-subtle text-inverse [a&]:hover:bg-background-inverse-subtle-hover",
+        "neutral-inverted": "border-transparent bg-surface-subtle [a&]:hover:bg-background-subtle-hover",
+        "neutral-outline": "!border-outline-inverse border [a&]:hover:bg-background-subtle-hover",
 
         // === OUTLINE (generic) ===
-        outline: 'border-border text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground',
+        outline: "border-border text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
+
+        // === PRIMARY (Indigo) ===
+        primary: "border-transparent bg-primary text-inverse [a&]:hover:bg-primary/90",
+        "primary-inverted": "border-transparent bg-primary/10 text-primary [a&]:hover:bg-primary/20",
+        "primary-outline": "border-primary text-primary [a&]:hover:bg-primary/10",
+
+        // === SECONDARY (Dark Blue) ===
+        secondary: "border-transparent bg-secondary text-inverse [a&]:hover:bg-secondary/90",
+        "secondary-inverted": "border-transparent bg-secondary/10 text-secondary [a&]:hover:bg-secondary/20",
+        "secondary-outline": "border-secondary text-secondary [a&]:hover:bg-secondary/10",
+
+        // === SIMPLE (Light grey - semantic tokens) ===
+        simple: "text-secondary [a&]:hover:bg-background-subtle-hover",
+        "simple-inverted": "text-secondary [a&]:hover:bg-background-subtle-hover",
+        "simple-outline": "!border-outline-inverse border text-secondary [a&]:hover:bg-background-subtle-hover",
+
+        // === SUCCESS (Green - semantic tokens) ===
+        success: "border-transparent bg-surface-success text-inverse [a&]:hover:bg-surface-success-hover",
+        "success-inverted":
+          "border-transparent bg-background-success-subtle text-success [a&]:hover:bg-background-success-subtle-hover",
+        "success-outline": "border-outline-success bg-transparent text-success [a&]:hover:bg-background-success-subtle",
+
+        // === WARNING (Yellow/Orange - semantic tokens) ===
+        warning: "border-transparent bg-surface-warning text-inverse [a&]:hover:bg-surface-warning-hover",
+        "warning-inverted": "border-transparent bg-background-warning-subtle text-warning [a&]:hover:bg-warning-subtle",
+        "warning-outline": "border-outline-warning bg-transparent text-warning [a&]:hover:bg-background-warning-subtle",
       },
-      size: {
-        // Small: 20px height (from Figma)
-        sm: 'h-5 gap-1 px-1.5 py-0 text-[11px] has-[>svg]:px-1 [&_svg]:size-3',
-        // Medium: 24px height (from Figma)
-        md: 'h-6 gap-1 px-2 py-0 text-xs has-[>svg]:px-1.5 [&_svg]:size-3.5',
-        // Large: 32px height (from Figma)
-        lg: 'h-8 gap-1.5 px-3 py-0 text-sm has-[>svg]:px-2 [&_svg]:size-4',
-      },
-    },
-    defaultVariants: {
-      variant: 'neutral',
-      size: 'md',
     },
   }
 );
 
-export type BadgeVariant = VariantProps<typeof badgeVariants>['variant'];
-export type BadgeSize = VariantProps<typeof badgeVariants>['size'];
+export type BadgeVariant = VariantProps<typeof badgeVariants>["variant"];
+export type BadgeSize = VariantProps<typeof badgeVariants>["size"];
 
 function Badge({
   className,
@@ -98,14 +97,14 @@ function Badge({
   size,
   ref,
   ...props
-}: React.ComponentProps<'span'> &
+}: React.ComponentProps<"span"> &
   SharedProps & {
     asChild?: boolean;
     icon?: React.ReactNode;
     variant?: BadgeVariant;
     size?: BadgeSize;
   }) {
-  const Comp = asChild ? Slot : 'span';
+  const Comp = asChild ? Slot : "span";
 
   // When asChild is used with Slot, we can only pass ONE child element
   // to satisfy React.Children.only(). In asChild mode, users must include
@@ -138,7 +137,7 @@ function Badge({
 
   return (
     <Comp
-      className={cn(badgeVariants({ variant, size }), className)}
+      className={cn(badgeVariants({ size, variant }), className)}
       data-slot="badge"
       data-testid={testId}
       ref={ref}

@@ -21,19 +21,9 @@ const temporaryDirectory = mkdtempSync(join(tmpdir(), "protoform-api-linter-"));
 const descriptorSet = join(temporaryDirectory, "aip.binpb");
 
 try {
-  execFileSync(
-    "bunx",
-    [
-      "buf",
-      "build",
-      "--path",
-      AIP_PROTO,
-      "--as-file-descriptor-set",
-      "--output",
-      descriptorSet,
-    ],
-    { stdio: "inherit" }
-  );
+  execFileSync("bunx", ["buf", "build", "--path", AIP_PROTO, "--as-file-descriptor-set", "--output", descriptorSet], {
+    stdio: "inherit",
+  });
   execFileSync(
     "env",
     [

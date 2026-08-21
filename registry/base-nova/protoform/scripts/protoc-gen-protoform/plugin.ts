@@ -1,9 +1,5 @@
 import type { DescMessage } from "@bufbuild/protobuf";
-import {
-  createEcmaScriptPlugin,
-  type GeneratedFile,
-  type Schema,
-} from "@bufbuild/protoplugin";
+import { createEcmaScriptPlugin, type GeneratedFile, type Schema } from "@bufbuild/protoplugin";
 import { generateMessageAnnotations } from "./generate-annotations.js";
 
 const DEFAULT_RUNTIME_IMPORT = "@/lib/protobuf-provider";
@@ -13,18 +9,12 @@ interface ProtoformPluginOptions {
   runtimeImport: string;
 }
 
-function parseOptions(
-  rawOptions: { key: string; value: string }[]
-): ProtoformPluginOptions {
-  const runtimeImports = rawOptions.filter(
-    (option) => option.key === "runtime_import"
-  );
+function parseOptions(rawOptions: { key: string; value: string }[]): ProtoformPluginOptions {
+  const runtimeImports = rawOptions.filter((option) => option.key === "runtime_import");
   if (runtimeImports.length > 1) {
     throw new Error("runtime_import can only be specified once");
   }
-  const unknown = rawOptions.find(
-    (option) => option.key !== "runtime_import"
-  );
+  const unknown = rawOptions.find((option) => option.key !== "runtime_import");
   if (unknown) {
     throw new Error(`unknown option ${unknown.key}`);
   }
@@ -33,23 +23,12 @@ function parseOptions(
   };
 }
 
-function generateMessageBinding(
-  f: GeneratedFile,
-  message: DescMessage,
-  runtimeImport: string
-): void {
-  const createProtoFormSchema = f.import(
-    "createProtoFormSchema",
-    runtimeImport
-  );
+function generateMessageBinding(f: GeneratedFile, message: DescMessage, runtimeImport: string): void {
+  const createProtoFormSchema = f.import("createProtoFormSchema", runtimeImport);
   const parseProtoSchema = f.import("parseProtoSchema", runtimeImport);
   const protoToFormValues = f.import("protoToFormValues", runtimeImport);
   const messageSchema = f.importSchema(message);
-  const annotationsName = generateMessageAnnotations(
-    f,
-    message,
-    runtimeImport
-  );
+  const annotationsName = generateMessageAnnotations(f, message, runtimeImport);
 
   f.print(f.jsDoc(`Form binding for message ${message.typeName}.`));
   f.print(f.export("const", `${message.name}FormBinding`), " = {");
@@ -63,13 +42,7 @@ function generateMessageBinding(
     messageSchema,
     ", options),"
   );
-  f.print(
-    "  defaultValues: () => ",
-    protoToFormValues,
-    "(",
-    messageSchema,
-    "),"
-  );
+  f.print("  defaultValues: () => ", protoToFormValues, "(", messageSchema, "),");
   f.print("  descriptor: ", messageSchema, ",");
   f.print("  parseSchema: () => ", parseProtoSchema, "(", messageSchema, "),");
   f.print("} as const;");

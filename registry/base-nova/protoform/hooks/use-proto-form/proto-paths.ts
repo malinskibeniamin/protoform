@@ -29,13 +29,7 @@ type IsProtoOneof<T> = T extends { case: string; value: infer _V }
  * Used to merge all oneof branch value types so that Path<T> can resolve
  * properties from ANY branch, not just properties shared across ALL branches.
  */
-type UnionToIntersection<U> = (
-  U extends unknown
-    ? (k: U) => void
-    : never
-) extends (k: infer I) => void
-  ? I
-  : never;
+type UnionToIntersection<U> = (U extends unknown ? (k: U) => void : never) extends (k: infer I) => void ? I : never;
 
 /**
  * Extracts all non-undefined `value` types from a proto oneof union,
@@ -51,14 +45,10 @@ type UnionToIntersection<U> = (
  * This intentionally drops the case-to-value correlation constraint.
  * Runtime validation via createProtoResolver still enforces correctness.
  */
-type FlattenOneof<T> = {
+interface FlattenOneof<T> {
   case: T extends { case: infer C } ? C : never;
-  value:
-    | UnionToIntersection<
-        T extends { case: string; value: infer V } ? V : never
-      >
-    | undefined;
-};
+  value: UnionToIntersection<T extends { case: string; value: infer V } ? V : never> | undefined;
+}
 
 /**
  * Recursively walks a type and flattens any proto oneof unions it finds.

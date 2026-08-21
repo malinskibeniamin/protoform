@@ -14,4 +14,4 @@ export {
   type HelpLink,
   type PreconditionViolation,
   type QuotaViolation,
-} from '../protobuf-provider';
+} from "../protobuf-provider";

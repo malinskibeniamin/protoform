@@ -1,26 +1,26 @@
-import { Separator as SeparatorPrimitive } from '@base-ui/react/separator';
-import { cva, type VariantProps } from 'class-variance-authority';
-import React from 'react';
+import { Separator as SeparatorPrimitive } from "@base-ui/react/separator";
+import { cva, type VariantProps } from "class-variance-authority";
+import type React from "react";
 
-import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
+import { cn, type SharedProps } from "@/registry/base-nova/protoform/lib/utils";
 
 const separatorVariants = cva(
-  'shrink-0 data-[orientation=horizontal]:h-px data-[orientation=vertical]:h-full data-[orientation=horizontal]:w-full data-[orientation=vertical]:w-px',
+  "shrink-0 data-[orientation=horizontal]:h-px data-[orientation=vertical]:h-full data-[orientation=horizontal]:w-full data-[orientation=vertical]:w-px",
   {
+    defaultVariants: {
+      variant: "default",
+    },
     variants: {
       variant: {
-        default: 'bg-divider-default',
-        subtle: 'bg-divider-subtle',
-        strong: 'bg-divider-strong',
+        default: "bg-divider-default",
+        strong: "bg-divider-strong",
+        subtle: "bg-divider-subtle",
       },
-    },
-    defaultVariants: {
-      variant: 'default',
     },
   }
 );
 
-export type SeparatorVariant = VariantProps<typeof separatorVariants>['variant'];
+export type SeparatorVariant = VariantProps<typeof separatorVariants>["variant"];
 
 type SeparatorProps = React.ComponentProps<typeof SeparatorPrimitive> &
   SharedProps & {
@@ -36,13 +36,13 @@ type SeparatorProps = React.ComponentProps<typeof SeparatorPrimitive> &
 
 function Separator({
   className,
-  orientation = 'horizontal',
+  orientation = "horizontal",
   decorative = true,
   variant,
   testId,
   ...props
 }: SeparatorProps) {
-  const a11yProps = decorative ? { 'aria-hidden': true, role: 'none' as const } : {};
+  const a11yProps = decorative ? { "aria-hidden": true, role: "none" as const } : {};
   return (
     <SeparatorPrimitive
       className={cn(separatorVariants({ variant }), className)}

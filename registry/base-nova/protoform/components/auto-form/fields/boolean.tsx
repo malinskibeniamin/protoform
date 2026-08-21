@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { Checkbox } from '../../checkbox';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../select';
-import { Switch } from '../../switch';
-import { Toggle } from '../../toggle';
-import type { AutoFormFieldProps } from '../core-types';
-import { CONSENT_FIELD_PATTERN } from '../helpers';
-import { getProtoFieldCustomData } from '../proto';
-import type { FieldTypeDefinition } from '../registry';
-import { getControlLabel, useFieldTestIds } from './shared';
+import { Checkbox } from "../../checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../select";
+import { Switch } from "../../switch";
+import { Toggle } from "../../toggle";
+import type { AutoFormFieldProps } from "../core-types";
+import { CONSENT_FIELD_PATTERN } from "../helpers";
+import { getProtoFieldCustomData } from "../proto";
+import type { FieldTypeDefinition } from "../registry";
+import { getControlLabel, useFieldTestIds } from "./shared";
 
 // ---------------------------------------------------------------------------
 // BooleanFieldComponent — tri-state select (true / false / unset)
@@ -21,37 +21,37 @@ function BooleanFieldComponent({ error, field, id, inputProps, label }: AutoForm
   return (
     <Select
       items={[
-        { label: 'Not set', value: null },
-        { label: 'True', value: 'true' },
-        { label: 'False', value: 'false' },
+        { label: "Not set", value: null },
+        { label: "True", value: "true" },
+        { label: "False", value: "false" },
       ]}
       onValueChange={(value) => {
         if (value === null) {
-          inputProps.onValueChange(undefined);
+          inputProps["onValueChange"](undefined);
           return;
         }
-        inputProps.onValueChange(value === 'true');
+        inputProps["onValueChange"](value === "true");
       }}
-      value={inputProps.value === undefined ? null : String(Boolean(inputProps.value))}
+      value={inputProps["value"] === undefined ? null : String(Boolean(inputProps["value"]))}
     >
       <SelectTrigger
         aria-invalid={Boolean(error)}
         aria-label={fieldLabel}
-        className={error ? 'border-destructive' : ''}
-        disabled={inputProps.disabled}
+        className={error ? "border-destructive" : ""}
+        disabled={inputProps["disabled"]}
         id={id}
         testId={testIds.control}
       >
         <SelectValue placeholder="Choose a value" />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem testId={testIds.option('not-set')} value={null}>
+        <SelectItem testId={testIds.option("not-set")} value={null}>
           Not set
         </SelectItem>
-        <SelectItem testId={testIds.option('true')} value="true">
+        <SelectItem testId={testIds.option("true")} value="true">
           True
         </SelectItem>
-        <SelectItem testId={testIds.option('false')} value="false">
+        <SelectItem testId={testIds.option("false")} value="false">
           False
         </SelectItem>
       </SelectContent>
@@ -71,10 +71,10 @@ function CheckboxFieldComponent({ error, field, id, inputProps, label }: AutoFor
       <Checkbox
         aria-invalid={Boolean(error)}
         aria-label={getControlLabel(label, field)}
-        checked={Boolean(inputProps.value)}
-        disabled={inputProps.disabled}
+        checked={Boolean(inputProps["value"])}
+        disabled={inputProps["disabled"]}
         id={id}
-        onCheckedChange={(checked) => inputProps.onValueChange(Boolean(checked))}
+        onCheckedChange={(checked) => inputProps["onValueChange"](Boolean(checked))}
         testId={testIds.control}
       />
     </div>
@@ -93,10 +93,10 @@ function SwitchFieldComponent({ error, field, id, inputProps, label }: AutoFormF
       <Switch
         aria-invalid={Boolean(error)}
         aria-label={getControlLabel(label, field)}
-        checked={Boolean(inputProps.value)}
-        disabled={inputProps.disabled}
+        checked={Boolean(inputProps["value"])}
+        disabled={inputProps["disabled"]}
         id={id}
-        onCheckedChange={(checked) => inputProps.onValueChange(Boolean(checked))}
+        onCheckedChange={(checked) => inputProps["onValueChange"](Boolean(checked))}
         testId={testIds.control}
       />
     </div>
@@ -115,20 +115,20 @@ function ToggleFieldComponent({ error, field, id, inputProps, label }: AutoFormF
       <Switch
         aria-invalid={Boolean(error)}
         aria-label={getControlLabel(label, field)}
-        checked={Boolean(inputProps.value)}
-        disabled={inputProps.disabled}
+        checked={Boolean(inputProps["value"])}
+        disabled={inputProps["disabled"]}
         id={id}
-        onCheckedChange={(checked) => inputProps.onValueChange(Boolean(checked))}
-        testId={testIds.controlPart('switch')}
+        onCheckedChange={(checked) => inputProps["onValueChange"](Boolean(checked))}
+        testId={testIds.controlPart("switch")}
       />
       <Toggle
         aria-hidden
         className="pointer-events-none rounded-full px-3"
-        pressed={Boolean(inputProps.value)}
+        pressed={Boolean(inputProps["value"])}
         size="sm"
         variant="outline"
       >
-        {inputProps.value ? 'On' : 'Off'}
+        {inputProps["value"] ? "On" : "Off"}
       </Toggle>
     </div>
   );
@@ -137,28 +137,28 @@ function ToggleFieldComponent({ error, field, id, inputProps, label }: AutoFormF
 export { BooleanFieldComponent, CheckboxFieldComponent, SwitchFieldComponent, ToggleFieldComponent };
 
 export const booleanFieldDefinition: FieldTypeDefinition = {
-  name: 'boolean',
-  priority: 15,
+  component: BooleanFieldComponent,
   match: (field) => {
-    if (field.type !== 'boolean') {
+    if (field.type !== "boolean") {
       return false;
     }
     const protoData = getProtoFieldCustomData(field);
     return Boolean(protoData?.supportsUnset) && !field.required;
   },
-  component: BooleanFieldComponent,
+  name: "boolean",
+  priority: 15,
 };
 
 export const checkboxFieldDefinition: FieldTypeDefinition = {
-  name: 'checkbox',
-  priority: 14,
-  match: (field, context) => field.type === 'boolean' && CONSENT_FIELD_PATTERN.test(context.identity),
   component: CheckboxFieldComponent,
+  match: (field, context) => field.type === "boolean" && CONSENT_FIELD_PATTERN.test(context.identity),
+  name: "checkbox",
+  priority: 14,
 };
 
 export const switchFieldDefinition: FieldTypeDefinition = {
-  name: 'switch',
-  priority: 10,
-  match: (field) => field.type === 'boolean',
   component: SwitchFieldComponent,
+  match: (field) => field.type === "boolean",
+  name: "switch",
+  priority: 10,
 };

@@ -1,5 +1,5 @@
 export function isPromiseLike<T>(value: T | Promise<T>): value is Promise<T> {
-  return Boolean(value && typeof value === 'object' && 'then' in (value as Record<string, unknown>));
+  return Boolean(value && typeof value === "object" && "then" in (value as Record<string, unknown>));
 }
 
 export function safeStringify(value: unknown): string {
@@ -7,7 +7,7 @@ export function safeStringify(value: unknown): string {
     return JSON.stringify(
       value,
       (_key, currentValue) => {
-        if (typeof currentValue === 'bigint') {
+        if (typeof currentValue === "bigint") {
           return currentValue.toString();
         }
         if (currentValue instanceof Date) {
@@ -18,6 +18,6 @@ export function safeStringify(value: unknown): string {
       2
     );
   } catch {
-    return '/* serialization error */';
+    return "/* serialization error */";
   }
 }

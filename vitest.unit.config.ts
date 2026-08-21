@@ -14,10 +14,6 @@ export default defineConfig({
       "registry/base-nova/protoform/lib/protobuf-v1-bridge/**",
     ],
     globals: true,
-    include: [
-      "registry/**/*.test.ts",
-      "examples/**/*.test.ts",
-      "scripts/**/*.test.ts",
-    ],
+    include: ["registry/**/*.test.ts", "examples/**/*.test.ts", "scripts/**/*.test.ts"],
   },
 });

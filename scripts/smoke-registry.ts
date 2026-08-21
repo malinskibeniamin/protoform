@@ -53,29 +53,17 @@ for (const name of expectedItems) {
   }
 }
 
-const hook = JSON.parse(
-  readFileSync("public/r/use-proto-form.json", "utf8")
-) as {
+const hook = JSON.parse(readFileSync("public/r/use-proto-form.json", "utf8")) as {
   files: { path: string }[];
 };
-if (
-  !hook.files.some((file) =>
-    file.path.endsWith("hooks/use-proto-form/index.ts")
-  )
-) {
-  throw new Error(
-    "use-proto-form registry item must include the hook entrypoint"
-  );
+if (!hook.files.some((file) => file.path.endsWith("hooks/use-proto-form/index.ts"))) {
+  throw new Error("use-proto-form registry item must include the hook entrypoint");
 }
 if (hook.files.some((file) => file.path.includes("/components/auto-form/"))) {
-  throw new Error(
-    "use-proto-form registry item must not install AutoForm components"
-  );
+  throw new Error("use-proto-form registry item must not install AutoForm components");
 }
 
-const license = JSON.parse(
-  readFileSync("public/r/protoform-license.json", "utf8")
-) as {
+const license = JSON.parse(readFileSync("public/r/protoform-license.json", "utf8")) as {
   files?: Array<{ content?: string; target?: string }>;
 };
 const expectedNotices = [
@@ -85,19 +73,12 @@ const expectedNotices = [
   ["~/THIRD_PARTY_NOTICES.md", "THIRD_PARTY_NOTICES.md"],
 ] as const;
 for (const [target, source] of expectedNotices) {
-  if (
-    !license.files?.some(
-      (file) =>
-        file.target === target && file.content === readFileSync(source, "utf8")
-    )
-  ) {
+  if (!license.files?.some((file) => file.target === target && file.content === readFileSync(source, "utf8"))) {
     throw new Error(`protoform-license must distribute ${source}`);
   }
 }
 
-const autoForm = JSON.parse(
-  readFileSync("public/r/auto-form.json", "utf8")
-) as {
+const autoForm = JSON.parse(readFileSync("public/r/auto-form.json", "utf8")) as {
   registryDependencies?: string[];
 };
 if (
@@ -109,8 +90,7 @@ if (
   throw new Error("auto-form must depend on the shared core and RHF hook");
 }
 
-const reactHookFormV8Alias =
-  "react-hook-form-v8@npm:react-hook-form@8.0.0-beta.3";
+const reactHookFormV8Alias = "react-hook-form-v8@npm:react-hook-form@8.0.0-beta.3";
 const dependencyItemSchema = z.object({
   dependencies: z.array(z.string()).optional(),
   registryDependencies: z.array(z.string()).optional(),
@@ -126,80 +106,53 @@ if (
   reactHookFormV8Hook.dependencies.includes("react-hook-form") ||
   reactHookFormV8Hook.dependencies.includes("@hookform/resolvers")
 ) {
-  throw new Error(
-    "use-proto-form-v8 must install only the pinned v8 form-library alias"
-  );
+  throw new Error("use-proto-form-v8 must install only the pinned v8 form-library alias");
 }
 if (
   !(
     reactHookFormV8AutoForm.dependencies?.includes(reactHookFormV8Alias) &&
-    reactHookFormV8AutoForm.registryDependencies?.includes(
-      "@protoform/auto-form-core"
-    ) &&
-    reactHookFormV8AutoForm.registryDependencies.includes(
-      "@protoform/use-proto-form-v8"
-    )
+    reactHookFormV8AutoForm.registryDependencies?.includes("@protoform/auto-form-core") &&
+    reactHookFormV8AutoForm.registryDependencies.includes("@protoform/use-proto-form-v8")
   )
 ) {
-  throw new Error(
-    "auto-form-react-hook-form-v8 must install the shared core, v8 hook, and pinned v8 alias"
-  );
+  throw new Error("auto-form-react-hook-form-v8 must install the shared core, v8 hook, and pinned v8 alias");
 }
 
-const tanstackAutoForm = JSON.parse(
-  readFileSync("public/r/auto-form-tanstack.json", "utf8")
-) as {
+const tanstackAutoForm = JSON.parse(readFileSync("public/r/auto-form-tanstack.json", "utf8")) as {
   dependencies?: string[];
   registryDependencies?: string[];
 };
 if (
   !(
-    tanstackAutoForm.registryDependencies?.includes(
-      "@protoform/auto-form-core"
-    ) &&
-    tanstackAutoForm.registryDependencies.includes(
-      "@protoform/use-proto-form-tanstack"
-    )
+    tanstackAutoForm.registryDependencies?.includes("@protoform/auto-form-core") &&
+    tanstackAutoForm.registryDependencies.includes("@protoform/use-proto-form-tanstack")
   )
 ) {
-  throw new Error(
-    "auto-form-tanstack must depend on the shared core and TanStack hook"
-  );
+  throw new Error("auto-form-tanstack must depend on the shared core and TanStack hook");
 }
 if (tanstackAutoForm.dependencies?.includes("react-hook-form")) {
   throw new Error("auto-form-tanstack must not install React Hook Form");
 }
 
-const tanstackV2Alias =
-  "@tanstack/react-form-v2@npm:@tanstack/react-form@2.0.0-alpha.0";
-const tanstackV2Hook = JSON.parse(
-  readFileSync("public/r/use-proto-form-tanstack-v2.json", "utf8")
-) as { dependencies?: string[] };
-const tanstackV2AutoForm = JSON.parse(
-  readFileSync("public/r/auto-form-tanstack-v2.json", "utf8")
-) as {
+const tanstackV2Alias = "@tanstack/react-form-v2@npm:@tanstack/react-form@2.0.0-alpha.0";
+const tanstackV2Hook = JSON.parse(readFileSync("public/r/use-proto-form-tanstack-v2.json", "utf8")) as {
+  dependencies?: string[];
+};
+const tanstackV2AutoForm = JSON.parse(readFileSync("public/r/auto-form-tanstack-v2.json", "utf8")) as {
   dependencies?: string[];
   registryDependencies?: string[];
 };
 if (!tanstackV2Hook.dependencies?.includes(tanstackV2Alias)) {
-  throw new Error(
-    "use-proto-form-tanstack-v2 must install the pinned v2 alias"
-  );
+  throw new Error("use-proto-form-tanstack-v2 must install the pinned v2 alias");
 }
 if (
   !(
     tanstackV2AutoForm.dependencies?.includes(tanstackV2Alias) &&
-    tanstackV2AutoForm.registryDependencies?.includes(
-      "@protoform/auto-form-core"
-    ) &&
-    tanstackV2AutoForm.registryDependencies.includes(
-      "@protoform/use-proto-form-tanstack-v2"
-    )
+    tanstackV2AutoForm.registryDependencies?.includes("@protoform/auto-form-core") &&
+    tanstackV2AutoForm.registryDependencies.includes("@protoform/use-proto-form-tanstack-v2")
   )
 ) {
-  throw new Error(
-    "auto-form-tanstack-v2 must install the shared core, v2 hook, and pinned v2 alias"
-  );
+  throw new Error("auto-form-tanstack-v2 must install the shared core, v2 hook, and pinned v2 alias");
 }
 
 console.log(`Registry smoke passed: ${expectedItems.join(", ")}`);

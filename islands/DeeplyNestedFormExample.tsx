@@ -11,9 +11,7 @@ const DeeplyNestedFormExample = lazy(async () => {
 
 export default function DeeplyNestedFormExampleIsland() {
   return (
-    <Suspense
-      fallback={<ExampleLoading label="Loading deeply nested example" />}
-    >
+    <Suspense fallback={<ExampleLoading label="Loading deeply nested example" />}>
       <DeeplyNestedFormExample />
     </Suspense>
   );

@@ -23,14 +23,8 @@ describe("TanStack Form example", () => {
     await user.click(screen.getByRole("button", { name: "Create profile" }));
 
     expect(await screen.findAllByText("value is required")).toHaveLength(2);
-    expect(screen.getByLabelText(displayNamePattern)).toHaveAttribute(
-      "aria-invalid",
-      "true"
-    );
-    expect(screen.getByLabelText(emailPattern)).toHaveAttribute(
-      "aria-invalid",
-      "true"
-    );
+    expect(screen.getByLabelText(displayNamePattern)).toHaveAttribute("aria-invalid", "true");
+    expect(screen.getByLabelText(emailPattern)).toHaveAttribute("aria-invalid", "true");
   });
 
   it("submits the Standard Schema output as a typed protobuf message", async () => {
@@ -45,9 +39,7 @@ describe("TanStack Form example", () => {
     await user.type(screen.getByLabelText(emailPattern), "ada@example.com");
     await user.click(screen.getByRole("button", { name: "Create profile" }));
 
-    expect(await screen.findByRole("status")).toHaveTextContent(
-      "profiles/ada-lovelace"
-    );
+    expect(await screen.findByRole("status")).toHaveTextContent("profiles/ada-lovelace");
   });
 
   it("maps structured server details to the owning TanStack field", async () => {
@@ -62,12 +54,7 @@ describe("TanStack Form example", () => {
     await user.type(screen.getByLabelText(emailPattern), "ada@blocked.example");
     await user.click(screen.getByRole("button", { name: "Create profile" }));
 
-    expect(
-      await screen.findByText("Use an email address from an approved domain.")
-    ).toBeInTheDocument();
-    expect(screen.getByLabelText(emailPattern)).toHaveAttribute(
-      "aria-invalid",
-      "true"
-    );
+    expect(await screen.findByText("Use an email address from an approved domain.")).toBeInTheDocument();
+    expect(screen.getByLabelText(emailPattern)).toHaveAttribute("aria-invalid", "true");
   });
 });

@@ -4,10 +4,7 @@ import { create } from "@bufbuild/protobuf";
 import { createValidator } from "@bufbuild/protovalidate";
 import { describe, expect, it } from "vitest";
 
-import {
-  createProtoFormSchema,
-  ProtoProvider,
-} from "../registry/base-nova/protoform/lib/protobuf-provider/index.js";
+import { createProtoFormSchema, ProtoProvider } from "../registry/base-nova/protoform/lib/protobuf-provider/index.js";
 import { CelRuleMatrixSchema } from "./gen/protoform/conformance/v1/conformance_pb.js";
 import {
   InvalidCelCompileSchema,
@@ -29,17 +26,13 @@ const validForm = {
 function paths(
   issues:
     | readonly {
-        path?: readonly (PropertyKey | { key: PropertyKey })[];
+        path?: readonly (PropertyKey | { key: PropertyKey })[] | undefined;
       }[]
     | undefined
 ): string[][] {
   return (issues ?? []).map((issue) =>
     (issue.path ?? []).map((segment) =>
-      String(
-        typeof segment === "object" && segment !== null && "key" in segment
-          ? segment.key
-          : segment
-      )
+      String(typeof segment === "object" && segment !== null && "key" in segment ? segment.key : segment)
     )
   );
 }
@@ -100,13 +93,11 @@ describe("CEL validation conformance", () => {
       ...validForm,
       booleanValue: "bad",
     });
-    const validatorResult = createValidator().validate(
-      CelRuleMatrixSchema,
-      message
-    );
-    const standardResult = await createProtoFormSchema(CelRuleMatrixSchema)[
-      "~standard"
-    ].validate({ ...validForm, booleanValue: "bad" });
+    const validatorResult = createValidator().validate(CelRuleMatrixSchema, message);
+    const standardResult = await createProtoFormSchema(CelRuleMatrixSchema)["~standard"].validate({
+      ...validForm,
+      booleanValue: "bad",
+    });
 
     expect(validatorResult).toMatchObject({
       kind: "invalid",
@@ -121,9 +112,10 @@ describe("CEL validation conformance", () => {
   });
 
   it("preserves a dynamic field CEL error string and stable form path", async () => {
-    const result = await createProtoFormSchema(CelRuleMatrixSchema)[
-      "~standard"
-    ].validate({ ...validForm, stringValue: "bad" });
+    const result = await createProtoFormSchema(CelRuleMatrixSchema)["~standard"].validate({
+      ...validForm,
+      stringValue: "bad",
+    });
 
     expect(result.issues).toEqual(
       expect.arrayContaining([
@@ -136,23 +128,17 @@ describe("CEL validation conformance", () => {
   });
 
   it("preserves nested and repeated message CEL paths including every index", async () => {
-    const result = await createProtoFormSchema(CelRuleMatrixSchema)[
-      "~standard"
-    ].validate({
+    const result = await createProtoFormSchema(CelRuleMatrixSchema)["~standard"].validate({
       ...validForm,
       child: { name: "bad" },
       children: [{ name: "bad-one" }, { name: "bad-two" }],
     });
 
-    expect(paths(result.issues)).toEqual(
-      expect.arrayContaining([["child"], ["children", "0"], ["children", "1"]])
-    );
+    expect(paths(result.issues)).toEqual(expect.arrayContaining([["child"], ["children", "0"], ["children", "1"]]));
   });
 
   it("returns every message and field CEL violation without dropping any", async () => {
-    const result = await createProtoFormSchema(CelRuleMatrixSchema)[
-      "~standard"
-    ].validate({
+    const result = await createProtoFormSchema(CelRuleMatrixSchema)["~standard"].validate({
       ...validForm,
       booleanValue: "bad",
       messageValue: "bad",
@@ -173,9 +159,7 @@ describe("CEL validation conformance", () => {
   });
 
   it("returns a safe root issue for a CEL compile error", async () => {
-    const result = await createProtoFormSchema(InvalidCelCompileSchema)[
-      "~standard"
-    ].validate({ value: 1 });
+    const result = await createProtoFormSchema(InvalidCelCompileSchema)["~standard"].validate({ value: 1 });
 
     expect(paths(result.issues)).toEqual([[]]);
     expect(result.issues?.[0]?.message).toBeTruthy();
@@ -193,6 +177,9 @@ describe("CEL validation conformance", () => {
       });
 
       expect(result.issues).toBeUndefined();
+      if (!("value" in result)) {
+        throw new Error(`Expected ${_name} to produce valid form values.`);
+      }
       expect(result.value).toMatchObject({ value });
     }
   );

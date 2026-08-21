@@ -40,9 +40,7 @@ describe("Formik example", () => {
     await fillProfile(user);
     await user.click(screen.getByRole("button", { name: "Create profile" }));
 
-    expect(await screen.findByRole("status")).toHaveTextContent(
-      "profiles/ada-lovelace"
-    );
+    expect(await screen.findByRole("status")).toHaveTextContent("profiles/ada-lovelace");
   });
 
   it("maps structured server errors into Formik", async () => {
@@ -54,13 +52,8 @@ describe("Formik example", () => {
     await user.type(screen.getByLabelText(emailPattern), "ada@blocked.example");
     await user.click(screen.getByRole("button", { name: "Create profile" }));
 
-    expect(
-      await screen.findByText("Use an email address from an approved domain.")
-    ).toBeInTheDocument();
-    expect(screen.getByLabelText(emailPattern)).toHaveAttribute(
-      "aria-invalid",
-      "true"
-    );
+    expect(await screen.findByText("Use an email address from an approved domain.")).toBeInTheDocument();
+    expect(screen.getByLabelText(emailPattern)).toHaveAttribute("aria-invalid", "true");
   });
 });
 
@@ -77,9 +70,7 @@ describe("Final Form example", () => {
     await fillProfile(user);
     await user.click(screen.getByRole("button", { name: "Create profile" }));
 
-    expect(await screen.findByRole("status")).toHaveTextContent(
-      "profiles/ada-lovelace"
-    );
+    expect(await screen.findByRole("status")).toHaveTextContent("profiles/ada-lovelace");
   });
 
   it("maps structured server errors into Final Form", async () => {
@@ -91,12 +82,7 @@ describe("Final Form example", () => {
     await user.type(screen.getByLabelText(emailPattern), "ada@blocked.example");
     await user.click(screen.getByRole("button", { name: "Create profile" }));
 
-    expect(
-      await screen.findByText("Use an email address from an approved domain.")
-    ).toBeInTheDocument();
-    expect(screen.getByLabelText(emailPattern)).toHaveAttribute(
-      "aria-invalid",
-      "true"
-    );
+    expect(await screen.findByText("Use an email address from an approved domain.")).toBeInTheDocument();
+    expect(screen.getByLabelText(emailPattern)).toHaveAttribute("aria-invalid", "true");
   });
 });

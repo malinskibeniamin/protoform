@@ -8,11 +8,7 @@ export function ExampleLoading({ label }: { label: string }) {
       className="flex min-h-64 items-center justify-center gap-3 rounded-xl border border-border/60 bg-muted/20 text-muted-foreground text-sm"
       role="status"
     >
-      <Spinner
-        aria-hidden="true"
-        className="size-5 motion-reduce:animate-none"
-        role="presentation"
-      />
+      <Spinner aria-hidden="true" className="size-5 motion-reduce:animate-none" role="presentation" />
       <span>{label}…</span>
     </div>
   );

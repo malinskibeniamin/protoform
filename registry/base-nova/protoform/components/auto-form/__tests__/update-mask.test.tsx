@@ -5,7 +5,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { MaskableProfileSchema } from "@/examples/gen/protoform/examples/v1/forms_pb.js";
 
-import { AutoForm } from "../index";
+import { AutoForm } from "..";
 
 describe("AutoForm update masks", () => {
   it("passes only touched protobuf fields to onSubmit", async () => {
@@ -31,8 +31,6 @@ describe("AutoForm update masks", () => {
     await waitFor(() => {
       expect(onSubmit).toHaveBeenCalledOnce();
     });
-    expect(onSubmit.mock.calls[0]?.[2].updateMask.paths).toEqual([
-      "display_name",
-    ]);
+    expect(onSubmit.mock.calls[0]?.[2].updateMask.paths).toEqual(["display_name"]);
   });
 });

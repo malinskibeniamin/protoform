@@ -2,16 +2,10 @@
 
 import { useState } from "react";
 
-import {
-  Alert,
-  AlertDescription,
-} from "@/registry/base-nova/protoform/components/alert";
+import { Alert, AlertDescription } from "@/registry/base-nova/protoform/components/alert";
 import { AutoForm } from "@/registry/base-nova/protoform/components/auto-form";
 
-import {
-  type BareBonesForm,
-  BareBonesFormSchema,
-} from "../gen/protoform/examples/v1/bare_bones_pb.js";
+import { type BareBonesForm, BareBonesFormSchema } from "../gen/protoform/examples/v1/bare_bones_pb.js";
 
 export function BareBonesFormExample() {
   const [submittedName, setSubmittedName] = useState<string>();

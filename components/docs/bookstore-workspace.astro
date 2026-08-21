@@ -1,15 +1,12 @@
 ---
 import data from "blume:data";
-// biome-ignore lint/correctness/noUnusedImports: rendered in the Astro template
 import Tab from "blume/components/content/Tab.astro";
-// biome-ignore lint/correctness/noUnusedImports: rendered in the Astro template
 import Tabs from "blume/components/content/Tabs.astro";
 import { highlightCode } from "blume/markdown";
 
 import aipForm from "@/conformance/gen/protoform/conformance/v1/aip_form.ts?raw";
 import aipPb from "@/conformance/gen/protoform/conformance/v1/aip_pb.ts?raw";
 import aipProto from "@/conformance/proto/protoform/conformance/v1/aip.proto?raw";
-// biome-ignore lint/correctness/noUnusedImports: rendered in the Astro template
 import BookstoreDemo from "@/registry/base-nova/protoform/demo/bookstore/bookstore-demo";
 import createBook from "@/registry/base-nova/protoform/demo/bookstore/create-book-form.tsx?raw";
 import deleteBook from "@/registry/base-nova/protoform/demo/bookstore/delete-book-form.tsx?raw";
@@ -65,15 +62,11 @@ const sourceFiles = [
 const _files = await Promise.all(
   sourceFiles.map(async (file) => ({
     ...file,
-    highlightedSource: await highlightCode(
-      file.source.replace(trailingNewlinesPattern, ""),
-      file.language,
-      {
-        className: "blume-source",
-        icons: false,
-        themes: data.config.codeThemes,
-      }
-    ),
+    highlightedSource: await highlightCode(file.source.replace(trailingNewlinesPattern, ""), file.language, {
+      className: "blume-source",
+      icons: false,
+      themes: data.config.codeThemes,
+    }),
   }))
 );
 ---
@@ -84,28 +77,18 @@ const _files = await Promise.all(
 >
   <div class="border-b bg-muted/40 px-4 py-3">
     <p class="font-medium text-sm">Live library + generated source</p>
-    <p class="text-muted-foreground text-xs">
-      Same contract, same bindings, real five-method ConnectRPC service.
-    </p>
+    <p class="text-muted-foreground text-xs">Same contract, same bindings, real five-method ConnectRPC service.</p>
   </div>
-  <div
-    class="grid min-h-[42rem] @min-[52rem]:grid-cols-[minmax(0,1.2fr)_minmax(25rem,0.8fr)]"
-  >
-    <div
-      class="min-w-0 overflow-auto border-b p-3 @min-[52rem]:border-r @min-[52rem]:border-b-0 sm:p-5"
-    >
+  <div class="grid min-h-[42rem] @min-[52rem]:grid-cols-[minmax(0,1.2fr)_minmax(25rem,0.8fr)]">
+    <div class="min-w-0 overflow-auto border-b p-3 @min-[52rem]:border-r @min-[52rem]:border-b-0 sm:p-5">
       <BookstoreDemo client:only="react">
         <p aria-live="polite" slot="fallback">Loading live demo…</p>
       </BookstoreDemo>
     </div>
-    <section
-      aria-label="Bookstore source files"
-      class="bookstore-source-tabs min-h-[36rem] min-w-0"
-    >
+    <section aria-label="Bookstore source files" class="bookstore-source-tabs min-h-[36rem] min-w-0">
       <div class="prose max-w-none">
         <Tabs hash={false} sync={false}>
-          {
-            _files.map((file) => (
+          {_files.map((file) => (
               <Tab
                 class="grid h-[48rem] max-h-[48rem] grid-rows-[auto_1fr] p-0!"
                 title={file.name}
@@ -120,8 +103,7 @@ const _files = await Promise.all(
                 </div>
                 <Fragment set:html={file.highlightedSource} />
               </Tab>
-            ))
-          }
+            ))}
         </Tabs>
       </div>
     </section>

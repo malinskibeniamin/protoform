@@ -97,17 +97,13 @@ describe("AIP-193 error lifecycle conformance", () => {
       {
         desc: PreconditionFailureSchema,
         value: {
-          violations: [
-            { description: "Accept the terms.", subject: "terms", type: "TOS" },
-          ],
+          violations: [{ description: "Accept the terms.", subject: "terms", type: "TOS" }],
         },
       },
       {
         desc: QuotaFailureSchema,
         value: {
-          violations: [
-            { description: "Ten books per project.", subject: "projects/123" },
-          ],
+          violations: [{ description: "Ten books per project.", subject: "projects/123" }],
         },
       },
       {
@@ -124,12 +120,8 @@ describe("AIP-193 error lifecycle conformance", () => {
       domain: "library.protoform.dev",
       message: "Book quota reached.",
       messageLocale: "en-GB",
-      preconditionViolations: [
-        { description: "Accept the terms.", subject: "terms", type: "TOS" },
-      ],
-      quotaViolations: [
-        { description: "Ten books per project.", subject: "projects/123" },
-      ],
+      preconditionViolations: [{ description: "Accept the terms.", subject: "terms", type: "TOS" }],
+      quotaViolations: [{ description: "Ten books per project.", subject: "projects/123" }],
       reason: "BOOK_QUOTA_REACHED",
       requestId: "request-detail",
       retryAfterSeconds: 2.5,

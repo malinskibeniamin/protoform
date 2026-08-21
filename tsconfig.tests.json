@@ -1,0 +1,38 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.tests.tsbuildinfo",
+    "types": ["bun", "@types/node", "vitest/globals", "vite/client"]
+  },
+  "include": [
+    "conformance/**/*.ts",
+    "conformance/**/*.tsx",
+    "e2e/**/*.ts",
+    "e2e/**/*.tsx",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
+    "**/__tests__/**/*.ts",
+    "**/__tests__/**/*.tsx",
+    "**/__browser__/**/*.ts",
+    "**/__browser__/**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules",
+    ".output",
+    ".blume",
+    ".blume-verify",
+    "dist",
+    ".tmp",
+    "test-results",
+    "artifacts",
+    "conformance/gen",
+    "examples/gen",
+    "registry/**/gen",
+    "registry/**/__golden__",
+    "registry/base-nova/protoform/lib/protobuf-v1-bridge",
+    "**/*_pb.ts",
+    "**/*_form.ts"
+  ]
+}

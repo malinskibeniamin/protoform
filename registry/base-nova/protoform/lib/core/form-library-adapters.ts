@@ -1,10 +1,6 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 
-export type FormValidationErrorValue =
-  | FormValidationErrors
-  | FormValidationErrorValue[]
-  | string
-  | undefined;
+export type FormValidationErrorValue = FormValidationErrors | FormValidationErrorValue[] | string | undefined;
 
 /** Nested error shape consumed by Formik and Final Form. */
 export interface FormValidationErrors {
@@ -19,9 +15,7 @@ export interface FormValidatorOptions extends StandardSchemaV1.Options {
   rootErrorKey?: PropertyKey;
 }
 
-export type FormValidator<Input> = (
-  values: Input
-) => FormValidationErrors | Promise<FormValidationErrors>;
+export type FormValidator<Input> = (values: Input) => FormValidationErrors | Promise<FormValidationErrors>;
 
 type ErrorContainer = FormValidationErrors | FormValidationErrorValue[];
 
@@ -38,16 +32,10 @@ function isErrorContainer(value: unknown): value is ErrorContainer {
 }
 
 function readOwn(container: ErrorContainer, key: PropertyKey): unknown {
-  return Object.hasOwn(container, key)
-    ? Reflect.get(container, key)
-    : undefined;
+  return Object.hasOwn(container, key) ? Reflect.get(container, key) : undefined;
 }
 
-function writeOwn(
-  container: ErrorContainer,
-  key: PropertyKey,
-  value: FormValidationErrorValue
-) {
+function writeOwn(container: ErrorContainer, key: PropertyKey, value: FormValidationErrorValue) {
   Object.defineProperty(container, key, {
     configurable: true,
     enumerable: true,
@@ -56,19 +44,11 @@ function writeOwn(
   });
 }
 
-function appendMessage(
-  container: ErrorContainer,
-  key: PropertyKey,
-  message: string
-) {
+function appendMessage(container: ErrorContainer, key: PropertyKey, message: string) {
   const current = readOwn(container, key);
   if (typeof current === "string") {
     const messages = current.split("\n");
-    writeOwn(
-      container,
-      key,
-      messages.includes(message) ? current : `${current}\n${message}`
-    );
+    writeOwn(container, key, messages.includes(message) ? current : `${current}\n${message}`);
     return;
   }
   if (isErrorContainer(current)) {
@@ -78,9 +58,7 @@ function appendMessage(
   writeOwn(container, key, message);
 }
 
-function getPathKey(
-  segment: PropertyKey | StandardSchemaV1.PathSegment
-): PropertyKey {
+function getPathKey(segment: PropertyKey | StandardSchemaV1.PathSegment): PropertyKey {
   return typeof segment === "object" ? segment.key : segment;
 }
 
@@ -88,11 +66,7 @@ function createContainer(nextKey: PropertyKey): ErrorContainer {
   return typeof nextKey === "number" ? [] : {};
 }
 
-function addIssue(
-  errors: FormValidationErrors,
-  issue: StandardSchemaV1.Issue,
-  rootErrorKey: PropertyKey
-) {
+function addIssue(errors: FormValidationErrors, issue: StandardSchemaV1.Issue, rootErrorKey: PropertyKey) {
   const path = issue.path?.map(getPathKey) ?? [];
   if (path.length === 0) {
     appendMessage(errors, rootErrorKey, issue.message);
@@ -146,17 +120,11 @@ function resultToErrors<Output>(
   result: StandardSchemaV1.Result<Output>,
   options: FormValidatorOptions | undefined
 ): FormValidationErrors {
-  return result.issues
-    ? standardSchemaIssuesToFormErrors(result.issues, options)
-    : {};
+  return result.issues ? standardSchemaIssuesToFormErrors(result.issues, options) : {};
 }
 
-function getStandardSchemaOptions(
-  options: FormValidatorOptions | undefined
-): StandardSchemaV1.Options | undefined {
-  return options?.libraryOptions === undefined
-    ? undefined
-    : { libraryOptions: options.libraryOptions };
+function getStandardSchemaOptions(options: FormValidatorOptions | undefined): StandardSchemaV1.Options | undefined {
+  return options?.libraryOptions === undefined ? undefined : { libraryOptions: options.libraryOptions };
 }
 
 function createValidator<Input, Output>(
@@ -164,14 +132,9 @@ function createValidator<Input, Output>(
   options: FormValidatorOptions | undefined
 ): FormValidator<Input> {
   return (values) => {
-    const result = schema["~standard"].validate(
-      values,
-      getStandardSchemaOptions(options)
-    );
+    const result = schema["~standard"].validate(values, getStandardSchemaOptions(options));
     return isPromiseLike<StandardSchemaV1.Result<Output>>(result)
-      ? Promise.resolve(result).then((resolved) =>
-          resultToErrors(resolved, options)
-        )
+      ? Promise.resolve(result).then((resolved) => resultToErrors(resolved, options))
       : resultToErrors(result, options);
   };
 }

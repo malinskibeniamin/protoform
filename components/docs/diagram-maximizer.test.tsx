@@ -1,10 +1,4 @@
-import {
-  cleanup,
-  render,
-  screen,
-  waitFor,
-  within,
-} from "@testing-library/react";
+import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -16,8 +10,7 @@ function appendDiagram(tagName = "blume-mermaid", label = "System flow") {
   const diagram = document.createElement(tagName);
   diagram.setAttribute("aria-label", label);
   diagram.setAttribute("data-test-diagram", "");
-  diagram.innerHTML =
-    '<div><svg aria-label="Rendered architecture"></svg></div>';
+  diagram.innerHTML = '<div><svg aria-label="Rendered architecture"></svg></div>';
   document.body.append(diagram);
   return diagram;
 }
@@ -50,9 +43,7 @@ describe("DiagramMaximizer", () => {
       })
     );
 
-    expect(
-      await screen.findByRole("dialog", { name: "Diagram" })
-    ).toBeVisible();
+    expect(await screen.findByRole("dialog", { name: "Diagram" })).toBeVisible();
   });
 
   it("opens an accessible full-viewport fallback and restores focus", async () => {
@@ -78,11 +69,7 @@ describe("DiagramMaximizer", () => {
     expect(preview.firstElementChild).toHaveAttribute("tabindex", "0");
 
     await user.click(within(dialog).getByRole("button", { name: "Close" }));
-    await waitFor(() =>
-      expect(
-        screen.queryByRole("dialog", { name: "System flow" })
-      ).not.toBeInTheDocument()
-    );
+    await waitFor(() => expect(screen.queryByRole("dialog", { name: "System flow" })).not.toBeInTheDocument());
     expect(maximize).toHaveFocus();
   });
 
@@ -108,9 +95,7 @@ describe("DiagramMaximizer", () => {
         name: "View Deployment architecture full screen",
       })
     ).toBeVisible();
-    expect(
-      screen.getAllByRole("button", { name: FULL_SCREEN_PATTERN })
-    ).toHaveLength(2);
+    expect(screen.getAllByRole("button", { name: FULL_SCREEN_PATTERN })).toHaveLength(2);
   });
 
   it("uses the browser Fullscreen API when available and exits from the same control", async () => {

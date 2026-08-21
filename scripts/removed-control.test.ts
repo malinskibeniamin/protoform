@@ -15,14 +15,7 @@ const excludedDirectories = new Set([
   "node_modules",
   "test-results",
 ]);
-const sourceExtensions = new Set([
-  ".json",
-  ".md",
-  ".mdx",
-  ".proto",
-  ".ts",
-  ".tsx",
-]);
+const sourceExtensions = new Set([".json", ".md", ".mdx", ".proto", ".ts", ".tsx"]);
 const removedControlNames = [
   ["secret", "selector"].join(""),
   ["secret", "selector"].join("-"),

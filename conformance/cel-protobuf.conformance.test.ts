@@ -5,10 +5,7 @@ import { DurationSchema, timestampFromDate } from "@bufbuild/protobuf/wkt";
 import { createValidator } from "@bufbuild/protovalidate";
 import { describe, expect, it } from "vitest";
 
-import {
-  CelProtoLanguageMatrixSchema,
-  MatrixStatus,
-} from "./gen/protoform/conformance/v1/conformance_pb.js";
+import { CelProtoLanguageMatrixSchema, MatrixStatus } from "./gen/protoform/conformance/v1/conformance_pb.js";
 
 describe("CEL protobuf conformance", () => {
   it("evaluates protobuf messages, enums, presence, collections, bytes, and temporal values", () => {
@@ -23,16 +20,11 @@ describe("CEL protobuf conformance", () => {
       window: create(DurationSchema, { seconds: 3600n }),
     });
 
-    expect(
-      createValidator().validate(CelProtoLanguageMatrixSchema, message)
-    ).toMatchObject({ kind: "valid" });
+    expect(createValidator().validate(CelProtoLanguageMatrixSchema, message)).toMatchObject({ kind: "valid" });
   });
 
   it("reports every protobuf CEL capability failure by stable rule id", () => {
-    const result = createValidator().validate(
-      CelProtoLanguageMatrixSchema,
-      create(CelProtoLanguageMatrixSchema)
-    );
+    const result = createValidator().validate(CelProtoLanguageMatrixSchema, create(CelProtoLanguageMatrixSchema));
 
     expect(result.kind).toBe("invalid");
     if (result.kind !== "invalid") {

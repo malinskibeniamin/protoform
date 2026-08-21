@@ -1,23 +1,18 @@
 import { BadRequestSchema } from "@buf/googleapis_googleapis.bufbuild_es/google/rpc/error_details_pb.js";
 import { clone, create } from "@bufbuild/protobuf";
-import {
-  EmptySchema,
-  timestampFromDate,
-  timestampMs,
-} from "@bufbuild/protobuf/wkt";
+import { EmptySchema, timestampFromDate, timestampMs } from "@bufbuild/protobuf/wkt";
 import { Code, ConnectError, type ServiceImpl } from "@connectrpc/connect";
 
 import {
   type Book,
   BookSchema,
   BookState,
-  LibraryService,
+  type LibraryService,
 } from "@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_pb";
 
 const PARENT_PATTERN = /^publishers\/[a-z0-9][a-z0-9-]{2,63}$/;
 const BOOK_ID_PATTERN = /^[a-z][a-z0-9-]{2,62}[a-z0-9]$/;
-const BOOK_NAME_PATTERN =
-  /^(publishers\/[a-z0-9][a-z0-9-]{2,63})\/books\/([a-z][a-z0-9-]{2,62}[a-z0-9])$/;
+const BOOK_NAME_PATTERN = /^(publishers\/[a-z0-9][a-z0-9-]{2,63})\/books\/([a-z][a-z0-9-]{2,62}[a-z0-9])$/;
 const DEFAULT_TTL_MS = 30 * 60 * 1000;
 const DEFAULT_MAX_LIBRARIES = 500;
 const DEFAULT_MAX_BOOKS = 20;
@@ -38,17 +33,12 @@ export interface LibraryServiceOptions {
 }
 
 function fieldError(field: string, description: string): ConnectError {
-  return new ConnectError(
-    "Review the highlighted fields.",
-    Code.InvalidArgument,
-    undefined,
-    [
-      {
-        desc: BadRequestSchema,
-        value: { fieldViolations: [{ description, field }] },
-      },
-    ]
-  );
+  return new ConnectError("Review the highlighted fields.", Code.InvalidArgument, undefined, [
+    {
+      desc: BadRequestSchema,
+      value: { fieldViolations: [{ description, field }] },
+    },
+  ]);
 }
 
 function connectError(code: Code, message: string): ConnectError {
@@ -58,29 +48,20 @@ function connectError(code: Code, message: string): ConnectError {
 function parentFromName(name: string): string {
   const match = name.match(BOOK_NAME_PATTERN);
   if (!match?.[1]) {
-    throw fieldError(
-      "name",
-      "Enter a book name such as publishers/my-library/books/my-book."
-    );
+    throw fieldError("name", "Enter a book name such as publishers/my-library/books/my-book.");
   }
   return match[1];
 }
 
 function validateParent(parent: string): void {
   if (!PARENT_PATTERN.test(parent)) {
-    throw fieldError(
-      "parent",
-      "Enter a publisher name such as publishers/my-library."
-    );
+    throw fieldError("parent", "Enter a publisher name such as publishers/my-library.");
   }
 }
 
 function validateBookId(bookId: string): void {
   if (!BOOK_ID_PATTERN.test(bookId)) {
-    throw fieldError(
-      "book_id",
-      "Use 4–64 lowercase letters, numbers, or hyphens, starting with a letter."
-    );
+    throw fieldError("book_id", "Use 4–64 lowercase letters, numbers, or hyphens, starting with a letter.");
   }
 }
 
@@ -113,13 +94,7 @@ export function createLibraryService({
     return `v${version}`;
   }
 
-  function makeBook(
-    parent: string,
-    bookId: string,
-    displayName: string,
-    isbn: string,
-    note?: string
-  ) {
+  function makeBook(parent: string, bookId: string, displayName: string, isbn: string, note?: string) {
     const timestamp = timestampFromDate(new Date(now()));
     return create(BookSchema, {
       createTime: timestamp,
@@ -142,11 +117,7 @@ export function createLibraryService({
         continue;
       }
       for (const [name, book] of library.books) {
-        if (
-          book.state === BookState.DELETED &&
-          book.purgeTime &&
-          timestampMs(book.purgeTime) <= currentTime
-        ) {
+        if (book.state === BookState.DELETED && book.purgeTime && timestampMs(book.purgeTime) <= currentTime) {
           library.books.delete(name);
         }
       }
@@ -185,9 +156,7 @@ export function createLibraryService({
     let library = libraries.get(parent);
     if (!library) {
       if (libraries.size >= maxLibraries) {
-        const oldest = [...libraries.entries()].sort(
-          ([, left], [, right]) => left.touchedAt - right.touchedAt
-        )[0]?.[0];
+        const oldest = [...libraries.entries()].sort(([, left], [, right]) => left.touchedAt - right.touchedAt)[0]?.[0];
         if (oldest) {
           libraries.delete(oldest);
         }
@@ -226,10 +195,7 @@ export function createLibraryService({
         throw connectError(Code.AlreadyExists, `Book ${name} already exists.`);
       }
       if (library.books.size >= maxBooks) {
-        throw connectError(
-          Code.ResourceExhausted,
-          "This temporary library has reached its book limit."
-        );
+        throw connectError(Code.ResourceExhausted, "This temporary library has reached its book limit.");
       }
       const book = makeBook(
         request.parent,
@@ -253,10 +219,7 @@ export function createLibraryService({
         throw connectError(Code.NotFound, `Book ${request.name} was deleted.`);
       }
       if (request.etag && request.etag !== book.etag) {
-        throw connectError(
-          Code.Aborted,
-          "This book changed. Refresh it before deleting."
-        );
+        throw connectError(Code.Aborted, "This book changed. Refresh it before deleting.");
       }
       const deletionTime = timestampFromDate(new Date(now()));
       const deleted = clone(BookSchema, book);
@@ -288,9 +251,7 @@ export function createLibraryService({
         .filter(
           (book) =>
             (request.showDeleted || book.state !== BookState.DELETED) &&
-            (!filter ||
-              book.displayName.toLowerCase().includes(filter) ||
-              book.isbn.includes(filter))
+            (!filter || book.displayName.toLowerCase().includes(filter) || book.isbn.includes(filter))
         )
         .map((book) => clone(BookSchema, book));
       return { books };
@@ -299,10 +260,7 @@ export function createLibraryService({
     undeleteBook(request) {
       const { book, library } = findBook(request.name);
       if (book.state !== BookState.DELETED) {
-        throw connectError(
-          Code.AlreadyExists,
-          `Book ${request.name} is not deleted.`
-        );
+        throw connectError(Code.AlreadyExists, `Book ${request.name} is not deleted.`);
       }
       const restored = clone(BookSchema, book);
       restored.deleteTime = undefined;
@@ -320,35 +278,21 @@ export function createLibraryService({
       }
       const { book: current, library } = findBook(request.book.name);
       if (current.state === BookState.DELETED) {
-        throw connectError(
-          Code.FailedPrecondition,
-          "Restore this book before updating it."
-        );
+        throw connectError(Code.FailedPrecondition, "Restore this book before updating it.");
       }
       const requestedPaths = request.updateMask?.paths;
-      const paths = request.updateMask
-        ? requestedPaths?.includes("*")
-          ? [...UPDATABLE_BOOK_PATHS]
-          : (requestedPaths ?? [])
-        : populatedUpdatableBookPaths(request.book);
-      const normalizedPaths = paths.map((path) =>
-        path === "displayName" ? "display_name" : path
-      );
-      const unsupported = normalizedPaths.filter(
-        (path) => !isUpdatableBookPath(path)
-      );
+      let paths: string[] = populatedUpdatableBookPaths(request.book);
+      if (request.updateMask) {
+        paths = requestedPaths?.includes("*") ? [...UPDATABLE_BOOK_PATHS] : (requestedPaths ?? []);
+      }
+      const normalizedPaths = paths.map((path) => (path === "displayName" ? "display_name" : path));
+      const unsupported = normalizedPaths.filter((path) => !isUpdatableBookPath(path));
       if (unsupported.length > 0) {
-        throw fieldError(
-          "update_mask",
-          `These fields cannot be updated: ${unsupported.join(", ")}.`
-        );
+        throw fieldError("update_mask", `These fields cannot be updated: ${unsupported.join(", ")}.`);
       }
       const updatablePaths = normalizedPaths.filter(isUpdatableBookPath);
       if (!request.book.etag || request.book.etag !== current.etag) {
-        throw connectError(
-          Code.FailedPrecondition,
-          "This book changed. Refresh it before saving."
-        );
+        throw connectError(Code.FailedPrecondition, "This book changed. Refresh it before saving.");
       }
       if (updatablePaths.length === 0) {
         return clone(BookSchema, current);
@@ -366,7 +310,7 @@ export function createLibraryService({
             next.note = request.book.note;
             break;
           default:
-            path satisfies never;
+            throw new TypeError(`Unsupported update path: ${path satisfies never}`);
         }
       }
       next.etag = nextEtag();

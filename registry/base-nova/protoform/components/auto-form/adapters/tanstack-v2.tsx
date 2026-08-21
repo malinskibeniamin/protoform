@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   type DefaultReactFormComponentMap,
@@ -7,14 +7,15 @@ import {
   type FormValidators,
   type ReactFormApi,
   type ToFormErrorTypes,
-  type ValidationErrorMap,
   useForm,
   useSelector,
-} from '@tanstack/react-form-v2';
-import React from 'react';
+  type ValidationErrorMap,
+} from "@tanstack/react-form-v2";
+import React from "react";
 
-import { dirtyFieldsFromValues } from '../../../lib/protobuf-provider';
-import type { SchemaValidation, SchemaValidationError } from '../core-types';
+import { useMemoizedArray } from "../../../lib/input-utils";
+import { dirtyFieldsFromValues } from "../../../lib/protobuf-provider";
+import type { SchemaValidation, SchemaValidationError } from "../core-types";
 import {
   type AutoFormArrayController,
   type AutoFormEngine,
@@ -22,102 +23,83 @@ import {
   type AutoFormFieldController,
   errorMessages,
   useDirtyStateNotification,
-} from '../engine';
-import type {
-  AutoFormRevalidationMode,
-  AutoFormValidationMode,
-} from '../types';
+} from "../engine";
+import type { AutoFormRevalidationMode, AutoFormValidationMode } from "../types";
 
 type FormValues = Record<string, unknown>;
 type V2Validators = FormValidators<FormValues>;
 type V2ErrorTypes = ToFormErrorTypes<V2Validators, unknown>;
-type DynamicArrayFieldApi = {
+interface DynamicArrayFieldApi {
   pushValue: (value: unknown) => void;
   removeValue: (index: number) => void;
   value: unknown;
-};
+}
 type DynamicArrayFieldComponent = React.ComponentType<{
   children: (field: DynamicArrayFieldApi) => React.ReactNode;
   name: string;
 }>;
 
-export type TanStackFormV2Options = Omit<
-  FormOptions<FormValues, V2Validators, unknown>,
-  'defaultValues'
->;
+export type TanStackFormV2Options = Omit<FormOptions<FormValues, V2Validators, unknown>, "defaultValues">;
 
-export type TanStackV2AutoFormApi = ReactFormApi<
-  FormValues,
-  V2ErrorTypes,
-  DefaultReactFormComponentMap
->;
+export type TanStackV2AutoFormApi = ReactFormApi<FormValues, V2ErrorTypes, DefaultReactFormComponentMap>;
 
-type TanStackV2EngineContextValue = {
+interface TanStackV2EngineContextValue {
   clearFieldErrors: (name: string) => void;
   fieldErrors: Map<string, string[]>;
   form: TanStackV2AutoFormApi;
   nativeFieldErrors: Map<string, string[]>;
   registerRef: (name: string, element: HTMLElement | null) => void;
-  setNativeFieldErrors: React.Dispatch<
-    React.SetStateAction<Map<string, string[]>>
-  >;
-};
+  setNativeFieldErrors: React.Dispatch<React.SetStateAction<Map<string, string[]>>>;
+}
 
-const TanStackV2EngineContext =
-  React.createContext<TanStackV2EngineContextValue | null>(null);
+const TanStackV2EngineContext = React.createContext<TanStackV2EngineContextValue | null>(null);
+const DIGITS_PATTERN = /^\d+$/;
 
 function toTanStackV2Path(path: string): string {
   return path
-    .split('.')
-    .map((segment, index) =>
-      /^\d+$/.test(segment) ? `[${segment}]` : index === 0 ? segment : `.${segment}`
-    )
-    .join('');
+    .split(".")
+    .map((segment, index) => {
+      if (DIGITS_PATTERN.test(segment)) {
+        return `[${segment}]`;
+      }
+      return index === 0 ? segment : `.${segment}`;
+    })
+    .join("");
 }
 
 function sameMessages(left: string[] | undefined, right: string[]) {
   const current = left ?? [];
-  return (
-    current.length === right.length &&
-    current.every((message, index) => message === right[index])
-  );
+  return current.length === right.length && current.every((message, index) => message === right[index]);
 }
 
 function useTanStackV2EngineContext() {
   const context = React.useContext(TanStackV2EngineContext);
   if (!context) {
-    throw new Error(
-      'TanStack Form v2 AutoForm controls must be rendered inside the v2 engine.'
-    );
+    throw new Error("TanStack Form v2 AutoForm controls must be rendered inside the v2 engine.");
   }
   return context;
 }
 
-function NativeFieldErrorsRegistration({
-  messages,
-  name,
-}: {
-  messages: string[];
-  name: string;
-}) {
+function NativeFieldErrorsRegistration({ messages, name }: { messages: string[]; name: string }) {
   const { setNativeFieldErrors } = useTanStackV2EngineContext();
+  const stableMessages = useMemoizedArray(messages);
 
   React.useEffect(
     function syncNativeFieldErrors() {
       setNativeFieldErrors((current) => {
-        if (sameMessages(current.get(name), messages)) {
+        if (sameMessages(current.get(name), stableMessages)) {
           return current;
         }
         const next = new Map(current);
-        if (messages.length > 0) {
-          next.set(name, messages);
+        if (stableMessages.length > 0) {
+          next.set(name, stableMessages);
         } else {
           next.delete(name);
         }
         return next;
       });
     },
-    [messages, name, setNativeFieldErrors]
+    [name, setNativeFieldErrors, stableMessages]
   );
 
   React.useEffect(
@@ -146,28 +128,17 @@ function TanStackV2FieldController({
   children: (controller: AutoFormFieldController) => React.ReactNode;
   name: string;
 }) {
-  const {
-    clearFieldErrors,
-    fieldErrors,
-    form,
-    registerRef,
-  } = useTanStackV2EngineContext();
+  const { clearFieldErrors, fieldErrors, form, registerRef } = useTanStackV2EngineContext();
   const fieldName = toTanStackV2Path(name);
 
   return (
     <form.Field name={fieldName}>
       {(field) => {
         const nativeMessages = errorMessages(field.errors);
-        const messages = [
-          ...nativeMessages,
-          ...(fieldErrors.get(name) ?? []),
-        ];
+        const messages = [...nativeMessages, ...(fieldErrors.get(name) ?? [])];
         return (
           <>
-            <NativeFieldErrorsRegistration
-              messages={nativeMessages}
-              name={name}
-            />
+            <NativeFieldErrorsRegistration messages={nativeMessages} name={name} />
             {children({
               errors: [...new Set(messages)],
               name,
@@ -175,9 +146,9 @@ function TanStackV2FieldController({
               onChange: (value, options) => {
                 clearFieldErrors(name);
                 field.handleChange(value, {
-                  causeValidation: options?.shouldValidate,
-                  markAsDirty: options?.shouldDirty,
-                  markAsTouched: options?.shouldTouch,
+                  ...(options?.shouldValidate === undefined ? {} : { causeValidation: options.shouldValidate }),
+                  ...(options?.shouldDirty === undefined ? {} : { markAsDirty: options.shouldDirty }),
+                  ...(options?.shouldTouch === undefined ? {} : { markAsTouched: options.shouldTouch }),
                 });
               },
               ref: (element) => registerRef(name, element),
@@ -209,7 +180,8 @@ function TanStackV2ArrayController({
       {(field) => {
         const arrayValue = Array.isArray(field.value) ? field.value : [];
         while (keys.current.length < arrayValue.length) {
-          keys.current.push(`${collectionId}-${nextItemId.current++}`);
+          nextItemId.current += 1;
+          keys.current.push(`${collectionId}-${nextItemId.current}`);
         }
         if (keys.current.length > arrayValue.length) {
           keys.current.length = arrayValue.length;
@@ -217,7 +189,8 @@ function TanStackV2ArrayController({
 
         return children({
           append: (item) => {
-            keys.current.push(`${collectionId}-${nextItemId.current++}`);
+            nextItemId.current += 1;
+            keys.current.push(`${collectionId}-${nextItemId.current}`);
             field.pushValue(item);
           },
           items: arrayValue.map((item, index) => ({
@@ -234,33 +207,27 @@ function TanStackV2ArrayController({
   );
 }
 
-function validationErrorsByPath(
-  errors: SchemaValidationError[]
-): Map<string, string[]> {
+function validationErrorsByPath(errors: SchemaValidationError[]): Map<string, string[]> {
   const byPath = new Map<string, string[]>();
   for (const error of errors) {
     if (error.path.length === 0) {
       continue;
     }
-    const path = error.path.join('.');
+    const path = error.path.join(".");
     byPath.set(path, [...(byPath.get(path) ?? []), error.message]);
   }
   return byPath;
 }
 
-function setErrorAtPath(
-  target: Record<string, unknown>,
-  path: string[],
-  messages: string[]
-) {
+function setErrorAtPath(target: Record<string, unknown>, path: string[], messages: string[]) {
   let current = target;
   for (const [index, segment] of path.entries()) {
     if (index === path.length - 1) {
-      current[segment] = { message: messages.join('\n') };
+      current[segment] = { message: messages.join("\n") };
       return;
     }
     const existing = current[segment];
-    if (existing && typeof existing === 'object' && !Array.isArray(existing)) {
+    if (existing && typeof existing === "object" && !Array.isArray(existing)) {
       current = existing as Record<string, unknown>;
       continue;
     }
@@ -270,53 +237,43 @@ function setErrorAtPath(
   }
 }
 
-function toV2ValidationError(
-  errors: SchemaValidationError[]
-): ValidationErrorMap<FormValues> {
+function toV2ValidationError(errors: SchemaValidationError[]): ValidationErrorMap<FormValues> {
   const fieldEntries = validationErrorsByPath(errors);
-  const formErrors = errors
-    .filter((error) => error.path.length === 0)
-    .map((error) => error.message);
+  const formErrors: string[] = [];
+  for (const error of errors) {
+    if (error.path.length === 0) {
+      formErrors.push(error.message);
+    }
+  }
   return {
     ...(formErrors.length > 0 ? { form: formErrors } : {}),
-    fields: Object.fromEntries(
-      [...fieldEntries].map(([path, messages]) => [
-        toTanStackV2Path(path),
-        messages,
-      ])
-    ),
+    fields: Object.fromEntries([...fieldEntries].map(([path, messages]) => [toTanStackV2Path(path), messages])),
   };
 }
 
-function shouldValidateForMode(
-  mode: AutoFormValidationMode | AutoFormRevalidationMode,
-  event: 'blur' | 'change'
-) {
+function shouldValidateForMode(mode: AutoFormValidationMode | AutoFormRevalidationMode, event: "blur" | "change") {
   return mode === event;
 }
 
-export type TanStackV2EngineProps = {
+export interface TanStackV2EngineProps {
   children: (engine: AutoFormEngine) => React.ReactNode;
   defaultValues: FormValues;
-  formOptions?: TanStackFormV2Options;
-  onDirtyChange?: (isDirty: boolean) => void;
-  revalidationMode?: AutoFormRevalidationMode;
-  validateSchema: (
-    values: FormValues,
-    signal: AbortSignal
-  ) => Promise<SchemaValidation>;
-  validationMode?: AutoFormValidationMode;
-  values?: FormValues;
-};
+  formOptions?: TanStackFormV2Options | undefined;
+  onDirtyChange?: ((isDirty: boolean) => void) | undefined;
+  revalidationMode?: AutoFormRevalidationMode | undefined;
+  validateSchema: (values: FormValues, signal: AbortSignal) => Promise<SchemaValidation>;
+  validationMode?: AutoFormValidationMode | undefined;
+  values?: FormValues | undefined;
+}
 
 export function TanStackV2Engine({
   children,
   defaultValues,
   formOptions,
   onDirtyChange,
-  revalidationMode = 'change',
+  revalidationMode = "change",
   validateSchema,
-  validationMode = 'submit',
+  validationMode = "submit",
   values,
 }: TanStackV2EngineProps) {
   const formDefaultValuesRef = React.useRef(defaultValues);
@@ -324,14 +281,10 @@ export function TanStackV2Engine({
   const hasNormalizedDefaultsRef = React.useRef(false);
   const validatedValuesRef = React.useRef<FormValues | undefined>(undefined);
   const manualValidationRef = React.useRef(false);
-  const [validationErrors, setValidationErrors] = React.useState<
-    SchemaValidationError[]
-  >([]);
+  const [validationErrors, setValidationErrors] = React.useState<SchemaValidationError[]>([]);
   const [submitError, setSubmitError] = React.useState<string>();
   const [isAutoFormSubmitting, setIsAutoFormSubmitting] = React.useState(false);
-  const [nativeFieldErrors, setNativeFieldErrors] = React.useState(
-    new Map<string, string[]>()
-  );
+  const [nativeFieldErrors, setNativeFieldErrors] = React.useState(new Map<string, string[]>());
   const fieldRefs = React.useRef(new Map<string, HTMLElement>());
 
   const providerValidator: FormValidator<FormValues> = {
@@ -350,26 +303,16 @@ export function TanStackV2Engine({
     },
     triggers: [
       {
-        trigger: 'change',
+        trigger: "change",
         when: ({ formApi }) =>
           manualValidationRef.current ||
-          shouldValidateForMode(
-            formApi.state.submissionAttempts > 0
-              ? revalidationMode
-              : validationMode,
-            'change'
-          ),
+          shouldValidateForMode(formApi.state.submissionAttempts > 0 ? revalidationMode : validationMode, "change"),
       },
       {
-        trigger: 'blur',
+        trigger: "blur",
         when: ({ formApi }) =>
           manualValidationRef.current ||
-          shouldValidateForMode(
-            formApi.state.submissionAttempts > 0
-              ? revalidationMode
-              : validationMode,
-            'blur'
-          ),
+          shouldValidateForMode(formApi.state.submissionAttempts > 0 ? revalidationMode : validationMode, "blur"),
       },
     ],
   };
@@ -379,55 +322,54 @@ export function TanStackV2Engine({
     validators: [...(formOptions?.validators ?? []), providerValidator],
   });
   const state = useSelector(form.atom, (current) => current);
-  const fieldErrors = validationErrorsByPath(validationErrors);
-  const dirtyFields = dirtyFieldsFromValues(
-    state.values,
-    cleanValuesRef.current
-  );
+  const fieldErrors = React.useMemo(() => validationErrorsByPath(validationErrors), [validationErrors]);
+  const dirtyFields = dirtyFieldsFromValues(state.values, cleanValuesRef.current);
   const isDirty = !state.isDefaultValue;
   const notifyDirtyChange = useDirtyStateNotification(isDirty, onDirtyChange);
   const errors: Record<string, unknown> = {};
-  for (const [path, messages] of [
-    ...fieldErrors,
-    ...nativeFieldErrors,
-  ]) {
-    setErrorAtPath(errors, path.split('.'), messages);
+  for (const [path, messages] of [...fieldErrors, ...nativeFieldErrors]) {
+    setErrorAtPath(errors, path.split("."), messages);
   }
-  const validationRootErrors = validationErrors
-    .filter((error) => error.path.length === 0)
-    .map((error) => error.message);
+  const validationRootErrors: string[] = [];
+  for (const error of validationErrors) {
+    if (error.path.length === 0) {
+      validationRootErrors.push(error.message);
+    }
+  }
   const rootError =
-    [
-      ...new Set([
-        ...errorMessages(state.errors),
-        ...validationRootErrors,
-        ...(submitError ? [submitError] : []),
-      ]),
-    ].join('\n') || undefined;
+    [...new Set([...errorMessages(state.errors), ...validationRootErrors, ...(submitError ? [submitError] : [])])].join(
+      "\n"
+    ) || undefined;
 
-  React.useEffect(function normalizeMountedDefaults() {
-    if (!hasNormalizedDefaultsRef.current) {
-      hasNormalizedDefaultsRef.current = true;
-      const normalizedDefaults = form.state.values;
-      formDefaultValuesRef.current = normalizedDefaults;
-      cleanValuesRef.current = normalizedDefaults;
-      form.reset(normalizedDefaults);
-      notifyDirtyChange(false);
-    }
-  }, [form]);
+  React.useEffect(
+    function normalizeMountedDefaults() {
+      if (!hasNormalizedDefaultsRef.current) {
+        hasNormalizedDefaultsRef.current = true;
+        const normalizedDefaults = form.state.values;
+        formDefaultValuesRef.current = normalizedDefaults;
+        cleanValuesRef.current = normalizedDefaults;
+        form.reset(normalizedDefaults);
+        notifyDirtyChange(false);
+      }
+    },
+    [form, notifyDirtyChange]
+  );
 
-  React.useEffect(function syncControlledValues() {
-    if (values) {
-      validatedValuesRef.current = undefined;
-      setSubmitError(undefined);
-      setValidationErrors([]);
-      setNativeFieldErrors(new Map());
-      formDefaultValuesRef.current = values;
-      cleanValuesRef.current = values;
-      form.reset(values);
-      notifyDirtyChange(false);
-    }
-  }, [form, values]);
+  React.useEffect(
+    function syncControlledValues() {
+      if (values) {
+        validatedValuesRef.current = undefined;
+        setSubmitError(undefined);
+        setValidationErrors([]);
+        setNativeFieldErrors(new Map());
+        formDefaultValuesRef.current = values;
+        cleanValuesRef.current = values;
+        form.reset(values);
+        notifyDirtyChange(false);
+      }
+    },
+    [form, values, notifyDirtyChange]
+  );
 
   const clearErrors = (paths?: string[]) => {
     setSubmitError(undefined);
@@ -436,61 +378,48 @@ export function TanStackV2Engine({
         return [];
       }
       const targets = new Set(paths);
-      return current.filter(
-        (error) => !targets.has(error.path.join('.'))
-      );
+      return current.filter((error) => !targets.has(error.path.join(".")));
     });
   };
 
-  const contextValue: TanStackV2EngineContextValue = {
-    clearFieldErrors: (name) =>
-      setValidationErrors((current) =>
-        current.filter((error) => error.path.join('.') !== name)
-      ),
-    fieldErrors,
-    form,
-    nativeFieldErrors,
-    registerRef: (name, element) => {
-      if (element) {
-        fieldRefs.current.set(name, element);
-      } else {
-        fieldRefs.current.delete(name);
-      }
-    },
-    setNativeFieldErrors,
-  };
+  const clearFieldErrors = React.useCallback((name: string) => {
+    setValidationErrors((current) => current.filter((error) => error.path.join(".") !== name));
+  }, []);
+  const registerRef = React.useCallback((name: string, element: HTMLElement | null) => {
+    if (element) {
+      fieldRefs.current.set(name, element);
+    } else {
+      fieldRefs.current.delete(name);
+    }
+  }, []);
+  const contextValue = React.useMemo<TanStackV2EngineContextValue>(
+    () => ({ clearFieldErrors, fieldErrors, form, nativeFieldErrors, registerRef, setNativeFieldErrors }),
+    [clearFieldErrors, fieldErrors, form, nativeFieldErrors, registerRef]
+  );
 
   const engine: AutoFormEngine = {
     ArrayController: TanStackV2ArrayController,
-    FieldController: TanStackV2FieldController,
     clearErrors,
     defaultValues: cleanValuesRef.current,
     dirtyFields,
     errors,
+    FieldController: TanStackV2FieldController,
     focus: (path) => fieldRefs.current.get(path)?.focus(),
-    getFieldInvalid: (path) =>
-      Boolean(
-        fieldErrors.get(path)?.length ||
-          nativeFieldErrors.get(path)?.length
-      ),
+    getFieldInvalid: (path) => Boolean(fieldErrors.get(path)?.length || nativeFieldErrors.get(path)?.length),
     getValues: () => form.state.values,
     handleSubmit: (onValid) => (event) => {
       event.preventDefault();
       setIsAutoFormSubmitting(true);
       validatedValuesRef.current = undefined;
-      void form
+      form
         .handleSubmit()
         .then(async (submitErrors) => {
           if (submitErrors.length === 0) {
-            await onValid(
-              validatedValuesRef.current ?? form.state.values
-            );
+            await onValid(validatedValuesRef.current ?? form.state.values);
           }
         })
         .catch((error: unknown) => {
-          setSubmitError(
-            error instanceof Error ? error.message : 'Submission failed.'
-          );
+          setSubmitError(error instanceof Error ? error.message : "Submission failed.");
         })
         .finally(() => setIsAutoFormSubmitting(false));
     },
@@ -521,9 +450,7 @@ export function TanStackV2Engine({
     setRootError: setSubmitError,
     setValidationErrors,
     setValue: (path, value, options) => {
-      setValidationErrors((current) =>
-        current.filter((error) => error.path.join('.') !== path)
-      );
+      setValidationErrors((current) => current.filter((error) => error.path.join(".") !== path));
       Reflect.apply(form.setFieldValue, form, [
         toTanStackV2Path(path),
         value,
@@ -537,7 +464,7 @@ export function TanStackV2Engine({
     trigger: async () => {
       manualValidationRef.current = true;
       try {
-        const results = await form.validate('change');
+        const results = await form.validate("change");
         return results.length === 0;
       } finally {
         manualValidationRef.current = false;
@@ -549,9 +476,7 @@ export function TanStackV2Engine({
 
   return (
     <TanStackV2EngineContext.Provider value={contextValue}>
-      <AutoFormEngineProvider engine={engine}>
-        {children(engine)}
-      </AutoFormEngineProvider>
+      <AutoFormEngineProvider engine={engine}>{children(engine)}</AutoFormEngineProvider>
     </TanStackV2EngineContext.Provider>
   );
 }

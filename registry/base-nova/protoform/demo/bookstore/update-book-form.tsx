@@ -1,29 +1,16 @@
 "use client";
 
-import type { Book } from "@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_pb";
-import { LibraryService } from "@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_pb";
-import { BookFormBinding } from "@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_form";
-import {
-  createConnectQueryKey,
-  useMutation,
-  useTransport,
-} from "@connectrpc/connect-query";
+import { createConnectQueryKey, useMutation, useTransport } from "@connectrpc/connect-query";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-} from "@/registry/base-nova/protoform/components/alert";
+import { Alert, AlertDescription, AlertTitle } from "@/registry/base-nova/protoform/components/alert";
 import { Button } from "@/registry/base-nova/protoform/components/button";
-import {
-  Field,
-  FieldError,
-  FieldLabel,
-} from "@/registry/base-nova/protoform/components/field";
+import { Field, FieldError, FieldLabel } from "@/registry/base-nova/protoform/components/field";
 import { Input } from "@/registry/base-nova/protoform/components/input";
 import { Textarea } from "@/registry/base-nova/protoform/components/textarea";
+import { BookFormBinding } from "@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_form";
+import type { Book } from "@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_pb";
+import { LibraryService } from "@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_pb";
 import { useProtoForm } from "@/registry/base-nova/protoform/hooks/use-proto-form";
 
 interface UpdateBookFormProps {
@@ -32,11 +19,7 @@ interface UpdateBookFormProps {
   onUpdated: () => void;
 }
 
-export function UpdateBookForm({
-  book,
-  onCancel,
-  onUpdated,
-}: UpdateBookFormProps) {
+export function UpdateBookForm({ book, onCancel, onUpdated }: UpdateBookFormProps) {
   const queryClient = useQueryClient();
   const transport = useTransport();
   const mutation = useMutation(LibraryService.method.updateBook);
@@ -84,7 +67,7 @@ export function UpdateBookForm({
         response
       );
       const parent = response.name.split("/books/")[0] ?? "";
-      void queryClient.invalidateQueries({
+      await queryClient.invalidateQueries({
         queryKey: createConnectQueryKey({
           cardinality: undefined,
           input: { parent },
@@ -109,17 +92,10 @@ export function UpdateBookForm({
           Protoform derives the update mask. The service checks the book etag.
         </p>
       </div>
-      <form
-        className="space-y-5"
-        onSubmit={form.handleSubmit(submitUpdate, handleInvalid)}
-      >
+      <form className="space-y-5" onSubmit={form.handleSubmit(submitUpdate, handleInvalid)}>
         <Field data-invalid={Boolean(titleError)}>
           <FieldLabel htmlFor="update-book-title">Title</FieldLabel>
-          <Input
-            aria-invalid={Boolean(titleError)}
-            id="update-book-title"
-            {...form.register("displayName")}
-          />
+          <Input aria-invalid={Boolean(titleError)} id="update-book-title" {...form.register("displayName")} />
           {titleError ? <FieldError>{titleError}</FieldError> : null}
         </Field>
         <Field>
@@ -129,20 +105,14 @@ export function UpdateBookForm({
         {formError || mutation.error ? (
           <Alert variant="destructive">
             <AlertTitle>Changes not saved</AlertTitle>
-            <AlertDescription>
-              {formError ?? mutation.error?.message}
-            </AlertDescription>
+            <AlertDescription>{formError ?? mutation.error?.message}</AlertDescription>
           </Alert>
         ) : null}
         <div className="flex flex-wrap justify-between gap-3">
           <Button onClick={onCancel} type="button" variant="outline">
             Cancel
           </Button>
-          <Button
-            isLoading={mutation.isPending}
-            onClick={saveChanges}
-            type="button"
-          >
+          <Button isLoading={mutation.isPending} onClick={saveChanges} type="button">
             Save changes
           </Button>
         </div>

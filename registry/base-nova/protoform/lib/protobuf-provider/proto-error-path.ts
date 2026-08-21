@@ -4,10 +4,7 @@ import type { DescField, DescMessage, DescOneof } from "@bufbuild/protobuf";
  * Convert a server-side proto field path into the camelCase form path used by
  * Protoform adapters. Oneof branches flatten under `{oneofLocalName}.value`.
  */
-export function protoPathToFormPath(
-  schema: DescMessage,
-  serverPath: string
-): string | null {
+export function protoPathToFormPath(schema: DescMessage, serverPath: string): string | null {
   if (!serverPath) {
     return null;
   }
@@ -15,10 +12,7 @@ export function protoPathToFormPath(
   return path ? path.join(".") : null;
 }
 
-function walk(
-  current: DescMessage,
-  segments: readonly string[]
-): string[] | null {
+function walk(current: DescMessage, segments: readonly string[]): string[] | null {
   if (segments.length === 0) {
     return [];
   }
@@ -39,9 +33,7 @@ function walk(
     if (!branchName) {
       return null;
     }
-    const branch = resolved.oneof.fields.find(
-      (candidate) => candidate.name === branchName
-    );
+    const branch = resolved.oneof.fields.find((candidate) => candidate.name === branchName);
     if (!branch) {
       return null;
     }
@@ -50,9 +42,7 @@ function walk(
   }
 
   const { field } = resolved;
-  const formPath = field.oneof
-    ? [field.oneof.localName, "value"]
-    : [field.localName];
+  const formPath = field.oneof ? [field.oneof.localName, "value"] : [field.localName];
   if (rest.length === 0) {
     return formPath;
   }
@@ -63,32 +53,22 @@ function walk(
   return tail === null ? null : [...formPath, ...tail];
 }
 
-function walkInto(
-  field: DescField,
-  segments: readonly string[]
-): string[] | null {
+function walkInto(field: DescField, segments: readonly string[]): string[] | null {
   if (segments.length === 0) {
     return [];
   }
   return field.message ? walk(field.message, segments) : null;
 }
 
-type Resolved =
-  | { kind: "field"; field: DescField }
-  | { kind: "oneof"; oneof: DescOneof };
+type Resolved = { kind: "field"; field: DescField } | { kind: "oneof"; oneof: DescOneof };
 
-function findMember(
-  message: DescMessage,
-  protoName: string
-): Resolved | undefined {
+function findMember(message: DescMessage, protoName: string): Resolved | undefined {
   for (const member of message.members) {
     if (member.kind === "oneof") {
       if (member.name === protoName) {
         return { kind: "oneof", oneof: member };
       }
-      const field = member.fields.find(
-        (candidate) => candidate.name === protoName
-      );
+      const field = member.fields.find((candidate) => candidate.name === protoName);
       if (field) {
         return { field, kind: "field" };
       }

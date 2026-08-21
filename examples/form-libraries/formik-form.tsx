@@ -3,18 +3,9 @@
 import { createClient } from "@connectrpc/connect";
 import { Formik, type FormikErrors } from "formik";
 import React from "react";
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-} from "@/registry/base-nova/protoform/components/alert";
+import { Alert, AlertDescription, AlertTitle } from "@/registry/base-nova/protoform/components/alert";
 import { Button } from "@/registry/base-nova/protoform/components/button";
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@/registry/base-nova/protoform/components/field";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/registry/base-nova/protoform/components/field";
 import { Input } from "@/registry/base-nova/protoform/components/input";
 import { createFormikValidator } from "@/registry/base-nova/protoform/lib/core";
 import { createFormExamplesTransport } from "../browser-transport.js";
@@ -32,18 +23,13 @@ import {
 const validate = createFormikValidator(profileSchema);
 
 function readStatusMessages(status: unknown): string[] {
-  return Array.isArray(status)
-    ? status.filter((message): message is string => typeof message === "string")
-    : [];
+  return Array.isArray(status) ? status.filter((message): message is string => typeof message === "string") : [];
 }
 
 export function FormikExample({ baseUrl }: { baseUrl?: string }) {
   const idPrefix = React.useId();
   const [profileId, setProfileId] = React.useState<string>();
-  const client = createClient(
-    FormExamplesService,
-    createFormExamplesTransport(baseUrl)
-  );
+  const client = createClient(FormExamplesService, createFormExamplesTransport(baseUrl));
 
   return (
     <Formik<BasicFormValues>
@@ -80,23 +66,10 @@ export function FormikExample({ baseUrl }: { baseUrl?: string }) {
       }}
       validate={validate}
     >
-      {({
-        errors,
-        handleBlur,
-        handleChange,
-        handleSubmit,
-        isSubmitting,
-        status,
-        touched,
-        values,
-      }) => {
+      {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, status, touched, values }) => {
         const rootErrors = readStatusMessages(status);
-        const displayNameErrors = touched.displayName
-          ? splitErrorMessages(errors.displayName)
-          : [];
-        const emailErrors = touched.email
-          ? splitErrorMessages(errors.email)
-          : [];
+        const displayNameErrors = touched.displayName ? splitErrorMessages(errors.displayName) : [];
+        const emailErrors = touched.email ? splitErrorMessages(errors.email) : [];
 
         return (
           <form className="space-y-6" onSubmit={handleSubmit}>

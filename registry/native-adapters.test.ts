@@ -1,14 +1,14 @@
-import { readFileSync } from 'node:fs';
-import { describe, expect, it } from 'vitest';
+import { readFileSync } from "node:fs";
+import { describe, expect, it } from "vitest";
 
-type RegistryItem = {
+interface RegistryItem {
   dependencies?: string[];
   files?: Array<{ path: string }>;
   name: string;
   registryDependencies?: string[];
-};
+}
 
-const registry = JSON.parse(readFileSync('registry.json', 'utf8')) as {
+const registry = JSON.parse(readFileSync("registry.json", "utf8")) as {
   items: RegistryItem[];
 };
 
@@ -24,89 +24,80 @@ function filePaths(registryItem: RegistryItem): string[] {
   return registryItem.files?.map((file) => file.path) ?? [];
 }
 
-describe('native form adapter registry entries', () => {
-  it('keeps the shared AutoForm core independent from form engines', () => {
-    const core = item('auto-form-core');
+describe("native form adapter registry entries", () => {
+  it("keeps the shared AutoForm core independent from form engines", () => {
+    const core = item("auto-form-core");
 
-    expect(core.dependencies).not.toContain('react-hook-form');
-    expect(core.dependencies).not.toContain('@tanstack/react-form');
+    expect(core.dependencies).not.toContain("react-hook-form");
+    expect(core.dependencies).not.toContain("@tanstack/react-form");
     expect(filePaths(core)).not.toContain(
-      'registry/base-nova/protoform/components/auto-form/adapters/react-hook-form.tsx'
+      "registry/base-nova/protoform/components/auto-form/adapters/react-hook-form.tsx"
     );
-    expect(filePaths(core)).not.toContain(
-      'registry/base-nova/protoform/components/auto-form/adapters/tanstack.tsx'
-    );
-    expect(filePaths(core)).not.toContain(
-      'registry/base-nova/protoform/components/auto-form/adapters/tanstack-v2.tsx'
-    );
+    expect(filePaths(core)).not.toContain("registry/base-nova/protoform/components/auto-form/adapters/tanstack.tsx");
+    expect(filePaths(core)).not.toContain("registry/base-nova/protoform/components/auto-form/adapters/tanstack-v2.tsx");
   });
 
-  it('ships React Hook Form as the default AutoForm adapter', () => {
-    const reactHookForm = item('auto-form');
+  it("ships React Hook Form as the default AutoForm adapter", () => {
+    const reactHookForm = item("auto-form");
 
-    expect(reactHookForm.registryDependencies).toEqual([
-      '@protoform/auto-form-core',
-      '@protoform/use-proto-form',
-    ]);
-    expect(reactHookForm.dependencies).toContain('react-hook-form');
+    expect(reactHookForm.registryDependencies).toEqual(["@protoform/auto-form-core", "@protoform/use-proto-form"]);
+    expect(reactHookForm.dependencies).toContain("react-hook-form");
     expect(filePaths(reactHookForm)).toContain(
-      'registry/base-nova/protoform/components/auto-form/adapters/react-hook-form.tsx'
+      "registry/base-nova/protoform/components/auto-form/adapters/react-hook-form.tsx"
     );
   });
 
-  it('ships TanStack Form without pulling React Hook Form', () => {
-    const tanstackHook = item('use-proto-form-tanstack');
-    const tanstackAutoForm = item('auto-form-tanstack');
+  it("ships TanStack Form without pulling React Hook Form", () => {
+    const tanstackHook = item("use-proto-form-tanstack");
+    const tanstackAutoForm = item("auto-form-tanstack");
 
-    expect(tanstackHook.dependencies).toContain('@tanstack/react-form');
-    expect(tanstackHook.dependencies).not.toContain('react-hook-form');
+    expect(tanstackHook.dependencies).toContain("@tanstack/react-form");
+    expect(tanstackHook.dependencies).not.toContain("react-hook-form");
     expect(tanstackAutoForm.registryDependencies).toEqual([
-      '@protoform/auto-form-core',
-      '@protoform/use-proto-form-tanstack',
+      "@protoform/auto-form-core",
+      "@protoform/use-proto-form-tanstack",
     ]);
-    expect(tanstackAutoForm.dependencies).toContain('@tanstack/react-form');
-    expect(tanstackAutoForm.dependencies).not.toContain('react-hook-form');
+    expect(tanstackAutoForm.dependencies).toContain("@tanstack/react-form");
+    expect(tanstackAutoForm.dependencies).not.toContain("react-hook-form");
     expect(filePaths(tanstackAutoForm)).toContain(
-      'registry/base-nova/protoform/components/auto-form/adapters/tanstack.tsx'
+      "registry/base-nova/protoform/components/auto-form/adapters/tanstack.tsx"
     );
   });
 
-  it('ships TanStack Form v2 as separate experimental registry items', () => {
-    const packageAlias =
-      '@tanstack/react-form-v2@npm:@tanstack/react-form@2.0.0-alpha.0';
-    const tanstackHook = item('use-proto-form-tanstack-v2');
-    const tanstackAutoForm = item('auto-form-tanstack-v2');
+  it("ships TanStack Form v2 as separate experimental registry items", () => {
+    const packageAlias = "@tanstack/react-form-v2@npm:@tanstack/react-form@2.0.0-alpha.0";
+    const tanstackHook = item("use-proto-form-tanstack-v2");
+    const tanstackAutoForm = item("auto-form-tanstack-v2");
 
     expect(tanstackHook.dependencies).toContain(packageAlias);
-    expect(tanstackHook.dependencies).not.toContain('react-hook-form');
+    expect(tanstackHook.dependencies).not.toContain("react-hook-form");
     expect(tanstackAutoForm.registryDependencies).toEqual([
-      '@protoform/auto-form-core',
-      '@protoform/use-proto-form-tanstack-v2',
+      "@protoform/auto-form-core",
+      "@protoform/use-proto-form-tanstack-v2",
     ]);
     expect(tanstackAutoForm.dependencies).toContain(packageAlias);
-    expect(tanstackAutoForm.dependencies).not.toContain('react-hook-form');
+    expect(tanstackAutoForm.dependencies).not.toContain("react-hook-form");
     expect(filePaths(tanstackAutoForm)).toContain(
-      'registry/base-nova/protoform/components/auto-form/adapters/tanstack-v2.tsx'
+      "registry/base-nova/protoform/components/auto-form/adapters/tanstack-v2.tsx"
     );
   });
 
-  it('ships React Hook Form v8 as separate experimental registry items', () => {
-    const packageAlias =
-      'react-hook-form-v8@npm:react-hook-form@8.0.0-beta.3';
-    const reactHookFormHook = item('use-proto-form-v8');
-    const reactHookFormAutoForm = item('auto-form-react-hook-form-v8');
+  it("ships React Hook Form v8 as separate experimental registry items", () => {
+    const packageAlias = "react-hook-form-v8@npm:react-hook-form@8.0.0-beta.3";
+    const reactHookFormHook = item("use-proto-form-v8");
+    const reactHookFormAutoForm = item("auto-form-react-hook-form-v8");
 
     expect(reactHookFormHook.dependencies).toContain(packageAlias);
-    expect(reactHookFormHook.dependencies).not.toContain('react-hook-form');
-    expect(reactHookFormHook.dependencies).not.toContain('@hookform/resolvers');
+    expect(reactHookFormHook.dependencies).not.toContain("react-hook-form");
+    expect(reactHookFormHook.dependencies).not.toContain("@hookform/resolvers");
     expect(reactHookFormAutoForm.registryDependencies).toEqual([
-      '@protoform/auto-form-core',
-      '@protoform/use-proto-form-v8',
+      "@protoform/auto-form-core",
+      "@protoform/use-proto-form-v8",
     ]);
     expect(reactHookFormAutoForm.dependencies).toContain(packageAlias);
-    expect(reactHookFormAutoForm.dependencies).not.toContain('react-hook-form');
+    expect(reactHookFormAutoForm.dependencies).not.toContain("react-hook-form");
     expect(filePaths(reactHookFormAutoForm)).toContain(
-      'registry/base-nova/protoform/components/auto-form/adapters/react-hook-form-v8.tsx'
+      "registry/base-nova/protoform/components/auto-form/adapters/react-hook-form-v8.tsx"
     );
   });
 });

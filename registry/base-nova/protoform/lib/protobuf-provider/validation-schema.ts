@@ -6,12 +6,7 @@ import {
   type MessageValidType,
 } from "@bufbuild/protobuf";
 import { usedTypes } from "@bufbuild/protobuf/reflect";
-import {
-  createValidator,
-  RuntimeError,
-  type Violation,
-  type ValidatorOptions,
-} from "@bufbuild/protovalidate";
+import { createValidator, RuntimeError, type ValidatorOptions, type Violation } from "@bufbuild/protovalidate";
 import type { StandardSchemaV1 } from "../core/index.js";
 
 function violationToIssue(violation: Violation): StandardSchemaV1.Issue {
@@ -34,36 +29,25 @@ function violationToIssue(violation: Violation): StandardSchemaV1.Issue {
         break;
       case "map_sub":
         path.push(
-          typeof segment.key === "string" ||
-            typeof segment.key === "number"
-            ? segment.key
-            : String(segment.key)
+          typeof segment.key === "string" || typeof segment.key === "number" ? segment.key : String(segment.key)
         );
         break;
       case "extension":
         path.push(`[${segment.typeName}]`);
         break;
       default:
-        segment satisfies never;
+        throw new TypeError(`Unsupported violation path segment: ${String(segment satisfies never)}`);
     }
   }
 
-  return path.length > 0
-    ? { message: violation.message, path }
-    : { message: violation.message };
+  return path.length > 0 ? { message: violation.message, path } : { message: violation.message };
 }
 
-export function createDescriptorAwareStandardSchema<
-  Desc extends DescMessage,
->(
+export function createDescriptorAwareStandardSchema<Desc extends DescMessage>(
   desc: Desc,
   options?: ValidatorOptions
 ): StandardSchemaV1<MessageShape<Desc>, MessageValidType<Desc>> {
-  const registry = createRegistry(
-    desc,
-    ...usedTypes(desc),
-    ...(options?.registry ? [options.registry] : [])
-  );
+  const registry = createRegistry(desc, ...usedTypes(desc), ...(options?.registry ? [options.registry] : []));
   const validator = createValidator({ ...options, registry });
 
   return {

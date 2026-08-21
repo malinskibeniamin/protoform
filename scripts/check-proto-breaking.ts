@@ -21,8 +21,7 @@ const stableModules: readonly StableProtoModule[] = [
     path: "registry/base-nova/protoform/lib/protobuf-provider/proto",
     waivers: [
       {
-        message:
-          'Previously present file "auto-form-example.proto" was deleted.',
+        message: 'Previously present file "auto-form-example.proto" was deleted.',
         type: "FILE_NO_DELETE",
       },
     ],
@@ -35,9 +34,9 @@ function isBreakingViolation(value: unknown): value is BreakingViolation {
   }
   const candidate = value as Record<string, unknown>;
   return (
-    typeof candidate.message === "string" &&
-    typeof candidate.type === "string" &&
-    (candidate.path === undefined || typeof candidate.path === "string")
+    typeof candidate["message"] === "string" &&
+    typeof candidate["type"] === "string" &&
+    (candidate["path"] === undefined || typeof candidate["path"] === "string")
   );
 }
 
@@ -59,11 +58,7 @@ function buildImage(input: string, output: string): void {
   }
 }
 
-function buildTargetImage(
-  against: string,
-  module: StableProtoModule,
-  output: string
-): void {
+function buildTargetImage(against: string, module: StableProtoModule, output: string): void {
   const paths = [module.path, ...(module.legacyPaths ?? [])];
   const failures: string[] = [];
 
@@ -80,9 +75,7 @@ function buildTargetImage(
 }
 
 function withSubdirectory(input: string, subdirectory: string): string {
-  return input.includes("#")
-    ? `${input},subdir=${subdirectory}`
-    : `${input}#subdir=${subdirectory}`;
+  return input.includes("#") ? `${input},subdir=${subdirectory}` : `${input}#subdir=${subdirectory}`;
 }
 
 function parseViolations(output: string): BreakingViolation[] {
@@ -99,15 +92,9 @@ function parseViolations(output: string): BreakingViolation[] {
     });
 }
 
-function isWaived(
-  violation: BreakingViolation,
-  waivers: readonly BreakingViolation[]
-): boolean {
+function isWaived(violation: BreakingViolation, waivers: readonly BreakingViolation[]): boolean {
   return waivers.some(
-    (waiver) =>
-      waiver.message === violation.message &&
-      waiver.path === violation.path &&
-      waiver.type === violation.type
+    (waiver) => waiver.message === violation.message && waiver.path === violation.path && waiver.type === violation.type
   );
 }
 
@@ -123,12 +110,7 @@ function againstInput(): string {
   return value;
 }
 
-function checkModule(
-  module: StableProtoModule,
-  against: string,
-  directory: string,
-  index: number
-): void {
+function checkModule(module: StableProtoModule, against: string, directory: string, index: number): void {
   const currentImage = join(directory, `current-${index}.binpb`);
   const targetImage = join(directory, `target-${index}.binpb`);
   buildImage(module.path, currentImage);
@@ -149,25 +131,12 @@ function checkModule(
   }
 
   const violations = parseViolations(`${result.stdout}${result.stderr}`);
-  const unwaived = violations.filter(
-    (violation) => !isWaived(violation, module.waivers)
-  );
-  for (const violation of violations.filter((item) =>
-    isWaived(item, module.waivers)
-  )) {
-    console.info(
-      `Accepted pre-1.0 protobuf migration in ${module.path}: ${violation.message}`
-    );
+  const unwaived = violations.filter((violation) => !isWaived(violation, module.waivers));
+  for (const violation of violations.filter((item) => isWaived(item, module.waivers))) {
+    console.info(`Accepted pre-1.0 protobuf migration in ${module.path}: ${violation.message}`);
   }
   if (unwaived.length > 0) {
-    throw new Error(
-      unwaived
-        .map(
-          (violation) =>
-            `${module.path}: ${violation.type}: ${violation.message}`
-        )
-        .join("\n")
-    );
+    throw new Error(unwaived.map((violation) => `${module.path}: ${violation.type}: ${violation.message}`).join("\n"));
   }
 }
 
@@ -178,11 +147,7 @@ try {
     checkModule(module, against, temporaryDirectory, index);
   }
 } catch (error) {
-  console.error(
-    error instanceof Error
-      ? error.message
-      : "Protobuf breaking-change detection failed."
-  );
+  console.error(error instanceof Error ? error.message : "Protobuf breaking-change detection failed.");
   process.exitCode = 1;
 } finally {
   rmSync(temporaryDirectory, { force: true, recursive: true });

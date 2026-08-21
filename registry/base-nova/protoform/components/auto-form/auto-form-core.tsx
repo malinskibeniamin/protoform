@@ -1,18 +1,14 @@
-'use client';
+"use client";
 
-import {
-  createUpdateMask,
-  formValuesToProto,
-  preserveProtoMessageSource,
-} from '../../lib/protobuf-provider';
-import React from 'react';
+import { isMessage } from "@bufbuild/protobuf";
+import React from "react";
+import { Alert, AlertDescription, AlertTitle } from "@/registry/base-nova/protoform/components/alert";
+import { TooltipProvider } from "@/registry/base-nova/protoform/components/tooltip";
+import { Heading, Text } from "@/registry/base-nova/protoform/components/typography";
+import { createUpdateMask, formValuesToProto, preserveProtoMessageSource } from "../../lib/protobuf-provider";
 
-import { Alert, AlertDescription, AlertTitle } from '@/registry/base-nova/protoform/components/alert';
-import { TooltipProvider } from '@/registry/base-nova/protoform/components/tooltip';
-import { Heading, Text } from '@/registry/base-nova/protoform/components/typography';
-
-import type { SchemaValidation } from './core-types';
-import type { AutoFormEngine } from './engine';
+import type { SchemaValidation } from "./core-types";
+import type { AutoFormEngine } from "./engine";
 import {
   ArrayElementWrapper,
   ArrayWrapper,
@@ -21,27 +17,27 @@ import {
   Form,
   ObjectWrapper,
   SubmitButton,
-} from './field-wrapper';
-import { AutoFormFieldComponentRegistry } from './fields';
-import { deriveSimpleFields } from './helpers';
-import { AutoFormModeShell } from './mode-shell';
+} from "./field-wrapper";
+import { AutoFormFieldComponentRegistry } from "./fields";
+import { deriveSimpleFields } from "./helpers";
+import { AutoFormModeShell } from "./mode-shell";
 import {
   getProtoMessageUiConfig,
   isProtoMessageDescriptor,
   isProtoProvider,
   PROTO_FORM_ROOT_ERROR_KEY,
   resolveProtoSourceMessage,
-} from './proto';
-import { AutoFormFields } from './renderers';
-import { AutoFormRuntimeProvider } from './runtime-provider';
+} from "./proto";
+import { AutoFormFields } from "./renderers";
+import { AutoFormRuntimeProvider } from "./runtime-provider";
 import {
   mergeFieldOverrides,
   normalizeProtoInitialValues,
   protoConversionOptionsFromFieldConfig,
   resolveSchema,
-} from './schema';
-import { AutoFormStepPanel, fieldsForStep, initialStepIndex, validateSteps } from './stepper';
-import { buildAutoFormTestId, resolveAutoFormTestIdPrefix } from './test-ids';
+} from "./schema";
+import { AutoFormStepPanel, fieldsForStep, initialStepIndex, validateSteps } from "./stepper";
+import { buildAutoFormTestId, resolveAutoFormTestIdPrefix } from "./test-ids";
 import type {
   AutoFormMode,
   AutoFormProps,
@@ -50,19 +46,19 @@ import type {
   AutoFormSubmitContext,
   AutoFormValidationMode,
   ResolvedSchema,
-} from './types';
-import { normalizeModes, resolveInitialMode } from './utils/modes';
+} from "./types";
+import { normalizeModes, resolveInitialMode } from "./utils/modes";
 
 const noopOnSubmit = async () => undefined;
 
 const ShadcnUIComponents = {
-  Form,
-  FieldWrapper,
-  ErrorMessage,
-  SubmitButton,
-  ObjectWrapper,
-  ArrayWrapper,
   ArrayElementWrapper,
+  ArrayWrapper,
+  ErrorMessage,
+  FieldWrapper,
+  Form,
+  ObjectWrapper,
+  SubmitButton,
 };
 
 export const ShadcnAutoFormFieldComponents = AutoFormFieldComponentRegistry;
@@ -70,21 +66,15 @@ export const ShadcnAutoFormFieldComponents = AutoFormFieldComponentRegistry;
 export type AutoFormEngineRender = (props: {
   children: (engine: AutoFormEngine) => React.ReactNode;
   defaultValues: Record<string, unknown>;
-  validateSchema: (
-    values: Record<string, unknown>,
-    signal: AbortSignal
-  ) => Promise<SchemaValidation>;
-  values?: Record<string, unknown>;
+  validateSchema: (values: Record<string, unknown>, signal: AbortSignal) => Promise<SchemaValidation>;
+  values?: Record<string, unknown> | undefined;
 }) => React.ReactNode;
 
 export type AutoFormCoreProps<
   T extends Record<string, unknown>,
   TNativeForm,
   TCustomFieldType extends string = never,
-> = Omit<
-  AutoFormProps<T, TNativeForm, never, never, TCustomFieldType>,
-  'formOptions' | 'resolver'
-> & {
+> = Omit<AutoFormProps<T, TNativeForm, never, never, TCustomFieldType>, "formOptions" | "resolver"> & {
   renderEngine: AutoFormEngineRender;
 };
 
@@ -107,10 +97,10 @@ function renderModeContent({
   children: React.ReactNode;
   SubmitButtonComponent: React.ComponentType<{
     children: React.ReactNode;
-    disabled?: boolean;
-    testId?: string;
+    disabled?: boolean | undefined;
+    testId?: string | undefined;
   }>;
-  stepper?: AutoFormStepperConfig;
+  stepper?: AutoFormStepperConfig | undefined;
   currentStepIndex: number;
   onStepBack: () => void;
   onStepContinue: (fields: ReturnType<typeof mergeFieldOverrides>) => void | Promise<void>;
@@ -129,16 +119,13 @@ function renderModeContent({
         isAdvancing={isAdvancing}
         onBack={onStepBack}
         onContinue={() => onStepContinue(stepFields)}
-        orientation={stepper.orientation ?? 'horizontal'}
+        orientation={stepper.orientation ?? "horizontal"}
         step={step}
         steps={stepper.steps}
         submit={
           withSubmit ? (
-            <SubmitButtonComponent
-              disabled={isSubmitting}
-              testId={buildAutoFormTestId(testIdPrefix, 'submit')}
-            >
-              {isSubmitting ? 'Submitting…' : 'Submit'}
+            <SubmitButtonComponent disabled={isSubmitting} testId={buildAutoFormTestId(testIdPrefix, "submit")}>
+              {isSubmitting ? "Submitting…" : "Submit"}
             </SubmitButtonComponent>
           ) : null
         }
@@ -152,12 +139,9 @@ function renderModeContent({
     <>
       <AutoFormFields fields={fields}>{children}</AutoFormFields>
       {withSubmit ? (
-        <div
-          className="flex items-center justify-end border-border/60 border-t pt-5"
-          data-slot="auto-form-actions"
-        >
-          <SubmitButtonComponent disabled={isSubmitting} testId={buildAutoFormTestId(testIdPrefix, 'submit')}>
-            {isSubmitting ? 'Submitting…' : 'Submit'}
+        <div className="flex items-center justify-end border-border/60 border-t pt-5" data-slot="auto-form-actions">
+          <SubmitButtonComponent disabled={isSubmitting} testId={buildAutoFormTestId(testIdPrefix, "submit")}>
+            {isSubmitting ? "Submitting…" : "Submit"}
           </SubmitButtonComponent>
         </div>
       ) : null}
@@ -165,23 +149,15 @@ function renderModeContent({
   );
 }
 
-type AutoFormContentProps<
-  T extends Record<string, unknown>,
-  TNativeForm,
-  TCustomFieldType extends string,
-> = Omit<
+type AutoFormContentProps<T extends Record<string, unknown>, TNativeForm, TCustomFieldType extends string> = Omit<
   AutoFormCoreProps<T, TNativeForm, TCustomFieldType>,
-  'defaultValues' | 'renderEngine' | 'schema' | 'values'
+  "defaultValues" | "renderEngine" | "schema" | "values"
 > & {
   engine: AutoFormEngine;
   resolvedSchema: ResolvedSchema;
 };
 
-function AutoFormContent<
-  T extends Record<string, unknown>,
-  TNativeForm,
-  TCustomFieldType extends string,
->({
+function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustomFieldType extends string>({
   engine,
   resolvedSchema,
   testId,
@@ -199,17 +175,17 @@ function AutoFormContent<
   renderSummary,
   fieldRegistry,
   dataProviders,
-  deprecatedFields = 'show',
+  deprecatedFields = "show",
   classifyField,
   payloadSchema,
   payloadBuilder,
   payloadParser,
   onFieldChange,
   renderRootHeader,
-  rootHeader = 'auto',
+  rootHeader = "auto",
   stepper,
-  validationMode = 'submit',
-  revalidationMode = 'change',
+  validationMode = "submit",
+  revalidationMode = "change",
 }: AutoFormContentProps<T, TNativeForm, TCustomFieldType>) {
   const testIdPrefix = resolveAutoFormTestIdPrefix(testId);
   const submitController = React.useRef<AbortController | undefined>(undefined);
@@ -278,13 +254,13 @@ function AutoFormContent<
       return await Promise.resolve(resolvedSchema.provider.validateSchema(submittedValues, { signal }));
     } catch (error) {
       return {
-        success: false,
         errors: [
           {
+            message: error instanceof Error ? error.message : "Failed to validate form values.",
             path: [],
-            message: error instanceof Error ? error.message : 'Failed to validate form values.',
           },
         ],
+        success: false,
       };
     }
   }
@@ -305,24 +281,27 @@ function AutoFormContent<
     engine.setValidationErrors(result.success ? [] : result.errors);
   }
 
+  const runLifecycleValidationEffect = React.useEffectEvent(runLifecycleValidation);
+
   React.useEffect(() => {
     if (previousLifecycleValues.current === engine.values) {
       return;
     }
     previousLifecycleValues.current = engine.values;
-    if (activeValidationMode() === 'change') {
-      void runLifecycleValidation(engine.values);
+    const lifecycleMode = hasSubmitted.current ? revalidationMode : validationMode;
+    if (lifecycleMode === "change") {
+      runLifecycleValidationEffect(engine.values).catch((error: unknown) => {
+        engine.setRootError(error instanceof Error ? error.message : "Validation failed.");
+      });
     }
-  }, [engine.values, revalidationMode, validationMode]);
+  }, [engine.setRootError, engine.values, revalidationMode, validationMode]);
 
   function routeToFirstStepError() {
     if (!stepper) {
       return;
     }
     const targetStepIndex = stepper.steps.findIndex((step) =>
-      fieldsForStep(advancedFields, stepper.steps, step.id).some((field) =>
-        engine.getFieldInvalid(field.key)
-      )
+      fieldsForStep(advancedFields, stepper.steps, step.id).some((field) => engine.getFieldInvalid(field.key))
     );
     if (targetStepIndex < 0) {
       return;
@@ -331,11 +310,10 @@ function AutoFormContent<
       setCurrentStepIndex(targetStepIndex);
       return;
     }
-    const firstErrorField = fieldsForStep(
-      advancedFields,
-      stepper.steps,
-      stepper.steps[targetStepIndex]?.id ?? ''
-    ).find((field) => engine.getFieldInvalid(field.key));
+    const [targetStep] = stepper.steps.slice(targetStepIndex, targetStepIndex + 1);
+    const firstErrorField = fieldsForStep(advancedFields, stepper.steps, targetStep?.id ?? "").find((field) =>
+      engine.getFieldInvalid(field.key)
+    );
     if (firstErrorField) {
       engine.focus(firstErrorField.key);
     }
@@ -361,12 +339,7 @@ function AutoFormContent<
       form: engine,
       signal,
       updateMask: resolvedSchema.protoDesc
-        ? createUpdateMask(
-            resolvedSchema.protoDesc,
-            engine.dirtyFields,
-            engine.getValues(),
-            engine.defaultValues
-          )
+        ? createUpdateMask(resolvedSchema.protoDesc, engine.dirtyFields, engine.getValues(), engine.defaultValues)
         : undefined,
     };
   }
@@ -381,27 +354,22 @@ function AutoFormContent<
       const validatedProtoMessage = resolvedSchema.protoDesc
         ? resolveProtoSourceMessage(resolvedSchema.protoDesc, values)
         : undefined;
-      const submittedValues = resolvedSchema.protoDesc
-        ? validatedProtoMessage
-          ? preserveProtoMessageSource(
-              resolvedSchema.protoDesc,
-              validatedProtoMessage,
-              resolvedSchema.protoSource as never
-            )
-          : formValuesToProto(
-              resolvedSchema.protoDesc,
-              values,
-              resolvedSchema.protoSource as never,
-              conversionOptions
-            )
-        : values;
+      let submittedValues: unknown = values;
+      if (resolvedSchema.protoDesc) {
+        const sourceMessage = isMessage(resolvedSchema.protoSource, resolvedSchema.protoDesc)
+          ? resolvedSchema.protoSource
+          : undefined;
+        submittedValues = validatedProtoMessage
+          ? preserveProtoMessageSource(resolvedSchema.protoDesc, validatedProtoMessage, sourceMessage)
+          : formValuesToProto(resolvedSchema.protoDesc, values, sourceMessage, conversionOptions);
+      }
       await onSubmit(submittedValues as T, engine.nativeForm as TNativeForm, context);
       if (!controller.signal.aborted) {
         routeToFirstStepError();
       }
     } catch (error) {
       if (!controller.signal.aborted) {
-        engine.setRootError(error instanceof Error ? error.message : 'Submission failed.');
+        engine.setRootError(error instanceof Error ? error.message : "Submission failed.");
       }
     }
   }
@@ -409,7 +377,7 @@ function AutoFormContent<
   async function handleSubmit(submittedValues: Record<string, unknown>) {
     hasSubmitted.current = true;
     const controller = beginSubmit();
-    engine.clearErrors(['root', PROTO_FORM_ROOT_ERROR_KEY]);
+    engine.clearErrors(["root", PROTO_FORM_ROOT_ERROR_KEY]);
 
     if (engine.validatesSchema) {
       await submitValidatedValues(submittedValues as T, controller);
@@ -441,7 +409,7 @@ function AutoFormContent<
     setIsAdvancing(true);
     const controller = beginValidation();
     const fieldNames = stepFields.map((field) => field.key);
-    engine.clearErrors([...fieldNames, 'root', PROTO_FORM_ROOT_ERROR_KEY]);
+    engine.clearErrors([...fieldNames, "root", PROTO_FORM_ROOT_ERROR_KEY]);
 
     try {
       const nativeValid = await engine.trigger(engine.validatesSchema ? undefined : fieldNames);
@@ -469,14 +437,14 @@ function AutoFormContent<
       const currentErrors = validationResult.success
         ? []
         : validationResult.errors.filter((error) => {
-            const root = error.path[0];
-            return error.path.length === 0 || (typeof root === 'string' && currentFields.has(root));
+            const [root] = error.path;
+            return error.path.length === 0 || (typeof root === "string" && currentFields.has(root));
           });
       if (currentErrors.length > 0) {
         engine.setValidationErrors(currentErrors);
         const firstFieldError = currentErrors.find((error) => error.path.length > 0);
         if (firstFieldError) {
-          engine.focus(firstFieldError.path.join('.'));
+          engine.focus(firstFieldError.path.join("."));
         }
         return;
       }
@@ -499,9 +467,7 @@ function AutoFormContent<
       return;
     }
     const targetStepIndex = stepper.steps.findIndex((step) => {
-      const stepFieldKeys = new Set(
-        fieldsForStep(advancedFields, stepper.steps, step.id).map((field) => field.key)
-      );
+      const stepFieldKeys = new Set(fieldsForStep(advancedFields, stepper.steps, step.id).map((field) => field.key));
       return fieldErrorKeys.some((key) => stepFieldKeys.has(key));
     });
     if (targetStepIndex >= 0 && targetStepIndex !== currentStepIndex) {
@@ -521,30 +487,48 @@ function AutoFormContent<
     }
   }, [advancedFields, currentStepIndex, engine, stepper]);
 
-  function renderFormForMode(targetMode: Exclude<AutoFormMode, 'json'>) {
+  function renderFormForMode(targetMode: Exclude<AutoFormMode, "json">) {
     return renderModeContent({
-      fields: targetMode === 'simple' ? simpleFields : advancedFields,
-      testIdPrefix,
-      withSubmit,
       children,
-      SubmitButtonComponent: mergedUiComponents.SubmitButton as React.ComponentType<{
-        children: React.ReactNode;
-        disabled?: boolean;
-        testId?: string;
-      }>,
+      currentStepIndex,
+      fields: targetMode === "simple" ? simpleFields : advancedFields,
       isAdvancing,
       isSubmitting: engine.isSubmitting,
-      stepper,
-      currentStepIndex,
       onStepBack: handleStepBack,
       onStepContinue: handleStepContinue,
+      SubmitButtonComponent: mergedUiComponents.SubmitButton as React.ComponentType<{
+        children: React.ReactNode;
+        disabled?: boolean | undefined;
+        testId?: string | undefined;
+      }>,
+      stepper,
+      testIdPrefix,
+      withSubmit,
     });
   }
 
   const formOnBlurCapture =
-    typeof Reflect.get(formProps, 'onBlurCapture') === 'function'
-      ? (Reflect.get(formProps, 'onBlurCapture') as React.FocusEventHandler<HTMLFormElement>)
+    typeof Reflect.get(formProps, "onBlurCapture") === "function"
+      ? (Reflect.get(formProps, "onBlurCapture") as React.FocusEventHandler<HTMLFormElement>)
       : undefined;
+
+  let rootHeaderContent: React.ReactNode = null;
+  if (rootHeader !== "hidden") {
+    if (renderRootHeader) {
+      rootHeaderContent = renderRootHeader(rootHeaderMetadata);
+    } else if (protoMessageUi?.title || protoMessageUi?.description) {
+      rootHeaderContent = (
+        <header className="space-y-1 border-border/60 border-b pb-4" data-testid={`${testIdPrefix}-root-header`}>
+          {protoMessageUi.title ? <Heading level={2}>{protoMessageUi.title}</Heading> : null}
+          {protoMessageUi.description ? (
+            <Text className="text-muted-foreground" variant="small">
+              {protoMessageUi.description}
+            </Text>
+          ) : null}
+        </header>
+      );
+    }
+  }
 
   return (
     <TooltipProvider delayDuration={150} skipDelayDuration={0}>
@@ -565,8 +549,10 @@ function AutoFormContent<
             {...formProps}
             onBlurCapture={(event) => {
               formOnBlurCapture?.(event);
-              if (activeValidationMode() === 'blur') {
-                void runLifecycleValidation(engine.getValues());
+              if (activeValidationMode() === "blur") {
+                runLifecycleValidation(engine.getValues()).catch((error: unknown) => {
+                  engine.setRootError(error instanceof Error ? error.message : "Validation failed.");
+                });
               }
             }}
             onSubmit={engine.handleSubmit(handleSubmit)}
@@ -579,21 +565,7 @@ function AutoFormContent<
               </Alert>
             ) : null}
 
-            {rootHeader === 'hidden' ? null : renderRootHeader ? (
-              renderRootHeader(rootHeaderMetadata)
-            ) : protoMessageUi?.title || protoMessageUi?.description ? (
-              <header
-                className="space-y-1 border-border/60 border-b pb-4"
-                data-testid={`${testIdPrefix}-root-header`}
-              >
-                {protoMessageUi.title ? <Heading level={2}>{protoMessageUi.title}</Heading> : null}
-                {protoMessageUi.description ? (
-                  <Text className="text-muted-foreground" variant="small">
-                    {protoMessageUi.description}
-                  </Text>
-                ) : null}
-              </header>
-            ) : null}
+            {rootHeaderContent}
 
             <AutoFormModeShell
               bestEffort={bag.payloadState.bestEffort}
@@ -625,11 +597,7 @@ function AutoFormContent<
   );
 }
 
-function AutoFormCoreInner<
-  T extends Record<string, unknown>,
-  TNativeForm,
-  TCustomFieldType extends string,
->({
+function AutoFormCoreInner<T extends Record<string, unknown>, TNativeForm, TCustomFieldType extends string>({
   schema,
   defaultValues,
   values,
@@ -637,14 +605,11 @@ function AutoFormCoreInner<
   ...props
 }: AutoFormCoreProps<T, TNativeForm, TCustomFieldType>) {
   const conversionOptions = protoConversionOptionsFromFieldConfig(props.fieldConfig);
-  const protoDescriptor = isProtoMessageDescriptor(schema)
-    ? schema
-    : isProtoProvider(schema)
-      ? schema.getMessageDescriptor()
-      : undefined;
-  const protoSource = protoDescriptor
-    ? resolveProtoSourceMessage(protoDescriptor, values, defaultValues)
-    : undefined;
+  let protoDescriptor = isProtoMessageDescriptor(schema) ? schema : undefined;
+  if (!protoDescriptor && isProtoProvider(schema)) {
+    protoDescriptor = schema.getMessageDescriptor();
+  }
+  const protoSource = protoDescriptor ? resolveProtoSourceMessage(protoDescriptor, values, defaultValues) : undefined;
   const resolvedSchema = resolveSchema(schema, conversionOptions, protoSource);
   const providerDefaults = resolvedSchema.provider.getDefaultValues();
   const initialDefaultValues =
@@ -654,55 +619,58 @@ function AutoFormCoreInner<
           ...(normalizeProtoInitialValues(resolvedSchema.protoDesc, defaultValues) ?? {}),
         }
       : { ...providerDefaults, ...(defaultValues ?? {}) };
-  const controlledValues = values
-    ? resolvedSchema.isProto && resolvedSchema.protoDesc
-      ? normalizeProtoInitialValues(resolvedSchema.protoDesc, values)
-      : values
-    : undefined;
+  let controlledValues = values;
+  if (values && resolvedSchema.isProto && resolvedSchema.protoDesc) {
+    controlledValues = normalizeProtoInitialValues(resolvedSchema.protoDesc, values);
+  }
 
   return renderEngine({
+    children: (engine) => (
+      <AutoFormContent<T, TNativeForm, TCustomFieldType> {...props} engine={engine} resolvedSchema={resolvedSchema} />
+    ),
     defaultValues: initialDefaultValues,
     validateSchema: async (submittedValues, signal) => {
       try {
-        return await Promise.resolve(
-          resolvedSchema.provider.validateSchema(submittedValues, { signal })
-        );
+        return await Promise.resolve(resolvedSchema.provider.validateSchema(submittedValues, { signal }));
       } catch (error) {
         return {
-          success: false,
           errors: [
             {
+              message: error instanceof Error ? error.message : "Failed to validate form values.",
               path: [],
-              message:
-                error instanceof Error
-                  ? error.message
-                  : 'Failed to validate form values.',
             },
           ],
+          success: false,
         };
       }
     },
     values: controlledValues,
-    children: (engine) => (
-      <AutoFormContent<T, TNativeForm, TCustomFieldType>
-        {...props}
-        engine={engine}
-        resolvedSchema={resolvedSchema}
-      />
-    ),
   });
 }
 
-type AutoFormErrorBoundaryState = { error: Error | null };
+interface AutoFormErrorBoundaryState {
+  error: Error | null;
+  resetKey: unknown;
+}
 
-class AutoFormErrorBoundary extends React.Component<{ children: React.ReactNode }, AutoFormErrorBoundaryState> {
-  constructor(props: { children: React.ReactNode }) {
+class AutoFormErrorBoundary extends React.Component<
+  { children: React.ReactNode; resetKey: unknown },
+  AutoFormErrorBoundaryState
+> {
+  constructor(props: { children: React.ReactNode; resetKey: unknown }) {
     super(props);
-    this.state = { error: null };
+    this.state = { error: null, resetKey: props.resetKey };
   }
 
-  static getDerivedStateFromError(error: Error): AutoFormErrorBoundaryState {
+  static getDerivedStateFromError(error: Error): Partial<AutoFormErrorBoundaryState> {
     return { error };
+  }
+
+  static getDerivedStateFromProps(
+    props: { resetKey: unknown },
+    state: AutoFormErrorBoundaryState
+  ): AutoFormErrorBoundaryState | null {
+    return props.resetKey === state.resetKey ? null : { error: null, resetKey: props.resetKey };
   }
 
   override render() {
@@ -718,21 +686,11 @@ class AutoFormErrorBoundary extends React.Component<{ children: React.ReactNode 
   }
 }
 
-export function AutoFormCore<
-  T extends Record<string, unknown>,
-  TNativeForm,
-  TCustomFieldType extends string = never,
->(
+export function AutoFormCore<T extends Record<string, unknown>, TNativeForm, TCustomFieldType extends string = never>(
   props: AutoFormCoreProps<T, TNativeForm, TCustomFieldType>
 ) {
-  const schemaRef = React.useRef(props.schema);
-  const [schemaKey, setSchemaKey] = React.useState(0);
-  if (schemaRef.current !== props.schema) {
-    schemaRef.current = props.schema;
-    setSchemaKey((key) => key + 1);
-  }
   return (
-    <AutoFormErrorBoundary key={schemaKey}>
+    <AutoFormErrorBoundary resetKey={props.schema}>
       <AutoFormCoreInner {...props} />
     </AutoFormErrorBoundary>
   );

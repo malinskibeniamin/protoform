@@ -6,17 +6,8 @@
 import { readdir, readFile } from "node:fs/promises";
 import { join, relative } from "node:path";
 
-const coreSrc = join(
-  import.meta.dir,
-  "..",
-  "registry",
-  "base-nova",
-  "protoform",
-  "lib",
-  "core"
-);
-const bannedModulePattern =
-  /from\s+["'](@bufbuild\/[^"']+|@connectrpc\/[^"']+)["']/g;
+const coreSrc = join(import.meta.dir, "..", "registry", "base-nova", "protoform", "lib", "core");
+const bannedModulePattern = /from\s+["'](@bufbuild\/[^"']+|@connectrpc\/[^"']+)["']/g;
 
 async function collectTypescriptFiles(dir: string): Promise<string[]> {
   const entries = await readdir(dir, { recursive: true, withFileTypes: true });
@@ -35,16 +26,12 @@ for (const [index, text] of contents.entries()) {
     continue;
   }
   for (const match of text.matchAll(bannedModulePattern)) {
-    violations.push(
-      `${relative(process.cwd(), file)}: imports banned module ${match[1]}`
-    );
+    violations.push(`${relative(process.cwd(), file)}: imports banned module ${match[1]}`);
   }
 }
 
 if (violations.length > 0) {
-  console.error(
-    "registry core layering violations (core must stay protobuf-free):"
-  );
+  console.error("registry core layering violations (core must stay protobuf-free):");
   for (const violation of violations) {
     console.error(`  ${violation}`);
   }

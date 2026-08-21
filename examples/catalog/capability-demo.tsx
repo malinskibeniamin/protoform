@@ -2,11 +2,7 @@
 
 import { useState } from "react";
 
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-} from "@/registry/base-nova/protoform/components/alert";
+import { Alert, AlertDescription, AlertTitle } from "@/registry/base-nova/protoform/components/alert";
 import { AutoForm } from "@/registry/base-nova/protoform/components/auto-form";
 import { Badge } from "@/registry/base-nova/protoform/components/badge";
 
@@ -20,8 +16,7 @@ const engineLabels = {
   "tanstack-form": "TanStack Form",
 } as const;
 
-const SENSITIVE_PREVIEW_KEY =
-  /password|secret|apiKey|privateKey|credential|inputToken/i;
+const SENSITIVE_PREVIEW_KEY = /password|secret|apiKey|privateKey|credential|inputToken/i;
 
 function formatSubmittedValue(value: Record<string, unknown>): string {
   return JSON.stringify(
@@ -77,9 +72,7 @@ export function CapabilityDemo({ demoId }: { demoId: string }) {
         <Alert role="status" variant="success">
           <AlertTitle>Submitted protobuf value</AlertTitle>
           <AlertDescription>
-            <pre className="max-h-80 max-w-full overflow-auto whitespace-pre-wrap text-xs">
-              {submittedValue}
-            </pre>
+            <pre className="max-h-80 max-w-full overflow-auto whitespace-pre-wrap text-xs">{submittedValue}</pre>
           </AlertDescription>
         </Alert>
       ) : null}

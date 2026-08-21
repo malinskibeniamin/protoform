@@ -1,13 +1,7 @@
 import type { DescMessage, MessageValidType } from "@bufbuild/protobuf";
-import type {
-  FormValues,
-  StandardSchemaV1,
-} from "../core/index.js";
+import type { FormValues, StandardSchemaV1 } from "../core/index.js";
 
-import {
-  type ProtoFormOptions,
-  validateFormValuesAgainstProtoSchema,
-} from "./provider.js";
+import { type ProtoFormOptions, validateFormValuesAgainstProtoSchema } from "./provider.js";
 import { createDescriptorAwareStandardSchema } from "./validation-schema.js";
 
 function isFormValueObject(value: unknown): value is FormValues {
@@ -24,10 +18,7 @@ function isFormValueObject(value: unknown): value is FormValues {
  * (React Hook Form via standardSchemaResolver, TanStack Form natively)
  * gets proto validation without importing protovalidate directly.
  */
-export function createProtoFormSchema<
-  Input extends object = FormValues,
-  Desc extends DescMessage = DescMessage,
->(
+export function createProtoFormSchema<Input extends object = FormValues, Desc extends DescMessage = DescMessage>(
   desc: Desc,
   options: ProtoFormOptions = {}
 ): StandardSchemaV1<Input, MessageValidType<Desc>> {
@@ -38,17 +29,10 @@ export function createProtoFormSchema<
       validate: (value) => {
         if (!isFormValueObject(value)) {
           return {
-            issues: [
-              { message: "Expected form values to be an object.", path: [] },
-            ],
+            issues: [{ message: "Expected form values to be an object.", path: [] }],
           };
         }
-        return validateFormValuesAgainstProtoSchema(
-          desc,
-          value,
-          messageSchema,
-          options
-        );
+        return validateFormValuesAgainstProtoSchema(desc, value, messageSchema, options);
       },
       vendor: "protoform",
       version: 1,

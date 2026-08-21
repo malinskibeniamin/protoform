@@ -32,7 +32,7 @@ export default defineConfig({
     },
     {
       command: "bun run examples:server",
-      reuseExistingServer: !process.env.CI,
+      reuseExistingServer: !process.env["CI"],
       timeout: 60_000,
       url: "http://127.0.0.1:55012/health",
     },

@@ -1,50 +1,41 @@
 ---
-// biome-ignore lint/correctness/noUnusedImports: Astro resolves this import in the template.
 import data from "blume:data";
-// biome-ignore lint/correctness/noUnusedImports: Astro resolves this import in the template.
 import PageLayout from "blume/components/layout/PageLayout.astro";
 
 export const prerender = true;
 
-// biome-ignore lint/correctness/noUnusedVariables: Astro resolves this variable in the template.
 const description =
   "Build accessible React Hook Form experiences directly from Protobuf descriptors, Protovalidate constraints, CEL rules, and Google AIP conventions.";
 ---
 
 <PageLayout
-  site={{ title: data.config.title, description }}
-  logo={data.config.logo}
-  favicon={data.config.favicon}
+  analytics={data.config.analytics}
   appleIcon={data.config.appleIcon}
   banner={data.config.banner}
-  analytics={data.config.analytics}
-  navigation={data.navigation}
-  page={{ title: "Protoform — protobuf-driven forms", description, route: "/" }}
-  siteUrl={data.config.site}
-  ogEnabled={data.config.og.enabled}
-  themeMode={data.config.theme.mode}
+  favicon={data.config.favicon}
   fontCssVars={data.fontCssVars}
+  logo={data.config.logo}
+  navigation={data.navigation}
+  ogEnabled={data.config.og.enabled}
+  page={{ description, route: "/", title: "Protoform — protobuf-driven forms" }}
   searchEnabled={data.config.search.enabled}
+  site={{ description, title: data.config.title }}
+  siteUrl={data.config.site}
+  themeMode={data.config.theme.mode}
   ui={data.ui}
 >
-  <div
-    class="mx-auto flex min-h-[70dvh] max-w-3xl flex-col items-center justify-center gap-6 px-6 py-24 text-center"
-  >
+  <div class="mx-auto flex min-h-[70dvh] max-w-3xl flex-col items-center justify-center gap-6 px-6 py-24 text-center">
     <p class="font-medium text-primary text-sm">Protobuf-driven forms</p>
-    <h1 class="text-balance font-semibold text-4xl text-foreground">
-      Build complete forms from your API contract
-    </h1>
+    <h1 class="text-balance font-semibold text-4xl text-foreground">Build complete forms from your API contract</h1>
     <p class="max-w-2xl text-balance text-lg text-muted-foreground">
       {description}
     </p>
     <p class="max-w-2xl text-balance text-muted-foreground">
-      Generate accessible fields, preserve protobuf semantics, and keep client
-      and server validation aligned without maintaining a second form schema or
-      duplicated rules.
+      Generate accessible fields, preserve protobuf semantics, and keep client and server validation aligned without
+      maintaining a second form schema or duplicated rules.
     </p>
-    <a
-      class="rounded-md bg-primary px-5 py-3 font-medium text-primary-foreground text-sm"
-      href="/docs">Explore Protoform documentation</a
+    <a class="rounded-md bg-primary px-5 py-3 font-medium text-primary-foreground text-sm" href="/docs"
+      >Explore Protoform documentation</a
     >
   </div>
 </PageLayout>

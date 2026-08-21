@@ -1,11 +1,5 @@
 import { create } from "@bufbuild/protobuf";
-import {
-  act,
-  render,
-  renderHook,
-  screen,
-  waitFor,
-} from "@testing-library/react";
+import { act, render, renderHook, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
@@ -101,9 +95,7 @@ describe("descriptor-aware CEL entrypoints", () => {
 
     await user.click(screen.getByRole("button", { name: SUBMIT_BUTTON }));
 
-    expect(
-      await screen.findByTestId("transitive-cel-field-deployment-error")
-    ).toHaveTextContent(
+    expect(await screen.findByTestId("transitive-cel-field-deployment-error")).toHaveTextContent(
       "Production deployments require the stable release track."
     );
     expect(onSubmit).not.toHaveBeenCalled();

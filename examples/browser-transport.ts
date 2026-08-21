@@ -9,7 +9,5 @@ export function createFormExamplesTransport(baseUrl?: string): Transport {
     return createConnectTransport({ baseUrl });
   }
 
-  return createRouterTransport((router) =>
-    router.service(FormExamplesService, formExamplesService)
-  );
+  return createRouterTransport((router) => router.service(FormExamplesService, formExamplesService));
 }

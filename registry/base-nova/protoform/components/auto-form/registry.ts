@@ -1,24 +1,24 @@
-import type React from 'react';
+import type React from "react";
 
-import type { AutoFormFieldProps, ParsedField } from './core-types';
-import { getLabel } from './field-utils';
-import { getProtoFieldCustomData } from './proto';
+import type { AutoFormFieldProps, ParsedField } from "./core-types";
+import { getLabel } from "./field-utils";
+import { getProtoFieldCustomData } from "./proto";
 
-export type FieldTypeDefinition<TName extends string = string> = {
-  name: TName;
-  match: (field: ParsedField, context: FieldMatchContext) => boolean;
-  priority: number;
+export interface FieldTypeDefinition<TName extends string = string> {
   component: React.ComponentType<AutoFormFieldProps>;
-};
+  match: (field: ParsedField, context: FieldMatchContext) => boolean;
+  name: TName;
+  priority: number;
+}
 
-export type FieldMatchContext = {
+export interface FieldMatchContext {
   identity: string; // `${field.key} ${label}`.toLowerCase()
   inputType: string;
   maxLength: number;
-};
+}
 
 export class FieldTypeRegistry<TName extends string = never> {
-  private definitions: FieldTypeDefinition[] = [];
+  private readonly definitions: FieldTypeDefinition[] = [];
 
   register<const TRegisteredName extends string>(
     definition: FieldTypeDefinition<TRegisteredName>
@@ -29,9 +29,7 @@ export class FieldTypeRegistry<TName extends string = never> {
   }
 
   resolve(field: ParsedField, context: FieldMatchContext): FieldTypeDefinition<TName> | undefined {
-    return this.definitions.find((def) => def.match(field, context)) as
-      | FieldTypeDefinition<TName>
-      | undefined;
+    return this.definitions.find((def) => def.match(field, context)) as FieldTypeDefinition<TName> | undefined;
   }
 
   list(): readonly FieldTypeDefinition<TName>[] {
@@ -50,7 +48,7 @@ export class FieldTypeRegistry<TName extends string = never> {
 export function buildFieldMatchContext(field: ParsedField): FieldMatchContext {
   const label = String(field.fieldConfig?.label ?? getLabel(field));
   const identity = `${field.key} ${label}`.toLowerCase();
-  const inputType = String(field.fieldConfig?.inputProps?.type ?? getProtoFieldCustomData(field)?.inputType ?? '');
-  const maxLength = Number(field.fieldConfig?.inputProps?.maxLength ?? 0);
+  const inputType = String(field.fieldConfig?.inputProps?.["type"] ?? getProtoFieldCustomData(field)?.inputType ?? "");
+  const maxLength = Number(field.fieldConfig?.inputProps?.["maxLength"] ?? 0);
   return { identity, inputType, maxLength };
 }

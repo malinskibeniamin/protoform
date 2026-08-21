@@ -1,35 +1,34 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from "vitest";
 
-import '@/registry/base-nova/protoform/lib/protobuf-provider/auto-form-example-annotations';
+import "@/registry/base-nova/protoform/lib/protobuf-provider/auto-form-example-annotations";
 
-import { AutoFormExampleSchema } from '@/registry/base-nova/protoform/lib/protobuf-provider/gen/auto-form-example_pb';
+import { AutoFormExampleSchema } from "@/registry/base-nova/protoform/lib/protobuf-provider/gen/auto-form-example_pb";
+import { protoConversionOptionsFromFieldConfig, resolveSchema } from "../schema";
+import { createMockProvider } from "./test-utils";
 
-import { createMockProvider } from './test-utils';
-import { protoConversionOptionsFromFieldConfig, resolveSchema } from '../schema';
-
-describe('resolveSchema', () => {
-  it('maps per-field repeated-string policies to descriptor paths', () => {
+describe("resolveSchema", () => {
+  it("maps per-field repeated-string policies to descriptor paths", () => {
     expect(
       protoConversionOptionsFromFieldConfig({
-        aliases: { emptyRepeatedStringPolicy: 'preserve' },
+        aliases: { emptyRepeatedStringPolicy: "preserve" },
         name: {},
-        'settings.labels': { emptyRepeatedStringPolicy: 'discard' },
+        "settings.labels": { emptyRepeatedStringPolicy: "discard" },
       })
     ).toEqual({
       emptyRepeatedStringPolicies: {
-        aliases: 'preserve',
-        'settings.labels': 'discard',
+        aliases: "preserve",
+        "settings.labels": "discard",
       },
     });
   });
-  it('throws for unsupported input types', () => {
-    expect(() => resolveSchema('not a schema' as never)).toThrow('Unsupported AutoForm schema input');
-    expect(() => resolveSchema(42 as never)).toThrow('Unsupported');
-    expect(() => resolveSchema({ random: 'object' } as never)).toThrow('Unsupported');
+  it("throws for unsupported input types", () => {
+    expect(() => resolveSchema("not a schema" as never)).toThrow("Unsupported AutoForm schema input");
+    expect(() => resolveSchema(42 as never)).toThrow("Unsupported");
+    expect(() => resolveSchema({ random: "object" } as never)).toThrow("Unsupported");
   });
 
-  it('resolves a SchemaProvider', () => {
-    const provider = createMockProvider([{ key: 'name', type: 'string', required: true }]);
+  it("resolves a SchemaProvider", () => {
+    const provider = createMockProvider([{ key: "name", required: true, type: "string" }]);
 
     const resolved = resolveSchema(provider);
     expect(resolved.provider).toBe(provider);
@@ -38,11 +37,11 @@ describe('resolveSchema', () => {
     expect(resolved.protoDesc).toBeUndefined();
   });
 
-  it('resolves a proto descriptor without coupling the shared schema seam to an engine', () => {
+  it("resolves a proto descriptor without coupling the shared schema seam to an engine", () => {
     const resolved = resolveSchema(AutoFormExampleSchema);
     expect(resolved.isProto).toBe(true);
     expect(resolved.protoDesc).toBe(AutoFormExampleSchema);
-    expect(resolved).not.toHaveProperty('resolver');
+    expect(resolved).not.toHaveProperty("resolver");
     expect(resolved.parsedSchema.fields.length).toBeGreaterThan(0);
   });
 });

@@ -1,11 +1,7 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import { describe, expect, it } from "vitest";
 import { object as zodObject, string as zodString } from "zod";
-import {
-  minLength,
-  object as zodMiniObject,
-  string as zodMiniString,
-} from "zod/mini";
+import { minLength, object as zodMiniObject, string as zodMiniString } from "zod/mini";
 
 import {
   createFinalFormValidator,
@@ -44,10 +40,7 @@ it("supports callable schemas and forwards vendor options", async () => {
   let receivedOptions: StandardSchemaV1.Options | undefined;
   const schema = Object.assign(() => undefined, {
     "~standard": {
-      validate: (
-        value: unknown,
-        options?: StandardSchemaV1.Options
-      ): StandardSchemaV1.Result<unknown> => {
+      validate: (value: unknown, options?: StandardSchemaV1.Options): StandardSchemaV1.Result<unknown> => {
         receivedOptions = options;
         return { value };
       },
@@ -57,9 +50,7 @@ it("supports callable schemas and forwards vendor options", async () => {
   });
 
   expect(isStandardSchema(schema)).toBe(true);
-  expect(
-    await createFormikValidator(schema, { libraryOptions })(values)
-  ).toEqual({});
+  expect(await createFormikValidator(schema, { libraryOptions })(values)).toEqual({});
   expect(receivedOptions?.libraryOptions).toBe(libraryOptions);
 });
 

@@ -1,9 +1,6 @@
 import { ConnectError } from "@connectrpc/connect";
 import { protoPathToFormPath } from "@/registry/base-nova/protoform/hooks/use-proto-form";
-import {
-  createProtoFormSchema,
-  extractFieldViolations,
-} from "@/registry/base-nova/protoform/lib/protobuf-provider";
+import { createProtoFormSchema, extractFieldViolations } from "@/registry/base-nova/protoform/lib/protobuf-provider";
 
 import { SubmitBasicFormRequestSchema } from "../gen/protoform/examples/v1/forms_pb.js";
 
@@ -23,10 +20,9 @@ export const initialProfileValues: BasicFormValues = {
   email: "",
 };
 
-export const profileSchema = createProtoFormSchema<
-  BasicFormValues,
-  typeof SubmitBasicFormRequestSchema
->(SubmitBasicFormRequestSchema);
+export const profileSchema = createProtoFormSchema<BasicFormValues, typeof SubmitBasicFormRequestSchema>(
+  SubmitBasicFormRequestSchema
+);
 
 function emptyServerErrors(): ProfileServerErrors {
   return { displayName: [], email: [], root: [] };
@@ -35,9 +31,7 @@ function emptyServerErrors(): ProfileServerErrors {
 export function mapProfileServerErrors(error: unknown): ProfileServerErrors {
   const errors = emptyServerErrors();
   if (!(error instanceof ConnectError)) {
-    errors.root.push(
-      error instanceof Error ? error.message : "The request could not be sent."
-    );
+    errors.root.push(error instanceof Error ? error.message : "The request could not be sent.");
     return errors;
   }
 
@@ -49,10 +43,7 @@ export function mapProfileServerErrors(error: unknown): ProfileServerErrors {
 
   for (const violation of violations) {
     const message = violation.description || "Invalid value.";
-    const path = protoPathToFormPath(
-      SubmitBasicFormRequestSchema,
-      violation.field
-    );
+    const path = protoPathToFormPath(SubmitBasicFormRequestSchema, violation.field);
     if (path === "displayName" || path === "email") {
       errors[path].push(message);
     } else {
@@ -75,9 +66,7 @@ export function splitErrorMessages(error: unknown) {
     : [];
 }
 
-export function firstServerErrorField(
-  errors: ProfileServerErrors
-): keyof BasicFormValues | undefined {
+export function firstServerErrorField(errors: ProfileServerErrors): keyof BasicFormValues | undefined {
   if (errors.displayName.length > 0) {
     return "displayName";
   }

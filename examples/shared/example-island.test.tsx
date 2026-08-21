@@ -71,11 +71,8 @@ const islandCases: ReadonlyArray<{
   },
 ];
 
-it.each(islandCases)(
-  "shows the $label status while its chunk loads",
-  ({ Island, label }) => {
-    render(<Island />);
+it.each(islandCases)("shows the $label status while its chunk loads", ({ Island, label }) => {
+  render(<Island />);
 
-    expect(screen.getByRole("status", { name: label })).toBeInTheDocument();
-  }
-);
+  expect(screen.getByRole("status", { name: label })).toBeInTheDocument();
+});

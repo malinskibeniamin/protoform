@@ -3,13 +3,8 @@ import {
   MaskableProfileSchema,
   SubmitComplexFormRequestSchema,
 } from "../../../../../examples/gen/protoform/examples/v1/forms_pb.js";
+import { createFieldMask, createUpdateMask, dirtyFieldsFromValues } from "./field-mask.js";
 import { AutoFormExampleSchema } from "./gen/auto-form-example_pb.js";
-
-import {
-  createFieldMask,
-  createUpdateMask,
-  dirtyFieldsFromValues,
-} from "./field-mask.js";
 
 describe("createFieldMask", () => {
   it("normalizes and minimizes explicit read-mask paths", () => {
@@ -20,11 +15,7 @@ describe("createFieldMask", () => {
       "shippingAddress",
     ]);
 
-    expect(mask.paths).toEqual([
-      "primary_email",
-      "shipping_address",
-      "previous_addresses",
-    ]);
+    expect(mask.paths).toEqual(["primary_email", "shipping_address", "previous_addresses"]);
   });
 
   it("collapses an explicit wildcard to the full projection", () => {

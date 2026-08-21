@@ -1,12 +1,12 @@
-import React from 'react';
+import React from "react";
 
-import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
+import { cn, type SharedProps } from "@/registry/base-nova/protoform/lib/utils";
 
-const Label = React.forwardRef<HTMLLabelElement, React.ComponentPropsWithoutRef<'label'> & SharedProps>(
+const Label = React.forwardRef<HTMLLabelElement, React.ComponentPropsWithoutRef<"label"> & SharedProps>(
   ({ className, testId, ...props }, ref) => (
     <label
       className={cn(
-        'select-none font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-50 group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50',
+        "select-none font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-50 group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50",
         className
       )}
       data-slot="label"
@@ -17,6 +17,6 @@ const Label = React.forwardRef<HTMLLabelElement, React.ComponentPropsWithoutRef<
   )
 );
 
-Label.displayName = 'Label';
+Label.displayName = "Label";
 
 export { Label };

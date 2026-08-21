@@ -9,8 +9,6 @@ describe("release tag verification", () => {
     expect(() => verifyReleaseTag("v1.0.1", "1.0.0")).toThrow(
       "Release tag v1.0.1 does not match package version 1.0.0"
     );
-    expect(() => verifyReleaseTag(undefined, "1.0.0")).toThrow(
-      "GITHUB_REF_NAME is required"
-    );
+    expect(() => verifyReleaseTag(undefined, "1.0.0")).toThrow("GITHUB_REF_NAME is required");
   });
 });

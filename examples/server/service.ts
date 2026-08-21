@@ -7,7 +7,6 @@ import type {
   SubmitComplexFormRequest,
 } from "../gen/protoform/examples/v1/forms_pb.js";
 
-// biome-ignore lint/performance/noBarrelFile: The example server keeps one public service module.
 export {
   createLibraryService,
   type LibraryServiceOptions,
@@ -15,17 +14,12 @@ export {
 } from "../../registry/base-nova/protoform/demo/bookstore/library-service.js";
 
 function fieldError(field: string, description: string): ConnectError {
-  return new ConnectError(
-    "Review the highlighted fields.",
-    Code.InvalidArgument,
-    undefined,
-    [
-      {
-        desc: BadRequestSchema,
-        value: { fieldViolations: [{ description, field }] },
-      },
-    ]
-  );
+  return new ConnectError("Review the highlighted fields.", Code.InvalidArgument, undefined, [
+    {
+      desc: BadRequestSchema,
+      value: { fieldViolations: [{ description, field }] },
+    },
+  ]);
 }
 
 function profileId(displayName: string): string {

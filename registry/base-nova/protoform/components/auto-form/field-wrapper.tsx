@@ -1,31 +1,31 @@
-'use client';
+"use client";
 
-import { AlertCircle, ChevronDown, CircleHelp, ExternalLink, PlusIcon, TrashIcon } from 'lucide-react';
-import React from 'react';
-import { cn, type SharedProps } from '../../lib/utils';
-import { Alert, AlertDescription, AlertTitle } from '../alert';
-import { Button } from '../button';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../collapsible';
-import { Field, FieldContent, FieldDescription, FieldError, FieldLabel } from '../field';
-import { Tooltip, TooltipContent, TooltipTrigger } from '../tooltip';
-import { Heading, Text } from '../typography';
-import { useAutoFormRuntimeContext } from './context';
-import type { ArrayElementWrapperProps, ArrayWrapperProps, FieldWrapperProps, ObjectWrapperProps } from './core-types';
-import { formSpacing } from './form-spacing';
-import { getFieldDescriptionText, getFieldDocsUrl, getFieldHelpText, getFieldUiConfig } from './helpers';
-import { FormDepthProvider, headingLevelForDepth, useFormDepth } from './layout-context';
-import { getAutoFormFieldTestId } from './test-ids';
+import { AlertCircle, ChevronDown, CircleHelp, ExternalLink, PlusIcon, TrashIcon } from "lucide-react";
+import React from "react";
+import { cn, type SharedProps } from "../../lib/utils";
+import { Alert, AlertDescription, AlertTitle } from "../alert";
+import { Button } from "../button";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../collapsible";
+import { Field, FieldContent, FieldDescription, FieldError, FieldLabel } from "../field";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../tooltip";
+import { Heading, Text } from "../typography";
+import { useAutoFormRuntimeContext } from "./context";
+import type { ArrayElementWrapperProps, ArrayWrapperProps, FieldWrapperProps, ObjectWrapperProps } from "./core-types";
+import { formSpacing } from "./form-spacing";
+import { getFieldDescriptionText, getFieldDocsUrl, getFieldHelpText, getFieldUiConfig } from "./helpers";
+import { FormDepthProvider, headingLevelForDepth, useFormDepth } from "./layout-context";
+import { getAutoFormFieldTestId } from "./test-ids";
 
 const REGEX_ERROR_PATTERN = /regex pattern\s*`([^`]+)`/;
 
-export const Form = React.forwardRef<HTMLFormElement, React.ComponentProps<'form'> & SharedProps>(
+export const Form = React.forwardRef<HTMLFormElement, React.ComponentProps<"form"> & SharedProps>(
   ({ children, testId, ...props }, ref) => (
     <form className={formSpacing.form} data-testid={testId} ref={ref} {...props}>
       <FormDepthProvider depth={0}>{children}</FormDepthProvider>
     </form>
   )
 );
-Form.displayName = 'Form';
+Form.displayName = "Form";
 
 export const ArrayElementWrapper: React.FC<
   ArrayElementWrapperProps & {
@@ -62,7 +62,7 @@ export const ArrayWrapper: React.FC<
     {children}
     <Button onClick={onAddItem} size="sm" testId={addButtonTestId} type="button" variant="outline">
       <PlusIcon className="h-4 w-4" />
-      {label ? `Add ${label}` : 'Add item'}
+      {label ? `Add ${label}` : "Add item"}
     </Button>
   </div>
 );
@@ -76,10 +76,10 @@ export const ErrorMessage: React.FC<{ error: string }> = ({ error }) => (
 );
 
 function augmentError(
-  error: FieldWrapperProps['error'],
-  field: FieldWrapperProps['field']
-): FieldWrapperProps['error'] {
-  if (!(typeof error === 'string' && REGEX_ERROR_PATTERN.test(error))) {
+  error: FieldWrapperProps["error"],
+  field: FieldWrapperProps["field"]
+): FieldWrapperProps["error"] {
+  if (!(typeof error === "string" && REGEX_ERROR_PATTERN.test(error))) {
     return error;
   }
   const uiConfig = getFieldUiConfig(field);
@@ -92,20 +92,46 @@ function augmentError(
 export const FieldWrapper: React.FC<FieldWrapperProps> = ({ label, children, id, field, error: rawError }) => {
   const depth = useFormDepth();
   const { testIdPrefix } = useAutoFormRuntimeContext();
-  const isCompact = Boolean((field.fieldConfig?.customData as Record<string, unknown> | undefined)?.compactRow);
-  const tooltipText = isCompact ? '' : getFieldHelpText(field);
+  const isCompact = Boolean((field.fieldConfig?.customData as Record<string, unknown> | undefined)?.["compactRow"]);
+  const tooltipText = isCompact ? "" : getFieldHelpText(field);
   const helpText = isCompact ? undefined : getFieldDescriptionText(field);
   const docsUrl = isCompact ? undefined : getFieldDocsUrl(field);
   const error = augmentError(rawError, field);
-  const isDisabled = Boolean(field.fieldConfig?.inputProps?.disabled);
-  const hasVisibleLabel = !(typeof label === 'string' && label.trim().length === 0);
+  const isDisabled = Boolean(field.fieldConfig?.inputProps?.["disabled"]);
+  const hasVisibleLabel = !(typeof label === "string" && label.trim().length === 0);
   const fallbackLabel =
-    typeof field.fieldConfig?.label === 'string' && field.fieldConfig.label.trim().length > 0
+    typeof field.fieldConfig?.label === "string" && field.fieldConfig.label.trim().length > 0
       ? field.fieldConfig.label
       : field.key;
-  const helpLabel = typeof label === 'string' && label.trim().length > 0 ? label : fallbackLabel;
+  const helpLabel = typeof label === "string" && label.trim().length > 0 ? label : fallbackLabel;
+  const displayedLabel: React.ReactNode = hasVisibleLabel ? label : fallbackLabel;
   const fieldTestId = getAutoFormFieldTestId(testIdPrefix, id);
   const isSplit = depth === 0 && !isCompact;
+  let fieldFeedback: React.ReactNode = null;
+  if (error) {
+    fieldFeedback = <FieldError testId={getAutoFormFieldTestId(testIdPrefix, id, "error")}>{error}</FieldError>;
+  } else if ((helpText || docsUrl) && !isCompact) {
+    fieldFeedback = (
+      <FieldDescription testId={getAutoFormFieldTestId(testIdPrefix, id, "description")}>
+        {helpText ? <span>{helpText}</span> : null}
+        {docsUrl ? (
+          <>
+            {helpText ? " " : null}
+            <a
+              className="inline-flex items-center gap-1 text-primary underline-offset-2 hover:underline"
+              data-testid={getAutoFormFieldTestId(testIdPrefix, id, "docs-link")}
+              href={docsUrl}
+              rel="noreferrer"
+              target="_blank"
+            >
+              View {helpLabel} documentation
+              <ExternalLink aria-hidden className="h-3 w-3" />
+            </a>
+          </>
+        ) : null}
+      </FieldDescription>
+    );
+  }
 
   // Match the non-AutoForm usage pattern in managed-create-form.tsx:
   // `<Field>` with label / control / description / error as *direct*
@@ -118,20 +144,18 @@ export const FieldWrapper: React.FC<FieldWrapperProps> = ({ label, children, id,
   return (
     <Field
       className={
-        isSplit
-          ? 'grid items-start gap-x-8 gap-y-2 sm:grid-cols-[minmax(10rem,0.34fr)_minmax(0,1fr)]'
-          : undefined
+        isSplit ? "grid items-start gap-x-8 gap-y-2 sm:grid-cols-[minmax(10rem,0.34fr)_minmax(0,1fr)]" : undefined
       }
       data-disabled={isDisabled}
       data-invalid={Boolean(error)}
-      data-layout={isSplit ? 'split' : 'stacked'}
+      data-layout={isSplit ? "split" : "stacked"}
       testId={fieldTestId}
     >
       {isCompact ? null : (
-        <div className={cn('flex min-w-0 items-center gap-2', isSplit && 'sm:pt-2')}>
-          <FieldLabel className={hasVisibleLabel ? 'items-center gap-2' : 'sr-only'} htmlFor={id}>
+        <div className={cn("flex min-w-0 items-center gap-2", isSplit && "sm:pt-2")}>
+          <FieldLabel className={hasVisibleLabel ? "items-center gap-2" : "sr-only"} htmlFor={id}>
             <Text as="span" variant="labelStrongSmall">
-              {hasVisibleLabel ? label : fallbackLabel}
+              {displayedLabel}
             </Text>
             {field.required ? (
               <Text as="span" className="text-destructive" variant="small">
@@ -145,7 +169,7 @@ export const FieldWrapper: React.FC<FieldWrapperProps> = ({ label, children, id,
                 <Button
                   aria-label={`Help for ${helpLabel}`}
                   className="rounded-full text-muted-foreground shadow-none hover:text-foreground"
-                  data-testid={getAutoFormFieldTestId(testIdPrefix, id, 'help')}
+                  data-testid={getAutoFormFieldTestId(testIdPrefix, id, "help")}
                   size="icon-xs"
                   type="button"
                   variant="ghost"
@@ -156,7 +180,7 @@ export const FieldWrapper: React.FC<FieldWrapperProps> = ({ label, children, id,
               <TooltipContent
                 className="max-w-sm text-pretty text-xs"
                 role="tooltip"
-                testId={getAutoFormFieldTestId(testIdPrefix, id, 'help-content')}
+                testId={getAutoFormFieldTestId(testIdPrefix, id, "help-content")}
               >
                 {tooltipText}
               </TooltipContent>
@@ -166,51 +190,29 @@ export const FieldWrapper: React.FC<FieldWrapperProps> = ({ label, children, id,
       )}
       <FieldContent className="min-w-0 gap-2">
         {children}
-        {error ? (
-          <FieldError testId={getAutoFormFieldTestId(testIdPrefix, id, 'error')}>{error}</FieldError>
-        ) : (helpText || docsUrl) && !isCompact ? (
-          <FieldDescription testId={getAutoFormFieldTestId(testIdPrefix, id, 'description')}>
-            {helpText ? <span>{helpText}</span> : null}
-            {docsUrl ? (
-              <>
-                {helpText ? ' ' : null}
-                <a
-                  className="inline-flex items-center gap-1 text-primary underline-offset-2 hover:underline"
-                  data-testid={getAutoFormFieldTestId(testIdPrefix, id, 'docs-link')}
-                  href={docsUrl}
-                  rel="noreferrer"
-                  target="_blank"
-                >
-                  Learn more
-                  <ExternalLink aria-hidden className="h-3 w-3" />
-                </a>
-              </>
-            ) : null}
-          </FieldDescription>
-        ) : null}
+        {fieldFeedback}
       </FieldContent>
     </Field>
   );
 };
 
-export const ObjectWrapper: React.FC<ObjectWrapperProps & { testId?: string; hasError?: boolean }> = ({
-  label,
-  children,
-  field,
-  testId,
-  hasError,
-}) => {
+export const ObjectWrapper: React.FC<
+  ObjectWrapperProps & {
+    testId?: string | undefined;
+    hasError?: boolean | undefined;
+  }
+> = ({ label, children, field, testId, hasError }) => {
   const depth = useFormDepth();
   const headingLevel = headingLevelForDepth(depth);
   const helpText = getFieldDescriptionText(field);
-  const hasVisibleLabel = !(typeof label === 'string' && label.trim().length === 0);
+  const hasVisibleLabel = !(typeof label === "string" && label.trim().length === 0);
   const customData = (field.fieldConfig?.customData ?? {}) as Record<string, unknown>;
-  const isCollapsible = Boolean(customData.collapsible);
+  const isCollapsible = Boolean(customData["collapsible"]);
   // Divider under a section header. Defaults to true for parity with the
   // historical ObjectWrapper behavior. Consumers can opt out by setting
   // `customData.showDivider = false` — same escape hatch as FormSection's
   // `divider` prop so both entry points agree on when a rule renders.
-  const showDivider = customData.showDivider !== false && hasVisibleLabel;
+  const showDivider = customData["showDivider"] !== false && hasVisibleLabel;
   const isSplit = depth === 0 && hasVisibleLabel && !isCollapsible;
   const [isOpen, setIsOpen] = React.useState(false);
 
@@ -230,7 +232,7 @@ export const ObjectWrapper: React.FC<ObjectWrapperProps & { testId?: string; has
               className={
                 showDivider
                   ? `flex w-full items-center justify-between text-left ${formSpacing.sectionDivider}`
-                  : 'flex w-full items-center justify-between text-left'
+                  : "flex w-full items-center justify-between text-left"
               }
               type="button"
             >
@@ -268,17 +270,17 @@ export const ObjectWrapper: React.FC<ObjectWrapperProps & { testId?: string; has
     <section
       className={
         isSplit
-          ? 'grid items-start gap-6 sm:grid-cols-[minmax(10rem,0.34fr)_minmax(0,1fr)] sm:gap-x-8'
+          ? "grid items-start gap-6 sm:grid-cols-[minmax(10rem,0.34fr)_minmax(0,1fr)] sm:gap-x-8"
           : formSpacing.field
       }
-      data-layout={isSplit ? 'split' : 'stacked'}
+      data-layout={isSplit ? "split" : "stacked"}
       data-testid={testId}
     >
       {hasVisibleLabel ? (
         <div
           className={
             showDivider
-              ? `${formSpacing.sectionHeader} ${formSpacing.sectionDivider} ${isSplit ? 'sm:border-b-0 sm:pb-0' : ''}`
+              ? `${formSpacing.sectionHeader} ${formSpacing.sectionDivider} ${isSplit ? "sm:border-b-0 sm:pb-0" : ""}`
               : formSpacing.sectionHeader
           }
         >
@@ -300,17 +302,17 @@ export const ObjectWrapper: React.FC<ObjectWrapperProps & { testId?: string; has
         </div>
       ) : null}
       <FormDepthProvider depth={depth + 1}>
-        <div className={cn('min-w-0', formSpacing.field)}>{children}</div>
+        <div className={cn("min-w-0", formSpacing.field)}>{children}</div>
       </FormDepthProvider>
     </section>
   );
 };
 
-export const SubmitButton: React.FC<{ children: React.ReactNode; disabled?: boolean; testId?: string }> = ({
-  children,
-  disabled,
-  testId,
-}) => (
+export const SubmitButton: React.FC<{
+  children: React.ReactNode;
+  disabled?: boolean | undefined;
+  testId?: string | undefined;
+}> = ({ children, disabled, testId }) => (
   <Button disabled={disabled} testId={testId} type="submit">
     {children}
   </Button>

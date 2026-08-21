@@ -35,9 +35,7 @@ function sourceFileMessages(message: DescMessage): DescMessage[] {
   return messages;
 }
 
-function sourceComment(
-  desc: Parameters<typeof getComments>[0]
-): string | undefined {
+function sourceComment(desc: Parameters<typeof getComments>[0]): string | undefined {
   const comment = getComments(desc).leading?.trim();
   return comment || undefined;
 }

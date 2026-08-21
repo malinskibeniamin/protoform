@@ -2,10 +2,7 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 
-import {
-  getReadinessSummary,
-  readinessRequirements,
-} from "../../readiness/profile.js";
+import { getReadinessSummary, readinessRequirements } from "../../readiness/profile.js";
 import { ReadinessDashboard } from "./readiness-dashboard.js";
 
 describe("ReadinessDashboard", () => {
@@ -19,12 +16,8 @@ describe("ReadinessDashboard", () => {
     );
     expect(rangeLabel).toBeVisible();
     expect(rangeLabel.childNodes).toHaveLength(1);
-    expect(
-      within(ledger).getByRole("button", { name: "Previous page" })
-    ).toBeDisabled();
-    expect(
-      within(ledger).getByRole("button", { name: "Next page" })
-    ).toBeEnabled();
+    expect(within(ledger).getByRole("button", { name: "Previous page" })).toBeDisabled();
+    expect(within(ledger).getByRole("button", { name: "Next page" })).toBeEnabled();
     expect(within(ledger).getByText("String fields")).toBeVisible();
     expect(within(ledger).queryByText("Any")).not.toBeInTheDocument();
 
@@ -35,9 +28,7 @@ describe("ReadinessDashboard", () => {
     expect(pageLabel.childNodes).toHaveLength(1);
     expect(within(ledger).queryByText("String fields")).not.toBeInTheDocument();
     expect(within(ledger).getByText("Any")).toBeVisible();
-    expect(
-      within(ledger).getByRole("button", { name: "Previous page" })
-    ).toBeEnabled();
+    expect(within(ledger).getByRole("button", { name: "Previous page" })).toBeEnabled();
   });
 
   it("resets pagination when search or status filters change", async () => {
@@ -75,9 +66,7 @@ describe("ReadinessDashboard", () => {
     render(<ReadinessDashboard />);
 
     await user.click(screen.getByRole("button", { name: "Optional" }));
-    expect(
-      screen.getByText("Protobuf-ES v1 proto2/proto3 migration bridge")
-    ).toBeVisible();
+    expect(screen.getByText("Protobuf-ES v1 proto2/proto3 migration bridge")).toBeVisible();
     expect(screen.getByText("Verified optional")).toBeVisible();
 
     await user.click(screen.getByRole("button", { name: "Out of target" }));
@@ -90,25 +79,18 @@ describe("ReadinessDashboard", () => {
     const summary = getReadinessSummary(readinessRequirements);
     render(<ReadinessDashboard />);
 
-    expect(
-      screen.getByRole("progressbar", { name: "Overall readiness" })
-    ).toHaveAttribute("aria-valuenow", String(summary.percentage));
+    expect(screen.getByRole("progressbar", { name: "Overall readiness" })).toHaveAttribute(
+      "aria-valuenow",
+      String(summary.percentage)
+    );
     expect(
       screen.getByText(`${summary.excluded} excluded checks stay visible`, {
         exact: false,
       })
     ).toBeVisible();
-    expect(
-      screen.getAllByRole("heading", { name: "Protobuf" })[0]
-    ).toBeVisible();
-    expect(screen.getByRole("button", { name: "Verified" })).toHaveAttribute(
-      "aria-pressed",
-      "true"
-    );
-    expect(screen.getByRole("button", { name: "Gaps" })).toHaveAttribute(
-      "aria-pressed",
-      "false"
-    );
+    expect(screen.getAllByRole("heading", { name: "Protobuf" })[0]).toBeVisible();
+    expect(screen.getByRole("button", { name: "Verified" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("button", { name: "Gaps" })).toHaveAttribute("aria-pressed", "false");
     expect(screen.getByText("String fields")).toBeVisible();
 
     await user.click(screen.getByRole("button", { name: "All" }));
@@ -118,20 +100,17 @@ describe("ReadinessDashboard", () => {
       name: "Search readiness checks",
     });
     await user.type(search, "AIP-127");
-    expect(
-      screen.getByRole("link", { name: "AIP-127 HTTP and gRPC transcoding" })
-    ).toHaveAttribute("href", "https://google.aip.dev/127");
+    expect(screen.getByRole("link", { name: "AIP-127 HTTP and gRPC transcoding" })).toHaveAttribute(
+      "href",
+      "https://google.aip.dev/127"
+    );
     await user.clear(search);
 
     await user.click(screen.getByRole("button", { name: "Gaps" }));
 
     expect(screen.queryByText("String fields")).not.toBeInTheDocument();
-    expect(
-      screen.queryByText("Service and RPC descriptors")
-    ).not.toBeInTheDocument();
-    expect(
-      screen.getByText("No readiness checks match these filters.")
-    ).toBeVisible();
+    expect(screen.queryByText("Service and RPC descriptors")).not.toBeInTheDocument();
+    expect(screen.getByText("No readiness checks match these filters.")).toBeVisible();
 
     await user.click(screen.getByRole("button", { name: "External" }));
     expect(screen.getByText("Binary wire compatibility")).toBeVisible();
@@ -145,9 +124,7 @@ describe("ReadinessDashboard", () => {
       name: "String fields: Verified",
     });
     await user.hover(verifiedCheck);
-    expect(await screen.findByRole("tooltip")).toHaveTextContent(
-      "maps $key into the stable field model"
-    );
+    expect(await screen.findByRole("tooltip")).toHaveTextContent("maps $key into the stable field model");
 
     await user.unhover(verifiedCheck);
     const serviceCheck = screen.getByRole("button", {

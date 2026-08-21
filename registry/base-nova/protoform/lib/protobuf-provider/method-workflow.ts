@@ -4,12 +4,7 @@ import {
   OperationSchema,
   operation_info,
 } from "@buf/googleapis_googleapis.bufbuild_es/google/longrunning/operations_pb.js";
-import {
-  create,
-  type DescMethod,
-  getExtension,
-  hasExtension,
-} from "@bufbuild/protobuf";
+import { create, type DescMethod, getExtension, hasExtension } from "@bufbuild/protobuf";
 import { MethodOptionsSchema } from "@bufbuild/protobuf/wkt";
 
 export type ProtoMethodCategory = "batch" | "custom" | "standard";
@@ -33,7 +28,7 @@ export interface ProtoMethodWorkflow {
   execution: ProtoMethodExecution;
   httpBindings: readonly ProtoHttpBinding[];
   method: DescMethod;
-  operation?: ProtoOperationInfo;
+  operation?: ProtoOperationInfo | undefined;
 }
 
 const STANDARD_METHOD_PATTERN = /^(Create|Delete|Get|List|Update)[A-Z]/;
@@ -63,27 +58,22 @@ function getHttpPattern(rule: HttpRule): { method: string; path: string } {
   };
 }
 
-function parseHttpBinding(
-  method: DescMethod,
-  rule: HttpRule
-): ProtoHttpBinding {
+function parseHttpBinding(method: DescMethod, rule: HttpRule): ProtoHttpBinding {
   const pattern = getHttpPattern(rule);
-  const pathFields = Array.from(
-    pattern.path.matchAll(PATH_FIELD_PATTERN),
-    (match) => match[1]
-  ).filter((field): field is string => field !== undefined);
+  const pathFields = Array.from(pattern.path.matchAll(PATH_FIELD_PATTERN), (match) => match[1]).filter(
+    (field): field is string => field !== undefined
+  );
+  const pathFieldSet = new Set(pathFields);
   const requestFields = method.input.fields.map((field) => field.name);
   let bodyFields: string[] = [];
   let queryFields: string[] = [];
   if (rule.body === "*") {
-    bodyFields = requestFields.filter((field) => !pathFields.includes(field));
+    bodyFields = requestFields.filter((field) => !pathFieldSet.has(field));
   } else if (rule.body) {
     bodyFields = [rule.body];
-    queryFields = requestFields.filter(
-      (field) => !pathFields.includes(field) && field !== rule.body
-    );
+    queryFields = requestFields.filter((field) => !pathFieldSet.has(field) && field !== rule.body);
   } else {
-    queryFields = requestFields.filter((field) => !pathFields.includes(field));
+    queryFields = requestFields.filter((field) => !pathFieldSet.has(field));
   }
 
   return {
@@ -95,16 +85,10 @@ function parseHttpBinding(
   };
 }
 
-export function getProtoMethodWorkflow(
-  method: DescMethod
-): ProtoMethodWorkflow {
+export function getProtoMethodWorkflow(method: DescMethod): ProtoMethodWorkflow {
   const options = method.proto.options ?? create(MethodOptionsSchema);
-  const httpRule = hasExtension(options, http)
-    ? getExtension(options, http)
-    : undefined;
-  const operationInfo = hasExtension(options, operation_info)
-    ? getExtension(options, operation_info)
-    : undefined;
+  const httpRule = hasExtension(options, http) ? getExtension(options, http) : undefined;
+  const operationInfo = hasExtension(options, operation_info) ? getExtension(options, operation_info) : undefined;
   const streaming = method.methodKind !== "unary";
   const longRunning = method.output.typeName === OperationSchema.typeName;
   let execution: ProtoMethodExecution = "unary";
@@ -125,9 +109,7 @@ export function getProtoMethodWorkflow(
     category: getMethodCategory(method.name),
     execution,
     httpBindings: httpRule
-      ? [httpRule, ...httpRule.additionalBindings].map((rule) =>
-          parseHttpBinding(method, rule)
-        )
+      ? [httpRule, ...httpRule.additionalBindings].map((rule) => parseHttpBinding(method, rule))
       : [],
     method,
     operation,

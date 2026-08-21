@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 /**
  * Minimal local typings mirroring `@base-ui/react`'s public render-prop contract.
@@ -25,10 +25,10 @@ type ComponentRenderFnCompat<Props, State> = (props: Props, state: State) => Rea
  * through the generic bound, the returned prop bag keeps each primitive's
  * original `render` typing intact. No `any`, no casts at the call sites.
  */
-type AsChildInput = {
-  asChild?: boolean;
-  children?: React.ReactNode;
-};
+interface AsChildInput {
+  asChild?: boolean | undefined;
+  children?: React.ReactNode | undefined;
+}
 
 /**
  * Translates Radix-style `asChild` prop to Base UI `render` prop.
@@ -44,14 +44,14 @@ type AsChildInput = {
  * merge and force us to hand-roll prop precedence (including event handler
  * chaining), which is error-prone.
  */
-export function asChildToRender<P extends AsChildInput>(props: P): Omit<P, 'asChild'> {
+export function asChildToRender<P extends AsChildInput>(props: P): Omit<P, "asChild"> {
   const { asChild, children, ...rest } = props;
   if (asChild && React.isValidElement(children)) {
     // Drop `children` — Base UI uses `render` to mount the child element instead.
     // `rest` already omits it from the spread above.
-    return { ...rest, render: children } as unknown as Omit<P, 'asChild'>;
+    return { ...rest, render: children } as unknown as Omit<P, "asChild">;
   }
-  return { ...rest, children } as Omit<P, 'asChild'>;
+  return { ...rest, children } as Omit<P, "asChild">;
 }
 
 /**
@@ -60,18 +60,18 @@ export function asChildToRender<P extends AsChildInput>(props: P): Omit<P, 'asCh
  */
 function compatStateAttrs(state: CompatState | undefined): Record<string, string> {
   const attrs: Record<string, string> = {};
-  if (state && typeof state.open === 'boolean') {
-    attrs['data-state'] = state.open ? 'open' : 'closed';
+  if (state && typeof state.open === "boolean") {
+    attrs["data-state"] = state.open ? "open" : "closed";
   }
   if (state && state.checked !== undefined) {
-    if (state.checked === 'indeterminate') {
-      attrs['data-state'] = 'indeterminate';
-    } else if (typeof state.checked === 'boolean') {
-      attrs['data-state'] = state.checked ? 'checked' : 'unchecked';
+    if (state.checked === "indeterminate") {
+      attrs["data-state"] = "indeterminate";
+    } else if (typeof state.checked === "boolean") {
+      attrs["data-state"] = state.checked ? "checked" : "unchecked";
     }
   }
   if (state?.disabled) {
-    attrs['data-disabled'] = '';
+    attrs["data-disabled"] = "";
   }
   return attrs;
 }
@@ -97,7 +97,7 @@ function compatStateAttrs(state: CompatState | undefined): Record<string, string
  *   `nativeButton={false}` explicitly if their custom component renders a
  *   non-button element.
  */
-export function asChildTrigger<P extends AsChildInput>(props: P): Omit<P, 'asChild'> & { nativeButton?: boolean } {
+export function asChildTrigger<P extends AsChildInput>(props: P): Omit<P, "asChild"> & { nativeButton?: boolean } {
   const base = asChildToRender(props);
   if (!props.asChild) {
     return base;
@@ -119,8 +119,8 @@ export function asChildTrigger<P extends AsChildInput>(props: P): Omit<P, 'asChi
  * `nativeButton` assumption.
  */
 function rendersNonButton(element: React.ReactElement): boolean {
-  if (typeof element.type === 'string') {
-    return element.type !== 'button';
+  if (typeof element.type === "string") {
+    return element.type !== "button";
   }
   const props = (element.props ?? {}) as { asChild?: boolean; children?: React.ReactNode };
   if (!props.asChild) {
@@ -134,11 +134,11 @@ function rendersNonButton(element: React.ReactElement): boolean {
 /**
  * State shapes exposed by Base UI primitives that are relevant for data-state compat.
  */
-export type CompatState = {
-  open?: boolean;
-  checked?: boolean | 'indeterminate';
+export interface CompatState {
+  checked?: boolean | "indeterminate";
   disabled?: boolean;
-};
+  open?: boolean;
+}
 
 /**
  * Produces a `render` prop that spreads element props and injects Radix-style
@@ -151,7 +151,7 @@ export type CompatState = {
  * forwards a compat attribute while keeping Base UI's native attrs intact.
  */
 export function renderWithDataState<S extends CompatState = CompatState>(
-  Element: keyof React.JSX.IntrinsicElements = 'div'
+  Element: keyof React.JSX.IntrinsicElements = "div"
 ): ComponentRenderFnCompat<HTMLPropsCompat, S> {
   return (props, state) => React.createElement(Element, { ...props, ...compatStateAttrs(state) });
 }
@@ -229,16 +229,16 @@ export function useMirroredOpen(
     [onOpenChange]
   );
 
-  return { isOpen, handleOpenChange };
+  return { handleOpenChange, isOpen };
 }
 
-type DescriptionRenderProps = {
-  asChild?: boolean;
-  children?: React.ReactNode;
-  className?: string;
-  fallbackClassName?: string;
-  dataSlot?: string;
-};
+interface DescriptionRenderProps {
+  asChild?: boolean | undefined;
+  children?: React.ReactNode | undefined;
+  className?: string | undefined;
+  dataSlot?: string | undefined;
+  fallbackClassName?: string | undefined;
+}
 
 /**
  * Renders a Dialog/AlertDialog/Sheet Description as a `<div>` (instead of Base
@@ -250,19 +250,19 @@ export function renderDescription({
   asChild,
   children,
   className,
-  fallbackClassName = 'text-muted-foreground text-sm',
+  fallbackClassName = "text-muted-foreground text-sm",
   dataSlot,
 }: DescriptionRenderProps): React.ReactElement {
-  if (asChild && React.isValidElement<{ 'data-slot'?: string }>(children)) {
+  if (asChild && React.isValidElement<{ "data-slot"?: string }>(children)) {
     if (!dataSlot) {
       return children;
     }
-    if (children.props['data-slot']) {
+    if (children.props["data-slot"]) {
       return children;
     }
-    return React.cloneElement(children, { 'data-slot': dataSlot });
+    return React.cloneElement(children, { "data-slot": dataSlot });
   }
-  const mergedClassName = [fallbackClassName, className].filter(Boolean).join(' ');
+  const mergedClassName = [fallbackClassName, className].filter(Boolean).join(" ");
   return <div className={mergedClassName}>{children}</div>;
 }
 
@@ -274,16 +274,14 @@ export function renderDescription({
  */
 const warnedKeys = new Set<string>();
 
-export function devWarnOnce(key: string, message: string): void {
-  if (process.env.NODE_ENV === 'production') {
+export function devWarnOnce(key: string, _message: string): void {
+  if (process.env.NODE_ENV === "production") {
     return;
   }
   if (warnedKeys.has(key)) {
     return;
   }
   warnedKeys.add(key);
-  // biome-ignore lint/suspicious/noConsole: intentional dev-mode signal
-  console.warn(`[protoform-ui] ${message}`);
 }
 
 /**
@@ -299,7 +297,7 @@ export function resetDevWarnings(): void {
 
 /**
  * Fires a dev-only deprecation warning the first time a Radix-compat prop is
- * passed. Pair with a JSDoc `@deprecated` tag on the prop type so both the
+ * passed. Pair with a deprecated JSDoc tag on the prop type so both the
  * IDE and the runtime surface the guidance. Message format matches the
  * compat docs: says what the prop was, what to use instead, and when the
  * shim will go away.
@@ -336,9 +334,9 @@ export function resolveKeepMounted(
   if (forceMount) {
     warnDeprecatedProp(
       component,
-      'forceMount',
+      "forceMount",
       forceMount,
-      'Use `keepMounted` on the underlying Portal instead (already forwarded by this component).'
+      "Use `keepMounted` on the underlying Portal instead (already forwarded by this component)."
     );
     return true;
   }
@@ -363,24 +361,25 @@ type SlotProps = {
 type SlotElement = React.ReactElement & { ref?: React.Ref<HTMLElement> };
 
 type EventHandler = (...args: unknown[]) => unknown;
+const EVENT_HANDLER_KEY_PATTERN = /^on[A-Z]/;
 
 function isEventHandlerKey(key: string): boolean {
-  return /^on[A-Z]/.test(key);
+  return EVENT_HANDLER_KEY_PATTERN.test(key);
 }
 
 function readHandler(source: object, key: string): EventHandler | undefined {
   const value = Reflect.get(source, key);
-  return typeof value === 'function' ? (value as EventHandler) : undefined;
+  return typeof value === "function" ? (value as EventHandler) : undefined;
 }
 
 function readString(source: object, key: string): string | undefined {
   const value = Reflect.get(source, key);
-  return typeof value === 'string' ? value : undefined;
+  return typeof value === "string" ? value : undefined;
 }
 
 function readStyle(source: object): React.CSSProperties | undefined {
-  const value = Reflect.get(source, 'style');
-  return value && typeof value === 'object' ? (value as React.CSSProperties) : undefined;
+  const value = Reflect.get(source, "style");
+  return value && typeof value === "object" ? (value as React.CSSProperties) : undefined;
 }
 
 function composeRefs<T>(...refs: Array<React.Ref<T> | undefined>): React.RefCallback<T> {
@@ -389,10 +388,10 @@ function composeRefs<T>(...refs: Array<React.Ref<T> | undefined>): React.RefCall
       if (!ref) {
         continue;
       }
-      if (typeof ref === 'function') {
+      if (typeof ref === "function") {
         ref(value);
       } else {
-        (ref as React.MutableRefObject<T>).current = value;
+        (ref as React.RefObject<T>).current = value;
       }
     }
   };
@@ -400,7 +399,7 @@ function composeRefs<T>(...refs: Array<React.Ref<T> | undefined>): React.RefCall
 
 function getElementRef(element: React.ReactElement): React.Ref<unknown> | undefined {
   // React 19 exposes ref as a prop; React <=18 exposes it on the element.
-  const refFromProps = Reflect.get(element.props as object, 'ref');
+  const refFromProps = Reflect.get(element.props as object, "ref");
   if (refFromProps !== undefined) {
     return refFromProps as React.Ref<unknown>;
   }
@@ -410,16 +409,16 @@ function getElementRef(element: React.ReactElement): React.Ref<unknown> | undefi
 function mergeSlotProps(slotProps: object, childProps: object): Record<string, unknown> {
   const merged: Record<string, unknown> = { ...slotProps, ...childProps };
 
-  const slotClass = readString(slotProps, 'className');
-  const childClass = readString(childProps, 'className');
+  const slotClass = readString(slotProps, "className");
+  const childClass = readString(childProps, "className");
   if (slotClass || childClass) {
-    merged.className = [slotClass, childClass].filter(Boolean).join(' ');
+    merged["className"] = [slotClass, childClass].filter(Boolean).join(" ");
   }
 
   const slotStyle = readStyle(slotProps);
   const childStyle = readStyle(childProps);
   if (slotStyle || childStyle) {
-    merged.style = { ...(slotStyle ?? {}), ...(childStyle ?? {}) };
+    merged["style"] = { ...(slotStyle ?? {}), ...(childStyle ?? {}) };
   }
 
   for (const key of Object.keys(slotProps)) {
@@ -446,7 +445,7 @@ type SlotCloneProps = {
   children: React.ReactNode;
 } & React.HTMLAttributes<HTMLElement>;
 
-const SlotClone = React.forwardRef<HTMLElement, SlotCloneProps>(function SlotClone(props, forwardedRef) {
+const SlotClone = React.forwardRef<HTMLElement, SlotCloneProps>(function renderSlotClone(props, forwardedRef) {
   const { children, ...slotProps } = props;
 
   if (!React.isValidElement(children)) {
@@ -460,31 +459,31 @@ const SlotClone = React.forwardRef<HTMLElement, SlotCloneProps>(function SlotClo
   const childProps = element.props as object;
   const merged = mergeSlotProps(slotProps, childProps);
   const childRef = getElementRef(element) as React.Ref<HTMLElement> | undefined;
-  merged.ref = forwardedRef ? composeRefs(forwardedRef, childRef) : childRef;
+  merged["ref"] = forwardedRef ? composeRefs(forwardedRef, childRef) : childRef;
   return React.cloneElement(element, merged);
 });
 
-const SLOTTABLE_IDENTIFIER = Symbol.for('protoform.slottable');
+const SLOTTABLE_IDENTIFIER = Symbol.for("protoform.slottable");
 
 type SlottableComponent = React.FC<{ children: React.ReactNode }> & { __slottableId: symbol };
 
 export const Slottable: SlottableComponent = Object.assign(
-  function Slottable({ children }: { children: React.ReactNode }) {
+  function renderSlottable({ children }: { children: React.ReactNode }) {
     return <>{children}</>;
   },
   { __slottableId: SLOTTABLE_IDENTIFIER }
 );
-Slottable.displayName = 'Slottable';
+Slottable.displayName = "Slottable";
 
 function isSlottable(child: React.ReactNode): child is React.ReactElement<{ children: React.ReactNode }> {
   if (!React.isValidElement(child)) {
     return false;
   }
   const type = child.type as { __slottableId?: symbol } | string;
-  return typeof type !== 'string' && type.__slottableId === SLOTTABLE_IDENTIFIER;
+  return typeof type !== "string" && type.__slottableId === SLOTTABLE_IDENTIFIER;
 }
 
-export const Slot = React.forwardRef<HTMLElement, SlotProps>(function Slot(props, forwardedRef) {
+export const Slot = React.forwardRef<HTMLElement, SlotProps>(function renderSlot(props, forwardedRef) {
   const { children, ...slotProps } = props;
   const childrenArray = React.Children.toArray(children);
   const slottable = childrenArray.find(isSlottable);
@@ -514,4 +513,4 @@ export const Slot = React.forwardRef<HTMLElement, SlotProps>(function Slot(props
     </SlotClone>
   );
 });
-Slot.displayName = 'Slot';
+Slot.displayName = "Slot";

@@ -2,26 +2,12 @@ import {
   FieldBehavior,
   field_behavior as fieldBehaviorExtension,
 } from "@buf/googleapis_googleapis.bufbuild_es/google/api/field_behavior_pb.js";
-import {
-  create,
-  type DescField,
-  type DescMessage,
-  type DescOneof,
-  getExtension,
-} from "@bufbuild/protobuf";
-import {
-  type FieldMask,
-  FieldMaskSchema,
-  FieldOptionsSchema,
-} from "@bufbuild/protobuf/wkt";
+import { create, type DescField, type DescMessage, type DescOneof, getExtension } from "@bufbuild/protobuf";
+import { type FieldMask, FieldMaskSchema, FieldOptionsSchema } from "@bufbuild/protobuf/wkt";
 
 type FormRecord = Record<string, unknown>;
 
-const NON_UPDATABLE_BEHAVIORS = new Set([
-  FieldBehavior.IDENTIFIER,
-  FieldBehavior.IMMUTABLE,
-  FieldBehavior.OUTPUT_ONLY,
-]);
+const NON_UPDATABLE_BEHAVIORS = new Set([FieldBehavior.IDENTIFIER, FieldBehavior.IMMUTABLE, FieldBehavior.OUTPUT_ONLY]);
 
 function isRecord(value: unknown): value is FormRecord {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -36,17 +22,15 @@ function valuesEqual(left: unknown, right: unknown): boolean {
   }
   if (left instanceof Uint8Array && right instanceof Uint8Array) {
     return (
+      left.length === right.length &&
       left.byteLength === right.byteLength &&
       left.every((value, index) => value === right[index])
     );
   }
   if (Array.isArray(left) && Array.isArray(right)) {
-    return (
-      left.length === right.length &&
-      left.every((value, index) => valuesEqual(value, right[index]))
-    );
+    return left.length === right.length && left.every((value, index) => valuesEqual(value, right[index]));
   }
-  if (!isRecord(left) || !isRecord(right)) {
+  if (!(isRecord(left) && isRecord(right))) {
     return false;
   }
 
@@ -54,21 +38,16 @@ function valuesEqual(left: unknown, right: unknown): boolean {
   const rightKeys = Object.keys(right);
   return (
     leftKeys.length === rightKeys.length &&
-    leftKeys.every(
-      (key) => Object.hasOwn(right, key) && valuesEqual(left[key], right[key])
-    )
+    leftKeys.every((key) => Object.hasOwn(right, key) && valuesEqual(left[key], right[key]))
   );
 }
 
 /** Build the dirty-field tree expected by createUpdateMask from two value snapshots. */
-export function dirtyFieldsFromValues(
-  current: unknown,
-  initial: unknown
-): FormRecord {
+export function dirtyFieldsFromValues(current: unknown, initial: unknown): FormRecord {
   if (valuesEqual(current, initial)) {
     return {};
   }
-  if (!isRecord(current) || !isRecord(initial)) {
+  if (!(isRecord(current) && isRecord(initial))) {
     return {};
   }
 
@@ -81,9 +60,7 @@ export function dirtyFieldsFromValues(
       continue;
     }
     dirtyFields[key] =
-      isRecord(currentValue) && isRecord(initialValue)
-        ? dirtyFieldsFromValues(currentValue, initialValue)
-        : true;
+      isRecord(currentValue) && isRecord(initialValue) ? dirtyFieldsFromValues(currentValue, initialValue) : true;
   }
   return dirtyFields;
 }
@@ -106,22 +83,13 @@ function fieldPath(prefix: string, field: DescField): string {
 }
 
 function isUpdatableField(field: DescField): boolean {
-  const behaviors = getExtension(
-    field.proto.options ?? create(FieldOptionsSchema),
-    fieldBehaviorExtension
-  );
+  const behaviors = getExtension(field.proto.options ?? create(FieldOptionsSchema), fieldBehaviorExtension);
   return behaviors.every((behavior) => !NON_UPDATABLE_BEHAVIORS.has(behavior));
 }
 
-function findField(
-  schema: DescMessage,
-  segment: string
-): DescField | undefined {
+function findField(schema: DescMessage, segment: string): DescField | undefined {
   return schema.fields.find(
-    (field) =>
-      field.localName === segment ||
-      field.name === segment ||
-      field.jsonName === segment
+    (field) => field.localName === segment || field.name === segment || field.jsonName === segment
   );
 }
 
@@ -166,9 +134,7 @@ function fieldOrder(schema: DescMessage, path: string): number[] {
   const order: number[] = [];
   let currentSchema = schema;
   for (const segment of path.split(".")) {
-    const index = currentSchema.fields.findIndex(
-      (candidate) => candidate.name === segment
-    );
+    const index = currentSchema.fields.findIndex((candidate) => candidate.name === segment);
     order.push(index);
     const field = currentSchema.fields[index];
     if (field?.fieldKind !== "message") {
@@ -179,11 +145,7 @@ function fieldOrder(schema: DescMessage, path: string): number[] {
   return order;
 }
 
-function compareFieldOrder(
-  schema: DescMessage,
-  left: string,
-  right: string
-): number {
+function compareFieldOrder(schema: DescMessage, left: string, right: string): number {
   const leftOrder = fieldOrder(schema, left);
   const rightOrder = fieldOrder(schema, right);
   const length = Math.max(leftOrder.length, rightOrder.length);
@@ -197,21 +159,13 @@ function compareFieldOrder(
 }
 
 /** Build a validated, canonical FieldMask from TypeScript or protobuf paths. */
-export function createFieldMask(
-  schema: DescMessage,
-  paths: readonly string[]
-): FieldMask {
-  const normalizedPaths = [
-    ...new Set(paths.map((path) => normalizeFieldPath(schema, path))),
-  ];
+export function createFieldMask(schema: DescMessage, paths: readonly string[]): FieldMask {
+  const normalizedPaths = [...new Set(paths.map((path) => normalizeFieldPath(schema, path)))];
   if (normalizedPaths.includes("*")) {
     return create(FieldMaskSchema, { paths: ["*"] });
   }
   const minimizedPaths = normalizedPaths.filter(
-    (path) =>
-      !normalizedPaths.some(
-        (candidate) => candidate !== path && path.startsWith(`${candidate}.`)
-      )
+    (path) => !normalizedPaths.some((candidate) => candidate !== path && path.startsWith(`${candidate}.`))
   );
   minimizedPaths.sort((left, right) => compareFieldOrder(schema, left, right));
   return create(FieldMaskSchema, { paths: minimizedPaths });
@@ -229,11 +183,7 @@ function collectFieldPaths(
   }
 
   const path = fieldPath(prefix, field);
-  if (
-    dirtyValue === true ||
-    field.fieldKind === "list" ||
-    field.fieldKind === "map"
-  ) {
+  if (dirtyValue === true || field.fieldKind === "list" || field.fieldKind === "map") {
     return [path];
   }
   if (field.fieldKind !== "message" || !isRecord(dirtyValue)) {
@@ -262,39 +212,25 @@ function collectOneofPaths(
   }
 
   const selectedOneof =
-    isRecord(currentValue) && typeof currentValue.case === "string"
-      ? currentValue
-      : initialValue;
+    isRecord(currentValue) && typeof currentValue["case"] === "string" ? currentValue : initialValue;
   if (!isRecord(selectedOneof)) {
     return [];
   }
-  const selectedCase = selectedOneof.case;
+  const selectedCase = selectedOneof["case"];
   if (typeof selectedCase !== "string") {
     return [];
   }
-  const selectedField = oneof.fields.find(
-    (field) => field.localName === selectedCase
-  );
+  const selectedField = oneof.fields.find((field) => field.localName === selectedCase);
   if (!selectedField) {
     return [];
   }
 
   const nestedDirtyValue =
-    isRecord(dirtyValue) &&
-    dirtyValue.case !== true &&
-    hasDirtyValue(dirtyValue.value)
-      ? dirtyValue.value
+    isRecord(dirtyValue) && dirtyValue["case"] !== true && hasDirtyValue(dirtyValue["value"])
+      ? dirtyValue["value"]
       : true;
-  const initialOneofValue = isRecord(initialValue)
-    ? initialValue.value
-    : undefined;
-  return collectFieldPaths(
-    selectedField,
-    nestedDirtyValue,
-    selectedOneof.value,
-    initialOneofValue,
-    prefix
-  );
+  const initialOneofValue = isRecord(initialValue) ? initialValue["value"] : undefined;
+  return collectFieldPaths(selectedField, nestedDirtyValue, selectedOneof["value"], initialOneofValue, prefix);
 }
 
 function collectMessagePaths(

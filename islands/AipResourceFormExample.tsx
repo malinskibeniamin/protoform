@@ -11,9 +11,7 @@ const AipResourceFormExample = lazy(async () => {
 
 export default function AipResourceFormExampleIsland() {
   return (
-    <Suspense
-      fallback={<ExampleLoading label="Loading AIP resource example" />}
-    >
+    <Suspense fallback={<ExampleLoading label="Loading AIP resource example" />}>
       <AipResourceFormExample />
     </Suspense>
   );

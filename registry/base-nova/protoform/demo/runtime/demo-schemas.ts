@@ -170,10 +170,7 @@ function buildDefaults(schemaKey: DemoSchemaKey): Record<string, unknown> {
       };
     case "batch-get":
       return {
-        names: [
-          "publishers/acme/books/protoform-guide",
-          "publishers/acme/books/api-design",
-        ],
+        names: ["publishers/acme/books/protoform-guide", "publishers/acme/books/api-design"],
         parent: "publishers/acme",
       };
     case "batch-update":

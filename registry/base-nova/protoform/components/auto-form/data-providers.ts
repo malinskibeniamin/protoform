@@ -11,7 +11,7 @@
  * enumerates the proto descriptors and asserts completeness.
  */
 
-import type React from 'react';
+import type React from "react";
 
 export interface DataProviderOption {
   /** Optional helper line shown beneath the label. */

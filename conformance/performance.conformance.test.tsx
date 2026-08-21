@@ -4,6 +4,7 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { fieldsForStep } from "../registry/base-nova/protoform/components/auto-form/stepper.js";
+import type { ParsedField } from "../registry/base-nova/protoform/lib/form-types/index.js";
 import {
   createProtoFormSchema,
   parseProtoSchema,
@@ -17,10 +18,7 @@ const matrix = [
   { change: 250, fields: 500, render: 750, step: 250, validation: 750 },
 ] as const;
 
-function renderControls(
-  fields: ReturnType<typeof parseProtoSchema>["fields"],
-  values: Record<string, unknown>
-) {
+function renderControls<FieldType extends string>(fields: ParsedField<FieldType>[], values: Record<string, unknown>) {
   return renderToStaticMarkup(
     createElement(
       "form",
@@ -29,7 +27,7 @@ function renderControls(
         createElement(
           "label",
           { key: field.key },
-          field.label,
+          field.fieldConfig?.label ?? field.key,
           createElement("input", {
             defaultValue: String(values[field.key] ?? ""),
             name: field.key,
@@ -46,10 +44,7 @@ describe("large-form performance budget", () => {
     async (budget) => {
       const descriptor = createPerformanceDescriptor(budget.fields);
       const values = Object.fromEntries(
-        Array.from({ length: budget.fields }, (_, index) => [
-          `field${index + 1}`,
-          `value-${index + 1}`,
-        ])
+        Array.from({ length: budget.fields }, (_, index) => [`field${index + 1}`, `value-${index + 1}`])
       );
       const { fields } = parseProtoSchema(descriptor);
 
@@ -59,20 +54,15 @@ describe("large-form performance budget", () => {
       expect(performance.now() - renderStarted).toBeLessThan(budget.render);
 
       const validationStarted = performance.now();
-      const validation =
-        await createProtoFormSchema(descriptor)["~standard"].validate(values);
+      const validation = await createProtoFormSchema(descriptor)["~standard"].validate(values);
       expect(validation.issues).toBeUndefined();
-      expect(performance.now() - validationStarted).toBeLessThan(
-        budget.validation
-      );
+      expect(performance.now() - validationStarted).toBeLessThan(budget.validation);
 
       const changeStarted = performance.now();
       const changedValues = { ...values, field1: "updated" };
-      expect(protoFormValuesToPayload(descriptor, changedValues)).toMatchObject(
-        {
-          field1: "updated",
-        }
-      );
+      expect(protoFormValuesToPayload(descriptor, changedValues)).toMatchObject({
+        field1: "updated",
+      });
       expect(performance.now() - changeStarted).toBeLessThan(budget.change);
 
       const steppedFields = fields.map((field, index) => ({
