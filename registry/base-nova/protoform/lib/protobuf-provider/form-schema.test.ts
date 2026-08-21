@@ -1,4 +1,5 @@
-import { expect, expectTypeOf, test } from "vitest";
+import { expect, test } from "@rstest/core";
+import { expectTypeOf } from "expect-type";
 import { isStandardSchema } from "../core/index.js";
 import { createProtoFormSchema } from "./form-schema.js";
 import { AutoFormExampleSchema } from "./gen/auto-form-example_pb.js";

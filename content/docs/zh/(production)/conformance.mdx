@@ -8,13 +8,13 @@ Protoform 为表单适配器所依赖的核心和 protobuf 行为提供独立的
 bun run test:conformance
 ```
 
-其设计沿用了 [Protocol Buffers 一致性测试套件](https://github.com/protocolbuffers/protobuf/tree/main/conformance)中实用的职责分离方式：运行器负责测试用例和预期结果，实现则通过一个精简的公共接口接受测试。由于受支持的实现使用 TypeScript，Protoform 目前通过 Vitest 在进程内运行此模型。在没有其他语言适配器需要测试的情况下，引入子进程线协议只会增加成本。
+其设计沿用了 [Protocol Buffers 一致性测试套件](https://github.com/protocolbuffers/protobuf/tree/main/conformance)中实用的职责分离方式：运行器负责测试用例和预期结果，实现则通过一个精简的公共接口接受测试。由于受支持的实现使用 TypeScript，Protoform 目前通过 Rstest 在进程内运行此模型。在没有其他语言适配器需要测试的情况下，引入子进程线协议只会增加成本。
 
 [生产就绪度仪表板](/docs/production-readiness)将这些通过的用例纳入更大且带版本的统计基数。一致性用于判断已实现的契约是否通过；就绪度则明确区分已验证、已延期、不受支持以及由外部负责的能力。
 
 ```mermaid
 flowchart TD
-  Cases["Literal conformance cases"] --> Runner["Vitest runner"]
+  Cases["Literal conformance cases"] --> Runner["Rstest runner"]
   Runner --> Public["Protoform public interfaces"]
   Public --> Parse["Check descriptor field model"]
   Parse --> Validate["Check Standard Schema validation"]
@@ -96,7 +96,7 @@ registry 集成测试套件分别检查原生 TanStack hook 和生成的 AutoFor
 bun run test:conformance
 ```
 
-开发单个契约时，使用 Vitest 的名称过滤器：
+开发单个契约时，使用 Rstest 的名称过滤器：
 
 ```bash
 bun run test:conformance -- -t "nested map value"

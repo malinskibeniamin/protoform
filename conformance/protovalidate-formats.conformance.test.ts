@@ -1,9 +1,9 @@
-// @vitest-environment node
+// @rstest-environment node
 
 import { create, createRegistry } from "@bufbuild/protobuf";
 import { base64Encode } from "@bufbuild/protobuf/wire";
 import { createValidator } from "@bufbuild/protovalidate";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "@rstest/core";
 
 import {
   createProtoFormSchema,

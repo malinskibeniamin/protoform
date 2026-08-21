@@ -1,38 +1,46 @@
 ---
 title: Testowanie formularzy
-description: "Przetestuj jeden reprezentatywny przepływ Protoform z użyciem rzeczywistego serwera Connect i Vitest. Poznaj praktyczne użycie w Protoform."
+description: "Przetestuj jeden reprezentatywny przepływ Protoform z użyciem rzeczywistego serwera Connect i Rstest. Poznaj praktyczne użycie w Protoform."
 ---
 Użyj testu integracyjnego obejmującego rzeczywisty stos, aby sprawdzić zachowanie formularza należące do Twojej aplikacji. Wyrenderuj formularz,
 wejdź z nim w interakcję tak jak użytkownik i prześlij go przez ten sam transport Connect, który jest używany w środowisku produkcyjnym.
 Uruchom rzeczywisty router aplikacji na porcie efemerycznym zamiast zastępować wywołania RPC atrapami testowymi.
 
 Ten zakres obejmuje wygenerowany formularz, React Hook Form, Connect Query, serializację HTTP,
-procedurę obsługi Connect, Protovalidate oraz mapowanie ustrukturyzowanych błędów pól. Vitest uruchamia komponent w
+procedurę obsługi Connect, Protovalidate oraz mapowanie ustrukturyzowanych błędów pól. Rstest uruchamia komponent w
 `happy-dom`, dlatego traktuj ten test jako integracyjny, a nie kompleksowy test end-to-end w przeglądarce.
 
 ## Konfiguracja testów
 
-Zainstaluj Vitest i Testing Library w aplikacji:
+Zainstaluj Rstest i Testing Library w aplikacji:
 
 ```bash
-bun add --dev vitest happy-dom @testing-library/jest-dom @testing-library/react @testing-library/user-event
+bun add --dev @rsbuild/plugin-react @rstest/core happy-dom undici @testing-library/jest-dom @testing-library/react @testing-library/user-event
 ```
 
 Skonfiguruj zestaw testów integracyjnych z użyciem `happy-dom` i załaduj matchery Testing Library:
 
-```ts title="vitest.integration.config.ts"
-import { defineConfig } from "vitest/config";
+```ts title="rstest.integration.config.ts"
+import { pluginReact } from "@rsbuild/plugin-react";
+import { defineConfig } from "@rstest/core";
 
 export default defineConfig({
-  test: {
-    environment: "happy-dom",
-    setupFiles: ["./vitest.setup.ts"],
-  },
+  plugins: [pluginReact()],
+  setupFiles: ["./rstest.setup.ts"],
+  testEnvironment: "happy-dom",
 });
 ```
 
-```ts title="vitest.setup.ts"
-import "@testing-library/jest-dom/vitest";
+```ts title="rstest.setup.ts"
+import * as jestDomMatchers from "@testing-library/jest-dom/matchers";
+import { expect } from "@rstest/core";
+import { fetch as nodeFetch } from "undici";
+
+expect.extend(jestDomMatchers);
+Object.defineProperty(globalThis, "fetch", {
+  configurable: true,
+  value: nodeFetch,
+});
 ```
 
 Aplikacja powinna eksportować funkcję budującą serwer, która rejestruje rzeczywiste trasy Connect bez
@@ -47,7 +55,7 @@ który zostaje przypisany do pola:
 ```tsx title="profile-form.test.tsx"
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "@rstest/core";
 
 import { buildExampleServer } from "../server/server.js";
 import ProfileForm from "./profile-form.js";

@@ -1,7 +1,7 @@
 import { create, fromBinary, toBinary } from "@bufbuild/protobuf";
+import { describe, expect, it, rs } from "@rstest/core";
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
 
 import "@/registry/base-nova/protoform/lib/protobuf-provider/auto-form-example-annotations";
 import { AddressSchema } from "@/registry/base-nova/protoform/lib/protobuf-provider/gen/auto-form-example_pb";
@@ -12,8 +12,8 @@ import { AutoForm } from "..";
 describe("TanStack AutoForm conformance", () => {
   it("keeps the native form API while rendering and submitting provider output", async () => {
     const user = userEvent.setup();
-    const onSubmit = vi.fn();
-    const onFormInit = vi.fn();
+    const onSubmit = rs.fn();
+    const onFormInit = rs.fn();
     const schema: SchemaProvider<{ name: string }> = {
       getDefaultValues: () => ({ name: "" }),
       parseSchema: () => ({
@@ -38,7 +38,7 @@ describe("TanStack AutoForm conformance", () => {
 
   it("uses native TanStack state for repeated fields", async () => {
     const user = userEvent.setup();
-    const onSubmit = vi.fn();
+    const onSubmit = rs.fn();
     const schema: SchemaProvider<{ tags: string[] }> = {
       getDefaultValues: () => ({ tags: ["first"] }),
       parseSchema: () => ({
@@ -67,7 +67,7 @@ describe("TanStack AutoForm conformance", () => {
 
   it("clears the previous oneof branch when the selection changes", async () => {
     const user = userEvent.setup();
-    const onSubmit = vi.fn();
+    const onSubmit = rs.fn();
     const schema: SchemaProvider<{
       contact: { case?: string; value?: unknown };
     }> = {
@@ -108,7 +108,7 @@ describe("TanStack AutoForm conformance", () => {
 
   it("blocks submission and renders every provider failure", async () => {
     const user = userEvent.setup();
-    const onSubmit = vi.fn();
+    const onSubmit = rs.fn();
     const schema: SchemaProvider<{ name: string }> = {
       getDefaultValues: () => ({ name: "" }),
       parseSchema: () => ({
@@ -216,8 +216,8 @@ describe("TanStack AutoForm conformance", () => {
 
   it("retains native TanStack submit validators", async () => {
     const user = userEvent.setup();
-    const onSubmit = vi.fn();
-    const nativeValidator = vi.fn(() => "Native validation failed.");
+    const onSubmit = rs.fn();
+    const nativeValidator = rs.fn(() => "Native validation failed.");
     const schema: SchemaProvider<{ name: string }> = {
       getDefaultValues: () => ({ name: "Ada" }),
       parseSchema: () => ({
@@ -243,8 +243,8 @@ describe("TanStack AutoForm conformance", () => {
 
   it("runs native TanStack submission only after provider validation passes", async () => {
     const user = userEvent.setup();
-    const nativeOnSubmit = vi.fn();
-    const onSubmit = vi.fn();
+    const nativeOnSubmit = rs.fn();
+    const onSubmit = rs.fn();
     const schema: SchemaProvider<{ name: string }> = {
       getDefaultValues: () => ({ name: "" }),
       parseSchema: () => ({
@@ -274,7 +274,7 @@ describe("TanStack AutoForm conformance", () => {
 
   it("builds update masks from native TanStack dirty metadata", async () => {
     const user = userEvent.setup();
-    const onSubmit = vi.fn((_message, _nativeForm, context) => {
+    const onSubmit = rs.fn((_message, _nativeForm, context) => {
       if (onSubmit.mock.calls.length === 1) {
         context.form.markClean();
       }
@@ -314,7 +314,7 @@ describe("TanStack AutoForm conformance", () => {
 
   it("preserves the edit source message through the TanStack adapter", async () => {
     const user = userEvent.setup();
-    const onSubmit = vi.fn();
+    const onSubmit = rs.fn();
     const knownSource = create(AddressSchema, {
       city: "Warsaw",
       country: 4,

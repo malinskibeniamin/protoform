@@ -1,6 +1,6 @@
+import { describe, expect, it } from "@rstest/core";
 import { render, screen } from "@testing-library/react";
 import type React from "react";
-import { describe, expect, it } from "vitest";
 
 import { AutoFormContext, type AutoFormContextValue } from "../context";
 import type { ParsedField } from "../core-types";

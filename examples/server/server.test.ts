@@ -2,7 +2,7 @@ import { Code, ConnectError, createClient, createRouterTransport } from "@connec
 import { createConnectTransport } from "@connectrpc/connect-node";
 import { callUnaryMethod } from "@connectrpc/connect-query";
 import { createValidateInterceptor } from "@connectrpc/validate";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "@rstest/core";
 
 import { LibraryService } from "../../conformance/gen/protoform/conformance/v1/aip_pb.js";
 import { FormExamplesService } from "../gen/protoform/examples/v1/forms_pb.js";

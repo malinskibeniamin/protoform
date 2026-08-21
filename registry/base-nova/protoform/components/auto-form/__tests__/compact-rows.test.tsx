@@ -1,6 +1,6 @@
+import { describe, expect, it } from "@rstest/core";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
 import { AutoForm } from "..";
 import { createMockProvider } from "./test-utils";
 

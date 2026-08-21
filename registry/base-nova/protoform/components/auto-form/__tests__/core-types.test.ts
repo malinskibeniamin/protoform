@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "@rstest/core";
 
 import type { ParsedField } from "../core-types";
 import { getLabel, getPathInObject, sortFieldsByOrder } from "../field-utils";

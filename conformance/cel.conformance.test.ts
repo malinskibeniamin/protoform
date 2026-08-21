@@ -1,8 +1,8 @@
-// @vitest-environment node
+// @rstest-environment node
 
 import { create } from "@bufbuild/protobuf";
 import { createValidator } from "@bufbuild/protovalidate";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "@rstest/core";
 
 import { createProtoFormSchema, ProtoProvider } from "../registry/base-nova/protoform/lib/protobuf-provider/index.js";
 import { CelRuleMatrixSchema } from "./gen/protoform/conformance/v1/conformance_pb.js";

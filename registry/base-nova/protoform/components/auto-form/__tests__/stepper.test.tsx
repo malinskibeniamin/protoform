@@ -1,6 +1,6 @@
+import { describe, expect, it, rs } from "@rstest/core";
 import { act, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
 
 import { AutoForm } from "..";
 import { createMockProvider } from "./test-utils";
@@ -216,7 +216,7 @@ describe("AutoForm stepper", () => {
   it("submits only from the final step and prevents duplicate submissions", async () => {
     const user = userEvent.setup();
     let finishSubmit: (() => void) | undefined;
-    const onSubmit = vi.fn(
+    const onSubmit = rs.fn(
       () =>
         new Promise<void>((resolve) => {
           finishSubmit = resolve;

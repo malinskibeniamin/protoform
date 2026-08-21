@@ -5,7 +5,7 @@ import {
   proto3,
   ScalarType,
 } from "@bufbuild/protobuf";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "@rstest/core";
 import { createProtobufV1Provider } from "./index.js";
 
 type BasicForm = Message<BasicForm> & {

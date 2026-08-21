@@ -1,6 +1,6 @@
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
-import { describe, expect, test } from "vitest";
+import { describe, expect, test } from "@rstest/core";
 
 const manifest = JSON.parse(readFileSync("package.json", "utf8")) as {
   devDependencies: Record<string, string>;
@@ -63,7 +63,7 @@ describe("frontend quality policy", () => {
     expect(biomeConfig).not.toContain('"!registry"');
     expect(biomeConfig).not.toMatch(/"includes": \["registry\/\*\*"\][\s\S]*?"enabled": false/);
     expect(biomeConfig).toContain('"ultracite/biome/type-aware"');
-    expect(biomeConfig).toContain('"ultracite/biome/vitest"');
+    expect(biomeConfig).toContain('"ultracite/biome/jest"');
   });
 
   test("fails on warnings, formatting drift, and inline suppressions", () => {

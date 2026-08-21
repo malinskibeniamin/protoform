@@ -1,6 +1,6 @@
+import { describe, expect, it, rs } from "@rstest/core";
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
 
 import "@/registry/base-nova/protoform/lib/protobuf-provider/auto-form-example-annotations";
 import { AddressSchema } from "@/registry/base-nova/protoform/lib/protobuf-provider/gen/auto-form-example_pb";
@@ -11,8 +11,8 @@ import { AutoForm } from "..";
 describe("experimental TanStack Form v2 AutoForm conformance", () => {
   it("keeps the v2-native API and submits transformed provider output", async () => {
     const user = userEvent.setup();
-    const onSubmit = vi.fn();
-    const onFormInit = vi.fn();
+    const onSubmit = rs.fn();
+    const onFormInit = rs.fn();
     const schema = createNameSchema((values) => ({
       data: { name: String(values.name).trim().toUpperCase() },
       success: true,
@@ -35,7 +35,7 @@ describe("experimental TanStack Form v2 AutoForm conformance", () => {
 
   it("uses v2 field state for repeated fields", async () => {
     const user = userEvent.setup();
-    const onSubmit = vi.fn();
+    const onSubmit = rs.fn();
     const schema: SchemaProvider<{ tags: string[] }> = {
       getDefaultValues: () => ({ tags: ["first"] }),
       parseSchema: () => ({
@@ -64,7 +64,7 @@ describe("experimental TanStack Form v2 AutoForm conformance", () => {
 
   it("clears the previous oneof branch when the selection changes", async () => {
     const user = userEvent.setup();
-    const onSubmit = vi.fn();
+    const onSubmit = rs.fn();
     const schema: SchemaProvider<{
       contact: { case?: string; value?: unknown };
     }> = {
@@ -105,7 +105,7 @@ describe("experimental TanStack Form v2 AutoForm conformance", () => {
 
   it("renders every provider validation failure through v2 field errors", async () => {
     const user = userEvent.setup();
-    const onSubmit = vi.fn();
+    const onSubmit = rs.fn();
     const schema = createNameSchema(() => ({
       errors: [
         { message: "Name is required.", path: ["name"] },
@@ -260,8 +260,8 @@ describe("experimental TanStack Form v2 AutoForm conformance", () => {
 
   it("appends provider validation without replacing native v2 validators", async () => {
     const user = userEvent.setup();
-    const onSubmit = vi.fn();
-    const nativeValidator = vi.fn(() => ({
+    const onSubmit = rs.fn();
+    const nativeValidator = rs.fn(() => ({
       fields: { name: "Native validation failed." },
     }));
 
@@ -284,8 +284,8 @@ describe("experimental TanStack Form v2 AutoForm conformance", () => {
 
   it("runs native v2 submission only after provider validation passes", async () => {
     const user = userEvent.setup();
-    const nativeOnSubmit = vi.fn();
-    const onSubmit = vi.fn();
+    const nativeOnSubmit = rs.fn();
+    const onSubmit = rs.fn();
     const schema = createNameSchema((values) =>
       values.name
         ? { data: values, success: true }
@@ -309,7 +309,7 @@ describe("experimental TanStack Form v2 AutoForm conformance", () => {
 
   it("honors validation errors returned by native v2 onSubmit", async () => {
     const user = userEvent.setup();
-    const onSubmit = vi.fn();
+    const onSubmit = rs.fn();
 
     render(
       <AutoForm
@@ -332,7 +332,7 @@ describe("experimental TanStack Form v2 AutoForm conformance", () => {
 
   it("builds update masks from the v2 default-value baseline", async () => {
     const user = userEvent.setup();
-    const onSubmit = vi.fn();
+    const onSubmit = rs.fn();
     render(
       <AutoForm
         defaultValues={{

@@ -2,7 +2,7 @@ import { create, fromBinary, fromJson, toBinary } from "@bufbuild/protobuf";
 import { fromText, mergeFromText, toText } from "@bufbuild/protobuf/txtpb";
 import { base64Encode, sizeDelimitedDecodeStream, sizeDelimitedEncode } from "@bufbuild/protobuf/wire";
 import { anyPack, anyUnpack, StructSchema } from "@bufbuild/protobuf/wkt";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "@rstest/core";
 
 import {
   createProtoFormSchema,

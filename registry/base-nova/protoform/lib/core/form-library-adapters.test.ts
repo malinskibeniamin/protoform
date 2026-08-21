@@ -1,5 +1,5 @@
+import { describe, expect, it } from "@rstest/core";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
-import { describe, expect, it } from "vitest";
 
 import {
   createFinalFormValidator,

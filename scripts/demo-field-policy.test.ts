@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { relative } from "node:path";
+import { describe, expect, it } from "@rstest/core";
 import ts from "typescript";
-import { describe, expect, it } from "vitest";
 
 const repositoryDirectory = new URL("../", import.meta.url);
 const docsDirectory = new URL("../content/docs/", import.meta.url);

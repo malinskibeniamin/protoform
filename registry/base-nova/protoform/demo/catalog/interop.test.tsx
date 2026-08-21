@@ -1,6 +1,6 @@
+import { afterEach, describe, expect, it } from "@rstest/core";
 import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { afterEach, describe, expect, it } from "vitest";
 
 import { FinalFormDemo } from "./final-form.js";
 import { FormikDemo } from "./formik.js";

@@ -1,9 +1,9 @@
-// @vitest-environment node
+// @rstest-environment node
 
 import { create } from "@bufbuild/protobuf";
 import { DurationSchema, timestampFromDate } from "@bufbuild/protobuf/wkt";
 import { createValidator } from "@bufbuild/protovalidate";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "@rstest/core";
 
 import { CelProtoLanguageMatrixSchema, MatrixStatus } from "./gen/protoform/conformance/v1/conformance_pb.js";
 

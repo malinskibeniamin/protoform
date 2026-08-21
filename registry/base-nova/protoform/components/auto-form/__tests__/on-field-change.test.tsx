@@ -1,13 +1,13 @@
+import { describe, expect, it, rs } from "@rstest/core";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
 import { AutoForm } from "..";
 import { createMockProvider } from "./test-utils";
 
 describe("AutoForm – onFieldChange callback", () => {
   it("calls onFieldChange when a field value changes", async () => {
     const user = userEvent.setup();
-    const onFieldChange = vi.fn();
+    const onFieldChange = rs.fn();
     const schema = createMockProvider([
       { key: "name", required: true, type: "string" },
       { key: "email", required: true, type: "string" },

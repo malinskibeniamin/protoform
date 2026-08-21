@@ -4,7 +4,7 @@ import {
   FieldDescriptorProto_Type,
   FileDescriptorProtoSchema,
 } from "@bufbuild/protobuf/wkt";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "@rstest/core";
 
 import { formValuesToProto, protoToFormValues } from "./provider.js";
 

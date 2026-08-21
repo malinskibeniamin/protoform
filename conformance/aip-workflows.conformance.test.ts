@@ -1,8 +1,8 @@
-// @vitest-environment node
+// @rstest-environment node
 
 import { FieldBehavior } from "@buf/googleapis_googleapis.bufbuild_es/google/api/field_behavior_pb.js";
 import { create, type DescMessage } from "@bufbuild/protobuf";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "@rstest/core";
 import {
   getProtoPartialResult,
   getProtoPolicyPreviewPlan,

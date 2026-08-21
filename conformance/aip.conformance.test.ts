@@ -1,10 +1,10 @@
-// @vitest-environment node
+// @rstest-environment node
 
 import { method_signature } from "@buf/googleapis_googleapis.bufbuild_es/google/api/client_pb.js";
 import { FieldBehavior } from "@buf/googleapis_googleapis.bufbuild_es/google/api/field_behavior_pb.js";
 import { create, getExtension } from "@bufbuild/protobuf";
 import { MethodOptionsSchema } from "@bufbuild/protobuf/wkt";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "@rstest/core";
 
 import {
   getProtoFieldBehaviors,

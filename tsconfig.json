@@ -33,7 +33,7 @@
     "incremental": true,
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.tsbuildinfo",
     "ignoreDeprecations": "6.0",
-    "types": ["bun", "@types/node", "vitest/globals"],
+    "types": ["bun", "@types/node", "@rstest/core/globals"],
     "paths": {
       "@/*": ["./*"]
     }

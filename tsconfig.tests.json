@@ -2,13 +2,14 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.tests.tsbuildinfo",
-    "types": ["bun", "@types/node", "vitest/globals", "vite/client"]
+    "types": ["bun", "@types/node", "@rstest/core/globals", "vite/client"]
   },
   "include": [
     "conformance/**/*.ts",
     "conformance/**/*.tsx",
     "e2e/**/*.ts",
     "e2e/**/*.tsx",
+    "rstest.d.ts",
     "**/*.test.ts",
     "**/*.test.tsx",
     "**/*.spec.ts",

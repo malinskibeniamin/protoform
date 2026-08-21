@@ -1,7 +1,7 @@
 import { create, fromBinary, toBinary } from "@bufbuild/protobuf";
+import { describe, expect, it, rs } from "@rstest/core";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
 
 import "@/registry/base-nova/protoform/lib/protobuf-provider/auto-form-example-annotations";
 
@@ -97,7 +97,7 @@ const buildValidProtoDefaults = () => ({
 describe("AutoForm – protobuf forms", () => {
   it("submits protobuf descriptors with protobuf-shaped output", async () => {
     const user = userEvent.setup();
-    const onSubmit = vi.fn();
+    const onSubmit = rs.fn();
 
     render(
       <AutoForm
@@ -137,7 +137,7 @@ describe("AutoForm – protobuf forms", () => {
 
   it("preserves the edit source message through the React Hook Form adapter", async () => {
     const user = userEvent.setup();
-    const onSubmit = vi.fn();
+    const onSubmit = rs.fn();
     const base = formValuesToProto(AutoFormExampleSchema, buildValidProtoDefaults());
     if (!base.shippingAddress) {
       throw new Error("Expected valid defaults to include a shipping address.");
@@ -173,7 +173,7 @@ describe("AutoForm – protobuf forms", () => {
 
   it("preserves resolver-normalized protobuf values while restoring source unknown fields", async () => {
     const user = userEvent.setup();
-    const onSubmit = vi.fn();
+    const onSubmit = rs.fn();
     const knownSource = formValuesToProto(AutoFormExampleSchema, buildValidProtoDefaults());
     const source = fromBinary(
       AutoFormExampleSchema,
@@ -209,7 +209,7 @@ describe("AutoForm – protobuf forms", () => {
 
   it("shows protobuf field-level validation feedback", async () => {
     const user = userEvent.setup();
-    const onSubmit = vi.fn();
+    const onSubmit = rs.fn();
 
     render(
       <AutoForm
@@ -245,7 +245,7 @@ describe("AutoForm – protobuf forms", () => {
 
   it("switches protobuf oneof cases and submits the latest selection", async () => {
     const user = userEvent.setup();
-    const onSubmit = vi.fn();
+    const onSubmit = rs.fn();
 
     render(
       <AutoForm
@@ -298,7 +298,7 @@ describe("AutoForm – protobuf forms", () => {
           officeLocations: [],
           tags: ["forms"],
         }}
-        onSubmit={vi.fn()}
+        onSubmit={rs.fn()}
         schema={AutoFormExampleSchema}
         testId="tags-form"
         withSubmit
@@ -328,7 +328,7 @@ describe("AutoForm – protobuf forms", () => {
 
   it("surfaces protobuf message-level validation feedback", async () => {
     const user = userEvent.setup();
-    const onSubmit = vi.fn();
+    const onSubmit = rs.fn();
 
     render(
       <AutoForm
@@ -369,7 +369,7 @@ describe("AutoForm – protobuf forms", () => {
       username: "proto_user",
     });
 
-    render(<AutoForm defaultValues={message as never} onSubmit={vi.fn()} schema={AutoFormExampleSchema} withSubmit />);
+    render(<AutoForm defaultValues={message as never} onSubmit={rs.fn()} schema={AutoFormExampleSchema} withSubmit />);
 
     // Proto message ($typeName present) should be normalised into form-friendly values
     expect(screen.getByDisplayValue("proto_user")).toBeInTheDocument();

@@ -1,9 +1,9 @@
 import { BadRequestSchema } from "@buf/googleapis_googleapis.bufbuild_es/google/rpc/error_details_pb.js";
 import { create, isMessage } from "@bufbuild/protobuf";
 import { Code, ConnectError } from "@connectrpc/connect";
+import { describe, expect, it } from "@rstest/core";
 import { renderHook, waitFor } from "@testing-library/react";
 import { act } from "react";
-import { describe, expect, it } from "vitest";
 
 import "../../lib/protobuf-provider/auto-form-example-annotations.js";
 import { AutoFormExampleSchema } from "../../lib/protobuf-provider/gen/auto-form-example_pb.js";

@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+import { expect, it } from "@rstest/core";
 
 import { BareBonesFormSchema } from "../gen/protoform/examples/v1/bare_bones_pb.js";
 import { TwoStepFormSchema } from "../gen/protoform/examples/v1/two_step_pb.js";

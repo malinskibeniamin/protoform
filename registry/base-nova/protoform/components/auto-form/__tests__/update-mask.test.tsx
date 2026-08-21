@@ -1,7 +1,7 @@
 import { create } from "@bufbuild/protobuf";
+import { describe, expect, it, rs } from "@rstest/core";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
 
 import { MaskableProfileSchema } from "@/examples/gen/protoform/examples/v1/forms_pb.js";
 
@@ -10,7 +10,7 @@ import { AutoForm } from "..";
 describe("AutoForm update masks", () => {
   it("passes only touched protobuf fields to onSubmit", async () => {
     const user = userEvent.setup();
-    const onSubmit = vi.fn();
+    const onSubmit = rs.fn();
     render(
       <AutoForm
         defaultValues={create(MaskableProfileSchema, {

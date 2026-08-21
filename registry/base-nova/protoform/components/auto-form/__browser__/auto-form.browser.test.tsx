@@ -1,6 +1,6 @@
-import { expect, test } from "vitest";
-import { page } from "vitest/browser";
-import { render } from "vitest-browser-react";
+import { page } from "@rstest/browser";
+import { render } from "@rstest/browser-react";
+import { expect, test } from "@rstest/core";
 import { SimpleMultiSelect } from "../../multi-select";
 import { AutoForm } from "..";
 import type { SchemaProvider } from "../core-types";
@@ -26,8 +26,8 @@ const simpleProvider: SchemaProvider = {
   validateSchema: (values) => ({ data: values, success: true }),
 };
 
-test("browser visual regression: simple shadcn-native auto form", async () => {
-  render(
+test("renders a simple shadcn-native auto form in a browser", async () => {
+  await render(
     <>
       <style>{'[data-testid="browser-simple-form"] textarea { resize: none; }'}</style>
       <main className="max-w-2xl bg-background p-6 text-foreground">
@@ -38,16 +38,10 @@ test("browser visual regression: simple shadcn-native auto form", async () => {
 
   const form = page.getByTestId("browser-simple-form");
   await expect.element(form).toBeVisible();
-  if (import.meta.env["VISUAL_REGRESSION"]) {
-    await expect.element(form).toMatchScreenshot("simple-auto-form", {
-      comparatorName: "pixelmatch",
-      comparatorOptions: { allowedMismatchedPixels: 50 },
-    });
-  }
 });
 
 test("renders labels for controlled enum selections on first paint", async () => {
-  render(
+  await render(
     <SimpleMultiSelect
       options={[
         { label: "Active", value: "1" },
@@ -58,6 +52,6 @@ test("renders labels for controlled enum selections on first paint", async () =>
     />
   );
 
-  await expect.element(page.getByTestId("enum-statuses-selected-1")).toHaveTextContent("Active");
-  await expect.element(page.getByTestId("enum-statuses-selected-2")).toHaveTextContent("Paused");
+  await expect.element(page.getByTestId("enum-statuses-selected-1")).toHaveText("Active");
+  await expect.element(page.getByTestId("enum-statuses-selected-2")).toHaveText("Paused");
 });

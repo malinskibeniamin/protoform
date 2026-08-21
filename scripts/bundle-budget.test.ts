@@ -1,6 +1,6 @@
 import { execFileSync } from "node:child_process";
 import { mkdirSync, readFileSync, rmSync, statSync } from "node:fs";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "@rstest/core";
 
 const external = [
   "@bufbuild/*",

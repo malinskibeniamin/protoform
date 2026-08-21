@@ -1,7 +1,7 @@
-// @vitest-environment node
+// @rstest-environment node
 
 import { CelScalar, celEnv, isCelError, parse, plan, run } from "@bufbuild/cel";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "@rstest/core";
 
 function expectCelTrue(expression: string): void {
   expect(run(expression)).toBe(true);

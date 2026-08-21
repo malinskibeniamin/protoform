@@ -1,38 +1,46 @@
 ---
 title: 測試表單
-description: "使用 Vitest，透過真實的 Connect 伺服器測試一個具代表性的 Protoform 流程。本指南進一步說明如何在 Protoform 中實際套用此功能，並涵蓋契約設計、表單產生、欄位驗證、錯誤處理、遷移策略、無障礙體驗、測試方法與正式環境整合。"
+description: "使用 Rstest，透過真實的 Connect 伺服器測試一個具代表性的 Protoform 流程。本指南進一步說明如何在 Protoform 中實際套用此功能，並涵蓋契約設計、表單產生、欄位驗證、錯誤處理、遷移策略、無障礙體驗、測試方法與正式環境整合。"
 ---
 針對應用程式所負責的表單行為，使用真實技術堆疊的整合測試。算繪表單、
 模擬使用者操作，並透過正式環境所用的相同 Connect transport 提交。
 在臨時連接埠上啟動真實的應用程式 router，而不是使用測試替身取代 RPC。
 
 此邊界涵蓋產生的表單、React Hook Form、Connect Query、HTTP 序列化、
-Connect handler、Protovalidate，以及結構化欄位錯誤對應。Vitest 會在
+Connect handler、Protovalidate，以及結構化欄位錯誤對應。Rstest 會在
 `happy-dom` 中執行元件，因此應稱為整合測試，而不是瀏覽器端對端測試。
 
 ## 測試設定
 
-在應用程式中安裝 Vitest 和 Testing Library：
+在應用程式中安裝 Rstest 和 Testing Library：
 
 ```bash
-bun add --dev vitest happy-dom @testing-library/jest-dom @testing-library/react @testing-library/user-event
+bun add --dev @rsbuild/plugin-react @rstest/core happy-dom undici @testing-library/jest-dom @testing-library/react @testing-library/user-event
 ```
 
 使用 `happy-dom` 設定整合測試套件，並載入 Testing Library matchers：
 
-```ts title="vitest.integration.config.ts"
-import { defineConfig } from "vitest/config";
+```ts title="rstest.integration.config.ts"
+import { pluginReact } from "@rsbuild/plugin-react";
+import { defineConfig } from "@rstest/core";
 
 export default defineConfig({
-  test: {
-    environment: "happy-dom",
-    setupFiles: ["./vitest.setup.ts"],
-  },
+  plugins: [pluginReact()],
+  setupFiles: ["./rstest.setup.ts"],
+  testEnvironment: "happy-dom",
 });
 ```
 
-```ts title="vitest.setup.ts"
-import "@testing-library/jest-dom/vitest";
+```ts title="rstest.setup.ts"
+import * as jestDomMatchers from "@testing-library/jest-dom/matchers";
+import { expect } from "@rstest/core";
+import { fetch as nodeFetch } from "undici";
+
+expect.extend(jestDomMatchers);
+Object.defineProperty(globalThis, "fetch", {
+  configurable: true,
+  value: nodeFetch,
+});
 ```
 
 應用程式應匯出 server builder，以註冊真實的 Connect routes，且不監聽固定連接埠。
@@ -45,7 +53,7 @@ import "@testing-library/jest-dom/vitest";
 ```tsx title="profile-form.test.tsx"
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "@rstest/core";
 
 import { buildExampleServer } from "../server/server.js";
 import ProfileForm from "./profile-form.js";
