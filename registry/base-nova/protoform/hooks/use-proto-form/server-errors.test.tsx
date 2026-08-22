@@ -34,4 +34,37 @@ describe("useProtoForm server errors", () => {
     expect(result.current.getFieldState("homepageUrl").error?.message).toBe("Review this value and try again.");
     expect(mapped?.unmapped).toEqual([{ description: "value is required", field: "unknown_field" }]);
   });
+
+  it("maps violations through singular and plural server path prefixes", () => {
+    const { result } = renderHook(() =>
+      useProtoForm(AutoFormExampleSchema, {
+        serverPathPrefix: "request",
+        serverPathPrefixes: ["spec", "instance"],
+      })
+    );
+    const error = new ConnectError("Review the highlighted fields.", Code.InvalidArgument, {}, [
+      {
+        desc: BadRequestSchema,
+        value: {
+          fieldViolations: [
+            { description: "value is required", field: "spec.primary_email" },
+            { description: "must contain at least 1 item(s)", field: "instance.tags" },
+            { description: "   ", field: "request.homepage_url" },
+            { description: "value is required", field: "other.unknown_field" },
+          ],
+        },
+      },
+    ]);
+
+    let mapped: ReturnType<typeof result.current.setServerErrors> | undefined;
+    act(() => {
+      mapped = result.current.setServerErrors(error);
+    });
+
+    expect(result.current.getFieldState("primaryEmail").error?.message).toBe("Enter a value.");
+    expect(result.current.getFieldState("tags").error?.message).toBe("Add at least one item.");
+    expect(result.current.getFieldState("homepageUrl").error?.message).toBe("Review this value and try again.");
+    expect(mapped?.handled).toBe(true);
+    expect(mapped?.unmapped).toEqual([{ description: "value is required", field: "other.unknown_field" }]);
+  });
 });

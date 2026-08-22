@@ -83,4 +83,33 @@ describe("experimental React Hook Form v8 useProtoForm conformance", () => {
 
     expect(result.current.getFieldState("primaryEmail").error?.message).toBe("Enter a value.");
   });
+
+  it("maps violations through any configured server path prefix", () => {
+    const { result } = renderHook(() =>
+      useProtoForm(AutoFormExampleSchema, {
+        serverPathPrefixes: ["spec", "instance"],
+      })
+    );
+    const error = new ConnectError("Review the highlighted fields.", Code.InvalidArgument, {}, [
+      {
+        desc: BadRequestSchema,
+        value: {
+          fieldViolations: [
+            { description: "value is required", field: "spec.primary_email" },
+            { description: "must contain at least 1 item(s)", field: "instance.tags" },
+          ],
+        },
+      },
+    ]);
+
+    let mapped: ReturnType<typeof result.current.setServerErrors> | undefined;
+    act(() => {
+      mapped = result.current.setServerErrors(error);
+    });
+
+    expect(result.current.getFieldState("primaryEmail").error?.message).toBe("Enter a value.");
+    expect(result.current.getFieldState("tags").error?.message).toBe("Add at least one item.");
+    expect(mapped?.handled).toBe(true);
+    expect(mapped?.unmapped).toEqual([]);
+  });
 });
