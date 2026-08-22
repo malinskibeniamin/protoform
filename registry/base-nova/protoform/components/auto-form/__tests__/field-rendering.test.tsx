@@ -1,4 +1,4 @@
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 import { render, screen } from "@testing-library/react";
 
 import "@/registry/base-nova/protoform/lib/protobuf-provider/auto-form-example-annotations";
@@ -7,7 +7,7 @@ import { AutoFormExampleSchema } from "@/registry/base-nova/protoform/lib/protob
 import { AutoForm } from "..";
 import { createMockProvider } from "./test-utils";
 
-const SWITCH_TO_FORM_BUTTON = /switch to form/i;
+const SWITCH_TO_FORM_BUTTON = /switch to form/iu;
 
 const buildValidProtoDefaults = () => ({
   accessTier: 3,
@@ -53,19 +53,19 @@ const buildValidProtoDefaults = () => ({
 });
 
 describe("AutoForm – field rendering", () => {
-  it("groups root fields into section rows and anchors the submit action on the right", () => {
+  test("groups root fields into section rows and anchors the submit action on the right", () => {
     const schema = createMockProvider([{ key: "name", required: true, type: "string" }]);
 
     render(<AutoForm schema={schema} withSubmit />);
 
-    expect(screen.getByLabelText(/name/i).closest('[data-slot="auto-form-field-row"]')).not.toBeNull();
+    expect(screen.getByLabelText(/name/iu).closest('[data-slot="auto-form-field-row"]')).not.toBeNull();
     expect(screen.getByRole("button", { name: "Submit" }).parentElement).toHaveAttribute(
       "data-slot",
       "auto-form-actions"
     );
   });
 
-  it("defaults bounded numeric fields to a slider plus number input", () => {
+  test("defaults bounded numeric fields to a slider plus number input", () => {
     const schema = createMockProvider([{ key: "latitude", required: true, type: "number" }]);
 
     render(
@@ -85,18 +85,18 @@ describe("AutoForm – field rendering", () => {
     );
 
     expect(screen.getByRole("slider")).toBeInTheDocument();
-    expect(screen.getByRole("spinbutton", { name: /latitude/i })).toBeInTheDocument();
+    expect(screen.getByRole("spinbutton", { name: /latitude/iu })).toBeInTheDocument();
   });
 
-  it("drops redundant fallback helper copy", () => {
+  test("drops redundant fallback helper copy", () => {
     render(<AutoForm defaultValues={buildValidProtoDefaults()} schema={AutoFormExampleSchema} withSubmit />);
 
-    expect(screen.queryByText(/this field is required\./i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/use 2-40 characters\./i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/use 0-0 characters\./i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/this field is required\./iu)).not.toBeInTheDocument();
+    expect(screen.queryByText(/use 2-40 characters\./iu)).not.toBeInTheDocument();
+    expect(screen.queryByText(/use 0-0 characters\./iu)).not.toBeInTheDocument();
   });
 
-  it("allows object fields to render with the JSONField via fieldType override", () => {
+  test("allows object fields to render with the JSONField via fieldType override", () => {
     const schema = createMockProvider([
       {
         key: "extraSettings",
@@ -126,7 +126,7 @@ describe("AutoForm – field rendering", () => {
     expect(screen.getByRole("button", { name: SWITCH_TO_FORM_BUTTON })).toBeInTheDocument();
   });
 
-  it("exposes the selected state on compact radio cards", () => {
+  test("exposes the selected state on compact radio cards", () => {
     const schema = createMockProvider(
       [
         {

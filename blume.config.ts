@@ -1,3 +1,5 @@
+// Copyright 2026 Redpanda Data, Inc.
+
 import { defineConfig } from "blume";
 
 import { demoRedirects } from "./examples/catalog/demo-docs.js";
@@ -52,6 +54,9 @@ export default defineConfig({
     renderer: "blume",
     route: "/reference",
     spec: "./openapi.yaml",
+  },
+  react: {
+    compiler: true,
   },
   redirects: [...demoRedirects],
   theme: {

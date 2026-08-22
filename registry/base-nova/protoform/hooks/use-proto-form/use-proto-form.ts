@@ -130,6 +130,8 @@ export function useProtoForm<Desc extends DescMessage>(
   schema: Desc,
   options?: UseProtoFormOptions<Desc>
 ): UseProtoFormReturn<Desc> {
+  "use no memo";
+
   const {
     emptyRepeatedStringPolicies,
     serverPathPrefix,
@@ -342,7 +344,7 @@ function stripPrefix(field: string, prefix?: string): string {
 }
 
 function setModifiedPath(target: ModifiedFieldTree, path: string): void {
-  const segments = path.match(/[^.[\]]+/g) ?? [];
+  const segments = path.match(/[^.[\]]+/gu) ?? [];
   let current = target;
   for (const [index, segment] of segments.entries()) {
     if (index === segments.length - 1) {
@@ -365,7 +367,7 @@ function setModifiedPath(target: ModifiedFieldTree, path: string): void {
 }
 
 function clearModifiedPath(target: ModifiedFieldTree, path: string): void {
-  const segments = path.match(/[^.[\]]+/g) ?? [];
+  const segments = path.match(/[^.[\]]+/gu) ?? [];
   const [segment, ...rest] = segments;
   if (!segment) {
     return;

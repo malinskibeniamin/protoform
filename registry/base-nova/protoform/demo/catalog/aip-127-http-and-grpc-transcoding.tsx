@@ -21,9 +21,8 @@ export function Aip127HttpAndGrpcTranscodingDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {
-          "Edit the focused request, submit it, and compare the live behavior with the executable compatibility evidence below."
-        }
+        Edit the focused request, submit it, and compare the live behavior with the executable compatibility evidence
+        below.
       </p>
       <AutoForm
         defaultValues={defaultValues}

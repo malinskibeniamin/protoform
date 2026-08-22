@@ -21,7 +21,7 @@ export function UntrustedInputDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Use the safe live contract while executable evidence probes malformed values and paths."}
+        Use the safe live contract while executable evidence probes malformed values and paths.
       </p>
       <AutoForm
         defaultValues={defaultValues}

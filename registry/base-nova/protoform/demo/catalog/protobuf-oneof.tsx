@@ -21,7 +21,7 @@ export function ProtobufOneofDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Enter one source, switch branches, and submit to prove the hidden branch was removed."}
+        Enter one source, switch branches, and submit to prove the hidden branch was removed.
       </p>
       <AutoForm
         defaultValues={defaultValues}

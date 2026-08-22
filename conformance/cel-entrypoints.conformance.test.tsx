@@ -1,5 +1,5 @@
 import { create } from "@bufbuild/protobuf";
-import { describe, expect, it, rs } from "@rstest/core";
+import { describe, expect, rs } from "@rstest/core";
 import { act, render, renderHook, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
@@ -8,10 +8,10 @@ import { useProtoForm } from "../registry/base-nova/protoform/hooks/use-proto-fo
 import { InvalidCelRuntimeSchema } from "./gen/protoform/conformance/v1/expected_failures_pb.js";
 import { TransitiveCelConsumerSchema } from "./gen/protoform/conformance/v1/transitive_cel_pb.js";
 
-const SUBMIT_BUTTON = /submit/i;
+const SUBMIT_BUTTON = /submit/iu;
 
 describe("descriptor-aware CEL entrypoints", () => {
-  it("resolves transitive imported and nested enum symbols through useProtoForm", async () => {
+  test("resolves transitive imported and nested enum symbols through useProtoForm", async () => {
     const valid = renderHook(() =>
       useProtoForm(TransitiveCelConsumerSchema, {
         defaultValues: create(TransitiveCelConsumerSchema, {
@@ -43,7 +43,7 @@ describe("descriptor-aware CEL entrypoints", () => {
     });
   });
 
-  it("does not expose CEL runtime failures through useProtoForm", async () => {
+  test("does not expose CEL runtime failures through useProtoForm", async () => {
     const form = renderHook(() =>
       useProtoForm(InvalidCelRuntimeSchema, {
         defaultValues: create(InvalidCelRuntimeSchema, { value: 0 }),
@@ -59,7 +59,7 @@ describe("descriptor-aware CEL entrypoints", () => {
     expect(form.result.current.formState.errors).toEqual({});
   });
 
-  it("submits descriptor-aware valid values through AutoForm", async () => {
+  test("submits descriptor-aware valid values through AutoForm", async () => {
     const user = userEvent.setup();
     const onSubmit = rs.fn();
     render(
@@ -78,7 +78,7 @@ describe("descriptor-aware CEL entrypoints", () => {
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
   });
 
-  it("renders the declared CEL message at its form path through AutoForm", async () => {
+  test("renders the declared CEL message at its form path through AutoForm", async () => {
     const user = userEvent.setup();
     const onSubmit = rs.fn();
     render(
@@ -101,7 +101,7 @@ describe("descriptor-aware CEL entrypoints", () => {
     expect(onSubmit).not.toHaveBeenCalled();
   });
 
-  it("does not render CEL runtime failures through AutoForm", async () => {
+  test("does not render CEL runtime failures through AutoForm", async () => {
     const user = userEvent.setup();
     const onSubmit = rs.fn();
     render(

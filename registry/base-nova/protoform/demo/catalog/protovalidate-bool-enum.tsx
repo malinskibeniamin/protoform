@@ -21,7 +21,7 @@ export function ProtovalidateBoolEnumDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Change the boolean and enum selections, then submit to exercise allowed values."}
+        Change the boolean and enum selections, then submit to exercise allowed values.
       </p>
       <AutoForm
         defaultValues={defaultValues}

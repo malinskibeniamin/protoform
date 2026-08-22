@@ -21,7 +21,7 @@ export function AutoFormDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Edit the generated controls and submit without writing a field tree."}
+        Edit the generated controls and submit without writing a field tree.
       </p>
       <AutoForm
         defaultValues={defaultValues}

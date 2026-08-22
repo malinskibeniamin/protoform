@@ -2,7 +2,7 @@
 
 import { create } from "@bufbuild/protobuf";
 import { createValidator } from "@bufbuild/protovalidate";
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 
 import { createProtoFormSchema, ProtoProvider } from "../registry/base-nova/protoform/lib/protobuf-provider/index.js";
 import { CelRuleMatrixSchema } from "./gen/protoform/conformance/v1/conformance_pb.js";
@@ -38,7 +38,7 @@ function paths(
 }
 
 describe("CEL validation conformance", () => {
-  it("resolves transitive imported and nested enum symbols through Standard Schema", async () => {
+  test("resolves transitive imported and nested enum symbols through Standard Schema", async () => {
     const schema = createProtoFormSchema(TransitiveCelConsumerSchema);
 
     const valid = await schema["~standard"].validate({
@@ -57,7 +57,7 @@ describe("CEL validation conformance", () => {
     ]);
   });
 
-  it("resolves transitive imported and nested enum symbols through ProtoProvider", () => {
+  test("resolves transitive imported and nested enum symbols through ProtoProvider", () => {
     const provider = new ProtoProvider(TransitiveCelConsumerSchema);
 
     expect(
@@ -80,7 +80,7 @@ describe("CEL validation conformance", () => {
     });
   });
 
-  it("does not expose CEL runtime failures through ProtoProvider", () => {
+  test("does not expose CEL runtime failures through ProtoProvider", () => {
     const provider = new ProtoProvider(InvalidCelRuntimeSchema);
 
     expect(provider.validateSchema({ value: 0 })).toMatchObject({
@@ -88,7 +88,7 @@ describe("CEL validation conformance", () => {
     });
   });
 
-  it("preserves a field boolean CEL rule id, message, and form path", async () => {
+  test("preserves a field boolean CEL rule id, message, and form path", async () => {
     const message = create(CelRuleMatrixSchema, {
       ...validForm,
       booleanValue: "bad",
@@ -111,7 +111,7 @@ describe("CEL validation conformance", () => {
     expect(paths(standardResult.issues)).toContainEqual(["booleanValue"]);
   });
 
-  it("preserves a dynamic field CEL error string and stable form path", async () => {
+  test("preserves a dynamic field CEL error string and stable form path", async () => {
     const result = await createProtoFormSchema(CelRuleMatrixSchema)["~standard"].validate({
       ...validForm,
       stringValue: "bad",
@@ -127,7 +127,7 @@ describe("CEL validation conformance", () => {
     );
   });
 
-  it("preserves nested and repeated message CEL paths including every index", async () => {
+  test("preserves nested and repeated message CEL paths including every index", async () => {
     const result = await createProtoFormSchema(CelRuleMatrixSchema)["~standard"].validate({
       ...validForm,
       child: { name: "bad" },
@@ -137,7 +137,7 @@ describe("CEL validation conformance", () => {
     expect(paths(result.issues)).toEqual(expect.arrayContaining([["child"], ["children", "0"], ["children", "1"]]));
   });
 
-  it("returns every message and field CEL violation without dropping any", async () => {
+  test("returns every message and field CEL violation without dropping any", async () => {
     const result = await createProtoFormSchema(CelRuleMatrixSchema)["~standard"].validate({
       ...validForm,
       booleanValue: "bad",
@@ -158,14 +158,14 @@ describe("CEL validation conformance", () => {
     expect(result.issues).toHaveLength(4);
   });
 
-  it("returns a safe root issue for a CEL compile error", async () => {
+  test("returns a safe root issue for a CEL compile error", async () => {
     const result = await createProtoFormSchema(InvalidCelCompileSchema)["~standard"].validate({ value: 1 });
 
     expect(paths(result.issues)).toEqual([[]]);
     expect(result.issues?.[0]?.message).toBeTruthy();
   });
 
-  it.each([
+  test.each([
     ["wrong result type", InvalidCelTypeSchema, 1],
     ["unknown field", InvalidCelUnknownSchema, 1],
     ["evaluation error", InvalidCelRuntimeSchema, 0],

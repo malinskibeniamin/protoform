@@ -1,4 +1,4 @@
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 import { render, screen } from "@testing-library/react";
 import type React from "react";
 
@@ -35,7 +35,7 @@ function makeField(partial: Partial<ParsedField> = {}): ParsedField {
 }
 
 describe("Form", () => {
-  it("renders with the form spacing token", () => {
+  test("renders with the form spacing token", () => {
     render(
       <Form testId="form">
         <div>child</div>
@@ -47,7 +47,7 @@ describe("Form", () => {
 });
 
 describe("ObjectWrapper", () => {
-  it("uses a split label rail only for top-level sections", () => {
+  test("uses a split label rail only for top-level sections", () => {
     render(
       withAutoFormContext(
         <Form>
@@ -64,7 +64,7 @@ describe("ObjectWrapper", () => {
     expect(screen.getByTestId("inner")).toHaveAttribute("data-layout", "stacked");
   });
 
-  it("at the form root renders the title as an h2", () => {
+  test("at the form root renders the title as an h2", () => {
     render(
       withAutoFormContext(
         <Form>
@@ -77,7 +77,7 @@ describe("ObjectWrapper", () => {
     expect(screen.getByText("Basic").tagName).toBe("H2");
   });
 
-  it("nested one level deep renders the title as an h3", () => {
+  test("nested one level deep renders the title as an h3", () => {
     render(
       withAutoFormContext(
         <Form>
@@ -93,7 +93,7 @@ describe("ObjectWrapper", () => {
     expect(screen.getByText("Inner").tagName).toBe("H3");
   });
 
-  it("renders a divider under the heading when a label is present", () => {
+  test("renders a divider under the heading when a label is present", () => {
     render(
       withAutoFormContext(
         <Form>
@@ -108,7 +108,7 @@ describe("ObjectWrapper", () => {
     expect(header.className).toContain("border-b");
   });
 
-  it("suppresses the divider when there is no visible label", () => {
+  test("suppresses the divider when there is no visible label", () => {
     render(
       withAutoFormContext(
         <Form>
@@ -124,7 +124,7 @@ describe("ObjectWrapper", () => {
     expect(firstChild.className).not.toContain("border-b");
   });
 
-  it("suppresses the divider when customData.showDivider is false", () => {
+  test("suppresses the divider when customData.showDivider is false", () => {
     render(
       withAutoFormContext(
         <Form>
@@ -145,7 +145,7 @@ describe("ObjectWrapper", () => {
     expect(header.className).not.toContain("border-b");
   });
 
-  it("applies the field-spacing token to its children", () => {
+  test("applies the field-spacing token to its children", () => {
     render(
       withAutoFormContext(
         <Form>
@@ -162,7 +162,7 @@ describe("ObjectWrapper", () => {
 });
 
 describe("FieldWrapper", () => {
-  it("uses a responsive label rail for a top-level field", () => {
+  test("uses a responsive label rail for a top-level field", () => {
     render(
       withAutoFormContext(
         <Form>
@@ -176,7 +176,7 @@ describe("FieldWrapper", () => {
     expect(screen.getByTestId("test-field-name")).toHaveAttribute("data-layout", "split");
   });
 
-  it("renders field help as a named shadcn button with an outline question icon", () => {
+  test("renders field help as a named shadcn button with an outline question icon", () => {
     render(
       withAutoFormContext(
         <Form>
@@ -204,7 +204,7 @@ describe("FieldWrapper", () => {
     expect(helpButton.querySelector("svg")).toHaveAttribute("fill", "none");
   });
 
-  it("keeps help-only annotations in a tooltip instead of duplicating them inline", () => {
+  test("keeps help-only annotations in a tooltip instead of duplicating them inline", () => {
     render(
       withAutoFormContext(
         <Form>
@@ -228,7 +228,7 @@ describe("FieldWrapper", () => {
 });
 
 describe("ArrayWrapper", () => {
-  it("renders with the field-spacing token and an add button", () => {
+  test("renders with the field-spacing token and an add button", () => {
     render(
       withAutoFormContext(
         <ArrayWrapper field={makeField()} label="Seed Brokers" onAddItem={() => undefined} testId="array">
@@ -238,12 +238,12 @@ describe("ArrayWrapper", () => {
     );
     const wrapper = screen.getByTestId("array");
     expect(wrapper.className).toContain(formSpacing.field);
-    expect(screen.getByRole("button", { name: /add seed brokers/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /add seed brokers/iu })).toBeInTheDocument();
   });
 });
 
 describe("ArrayElementWrapper", () => {
-  it("contains each complex repeated item in a distinct native card", () => {
+  test("contains each complex repeated item in a distinct native card", () => {
     render(
       <>
         <ArrayElementWrapper index={0} onRemove={() => undefined} testId="item-0">

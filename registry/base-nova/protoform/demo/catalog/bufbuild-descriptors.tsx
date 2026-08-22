@@ -25,7 +25,7 @@ export function BufbuildDescriptorsDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
         <Badge variant="outline">{method.methodKind} RPC</Badge>
       </div>
-      <section
+      <fieldset
         aria-label="RPC method shape"
         className="grid gap-3 rounded-lg border border-border bg-muted/30 p-4 text-sm sm:grid-cols-2"
       >
@@ -43,9 +43,9 @@ export function BufbuildDescriptorsDemo() {
             <dd className="break-all text-muted-foreground">{method.output.typeName}</dd>
           </div>
         </dl>
-      </section>
+      </fieldset>
       <p className="text-muted-foreground text-sm">
-        {"Complete the request form that a generated service method accepts."}
+        Complete the request form that a generated service method accepts.
       </p>
       <AutoForm
         defaultValues={defaultValues}

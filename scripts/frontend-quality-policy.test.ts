@@ -1,6 +1,6 @@
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
-import { describe, expect, test } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 
 const manifest = JSON.parse(readFileSync("package.json", "utf8")) as {
   devDependencies: Record<string, string>;
@@ -61,7 +61,7 @@ describe("frontend quality policy", () => {
   test("checks authored installable registry source", () => {
     expect(tsconfig.exclude ?? []).not.toContain("registry/base-nova");
     expect(biomeConfig).not.toContain('"!registry"');
-    expect(biomeConfig).not.toMatch(/"includes": \["registry\/\*\*"\][\s\S]*?"enabled": false/);
+    expect(biomeConfig).not.toMatch(/"includes": \["registry\/\*\*"\][\s\S]*?"enabled": false/u);
     expect(biomeConfig).toContain('"ultracite/biome/type-aware"');
     expect(biomeConfig).toContain('"ultracite/biome/jest"');
   });
@@ -77,8 +77,9 @@ describe("frontend quality policy", () => {
 
   test("runs a full warning-blocking React Doctor gate", () => {
     expect(manifest.devDependencies["react-doctor"]).toBeDefined();
-    expect(manifest.scripts["doctor:strict"]).toContain("--scope full");
-    expect(manifest.scripts["doctor:strict"]).toContain("--blocking warning");
+    expect(manifest.scripts["doctor"]).toContain("--scope full");
+    expect(manifest.scripts["doctor"]).toContain("--blocking warning");
+    expect(manifest.scripts["doctor:strict"]).toBe("bun run doctor");
     expect(manifest.scripts["ci:gate"]).toContain("bun run doctor:strict");
     expect(manifest.scripts["quality:gate"]).toContain("bun run doctor:strict");
     expect(existsSync("doctor.config.ts")).toBe(true);

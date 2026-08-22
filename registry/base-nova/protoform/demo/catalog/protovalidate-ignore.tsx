@@ -21,7 +21,7 @@ export function ProtovalidateIgnoreDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Clear optional values and compare the result with fields explicitly set to zero."}
+        Clear optional values and compare the result with fields explicitly set to zero.
       </p>
       <AutoForm
         defaultValues={defaultValues}

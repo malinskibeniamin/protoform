@@ -1,9 +1,9 @@
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 
 import { formatSubmittedValue } from "./format-submitted-value.js";
 
 describe("formatSubmittedValue", () => {
-  it("formats protobuf JavaScript values as readable JSON", () => {
+  test("formats protobuf JavaScript values as readable JSON", () => {
     const formatted = formatSubmittedValue({
       apiKey: "demo-api-key",
       count: 42n,

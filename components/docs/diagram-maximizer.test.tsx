@@ -1,10 +1,10 @@
-import { afterEach, describe, expect, it, rs } from "@rstest/core";
+import { afterEach, describe, expect, rs } from "@rstest/core";
 import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { DiagramMaximizer } from "./diagram-maximizer";
 
-const FULL_SCREEN_PATTERN = /full screen/i;
+const FULL_SCREEN_PATTERN = /full screen/iu;
 
 function appendDiagram(tagName = "blume-mermaid", label = "System flow") {
   const diagram = document.createElement(tagName);
@@ -27,7 +27,7 @@ afterEach(() => {
 });
 
 describe("DiagramMaximizer", () => {
-  it("gives an unlabeled Mermaid fallback a readable dialog title", async () => {
+  test("gives an unlabeled Mermaid fallback a readable dialog title", async () => {
     const user = userEvent.setup();
     const diagram = appendDiagram();
     diagram.removeAttribute("aria-label");
@@ -46,7 +46,7 @@ describe("DiagramMaximizer", () => {
     expect(await screen.findByRole("dialog", { name: "Diagram" })).toBeVisible();
   });
 
-  it("opens an accessible full-viewport fallback and restores focus", async () => {
+  test("opens an accessible full-viewport fallback and restores focus", async () => {
     const user = userEvent.setup();
     const diagram = appendDiagram();
     Object.defineProperty(diagram, "requestFullscreen", {
@@ -73,7 +73,7 @@ describe("DiagramMaximizer", () => {
     expect(maximize).toHaveFocus();
   });
 
-  it("enhances generic architecture containers without duplicating nested Mermaid controls", async () => {
+  test("enhances generic architecture containers without duplicating nested Mermaid controls", async () => {
     const generic = appendDiagram("figure", "API architecture");
     generic.setAttribute("data-diagram", "");
 
@@ -98,7 +98,7 @@ describe("DiagramMaximizer", () => {
     expect(screen.getAllByRole("button", { name: FULL_SCREEN_PATTERN })).toHaveLength(2);
   });
 
-  it("uses the browser Fullscreen API when available and exits from the same control", async () => {
+  test("uses the browser Fullscreen API when available and exits from the same control", async () => {
     const user = userEvent.setup();
     const diagram = appendDiagram();
     const requestFullscreen = rs.fn(() => {

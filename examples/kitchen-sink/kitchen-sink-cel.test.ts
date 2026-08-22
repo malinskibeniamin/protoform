@@ -1,7 +1,7 @@
 import { create } from "@bufbuild/protobuf";
 import { timestampFromDate } from "@bufbuild/protobuf/wkt";
 import { createValidator } from "@bufbuild/protovalidate";
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 
 import {
   KitchenSinkEnvironment,
@@ -59,7 +59,7 @@ function buildValidRequest() {
 }
 
 describe("kitchen-sink CEL contract", () => {
-  it("accepts a request that satisfies every cross-collection policy", () => {
+  test("accepts a request that satisfies every cross-collection policy", () => {
     const result = createValidator().validate(SubmitKitchenSinkFormRequestSchema, buildValidRequest());
 
     expect(
@@ -70,7 +70,7 @@ describe("kitchen-sink CEL contract", () => {
     ).toBe("valid");
   });
 
-  it.each<{
+  test.each<{
     expectedMessage: string;
     expectedRule: string;
     mutate: (request: SubmitKitchenSinkFormRequest) => void;

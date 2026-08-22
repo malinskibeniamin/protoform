@@ -21,7 +21,7 @@ export function CelSafeEvaluationDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Use the bounded form while executable evidence covers unknown, error, and cost-limit paths."}
+        Use the bounded form while executable evidence covers unknown, error, and cost-limit paths.
       </p>
       <AutoForm
         defaultValues={defaultValues}

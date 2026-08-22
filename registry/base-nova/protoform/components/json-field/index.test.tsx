@@ -1,10 +1,10 @@
-import { describe, expect, it, rs } from "@rstest/core";
+import { describe, expect, rs } from "@rstest/core";
 import { render, screen } from "@testing-library/react";
 
 import { JSONField } from ".";
 
 describe("JSONField accessibility", () => {
-  it("labels the fallback editor for deeply nested JSON", () => {
+  test("labels the fallback editor for deeply nested JSON", () => {
     render(
       <JSONField
         maxDepth={1}
@@ -25,7 +25,7 @@ describe("JSONField accessibility", () => {
     expect(screen.getByRole("textbox", { name: "Audit JSON" })).toBeVisible();
   });
 
-  it("opens an unconstrained array in JSON mode", async () => {
+  test("opens an unconstrained array in JSON mode", async () => {
     render(<JSONField onChange={rs.fn()} schema={{ type: "array" }} value={["overview", 3, true]} />);
 
     expect(await screen.findByRole("textbox", { name: "JSON value" })).toHaveValue('[\n  "overview",\n  3,\n  true\n]');

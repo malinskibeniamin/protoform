@@ -60,7 +60,8 @@ export function FormikExample({ baseUrl }: { baseUrl?: string }) {
           helpers.setStatus(serverErrors.root);
           const firstField = firstServerErrorField(serverErrors);
           if (firstField) {
-            document.getElementById(`${idPrefix}-${firstField}`)?.focus();
+            const fieldId = `${idPrefix}-${firstField}`;
+            document.querySelector<HTMLElement>(`#${CSS.escape(fieldId)}`)?.focus();
           }
         }
       }}

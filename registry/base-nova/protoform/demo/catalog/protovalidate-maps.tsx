@@ -21,7 +21,7 @@ export function ProtovalidateMapsDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Add invalid keys and values to see both violations, then correct each entry."}
+        Add invalid keys and values to see both violations, then correct each entry.
       </p>
       <AutoForm
         defaultValues={defaultValues}

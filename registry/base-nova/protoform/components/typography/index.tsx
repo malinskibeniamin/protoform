@@ -135,6 +135,7 @@ export const Heading = forwardRef<HTMLHeadingElement, HeadingProps>((componentPr
     children
   );
 });
+Heading.displayName = "Heading";
 
 // Text Component
 interface TextProps extends React.HTMLAttributes<HTMLElement>, VariantProps<typeof textVariants>, SharedProps {

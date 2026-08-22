@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from "@rstest/core";
+import { afterEach, describe, expect } from "@rstest/core";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
@@ -6,8 +6,8 @@ import { buildExampleServer } from "../server/server.js";
 import { FinalFormExample } from "./final-form.js";
 import { FormikExample } from "./formik-form.js";
 
-const displayNamePattern = /display name/i;
-const emailPattern = /email/i;
+const displayNamePattern = /display name/iu;
+const emailPattern = /email/iu;
 
 let closeServer: (() => Promise<void>) | undefined;
 
@@ -17,7 +17,7 @@ afterEach(async () => {
 });
 
 async function startServer() {
-  const server = await buildExampleServer();
+  const server = buildExampleServer();
   const address = await server.listen({ host: "127.0.0.1", port: 0 });
   closeServer = () => server.close();
   return address;
@@ -29,7 +29,7 @@ async function fillProfile(user: ReturnType<typeof userEvent.setup>) {
 }
 
 describe("Formik example", () => {
-  it("validates with Formik and submits a typed protobuf message", async () => {
+  test("validates with Formik and submits a typed protobuf message", async () => {
     const address = await startServer();
     const user = userEvent.setup();
     render(<FormikExample baseUrl={address} />);
@@ -43,7 +43,7 @@ describe("Formik example", () => {
     expect(await screen.findByRole("status")).toHaveTextContent("profiles/ada-lovelace");
   });
 
-  it("maps structured server errors into Formik", async () => {
+  test("maps structured server errors into Formik", async () => {
     const address = await startServer();
     const user = userEvent.setup();
     render(<FormikExample baseUrl={address} />);
@@ -58,7 +58,7 @@ describe("Formik example", () => {
 });
 
 describe("Final Form example", () => {
-  it("validates with Final Form and submits a typed protobuf message", async () => {
+  test("validates with Final Form and submits a typed protobuf message", async () => {
     const address = await startServer();
     const user = userEvent.setup();
     render(<FinalFormExample baseUrl={address} />);
@@ -73,7 +73,7 @@ describe("Final Form example", () => {
     expect(await screen.findByRole("status")).toHaveTextContent("profiles/ada-lovelace");
   });
 
-  it("maps structured server errors into Final Form", async () => {
+  test("maps structured server errors into Final Form", async () => {
     const address = await startServer();
     const user = userEvent.setup();
     render(<FinalFormExample baseUrl={address} />);

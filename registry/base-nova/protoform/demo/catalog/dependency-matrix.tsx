@@ -21,7 +21,7 @@ export function DependencyMatrixDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Use the live form while the consumer fixture proves the registry-only install boundary."}
+        Use the live form while the consumer fixture proves the registry-only install boundary.
       </p>
       <AutoForm
         defaultValues={defaultValues}

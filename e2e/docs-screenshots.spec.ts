@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { expect, test } from "@playwright/test";
 
 const screenshotDir = "artifacts/screenshots";
-const productionComplexChunkPattern = /\/_astro\/complex-form\.[^/]+\.js$/;
+const productionComplexChunkPattern = /\/_astro\/complex-form\.[^/]+\.js$/u;
 const focusedExamplePaths = [
   "/docs/bare-bones-form",
   "/docs/two-step-form",
@@ -654,7 +654,6 @@ for (const pageInfo of pages) {
       }
     });
     await page.goto(pageInfo.path);
-    await page.waitForLoadState("networkidle");
     await expect(page.locator("h1", { hasText: pageInfo.heading }).first()).toBeVisible();
     if (pageInfo.diagram) {
       await expect(page.locator("blume-mermaid svg").first()).toBeVisible();

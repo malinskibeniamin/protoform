@@ -1,5 +1,5 @@
 import { create, fromBinary, toBinary, toJson } from "@bufbuild/protobuf";
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 import { renderHook, waitFor } from "@testing-library/react";
 import { act } from "react";
 
@@ -22,7 +22,7 @@ function defaults(overrides: Record<string, unknown> = {}) {
 // ---------------------------------------------------------------------------
 
 describe("useProtoFormDefaults", () => {
-  it("creates typed defaults from a proto schema", () => {
+  test("creates typed defaults from a proto schema", () => {
     const result = useProtoFormDefaults(AutoFormExampleSchema, {
       age: 25,
       username: "default_user",
@@ -33,7 +33,7 @@ describe("useProtoFormDefaults", () => {
     expect((result as Record<string, unknown>)["$typeName"]).toBe("protoform.v1.AutoFormExample");
   });
 
-  it("works with no init (empty message)", () => {
+  test("works with no init (empty message)", () => {
     const result = useProtoFormDefaults(AutoFormExampleSchema);
     expect(result.username).toBe("");
     expect(result.age).toBe(0);
@@ -45,7 +45,7 @@ describe("useProtoFormDefaults", () => {
 // ---------------------------------------------------------------------------
 
 describe("useProtoForm", () => {
-  it("returns form instance with all proto helpers", () => {
+  test("returns form instance with all proto helpers", () => {
     const { result } = renderHook(() => useProtoForm(AutoFormExampleSchema, { defaultValues: defaults() }));
 
     expect(result.current.register).toBeDefined();
@@ -57,7 +57,7 @@ describe("useProtoForm", () => {
     expect(result.current.getNestedErrors).toBeDefined();
   });
 
-  it("reflects invalid state when mode enables continuous validation", async () => {
+  test("reflects invalid state when mode enables continuous validation", async () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: defaults(),
@@ -70,7 +70,7 @@ describe("useProtoForm", () => {
     });
   });
 
-  it("produces field-level errors for invalid values", async () => {
+  test("produces field-level errors for invalid values", async () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: defaults({ username: "ab" }),
@@ -84,11 +84,11 @@ describe("useProtoForm", () => {
 
     await waitFor(() => {
       expect(result.current.formState.errors.username).toBeDefined();
-      expect(result.current.formState.errors.username?.message).toMatch(/3/);
+      expect(result.current.formState.errors.username?.message).toMatch(/3/u);
     });
   });
 
-  it("clears errors when values become valid", async () => {
+  test("clears errors when values become valid", async () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: defaults({ username: "ab" }),
@@ -116,7 +116,7 @@ describe("useProtoForm", () => {
 });
 
 describe("useProtoForm — update mask", () => {
-  it("derives the mask from fields changed through react-hook-form", async () => {
+  test("derives the mask from fields changed through react-hook-form", async () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: defaults({
@@ -140,7 +140,7 @@ describe("useProtoForm — update mask", () => {
     });
   });
 
-  it("starts a new mask baseline after reset", async () => {
+  test("starts a new mask baseline after reset", async () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: defaults({
@@ -173,7 +173,7 @@ describe("useProtoForm — update mask", () => {
 // ---------------------------------------------------------------------------
 
 describe("useProtoForm — createMessage", () => {
-  it("preserves configured empty repeated strings", () => {
+  test("preserves configured empty repeated strings", () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: defaults({ tags: ["alpha", "", "omega"] }),
@@ -184,7 +184,7 @@ describe("useProtoForm — createMessage", () => {
     expect(result.current.createMessage().tags).toEqual(["alpha", "", "omega"]);
   });
 
-  it("preserves unknown fields from parsed default values", () => {
+  test("preserves unknown fields from parsed default values", () => {
     const originalBytes = toBinary(
       AutoFormExampleSchema,
       create(AutoFormExampleSchema, { age: 25, username: "unknown_fields" })
@@ -213,7 +213,7 @@ describe("useProtoForm — createMessage", () => {
     expect(Array.from(editedBytes.slice(-unknownFieldBytes.length))).toEqual(unknownFieldBytes);
   });
 
-  it("builds a protobuf message from current form values", () => {
+  test("builds a protobuf message from current form values", () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: defaults({ age: 25, username: "test_user" }),
@@ -226,7 +226,7 @@ describe("useProtoForm — createMessage", () => {
     expect(message.age).toBe(25);
   });
 
-  it("strips stale protobuf metadata from RHF internal state", () => {
+  test("strips stale protobuf metadata from RHF internal state", () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: defaults({
@@ -251,7 +251,7 @@ describe("useProtoForm — createMessage", () => {
     expect(message.preferredContact.value).toBe("+1555");
   });
 
-  it("produces a message that survives JSON round-trip", () => {
+  test("produces a message that survives JSON round-trip", () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: defaults({
@@ -282,7 +282,7 @@ describe("useProtoForm — createMessage", () => {
 // ---------------------------------------------------------------------------
 
 describe("useProtoForm — nested messages", () => {
-  it("handles nested object values and creates message", () => {
+  test("handles nested object values and creates message", () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: defaults({
@@ -300,7 +300,7 @@ describe("useProtoForm — nested messages", () => {
     expect(message.shippingAddress?.city).toBe("Portland");
   });
 
-  it("validates nested field constraints", async () => {
+  test("validates nested field constraints", async () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: defaults({
@@ -329,7 +329,7 @@ describe("useProtoForm — nested messages", () => {
 // ---------------------------------------------------------------------------
 
 describe("useProtoForm — oneof fields", () => {
-  it("creates message with oneof values from defaults", () => {
+  test("creates message with oneof values from defaults", () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: defaults({
@@ -344,7 +344,7 @@ describe("useProtoForm — oneof fields", () => {
     expect(message.preferredContact.value).toBe("oneof@test.com");
   });
 
-  it("handles unset oneof gracefully", () => {
+  test("handles unset oneof gracefully", () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: defaults({ username: "no_contact" }),
@@ -355,7 +355,7 @@ describe("useProtoForm — oneof fields", () => {
     expect(message.preferredContact.case).toBeUndefined();
   });
 
-  it("setOneofValue switches oneof branch without casts", () => {
+  test("setOneofValue switches oneof branch without casts", () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: defaults({
@@ -373,7 +373,7 @@ describe("useProtoForm — oneof fields", () => {
     expect(message.preferredContact.value).toBe("+1234567890");
   });
 
-  it("throws when setOneofValue targets a non-oneof field", () => {
+  test("throws when setOneofValue targets a non-oneof field", () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: defaults({ username: "guard_test" }),
@@ -391,7 +391,7 @@ describe("useProtoForm — oneof fields", () => {
 // ---------------------------------------------------------------------------
 
 describe("useProtoForm — getNestedErrors", () => {
-  it("returns undefined when no errors exist", async () => {
+  test("returns undefined when no errors exist", async () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: defaults({ username: "valid_user" }),
@@ -403,7 +403,7 @@ describe("useProtoForm — getNestedErrors", () => {
     });
   });
 
-  it("drills into nested error objects", async () => {
+  test("drills into nested error objects", async () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: defaults({

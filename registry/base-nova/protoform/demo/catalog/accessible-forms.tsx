@@ -21,7 +21,7 @@ export function AccessibleFormsDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Complete the form using Tab, Shift+Tab, Enter, Space, and arrow keys."}
+        Complete the form using Tab, Shift+Tab, Enter, Space, and arrow keys.
       </p>
       <AutoForm
         defaultValues={defaultValues}

@@ -31,8 +31,8 @@ export interface ProtoMethodWorkflow {
   operation?: ProtoOperationInfo | undefined;
 }
 
-const STANDARD_METHOD_PATTERN = /^(Create|Delete|Get|List|Update)[A-Z]/;
-const PATH_FIELD_PATTERN = /\{([^}=]+)(?:=[^}]*)?\}/g;
+const STANDARD_METHOD_PATTERN = /^(Create|Delete|Get|List|Update)[A-Z]/u;
+const PATH_FIELD_PATTERN = /\{([^}=]+)(?:=[^}]*)?\}/gu;
 
 function getMethodCategory(name: string): ProtoMethodCategory {
   if (name.startsWith("Batch")) {

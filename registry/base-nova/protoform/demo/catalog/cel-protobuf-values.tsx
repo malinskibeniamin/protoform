@@ -21,7 +21,7 @@ export function CelProtobufValuesDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Change nested, enum, and optional fields to exercise descriptor-aware CEL access."}
+        Change nested, enum, and optional fields to exercise descriptor-aware CEL access.
       </p>
       <AutoForm
         defaultValues={defaultValues}

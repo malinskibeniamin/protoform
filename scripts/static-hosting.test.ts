@@ -1,10 +1,10 @@
 import { existsSync, readFileSync } from "node:fs";
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 
 const repositoryDirectory = new URL("../", import.meta.url);
 
 describe("static docs and registry hosting", () => {
-  it("builds one Cloudflare Pages artifact containing docs and registry JSON", () => {
+  test("builds one Cloudflare Pages artifact containing docs and registry JSON", () => {
     const manifest = JSON.parse(readFileSync(new URL("package.json", repositoryDirectory), "utf8")) as {
       scripts?: Record<string, string>;
     };

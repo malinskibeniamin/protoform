@@ -21,7 +21,7 @@ export function CelUiRulesDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Toggle the controlling value to reveal or disable dependent fields."}
+        Toggle the controlling value to reveal or disable dependent fields.
       </p>
       <AutoForm
         defaultValues={defaultValues}

@@ -1,4 +1,4 @@
-import { expect, test } from "@rstest/core";
+import { expect } from "@rstest/core";
 
 import { ControlTypeSchema } from "./gen/auto_form_ui_pb.js";
 

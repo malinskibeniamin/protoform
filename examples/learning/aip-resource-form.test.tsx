@@ -1,10 +1,10 @@
-import { expect, it } from "@rstest/core";
+import { expect } from "@rstest/core";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { AipResourceFormExample } from "./aip-resource-form.js";
 
-it("shows the AIP-safe update mask produced by editable changes", async () => {
+test("shows the AIP-safe update mask produced by editable changes", async () => {
   const user = userEvent.setup();
   render(<AipResourceFormExample />);
 

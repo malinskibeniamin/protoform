@@ -1,7 +1,7 @@
 import { BadRequestSchema } from "@buf/googleapis_googleapis.bufbuild_es/google/rpc/error_details_pb.js";
 import { create } from "@bufbuild/protobuf";
 import { Code, ConnectError } from "@connectrpc/connect";
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 import {
   BookSchema,
   BookState,
@@ -26,7 +26,7 @@ async function expectConnectCode(action: () => unknown | Promise<unknown>, code:
 }
 
 describe("form example service", () => {
-  it("accepts the basic form and returns a stable profile id", async () => {
+  test("accepts the basic form and returns a stable profile id", async () => {
     const response = await formExamplesService.submitBasicForm(
       create(SubmitBasicFormRequestSchema, {
         displayName: "Ada Lovelace",
@@ -41,7 +41,7 @@ describe("form example service", () => {
     });
   });
 
-  it("returns structured field details for business validation failures", async () => {
+  test("returns structured field details for business validation failures", async () => {
     const request = create(SubmitComplexFormRequestSchema, {
       approvalTicket: "OPS-42",
       ownerEmail: "owner@example.com",
@@ -68,7 +68,7 @@ describe("form example service", () => {
 });
 
 describe("library demo service", () => {
-  it("runs isolated create, get, list, update, and delete workflows", async () => {
+  test("runs isolated create, get, list, update, and delete workflows", async () => {
     const service = createLibraryService();
     const parent = "publishers/visitor-a";
 
@@ -168,7 +168,7 @@ describe("library demo service", () => {
     );
   });
 
-  it("isolates visitor libraries and rejects stale or immutable updates", async () => {
+  test("isolates visitor libraries and rejects stale or immutable updates", async () => {
     const service = createLibraryService();
     const firstParent = "publishers/visitor-a";
     const secondParent = "publishers/visitor-b";
@@ -198,7 +198,7 @@ describe("library demo service", () => {
     }
   });
 
-  it("uses current AIP lifecycle error codes for soft deletion", async () => {
+  test("uses current AIP lifecycle error codes for soft deletion", async () => {
     const service = createLibraryService();
     const parent = "publishers/visitor-a";
     const [book] = (await service.listBooks(create(ListBooksRequestSchema, { parent }))).books;

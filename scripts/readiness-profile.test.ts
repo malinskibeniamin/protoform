@@ -1,5 +1,5 @@
 import { existsSync, readFileSync } from "node:fs";
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 
 import {
   getReadinessSummary,
@@ -10,9 +10,9 @@ import {
 } from "../readiness/profile.js";
 import { formatReadinessReport } from "../readiness/report.js";
 
-const HTTPS_URL_PATTERN = /^https:\/\//;
-const ISO_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
-const PRODUCTION_SELF_CERTIFICATION_PATTERN = /is therefore.{0,8}production ready/i;
+const HTTPS_URL_PATTERN = /^https:\/\//u;
+const ISO_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/u;
+const PRODUCTION_SELF_CERTIFICATION_PATTERN = /is therefore.{0,8}production ready/iu;
 const GENERAL_AIP_NUMBERS = [
   1, 2, 3, 8, 9, 100, 111, 121, 122, 123, 124, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 140, 141, 142,
   143, 144, 145, 146, 147, 148, 149, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 180,
@@ -21,7 +21,7 @@ const GENERAL_AIP_NUMBERS = [
 ] as const;
 
 describe("readiness scoring", () => {
-  it("counts only applicable requirements in the percentage", () => {
+  test("counts only applicable requirements in the percentage", () => {
     const requirements: ReadinessRequirement[] = [
       {
         category: "protobuf",
@@ -91,7 +91,7 @@ describe("readiness scoring", () => {
     });
   });
 
-  it("publishes a unique, sourced production profile", () => {
+  test("publishes a unique, sourced production profile", () => {
     const ids = readinessRequirements.map((requirement) => requirement.id);
 
     expect(new Set(ids).size).toBe(ids.length);
@@ -108,7 +108,7 @@ describe("readiness scoring", () => {
     }
   });
 
-  it("completes the capability profile without self-certifying release", () => {
+  test("completes the capability profile without self-certifying release", () => {
     const summary = getReadinessSummary(readinessRequirements);
 
     expect(summary.percentage).toBe(100);
@@ -130,7 +130,7 @@ describe("readiness scoring", () => {
     expect(manifest.scripts?.["release:gate"]).toBe("bun run quality:gate");
   });
 
-  it("rejects a profile gate with a recommended gap", () => {
+  test("rejects a profile gate with a recommended gap", () => {
     const requirements: ReadinessRequirement[] = [
       {
         category: "production",
@@ -145,7 +145,7 @@ describe("readiness scoring", () => {
     expect(getReadinessSummary(requirements).profileComplete).toBe(false);
   });
 
-  it("backs every verified and optional capability with a discoverable test", () => {
+  test("backs every verified and optional capability with a discoverable test", () => {
     const repository = new URL("../", import.meta.url);
     const missingEvidence = readinessRequirements.flatMap((requirement) => {
       if (requirement.status !== "verified" && requirement.status !== "optional") {
@@ -163,7 +163,7 @@ describe("readiness scoring", () => {
     expect(missingEvidence).toEqual([]);
   });
 
-  it("counts the kitchen-sink CEL contract as verified evidence", () => {
+  test("counts the kitchen-sink CEL contract as verified evidence", () => {
     expect(
       readinessRequirements.filter((requirement) =>
         ["cel.language-coverage", "cel.message-string"].includes(requirement.id)
@@ -188,7 +188,7 @@ describe("readiness scoring", () => {
     );
   });
 
-  it("tracks the complete form-relevant CEL baseline without unsupported rows", () => {
+  test("tracks the complete form-relevant CEL baseline without unsupported rows", () => {
     const ids = new Map(
       readinessRequirements
         .filter((requirement) => requirement.category === "cel")
@@ -232,7 +232,7 @@ describe("readiness scoring", () => {
     expect(ids.get("cel.cost-limits")).toBe("verified");
   });
 
-  it("tracks every General AIP with an explicit readiness status", () => {
+  test("tracks every General AIP with an explicit readiness status", () => {
     const aipRequirements = readinessRequirements.filter((requirement) => requirement.category === "aip");
     const aipIds = aipRequirements
       .map((requirement) => requirement.id)
@@ -262,7 +262,7 @@ describe("readiness scoring", () => {
     ).toBe(true);
   });
 
-  it("reports the maintained v1 bridge separately from out-of-target proto2 features", () => {
+  test("reports the maintained v1 bridge separately from out-of-target proto2 features", () => {
     expect(readinessRequirements.find((requirement) => requirement.id === "protobuf.v1-proto2-bridge")).toMatchObject({
       category: "protobuf",
       evidence: {
@@ -293,7 +293,7 @@ describe("readiness scoring", () => {
     });
   });
 
-  it("pins the upstream ranges that define the profile denominator", () => {
+  test("pins the upstream ranges that define the profile denominator", () => {
     const manifest = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8")) as {
       dependencies?: Record<string, string>;
     };
@@ -305,7 +305,7 @@ describe("readiness scoring", () => {
     }
   });
 
-  it("does not turn profile completeness into a release claim", () => {
+  test("does not turn profile completeness into a release claim", () => {
     const guide = readFileSync(
       new URL("../content/docs/(production)/production-readiness.mdx", import.meta.url),
       "utf8"
@@ -316,7 +316,7 @@ describe("readiness scoring", () => {
     expect(guide).not.toMatch(PRODUCTION_SELF_CERTIFICATION_PATTERN);
   });
 
-  it("formats a report with the score and next tests", () => {
+  test("formats a report with the score and next tests", () => {
     const report = formatReadinessReport(readinessRequirements, readinessCategories);
     const summary = getReadinessSummary(readinessRequirements);
 

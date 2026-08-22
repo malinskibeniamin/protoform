@@ -3,7 +3,7 @@
 import { create, createRegistry } from "@bufbuild/protobuf";
 import { base64Encode } from "@bufbuild/protobuf/wire";
 import { createValidator } from "@bufbuild/protovalidate";
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 
 import {
   createProtoFormSchema,
@@ -40,7 +40,7 @@ function bytes(value: string | readonly number[]): string {
 }
 
 describe("Protovalidate format rule conformance", () => {
-  it.each([
+  test.each([
     ["hostname", "api.example.com", "not a host"],
     ["ip", "192.0.2.1", "999.0.2.1"],
     ["ipv4", "192.0.2.1", "2001:db8::1"],
@@ -64,7 +64,7 @@ describe("Protovalidate format rule conformance", () => {
     await expectInvalid(schema, field, invalid);
   });
 
-  it.each([
+  test.each([
     ["exact", bytes("proto"), bytes("wrong")],
     ["exactLength", bytes("12345"), bytes("1234")],
     ["boundedLength", bytes("four"), bytes("12")],
@@ -91,7 +91,7 @@ describe("Protovalidate format rule conformance", () => {
 });
 
 describe("Protovalidate well-known-type rule conformance", () => {
-  it("enforces duration const, comparisons, ranges, membership, normalization, and malformed input", async () => {
+  test("enforces duration const, comparisons, ranges, membership, normalization, and malformed input", async () => {
     const schema = createProtoFormSchema(WellKnownRuleMatrixSchema);
 
     await expectValid(schema, "exactDuration", "5s");
@@ -107,7 +107,7 @@ describe("Protovalidate well-known-type rule conformance", () => {
     await expectInvalid(schema, "exactDuration", "not-a-duration");
   });
 
-  it("enforces FieldMask const, allow, deny, and subpath semantics", async () => {
+  test("enforces FieldMask const, allow, deny, and subpath semantics", async () => {
     const schema = createProtoFormSchema(WellKnownRuleMatrixSchema);
 
     await expectValid(schema, "exactMask", ["display_name"]);
@@ -117,7 +117,7 @@ describe("Protovalidate well-known-type rule conformance", () => {
     await expectInvalid(schema, "deniedMask", ["name.child"]);
   });
 
-  it("enforces timestamp const, comparisons, reversed and now-relative ranges, timezone normalization, and malformed input", async () => {
+  test("enforces timestamp const, comparisons, reversed and now-relative ranges, timezone normalization, and malformed input", async () => {
     const schema = createProtoFormSchema(WellKnownRuleMatrixSchema);
     const now = Date.now();
 
@@ -137,7 +137,7 @@ describe("Protovalidate well-known-type rule conformance", () => {
 });
 
 describe("Protovalidate control-plane rule conformance", () => {
-  it("applies IGNORE_ALWAYS and IGNORE_IF_ZERO_VALUE across scalar, message, repeated, and map fields", async () => {
+  test("applies IGNORE_ALWAYS and IGNORE_IF_ZERO_VALUE across scalar, message, repeated, and map fields", async () => {
     const schema = createProtoFormSchema(IgnoreRuleMatrixSchema);
     const zeroValues = await schema["~standard"].validate({
       alwaysChild: { name: "x" },
@@ -160,7 +160,7 @@ describe("Protovalidate control-plane rule conformance", () => {
     ]);
   });
 
-  it("executes custom predefined rules with a stable rule id and form path", async () => {
+  test("executes custom predefined rules with a stable rule id and form path", async () => {
     const registry = createRegistry(kebab_case);
     const validatorResult = createValidator({ registry }).validate(
       PredefinedRuleMatrixSchema,
@@ -177,7 +177,7 @@ describe("Protovalidate control-plane rule conformance", () => {
     expect(paths(standardResult)).toContainEqual(["slug"]);
   });
 
-  it("keeps standard rule examples non-validating and surfaces the first example as form guidance", async () => {
+  test("keeps standard rule examples non-validating and surfaces the first example as form guidance", async () => {
     const schema = createProtoFormSchema(ExampleRuleMatrixSchema);
     const empty = await schema["~standard"].validate({});
     const invalid = await schema["~standard"].validate({ email: "not-email" });

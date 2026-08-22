@@ -1,13 +1,13 @@
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import KitchenSinkFormExample from "./kitchen-sink-form.js";
 
-const ORGANIZATION_SLUG_LABEL = /organization slug/i;
+const ORGANIZATION_SLUG_LABEL = /organization slug/iu;
 
 describe("KitchenSinkFormExample", () => {
-  it("presents the large contract as a linear source-owned shadcn flow", async () => {
+  test("presents the large contract as a linear source-owned shadcn flow", async () => {
     const user = userEvent.setup();
 
     render(<KitchenSinkFormExample />);

@@ -1,14 +1,14 @@
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 
-const sourceExtensionPattern = /\.(?:astro|cjs|css|js|jsx|mdx|mjs|ts|tsx)$/;
+const sourceExtensionPattern = /\.(?:astro|cjs|css|js|jsx|mdx|mjs|ts|tsx)$/u;
 const generatedPathPatterns = [
-  /(^|\/)gen\//,
-  /(^|\/)__golden__\//,
-  /(^|\/)public\/r\//,
-  /(^|\/)registry\/base-nova\/protoform\/lib\/protobuf-v1-bridge\//,
-  /(?:^|\/)routeTree\.gen\.ts$/,
-  /_(?:form|pb)\.ts$/,
+  /(^|\/)gen\//u,
+  /(^|\/)__golden__\//u,
+  /(^|\/)public\/r\//u,
+  /(^|\/)registry\/base-nova\/protoform\/lib\/protobuf-v1-bridge\//u,
+  /(?:^|\/)routeTree\.gen\.ts$/u,
+  /_(?:form|pb)\.ts$/u,
 ];
 
 const forbiddenDirectives = [

@@ -21,7 +21,7 @@ export function ProtobufDynamicJsonAnyDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Change object, scalar, list, and typed payload values, then submit their protobuf representation."}
+        Change object, scalar, list, and typed payload values, then submit their protobuf representation.
       </p>
       <AutoForm
         defaultValues={defaultValues}

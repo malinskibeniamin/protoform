@@ -33,10 +33,14 @@
     ]
   },
   "formatter": {
+    "enabled": true,
     "lineWidth": 120
   },
   "linter": {
+    "enabled": true,
     "rules": {
+      "preset": "all",
+      "nursery": "error",
       "complexity": {
         // TypeScript requires bracket access for values exposed only through index signatures.
         "useLiteralKeys": "off",
@@ -48,9 +52,16 @@
         // Biome's scanner cannot resolve registry aliases and generated protobuf module paths;
         // the TypeScript compiler validates both with the consumer-compatible resolver.
         "noUnresolvedImports": "off",
+        // Solid and Qwik rules misclassify React props and closures when every stable rule is enabled.
+        "noSolidDestructuredProps": "off",
+        "useQwikValidLexicalScope": "off",
         // Extensionless source imports remain portable when registry files are installed into
         // consumer projects; TypeScript still validates every resolved module.
         "useImportExtensions": "off"
+      },
+      "performance": {
+        // This React-only project cannot adopt Solid's For component.
+        "useSolidForComponent": "off"
       },
       "suspicious": {
         "noConsole": "error"
@@ -58,6 +69,139 @@
     }
   },
   "overrides": [
+    {
+      "includes": ["**"],
+      "linter": {
+        "rules": {
+          "nursery": {
+            // These experimental rules either duplicate each other, require broad semantic
+            // migrations, or produce framework/tooling false positives. Every other nursery
+            // rule remains enabled as an error through the top-level group setting.
+            "noConditionalExpect": "off",
+            // Dynamic component geometry and theme previews require runtime values; deleting
+            // their inline styles is an unsafe fix that breaks layout and visual state.
+            "noInlineStyles": "off",
+            "noReactNativeDeepImports": "off",
+            "noReactNativeLiteralColors": "off",
+            "noReactNativeRawText": "off",
+            // Installable registry modules use host-defined Tailwind tokens and arbitrary
+            // variants that cannot be resolved inside this repository.
+            "noTailwindArbitraryValue": "off",
+            "noUndeclaredClasses": "off",
+            "noUnsafeTypeAssertion": "off",
+            "noUnusedClasses": "off",
+            "useBaseline": "off",
+            "useConsistentTestIt": {
+              "level": "error",
+              "options": {
+                "function": "test",
+                "withinDescribe": "test"
+              }
+            },
+            "useExplicitReturnType": "off",
+            "useExplicitType": "off",
+            "useNamedCaptureGroup": "off",
+            // Empty strings, false flags, and zero values are meaningful form inputs; `||`
+            // is intentional at the reported fallback and boolean-composition sites.
+            "useNullishCoalescing": "off",
+            "useReactNativePlatformComponents": "off",
+            // Forward-ref and polymorphic public components intentionally use const definitions.
+            "useReactFunctionComponentDefinition": "off",
+            // Biome 2.5 cannot parse Tailwind v4 arbitrary variants used by shadcn components.
+            "useTailwindShorthandClasses": "off",
+            "useUnicodeRegex": "off",
+            // Assertion helpers own expectations on behalf of table-driven tests.
+            "useExpect": "off"
+          }
+        }
+      }
+    },
+    {
+      // Generated catalog modules expose Blume's static `client` marker before imports.
+      "includes": ["registry/base-nova/protoform/demo/catalog/**"],
+      "linter": {
+        "rules": {
+          "nursery": {
+            "useImportsFirst": "off"
+          }
+        }
+      }
+    },
+    {
+      // React 19's `act` always returns a thenable at runtime, but its void overload hides that
+      // contract from Biome's type-aware rule for async callbacks.
+      "includes": [
+        "registry/base-nova/protoform/hooks/use-proto-form-tanstack-v2/index.test.tsx",
+        "registry/base-nova/protoform/hooks/use-proto-form-tanstack/index.test.tsx",
+        "registry/base-nova/protoform/hooks/use-proto-form-v8/conformance.test.tsx",
+        "registry/base-nova/protoform/hooks/use-proto-form/partial-edit-validation.test.tsx",
+        "registry/base-nova/protoform/hooks/use-proto-form/use-proto-form.test.ts"
+      ],
+      "linter": {
+        "rules": {
+          "nursery": {
+            "useAwaitThenable": "off"
+          }
+        }
+      }
+    },
+    {
+      // Both reported conversions are guarded by `typeof value === "number"`; Biome loses that
+      // narrowing across the recursive JSON-field renderer.
+      "includes": [
+        "registry/base-nova/protoform/components/json-field/index.tsx"
+      ],
+      "linter": {
+        "rules": {
+          "nursery": {
+            "noBaseToString": "off"
+          }
+        }
+      }
+    },
+    {
+      // CEL expression identifiers are bigint values, which Math.min/Math.max cannot accept.
+      "includes": [
+        "registry/base-nova/protoform/components/auto-form/cel-runtime.ts"
+      ],
+      "linter": {
+        "rules": {
+          "nursery": {
+            "useMathMinMax": "off"
+          }
+        }
+      }
+    },
+    {
+      // ResizeObserver requires instance methods even though this no-op DOM mock has no state.
+      "includes": ["rstest.shared.setup.ts"],
+      "linter": {
+        "rules": {
+          "nursery": {
+            "useThisInClassMethods": "off"
+          }
+        }
+      }
+    },
+    {
+      // Biome does not honor React Compiler's explicit "use no memo" directives. These
+      // components are verified by the fail-fast compiler itself, which skips their known
+      // imperative ref, controlled-editor, and layout-measurement boundaries.
+      "includes": [
+        "registry/base-nova/protoform/components/auto-form/field-wrapper.tsx",
+        "registry/base-nova/protoform/components/auto-form/fields/shared.tsx",
+        "registry/base-nova/protoform/components/json-field/index.tsx",
+        "registry/base-nova/protoform/components/popover/index.tsx",
+        "registry/base-nova/protoform/components/toggle-group/index.tsx"
+      ],
+      "linter": {
+        "rules": {
+          "nursery": {
+            "useReactCompiler": "off"
+          }
+        }
+      }
+    },
     {
       "includes": ["scripts/**", "*.config.ts"],
       "linter": {
@@ -195,6 +339,25 @@
             "noMisplacedAssertion": "off"
           }
         }
+      }
+    },
+    {
+      // Rstest supplies its test function globally; Playwright specs remain excluded so their
+      // fixture-aware test API must always be imported from @playwright/test.
+      "includes": ["**/*.test.ts", "**/*.test.tsx"],
+      "javascript": {
+        "globals": ["test"]
+      }
+    },
+    {
+      // Browser-mode Rstest does not expose globals at runtime.
+      "includes": [
+        "**/*.browser.test.ts",
+        "**/*.browser.test.tsx",
+        "**/__browser__/**"
+      ],
+      "javascript": {
+        "globals": []
       }
     },
     {

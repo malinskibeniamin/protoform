@@ -1,6 +1,6 @@
 import { BadRequestSchema } from "@buf/googleapis_googleapis.bufbuild_es/google/rpc/error_details_pb.js";
 import { Code, ConnectError } from "@connectrpc/connect";
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 import { renderHook } from "@testing-library/react";
 import { act } from "react";
 
@@ -8,7 +8,7 @@ import { AutoFormExampleSchema } from "../../lib/protobuf-provider/gen/auto-form
 import { useProtoForm } from ".";
 
 describe("useProtoForm server errors", () => {
-  it("humanizes mapped violations and keeps unmapped violations unchanged", () => {
+  test("humanizes mapped violations and keeps unmapped violations unchanged", () => {
     const { result } = renderHook(() => useProtoForm(AutoFormExampleSchema));
     const error = new ConnectError("Review the highlighted fields.", Code.InvalidArgument, {}, [
       {
