@@ -1,6 +1,8 @@
 ---
 title: Błędy serwera
-description: "Zachowuj ustrukturyzowane błędy Connect i gRPC z API jako dostępne komunikaty zwrotne formularza. Poznaj praktyczne użycie w Protoform."
+description: >-
+  Zachowuj ustrukturyzowane błędy Connect i gRPC z API jako dostępne komunikaty
+  zwrotne formularza. Poznaj praktyczne użycie w Protoform.
 ---
 Walidacja po stronie klienta poprawia jakość komunikatów zwrotnych, ale to serwer pozostaje źródłem prawdy w kwestiach autoryzacji,
 współbieżności, unikalności, limitów i kontroli bieżącego stanu. Protoform mapuje ustrukturyzowane błędy Connect i gRPC
@@ -86,6 +88,19 @@ const form = useProtoForm(NotificationSchema, {
 });
 ```
 
+Użyj `serverPathPrefixes`, gdy równoważne kontrakty serwera mogą opakować ten sam komunikat w różnych
+polach żądania:
+
+```tsx
+const form = useProtoForm(CreateInstanceSpecSchema, {
+  serverPathPrefixes: ["spec", "instance"],
+});
+```
+
+Zarówno `spec.config.host`, jak i `instance.config.host` zostaną wtedy zmapowane na `config.host`.
+Opcje pojedyncza i mnoga są łączone: najpierw sprawdzany jest `serverPathPrefix`, a następnie elementy
+`serverPathPrefixes` w kolejności tablicy.
+
 | Ścieżka pola zaplecza | Ścieżka formularza |
 | --- | --- |
 | `notification.display_name` | `displayName` |
@@ -93,7 +108,7 @@ const form = useProtoForm(NotificationSchema, {
 | `notification.delivery.webhook.signing_secret_ref` | `delivery.value.signingSecretRef` |
 | `notification.delivery` | `delivery` |
 
-Protoform usuwa dokładnie wskazany prefiks, przechodzi przez deskryptor protobuf, konwertuje nazwy protobuf w formacie `snake_case`
+Protoform usuwa pierwszy dokładnie pasujący prefiks, przechodzi przez deskryptor protobuf, konwertuje nazwy protobuf w formacie `snake_case`
 na format TypeScript `camelCase` i spłaszcza warianty oneof pod `{oneofLocalName}.value`. Ustawia fokus na
 pierwszym zmapowanym polu i dodaje każde zmapowane naruszenie z typem błędu React Hook Form `server`. Ogólne
 opisy Protovalidate używają tych samych praktycznych komunikatów co walidacja po stronie klienta, natomiast pusty

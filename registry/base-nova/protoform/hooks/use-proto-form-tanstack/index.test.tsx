@@ -138,6 +138,42 @@ describe("TanStack useProtoForm", () => {
     expect(errorsForField(fieldErrors, "homepageUrl")).toContain("Review this value and try again.");
   });
 
+  it("maps violations through any configured server path prefix", () => {
+    const { result } = renderHook(() =>
+      useProtoForm(AutoFormExampleSchema, {
+        defaultValues: {
+          age: 25,
+          primaryEmail: "",
+          tags: [],
+          username: "valid_user",
+        },
+        serverPathPrefixes: ["spec", "instance"],
+      })
+    );
+    const error = new ConnectError("Review the highlighted fields.", Code.InvalidArgument, {}, [
+      {
+        desc: BadRequestSchema,
+        value: {
+          fieldViolations: [
+            { description: "value is required", field: "spec.primary_email" },
+            { description: "must contain at least 1 item(s)", field: "instance.tags" },
+          ],
+        },
+      },
+    ]);
+
+    let mapped: ReturnType<typeof result.current.setServerErrors> | undefined;
+    act(() => {
+      mapped = result.current.setServerErrors(error);
+    });
+
+    expect(mapped?.handled).toBe(true);
+    expect(mapped?.unmapped).toEqual([]);
+    const fieldErrors = result.current.getAllErrors().fields;
+    expect(errorsForField(fieldErrors, "primaryEmail")).toContain("Enter a value.");
+    expect(errorsForField(fieldErrors, "tags")).toContain("Add at least one item.");
+  });
+
   it("switches oneof branches without retaining the previous branch value", () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {

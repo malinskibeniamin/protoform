@@ -50,6 +50,11 @@ export interface UseProtoFormOptions<Desc extends DescMessage> extends Omit<UseF
    */
   serverPathPrefix?: string;
   /**
+   * Strip any of several leading server-path prefixes before mapping
+   * violations. Prefixes are checked in order after `serverPathPrefix`.
+   */
+  serverPathPrefixes?: readonly string[];
+  /**
    * `modified-fields` validates only fields intentionally changed since the
    * last reset and uses the same sticky field set for update masks. Root
    * issues remain visible. Defaults to full-message validation.
@@ -133,6 +138,7 @@ export function useProtoForm<Desc extends DescMessage>(
   const {
     emptyRepeatedStringPolicies,
     serverPathPrefix,
+    serverPathPrefixes = [],
     validationScope = "all",
     mode = "onChange",
     ...rest
@@ -140,6 +146,7 @@ export function useProtoForm<Desc extends DescMessage>(
   const conversionOptions: ProtoConversionOptions = {
     emptyRepeatedStringPolicies,
   };
+  const pathPrefixes = serverPathPrefix ? [serverPathPrefix, ...serverPathPrefixes] : serverPathPrefixes;
   const sourceMessage = isMessage(rest.defaultValues, schema) ? rest.defaultValues : undefined;
   const modifiedFieldsRef = useRef<ModifiedFieldTree>({});
   const suppressModifiedTrackingRef = useRef(false);
@@ -287,7 +294,7 @@ export function useProtoForm<Desc extends DescMessage>(
     const unmapped: { field: string; description: string }[] = [];
     let handled = false;
     for (const violation of extractFieldViolations(error)) {
-      const bare = stripPrefix(violation.field, serverPathPrefix);
+      const bare = stripPrefix(violation.field, pathPrefixes);
       const formPath = protoPathToFormPath(schema, bare);
       if (!formPath) {
         unmapped.push(violation);
@@ -333,12 +340,17 @@ export function useProtoFormDefaults<Desc extends DescMessage>(
   return create(schema, init ?? ({} as MessageInitShape<Desc>)) as unknown as FormShape<Desc>;
 }
 
-function stripPrefix(field: string, prefix?: string): string {
-  if (!prefix) {
-    return field;
+function stripPrefix(field: string, prefixes: readonly string[]): string {
+  for (const prefix of prefixes) {
+    if (!prefix) {
+      continue;
+    }
+    const withDot = `${prefix}.`;
+    if (field.startsWith(withDot)) {
+      return field.slice(withDot.length);
+    }
   }
-  const withDot = `${prefix}.`;
-  return field.startsWith(withDot) ? field.slice(withDot.length) : field;
+  return field;
 }
 
 function setModifiedPath(target: ModifiedFieldTree, path: string): void {

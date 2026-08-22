@@ -43,6 +43,11 @@ export interface UseProtoFormOptions<Desc extends DescMessage> extends Omit<UseF
    * message in `CreateNotificationRequest { notification: Notification }`).
    */
   serverPathPrefix?: string;
+  /**
+   * Strip any of several leading server-path prefixes before mapping
+   * violations. Prefixes are checked in order after `serverPathPrefix`.
+   */
+  serverPathPrefixes?: readonly string[];
 }
 
 export type UseProtoFormReturn<Desc extends DescMessage> = UseFormReturn<FormShape<Desc>> & {
@@ -118,10 +123,17 @@ export function useProtoForm<Desc extends DescMessage>(
   schema: Desc,
   options?: UseProtoFormOptions<Desc>
 ): UseProtoFormReturn<Desc> {
-  const { emptyRepeatedStringPolicies, serverPathPrefix, mode = "onChange", ...rest } = options ?? {};
+  const {
+    emptyRepeatedStringPolicies,
+    serverPathPrefix,
+    serverPathPrefixes = [],
+    mode = "onChange",
+    ...rest
+  } = options ?? {};
   const conversionOptions: ProtoConversionOptions = {
     emptyRepeatedStringPolicies,
   };
+  const pathPrefixes = serverPathPrefix ? [serverPathPrefix, ...serverPathPrefixes] : serverPathPrefixes;
   const sourceMessage = isMessage(rest.defaultValues, schema) ? rest.defaultValues : undefined;
 
   const form = useForm({
@@ -188,7 +200,7 @@ export function useProtoForm<Desc extends DescMessage>(
     const unmapped: { field: string; description: string }[] = [];
     let handled = false;
     for (const violation of extractFieldViolations(error)) {
-      const bare = stripPrefix(violation.field, serverPathPrefix);
+      const bare = stripPrefix(violation.field, pathPrefixes);
       const formPath = protoPathToFormPath(schema, bare);
       if (!formPath) {
         unmapped.push(violation);
@@ -229,10 +241,15 @@ export function useProtoFormDefaults<Desc extends DescMessage>(
   return create(schema, init ?? ({} as MessageInitShape<Desc>)) as unknown as FormShape<Desc>;
 }
 
-function stripPrefix(field: string, prefix?: string): string {
-  if (!prefix) {
-    return field;
+function stripPrefix(field: string, prefixes: readonly string[]): string {
+  for (const prefix of prefixes) {
+    if (!prefix) {
+      continue;
+    }
+    const withDot = `${prefix}.`;
+    if (field.startsWith(withDot)) {
+      return field.slice(withDot.length);
+    }
   }
-  const withDot = `${prefix}.`;
-  return field.startsWith(withDot) ? field.slice(withDot.length) : field;
+  return field;
 }

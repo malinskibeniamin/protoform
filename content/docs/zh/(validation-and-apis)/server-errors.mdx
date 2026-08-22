@@ -1,6 +1,6 @@
 ---
 title: 服务器错误
-description: "将 API 返回的结构化 Connect 和 gRPC 错误保留为无障碍表单反馈。本指南进一步说明如何在 Protoform 中实际应用此功能，并涵盖契约设计、表单生成、字段验证、错误处理、迁移策略、无障碍体验、测试方法与生产环境集成。"
+description: 将 API 返回的结构化 Connect 和 gRPC 错误保留为无障碍表单反馈。请参阅 Protoform 实际应用指南。
 ---
 客户端验证可以改善反馈，但服务器仍是授权、并发、唯一性、配额和当前状态检查的权威来源。Protoform 将结构化 Connect 和 gRPC 错误映射到 3 个位置：字段错误、错误摘要和诊断上下文。
 
@@ -77,6 +77,16 @@ const form = useProtoForm(NotificationSchema, {
 });
 ```
 
+当等价的服务端契约可能将同一消息包装在不同的请求字段下时，请使用 `serverPathPrefixes`：
+
+```tsx
+const form = useProtoForm(CreateInstanceSpecSchema, {
+  serverPathPrefixes: ["spec", "instance"],
+});
+```
+
+此时，`spec.config.host` 和 `instance.config.host` 都会映射到 `config.host`。单数和复数选项会合并：先检查 `serverPathPrefix`，再按数组顺序检查 `serverPathPrefixes`。
+
 | 后端字段路径 | 表单路径 |
 | --- | --- |
 | `notification.display_name` | `displayName` |
@@ -84,7 +94,7 @@ const form = useProtoForm(NotificationSchema, {
 | `notification.delivery.webhook.signing_secret_ref` | `delivery.value.signingSecretRef` |
 | `notification.delivery` | `delivery` |
 
-Protoform 会移除完全匹配的前缀，遍历 protobuf 描述符，将 protobuf `snake_case` 名称转换为 TypeScript `camelCase`，并将 oneof 分支扁平化到 `{oneofLocalName}.value` 下。它会聚焦第一个已映射字段，并使用 React Hook Form 错误类型 `server` 添加每个已映射违规项。通用 Protovalidate 描述使用与客户端验证相同的可操作文案，空描述则回退为 `Review this value and try again.`
+Protoform 会移除第一个完全匹配的前缀，遍历 protobuf 描述符，将 protobuf `snake_case` 名称转换为 TypeScript `camelCase`，并将 oneof 分支扁平化到 `{oneofLocalName}.value` 下。它会聚焦第一个已映射字段，并使用 React Hook Form 错误类型 `server` 添加每个已映射违规项。通用 Protovalidate 描述使用与客户端验证相同的可操作文案，空描述则回退为 `Review this value and try again.`
 
 未知字段会保留在 `unmapped` 中。`contacts[0].email` 等使用方括号索引的重复字段和 map 路径目前也无法映射，因为映射器解析的是描述符字段段，而不是集合索引。请在摘要中显示这些违规项，不要将其丢弃。
 

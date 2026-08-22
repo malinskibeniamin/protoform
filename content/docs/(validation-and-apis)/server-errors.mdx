@@ -87,6 +87,18 @@ const form = useProtoForm(NotificationSchema, {
 });
 ```
 
+Use `serverPathPrefixes` when equivalent server contracts may wrap the same message under different
+request fields:
+
+```tsx
+const form = useProtoForm(CreateInstanceSpecSchema, {
+  serverPathPrefixes: ["spec", "instance"],
+});
+```
+
+Both `spec.config.host` and `instance.config.host` then map to `config.host`. The singular and plural
+options combine: `serverPathPrefix` is checked first, followed by `serverPathPrefixes` in array order.
+
 | Backend field path | Form path |
 | --- | --- |
 | `notification.display_name` | `displayName` |
@@ -94,7 +106,7 @@ const form = useProtoForm(NotificationSchema, {
 | `notification.delivery.webhook.signing_secret_ref` | `delivery.value.signingSecretRef` |
 | `notification.delivery` | `delivery` |
 
-Protoform strips the exact prefix, walks the protobuf descriptor, converts protobuf `snake_case` names
+Protoform strips the first exact matching prefix, walks the protobuf descriptor, converts protobuf `snake_case` names
 to TypeScript `camelCase`, and flattens oneof branches under `{oneofLocalName}.value`. It focuses the
 first mapped field and adds every mapped violation with React Hook Form error type `server`. Generic
 Protovalidate descriptions use the same actionable copy as client validation, while an empty

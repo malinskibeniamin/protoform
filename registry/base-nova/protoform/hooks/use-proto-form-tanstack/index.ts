@@ -175,6 +175,7 @@ export function useProtoForm<
   > & {
     emptyRepeatedStringPolicies?: ProtoConversionOptions["emptyRepeatedStringPolicies"];
     serverPathPrefix?: string;
+    serverPathPrefixes?: readonly string[];
   }
 ): UseProtoFormReturn<
   Values,
@@ -190,10 +191,11 @@ export function useProtoForm<
   TOnServer,
   TSubmitMeta
 > {
-  const { emptyRepeatedStringPolicies, serverPathPrefix, ...nativeOptions } = options;
+  const { emptyRepeatedStringPolicies, serverPathPrefix, serverPathPrefixes = [], ...nativeOptions } = options;
   const conversionOptions: ProtoConversionOptions = {
     emptyRepeatedStringPolicies,
   };
+  const pathPrefixes = serverPathPrefix ? [serverPathPrefix, ...serverPathPrefixes] : serverPathPrefixes;
   const protoSchema = createProtoFormSchema<Values, Desc>(schema, conversionOptions);
   const onSubmitAsyncValidator = composeSubmitAsyncValidator(nativeOptions.validators?.onSubmitAsync, protoSchema);
   const composedOptions = {
@@ -239,7 +241,7 @@ export function useProtoForm<
     let handled = false;
     const unmapped: { field: string; description: string }[] = [];
     for (const violation of extractFieldViolations(error)) {
-      const serverPath = stripPrefix(violation.field, serverPathPrefix);
+      const serverPath = stripPrefix(violation.field, pathPrefixes);
       const formPath = protoPathToFormPath(schema, serverPath);
       if (!formPath) {
         unmapped.push(violation);
@@ -348,10 +350,15 @@ function setNestedMessage(target: Record<string, unknown>, path: string[], messa
   }
 }
 
-function stripPrefix(field: string, prefix?: string): string {
-  if (!prefix) {
-    return field;
+function stripPrefix(field: string, prefixes: readonly string[]): string {
+  for (const prefix of prefixes) {
+    if (!prefix) {
+      continue;
+    }
+    const withDot = `${prefix}.`;
+    if (field.startsWith(withDot)) {
+      return field.slice(withDot.length);
+    }
   }
-  const withDot = `${prefix}.`;
-  return field.startsWith(withDot) ? field.slice(withDot.length) : field;
+  return field;
 }
