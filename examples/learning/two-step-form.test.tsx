@@ -1,10 +1,10 @@
-import { expect, it } from "@rstest/core";
+import { expect } from "@rstest/core";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import TwoStepFormExample from "./two-step-form.js";
 
-it("reveals one simple field per step", async () => {
+test("reveals one simple field per step", async () => {
   const user = userEvent.setup();
   render(<TwoStepFormExample />);
 

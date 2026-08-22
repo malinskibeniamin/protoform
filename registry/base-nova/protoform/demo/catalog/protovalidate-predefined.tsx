@@ -21,7 +21,7 @@ export function ProtovalidatePredefinedDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Change the predefined-rule fields and submit to see reusable messages."}
+        Change the predefined-rule fields and submit to see reusable messages.
       </p>
       <AutoForm
         defaultValues={defaultValues}

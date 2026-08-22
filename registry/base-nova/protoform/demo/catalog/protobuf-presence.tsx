@@ -21,7 +21,7 @@ export function ProtobufPresenceDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Toggle populated values and submit to compare explicit presence with an unset field."}
+        Toggle populated values and submit to compare explicit presence with an unset field.
       </p>
       <AutoForm
         defaultValues={defaultValues}

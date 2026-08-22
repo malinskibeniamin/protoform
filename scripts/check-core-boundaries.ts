@@ -7,7 +7,7 @@ import { readdir, readFile } from "node:fs/promises";
 import { join, relative } from "node:path";
 
 const coreSrc = join(import.meta.dir, "..", "registry", "base-nova", "protoform", "lib", "core");
-const bannedModulePattern = /from\s+["'](@bufbuild\/[^"']+|@connectrpc\/[^"']+)["']/g;
+const bannedModulePattern = /from\s+["'](@bufbuild\/[^"']+|@connectrpc\/[^"']+)["']/gu;
 
 async function collectTypescriptFiles(dir: string): Promise<string[]> {
   const entries = await readdir(dir, { recursive: true, withFileTypes: true });

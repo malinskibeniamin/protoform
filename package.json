@@ -22,7 +22,8 @@
     "docs:blume:translate": "blume translate --codex",
     "docs:blume:translate:check": "blume translate --check",
     "docs:blume:validate": "blume validate",
-    "doctor:strict": "react-doctor . --yes --scope full --blocking warning --no-respect-inline-disables --no-score --no-supply-chain",
+    "doctor": "react-doctor . --yes --scope full --blocking warning --no-respect-inline-disables --no-score --no-supply-chain",
+    "doctor:strict": "bun run doctor",
     "e2e:screenshots": "bun run test:e2e",
     "examples:dev": "bun run --parallel examples:server dev",
     "examples:generate": "buf generate --template buf.gen.examples.yaml",
@@ -44,6 +45,7 @@
     "registry:smoke": "bun run scripts/smoke-registry.ts",
     "release:gate": "bun run quality:gate",
     "release:verify-tag": "bun run scripts/verify-release-tag.ts",
+    "scan:react": "react-scan http://localhost:55011",
     "start": "blume preview --host 0.0.0.0 --port 8080",
     "test": "bun run test:unit && bun run test:integration",
     "test:browser": "node scripts/run-tests.mjs browser --reporters verbose",
@@ -106,7 +108,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.12.1",
-    "@biomejs/biome": "2.5.7",
+    "@biomejs/biome": "2.5.10",
     "@bufbuild/buf": "^1.72.0",
     "@bufbuild/protoc-gen-es": "^2.13.0",
     "@bufbuild/protoplugin": "^2.13.0",
@@ -131,9 +133,10 @@
     "expect-type": "1.3.0",
     "happy-dom": "20.11.1",
     "react-doctor": "0.9.12",
+    "react-scan": "0.5.7",
     "tailwindcss": "^4.3.3",
     "typescript": "^6.0.3",
-    "ultracite": "^7.10.1",
+    "ultracite": "7.10.6",
     "undici": "8.9.0"
   },
   "packageManager": "bun@1.3.14"

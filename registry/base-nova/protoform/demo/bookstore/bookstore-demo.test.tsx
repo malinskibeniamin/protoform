@@ -1,4 +1,4 @@
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
@@ -9,7 +9,7 @@ function renderDemo() {
 }
 
 describe("bookstore flagship demo", () => {
-  it("lists, gets, and creates a book through a CEL-validated RHF stepper", async () => {
+  test("lists, gets, and creates a book through a CEL-validated RHF stepper", async () => {
     const user = userEvent.setup();
     renderDemo();
 
@@ -50,7 +50,7 @@ describe("bookstore flagship demo", () => {
     expect(await screen.findByRole("heading", { name: "Protocol" })).toBeVisible();
   });
 
-  it("updates with an etag and field mask, then deletes with AutoForm", async () => {
+  test("updates with an etag and field mask, then deletes with AutoForm", async () => {
     const user = userEvent.setup();
     renderDemo();
 

@@ -66,7 +66,8 @@ export function FinalFormExample({ baseUrl }: { baseUrl?: string }) {
         } catch (error) {
           const submission = mapSubmissionErrors(error);
           if (submission.firstField) {
-            document.getElementById(`${idPrefix}-${submission.firstField}`)?.focus();
+            const fieldId = `${idPrefix}-${submission.firstField}`;
+            document.querySelector<HTMLElement>(`#${CSS.escape(fieldId)}`)?.focus();
           }
           return submission.errors;
         }

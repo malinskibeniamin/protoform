@@ -1,9 +1,9 @@
 import { readFileSync } from "node:fs";
 
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 
 describe("Protoform registry style", () => {
-  it("targets the Base UI Nova style", () => {
+  test("targets the Base UI Nova style", () => {
     const config = JSON.parse(readFileSync("components.json", "utf8")) as {
       style?: string;
     };
@@ -11,7 +11,7 @@ describe("Protoform registry style", () => {
     expect(config.style).toBe("base-nova");
   });
 
-  it("publishes runtime source and the documented proto contract", () => {
+  test("publishes runtime source and the documented proto contract", () => {
     const registry = JSON.parse(readFileSync("registry.json", "utf8")) as {
       items: Array<{
         files?: Array<{ path: string; target?: string; type: string }>;
@@ -50,7 +50,7 @@ describe("Protoform registry style", () => {
     ]);
   });
 
-  it("points shadcn at the actual non-RSC stylesheet", () => {
+  test("points shadcn at the actual non-RSC stylesheet", () => {
     const config = JSON.parse(readFileSync("components.json", "utf8")) as {
       rsc?: boolean;
       tailwind?: { css?: string };
@@ -60,20 +60,20 @@ describe("Protoform registry style", () => {
     expect(config.tailwind?.css).toBe("theme.css");
   });
 
-  it("creates smoke-test consumers with the same Base Nova style", () => {
+  test("creates smoke-test consumers with the same Base Nova style", () => {
     const fixtureScript = readFileSync("scripts/consumer-fixture-smoke.ts", "utf8");
 
     expect(fixtureScript).toContain('style: "base-nova"');
     expect(fixtureScript).not.toContain('style: "new-york"');
   });
 
-  it("never publishes the internal unset sentinel", () => {
+  test("never publishes the internal unset sentinel", () => {
     const autoFormCore = readFileSync("public/r/auto-form-core.json", "utf8");
 
     expect(autoFormCore).not.toContain("__autoform_unset__");
   });
 
-  it("uses semantic card colors in light and dark hosts", () => {
+  test("uses semantic card colors in light and dark hosts", () => {
     const card = readFileSync("registry/base-nova/protoform/components/card/index.tsx", "utf8");
 
     expect(card).toContain("border-border");

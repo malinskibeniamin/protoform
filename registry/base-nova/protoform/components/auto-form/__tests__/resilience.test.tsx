@@ -1,17 +1,17 @@
-import { describe, expect, it, rs } from "@rstest/core";
+import { describe, expect, rs } from "@rstest/core";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { AutoForm } from "..";
 import type { SchemaProvider } from "../core-types";
 import { createMockProvider } from "./test-utils";
 
-const SUBMIT_BUTTON = /submit/i;
-const USERNAME_LABEL = /username/i;
+const SUBMIT_BUTTON = /submit/iu;
+const USERNAME_LABEL = /username/iu;
 
 const usernameProvider = createMockProvider([{ key: "username", required: true, type: "string" }]);
 
 describe("AutoForm – onSubmit error handling", () => {
-  it("shows root error when onSubmit throws", async () => {
+  test("shows root error when onSubmit throws", async () => {
     const user = userEvent.setup();
 
     render(
@@ -28,11 +28,11 @@ describe("AutoForm – onSubmit error handling", () => {
     await user.click(screen.getByRole("button", { name: SUBMIT_BUTTON }));
 
     await waitFor(() => {
-      expect(screen.getByText(/api failed/i)).toBeInTheDocument();
+      expect(screen.getByText(/api failed/iu)).toBeInTheDocument();
     });
   });
 
-  it("shows root error when onSubmit rejects", async () => {
+  test("shows root error when onSubmit rejects", async () => {
     const user = userEvent.setup();
 
     render(
@@ -43,11 +43,11 @@ describe("AutoForm – onSubmit error handling", () => {
     await user.click(screen.getByRole("button", { name: SUBMIT_BUTTON }));
 
     await waitFor(() => {
-      expect(screen.getByText(/network error/i)).toBeInTheDocument();
+      expect(screen.getByText(/network error/iu)).toBeInTheDocument();
     });
   });
 
-  it("aborts the previous submit context before a newer attempt", async () => {
+  test("aborts the previous submit context before a newer attempt", async () => {
     const user = userEvent.setup();
     const signals: AbortSignal[] = [];
     const onSubmit = rs.fn(async (_values, _form, context) => {
@@ -66,7 +66,7 @@ describe("AutoForm – onSubmit error handling", () => {
     expect(signals[1]?.aborted).toBe(false);
   });
 
-  it("aborts active submission when the form unmounts", async () => {
+  test("aborts active submission when the form unmounts", async () => {
     const user = userEvent.setup();
     let signal: AbortSignal | undefined;
     let finish: (() => void) | undefined;
@@ -88,7 +88,7 @@ describe("AutoForm – onSubmit error handling", () => {
     finish?.();
   });
 
-  it("aborts active provider validation when the form unmounts", async () => {
+  test("aborts active provider validation when the form unmounts", async () => {
     const user = userEvent.setup();
     let validationSignal: AbortSignal | undefined;
     let finishValidation: (() => void) | undefined;

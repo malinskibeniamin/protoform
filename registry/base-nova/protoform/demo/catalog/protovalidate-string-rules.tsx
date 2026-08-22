@@ -21,7 +21,7 @@ export function ProtovalidateStringRulesDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Try short, long, and malformed strings to see each constraint stay attached to its field."}
+        Try short, long, and malformed strings to see each constraint stay attached to its field.
       </p>
       <AutoForm
         defaultValues={defaultValues}

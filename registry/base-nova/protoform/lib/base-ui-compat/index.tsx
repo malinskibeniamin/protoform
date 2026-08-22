@@ -153,7 +153,9 @@ export interface CompatState {
 export function renderWithDataState<S extends CompatState = CompatState>(
   Element: keyof React.JSX.IntrinsicElements = "div"
 ): ComponentRenderFnCompat<HTMLPropsCompat, S> {
-  return (props, state) => React.createElement(Element, { ...props, ...compatStateAttrs(state) });
+  return function renderDataState(props, state) {
+    return React.createElement(Element, { ...props, ...compatStateAttrs(state) });
+  };
 }
 
 /**
@@ -361,7 +363,7 @@ type SlotProps = {
 type SlotElement = React.ReactElement & { ref?: React.Ref<HTMLElement> };
 
 type EventHandler = (...args: unknown[]) => unknown;
-const EVENT_HANDLER_KEY_PATTERN = /^on[A-Z]/;
+const EVENT_HANDLER_KEY_PATTERN = /^on[A-Z]/u;
 
 function isEventHandlerKey(key: string): boolean {
   return EVENT_HANDLER_KEY_PATTERN.test(key);
@@ -469,7 +471,7 @@ type SlottableComponent = React.FC<{ children: React.ReactNode }> & { __slottabl
 
 export const Slottable: SlottableComponent = Object.assign(
   function renderSlottable({ children }: { children: React.ReactNode }) {
-    return <>{children}</>;
+    return children;
   },
   { __slottableId: SLOTTABLE_IDENTIFIER }
 );

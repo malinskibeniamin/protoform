@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 
 const manifest = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8")) as {
   scripts: Record<string, string>;
@@ -8,7 +8,7 @@ const runner = readFileSync(new URL("./check-api-linter.ts", import.meta.url), "
 const ciWorkflow = readFileSync(new URL("../.github/workflows/ci.yml", import.meta.url), "utf8");
 
 describe("Google API Linter gate", () => {
-  it("pins the linter and verifies the AIP service contract in CI and release gates", () => {
+  test("pins the linter and verifies the AIP service contract in CI and release gates", () => {
     expect(manifest.scripts["aip:lint"]).toBe("bun run scripts/check-api-linter.ts");
     expect(manifest.scripts["ci:gate"]).toContain("bun run aip:lint");
     expect(manifest.scripts["quality:gate"]).toContain("bun run aip:lint");

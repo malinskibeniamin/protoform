@@ -1,4 +1,4 @@
-import { describe, expect, it, rs } from "@rstest/core";
+import { describe, expect, rs } from "@rstest/core";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
@@ -64,7 +64,7 @@ describe.each([
   ["React Hook Form", ReactHookAutoForm],
   ["TanStack Form", TanStackAutoForm],
 ] as const)("%s deprecated field policy", (_name, AutoForm) => {
-  it("shows deprecated fields by default", () => {
+  test("shows deprecated fields by default", () => {
     render(<AutoForm schema={schema} />);
 
     expect(screen.getByRole("textbox", { name: "Legacy name" })).toBeEnabled();
@@ -73,7 +73,7 @@ describe.each([
     expect(screen.getByRole("textbox", { name: "Legacy contact" })).toBeEnabled();
   });
 
-  it("disables deprecated fields and an active deprecated oneof branch", () => {
+  test("disables deprecated fields and an active deprecated oneof branch", () => {
     render(<AutoForm deprecatedFields="disable" schema={schema} />);
 
     expect(screen.getByRole("textbox", { name: "Legacy name" })).toBeDisabled();
@@ -82,7 +82,7 @@ describe.each([
     expect(screen.getByRole("textbox", { name: "Legacy contact" })).toBeDisabled();
   });
 
-  it("hides deprecated fields and choices while preserving their submitted values", async () => {
+  test("hides deprecated fields and choices while preserving their submitted values", async () => {
     const user = userEvent.setup();
     const onSubmit = rs.fn();
     render(<AutoForm deprecatedFields="hide" onSubmit={onSubmit} schema={schema} withSubmit />);

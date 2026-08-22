@@ -1,4 +1,4 @@
-import { expect, test } from "@rstest/core";
+import { expect } from "@rstest/core";
 
 import { isStandardSchema } from "./standard-schema.js";
 

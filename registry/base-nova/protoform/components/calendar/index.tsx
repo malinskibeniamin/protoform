@@ -64,12 +64,17 @@ function Calendar({
   SharedProps & {
     buttonVariant?: React.ComponentProps<typeof Button>["variant"];
   }) {
+  "use no memo";
+
   const defaultClassNames = getDefaultClassNames();
 
   const rootComponent = React.useMemo(
     () =>
-      ({ ref, ...rootProps }: React.ComponentProps<typeof CalendarRoot> & { ref?: React.Ref<HTMLDivElement> }) => (
-        <CalendarRootWithTestId {...rootProps} rootRef={ref ?? null} testId={testId} />
+      Object.assign(
+        ({ ref, ...rootProps }: React.ComponentProps<typeof CalendarRoot> & { ref?: React.Ref<HTMLDivElement> }) => (
+          <CalendarRootWithTestId {...rootProps} rootRef={ref ?? null} testId={testId} />
+        ),
+        { displayName: "CalendarRootComponent" }
       ),
     [testId]
   );
@@ -102,7 +107,7 @@ function Calendar({
           defaultClassNames.caption_label
         ),
         day: cn(
-          "group/day relative aspect-square h-full w-full select-none p-0 text-center [&:first-child[data-selected=true]_button]:rounded-l-md [&:last-child[data-selected=true]_button]:rounded-r-md",
+          "group/day relative aspect-square size-full select-none p-0 text-center [&:first-child[data-selected=true]_button]:rounded-l-md [&:last-child[data-selected=true]_button]:rounded-r-md",
           defaultClassNames.day
         ),
         disabled: cn("text-muted-foreground opacity-50", defaultClassNames.disabled),

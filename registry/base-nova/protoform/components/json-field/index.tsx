@@ -21,14 +21,14 @@ function isCommonJsEditorModule(value: unknown): value is { default: typeof Edit
 const Editor = isCommonJsEditorModule(EditorModule) ? EditorModule.default : EditorModule;
 
 const JSON_PRISM_GRAMMAR: Prism.Grammar = {
-  boolean: /\b(?:false|true)\b/,
-  comment: { greedy: true, pattern: /\/\/.*|\/\*[\s\S]*?(?:\*\/|$)/ },
-  null: { alias: "keyword", pattern: /\bnull\b/ },
-  number: /-?\b\d+(?:\.\d+)?(?:e[+-]?\d+)?\b/i,
-  operator: /:/,
-  property: { greedy: true, lookbehind: true, pattern: /(^|[^\\])"(?:\\.|[^\\"\r\n])*"(?=\s*:)/ },
-  punctuation: /[{}[\],]/,
-  string: { greedy: true, lookbehind: true, pattern: /(^|[^\\])"(?:\\.|[^\\"\r\n])*"(?!\s*:)/ },
+  boolean: /\b(?:false|true)\b/u,
+  comment: { greedy: true, pattern: /\/\/.*|\/\*[\s\S]*?(?:\*\/|$)/u },
+  null: { alias: "keyword", pattern: /\bnull\b/u },
+  number: /-?\b\d+(?:\.\d+)?(?:e[+-]?\d+)?\b/iu,
+  operator: /:/u,
+  property: { greedy: true, lookbehind: true, pattern: /(^|[^\\])"(?:\\.|[^\\"\r\n])*"(?=\s*:)/u },
+  punctuation: /[{}[\],]/u,
+  string: { greedy: true, lookbehind: true, pattern: /(^|[^\\])"(?:\\.|[^\\"\r\n])*"(?!\s*:)/u },
 };
 
 function highlightJson(code: string): string {
@@ -36,7 +36,7 @@ function highlightJson(code: string): string {
 }
 
 // Regex for matching trailing 's' to create singular names
-const TRAILING_S_REGEX = /s$/;
+const TRAILING_S_REGEX = /s$/u;
 
 function jsonEditorLabel(propertyName: string | undefined, path: string[]): string {
   const name = propertyName ?? path.at(-1) ?? "value";
@@ -215,6 +215,8 @@ const JSONField = ({
   ref,
   ...rest
 }: JSONFieldProps) => {
+  "use no memo";
+
   const [isJSONMode, setIsJSONMode] = useState(false);
   const [jsonError, setJSONError] = useState<string>();
   const customFieldsByName = React.useMemo(
@@ -415,7 +417,7 @@ const JSONField = ({
                 handleFieldChange(path, newValue);
               }}
               options={oneOfOptions}
-              placeholder="Select an option..."
+              placeholder="Select an option…"
               value={typeof currentValue === "string" ? currentValue : ""}
             />
           );
@@ -443,7 +445,7 @@ const JSONField = ({
                 handleFieldChange(path, newValue);
               }}
               options={enumOptions}
-              placeholder="Select an option..."
+              placeholder="Select an option…"
               value={typeof currentValue === "string" ? currentValue : ""}
             />
           );
@@ -537,7 +539,7 @@ const JSONField = ({
         return (
           <Input
             checked={typeof currentValue === "boolean" ? currentValue : false}
-            className="h-4 w-4"
+            className="size-4"
             onChange={(e) => handleFieldChange(path, e.target.checked)}
             required={isRequired}
             type="checkbox"
@@ -577,7 +579,7 @@ const JSONField = ({
                     {requiredFields.has(key) && <span className="ml-1 text-destructive">*</span>}
                   </Text>
                   <Badge className="px-1 py-0 text-xs" variant="outline">
-                    {(subSchema as JSONSchemaType).type || "unknown"}
+                    {(subSchema as JSONSchemaType).type ?? "unknown"}
                   </Badge>
                 </div>
                 {renderFormFields(
@@ -644,7 +646,7 @@ const JSONField = ({
                           type="button"
                           variant="outline"
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Trash2 className="size-4" />
                         </Button>
                       </div>
                       <div className="space-y-3">
@@ -656,7 +658,7 @@ const JSONField = ({
                                     {key}
                                   </Text>
                                   <Badge className="px-1 py-0 text-xs" variant="outline">
-                                    {(subSchema as JSONSchemaType).type || "unknown"}
+                                    {(subSchema as JSONSchemaType).type ?? "unknown"}
                                   </Badge>
                                   {requiredItemFields.has(key) && <span className="ml-1 text-destructive">*</span>}
                                 </div>
@@ -815,7 +817,7 @@ const JSONField = ({
               Copy JSON
             </CopyButton>
             <Button onClick={formatJSON} size="sm" type="button" variant="outline">
-              <SpellCheck className="h-4 w-4" />
+              <SpellCheck className="size-4" />
               Format JSON
             </Button>
           </>
@@ -824,12 +826,12 @@ const JSONField = ({
         <Button onClick={handleSwitchToFormMode} size="sm" type="button" variant="outline">
           {isJSONMode ? (
             <>
-              <FileEdit className="h-4 w-4" />
+              <FileEdit className="size-4" />
               Switch to Form
             </>
           ) : (
             <>
-              <Braces className="h-4 w-4" />
+              <Braces className="size-4" />
               Switch to JSON
             </>
           )}
@@ -864,6 +866,8 @@ interface JSONEditorProps {
 }
 
 const JSONEditor = ({ value, onChange, error: externalError, label }: JSONEditorProps) => {
+  "use no memo";
+
   const [editorContent, setEditorContent] = useState(value || "");
   const [internalError, setInternalError] = useState<string | undefined>(undefined);
   const editorId = React.useId();

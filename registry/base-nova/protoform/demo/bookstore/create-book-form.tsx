@@ -24,7 +24,7 @@ interface CreateBookFormProps {
 }
 
 const bookIdInputPattern = String.raw`[a-z][a-z0-9\-]{2,62}[a-z0-9]`;
-const BOOK_ID_PATTERN = /^[a-z][a-z0-9-]{2,62}[a-z0-9]$/;
+const BOOK_ID_PATTERN = /^[a-z][a-z0-9-]{2,62}[a-z0-9]$/u;
 
 export function CreateBookForm({ onCancel, onCreated, parent }: CreateBookFormProps) {
   const [step, setStep] = useState<"book" | "publishing">("book");

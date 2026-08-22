@@ -73,7 +73,7 @@ function DialogOverlay({ className, ...props }: React.ComponentProps<typeof Dial
 }
 
 const dialogContentVariants = cva(
-  "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 flex max-h-[85vh] w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] flex-col overflow-hidden rounded-xl border bg-background fill-mode-forwards shadow-lg duration-200 data-[state=closed]:animate-out data-[state=open]:animate-in",
+  "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 translate-[-50%] fixed top-[50%] left-[50%] z-50 flex max-h-[85vh] w-full max-w-[calc(100%-2rem)] flex-col overflow-hidden rounded-xl border bg-background fill-mode-forwards shadow-lg duration-200 data-[state=closed]:animate-out data-[state=open]:animate-in",
   {
     defaultVariants: {
       size: "md",

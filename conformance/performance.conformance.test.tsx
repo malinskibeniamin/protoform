@@ -1,6 +1,6 @@
 // @rstest-environment node
 
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { fieldsForStep } from "../registry/base-nova/protoform/components/auto-form/stepper.js";
@@ -39,7 +39,7 @@ function renderControls<FieldType extends string>(fields: ParsedField<FieldType>
 }
 
 describe("large-form performance budget", () => {
-  it.each(matrix)(
+  test.each(matrix)(
     "keeps render, validation, field change, and step transition within budgets for a $fields-field descriptor",
     async (budget) => {
       const descriptor = createPerformanceDescriptor(budget.fields);

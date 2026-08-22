@@ -1,8 +1,12 @@
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 
 import { type AutoFormConfigurationDiagnostic, inspectAutoFormConfiguration } from "../configuration";
 import { defaultRegistry } from "../fields";
 import { createMockProvider } from "./test-utils";
+
+function CustomRenderer(): null {
+  return null;
+}
 
 const schema = createMockProvider([
   {
@@ -29,7 +33,7 @@ const schema = createMockProvider([
 ]);
 
 describe("inspectAutoFormConfiguration", () => {
-  it("returns deterministic diagnostics for every nested configuration defect", () => {
+  test("returns deterministic diagnostics for every nested configuration defect", () => {
     const diagnostics = inspectAutoFormConfiguration({
       dataProviders: {},
       fieldConfig: {
@@ -85,8 +89,7 @@ describe("inspectAutoFormConfiguration", () => {
     ]);
   });
 
-  it("accepts registered renderers, providers, and supported nested configuration", () => {
-    const CustomRenderer = () => null;
+  test("accepts registered renderers, providers, and supported nested configuration", () => {
     const fieldRegistry = defaultRegistry.clone().register({
       component: CustomRenderer,
       match: (field) => field.key === "source",

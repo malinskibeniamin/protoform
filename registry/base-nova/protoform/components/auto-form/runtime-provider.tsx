@@ -109,6 +109,8 @@ function AutoFormPayloadController<TNativeForm>({
   conversionOptions: AutoFormRuntimeProviderProps<TNativeForm>["conversionOptions"];
   renderContent: AutoFormRuntimeProviderProps<TNativeForm>["renderContent"];
 }) {
+  "use no memo";
+
   const deferredValues = React.useDeferredValue(watchedValues);
   const payloadValidationController = React.useMemo(() => new AbortController(), []);
 

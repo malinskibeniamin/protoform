@@ -4,15 +4,15 @@ const { default: defaultMatchers, ...namedMatchers } = await import("@testing-li
 expect.extend(defaultMatchers ?? namedMatchers);
 
 class ResizeObserverMock implements ResizeObserver {
-  observe() {
+  observe = (): void => {
     // The simulated DOM has no layout engine.
-  }
-  unobserve() {
+  };
+  unobserve = (): void => {
     // The simulated DOM has no layout engine.
-  }
-  disconnect() {
+  };
+  disconnect = (): void => {
     // The simulated DOM has no layout engine.
-  }
+  };
 }
 
 globalThis.ResizeObserver ??= ResizeObserverMock;

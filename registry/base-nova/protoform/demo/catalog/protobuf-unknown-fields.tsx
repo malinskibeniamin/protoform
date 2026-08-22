@@ -21,7 +21,7 @@ export function ProtobufUnknownFieldsDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Edit the display name; the compatibility evidence verifies unknown wire data survives."}
+        Edit the display name; the compatibility evidence verifies unknown wire data survives.
       </p>
       <AutoForm
         defaultValues={defaultValues}

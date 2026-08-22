@@ -21,7 +21,7 @@ export function ProtobufScalarsDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Change positive, negative, fractional, and 64-bit values, then submit the typed protobuf message."}
+        Change positive, negative, fractional, and 64-bit values, then submit the typed protobuf message.
       </p>
       <AutoForm
         defaultValues={defaultValues}

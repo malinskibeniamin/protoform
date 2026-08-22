@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, rs } from "@rstest/core";
+import { afterEach, beforeEach, describe, expect, rs } from "@rstest/core";
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
@@ -7,8 +7,8 @@ import { buildPresetCode, defaultPreset, defaultRadius, presetDefinitions } from
 
 const originalClipboard = navigator.clipboard;
 const originalExitFullscreen = document.exitFullscreen;
-const workEmailPattern = /work email/i;
-const submitPattern = /submit/i;
+const workEmailPattern = /work email/iu;
+const submitPattern = /submit/iu;
 
 describe("PresetLab", () => {
   beforeEach(() => {
@@ -33,7 +33,7 @@ describe("PresetLab", () => {
     rs.restoreAllMocks();
   });
 
-  it("applies preview mode changes to the Blume docs theme", async () => {
+  test("applies preview mode changes to the Blume docs theme", async () => {
     const user = userEvent.setup();
 
     render(<PresetLab />);
@@ -44,7 +44,7 @@ describe("PresetLab", () => {
     expect(localStorage.getItem("blume-theme")).toBe("dark");
   });
 
-  it("tracks Blume docs theme changes without a reload", async () => {
+  test("tracks Blume docs theme changes without a reload", async () => {
     render(<PresetLab />);
 
     document.documentElement.dataset["theme"] = "dark";
@@ -57,7 +57,7 @@ describe("PresetLab", () => {
     expect(new URL(window.location.href).searchParams.get("mode")).toBe("dark");
   });
 
-  it("starts from the current Blume docs theme when mode is not shared", () => {
+  test("starts from the current Blume docs theme when mode is not shared", () => {
     document.documentElement.dataset["theme"] = "dark";
     localStorage.setItem("blume-theme", "dark");
 
@@ -67,7 +67,7 @@ describe("PresetLab", () => {
     expect(screen.getByTestId("preset-preview")).toHaveClass("dark");
   });
 
-  it("keeps every preset close while rendering one focused live form", async () => {
+  test("keeps every preset close while rendering one focused live form", async () => {
     const user = userEvent.setup();
 
     render(<PresetLab />);
@@ -147,7 +147,7 @@ describe("PresetLab", () => {
     expect(new Set(ids).size).toBe(ids.length);
   });
 
-  it("enters and exits full screen without replacing the live workspace", async () => {
+  test("enters and exits full screen without replacing the live workspace", async () => {
     const user = userEvent.setup();
 
     render(<PresetLab />);
@@ -190,7 +190,7 @@ describe("PresetLab", () => {
     expect(workspace).toHaveAttribute("data-fullscreen", "false");
   });
 
-  it("falls back to an accessible full-viewport mode when the browser API rejects", async () => {
+  test("falls back to an accessible full-viewport mode when the browser API rejects", async () => {
     const user = userEvent.setup();
 
     render(
@@ -222,7 +222,7 @@ describe("PresetLab", () => {
     expect(screen.getByRole("status")).toHaveTextContent("Full screen closed");
   });
 
-  it("reports invalid shared presets and clipboard failures", async () => {
+  test("reports invalid shared presets and clipboard failures", async () => {
     const supportedCode = buildPresetCode(defaultPreset, defaultRadius);
     const noncanonicalCode = `${supportedCode[0]}0${supportedCode.slice(1)}`;
     window.history.replaceState({}, "", `/docs/presets?preset=${noncanonicalCode}&mode=night`);
@@ -243,7 +243,7 @@ describe("PresetLab", () => {
     expect(screen.getByRole("status")).toHaveTextContent("Could not copy the preset code");
   });
 
-  it("preserves a supported preset when only the shared mode is invalid", () => {
+  test("preserves a supported preset when only the shared mode is invalid", () => {
     const presetCode = buildPresetCode(defaultPreset, defaultRadius);
     window.history.replaceState({}, "", `/docs/presets?preset=${presetCode}&mode=night`);
 

@@ -7,7 +7,7 @@ interface DocsDiagnosticSummary {
   warnings: number;
 }
 
-const diagnosticSummaryPattern = /^-\s+(\d+)\s+(errors?|warnings?|hints?)\s*$/gim;
+const diagnosticSummaryPattern = /^-\s+(\d+)\s+(errors?|warnings?|hints?)\s*$/gimu;
 
 export function parseDocsDiagnosticSummary(output: string): DocsDiagnosticSummary | null {
   const summary: Partial<DocsDiagnosticSummary> = {};

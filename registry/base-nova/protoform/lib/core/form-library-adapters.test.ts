@@ -1,4 +1,4 @@
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 
 import {
@@ -41,7 +41,7 @@ const values: ProfileValues = {
 };
 
 describe("form-library Standard Schema adapters", () => {
-  it("maps Standard Schema issues for Formik", async () => {
+  test("maps Standard Schema issues for Formik", async () => {
     const validate = createFormikValidator(failingSchema());
 
     expect(await validate(values)).toEqual({
@@ -55,7 +55,7 @@ describe("form-library Standard Schema adapters", () => {
     });
   });
 
-  it("maps Standard Schema issues for Final Form", async () => {
+  test("maps Standard Schema issues for Final Form", async () => {
     const formError = Symbol("form-error");
     const validate = createFinalFormValidator(failingSchema(), {
       rootErrorKey: formError,
@@ -73,7 +73,7 @@ describe("form-library Standard Schema adapters", () => {
     expect(errors[formError]).toBe("Review the highlighted fields.");
   });
 
-  it("returns no errors for valid values", async () => {
+  test("returns no errors for valid values", async () => {
     const schema: StandardSchemaV1<ProfileValues, ProfileValues> = {
       "~standard": {
         validate: () => ({ value: values }),
@@ -86,7 +86,7 @@ describe("form-library Standard Schema adapters", () => {
     expect(await createFinalFormValidator(schema)(values)).toEqual({});
   });
 
-  it("forwards Standard Schema library options", async () => {
+  test("forwards Standard Schema library options", async () => {
     const libraryOptions = { locale: "en-GB" };
     const receivedOptions: Array<StandardSchemaV1.Options | undefined> = [];
     const schema: StandardSchemaV1<ProfileValues, ProfileValues> = {
@@ -107,7 +107,7 @@ describe("form-library Standard Schema adapters", () => {
     expect(receivedOptions).toEqual([undefined, { libraryOptions }, { libraryOptions }]);
   });
 
-  it("does not allow issue paths to mutate object prototypes", () => {
+  test("does not allow issue paths to mutate object prototypes", () => {
     const errors = standardSchemaIssuesToFormErrors([
       {
         message: "Unsafe path was isolated.",

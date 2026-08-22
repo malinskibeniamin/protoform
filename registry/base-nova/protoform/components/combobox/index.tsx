@@ -144,6 +144,8 @@ export const Combobox = memo(
     emptyState,
     renderOption,
   }: ComboboxProps) => {
+    "use no memo";
+
     const [state, dispatch] = useReducer(comboboxReducer, { controlledValue, defaultOpen, options }, (init) =>
       createInitialState(init.options, init.controlledValue, init.defaultOpen)
     );
@@ -272,7 +274,7 @@ export const Combobox = memo(
       }
     }, [open]);
 
-    const handleBlur = useCallback(() => {
+    const handleInputValueCommit = useCallback(() => {
       if (inputValue.trim() === "" && controlledValue && userHasTyped) {
         onChange("");
         dispatch({ type: "BLUR_CLEAR" });
@@ -414,7 +416,7 @@ export const Combobox = memo(
             className="relative w-full shadow-none"
             containerClassName={className}
             disabled={disabled}
-            onBlur={handleBlur}
+            onBlur={handleInputValueCommit}
             onChange={handleInputChange}
             onClick={handleInputClick}
             onKeyDown={handleKeyDown}
@@ -499,7 +501,7 @@ export const Combobox = memo(
                 <CommandGroup>
                   <CommandItem forceMount onSelect={handleCreatableSubmit} value={`${CREATE_ITEM_PREFIX}${inputValue}`}>
                     <Plus className="size-4 shrink-0" />
-                    <span className="truncate">Create "{inputValue}"</span>
+                    <span className="truncate">Create &quot;{inputValue}&quot;</span>
                   </CommandItem>
                 </CommandGroup>
               ) : null}
@@ -518,3 +520,4 @@ export const Combobox = memo(
     );
   }
 );
+Combobox.displayName = "Combobox";

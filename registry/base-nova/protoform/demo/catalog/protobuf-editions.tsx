@@ -21,7 +21,7 @@ export function ProtobufEditionsDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Edit edition-backed fields and submit them through the standard AutoForm surface."}
+        Edit edition-backed fields and submit them through the standard AutoForm surface.
       </p>
       <AutoForm
         defaultValues={defaultValues}

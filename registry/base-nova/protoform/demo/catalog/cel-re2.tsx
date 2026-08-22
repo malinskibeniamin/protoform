@@ -21,7 +21,7 @@ export function CelRe2Demo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Try an uppercase project ID, then a lowercase hyphenated value that matches RE2."}
+        Try an uppercase project ID, then a lowercase hyphenated value that matches RE2.
       </p>
       <AutoForm
         defaultValues={defaultValues}

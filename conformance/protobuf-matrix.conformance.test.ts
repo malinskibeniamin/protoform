@@ -2,7 +2,7 @@ import { create, fromBinary, fromJson, toBinary } from "@bufbuild/protobuf";
 import { fromText, mergeFromText, toText } from "@bufbuild/protobuf/txtpb";
 import { base64Encode, sizeDelimitedDecodeStream, sizeDelimitedEncode } from "@bufbuild/protobuf/wire";
 import { anyPack, anyUnpack, StructSchema } from "@bufbuild/protobuf/wkt";
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 
 import {
   createProtoFormSchema,
@@ -31,7 +31,7 @@ function issuePaths(
 }
 
 describe("Protobuf text and streaming conformance", () => {
-  it("round-trips form messages through the protobuf text format", () => {
+  test("round-trips form messages through the protobuf text format", () => {
     const parsed = fromText(NumericMatrixSchema, "enabled: true\nint32_value: -7\n");
     const values = protoToFormValues(NumericMatrixSchema, parsed);
 
@@ -41,7 +41,7 @@ describe("Protobuf text and streaming conformance", () => {
     expect(toText(NumericMatrixSchema, edited)).toBe("enabled: true\nint32_value: 8\n");
   });
 
-  it("merges protobuf text into an existing message", () => {
+  test("merges protobuf text into an existing message", () => {
     const target = create(NumericMatrixSchema, {
       enabled: true,
       int32Value: 1,
@@ -52,7 +52,7 @@ describe("Protobuf text and streaming conformance", () => {
     expect(merged).toMatchObject({ enabled: true, int32Value: 2 });
   });
 
-  it("bounds size-delimited decoding with readMaxBytes", async () => {
+  test("bounds size-delimited decoding with readMaxBytes", async () => {
     const encoded = sizeDelimitedEncode(NumericMatrixSchema, create(NumericMatrixSchema, { enabled: true }));
     const chunks = new ReadableStream<Uint8Array>({
       start(controller) {
@@ -69,7 +69,7 @@ describe("Protobuf text and streaming conformance", () => {
 });
 
 describe("Protobuf scalar conformance", () => {
-  it("preserves unknown fields when editing a parsed message", () => {
+  test("preserves unknown fields when editing a parsed message", () => {
     const originalBytes = toBinary(NumericMatrixSchema, create(NumericMatrixSchema, { int32Value: 1 }));
     const unknownFieldBytes = [0xb8, 0x3e, 0x07];
     const parsed = fromBinary(NumericMatrixSchema, Uint8Array.from([...originalBytes, ...unknownFieldBytes]));
@@ -84,7 +84,7 @@ describe("Protobuf scalar conformance", () => {
     expect(Array.from(editedBytes.slice(-unknownFieldBytes.length))).toEqual(unknownFieldBytes);
   });
 
-  it("round-trips explicit and implicit boolean values", async () => {
+  test("round-trips explicit and implicit boolean values", async () => {
     const schema = createProtoFormSchema(NumericMatrixSchema);
     const implicit = await schema["~standard"].validate({});
     const explicit = await schema["~standard"].validate({ enabled: true });
@@ -97,7 +97,7 @@ describe("Protobuf scalar conformance", () => {
     expect(protoToFormValues(NumericMatrixSchema, explicit.value)).toMatchObject({ enabled: true });
   });
 
-  it("enforces signed 32-bit boundaries across int32, sint32, and sfixed32", async () => {
+  test("enforces signed 32-bit boundaries across int32, sint32, and sfixed32", async () => {
     const schema = createProtoFormSchema(NumericMatrixSchema);
     const valid = await schema["~standard"].validate({
       int32Value: -2_147_483_648,
@@ -124,7 +124,7 @@ describe("Protobuf scalar conformance", () => {
     }
   });
 
-  it("enforces unsigned 32-bit boundaries across uint32 and fixed32", async () => {
+  test("enforces unsigned 32-bit boundaries across uint32 and fixed32", async () => {
     const schema = createProtoFormSchema(NumericMatrixSchema);
     const valid = await schema["~standard"].validate({
       fixed32Value: 4_294_967_295,
@@ -150,7 +150,7 @@ describe("Protobuf scalar conformance", () => {
     }
   });
 
-  it("enforces signed and unsigned boundaries for other 64-bit integer families", async () => {
+  test("enforces signed and unsigned boundaries for other 64-bit integer families", async () => {
     const schema = createProtoFormSchema(NumericMatrixSchema);
     const valid = await schema["~standard"].validate({
       fixed64Value: "18446744073709551615",
@@ -184,7 +184,7 @@ describe("Protobuf scalar conformance", () => {
     }
   });
 
-  it("round-trips float and double decimals, negative zero, NaN, and infinities", async () => {
+  test("round-trips float and double decimals, negative zero, NaN, and infinities", async () => {
     const schema = createProtoFormSchema(NumericMatrixSchema);
     const decimals = await schema["~standard"].validate({
       doubleValue: -0,
@@ -211,7 +211,7 @@ describe("Protobuf scalar conformance", () => {
 });
 
 describe("Protobuf collection conformance", () => {
-  it("round-trips the repeated scalar, bytes, enum, 64-bit, float, and double matrix", async () => {
+  test("round-trips the repeated scalar, bytes, enum, 64-bit, float, and double matrix", async () => {
     const schema = createProtoFormSchema(CollectionMatrixSchema);
     const result = await schema["~standard"].validate({
       amounts: [3.5, "Infinity"],
@@ -240,7 +240,7 @@ describe("Protobuf collection conformance", () => {
     });
   });
 
-  it("round-trips repeated messages and preserves indexed validation paths after removal", async () => {
+  test("round-trips repeated messages and preserves indexed validation paths after removal", async () => {
     const schema = createProtoFormSchema(CollectionMatrixSchema);
     const valid = await schema["~standard"].validate({
       children: [{ name: "one" }, { name: "two" }],
@@ -262,7 +262,7 @@ describe("Protobuf collection conformance", () => {
     expect(issuePaths(afterRemoval.issues)).toEqual([["children", "0", "name"]]);
   });
 
-  it("round-trips every legal boolean and integer map key type", async () => {
+  test("round-trips every legal boolean and integer map key type", async () => {
     const schema = createProtoFormSchema(CollectionMatrixSchema);
     const result = await schema["~standard"].validate({
       boolKeys: [
@@ -303,7 +303,7 @@ describe("Protobuf collection conformance", () => {
 });
 
 describe("Protobuf presence and well-known-type conformance", () => {
-  it("distinguishes explicit presence while documenting implicit scalar loss", async () => {
+  test("distinguishes explicit presence while documenting implicit scalar loss", async () => {
     const presenceSchema = createProtoFormSchema(PresenceMatrixSchema);
     const numericSchema = createProtoFormSchema(NumericMatrixSchema);
     const unset = await presenceSchema["~standard"].validate({});
@@ -334,7 +334,7 @@ describe("Protobuf presence and well-known-type conformance", () => {
     expect(implicitDefault).toMatchObject({ value: { enabled: false } });
   });
 
-  it("round-trips every remaining scalar wrapper with unset and default values", async () => {
+  test("round-trips every remaining scalar wrapper with unset and default values", async () => {
     const schema = createProtoFormSchema(PresenceMatrixSchema);
     const unset = await schema["~standard"].validate({});
     const defaults = await schema["~standard"].validate({
@@ -379,7 +379,7 @@ describe("Protobuf presence and well-known-type conformance", () => {
     });
   });
 
-  it("round-trips Any bytes, rejects malformed base64, and supports registered unpacking", async () => {
+  test("round-trips Any bytes, rejects malformed base64, and supports registered unpacking", async () => {
     const schema = createProtoFormSchema(AnyMatrixSchema);
     const struct = fromJson(StructSchema, { enabled: true });
     const packed = anyPack(StructSchema, struct);
