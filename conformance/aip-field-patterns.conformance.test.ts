@@ -1,6 +1,6 @@
 // @rstest-environment node
 
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 
 import {
   createProtoFormSchema,
@@ -29,7 +29,7 @@ async function expectInvalid(values: Record<string, unknown>, path: string): Pro
 }
 
 describe("AIP field pattern conformance", () => {
-  it("models AIP-141 quantities with signed numeric fields and units in field names", async () => {
+  test("models AIP-141 quantities with signed numeric fields and units in field names", async () => {
     const parsed = parseProtoSchema(ProvisionCapacityRequestSchema);
 
     expect(field(parsed, "storageGibibytes")).toMatchObject({
@@ -57,7 +57,7 @@ describe("AIP field pattern conformance", () => {
     );
   });
 
-  it("models AIP-143 standardized codes as validated strings rather than enums", async () => {
+  test("models AIP-143 standardized codes as validated strings rather than enums", async () => {
     const parsed = parseProtoSchema(ProvisionCapacityRequestSchema);
 
     for (const key of ["currencyCode", "languageCode", "regionCode", "timeZone"]) {
@@ -77,7 +77,7 @@ describe("AIP field pattern conformance", () => {
     await expectInvalid({ timeZone: "London" }, "timeZone");
   });
 
-  it("validates AIP-145 inclusive-start, exclusive-end ranges and open bounds", async () => {
+  test("validates AIP-145 inclusive-start, exclusive-end ranges and open bounds", async () => {
     const schema = createProtoFormSchema(TimeRangeSchema);
 
     const validResults = await Promise.all(

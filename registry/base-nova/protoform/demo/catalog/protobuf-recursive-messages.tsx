@@ -21,7 +21,7 @@ export function ProtobufRecursiveMessagesDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Edit the bounded recursive node and submit without triggering an infinite render."}
+        Edit the bounded recursive node and submit without triggering an infinite render.
       </p>
       <AutoForm
         defaultValues={defaultValues}

@@ -61,7 +61,7 @@ interface FeatureDemoDefinition {
   tryIt: string;
 }
 
-const AIP_TITLE_PREFIX = /^AIP-\d+\s+/;
+const AIP_TITLE_PREFIX = /^AIP-\d+\s+/u;
 
 const featureDemoDefinitions: readonly FeatureDemoDefinition[] = [
   {
@@ -596,8 +596,8 @@ const featureDemoDefinitions: readonly FeatureDemoDefinition[] = [
 function slugify(value: string): string {
   return value
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
+    .replace(/[^a-z0-9]+/gu, "-")
+    .replace(/^-|-$/gu, "");
 }
 
 const aipSchemas: Readonly<Partial<Record<number, DemoSchemaKey>>> = {

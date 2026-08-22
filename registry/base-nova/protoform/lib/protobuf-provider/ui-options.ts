@@ -64,7 +64,7 @@ function normalizeRule(rule: ProtoUiRuleMessage): ProtoUiRule | undefined {
 }
 
 function normalizeRules(rules: ProtoUiRuleMessage[] | undefined): ProtoUiRule[] | undefined {
-  if (!rules?.length) {
+  if (!rules || rules.length === 0) {
     return;
   }
 

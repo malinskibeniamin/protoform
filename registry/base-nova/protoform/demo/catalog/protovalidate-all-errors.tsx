@@ -21,7 +21,7 @@ export function ProtovalidateAllErrorsDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Submit the intentionally invalid defaults and fix errors in any order."}
+        Submit the intentionally invalid defaults and fix errors in any order.
       </p>
       <AutoForm
         defaultValues={defaultValues}

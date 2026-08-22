@@ -142,7 +142,7 @@ blume-mermaid > div > svg {
 
 /* Shiki's default light-theme orange is below WCAG AA on the docs surface. */
 code span[style*="--shiki-light:#E36209"] {
-  --shiki-light: #963b00 !important;
+  --shiki-light: rgb(150 59 0) !important;
 }
 
 /* Component source panes always show the same counter-driven gutter that

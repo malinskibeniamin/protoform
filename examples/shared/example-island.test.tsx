@@ -1,4 +1,4 @@
-import { expect, it } from "@rstest/core";
+import { expect } from "@rstest/core";
 import { render, screen } from "@testing-library/react";
 import type { ComponentType } from "react";
 
@@ -71,7 +71,7 @@ const islandCases: ReadonlyArray<{
   },
 ];
 
-it.each(islandCases)("shows the $label status while its chunk loads", ({ Island, label }) => {
+test.each(islandCases)("shows the $label status while its chunk loads", ({ Island, label }) => {
   render(<Island />);
 
   expect(screen.getByRole("status", { name: label })).toBeInTheDocument();

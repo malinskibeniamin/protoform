@@ -21,7 +21,7 @@ export function StandardSchemaDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Submit invalid and valid values through the same provider-neutral validation boundary."}
+        Submit invalid and valid values through the same provider-neutral validation boundary.
       </p>
       <AutoForm
         defaultValues={defaultValues}

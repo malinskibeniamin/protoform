@@ -7,7 +7,7 @@ import {
 } from "@buf/googleapis_googleapis.bufbuild_es/google/longrunning/operations_pb.js";
 import { create, type DescMessage, type DescMethod, setExtension } from "@bufbuild/protobuf";
 import { MethodDescriptorProtoSchema, MethodOptionsSchema } from "@bufbuild/protobuf/wkt";
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 
 import {
   BookSchema,
@@ -72,7 +72,7 @@ function createMethodFixture({
 }
 
 describe("getProtoMethodWorkflow", () => {
-  it("classifies standard unary methods and their path, query, and body fields", () => {
+  test("classifies standard unary methods and their path, query, and body fields", () => {
     const get = getProtoMethodWorkflow(
       createMethodFixture({
         input: GetBookRequestSchema,
@@ -123,7 +123,7 @@ describe("getProtoMethodWorkflow", () => {
     expect(get.method.input).toBe(GetBookRequestSchema);
   });
 
-  it("classifies custom long-running workflows and exposes operation types", () => {
+  test("classifies custom long-running workflows and exposes operation types", () => {
     const workflow = getProtoMethodWorkflow(
       createMethodFixture({
         body: "*",
@@ -154,7 +154,7 @@ describe("getProtoMethodWorkflow", () => {
     });
   });
 
-  it("marks streaming RPCs as non-form workflows", () => {
+  test("marks streaming RPCs as non-form workflows", () => {
     const workflow = getProtoMethodWorkflow(
       createMethodFixture({
         input: GetBookRequestSchema,

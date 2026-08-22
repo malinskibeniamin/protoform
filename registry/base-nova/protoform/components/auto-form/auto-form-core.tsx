@@ -194,6 +194,8 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
   validationMode = "submit",
   revalidationMode = "change",
 }: AutoFormContentProps<T, TNativeForm, TCustomFieldType>) {
+  "use no memo";
+
   const testIdPrefix = resolveAutoFormTestIdPrefix(testId);
   const submitController = React.useRef<AbortController | undefined>(undefined);
   const validationController = React.useRef<AbortController | undefined>(undefined);

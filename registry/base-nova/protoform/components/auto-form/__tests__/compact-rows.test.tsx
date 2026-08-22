@@ -1,4 +1,4 @@
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { AutoForm } from "..";
@@ -23,7 +23,7 @@ if (!HTMLElement.prototype.releasePointerCapture) {
 }
 
 describe("AutoForm – compact array row rendering", () => {
-  it("array items in compact mode do not render visible label elements", () => {
+  test("array items in compact mode do not render visible label elements", () => {
     const schema = createMockProvider([
       {
         key: "tags",
@@ -37,7 +37,7 @@ describe("AutoForm – compact array row rendering", () => {
 
     // The top-level "tags" field has a visible label, but individual array item
     // fields (tags.0, tags.1) use compact mode and suppress the label entirely.
-    const itemFields = screen.getAllByTestId(/compact-field-tags-\d+-control/);
+    const itemFields = screen.getAllByTestId(/compact-field-tags-\d+-control/u);
     expect(itemFields).toHaveLength(2);
 
     // Each item's FieldWrapper should not contain a label element for the item
@@ -49,7 +49,7 @@ describe("AutoForm – compact array row rendering", () => {
     }
   });
 
-  it("array items in compact mode do not show help icons", () => {
+  test("array items in compact mode do not show help icons", () => {
     const schema = createMockProvider([
       {
         key: "tags",
@@ -61,17 +61,17 @@ describe("AutoForm – compact array row rendering", () => {
 
     render(<AutoForm defaultValues={{ tags: ["alpha", "beta"] }} schema={schema} testId="compact" withSubmit />);
 
-    const helpButtons = screen.queryAllByTestId(/help$/);
+    const helpButtons = screen.queryAllByTestId(/help$/u);
     const tagRowHelps = helpButtons.filter((el) => el.getAttribute("data-testid")?.includes("tags"));
     // Top-level "tags" field may have help, but individual rows should not
     const rowHelps = tagRowHelps.filter((el) => {
       const testId = el.getAttribute("data-testid") ?? "";
-      return /\.\d+/.test(testId);
+      return /\.\d+/u.test(testId);
     });
     expect(rowHelps).toHaveLength(0);
   });
 
-  it("array items in compact mode still show validation errors on submit", async () => {
+  test("array items in compact mode still show validation errors on submit", async () => {
     const user = userEvent.setup();
     const schema = createMockProvider(
       [
@@ -115,14 +115,14 @@ describe("AutoForm – compact array row rendering", () => {
     await user.clear(secondInput);
     await user.type(secondInput, "a");
 
-    await user.click(screen.getByRole("button", { name: /submit/i }));
+    await user.click(screen.getByRole("button", { name: /submit/iu }));
 
     await waitFor(() => {
-      expect(screen.getByText(/too short/i)).toBeInTheDocument();
+      expect(screen.getByText(/too short/iu)).toBeInTheDocument();
     });
   });
 
-  it("delete button is present and removes an item", async () => {
+  test("delete button is present and removes an item", async () => {
     const user = userEvent.setup();
     const schema = createMockProvider([
       {
@@ -137,7 +137,7 @@ describe("AutoForm – compact array row rendering", () => {
       <AutoForm defaultValues={{ tags: ["alpha", "beta", "gamma"] }} schema={schema} testId="compact" withSubmit />
     );
 
-    const removeButtons = screen.getAllByRole("button", { name: /remove item/i });
+    const removeButtons = screen.getAllByRole("button", { name: /remove item/iu });
     expect(removeButtons.length).toBe(3);
     const [firstRemoveButton] = removeButtons;
     if (!firstRemoveButton) {
@@ -147,11 +147,11 @@ describe("AutoForm – compact array row rendering", () => {
     await user.click(firstRemoveButton);
 
     await waitFor(() => {
-      expect(screen.getAllByRole("button", { name: /remove item/i })).toHaveLength(2);
+      expect(screen.getAllByRole("button", { name: /remove item/iu })).toHaveLength(2);
     });
   });
 
-  it("fields with customData.hidden are not rendered", () => {
+  test("fields with customData.hidden are not rendered", () => {
     const schema = createMockProvider([
       { key: "visible", required: true, type: "string" },
       { key: "secret", required: true, type: "string" },
@@ -172,7 +172,7 @@ describe("AutoForm – compact array row rendering", () => {
     expect(document.querySelectorAll('[data-slot="auto-form-field-row"]')).toHaveLength(1);
   });
 
-  it("fields with customData.immutable are rendered as disabled", () => {
+  test("fields with customData.immutable are rendered as disabled", () => {
     const schema = createMockProvider([
       { key: "editable", required: true, type: "string" },
       { key: "locked", required: true, type: "string" },
@@ -195,7 +195,7 @@ describe("AutoForm – compact array row rendering", () => {
     expect(lockedInput).toBeDisabled();
   });
 
-  it("objects with customData.collapsible render collapsed by default", async () => {
+  test("objects with customData.collapsible render collapsed by default", async () => {
     const user = userEvent.setup();
     const schema = createMockProvider([
       {
@@ -220,7 +220,7 @@ describe("AutoForm – compact array row rendering", () => {
     expect(screen.queryByDisplayValue("3")).not.toBeInTheDocument();
 
     // Click the collapsible trigger to expand
-    const trigger = screen.getByRole("button", { name: /advanced settings/i });
+    const trigger = screen.getByRole("button", { name: /advanced settings/iu });
     await user.click(trigger);
 
     // After expanding, the retries field should be visible

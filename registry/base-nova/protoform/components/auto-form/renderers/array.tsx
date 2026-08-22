@@ -66,7 +66,7 @@ export function ArrayFieldRenderer({
   const error = getFieldErrorMessage(errors, path);
   const label = getRenderedLabel(field);
   const { isDisabled, isVisible, renderField } = useFieldPresentation(field, path, inheritedDisabled);
-  const FieldWrapperComponent = field.fieldConfig?.fieldWrapper || uiComponents.FieldWrapper;
+  const FieldWrapperComponent = field.fieldConfig?.fieldWrapper ?? uiComponents.FieldWrapper;
   const ArrayWrapperComponent = uiComponents.ArrayWrapper as React.ComponentType<
     React.ComponentProps<typeof uiComponents.ArrayWrapper> & {
       addButtonLabel?: string;
@@ -84,12 +84,7 @@ export function ArrayFieldRenderer({
   const compactItemField = itemField ? cloneFieldForCompactRow(itemField) : undefined;
   const useCompactRows = itemField ? !isComplexCollectionField(itemField) : false;
   const depth = useFormDepth();
-  const addItemLabel = formatProtoformMessage(
-    formatMessage,
-    "auto_form.add_item",
-    { label: String(label) },
-    `Add ${String(label)}`
-  );
+  const addItemLabel = formatProtoformMessage(formatMessage, "auto_form.add_item", { label }, `Add ${label}`);
   const removeItemLabel = formatProtoformMessage(formatMessage, "auto_form.remove_item", {}, "Remove item");
 
   if (!isVisible) {
@@ -106,7 +101,7 @@ export function ArrayFieldRenderer({
               addButtonLabel={addItemLabel}
               addButtonTestId={getAutoFormFieldTestId(testIdPrefix, fullPath, "add")}
               field={renderField}
-              label={String(label)}
+              label={label}
               onAddItem={() => {
                 if (!isDisabled) {
                   controller.append(createEmptyFieldValue(itemField));
@@ -144,7 +139,7 @@ export function ArrayFieldRenderer({
                         type="button"
                         variant="ghost"
                       >
-                        <TrashIcon className="h-4 w-4" />
+                        <TrashIcon className="size-4" />
                       </Button>
                     </div>
                   );

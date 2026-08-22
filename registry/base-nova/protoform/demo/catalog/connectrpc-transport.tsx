@@ -21,7 +21,7 @@ export function ConnectrpcTransportDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Complete the request; the full example can send the typed message through ConnectRPC."}
+        Complete the request; the full example can send the typed message through ConnectRPC.
       </p>
       <AutoForm
         defaultValues={defaultValues}

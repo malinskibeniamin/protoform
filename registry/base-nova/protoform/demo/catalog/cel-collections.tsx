@@ -21,7 +21,7 @@ export function CelCollectionsDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Add collection values that make each comprehension succeed or fail."}
+        Add collection values that make each comprehension succeed or fail.
       </p>
       <AutoForm
         defaultValues={defaultValues}

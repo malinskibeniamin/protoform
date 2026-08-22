@@ -1,10 +1,10 @@
-import { expect, it } from "@rstest/core";
+import { expect } from "@rstest/core";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import CelRe2FormExample from "./cel-re2-form.js";
 
-it("explains and accepts a focused RE2-backed CEL rule", async () => {
+test("explains and accepts a focused RE2-backed CEL rule", async () => {
   const user = userEvent.setup();
   render(<CelRe2FormExample />);
 

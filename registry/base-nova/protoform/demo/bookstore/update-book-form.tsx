@@ -82,6 +82,13 @@ export function UpdateBookForm({ book, onCancel, onUpdated }: UpdateBookFormProp
   }
 
   const titleError = form.formState.errors.displayName?.message;
+  const {
+    name: displayName,
+    onBlur: handleDisplayNameBlur,
+    onChange: handleDisplayNameChange,
+    ref: displayNameRef,
+  } = form.register("displayName");
+  const { name: note, onBlur: handleNoteBlur, onChange: handleNoteChange, ref: noteRef } = form.register("note");
   return (
     <section aria-labelledby="edit-book-title" className="space-y-6">
       <div className="space-y-2">
@@ -95,12 +102,25 @@ export function UpdateBookForm({ book, onCancel, onUpdated }: UpdateBookFormProp
       <form className="space-y-5" onSubmit={form.handleSubmit(submitUpdate, handleInvalid)}>
         <Field data-invalid={Boolean(titleError)}>
           <FieldLabel htmlFor="update-book-title">Title</FieldLabel>
-          <Input aria-invalid={Boolean(titleError)} id="update-book-title" {...form.register("displayName")} />
+          <Input
+            aria-invalid={Boolean(titleError)}
+            id="update-book-title"
+            name={displayName}
+            onBlur={handleDisplayNameBlur}
+            onChange={handleDisplayNameChange}
+            ref={displayNameRef}
+          />
           {titleError ? <FieldError>{titleError}</FieldError> : null}
         </Field>
         <Field>
           <FieldLabel htmlFor="update-book-note">Note</FieldLabel>
-          <Textarea id="update-book-note" {...form.register("note")} />
+          <Textarea
+            id="update-book-note"
+            name={note}
+            onBlur={handleNoteBlur}
+            onChange={handleNoteChange}
+            ref={noteRef}
+          />
         </Field>
         {formError || mutation.error ? (
           <Alert variant="destructive">

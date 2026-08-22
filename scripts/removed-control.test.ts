@@ -1,6 +1,6 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { extname } from "node:path";
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 
 const repositoryDirectory = new URL("../", import.meta.url);
 const excludedDirectories = new Set([
@@ -38,7 +38,7 @@ function findSourceFiles(directory: URL): URL[] {
 }
 
 describe("removed controls", () => {
-  it("does not publish the removed control in source or registry artifacts", () => {
+  test("does not publish the removed control in source or registry artifacts", () => {
     const matches = findSourceFiles(repositoryDirectory).flatMap((file) => {
       const normalized = readFileSync(file, "utf8").toLowerCase();
       return removedControlNames.some((name) => normalized.includes(name))

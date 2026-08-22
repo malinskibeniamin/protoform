@@ -21,7 +21,7 @@ export function ProtobufJsonOptionsDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Edit annotated fields and submit to inspect the JSON-safe message shape."}
+        Edit annotated fields and submit to inspect the JSON-safe message shape.
       </p>
       <AutoForm
         defaultValues={defaultValues}

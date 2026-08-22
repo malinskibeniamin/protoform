@@ -1,11 +1,11 @@
-import { describe, expect, it, rs } from "@rstest/core";
+import { describe, expect, rs } from "@rstest/core";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { AutoForm } from "..";
 import { createMockProvider } from "./test-utils";
 
 describe("AutoForm – onFieldChange callback", () => {
-  it("calls onFieldChange when a field value changes", async () => {
+  test("calls onFieldChange when a field value changes", async () => {
     const user = userEvent.setup();
     const onFieldChange = rs.fn();
     const schema = createMockProvider([

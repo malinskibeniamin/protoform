@@ -1,4 +1,4 @@
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 
 import type { AutoFormFieldProps, ParsedField } from "../core-types";
 import { type FieldMatchContext, type FieldTypeDefinition, FieldTypeRegistry } from "../registry";
@@ -23,7 +23,7 @@ const stubContext = (identity = "test test"): FieldMatchContext => ({
 });
 
 describe("FieldTypeRegistry", () => {
-  it("resolve() returns the highest-priority matching definition", () => {
+  test("resolve() returns the highest-priority matching definition", () => {
     const registry = new FieldTypeRegistry()
       .register(makeDef("low", 10, () => true))
       .register(makeDef("high", 100, () => true));
@@ -33,7 +33,7 @@ describe("FieldTypeRegistry", () => {
     expect(result?.name).toBe("high");
   });
 
-  it("resolve() returns undefined when no definition matches", () => {
+  test("resolve() returns undefined when no definition matches", () => {
     const registry = new FieldTypeRegistry().register(makeDef("never", 10, () => false));
 
     const result = registry.resolve(stubField("string"), stubContext());
@@ -41,7 +41,7 @@ describe("FieldTypeRegistry", () => {
     expect(result).toBeUndefined();
   });
 
-  it("register() with higher priority wins over lower priority for same match", () => {
+  test("register() with higher priority wins over lower priority for same match", () => {
     const registry = new FieldTypeRegistry();
 
     registry.register(makeDef("first", 50, (f) => f.type === "string"));
@@ -52,7 +52,7 @@ describe("FieldTypeRegistry", () => {
     expect(result?.name).toBe("second");
   });
 
-  it("clone() produces an independent copy that does not affect the original", () => {
+  test("clone() produces an independent copy that does not affect the original", () => {
     const original = new FieldTypeRegistry().register(makeDef("original", 10, () => true));
 
     const cloned = original.clone();
@@ -63,7 +63,7 @@ describe("FieldTypeRegistry", () => {
     expect(original.list()[0]?.name).toBe("original");
   });
 
-  it("list() returns all registered definitions", () => {
+  test("list() returns all registered definitions", () => {
     const registry = new FieldTypeRegistry()
       .register(makeDef("alpha", 10, () => false))
       .register(makeDef("beta", 20, () => false))

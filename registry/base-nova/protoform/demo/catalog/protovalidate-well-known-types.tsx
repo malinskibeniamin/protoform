@@ -21,7 +21,7 @@ export function ProtovalidateWellKnownTypesDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Try malformed time, duration, and mask inputs before submitting valid protobuf values."}
+        Try malformed time, duration, and mask inputs before submitting valid protobuf values.
       </p>
       <AutoForm
         defaultValues={defaultValues}

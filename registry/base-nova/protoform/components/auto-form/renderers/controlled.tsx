@@ -34,7 +34,7 @@ export function ControlledFieldRenderer({
   }
 
   const resolvedRenderType = renderType ?? inferredRenderType;
-  const FieldWrapperComponent = field.fieldConfig?.fieldWrapper || uiComponents.FieldWrapper;
+  const FieldWrapperComponent = field.fieldConfig?.fieldWrapper ?? uiComponents.FieldWrapper;
   const registeredComponent =
     formComponents[resolvedRenderType] ??
     fieldRegistry?.list().find((definition) => definition.name === resolvedRenderType)?.component;

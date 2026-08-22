@@ -1,4 +1,4 @@
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 import {
   MaskableProfileSchema,
   SubmitComplexFormRequestSchema,
@@ -7,7 +7,7 @@ import { createFieldMask, createUpdateMask, dirtyFieldsFromValues } from "./fiel
 import { AutoFormExampleSchema } from "./gen/auto-form-example_pb.js";
 
 describe("createFieldMask", () => {
-  it("normalizes and minimizes explicit read-mask paths", () => {
+  test("normalizes and minimizes explicit read-mask paths", () => {
     const mask = createFieldMask(AutoFormExampleSchema, [
       "previousAddresses.city",
       "shippingAddress.postalCode",
@@ -18,7 +18,7 @@ describe("createFieldMask", () => {
     expect(mask.paths).toEqual(["primary_email", "shipping_address", "previous_addresses"]);
   });
 
-  it("collapses an explicit wildcard to the full projection", () => {
+  test("collapses an explicit wildcard to the full projection", () => {
     const mask = createFieldMask(AutoFormExampleSchema, ["primaryEmail", "*"]);
 
     expect(mask.paths).toEqual(["*"]);
@@ -26,7 +26,7 @@ describe("createFieldMask", () => {
 });
 
 describe("createUpdateMask", () => {
-  it("includes only dirty protobuf fields and collapses collections", () => {
+  test("includes only dirty protobuf fields and collapses collections", () => {
     const mask = createUpdateMask(
       AutoFormExampleSchema,
       {
@@ -55,7 +55,7 @@ describe("createUpdateMask", () => {
     ]);
   });
 
-  it("masks the initial oneof branch when an edit clears it", () => {
+  test("masks the initial oneof branch when an edit clears it", () => {
     const mask = createUpdateMask(
       AutoFormExampleSchema,
       { preferredContact: { case: true, value: true } },
@@ -71,7 +71,7 @@ describe("createUpdateMask", () => {
     expect(mask.paths).toEqual(["preferred_email"]);
   });
 
-  it("keeps a nested dirty leaf inside the active oneof branch", () => {
+  test("keeps a nested dirty leaf inside the active oneof branch", () => {
     const mask = createUpdateMask(
       SubmitComplexFormRequestSchema,
       { credentials: { value: { apiKey: true } } },
@@ -86,7 +86,7 @@ describe("createUpdateMask", () => {
     expect(mask.paths).toEqual(["api_key.api_key"]);
   });
 
-  it("excludes AIP-owned fields from update masks", () => {
+  test("excludes AIP-owned fields from update masks", () => {
     const mask = createUpdateMask(
       MaskableProfileSchema,
       {
@@ -108,7 +108,7 @@ describe("createUpdateMask", () => {
 });
 
 describe("dirtyFieldsFromValues", () => {
-  it("builds a nested dirty tree and collapses changed collections", () => {
+  test("builds a nested dirty tree and collapses changed collections", () => {
     expect(
       dirtyFieldsFromValues(
         {
@@ -128,7 +128,7 @@ describe("dirtyFieldsFromValues", () => {
     });
   });
 
-  it("returns an empty tree for deeply equal values", () => {
+  test("returns an empty tree for deeply equal values", () => {
     expect(
       dirtyFieldsFromValues(
         { profile: { name: "Ada" }, tags: ["forms"] },

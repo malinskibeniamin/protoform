@@ -1,4 +1,6 @@
-import { describe, expect, it, rs } from "@rstest/core";
+import { BadRequestSchema } from "@buf/googleapis_googleapis.bufbuild_es/google/rpc/error_details_pb.js";
+import { Code, ConnectError } from "@connectrpc/connect";
+import { describe, expect, rs } from "@rstest/core";
 import { renderHook } from "@testing-library/react";
 import { act } from "react";
 
@@ -23,7 +25,7 @@ function errorsForField(fields: object, fieldName: string): unknown[] {
 }
 
 describe("TanStack useProtoForm", () => {
-  it("preserves the native form API and adds protobuf helpers", () => {
+  test("preserves the native form API and adds protobuf helpers", () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: {
@@ -47,7 +49,7 @@ describe("TanStack useProtoForm", () => {
     expect(result.current.createUpdateMask().paths).toEqual(["username"]);
   });
 
-  it("validates the generated protobuf contract before submission", async () => {
+  test("validates the generated protobuf contract before submission", async () => {
     const onSubmit = rs.fn();
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
@@ -67,7 +69,7 @@ describe("TanStack useProtoForm", () => {
     expect(result.current.getAllErrors().fields.username?.errors).not.toHaveLength(0);
   });
 
-  it("composes the caller onSubmit validator instead of replacing it", async () => {
+  test("composes the caller onSubmit validator instead of replacing it", async () => {
     const onSubmit = rs.fn();
     const nativeValidator = rs.fn(() => "Native validation failed.");
     const { result } = renderHook(() =>
@@ -91,7 +93,7 @@ describe("TanStack useProtoForm", () => {
     expect(onSubmit).not.toHaveBeenCalled();
   });
 
-  it("maps Connect field violations onto native TanStack field errors", () => {
+  test("maps Connect field violations onto native TanStack field errors", () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: {
@@ -138,7 +140,7 @@ describe("TanStack useProtoForm", () => {
     expect(errorsForField(fieldErrors, "homepageUrl")).toContain("Review this value and try again.");
   });
 
-  it("maps violations through any configured server path prefix", () => {
+  test("maps violations through any configured server path prefix", () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: {
@@ -174,7 +176,7 @@ describe("TanStack useProtoForm", () => {
     expect(errorsForField(fieldErrors, "tags")).toContain("Add at least one item.");
   });
 
-  it("switches oneof branches without retaining the previous branch value", () => {
+  test("switches oneof branches without retaining the previous branch value", () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: {
@@ -198,7 +200,7 @@ describe("TanStack useProtoForm", () => {
     });
   });
 
-  it("drills into nested native errors with the Protoform helper", () => {
+  test("drills into nested native errors with the Protoform helper", () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: {
@@ -231,6 +233,3 @@ describe("TanStack useProtoForm", () => {
     });
   });
 });
-
-import { BadRequestSchema } from "@buf/googleapis_googleapis.bufbuild_es/google/rpc/error_details_pb.js";
-import { Code, ConnectError } from "@connectrpc/connect";

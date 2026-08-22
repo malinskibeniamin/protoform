@@ -101,9 +101,10 @@ export function mergeFieldOverrides<TCustom extends string = never>(
           } as RenderFieldConfig<TCustom>)
         : existingConfig;
 
-      const nextSchema = field.schema?.length
-        ? mergeFieldOverrides(field.schema, overrides, [...path, field.key])
-        : field.schema;
+      const nextSchema =
+        field.schema && field.schema.length > 0
+          ? mergeFieldOverrides(field.schema, overrides, [...path, field.key])
+          : field.schema;
 
       return {
         ...field,

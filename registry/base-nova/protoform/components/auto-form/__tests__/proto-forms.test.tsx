@@ -1,5 +1,5 @@
 import { create, fromBinary, toBinary } from "@bufbuild/protobuf";
-import { describe, expect, it, rs } from "@rstest/core";
+import { describe, expect, rs } from "@rstest/core";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
@@ -31,15 +31,15 @@ if (!HTMLElement.prototype.releasePointerCapture) {
   });
 }
 
-const TAGS_ADD_BUTTON = /add tags/i;
-const REMOVE_ITEM_BUTTON = /remove item/i;
-const PREFERRED_CONTACT_LABEL = /preferred contact/i;
-const PREFERRED_PHONE_LABEL = /preferred phone/i;
-const SUBMIT_BUTTON = /submit/i;
+const TAGS_ADD_BUTTON = /add tags/iu;
+const REMOVE_ITEM_BUTTON = /remove item/iu;
+const PREFERRED_CONTACT_LABEL = /preferred contact/iu;
+const PREFERRED_PHONE_LABEL = /preferred phone/iu;
+const SUBMIT_BUTTON = /submit/iu;
 // The proto resolver humanizes generic protovalidate messages — `min_len: 3`
 // surfaces as "Must be at least 3 characters." rather than the raw text.
-const FIELD_ERROR_TEXT = /must be at least 3 characters/i;
-const MESSAGE_ERROR_TEXT = /minimum threshold must be less than or equal to maximum threshold/i;
+const FIELD_ERROR_TEXT = /must be at least 3 characters/iu;
+const MESSAGE_ERROR_TEXT = /minimum threshold must be less than or equal to maximum threshold/iu;
 
 const buildValidProtoDefaults = () => ({
   accessTier: 3,
@@ -95,7 +95,7 @@ const buildValidProtoDefaults = () => ({
 });
 
 describe("AutoForm – protobuf forms", () => {
-  it("submits protobuf descriptors with protobuf-shaped output", async () => {
+  test("submits protobuf descriptors with protobuf-shaped output", async () => {
     const user = userEvent.setup();
     const onSubmit = rs.fn();
 
@@ -135,7 +135,7 @@ describe("AutoForm – protobuf forms", () => {
     expect(submittedValue.writablePaths.paths).toEqual(["profile"]);
   }, 10_000);
 
-  it("preserves the edit source message through the React Hook Form adapter", async () => {
+  test("preserves the edit source message through the React Hook Form adapter", async () => {
     const user = userEvent.setup();
     const onSubmit = rs.fn();
     const base = formValuesToProto(AutoFormExampleSchema, buildValidProtoDefaults());
@@ -171,7 +171,7 @@ describe("AutoForm – protobuf forms", () => {
     expect(submitted.shippingAddress.$unknown).toEqual(source.shippingAddress.$unknown);
   }, 10_000);
 
-  it("preserves resolver-normalized protobuf values while restoring source unknown fields", async () => {
+  test("preserves resolver-normalized protobuf values while restoring source unknown fields", async () => {
     const user = userEvent.setup();
     const onSubmit = rs.fn();
     const knownSource = formValuesToProto(AutoFormExampleSchema, buildValidProtoDefaults());
@@ -207,7 +207,7 @@ describe("AutoForm – protobuf forms", () => {
     expect(submitted.$unknown).toEqual(source.$unknown);
   }, 10_000);
 
-  it("shows protobuf field-level validation feedback", async () => {
+  test("shows protobuf field-level validation feedback", async () => {
     const user = userEvent.setup();
     const onSubmit = rs.fn();
 
@@ -236,14 +236,14 @@ describe("AutoForm – protobuf forms", () => {
     expect(screen.getByText(FIELD_ERROR_TEXT)).toBeInTheDocument();
   });
 
-  it("renders registered proto field descriptions", () => {
+  test("renders registered proto field descriptions", () => {
     render(<AutoForm defaultValues={buildValidProtoDefaults()} schema={AutoFormExampleSchema} withSubmit />);
 
     expect(screen.getByText("Public handle shown in mentions and admin lists.")).toBeInTheDocument();
     expect(screen.getByText("Exactly one preferred contact route can be selected at a time.")).toBeInTheDocument();
   });
 
-  it("switches protobuf oneof cases and submits the latest selection", async () => {
+  test("switches protobuf oneof cases and submits the latest selection", async () => {
     const user = userEvent.setup();
     const onSubmit = rs.fn();
 
@@ -287,7 +287,7 @@ describe("AutoForm – protobuf forms", () => {
     });
   });
 
-  it("updates protobuf collection values when rows are added and removed", async () => {
+  test("updates protobuf collection values when rows are added and removed", async () => {
     const user = userEvent.setup();
 
     render(
@@ -326,7 +326,7 @@ describe("AutoForm – protobuf forms", () => {
     });
   });
 
-  it("surfaces protobuf message-level validation feedback", async () => {
+  test("surfaces protobuf message-level validation feedback", async () => {
     const user = userEvent.setup();
     const onSubmit = rs.fn();
 
@@ -353,7 +353,7 @@ describe("AutoForm – protobuf forms", () => {
     expect(screen.getByText(MESSAGE_ERROR_TEXT)).toBeInTheDocument();
   });
 
-  it("populates form from a proto message instance passed as defaultValues", () => {
+  test("populates form from a proto message instance passed as defaultValues", () => {
     const message = create(AutoFormExampleSchema, {
       accessTier: 3,
       age: 28,

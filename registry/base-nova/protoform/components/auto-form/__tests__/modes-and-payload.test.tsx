@@ -1,20 +1,20 @@
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { AutoForm } from "..";
 import { createMockProvider } from "./test-utils";
 
-const REQUIRED_NAME_LABEL = /required name/i;
-const OPTIONAL_NOTE_LABEL = /optional note/i;
-const ADVANCED_TAB = /advanced/i;
-const JSON_TAB = /json/i;
-const PAYLOAD_SUMMARY_TEXT = /payload preview/i;
-const PAYLOAD_JSON_TEXT = /payload json/i;
-const COPY_JSON_BUTTON = /copy json/i;
-const FORMAT_JSON_BUTTON = /format json/i;
+const REQUIRED_NAME_LABEL = /required name/iu;
+const OPTIONAL_NOTE_LABEL = /optional note/iu;
+const ADVANCED_TAB = /advanced/iu;
+const JSON_TAB = /json/iu;
+const PAYLOAD_SUMMARY_TEXT = /payload preview/iu;
+const PAYLOAD_JSON_TEXT = /payload json/iu;
+const COPY_JSON_BUTTON = /copy json/iu;
+const FORMAT_JSON_BUTTON = /format json/iu;
 
 describe("AutoForm – modes and payload", () => {
-  it("supports simple, advanced, and JSON modes with an opt-in summary panel", async () => {
+  test("supports simple, advanced, and JSON modes with an opt-in summary panel", async () => {
     const user = userEvent.setup();
     const schema = createMockProvider([
       { key: "requiredName", required: true, type: "string" },
@@ -59,7 +59,7 @@ describe("AutoForm – modes and payload", () => {
     });
   });
 
-  it("supports payloadBuilder and custom summary rendering", async () => {
+  test("supports payloadBuilder and custom summary rendering", async () => {
     const user = userEvent.setup();
     const schema = createMockProvider([
       { key: "teamName", required: true, type: "string" },
@@ -100,7 +100,7 @@ describe("AutoForm – modes and payload", () => {
     expect(screen.getByRole("button", { name: COPY_JSON_BUTTON })).toBeInTheDocument();
   });
 
-  it("updates summary after editing in JSON mode and switching back to advanced", async () => {
+  test("updates summary after editing in JSON mode and switching back to advanced", async () => {
     const user = userEvent.setup();
     const schema = createMockProvider([
       { key: "monthlyBudget", required: true, type: "number" },
@@ -143,7 +143,7 @@ describe("AutoForm – modes and payload", () => {
     expect(updatedSummaryEl.textContent).toContain("99999");
   });
 
-  it("supports editable JSON mode via payloadParser", async () => {
+  test("supports editable JSON mode via payloadParser", async () => {
     const user = userEvent.setup();
     const schema = createMockProvider([
       { key: "teamName", required: true, type: "string" },

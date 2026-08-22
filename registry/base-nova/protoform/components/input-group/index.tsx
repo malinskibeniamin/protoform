@@ -15,7 +15,7 @@ function InputGroup({ className, testId, ...props }: React.ComponentProps<"div">
   React.useEffect(() => {
     if (ref.current) {
       const blockAddon = ref.current.querySelector('[data-align="block-start"], [data-align="block-end"]');
-      setHasBlockAlign(!!blockAddon);
+      setHasBlockAlign(Boolean(blockAddon));
     }
   }, []);
 

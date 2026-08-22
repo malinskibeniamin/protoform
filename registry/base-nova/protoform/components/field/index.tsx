@@ -190,7 +190,7 @@ function FieldSeparator({
   return (
     <div
       className={cn("relative -my-2 h-5 text-sm group-data-[variant=outline]/field-group:-mb-2", className)}
-      data-content={!!children}
+      data-content={Boolean(children)}
       data-slot="field-separator"
       {...props}
     >
@@ -222,7 +222,7 @@ function FieldError({
       return children;
     }
 
-    if (!errors?.length) {
+    if (!errors || errors.length === 0) {
       return null;
     }
 

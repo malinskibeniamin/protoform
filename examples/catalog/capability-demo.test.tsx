@@ -1,14 +1,14 @@
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { CapabilityDemo } from "./capability-demo.js";
 import { demoCatalog } from "./demo-catalog.js";
 
-const FOCUSED_REQUEST_TEXT = /Edit the focused request/;
+const FOCUSED_REQUEST_TEXT = /Edit the focused request/u;
 
 describe("CapabilityDemo", () => {
-  it("renders a focused React Hook Form AIP demo and submits its protobuf value", async () => {
+  test("renders a focused React Hook Form AIP demo and submits its protobuf value", async () => {
     const user = userEvent.setup();
 
     render(<CapabilityDemo demoId="aip.131" />);
@@ -21,13 +21,13 @@ describe("CapabilityDemo", () => {
     expect(await screen.findByRole("status")).toHaveTextContent("publishers/acme/books/protoform-guide");
   });
 
-  it("renders an explicit not-found state for an unknown demo", () => {
+  test("renders an explicit not-found state for an unknown demo", () => {
     render(<CapabilityDemo demoId="missing" />);
 
     expect(screen.getByRole("alert")).toHaveTextContent("This demo is unavailable.");
   });
 
-  it("redacts sensitive values from submitted previews", async () => {
+  test("redacts sensitive values from submitted previews", async () => {
     const user = userEvent.setup();
     render(<CapabilityDemo demoId="aip.147" />);
 
@@ -38,13 +38,13 @@ describe("CapabilityDemo", () => {
     expect(result).not.toHaveTextContent("draft-token");
   });
 
-  it("normalizes well-known type defaults for form controls", () => {
+  test("normalizes well-known type defaults for form controls", () => {
     render(<CapabilityDemo demoId="aip.133" />);
 
     expect(screen.getByRole("textbox", { name: "Ttl" })).toHaveValue("86400s");
   });
 
-  it("stacks bounded recursive array items inside their collection", () => {
+  test("stacks bounded recursive array items inside their collection", () => {
     render(<CapabilityDemo demoId="demo.protobuf-recursive-messages" />);
 
     expect(screen.getByTestId("demo-protobuf-recursive-messages-field-children-0")).toHaveAttribute(
@@ -53,14 +53,14 @@ describe("CapabilityDemo", () => {
     );
   });
 
-  it("renders repeated enum defaults with their protobuf labels", () => {
+  test("renders repeated enum defaults with their protobuf labels", () => {
     render(<CapabilityDemo demoId="demo.protobuf-maps" />);
 
     expect(screen.getByTestId("demo-protobuf-maps-field-statuses-selected-1")).toHaveTextContent("Active");
     expect(screen.getByTestId("demo-protobuf-maps-field-statuses-selected-2")).toHaveTextContent("Paused");
   });
 
-  it.each([
+  test.each([
     ...new Map(
       demoCatalog.filter((demo) => demo.engine === "react-hook-form").map((demo) => [demo.schemaKey, demo])
     ).values(),

@@ -1,14 +1,20 @@
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 import { render, screen } from "@testing-library/react";
 import { AutoForm, defaultRegistry } from "..";
 import { createMockProvider } from "./test-utils";
 
-describe("AutoForm – fieldRegistry prop wiring", () => {
-  it("uses a custom fieldRegistry to resolve field components", () => {
-    const CustomComponent = () => <div data-testid="custom-rendered">Custom!</div>;
+function GreetingCustomComponent() {
+  return <div data-testid="custom-rendered">Custom!</div>;
+}
 
+function NestedCustomComponent() {
+  return <div data-testid="nested-custom-rendered">Nested custom</div>;
+}
+
+describe("AutoForm – fieldRegistry prop wiring", () => {
+  test("uses a custom fieldRegistry to resolve field components", () => {
     const customRegistry = defaultRegistry.clone().register({
-      component: CustomComponent,
+      component: GreetingCustomComponent,
       match: (field) => field.key === "greeting",
       name: "code",
       priority: 9999,
@@ -23,10 +29,9 @@ describe("AutoForm – fieldRegistry prop wiring", () => {
     expect(screen.getByTestId("custom-rendered")).toBeInTheDocument();
   });
 
-  it("renders custom field types inside nested messages", () => {
-    const CustomComponent = () => <div data-testid="nested-custom-rendered">Nested custom</div>;
+  test("renders custom field types inside nested messages", () => {
     const registry = defaultRegistry.clone().register({
-      component: CustomComponent,
+      component: NestedCustomComponent,
       match: (field) => field.key === "source",
       name: "code",
       priority: 9999,
@@ -44,7 +49,7 @@ describe("AutoForm – fieldRegistry prop wiring", () => {
       <AutoForm
         fieldConfig={{ "settings.source": { fieldType: "code" } }}
         fieldRegistry={registry}
-        formComponents={{ code: CustomComponent }}
+        formComponents={{ code: NestedCustomComponent }}
         schema={schema}
       />
     );
@@ -52,7 +57,7 @@ describe("AutoForm – fieldRegistry prop wiring", () => {
     expect(screen.getByTestId("nested-custom-rendered")).toBeInTheDocument();
   });
 
-  it("shows a configuration error when a renderer has no component", () => {
+  test("shows a configuration error when a renderer has no component", () => {
     const schema = createMockProvider([{ key: "greeting", required: true, type: "string" }]);
 
     render(<AutoForm fieldConfig={{ greeting: { fieldType: "missing-renderer" } }} schema={schema} />);

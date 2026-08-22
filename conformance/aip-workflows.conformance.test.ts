@@ -2,7 +2,7 @@
 
 import { FieldBehavior } from "@buf/googleapis_googleapis.bufbuild_es/google/api/field_behavior_pb.js";
 import { create, type DescMessage } from "@bufbuild/protobuf";
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 import {
   getProtoPartialResult,
   getProtoPolicyPreviewPlan,
@@ -45,7 +45,7 @@ async function issues(schema: DescMessage, values: Record<string, unknown>) {
 }
 
 describe("AIP workflow form conformance", () => {
-  it("models AIP-152 Job configuration and Run request forms", () => {
+  test("models AIP-152 Job configuration and Run request forms", () => {
     expect(getProtoResourceMetadata(WriteBookJobSchema)).toMatchObject({
       patterns: ["publishers/{publisher}/writeBookJobs/{write_book_job}"],
       type: "library.protoform.dev/WriteBookJob",
@@ -58,7 +58,7 @@ describe("AIP workflow form conformance", () => {
     expect(parseProtoSchema(RunWriteBookJobRequestSchema).fields).toMatchObject([{ key: "name", required: true }]);
   });
 
-  it("models AIP-153 import and export source choices plus partial failures", async () => {
+  test("models AIP-153 import and export source choices plus partial failures", async () => {
     const importSchema = parseProtoSchema(ImportBooksRequestSchema);
     const exportSchema = parseProtoSchema(ExportBooksRequestSchema);
 
@@ -90,7 +90,7 @@ describe("AIP workflow form conformance", () => {
     ).toBeUndefined();
   });
 
-  it("enforces AIP-159 cross-collection and AIP-217 partial-result controls", async () => {
+  test("enforces AIP-159 cross-collection and AIP-217 partial-result controls", async () => {
     expect(parseProtoSchema(ListBooksRequestSchema).fields.map(({ key }) => key)).toEqual([
       "parent",
       "pageSize",
@@ -150,7 +150,7 @@ describe("AIP workflow form conformance", () => {
     });
   });
 
-  it("models the AIP-165 purge preview and destructive confirmation", async () => {
+  test("models the AIP-165 purge preview and destructive confirmation", async () => {
     const request = parseProtoSchema(PurgeBooksRequestSchema);
     expect(request.fields).toMatchObject([
       { key: "parent", required: true },
@@ -173,7 +173,7 @@ describe("AIP workflow form conformance", () => {
     });
   });
 
-  it("models AIP-236 policy experiments and distinguishes preview from commit", async () => {
+  test("models AIP-236 policy experiments and distinguishes preview from commit", async () => {
     const experiment = parseProtoSchema(PolicyExperimentSchema);
     expect(field(experiment, "policy").required).toBe(true);
     expect(getProtoFieldCustomData(field(experiment, "previewMetadata"))?.hidden).toBe(true);

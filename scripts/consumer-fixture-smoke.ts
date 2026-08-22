@@ -9,7 +9,7 @@ import { $ } from "bun";
 const root = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const fixture = join(root, ".tmp", "consumer-fixture");
 const publicDir = join(root, "public");
-const leadingSlashes = /^\/+/;
+const leadingSlashes = /^\/+/u;
 const registryOrigin = "http://127.0.0.1:48741";
 
 const contentTypes: Record<string, string> = {

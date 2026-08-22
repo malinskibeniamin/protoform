@@ -21,7 +21,7 @@ export function ProtobufMapsDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Add map entries, change a key, and confirm the submitted message preserves value types."}
+        Add map entries, change a key, and confirm the submitted message preserves value types.
       </p>
       <AutoForm
         defaultValues={defaultValues}

@@ -110,7 +110,7 @@ export function TanStackFormExample({ baseUrl }: { baseUrl?: string }) {
         </form.Field>
       </FieldGroup>
 
-      {rootErrors.length ? (
+      {rootErrors.length > 0 ? (
         <Alert variant="destructive">
           <AlertTitle>Submission failed</AlertTitle>
           <AlertDescription>

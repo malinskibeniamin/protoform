@@ -1,6 +1,6 @@
 import { create } from "@bufbuild/protobuf";
 import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 
 import { BookSchema, LibraryService } from "../../../../../conformance/gen/protoform/conformance/v1/aip_pb.js";
 import { composeCreateRequest, composeDeleteRequest, composeUpdateRequest } from "./mutation-request.js";
@@ -12,7 +12,7 @@ describe("descriptor-driven mutation request composers", () => {
     name: "publishers/acme/books/domain-modeling",
   });
 
-  it("composes standard create request controls around a resource", () => {
+  test("composes standard create request controls around a resource", () => {
     const request = composeCreateRequest(LibraryService.method.createBook, {
       parent: "publishers/acme",
       requestId: "00000000-0000-4000-8000-000000000001",
@@ -30,7 +30,7 @@ describe("descriptor-driven mutation request composers", () => {
     });
   });
 
-  it("composes update and delete controls without performing an RPC", () => {
+  test("composes update and delete controls without performing an RPC", () => {
     const updateMask = create(FieldMaskSchema, { paths: ["display_name"] });
 
     expect(
@@ -50,11 +50,11 @@ describe("descriptor-driven mutation request composers", () => {
     ).toMatchObject({ etag: "etag-1", name: book.name, validateOnly: true });
   });
 
-  it("rejects a descriptor whose standard method shape is ambiguous", () => {
+  test("rejects a descriptor whose standard method shape is ambiguous", () => {
     expect(() =>
       composeDeleteRequest(LibraryService.method.getBook, {
         name: book.name,
       })
-    ).toThrow(/expected Delete/i);
+    ).toThrow(/expected Delete/iu);
   });
 });

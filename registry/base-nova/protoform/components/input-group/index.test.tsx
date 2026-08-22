@@ -1,11 +1,11 @@
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from ".";
 
 describe("InputGroupAddon", () => {
-  it("focuses the input without adding a decorative keyboard stop", async () => {
+  test("focuses the input without adding a decorative keyboard stop", async () => {
     const user = userEvent.setup();
     const { container } = render(
       <InputGroup>

@@ -24,7 +24,7 @@ interface CreateBookFormProps {
 }
 
 const bookIdInputPattern = String.raw`[a-z][a-z0-9\-]{2,62}[a-z0-9]`;
-const BOOK_ID_PATTERN = /^[a-z][a-z0-9-]{2,62}[a-z0-9]$/;
+const BOOK_ID_PATTERN = /^[a-z][a-z0-9-]{2,62}[a-z0-9]$/u;
 
 export function CreateBookForm({ onCancel, onCreated, parent }: CreateBookFormProps) {
   const [step, setStep] = useState<"book" | "publishing">("book");
@@ -73,6 +73,14 @@ export function CreateBookForm({ onCancel, onCreated, parent }: CreateBookFormPr
   const titleError = form.formState.errors.displayName?.message;
   const isbnError = form.formState.errors.isbn?.message;
   const bookIdInvalid = bookId.length > 0 && !BOOK_ID_PATTERN.test(bookId);
+  const {
+    name: displayName,
+    onBlur: handleDisplayNameBlur,
+    onChange: handleDisplayNameChange,
+    ref: displayNameRef,
+  } = form.register("displayName");
+  const { name: isbn, onBlur: handleIsbnBlur, onChange: handleIsbnChange, ref: isbnRef } = form.register("isbn");
+  const { name: note, onBlur: handleNoteBlur, onChange: handleNoteChange, ref: noteRef } = form.register("note");
 
   return (
     <section aria-labelledby="create-book-title" className="space-y-6">
@@ -90,7 +98,14 @@ export function CreateBookForm({ onCancel, onCreated, parent }: CreateBookFormPr
         <div className="space-y-5">
           <Field data-invalid={Boolean(titleError)}>
             <FieldLabel htmlFor="create-book-title-input">Title</FieldLabel>
-            <Input aria-invalid={Boolean(titleError)} id="create-book-title-input" {...form.register("displayName")} />
+            <Input
+              aria-invalid={Boolean(titleError)}
+              id="create-book-title-input"
+              name={displayName}
+              onBlur={handleDisplayNameBlur}
+              onChange={handleDisplayNameChange}
+              ref={displayNameRef}
+            />
             {titleError ? <FieldError>{titleError}</FieldError> : null}
           </Field>
           <Field data-invalid={Boolean(isbnError)}>
@@ -100,8 +115,11 @@ export function CreateBookForm({ onCancel, onCreated, parent }: CreateBookFormPr
               aria-invalid={Boolean(isbnError)}
               id="create-book-isbn"
               inputMode="numeric"
+              name={isbn}
+              onBlur={handleIsbnBlur}
+              onChange={handleIsbnChange}
               placeholder="9783161484100"
-              {...form.register("isbn")}
+              ref={isbnRef}
             />
             {isbnError ? (
               <FieldError>{isbnError}</FieldError>
@@ -136,7 +154,13 @@ export function CreateBookForm({ onCancel, onCreated, parent }: CreateBookFormPr
           </Field>
           <Field>
             <FieldLabel htmlFor="create-book-note">Note</FieldLabel>
-            <Textarea id="create-book-note" {...form.register("note")} />
+            <Textarea
+              id="create-book-note"
+              name={note}
+              onBlur={handleNoteBlur}
+              onChange={handleNoteChange}
+              ref={noteRef}
+            />
           </Field>
           {mutation.error ? (
             <Alert variant="destructive">

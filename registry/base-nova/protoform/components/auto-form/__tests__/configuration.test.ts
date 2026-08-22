@@ -1,8 +1,12 @@
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 
 import { type AutoFormConfigurationDiagnostic, inspectAutoFormConfiguration } from "../configuration";
 import { defaultRegistry } from "../fields";
 import { createMockProvider } from "./test-utils";
+
+function CustomRenderer(): null {
+  return null;
+}
 
 const schema = createMockProvider([
   {
@@ -29,7 +33,7 @@ const schema = createMockProvider([
 ]);
 
 describe("inspectAutoFormConfiguration", () => {
-  it("returns deterministic diagnostics for every nested configuration defect", () => {
+  test("returns deterministic diagnostics for every nested configuration defect", () => {
     const diagnostics = inspectAutoFormConfiguration({
       dataProviders: {},
       fieldConfig: {
@@ -85,8 +89,7 @@ describe("inspectAutoFormConfiguration", () => {
     ]);
   });
 
-  it("accepts registered renderers, providers, and supported nested configuration", () => {
-    const CustomRenderer = () => null;
+  test("accepts registered renderers, providers, and supported nested configuration", () => {
     const fieldRegistry = defaultRegistry.clone().register({
       component: CustomRenderer,
       match: (field) => field.key === "source",
@@ -110,7 +113,7 @@ describe("inspectAutoFormConfiguration", () => {
     ).toEqual([]);
   });
 
-  it("reports incompatible built-in controls", () => {
+  test("reports incompatible built-in controls", () => {
     expect(
       inspectAutoFormConfiguration({
         fieldConfig: {
@@ -126,7 +129,7 @@ describe("inspectAutoFormConfiguration", () => {
     });
   });
 
-  it("reports broken step configuration and unsupported schema shapes instead of throwing", () => {
+  test("reports broken step configuration and unsupported schema shapes instead of throwing", () => {
     const brokenSchema = {
       getDefaultValues: () => ({}),
       parseSchema: () => {
@@ -162,7 +165,7 @@ describe("inspectAutoFormConfiguration", () => {
     );
   });
 
-  it("reports unknown default and field step references", () => {
+  test("reports unknown default and field step references", () => {
     const stepSchema = createMockProvider([
       { hints: { step: "missing" }, key: "name", required: true, type: "string" },
     ]);

@@ -252,10 +252,10 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
   return Boolean(value && typeof value === "object" && !Array.isArray(value));
 }
 
-const UNSPECIFIED_PATTERN = /(unspecified|unknown)$/i;
-const CAMEL_BOUNDARY_PATTERN = /([a-z0-9])([A-Z])/g;
-const WORD_SEPARATOR_PATTERN = /[_.-]+/g;
-const WHITESPACE_PATTERN = /\s+/g;
+const UNSPECIFIED_PATTERN = /(unspecified|unknown)$/iu;
+const CAMEL_BOUNDARY_PATTERN = /([a-z0-9])([A-Z])/gu;
+const WORD_SEPARATOR_PATTERN = /[_.-]+/gu;
+const WHITESPACE_PATTERN = /\s+/gu;
 
 function isUnspecifiedEnumValue(enumValue: { number: number; localName: string; name?: string }): boolean {
   if (enumValue.number !== 0) {
@@ -285,7 +285,7 @@ function humanize(input: string): string {
     .join(" ");
 }
 
-const NORMALIZE_SEPARATOR_PATTERN = /[\s_-]+/g;
+const NORMALIZE_SEPARATOR_PATTERN = /[\s_-]+/gu;
 
 // Returns the raw localName for enum values.
 // Consumers can override labels via optionLabels in fieldConfig.
@@ -1088,8 +1088,8 @@ export function parseProtoSchema(
   return parseProtoSchemaInternal(desc, annotations, parentSecretScope, new Set(), undefined);
 }
 
-const CREATE_REQUEST_PATTERN = /^Create.+Request$/;
-const UPDATE_REQUEST_PATTERN = /^Update.+Request$/;
+const CREATE_REQUEST_PATTERN = /^Create.+Request$/u;
+const UPDATE_REQUEST_PATTERN = /^Update.+Request$/u;
 
 function inferProtoOperation(desc: DescMessage): "create" | "update" | undefined {
   const messageName = desc.typeName.split(".").at(-1) ?? "";
@@ -1182,7 +1182,7 @@ function fieldToFormValue(field: DescField, value: unknown): unknown {
           return toDateTimeLocalValue(value as MessageShape<typeof TimestampSchema> | undefined);
         case DURATION_TYPE:
           return value
-            ? toJsonString(DurationSchema, value as MessageShape<typeof DurationSchema>).replace(/"/g, "")
+            ? toJsonString(DurationSchema, value as MessageShape<typeof DurationSchema>).replace(/"/gu, "")
             : undefined;
         case FIELD_MASK_TYPE:
           return isPlainObject(value) && Array.isArray((value as { paths?: unknown[] }).paths)

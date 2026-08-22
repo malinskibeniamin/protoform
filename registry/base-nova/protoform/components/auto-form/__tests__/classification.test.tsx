@@ -1,16 +1,16 @@
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { AutoForm } from "..";
 import { createMockProvider } from "./test-utils";
 
-const REQUIRED_NAME_LABEL = /required name/i;
-const OPTIONAL_NOTE_LABEL = /optional note/i;
-const REQUIRED_HIDDEN_LABEL = /required hidden/i;
-const OPTIONAL_PROMOTED_LABEL = /optional promoted/i;
+const REQUIRED_NAME_LABEL = /required name/iu;
+const OPTIONAL_NOTE_LABEL = /optional note/iu;
+const REQUIRED_HIDDEN_LABEL = /required hidden/iu;
+const OPTIONAL_PROMOTED_LABEL = /optional promoted/iu;
 
 describe("AutoForm – simple/advanced field classification", () => {
-  it("shows required fields in simple mode and hides optional fields", () => {
+  test("shows required fields in simple mode and hides optional fields", () => {
     const schema = createMockProvider([
       { key: "requiredName", required: true, type: "string" },
       { key: "optionalNote", required: false, type: "string" },
@@ -30,7 +30,7 @@ describe("AutoForm – simple/advanced field classification", () => {
     expect(screen.queryByLabelText(OPTIONAL_NOTE_LABEL)).not.toBeInTheDocument();
   });
 
-  it("hides a required field when customData.advanced is true", () => {
+  test("hides a required field when customData.advanced is true", () => {
     const schema = createMockProvider([
       { key: "requiredName", required: true, type: "string" },
       { key: "requiredHidden", required: true, type: "string" },
@@ -55,7 +55,7 @@ describe("AutoForm – simple/advanced field classification", () => {
     expect(screen.queryByLabelText(REQUIRED_HIDDEN_LABEL)).not.toBeInTheDocument();
   });
 
-  it("shows an optional field when customData.advanced is false", () => {
+  test("shows an optional field when customData.advanced is false", () => {
     const schema = createMockProvider([
       { key: "requiredName", required: true, type: "string" },
       { key: "optionalPromoted", required: false, type: "string" },
@@ -80,7 +80,7 @@ describe("AutoForm – simple/advanced field classification", () => {
     expect(screen.getByLabelText(OPTIONAL_PROMOTED_LABEL)).toBeInTheDocument();
   });
 
-  it("custom classifyField prop controls which fields appear in simple mode", () => {
+  test("custom classifyField prop controls which fields appear in simple mode", () => {
     const schema = createMockProvider([
       { key: "requiredName", required: true, type: "string" },
       { key: "optionalNote", required: false, type: "string" },
@@ -101,7 +101,7 @@ describe("AutoForm – simple/advanced field classification", () => {
     expect(screen.getByLabelText(OPTIONAL_NOTE_LABEL)).toBeInTheDocument();
   });
 
-  it("switching to advanced mode reveals all fields", async () => {
+  test("switching to advanced mode reveals all fields", async () => {
     const user = userEvent.setup();
     const schema = createMockProvider([
       { key: "requiredName", required: true, type: "string" },
@@ -120,7 +120,7 @@ describe("AutoForm – simple/advanced field classification", () => {
 
     expect(screen.queryByLabelText(OPTIONAL_NOTE_LABEL)).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole("tab", { name: /advanced/i }));
+    await user.click(screen.getByRole("tab", { name: /advanced/iu }));
 
     await waitFor(() => {
       expect(screen.getByLabelText(OPTIONAL_NOTE_LABEL)).toBeInTheDocument();

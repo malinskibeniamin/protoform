@@ -18,6 +18,8 @@ import {
   readinessProfile,
   readinessRequirements,
 } from "../../readiness/profile.js";
+import { RequirementDetail } from "./requirement-detail.js";
+import { RequirementStatus } from "./requirement-status.js";
 
 type StatusFilter = "all" | "gaps" | ReadinessRequirement["status"];
 const PAGE_SIZE = 25;
@@ -95,61 +97,6 @@ function requirementExplanation(requirement: ReadinessRequirement): string {
     return `Next test: ${requirement.nextTest}`;
   }
   return requirement.rationale;
-}
-
-function RequirementStatus({ status }: { status: ReadinessRequirement["status"] }) {
-  if (status === "verified") {
-    return <Badge variant="success-inverted">Verified</Badge>;
-  }
-  if (status === "optional") {
-    return <Badge variant="success-outline">Verified optional</Badge>;
-  }
-  if (status === "missing") {
-    return <Badge variant="warning-inverted">Gap</Badge>;
-  }
-  if (status === "deferred") {
-    return <Badge variant="info-inverted">Deferred</Badge>;
-  }
-  if (status === "unsupported") {
-    return <Badge variant="destructive-inverted">Unsupported</Badge>;
-  }
-  if (status === "external") {
-    return <Badge variant="neutral-inverted">External</Badge>;
-  }
-  if (status === "out-of-target") {
-    return <Badge variant="neutral-outline">Out of target</Badge>;
-  }
-  return <Badge variant="disabled-inverted">Superseded</Badge>;
-}
-
-function RequirementDetail({ requirement }: { requirement: ReadinessRequirement }) {
-  if (requirement.status === "verified" || requirement.status === "optional") {
-    return (
-      <p className="m-0 text-muted-foreground text-xs">
-        Evidence: <code className="break-all">{requirement.evidence.file}</code>
-        {" · "}
-        {requirement.evidence.testName}
-      </p>
-    );
-  }
-  if (requirement.status === "missing") {
-    return (
-      <p className="m-0 text-sm">
-        <strong>Next test:</strong> {requirement.nextTest}
-      </p>
-    );
-  }
-  if (requirement.status === "deferred" || requirement.status === "unsupported") {
-    return (
-      <div className="space-y-2 text-sm">
-        <p className="m-0 text-muted-foreground">{requirement.rationale}</p>
-        <p className="m-0">
-          <strong>Next test:</strong> {requirement.nextTest}
-        </p>
-      </div>
-    );
-  }
-  return <p className="m-0 text-muted-foreground text-sm">{requirement.rationale}</p>;
 }
 
 export function ReadinessDashboard() {
