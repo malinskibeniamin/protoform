@@ -1,8 +1,11 @@
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import "@/registry/base-nova/protoform/lib/protobuf-provider/auto-form-example-annotations";
+import { AutoFormUiMetadataExampleSchema } from "@/registry/base-nova/protoform/lib/protobuf-provider/gen/auto-form-example_pb";
+
+import { AutoForm } from "..";
 
 if (!HTMLElement.prototype.hasPointerCapture) {
   Object.defineProperty(HTMLElement.prototype, "hasPointerCapture", {
@@ -22,10 +25,6 @@ if (!HTMLElement.prototype.releasePointerCapture) {
   });
 }
 
-import { AutoFormUiMetadataExampleSchema } from "@/registry/base-nova/protoform/lib/protobuf-provider/gen/auto-form-example_pb";
-
-import { AutoForm } from "..";
-
 const buildProtoUiMetadataDefaults = () => ({
   approvalTicket: "OPS-142",
   clusterName: "scarlet-forest-dolphin",
@@ -37,7 +36,7 @@ const buildProtoUiMetadataDefaults = () => ({
 });
 
 describe("AutoForm – CEL rules", () => {
-  it("supports proto UI CEL for field visibility and disabled state", async () => {
+  test("supports proto UI CEL for field visibility and disabled state", async () => {
     const user = userEvent.setup();
 
     render(

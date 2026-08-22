@@ -1,4 +1,4 @@
-import { describe, expect, it, rs } from "@rstest/core";
+import { describe, expect, rs } from "@rstest/core";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
@@ -6,7 +6,7 @@ import type { SchemaProvider } from "../../auto-form/core-types";
 import { AutoForm } from "..";
 
 describe("experimental React Hook Form v8 AutoForm conformance", () => {
-  it("keeps the v8-native API and submits transformed provider output", async () => {
+  test("keeps the v8-native API and submits transformed provider output", async () => {
     const user = userEvent.setup();
     const onSubmit = rs.fn();
     const onFormInit = rs.fn();
@@ -17,7 +17,7 @@ describe("experimental React Hook Form v8 AutoForm conformance", () => {
 
     render(<AutoForm onFormInit={onFormInit} onSubmit={onSubmit} schema={schema} withSubmit />);
 
-    await user.type(screen.getByRole("textbox", { name: /name/i }), " ada ");
+    await user.type(screen.getByRole("textbox", { name: /name/iu }), " ada ");
     await user.click(screen.getByRole("button", { name: "Submit" }));
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
@@ -26,7 +26,7 @@ describe("experimental React Hook Form v8 AutoForm conformance", () => {
     expect(onFormInit.mock.calls[0]?.[0].control).toBeDefined();
   });
 
-  it("uses v8 field keys for repeated fields", async () => {
+  test("uses v8 field keys for repeated fields", async () => {
     const user = userEvent.setup();
     const onSubmit = rs.fn();
     const schema: SchemaProvider<{ tags: string[] }> = {
@@ -46,7 +46,7 @@ describe("experimental React Hook Form v8 AutoForm conformance", () => {
 
     render(<AutoForm onSubmit={onSubmit} schema={schema} withSubmit />);
 
-    await user.click(screen.getByRole("button", { name: /add tags/i }));
+    await user.click(screen.getByRole("button", { name: /add tags/iu }));
     const inputs = screen.getAllByRole("textbox");
     await user.type(inputs[1] as HTMLInputElement, "second");
     await user.click(screen.getByRole("button", { name: "Submit" }));
@@ -55,7 +55,7 @@ describe("experimental React Hook Form v8 AutoForm conformance", () => {
     expect(onSubmit.mock.calls[0]?.[0]).toEqual({ tags: ["first", "second"] });
   });
 
-  it("renders every provider validation failure through v8 field errors", async () => {
+  test("renders every provider validation failure through v8 field errors", async () => {
     const user = userEvent.setup();
     const schema = createNameSchema(() => ({
       errors: [
@@ -71,10 +71,10 @@ describe("experimental React Hook Form v8 AutoForm conformance", () => {
     const fieldError = await screen.findByRole("alert");
     expect(fieldError).toHaveTextContent("Name is required.");
     expect(fieldError).toHaveTextContent("Name must be unique.");
-    expect(screen.getByRole("textbox", { name: /name/i })).toHaveAttribute("aria-invalid", "true");
+    expect(screen.getByRole("textbox", { name: /name/iu })).toHaveAttribute("aria-invalid", "true");
   });
 
-  it("renders a provider root error once", async () => {
+  test("renders a provider root error once", async () => {
     const user = userEvent.setup();
     const schema = createNameSchema(() => ({
       errors: [{ message: "Provider exploded.", path: [] }],
@@ -85,7 +85,7 @@ describe("experimental React Hook Form v8 AutoForm conformance", () => {
     await user.click(screen.getByRole("button", { name: "Submit" }));
 
     const rootError = await screen.findByRole("alert");
-    expect(rootError.textContent?.match(/Provider exploded\./g)).toHaveLength(1);
+    expect(rootError.textContent?.match(/Provider exploded\./gu)).toHaveLength(1);
   });
 });
 

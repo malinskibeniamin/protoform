@@ -1,10 +1,10 @@
-import { expect, it } from "@rstest/core";
+import { expect } from "@rstest/core";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { BareBonesFormExample } from "./bare-bones-form.js";
 
-it("submits the simplest generated form without a server", async () => {
+test("submits the simplest generated form without a server", async () => {
   const user = userEvent.setup();
   render(<BareBonesFormExample />);
 

@@ -9,6 +9,14 @@ export default defineConfig({
     provider: "playwright",
   },
   include: ["registry/**/*.browser.test.tsx"],
-  plugins: [pluginReact()],
+  plugins: [
+    pluginReact({
+      reactCompiler: {
+        compilationMode: "infer",
+        panicThreshold: "all_errors",
+        target: "19",
+      },
+    }),
+  ],
   setupFiles: ["./rstest.browser.setup.ts"],
 });

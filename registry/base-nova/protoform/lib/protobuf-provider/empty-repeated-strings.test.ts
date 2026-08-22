@@ -4,7 +4,7 @@ import {
   FieldDescriptorProto_Type,
   FileDescriptorProtoSchema,
 } from "@bufbuild/protobuf/wkt";
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 
 import { formValuesToProtoInit } from "./provider.js";
 
@@ -107,7 +107,7 @@ function createConversionFixture(): DescMessage {
 const ConversionFixtureSchema = createConversionFixture();
 
 describe("empty repeated string conversion", () => {
-  it("discards empty and whitespace-only strings by default without changing other list types", () => {
+  test("discards empty and whitespace-only strings by default without changing other list types", () => {
     const converted = formValuesToProtoInit(ConversionFixtureSchema, {
       children: [{ labels: [""] }, { labels: ["child"] }],
       labels: ["foo", "", "   ", "bar"],
@@ -123,7 +123,7 @@ describe("empty repeated string conversion", () => {
     expect(converted["children"]).toEqual([{ labels: [] }, { labels: ["child"] }]);
   });
 
-  it("preserves empty strings for configured root, nested, and oneof-message fields", () => {
+  test("preserves empty strings for configured root, nested, and oneof-message fields", () => {
     const converted = formValuesToProtoInit(
       ConversionFixtureSchema,
       {

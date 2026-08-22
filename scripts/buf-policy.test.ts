@@ -1,6 +1,6 @@
 import { spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 
 function runBufLint(input = ".") {
   return spawnSync("bunx", ["buf", "lint", input, "--error-format=json"], {
@@ -15,14 +15,14 @@ function runBufBreaking(input: string, against: string) {
 }
 
 describe("Buf policy", () => {
-  it("passes Buf STANDARD including the complete Protovalidate lint rule", () => {
+  test("passes Buf STANDARD including the complete Protovalidate lint rule", () => {
     const result = runBufLint();
 
     expect(result.status, `${result.stdout}${result.stderr}`).toBe(0);
     expect(`${result.stdout}${result.stderr}`).toBe("");
   });
 
-  it("keeps intentional Protovalidate lint failures in an isolated module", () => {
+  test("keeps intentional Protovalidate lint failures in an isolated module", () => {
     const result = runBufLint("conformance/expected-failures");
     const output = `${result.stdout}${result.stderr}`;
     const violations = output
@@ -36,13 +36,13 @@ describe("Buf policy", () => {
     expect(new Set(violations.map((violation) => violation.type))).toEqual(new Set(["PROTOVALIDATE"]));
   });
 
-  it("runs the complete lint policy in CI", () => {
+  test("runs the complete lint policy in CI", () => {
     const workflow = readFileSync(".github/workflows/ci.yml", "utf8");
 
     expect(workflow).toContain("bunx buf lint");
   });
 
-  it("enforces target-branch compatibility and rejects an isolated fixture", () => {
+  test("enforces target-branch compatibility and rejects an isolated fixture", () => {
     const result = runBufBreaking(
       "conformance/expected-failures/breaking/candidate",
       "conformance/expected-failures/breaking/baseline"

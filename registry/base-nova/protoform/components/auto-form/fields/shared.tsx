@@ -11,7 +11,7 @@ import { getFieldUiConfig, NUMERIC_OPTION_PATTERN } from "../helpers";
 import { getAutoFormChoiceTestId, getAutoFormFieldTestId } from "../test-ids";
 import type { AutoFormOptionGroup, AutoFormOptionItem } from "../types";
 
-const TIME_ZONE_SUFFIX_PATTERN = /([+-]\d{2}:\d{2}|Z)$/;
+const TIME_ZONE_SUFFIX_PATTERN = /([+-]\d{2}:\d{2}|Z)$/u;
 
 // ---------------------------------------------------------------------------
 // Label utilities
@@ -206,6 +206,8 @@ export function StringLikeInput({
   testId: string;
   type?: React.ComponentProps<typeof Input>["type"];
 }) {
+  "use no memo";
+
   if (icon) {
     return (
       <InputGroup testId={testId}>
@@ -214,16 +216,16 @@ export function StringLikeInput({
         </InputGroupAddon>
         <InputGroupInput
           aria-invalid={Boolean(error)}
-          disabled={inputProps["disabled"]}
+          disabled={inputProps.disabled}
           id={id}
-          name={inputProps["name"]}
-          onBlur={inputProps["onBlur"]}
-          onChange={(event) => inputProps["onValueChange"](event.target.value)}
+          name={inputProps.name}
+          onBlur={inputProps.onBlur}
+          onChange={(event) => inputProps.onValueChange(event.target.value)}
           placeholder={placeholder}
-          ref={inputProps["ref"]}
+          ref={inputProps.ref}
           testId={`${testId}-input`}
           type={type}
-          value={(inputProps["value"] as string | undefined) ?? ""}
+          value={typeof inputProps.value === "string" ? inputProps.value : ""}
         />
       </InputGroup>
     );
@@ -233,16 +235,16 @@ export function StringLikeInput({
     <Input
       aria-invalid={Boolean(error)}
       className={error ? "border-destructive" : ""}
-      disabled={inputProps["disabled"]}
+      disabled={inputProps.disabled}
       id={id}
-      name={inputProps["name"]}
-      onBlur={inputProps["onBlur"]}
-      onChange={(event) => inputProps["onValueChange"](event.target.value)}
+      name={inputProps.name}
+      onBlur={inputProps.onBlur}
+      onChange={(event) => inputProps.onValueChange(event.target.value)}
       placeholder={placeholder}
-      ref={inputProps["ref"]}
+      ref={inputProps.ref}
       testId={testId}
       type={type}
-      value={(inputProps["value"] as string | undefined) ?? ""}
+      value={typeof inputProps.value === "string" ? inputProps.value : ""}
     />
   );
 }

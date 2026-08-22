@@ -17,7 +17,7 @@ function getStepState(isCurrent: boolean, isComplete: boolean): "complete" | "cu
   return isComplete ? "complete" : "upcoming";
 }
 
-function getStepStatusLabel(isCurrent: boolean, isComplete: boolean): string {
+function getStepStatusLabel(isCurrent: boolean, isComplete: boolean) {
   if (isCurrent) {
     return "current step";
   }
@@ -40,7 +40,7 @@ export function fieldsForStep(fields: ParsedField[], steps: AutoFormStep[], step
 
 export function initialStepIndex(steps: AutoFormStep[], defaultStep: string | undefined): number {
   const index = defaultStep ? steps.findIndex((step) => step.id === defaultStep) : 0;
-  return index >= 0 ? index : 0;
+  return Math.max(index, 0);
 }
 
 export function validateSteps(steps: AutoFormStep[]): void {

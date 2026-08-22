@@ -184,7 +184,7 @@ const TabsList = React.forwardRef<HTMLDivElement, TabsListProps>(
     ref
   ) => {
     const localRef = React.useRef<HTMLDivElement>(null);
-    React.useImperativeHandle(ref, () => localRef.current || document.createElement("div"));
+    React.useImperativeHandle(ref, () => localRef.current ?? document.createElement("div"));
 
     const [bounds, setBounds] = React.useState<HighlightBounds | null>(null);
     const [orientation, setOrientation] = React.useState<"horizontal" | "vertical">("horizontal");

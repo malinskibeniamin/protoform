@@ -21,7 +21,7 @@ export function StepperDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Move forward and back, verify values persist, then submit from the final step."}
+        Move forward and back, verify values persist, then submit from the final step.
       </p>
       <AutoForm
         defaultValues={defaultValues}

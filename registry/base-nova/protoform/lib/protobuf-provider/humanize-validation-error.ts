@@ -3,15 +3,15 @@
 // custom messages. Proto-level CEL expressions with custom messages take
 // priority. This utility only fires for generic fallback messages.
 
-const REGEX_ERROR_PATTERN = /regex pattern\s*`([^`]+)`/;
-const MIN_LEN_PATTERN = /^value length must be at least (\d+)/;
-const MAX_LEN_PATTERN = /^value length must be at most (\d+)/;
-const MIN_ITEMS_PATTERN = /^(?:value )?must contain at least (\d+)(?: item(?:\(s\)|s)?)?/;
-const MAX_ITEMS_PATTERN = /^(?:value )?must contain at most (\d+)(?: item(?:\(s\)|s)?)?/;
-const GTE_PATTERN = /^value must be greater than or equal to ([\d.]+)/;
-const LTE_PATTERN = /^value must be less than or equal to ([\d.]+)/;
-const GT_PATTERN = /^value must be greater than ([\d.]+)/;
-const LT_PATTERN = /^value must be less than ([\d.]+)/;
+const REGEX_ERROR_PATTERN = /regex pattern\s*`([^`]+)`/u;
+const MIN_LEN_PATTERN = /^value length must be at least (\d+)/u;
+const MAX_LEN_PATTERN = /^value length must be at most (\d+)/u;
+const MIN_ITEMS_PATTERN = /^(?:value )?must contain at least (\d+)(?: item(?:\(s\)|s)?)?/u;
+const MAX_ITEMS_PATTERN = /^(?:value )?must contain at most (\d+)(?: item(?:\(s\)|s)?)?/u;
+const GTE_PATTERN = /^value must be greater than or equal to ([\d.]+)/u;
+const LTE_PATTERN = /^value must be less than or equal to ([\d.]+)/u;
+const GT_PATTERN = /^value must be greater than ([\d.]+)/u;
+const LT_PATTERN = /^value must be less than ([\d.]+)/u;
 
 interface PatternDescription {
   description: string;

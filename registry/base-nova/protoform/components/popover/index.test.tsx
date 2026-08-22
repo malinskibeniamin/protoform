@@ -1,13 +1,15 @@
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 import { render, screen } from "@testing-library/react";
 
 import { Popover, PopoverAnchor } from ".";
 
 describe("PopoverAnchor", () => {
-  it("supports Base UI render composition without adding a wrapper", () => {
+  test("supports Base UI render composition without adding a wrapper", () => {
     render(
       <Popover>
-        <PopoverAnchor render={<button type="button" />}>Open nested command</PopoverAnchor>
+        <PopoverAnchor render={<button aria-label="Open nested command" type="button" />}>
+          Open nested command
+        </PopoverAnchor>
       </Popover>
     );
 

@@ -1,9 +1,9 @@
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 
 import { expectedReleaseTag, verifyReleaseTag } from "./verify-release-tag";
 
 describe("release tag verification", () => {
-  it("requires the immutable tag to match the package version", () => {
+  test("requires the immutable tag to match the package version", () => {
     expect(expectedReleaseTag("1.0.0")).toBe("v1.0.0");
     expect(() => verifyReleaseTag("v1.0.0", "1.0.0")).not.toThrow();
     expect(() => verifyReleaseTag("v1.0.1", "1.0.0")).toThrow(

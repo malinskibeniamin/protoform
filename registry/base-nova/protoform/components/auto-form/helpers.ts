@@ -4,15 +4,15 @@ import type { ParsedField, SchemaValidation } from "./core-types";
 import { getLabel, getPathInObject, sortFieldsByOrder } from "./field-utils";
 import type { AutoFormOptionGroup, AutoFormOptionItem, AutoFormUiRule, FieldTypes } from "./types";
 
-export const NUMERIC_OPTION_PATTERN = /^-?\d+$/;
-export const FIELD_MASK_PATH_SPLIT_PATTERN = /[\n,]/;
+export const NUMERIC_OPTION_PATTERN = /^-?\d+$/u;
+export const FIELD_MASK_PATH_SPLIT_PATTERN = /[\n,]/u;
 
-export const SECRET_FIELD_PATTERN = /(password|secret|token|api[_-]?key|private[_-]?key|credential)/i;
-export const CONSENT_FIELD_PATTERN = /(accept|agree|consent|terms|policy|opt[-_ ]?in)/i;
-export const URL_FIELD_PATTERN = /(url|uri|website|homepage|link)/i;
-export const EMAIL_FIELD_PATTERN = /(email|e-mail)/i;
-export const CURRENCY_FIELD_PATTERN = /(amount|price|cost|balance|budget|revenue|salary|subtotal|total)/i;
-export const LONG_TEXT_FIELD_PATTERN = /(bio|description|details|notes?|summary|message|comment)/i;
+export const SECRET_FIELD_PATTERN = /(password|secret|token|api[_-]?key|private[_-]?key|credential)/iu;
+export const CONSENT_FIELD_PATTERN = /(accept|agree|consent|terms|policy|opt[-_ ]?in)/iu;
+export const URL_FIELD_PATTERN = /(url|uri|website|homepage|link)/iu;
+export const EMAIL_FIELD_PATTERN = /(email|e-mail)/iu;
+export const CURRENCY_FIELD_PATTERN = /(amount|price|cost|balance|budget|revenue|salary|subtotal|total)/iu;
+export const LONG_TEXT_FIELD_PATTERN = /(bio|description|details|notes?|summary|message|comment)/iu;
 
 export function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value && typeof value === "object" && !Array.isArray(value));
@@ -548,7 +548,7 @@ export function getFieldDescriptionText(field: ParsedField): string | undefined 
 
 function hasSimpleRequiredCount(field: ParsedField): boolean {
   const hints = getFieldHints(field);
-  return Boolean((hints?.minItems ?? 0) > 0 || (hints?.minPairs ?? 0) > 0);
+  return (hints?.minItems ?? 0) > 0 || (hints?.minPairs ?? 0) > 0;
 }
 
 /**

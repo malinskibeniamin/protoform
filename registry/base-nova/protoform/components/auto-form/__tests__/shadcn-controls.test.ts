@@ -1,4 +1,4 @@
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 
 import { shadcnAutoFormControls, shadcnComponentCoverage } from "../shadcn-controls";
 
@@ -40,13 +40,13 @@ const outOfBoxComponents = [
 ];
 
 describe("shadcn AutoForm coverage manifest", () => {
-  it("covers every bundled shadcn Base UI component with an AutoForm role", () => {
+  test("covers every bundled shadcn Base UI component with an AutoForm role", () => {
     expect(
       shadcnComponentCoverage.map((entry) => entry.component).sort((left, right) => left.localeCompare(right))
     ).toEqual(outOfBoxComponents.sort((left, right) => left.localeCompare(right)));
   });
 
-  it("keeps proto control annotations unique and explicit", () => {
+  test("keeps proto control annotations unique and explicit", () => {
     const controls = shadcnAutoFormControls.map((entry) => entry.control);
     expect(new Set(controls).size).toBe(controls.length);
     expect(shadcnAutoFormControls.every((entry) => entry.protoAnnotation.startsWith("CONTROL_TYPE_"))).toBe(true);

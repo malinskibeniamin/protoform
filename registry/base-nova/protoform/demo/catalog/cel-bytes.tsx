@@ -21,7 +21,7 @@ export function CelBytesDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Change the encoded payload and submit to exercise byte-aware rules."}
+        Change the encoded payload and submit to exercise byte-aware rules.
       </p>
       <AutoForm
         defaultValues={defaultValues}

@@ -21,7 +21,7 @@ export function CelTimeDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Set an end before the start, then correct the half-open time range."}
+        Set an end before the start, then correct the half-open time range.
       </p>
       <AutoForm
         defaultValues={defaultValues}

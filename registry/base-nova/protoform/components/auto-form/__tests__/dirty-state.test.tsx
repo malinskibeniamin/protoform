@@ -1,4 +1,4 @@
-import { describe, expect, it, rs } from "@rstest/core";
+import { describe, expect, rs } from "@rstest/core";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
@@ -59,7 +59,7 @@ describe.each([
   ["React Hook Form", ReactHookAutoForm],
   ["TanStack Form", TanStackAutoForm],
 ] as const)("%s dirty-state lifecycle", (_name, FormComponent) => {
-  it("reports clean initially, emits distinct changes, and marks the saved values clean synchronously", async () => {
+  test("reports clean initially, emits distinct changes, and marks the saved values clean synchronously", async () => {
     const user = userEvent.setup();
     const onDirtyChange = rs.fn();
     let cleanBeforeNavigation = false;
@@ -72,7 +72,7 @@ describe.each([
 
     await waitFor(() => expect(onDirtyChange.mock.calls.map(([dirty]) => dirty)).toEqual([false]));
 
-    await user.type(screen.getByRole("textbox", { name: /name/i }), "Ada");
+    await user.type(screen.getByRole("textbox", { name: /name/iu }), "Ada");
     await waitFor(() => expect(onDirtyChange.mock.calls.map(([dirty]) => dirty)).toEqual([false, true]));
 
     await user.click(screen.getByRole("button", { name: "Submit" }));
@@ -80,13 +80,13 @@ describe.each([
     expect(cleanBeforeNavigation).toBe(true);
     expect(onDirtyChange.mock.calls.map(([dirty]) => dirty)).toEqual([false, true, false]);
 
-    await user.clear(screen.getByRole("textbox", { name: /name/i }));
+    await user.clear(screen.getByRole("textbox", { name: /name/iu }));
     await waitFor(() => expect(onDirtyChange).toHaveBeenLastCalledWith(true));
-    await user.type(screen.getByRole("textbox", { name: /name/i }), "Ada");
+    await user.type(screen.getByRole("textbox", { name: /name/iu }), "Ada");
     await waitFor(() => expect(onDirtyChange).toHaveBeenLastCalledWith(false));
   });
 
-  it("establishes reset values as the new clean baseline", async () => {
+  test("establishes reset values as the new clean baseline", async () => {
     const user = userEvent.setup();
     const onDirtyChange = rs.fn();
     const onSubmit = rs.fn((_values, _nativeForm, context) => {
@@ -95,7 +95,7 @@ describe.each([
 
     render(<FormComponent onDirtyChange={onDirtyChange} onSubmit={onSubmit} schema={schema} withSubmit />);
 
-    const input = screen.getByRole("textbox", { name: /name/i });
+    const input = screen.getByRole("textbox", { name: /name/iu });
     await user.type(input, "Draft");
     await waitFor(() => expect(onDirtyChange).toHaveBeenLastCalledWith(true));
     await user.click(screen.getByRole("button", { name: "Submit" }));
@@ -107,7 +107,7 @@ describe.each([
     await waitFor(() => expect(onDirtyChange).toHaveBeenLastCalledWith(true));
   });
 
-  it("tracks nested, array, map, and oneof changes", async () => {
+  test("tracks nested, array, map, and oneof changes", async () => {
     const user = userEvent.setup();
     const onDirtyChange = rs.fn();
     const onSubmit = rs.fn((_values, _nativeForm, context) => context.form.markClean());

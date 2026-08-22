@@ -2,13 +2,13 @@ import { spawnSync } from "node:child_process";
 import { isAbsolute, relative, resolve } from "node:path";
 
 const generatedPathPatterns = [
-  /(^|\/)gen\//,
-  /(^|\/)__golden__\//,
-  /(^|\/)registry\/base-nova\/protoform\/lib\/protobuf-v1-bridge\//,
-  /(?:^|\/)routeTree\.gen\.ts$/,
-  /_(?:form|pb)\.ts$/,
+  /(^|\/)gen\//u,
+  /(^|\/)__golden__\//u,
+  /(^|\/)registry\/base-nova\/protoform\/lib\/protobuf-v1-bridge\//u,
+  /(?:^|\/)routeTree\.gen\.ts$/u,
+  /_(?:form|pb)\.ts$/u,
 ];
-const typescriptPathPattern = /\.tsx?$/;
+const typescriptPathPattern = /\.tsx?$/u;
 const projectRoot = process.cwd();
 
 function run(command: string, args: string[]): string {

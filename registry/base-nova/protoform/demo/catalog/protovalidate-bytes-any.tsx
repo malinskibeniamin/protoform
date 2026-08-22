@@ -21,7 +21,7 @@ export function ProtovalidateBytesAnyDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Change the base64 and type URL inputs to trigger safe validation failures."}
+        Change the base64 and type URL inputs to trigger safe validation failures.
       </p>
       <AutoForm
         defaultValues={defaultValues}

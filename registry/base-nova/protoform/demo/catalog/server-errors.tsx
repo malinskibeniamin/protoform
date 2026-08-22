@@ -21,7 +21,7 @@ export function ServerErrorsDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Submit a blocked value to map a server error back to its field without losing input."}
+        Submit a blocked value to map a server error back to its field without losing input.
       </p>
       <AutoForm
         defaultValues={defaultValues}

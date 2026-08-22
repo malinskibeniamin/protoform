@@ -24,7 +24,7 @@ function MultiSelectFieldComponent({ field, id, inputProps }: AutoFormFieldProps
         heading: group.label,
         testId: testIds.group(String(group.label ?? "group")),
       }))
-    : (itemField?.options || []).map(([value, optionLabel]) => ({
+    : (itemField?.options ?? []).map(([value, optionLabel]) => ({
         label: optionLabel,
         selectedTestId: testIds.selected(value),
         testId: testIds.option(value),
@@ -83,9 +83,7 @@ function DataProviderMultiSelectComponent({ field, id, inputProps }: AutoFormFie
     const labelNode = (
       <span className="flex items-center gap-2" key={option.value}>
         {option.icon ? (
-          <span className="flex h-4 w-4 shrink-0 items-center justify-center [&>svg]:h-full [&>svg]:w-full">
-            {option.icon}
-          </span>
+          <span className="flex size-4 shrink-0 items-center justify-center [&>svg]:size-full">{option.icon}</span>
         ) : null}
         <span>{option.label}</span>
         {option.description ? <span className="text-muted-foreground text-xs">— {option.description}</span> : null}

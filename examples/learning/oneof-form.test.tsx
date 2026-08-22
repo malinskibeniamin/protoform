@@ -1,4 +1,4 @@
-import { expect, it } from "@rstest/core";
+import { expect } from "@rstest/core";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
@@ -12,7 +12,7 @@ async function selectContact(label: "Email" | "Phone") {
   fireEvent.click(option);
 }
 
-it("shows oneof placeholders and labels instead of internal values", async () => {
+test("shows oneof placeholders and labels instead of internal values", async () => {
   render(<OneofFormExample />);
 
   const contact = screen.getByRole("combobox", { name: "Contact" });
@@ -25,7 +25,7 @@ it("shows oneof placeholders and labels instead of internal values", async () =>
   });
 });
 
-it("clears the previous oneof branch before submitting the new one", async () => {
+test("clears the previous oneof branch before submitting the new one", async () => {
   const user = userEvent.setup();
   render(<OneofFormExample />);
 

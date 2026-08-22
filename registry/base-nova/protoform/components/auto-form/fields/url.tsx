@@ -12,7 +12,7 @@ function UrlFieldComponent(props: AutoFormFieldProps) {
   return (
     <StringLikeInput
       error={props.error}
-      icon={<Link2Icon className="h-4 w-4" />}
+      icon={<Link2Icon className="size-4" />}
       id={props.id}
       inputProps={props.inputProps}
       placeholder={getFieldUiConfig(props.field).placeholder || "https://"}

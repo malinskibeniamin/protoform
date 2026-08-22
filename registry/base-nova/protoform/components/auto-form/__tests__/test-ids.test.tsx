@@ -1,6 +1,6 @@
 import "@/registry/base-nova/protoform/lib/protobuf-provider/auto-form-example-annotations";
 
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
@@ -70,7 +70,7 @@ const buildValidProtoDefaults = () => ({
 });
 
 describe("AutoForm – test IDs", () => {
-  it("defaults the root test id prefix to autoform", () => {
+  test("defaults the root test id prefix to autoform", () => {
     const schema = createMockProvider([{ key: "username", required: true, type: "string" }]);
 
     render(<AutoForm schema={schema} withSubmit />);
@@ -80,7 +80,7 @@ describe("AutoForm – test IDs", () => {
     expect(screen.getByTestId("autoform-field-username-control")).toBeInTheDocument();
   });
 
-  it("emits stable field, help, and option test ids for zod forms", async () => {
+  test("emits stable field, help, and option test ids for zod forms", async () => {
     const user = userEvent.setup();
     const schema = createMockProvider([
       { key: "username", required: true, type: "string" },
@@ -195,7 +195,7 @@ describe("AutoForm – test IDs", () => {
     expect(screen.getByTestId("deploy-form-field-channels-selected-slack")).toBeInTheDocument();
   });
 
-  it("emits stable ids for collections and modes", async () => {
+  test("emits stable ids for collections and modes", async () => {
     const user = userEvent.setup();
     const schema = createMockProvider([
       { key: "accountName", required: true, type: "string" },
@@ -250,7 +250,7 @@ describe("AutoForm – test IDs", () => {
     expect(screen.getByTestId("wizard-form-json-editor")).toBeInTheDocument();
   });
 
-  it("emits the same path-based ids for protobuf descriptors", () => {
+  test("emits the same path-based ids for protobuf descriptors", () => {
     render(
       <AutoForm
         defaultValues={buildValidProtoDefaults()}

@@ -1,4 +1,4 @@
-import { expect, it, rs } from "@rstest/core";
+import { expect, rs } from "@rstest/core";
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
@@ -8,10 +8,10 @@ import { createFinalFormValidator, createFormikValidator } from "../registry/bas
 import { createProtoFormSchema } from "../registry/base-nova/protoform/lib/protobuf-provider/index.js";
 import { EmailContractSchema } from "./gen/protoform/conformance/v1/conformance_pb.js";
 
-const DISPLAY_NAME_PATTERN = /display name/i;
-const EMAIL_PATTERN = /email/i;
+const DISPLAY_NAME_PATTERN = /display name/iu;
+const EMAIL_PATTERN = /email/iu;
 
-it("rejects malformed email through every supported form adapter", async () => {
+test("rejects malformed email through every supported form adapter", async () => {
   const schema = createProtoFormSchema(EmailContractSchema);
   const invalidValues = { email: "not-an-email" };
   const direct = await schema["~standard"].validate(invalidValues);

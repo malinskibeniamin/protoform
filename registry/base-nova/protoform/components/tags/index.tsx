@@ -119,7 +119,7 @@ export const TagsTrigger = ({ className, children, testId, ...props }: TagsTrigg
     >
       <div className="flex flex-wrap items-center gap-1">
         {children}
-        <span className="px-2 py-px text-muted-foreground">Select a tag...</span>
+        <span className="px-2 py-px text-muted-foreground">Select a tag…</span>
       </div>
     </Button>
   </PopoverTrigger>

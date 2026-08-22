@@ -21,7 +21,7 @@ export function ProtobufNestedCollectionsDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Add and remove rows, edit a nested child, then submit and inspect indexed values."}
+        Add and remove rows, edit a nested child, then submit and inspect indexed values.
       </p>
       <AutoForm
         defaultValues={defaultValues}

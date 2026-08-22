@@ -117,6 +117,8 @@ function TanStackArrayController({
   children: (controller: AutoFormArrayController) => React.ReactNode;
   name: string;
 }) {
+  "use no memo";
+
   const { form } = useTanStackEngineContext();
   const value = useSelector(form.store, (state) => getPathInObject(state.values, name.split(".")));
   const arrayValue = Array.isArray(value) ? value : [];
@@ -254,6 +256,9 @@ export interface TanStackEngineProps {
 }
 
 export function TanStackEngine({ children, defaultValues, formOptions, values, onDirtyChange }: TanStackEngineProps) {
+  // allow: form-validate [AutoForm injects schema-provider validation through its engine]
+  "use no memo";
+
   const submitRef = React.useRef<((values: FormValues) => void | Promise<void>) | undefined>(undefined);
   const nativeSubmissionRef = React.useRef<TanStackSubmitPayload | undefined>(undefined);
   const formDefaultValuesRef = React.useRef(defaultValues);

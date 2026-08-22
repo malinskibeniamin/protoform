@@ -124,7 +124,7 @@ function DiagramControl({ isFullscreen, onToggle, portal }: DiagramControlProps)
   const action = isFullscreen ? "Exit" : "View";
   const accessibleName = `${action} ${portal.label} full screen`;
 
-  async function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
+  async function handleFullscreenToggle(event: React.MouseEvent<HTMLButtonElement>) {
     await onToggle(portal, event.currentTarget);
   }
 
@@ -134,7 +134,7 @@ function DiagramControl({ isFullscreen, onToggle, portal }: DiagramControlProps)
         <Button
           aria-label={accessibleName}
           className="bg-background/90 shadow-sm backdrop-blur"
-          onClick={handleClick}
+          onClick={handleFullscreenToggle}
           size="icon-sm"
           title={isFullscreen ? "Exit full screen" : "View diagram full screen"}
           type="button"
@@ -267,7 +267,7 @@ export function DiagramMaximizer() {
 
       <Dialog onOpenChange={handleDialogOpenChange} open={activeDiagram !== null}>
         <DialogContent
-          className="inset-0 h-[100dvh] max-h-none w-screen max-w-none translate-x-0 translate-y-0 rounded-none border-0 sm:max-w-none"
+          className="translate-0 inset-0 h-[100dvh] max-h-none w-full max-w-none rounded-none border-0 sm:max-w-none"
           data-diagram-dialog=""
           size="full"
         >

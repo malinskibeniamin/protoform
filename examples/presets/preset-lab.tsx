@@ -28,8 +28,8 @@ import {
 
 type PreviewValues = Record<string, unknown>;
 
-const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const isoDatePattern = /^\d{4}-\d{2}-\d{2}$/;
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/u;
+const isoDatePattern = /^\d{4}-\d{2}-\d{2}$/u;
 const environmentValues = new Set(["development", "staging", "production"]);
 const reviewTemplateValues = new Set(["access", "architecture", "compliance", "incident", "launch"]);
 
@@ -595,10 +595,11 @@ export function PresetLab() {
   }
 
   async function copyText(value: string, successMessage: string, failureMessage: string) {
+    if (!navigator.clipboard) {
+      setStatus(failureMessage);
+      return;
+    }
     try {
-      if (!navigator.clipboard) {
-        throw new Error("Clipboard access is unavailable.");
-      }
       await navigator.clipboard.writeText(value);
       setStatus(successMessage);
     } catch {
@@ -721,9 +722,7 @@ export function PresetLab() {
                             <span
                               aria-hidden="true"
                               className="size-3.5 rounded-full border border-foreground/10"
-                              style={{
-                                backgroundColor: variables["--primary"],
-                              }}
+                              style={{ backgroundColor: variables["--primary"] }}
                             />
                             {preset.name}
                             {active ? <CheckIcon aria-hidden="true" className="ml-auto hidden md:block" /> : null}
@@ -793,7 +792,7 @@ export function PresetLab() {
                 </div>
               </div>
 
-              <footer className="grid gap-3 border-t px-3 py-3 sm:px-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+              <footer className="grid gap-3 border-t p-3 sm:px-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
                 <div className="min-w-0">
                   <p aria-live="polite" className="m-0! text-muted-foreground text-xs" role="status">
                     {status ?? activePreset.description}

@@ -5,8 +5,8 @@ import type { DescMethod } from "@bufbuild/protobuf";
 import { MethodOptions_IdempotencyLevel } from "@bufbuild/protobuf/wkt";
 import { Code, ConnectError } from "@connectrpc/connect";
 
-const ALPHA_VERSION_PATTERN = /(?:^|\.)v\d+alpha\d+(?:\.|$)/;
-const BETA_VERSION_PATTERN = /(?:^|\.)v\d+beta\d+(?:\.|$)/;
+const ALPHA_VERSION_PATTERN = /(?:^|\.)v\d+alpha\d+(?:\.|$)/u;
+const BETA_VERSION_PATTERN = /(?:^|\.)v\d+beta\d+(?:\.|$)/u;
 
 export interface ProtoOperationRunner {
   cancel?: (name: string) => Promise<void>;

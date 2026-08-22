@@ -6,9 +6,17 @@ export default defineConfig({
   include: ["registry/**/*.test.{ts,tsx}"],
   output: {
     // Preserve Zod's detailed validation messages instead of the bundled fallback.
-    externals: [/^zod(?:\/|$)/],
+    externals: [/^zod(?:\/|$)/u],
   },
-  plugins: [pluginReact()],
+  plugins: [
+    pluginReact({
+      reactCompiler: {
+        compilationMode: "infer",
+        panicThreshold: "all_errors",
+        target: "19",
+      },
+    }),
+  ],
   setupFiles: ["./rstest.setup.ts"],
   testEnvironment: "happy-dom",
 });

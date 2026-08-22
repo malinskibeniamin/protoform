@@ -1,12 +1,12 @@
-import { afterEach, describe, expect, it } from "@rstest/core";
+import { afterEach, describe, expect } from "@rstest/core";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { buildExampleServer } from "../server/server.js";
 import { TanStackFormExample } from "./tanstack-form.js";
 
-const displayNamePattern = /display name/i;
-const emailPattern = /email/i;
+const displayNamePattern = /display name/iu;
+const emailPattern = /email/iu;
 
 let closeServer: (() => Promise<void>) | undefined;
 
@@ -16,7 +16,7 @@ afterEach(async () => {
 });
 
 describe("TanStack Form example", () => {
-  it("maps the protobuf Standard Schema issues to fields on submit", async () => {
+  test("maps the protobuf Standard Schema issues to fields on submit", async () => {
     const user = userEvent.setup();
 
     render(<TanStackFormExample />);
@@ -27,8 +27,8 @@ describe("TanStack Form example", () => {
     expect(screen.getByLabelText(emailPattern)).toHaveAttribute("aria-invalid", "true");
   });
 
-  it("submits the Standard Schema output as a typed protobuf message", async () => {
-    const server = await buildExampleServer();
+  test("submits the Standard Schema output as a typed protobuf message", async () => {
+    const server = buildExampleServer();
     const address = await server.listen({ host: "127.0.0.1", port: 0 });
     closeServer = () => server.close();
     const user = userEvent.setup();
@@ -42,8 +42,8 @@ describe("TanStack Form example", () => {
     expect(await screen.findByRole("status")).toHaveTextContent("profiles/ada-lovelace");
   });
 
-  it("maps structured server details to the owning TanStack field", async () => {
-    const server = await buildExampleServer();
+  test("maps structured server details to the owning TanStack field", async () => {
+    const server = buildExampleServer();
     const address = await server.listen({ host: "127.0.0.1", port: 0 });
     closeServer = () => server.close();
     const user = userEvent.setup();

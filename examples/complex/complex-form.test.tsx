@@ -1,15 +1,15 @@
-import { afterEach, describe, expect, it } from "@rstest/core";
+import { afterEach, describe, expect } from "@rstest/core";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { buildExampleServer } from "../server/server.js";
 import ComplexFormExample from "./complex-form.js";
 
-const rawApiKeyPattern = /example-api-key/;
-const redactedPattern = /\[redacted\]/;
-const projectIdPattern = /project id/i;
-const regionPattern = /region/i;
-const approvalTicketPattern = /approval ticket/i;
+const rawApiKeyPattern = /example-api-key/u;
+const redactedPattern = /\[redacted\]/u;
+const projectIdPattern = /project id/iu;
+const regionPattern = /region/iu;
+const approvalTicketPattern = /approval ticket/iu;
 
 let closeServer: (() => Promise<void>) | undefined;
 
@@ -19,7 +19,7 @@ afterEach(async () => {
 });
 
 describe("complex form example", () => {
-  it("redacts credentials from the final review summary", async () => {
+  test("redacts credentials from the final review summary", async () => {
     const user = userEvent.setup();
     render(<ComplexFormExample />);
 
@@ -37,8 +37,8 @@ describe("complex form example", () => {
     expect(screen.getByText(redactedPattern)).toBeInTheDocument();
   });
 
-  it("routes a structured submit error back to the step that owns the field", async () => {
-    const server = await buildExampleServer();
+  test("routes a structured submit error back to the step that owns the field", async () => {
+    const server = buildExampleServer();
     const address = await server.listen({ host: "127.0.0.1", port: 0 });
     closeServer = () => server.close();
     const user = userEvent.setup();

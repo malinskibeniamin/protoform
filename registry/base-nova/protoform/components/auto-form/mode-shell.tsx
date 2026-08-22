@@ -8,18 +8,17 @@ import { CopyButton } from "../copy-button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../tabs";
 import { Textarea } from "../textarea";
 import { Heading, Text } from "../typography";
+import { formSpacing } from "./form-spacing";
+import { buildAutoFormTestId } from "./test-ids";
+import type { AutoFormMode, AutoFormSummaryContext } from "./types";
+import { safeStringify } from "./utils/serialization";
 
-function getModeLabel(mode: AutoFormMode): string {
+function getModeLabel(mode: AutoFormMode) {
   if (mode === "json") {
     return "JSON";
   }
   return mode === "simple" ? "Simple" : "Advanced";
 }
-
-import { formSpacing } from "./form-spacing";
-import { buildAutoFormTestId } from "./test-ids";
-import type { AutoFormMode, AutoFormSummaryContext } from "./types";
-import { safeStringify } from "./utils/serialization";
 
 function JsonBlock({ description, jsonText, title }: { title: string; description: string; jsonText: string }) {
   return (

@@ -1,4 +1,4 @@
-import { describe, test } from "@rstest/core";
+import { describe } from "@rstest/core";
 import { expectTypeOf } from "expect-type";
 import type { Path } from "react-hook-form";
 import type { FlattenProtoOneofs } from "./proto-paths.js";
