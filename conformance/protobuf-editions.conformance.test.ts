@@ -5,7 +5,7 @@ import {
   FeatureSet_VisibilityFeature_DefaultSymbolVisibility,
   SymbolVisibility,
 } from "@bufbuild/protobuf/wkt";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "@rstest/core";
 
 import {
   createProtoFormSchema,

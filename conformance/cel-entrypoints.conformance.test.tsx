@@ -1,7 +1,7 @@
 import { create } from "@bufbuild/protobuf";
+import { describe, expect, it, rs } from "@rstest/core";
 import { act, render, renderHook, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
 
 import { AutoForm } from "../registry/base-nova/protoform/components/auto-form/index.js";
 import { useProtoForm } from "../registry/base-nova/protoform/hooks/use-proto-form/index.js";
@@ -61,7 +61,7 @@ describe("descriptor-aware CEL entrypoints", () => {
 
   it("submits descriptor-aware valid values through AutoForm", async () => {
     const user = userEvent.setup();
-    const onSubmit = vi.fn();
+    const onSubmit = rs.fn();
     render(
       <AutoForm
         defaultValues={{
@@ -80,7 +80,7 @@ describe("descriptor-aware CEL entrypoints", () => {
 
   it("renders the declared CEL message at its form path through AutoForm", async () => {
     const user = userEvent.setup();
-    const onSubmit = vi.fn();
+    const onSubmit = rs.fn();
     render(
       <AutoForm
         defaultValues={{
@@ -103,7 +103,7 @@ describe("descriptor-aware CEL entrypoints", () => {
 
   it("does not render CEL runtime failures through AutoForm", async () => {
     const user = userEvent.setup();
-    const onSubmit = vi.fn();
+    const onSubmit = rs.fn();
     render(
       <AutoForm
         defaultValues={{ value: 0 }}

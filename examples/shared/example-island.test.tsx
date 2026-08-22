@@ -1,6 +1,6 @@
+import { expect, it } from "@rstest/core";
 import { render, screen } from "@testing-library/react";
 import type { ComponentType } from "react";
-import { expect, it } from "vitest";
 
 import AipResourceFormExampleIsland from "../../islands/AipResourceFormExample.js";
 import BareBonesFormExampleIsland from "../../islands/BareBonesFormExample.js";

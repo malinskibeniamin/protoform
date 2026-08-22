@@ -1,8 +1,8 @@
 import "@/registry/base-nova/protoform/lib/protobuf-provider/auto-form-example-annotations";
 
+import { describe, expect, it } from "@rstest/core";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
 
 import { AutoFormExampleSchema } from "@/registry/base-nova/protoform/lib/protobuf-provider/gen/auto-form-example_pb";
 import { AutoForm } from "..";

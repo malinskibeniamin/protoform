@@ -1,6 +1,6 @@
+import { describe, expect, it, rs } from "@rstest/core";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
 
 import type { SchemaProvider } from "../../auto-form/core-types";
 import { AutoForm } from "..";
@@ -8,8 +8,8 @@ import { AutoForm } from "..";
 describe("experimental React Hook Form v8 AutoForm conformance", () => {
   it("keeps the v8-native API and submits transformed provider output", async () => {
     const user = userEvent.setup();
-    const onSubmit = vi.fn();
-    const onFormInit = vi.fn();
+    const onSubmit = rs.fn();
+    const onFormInit = rs.fn();
     const schema = createNameSchema((values) => ({
       data: { name: String(values.name).trim().toUpperCase() },
       success: true,
@@ -28,7 +28,7 @@ describe("experimental React Hook Form v8 AutoForm conformance", () => {
 
   it("uses v8 field keys for repeated fields", async () => {
     const user = userEvent.setup();
-    const onSubmit = vi.fn();
+    const onSubmit = rs.fn();
     const schema: SchemaProvider<{ tags: string[] }> = {
       getDefaultValues: () => ({ tags: ["first"] }),
       parseSchema: () => ({

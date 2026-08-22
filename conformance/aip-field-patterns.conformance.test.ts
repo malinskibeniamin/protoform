@@ -1,6 +1,6 @@
-// @vitest-environment node
+// @rstest-environment node
 
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "@rstest/core";
 
 import {
   createProtoFormSchema,

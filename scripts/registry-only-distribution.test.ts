@@ -1,7 +1,7 @@
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { resolve } from "node:path";
 
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "@rstest/core";
 
 const repositoryRoot = resolve(import.meta.dirname, "..");
 const MIT_LICENSE_PATTERN = /^MIT License/;

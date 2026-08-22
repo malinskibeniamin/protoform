@@ -1,6 +1,6 @@
+import { describe, expect, it, rs } from "@rstest/core";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
 
 import { AutoForm as TanStackAutoForm } from "../../auto-form-tanstack";
 import { AutoForm as ReactHookAutoForm } from "..";
@@ -61,9 +61,9 @@ describe.each([
 ] as const)("%s dirty-state lifecycle", (_name, FormComponent) => {
   it("reports clean initially, emits distinct changes, and marks the saved values clean synchronously", async () => {
     const user = userEvent.setup();
-    const onDirtyChange = vi.fn();
+    const onDirtyChange = rs.fn();
     let cleanBeforeNavigation = false;
-    const onSubmit = vi.fn((_values, _nativeForm, context) => {
+    const onSubmit = rs.fn((_values, _nativeForm, context) => {
       context.form.markClean();
       cleanBeforeNavigation = onDirtyChange.mock.calls.at(-1)?.[0] === false;
     });
@@ -88,8 +88,8 @@ describe.each([
 
   it("establishes reset values as the new clean baseline", async () => {
     const user = userEvent.setup();
-    const onDirtyChange = vi.fn();
-    const onSubmit = vi.fn((_values, _nativeForm, context) => {
+    const onDirtyChange = rs.fn();
+    const onSubmit = rs.fn((_values, _nativeForm, context) => {
       context.form.reset({ name: "Saved on the server" });
     });
 
@@ -109,8 +109,8 @@ describe.each([
 
   it("tracks nested, array, map, and oneof changes", async () => {
     const user = userEvent.setup();
-    const onDirtyChange = vi.fn();
-    const onSubmit = vi.fn((_values, _nativeForm, context) => context.form.markClean());
+    const onDirtyChange = rs.fn();
+    const onSubmit = rs.fn((_values, _nativeForm, context) => context.form.markClean());
     render(<FormComponent onDirtyChange={onDirtyChange} onSubmit={onSubmit} schema={structuredSchema} withSubmit />);
 
     async function expectEditThenClean(label: string, edit: () => void | Promise<void>) {

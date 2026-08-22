@@ -1,6 +1,6 @@
+import { expect, it } from "@rstest/core";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { expect, it } from "vitest";
 
 import OneofFormExample from "./oneof-form.js";
 

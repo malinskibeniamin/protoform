@@ -1,5 +1,5 @@
 import { existsSync, readFileSync } from "node:fs";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "@rstest/core";
 
 const ROOT = new URL("../", import.meta.url);
 const SIMULATED_IDE_PATTERN = /stackblitz|fake terminal/i;

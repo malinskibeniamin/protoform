@@ -1,6 +1,6 @@
+import { afterEach, describe, expect, it } from "@rstest/core";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { afterEach, describe, expect, it } from "vitest";
 
 import { buildExampleServer } from "../server/server.js";
 import ComplexFormExample from "./complex-form.js";

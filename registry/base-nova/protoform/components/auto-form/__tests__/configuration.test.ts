@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "@rstest/core";
 
 import { type AutoFormConfigurationDiagnostic, inspectAutoFormConfiguration } from "../configuration";
 import { defaultRegistry } from "../fields";

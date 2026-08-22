@@ -1,6 +1,6 @@
+import { expect, it } from "@rstest/core";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { expect, it } from "vitest";
 
 import { BareBonesFormExample } from "./bare-bones-form.js";
 

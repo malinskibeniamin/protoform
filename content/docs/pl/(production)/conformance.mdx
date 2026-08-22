@@ -13,7 +13,7 @@ bun run test:conformance
 Projekt wykorzystuje praktyczny podział znany z
 [zestawu testów zgodności Protocol Buffers](https://github.com/protocolbuffers/protobuf/tree/main/conformance):
 runner zarządza przypadkami i oczekiwanymi wynikami, a implementacja jest testowana przez
-niewielki publiczny interfejs. Protoform obecnie wykonuje ten model w ramach procesu za pomocą Vitest, ponieważ
+niewielki publiczny interfejs. Protoform obecnie wykonuje ten model w ramach procesu za pomocą Rstest, ponieważ
 obsługiwana implementacja jest napisana w TypeScript. Protokół komunikacji z podprocesem zwiększałby koszty bez kolejnego
 adaptera językowego do przetestowania.
 
@@ -23,7 +23,7 @@ rozróżnienie między możliwościami zweryfikowanymi, odroczonymi, nieobsługi
 
 ```mermaid
 flowchart TD
-  Cases["Literal conformance cases"] --> Runner["Vitest runner"]
+  Cases["Literal conformance cases"] --> Runner["Rstest runner"]
   Runner --> Public["Protoform public interfaces"]
   Public --> Parse["Check descriptor field model"]
   Parse --> Validate["Check Standard Schema validation"]
@@ -136,7 +136,7 @@ Uruchom cały zestaw:
 bun run test:conformance
 ```
 
-Podczas tworzenia pojedynczego kontraktu użyj filtra nazw Vitest:
+Podczas tworzenia pojedynczego kontraktu użyj filtra nazw Rstest:
 
 ```bash
 bun run test:conformance -- -t "nested map value"

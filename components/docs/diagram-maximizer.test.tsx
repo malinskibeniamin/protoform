@@ -1,6 +1,6 @@
+import { afterEach, describe, expect, it, rs } from "@rstest/core";
 import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { DiagramMaximizer } from "./diagram-maximizer";
 
@@ -101,7 +101,7 @@ describe("DiagramMaximizer", () => {
   it("uses the browser Fullscreen API when available and exits from the same control", async () => {
     const user = userEvent.setup();
     const diagram = appendDiagram();
-    const requestFullscreen = vi.fn(() => {
+    const requestFullscreen = rs.fn(() => {
       Object.defineProperty(document, "fullscreenElement", {
         configurable: true,
         value: diagram,
@@ -109,7 +109,7 @@ describe("DiagramMaximizer", () => {
       document.dispatchEvent(new Event("fullscreenchange"));
       return Promise.resolve();
     });
-    const exitFullscreen = vi.fn(() => {
+    const exitFullscreen = rs.fn(() => {
       Object.defineProperty(document, "fullscreenElement", {
         configurable: true,
         value: null,

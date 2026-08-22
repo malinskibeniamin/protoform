@@ -1,5 +1,5 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "@rstest/core";
 
 import { demoCatalog } from "../examples/catalog/demo-catalog.js";
 import { demoHubCategoryFor, demoRedirects, getDemoHub } from "../examples/catalog/demo-docs.js";
@@ -12,6 +12,12 @@ function read(path: string): string {
 }
 
 describe("live demo catalog", () => {
+  it("excludes test modules from the production demo glob", () => {
+    const source = read("examples/catalog/demo-hub.tsx");
+
+    expect(source).toContain('"!../../registry/base-nova/protoform/demo/catalog/*.test.tsx"');
+  });
+
   it("maps every applicable readiness requirement to a live demo", () => {
     const applicableIds = readinessRequirements
       .filter((requirement) => requirement.status === "verified")

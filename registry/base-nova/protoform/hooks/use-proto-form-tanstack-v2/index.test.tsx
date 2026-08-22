@@ -1,6 +1,6 @@
+import { describe, expect, it, rs } from "@rstest/core";
 import { renderHook } from "@testing-library/react";
 import { act } from "react";
-import { describe, expect, it, vi } from "vitest";
 
 import "../../lib/protobuf-provider/auto-form-example-annotations";
 import { AutoFormExampleSchema } from "../../lib/protobuf-provider/gen/auto-form-example_pb";
@@ -34,7 +34,7 @@ describe("experimental TanStack Form v2 useProtoForm", () => {
   });
 
   it("runs protobuf validation through the v2 validator pipeline", async () => {
-    const onSubmit = vi.fn();
+    const onSubmit = rs.fn();
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: {
@@ -56,8 +56,8 @@ describe("experimental TanStack Form v2 useProtoForm", () => {
   });
 
   it("appends the protobuf validator without replacing native v2 validators", async () => {
-    const onSubmit = vi.fn();
-    const nativeValidator = vi.fn(() => ({
+    const onSubmit = rs.fn();
+    const nativeValidator = rs.fn(() => ({
       fields: { username: "Native validation failed." },
     }));
     const { result } = renderHook(() =>
@@ -80,7 +80,7 @@ describe("experimental TanStack Form v2 useProtoForm", () => {
   });
 
   it("exposes the validated protobuf message in native schema outputs", async () => {
-    const onSubmit = vi.fn(({ schemaOutputs }) => {
+    const onSubmit = rs.fn(({ schemaOutputs }) => {
       expect(schemaOutputs[0].$typeName).toBe("protoform.v1.AutoFormExample");
       expect(schemaOutputs[0].username).toBe("protoform_admin");
     });

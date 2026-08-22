@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "@rstest/core";
 
 import "@/registry/base-nova/protoform/lib/protobuf-provider/auto-form-example-annotations";
 

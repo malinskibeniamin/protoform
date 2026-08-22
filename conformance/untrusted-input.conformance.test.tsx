@@ -1,5 +1,5 @@
+import { describe, expect, it } from "@rstest/core";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
 import type { SchemaProvider } from "../registry/base-nova/protoform/components/auto-form/core-types.js";
 import { AutoForm } from "../registry/base-nova/protoform/components/auto-form/index.js";
 import { protoPathToFormPath } from "../registry/base-nova/protoform/hooks/use-proto-form/index.js";

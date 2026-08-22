@@ -51,5 +51,4 @@ next-env.d.ts
 .blume/
 .blume-verify/
 
-/.vitest-attachments/
 packages/*/dist/

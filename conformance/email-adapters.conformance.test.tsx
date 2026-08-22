@@ -1,6 +1,6 @@
+import { expect, it, rs } from "@rstest/core";
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { expect, it, vi } from "vitest";
 
 import { TanStackFormExample } from "../examples/tanstack/tanstack-form.js";
 import { AutoForm } from "../registry/base-nova/protoform/components/auto-form/index.js";
@@ -19,7 +19,7 @@ it("rejects malformed email through every supported form adapter", async () => {
   expect(direct.issues).toEqual([expect.objectContaining({ path: ["email"] })]);
   expect(await createFormikValidator(schema)(invalidValues)).toHaveProperty("email");
   expect(await createFinalFormValidator(schema)(invalidValues)).toHaveProperty("email");
-  const onSubmit = vi.fn();
+  const onSubmit = rs.fn();
   const reactHookForm = render(
     <AutoForm
       defaultValues={{ email: "not-an-email" }}

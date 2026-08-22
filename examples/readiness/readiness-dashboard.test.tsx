@@ -1,6 +1,6 @@
+import { describe, expect, it } from "@rstest/core";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
 
 import { getReadinessSummary, readinessRequirements } from "../../readiness/profile.js";
 import { ReadinessDashboard } from "./readiness-dashboard.js";

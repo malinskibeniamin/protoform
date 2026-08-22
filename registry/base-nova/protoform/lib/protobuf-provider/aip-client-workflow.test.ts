@@ -7,7 +7,7 @@ import { StatusSchema } from "@buf/googleapis_googleapis.bufbuild_es/google/rpc/
 import { create, type DescMethod } from "@bufbuild/protobuf";
 import { AnySchema, MethodOptions_IdempotencyLevel } from "@bufbuild/protobuf/wkt";
 import { Code, ConnectError } from "@connectrpc/connect";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, rs } from "@rstest/core";
 
 import { FormExamplesService } from "../../../../../examples/gen/protoform/examples/v1/forms_pb.js";
 import {
@@ -34,7 +34,7 @@ function method(idempotency: MethodOptions_IdempotencyLevel): DescMethod {
 describe("runProtoOperation", () => {
   it("polls named AIP-151 operations and exposes progress until success", async () => {
     const updates: boolean[] = [];
-    const poll = vi.fn(async () =>
+    const poll = rs.fn(async () =>
       operation("operations/123", true, {
         case: "response",
         value: create(AnySchema),
@@ -55,7 +55,7 @@ describe("runProtoOperation", () => {
 
   it("cancels the remote operation when the caller aborts", async () => {
     const controller = new AbortController();
-    const cancel = vi.fn(async () => undefined);
+    const cancel = rs.fn(async () => undefined);
 
     await expect(
       runProtoOperation({

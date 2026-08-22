@@ -5,7 +5,7 @@
     "ultracite/biome/react",
     "ultracite/biome/astro",
     "ultracite/biome/type-aware",
-    "ultracite/biome/vitest",
+    "ultracite/biome/jest",
     "ultracite/biome/tanstack"
   ],
   "vcs": {

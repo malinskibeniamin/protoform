@@ -14,7 +14,7 @@ bun run test:conformance
 The design follows the useful separation in the
 [Protocol Buffers conformance suite](https://github.com/protocolbuffers/protobuf/tree/main/conformance):
 the runner owns the cases and expected outcomes, while the implementation is exercised through a
-small public interface. Protoform currently runs that model in-process with Vitest because the
+small public interface. Protoform currently runs that model in-process with Rstest because the
 supported implementation is TypeScript. A subprocess wire protocol would add cost without another
 language adapter to test.
 
@@ -24,7 +24,7 @@ verified, deferred, unsupported, and externally owned capabilities distinct.
 
 ```mermaid
 flowchart TD
-  Cases["Literal conformance cases"] --> Runner["Vitest runner"]
+  Cases["Literal conformance cases"] --> Runner["Rstest runner"]
   Runner --> Public["Protoform public interfaces"]
   Public --> Parse["Check descriptor field model"]
   Parse --> Validate["Check Standard Schema validation"]
@@ -137,7 +137,7 @@ Run the complete suite:
 bun run test:conformance
 ```
 
-Use Vitest's name filter while developing one contract:
+Use Rstest's name filter while developing one contract:
 
 ```bash
 bun run test:conformance -- -t "nested map value"

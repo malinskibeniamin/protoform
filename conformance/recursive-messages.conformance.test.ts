@@ -1,6 +1,6 @@
-// @vitest-environment node
+// @rstest-environment node
 
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "@rstest/core";
 
 import { parseProtoSchema } from "../registry/base-nova/protoform/lib/protobuf-provider/index.js";
 import { RecursiveLeftSchema, RecursiveNodeSchema } from "./gen/protoform/conformance/v1/conformance_pb.js";

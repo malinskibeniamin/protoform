@@ -22,11 +22,20 @@ interface DemoModule {
   default: ComponentType;
 }
 
-const demoModules = import.meta.glob<DemoModule>("../../registry/base-nova/protoform/demo/catalog/*.tsx");
-const demoSourceModules = import.meta.glob<string>("../../registry/base-nova/protoform/demo/catalog/*.tsx", {
-  import: "default",
-  query: "?raw",
-});
+const demoModules = import.meta.glob<DemoModule>([
+  "../../registry/base-nova/protoform/demo/catalog/*.tsx",
+  "!../../registry/base-nova/protoform/demo/catalog/*.test.tsx",
+]);
+const demoSourceModules = import.meta.glob<string>(
+  [
+    "../../registry/base-nova/protoform/demo/catalog/*.tsx",
+    "!../../registry/base-nova/protoform/demo/catalog/*.test.tsx",
+  ],
+  {
+    import: "default",
+    query: "?raw",
+  }
+);
 const demoComponents = new Map<string, LazyExoticComponent<ComponentType>>();
 const demoSourceComponents = new Map<string, LazyExoticComponent<ComponentType>>();
 

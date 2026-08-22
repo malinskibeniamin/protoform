@@ -289,7 +289,7 @@ export function devWarnOnce(key: string, _message: string): void {
  * scoped so it persists across tests in the same process, which means a
  * warning that fires in test A won't re-fire in test B even if the second
  * test genuinely expects it. Call this from `beforeEach` in any test suite
- * that asserts on warning output. Wired into the registry's `vitest.setup.ts`.
+ * that asserts on warning output. Wired into the registry's `rstest.setup.ts`.
  */
 export function resetDevWarnings(): void {
   warnedKeys.clear();

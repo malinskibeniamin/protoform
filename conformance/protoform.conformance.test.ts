@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "@rstest/core";
 import { AutoFormExampleSchema } from "../registry/base-nova/protoform/lib/protobuf-provider/gen/auto-form-example_pb.js";
 import {
   createProtoFormSchema,

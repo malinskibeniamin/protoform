@@ -1,6 +1,6 @@
 ---
 title: Testing forms
-description: "Test one representative Protoform flow through a real Connect server with Vitest. See the practical Protoform implementation guide."
+description: "Test one representative Protoform flow through a real Connect server with Rstest. See the practical Protoform implementation guide."
 ---
 
 Use a real-stack integration test for the form behavior your application owns. Render the form,
@@ -8,32 +8,40 @@ interact with it as a person would, and submit through the same Connect transpor
 Start the real application router on an ephemeral port instead of replacing RPCs with test doubles.
 
 This boundary covers the generated form, React Hook Form, Connect Query, HTTP serialization, the
-Connect handler, Protovalidate, and structured field-error mapping. Vitest runs the component in
+Connect handler, Protovalidate, and structured field-error mapping. Rstest runs the component in
 `happy-dom`, so call this an integration test rather than browser end-to-end coverage.
 
 ## Test setup
 
-Install Vitest and Testing Library in the application:
+Install Rstest and Testing Library in the application:
 
 ```bash
-bun add --dev vitest happy-dom @testing-library/jest-dom @testing-library/react @testing-library/user-event
+bun add --dev @rsbuild/plugin-react @rstest/core happy-dom undici @testing-library/jest-dom @testing-library/react @testing-library/user-event
 ```
 
 Configure the integration suite with `happy-dom` and load the Testing Library matchers:
 
-```ts title="vitest.integration.config.ts"
-import { defineConfig } from "vitest/config";
+```ts title="rstest.integration.config.ts"
+import { pluginReact } from "@rsbuild/plugin-react";
+import { defineConfig } from "@rstest/core";
 
 export default defineConfig({
-  test: {
-    environment: "happy-dom",
-    setupFiles: ["./vitest.setup.ts"],
-  },
+  plugins: [pluginReact()],
+  setupFiles: ["./rstest.setup.ts"],
+  testEnvironment: "happy-dom",
 });
 ```
 
-```ts title="vitest.setup.ts"
-import "@testing-library/jest-dom/vitest";
+```ts title="rstest.setup.ts"
+import * as jestDomMatchers from "@testing-library/jest-dom/matchers";
+import { expect } from "@rstest/core";
+import { fetch as nodeFetch } from "undici";
+
+expect.extend(jestDomMatchers);
+Object.defineProperty(globalThis, "fetch", {
+  configurable: true,
+  value: nodeFetch,
+});
 ```
 
 The application should export a server builder that registers its real Connect routes without
@@ -48,7 +56,7 @@ returns to a field:
 ```tsx title="profile-form.test.tsx"
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "@rstest/core";
 
 import { buildExampleServer } from "../server/server.js";
 import ProfileForm from "./profile-form.js";

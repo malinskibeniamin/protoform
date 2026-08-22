@@ -1,6 +1,6 @@
+import { describe, expect, it, rs } from "@rstest/core";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
 import { AutoForm } from "..";
 import type { SchemaProvider } from "../core-types";
 import { createMockProvider } from "./test-utils";
@@ -50,7 +50,7 @@ describe("AutoForm – onSubmit error handling", () => {
   it("aborts the previous submit context before a newer attempt", async () => {
     const user = userEvent.setup();
     const signals: AbortSignal[] = [];
-    const onSubmit = vi.fn(async (_values, _form, context) => {
+    const onSubmit = rs.fn(async (_values, _form, context) => {
       signals.push(context.signal);
       await Promise.resolve();
     });
@@ -70,7 +70,7 @@ describe("AutoForm – onSubmit error handling", () => {
     const user = userEvent.setup();
     let signal: AbortSignal | undefined;
     let finish: (() => void) | undefined;
-    const onSubmit = vi.fn(
+    const onSubmit = rs.fn(
       (_values, _form, context) =>
         new Promise<void>((resolve) => {
           ({ signal } = context);

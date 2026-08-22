@@ -1,6 +1,6 @@
 import { spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "@rstest/core";
 
 function runBufLint(input = ".") {
   return spawnSync("bunx", ["buf", "lint", input, "--error-format=json"], {

@@ -1,6 +1,6 @@
+import { describe, expect, it, rs } from "@rstest/core";
 import { renderHook } from "@testing-library/react";
 import { act } from "react";
-import { describe, expect, it, vi } from "vitest";
 
 import "../../lib/protobuf-provider/auto-form-example-annotations";
 import { AutoFormExampleSchema } from "../../lib/protobuf-provider/gen/auto-form-example_pb";
@@ -48,7 +48,7 @@ describe("TanStack useProtoForm", () => {
   });
 
   it("validates the generated protobuf contract before submission", async () => {
-    const onSubmit = vi.fn();
+    const onSubmit = rs.fn();
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: {
@@ -68,8 +68,8 @@ describe("TanStack useProtoForm", () => {
   });
 
   it("composes the caller onSubmit validator instead of replacing it", async () => {
-    const onSubmit = vi.fn();
-    const nativeValidator = vi.fn(() => "Native validation failed.");
+    const onSubmit = rs.fn();
+    const nativeValidator = rs.fn(() => "Native validation failed.");
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: {

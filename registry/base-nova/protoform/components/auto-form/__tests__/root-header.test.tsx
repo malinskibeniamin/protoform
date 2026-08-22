@@ -1,7 +1,7 @@
 import { create, setExtension } from "@bufbuild/protobuf";
 import { MessageOptionsSchema } from "@bufbuild/protobuf/wkt";
+import { afterEach, beforeEach, describe, expect, it, rs } from "@rstest/core";
 import { render, screen } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { AutoFormExampleSchema } from "../../../lib/protobuf-provider/gen/auto-form-example_pb";
 import { MessageUiOptionsSchema, message_ui } from "../../../lib/protobuf-provider/gen/protoform/v1/auto_form_ui_pb";
@@ -36,7 +36,7 @@ describe("AutoForm root header", () => {
   });
 
   it("uses a host renderer with the resolved root metadata", () => {
-    const renderRootHeader = vi.fn(({ title, description }) => (
+    const renderRootHeader = rs.fn(({ title, description }) => (
       <aside aria-label="Form introduction">
         {title ?? "Untitled"}: {description ?? "No description"}
       </aside>
@@ -54,7 +54,7 @@ describe("AutoForm root header", () => {
   });
 
   it("can hide the root header without invoking a host renderer", () => {
-    const renderRootHeader = vi.fn(() => <div>Hidden introduction</div>);
+    const renderRootHeader = rs.fn(() => <div>Hidden introduction</div>);
 
     render(<AutoForm renderRootHeader={renderRootHeader} rootHeader="hidden" schema={AutoFormExampleSchema} />);
 

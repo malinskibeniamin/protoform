@@ -1,5 +1,5 @@
+import { describe, expect, it, rs } from "@rstest/core";
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
 
 import { JSONField } from ".";
 
@@ -8,7 +8,7 @@ describe("JSONField accessibility", () => {
     render(
       <JSONField
         maxDepth={1}
-        onChange={vi.fn()}
+        onChange={rs.fn()}
         schema={{
           properties: {
             audit: {
@@ -26,7 +26,7 @@ describe("JSONField accessibility", () => {
   });
 
   it("opens an unconstrained array in JSON mode", async () => {
-    render(<JSONField onChange={vi.fn()} schema={{ type: "array" }} value={["overview", 3, true]} />);
+    render(<JSONField onChange={rs.fn()} schema={{ type: "array" }} value={["overview", 3, true]} />);
 
     expect(await screen.findByRole("textbox", { name: "JSON value" })).toHaveValue('[\n  "overview",\n  3,\n  true\n]');
   });

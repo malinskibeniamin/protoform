@@ -1,8 +1,8 @@
-// @vitest-environment node
+// @rstest-environment node
 
+import { describe, expect, it } from "@rstest/core";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it } from "vitest";
 import { fieldsForStep } from "../registry/base-nova/protoform/components/auto-form/stepper.js";
 import type { ParsedField } from "../registry/base-nova/protoform/lib/form-types/index.js";
 import {

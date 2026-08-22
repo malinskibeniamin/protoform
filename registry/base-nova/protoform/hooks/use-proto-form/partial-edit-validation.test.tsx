@@ -1,8 +1,8 @@
 import { create } from "@bufbuild/protobuf";
+import { describe, expect, it } from "@rstest/core";
 import { render, renderHook, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { act } from "react";
-import { describe, expect, it } from "vitest";
 
 import "../../lib/protobuf-provider/auto-form-example-annotations.js";
 

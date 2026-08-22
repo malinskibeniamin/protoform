@@ -1,5 +1,5 @@
+import { describe, expect, it } from "@rstest/core";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
-import { describe, expect, it } from "vitest";
 import { object as zodObject, string as zodString } from "zod";
 import { minLength, object as zodMiniObject, string as zodMiniString } from "zod/mini";
 

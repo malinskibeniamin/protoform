@@ -8,13 +8,13 @@ Protoform 提供獨立的一致性測試套件，涵蓋表單介接器所依賴�
 bun run test:conformance
 ```
 
-此設計採用 [Protocol Buffers conformance suite](https://github.com/protocolbuffers/protobuf/tree/main/conformance) 中實用的職責分離方式：runner 管理案例與預期結果，實作則透過小型公開介面接受測試。由於目前支援的實作是 TypeScript，Protoform 使用 Vitest 在行程內執行此模型。若沒有其他語言介接器需要測試，加入子行程有線協定只會增加成本。
+此設計採用 [Protocol Buffers conformance suite](https://github.com/protocolbuffers/protobuf/tree/main/conformance) 中實用的職責分離方式：runner 管理案例與預期結果，實作則透過小型公開介面接受測試。由於目前支援的實作是 TypeScript，Protoform 使用 Rstest 在行程內執行此模型。若沒有其他語言介接器需要測試，加入子行程有線協定只會增加成本。
 
 [生產就緒度儀表板](/docs/production-readiness) 將這些通過的案例納入更大且有版本控管的分母。一致性用於判定已實作的合約是否通過；就緒度則明確區分已驗證、延後、不支援及由外部負責的功能。
 
 ```mermaid
 flowchart TD
-  Cases["Literal conformance cases"] --> Runner["Vitest runner"]
+  Cases["Literal conformance cases"] --> Runner["Rstest runner"]
   Runner --> Public["Protoform public interfaces"]
   Public --> Parse["Check descriptor field model"]
   Parse --> Validate["Check Standard Schema validation"]
@@ -96,7 +96,7 @@ registry 整合測試套件會分別檢查原生 TanStack hook 與產生的 Auto
 bun run test:conformance
 ```
 
-開發單一合約時，使用 Vitest 的名稱篩選器：
+開發單一合約時，使用 Rstest 的名稱篩選器：
 
 ```bash
 bun run test:conformance -- -t "nested map value"

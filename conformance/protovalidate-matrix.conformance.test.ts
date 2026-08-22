@@ -1,9 +1,9 @@
-// @vitest-environment node
+// @rstest-environment node
 
 import { fromJson } from "@bufbuild/protobuf";
 import { base64Encode } from "@bufbuild/protobuf/wire";
 import { anyPack, StructSchema, ValueSchema } from "@bufbuild/protobuf/wkt";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "@rstest/core";
 
 import { createProtoFormSchema } from "../registry/base-nova/protoform/lib/protobuf-provider/index.js";
 import { AnyMatrixSchema, ValidationMatrixSchema } from "./gen/protoform/conformance/v1/conformance_pb.js";
