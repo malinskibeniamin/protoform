@@ -140,9 +140,20 @@ bunx shadcn@latest add @protoform/auto-form-react-hook-form-v8
 import { AutoForm } from "@/components/auto-form-react-hook-form-v8";
 ```
 
-這些項目會在 `react-hook-form-v8` 套件別名下安裝 v8、保留原生 v8 API，並
-使用 v8 的 `key` 欄位陣列識別碼。在遷移完成前，請將穩定版與 beta 版的 import 分開。採用 beta 途徑前，請先檢閱上游的
-[v8 beta 版本資訊](https://github.com/react-hook-form/react-hook-form/releases/tag/v8.0.0-beta.0)。
+這些項目會在 `react-hook-form-v8` 套件別名下安裝 v8，並保留原生 v8 API。
+在遷移完成前，請將穩定版與 beta 版的 import 分開。採用 beta 途徑前，請先檢閱上游的
+[v7 到 v8 遷移指南](https://react-hook-form.com/migrate-v7-to-v8)與
+[beta.3 版本資訊](https://github.com/react-hook-form/react-hook-form/releases/tag/v8.0.0-beta.3)。
+
+請注意以下 beta 限制：
+
+- `useFieldArray` 公開 `field.key`，並移除 `keyName`。Protoform v8 介接器已使用 `key`。
+- v8 的型別支援扁平基本型別陣列，但直接使用 `useFieldArray` 轉譯時仍有上游執行階段限制。
+  Protoform 測試涵蓋重複基本型別欄位的新增、移除與送出；請另外驗證自訂 field-array 轉譯。
+- `Controller` 與 `useController` 現在會保留真實 DOM 元素。請將 `field.ref` 轉送至 input，
+  讓 focus 與原生驗證持續運作。
+- 請使用 `subscribe`，不要使用 callback `watch`。替換整個 field array 時請使用 `replace`；
+  透過 `setValue` 更新陣列的預計移除項目尚未包含在 beta.3。
 
 已標準化採用其他表單儲存庫？請參閱
 [TanStack Form](/docs/tanstack-form) 中的原生 hook 與產生式 AutoForm 使用方式，或

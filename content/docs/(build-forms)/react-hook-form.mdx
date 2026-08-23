@@ -145,11 +145,23 @@ bunx shadcn@latest add @protoform/auto-form-react-hook-form-v8
 import { AutoForm } from "@/components/auto-form-react-hook-form-v8";
 ```
 
-These items install v8 under the `react-hook-form-v8` package alias, keep the native v8 API, and
-use v8's `key` field-array identifier. Keep the stable and beta imports separate until the
-migration is complete. Review the upstream
-[v8 beta release notes](https://github.com/react-hook-form/react-hook-form/releases/tag/v8.0.0-beta.0)
+These items install v8 under the `react-hook-form-v8` package alias and keep the native v8 API.
+Keep the stable and beta imports separate until the migration is complete. Check the upstream
+[v7 to v8 migration guide](https://react-hook-form.com/migrate-v7-to-v8) and
+[beta.3 release notes](https://github.com/react-hook-form/react-hook-form/releases/tag/v8.0.0-beta.3)
 before adopting the beta path.
+
+Relevant beta caveats:
+
+- `useFieldArray` exposes `field.key` and removes `keyName`. The Protoform v8 adapter already
+  uses `key`.
+- Flat primitive arrays type-check in v8, but direct `useFieldArray` rendering still has an
+  upstream runtime limitation. Protoform tests append, remove, and submit behavior for repeated
+  primitive fields; verify custom field-array rendering separately.
+- `Controller` and `useController` now retain the real DOM element. Forward `field.ref` to the
+  input so focus and native validation continue to work.
+- Prefer `subscribe` over callback `watch`. Prefer `replace` for whole field arrays; the planned
+  removal of array updates through `setValue` has not shipped in beta.3.
 
 Already standardized on another form store? See the native hook and generated AutoForm path in
 [TanStack Form](/docs/tanstack-form), or the
