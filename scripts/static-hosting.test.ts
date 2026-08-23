@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "@rstest/core";
 
 const repositoryDirectory = new URL("../", import.meta.url);
+const bunVersion = "1.4.0";
 
 describe("static docs and registry hosting", () => {
   it("builds one Cloudflare Pages artifact containing docs and registry JSON", () => {
@@ -29,10 +30,35 @@ describe("static docs and registry hosting", () => {
     expect(deploymentGuide).toContain("https://protoform.pages.dev/docs");
     expect(deploymentGuide).toContain("https://protoform.pages.dev/r/{name}.json");
     expect(deploymentGuide).toContain("BUN_VERSION");
-    expect(deploymentGuide).toContain("1.3.14");
+    expect(deploymentGuide).toContain(bunVersion);
     expect(deploymentGuide).toContain("Build command");
     expect(deploymentGuide).toContain("`bun run build`");
     expect(deploymentGuide).toContain("Build output directory");
     expect(deploymentGuide).toContain("`dist`");
+  });
+
+  it("pins the Bun toolchain consistently", () => {
+    const manifest = JSON.parse(readFileSync(new URL("package.json", repositoryDirectory), "utf8")) as {
+      devDependencies?: Record<string, string>;
+      packageManager?: string;
+    };
+    const contributingGuide = readFileSync(new URL("CONTRIBUTING.md", repositoryDirectory), "utf8");
+    const pinnedFiles = [
+      ".github/workflows/ci.yml",
+      ".github/workflows/quality.yml",
+      ".github/workflows/release.yml",
+      "content/docs/(production)/deployment.mdx",
+      "content/docs/pl/(production)/deployment.mdx",
+      "content/docs/zh/(production)/deployment.mdx",
+      "content/docs/zh-TW/(production)/deployment.mdx",
+    ];
+
+    expect(manifest.packageManager).toBe(`bun@${bunVersion}`);
+    expect(manifest.devDependencies?.["@types/bun"]).toBe(`^${bunVersion}`);
+    expect(contributingGuide).toContain(`Bun ${bunVersion}`);
+
+    for (const path of pinnedFiles) {
+      expect(readFileSync(new URL(path, repositoryDirectory), "utf8")).toContain(bunVersion);
+    }
   });
 });
