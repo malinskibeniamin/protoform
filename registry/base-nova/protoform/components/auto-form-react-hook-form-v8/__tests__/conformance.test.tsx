@@ -26,7 +26,7 @@ describe("experimental React Hook Form v8 AutoForm conformance", () => {
     expect(onFormInit.mock.calls[0]?.[0].control).toBeDefined();
   });
 
-  it("uses v8 field keys for repeated fields", async () => {
+  it("uses v8 field keys to append and remove primitive repeated fields", async () => {
     const user = userEvent.setup();
     const onSubmit = rs.fn();
     const schema: SchemaProvider<{ tags: string[] }> = {
@@ -49,13 +49,19 @@ describe("experimental React Hook Form v8 AutoForm conformance", () => {
     await user.click(screen.getByRole("button", { name: /add tags/i }));
     const inputs = screen.getAllByRole("textbox");
     await user.type(inputs[1] as HTMLInputElement, "second");
+
+    const [firstRemoveButton] = screen.getAllByRole("button", { name: /remove item/i });
+    if (!firstRemoveButton) {
+      throw new Error("Expected the first repeated-field remove button.");
+    }
+    await user.click(firstRemoveButton);
     await user.click(screen.getByRole("button", { name: "Submit" }));
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
-    expect(onSubmit.mock.calls[0]?.[0]).toEqual({ tags: ["first", "second"] });
+    expect(onSubmit.mock.calls[0]?.[0]).toEqual({ tags: ["second"] });
   });
 
-  it("renders every provider validation failure through v8 field errors", async () => {
+  it("renders every provider validation failure and focuses the first v8 field", async () => {
     const user = userEvent.setup();
     const schema = createNameSchema(() => ({
       errors: [
@@ -69,9 +75,11 @@ describe("experimental React Hook Form v8 AutoForm conformance", () => {
     await user.click(screen.getByRole("button", { name: "Submit" }));
 
     const fieldError = await screen.findByRole("alert");
+    const input = screen.getByRole("textbox", { name: /name/i });
     expect(fieldError).toHaveTextContent("Name is required.");
     expect(fieldError).toHaveTextContent("Name must be unique.");
-    expect(screen.getByRole("textbox", { name: /name/i })).toHaveAttribute("aria-invalid", "true");
+    expect(input).toHaveAttribute("aria-invalid", "true");
+    expect(input).toHaveFocus();
   });
 
   it("renders a provider root error once", async () => {
