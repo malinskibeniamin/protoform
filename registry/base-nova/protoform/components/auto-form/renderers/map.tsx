@@ -2,6 +2,7 @@
 
 import { TrashIcon } from "lucide-react";
 import type React from "react";
+import { formatProtoformMessage } from "../../../lib/core/messages";
 import { Button } from "../../button";
 import { useAutoFormRenderContext, useAutoFormRuntimeContext } from "../context";
 import type { ParsedField } from "../core-types";
@@ -26,7 +27,7 @@ export function MapFieldRenderer({
 }) {
   const { uiComponents } = useAutoFormRenderContext();
   const { ArrayController, errors } = useAutoFormEngine();
-  const { testIdPrefix } = useAutoFormRuntimeContext();
+  const { formatMessage, testIdPrefix } = useAutoFormRuntimeContext();
   const fullPath = path.join(".");
   const keyField = field.schema?.[0];
   const valueField = field.schema?.[1];
@@ -43,6 +44,7 @@ export function MapFieldRenderer({
   const compactKeyField = keyField ? cloneFieldForCompactRow(keyField) : undefined;
   const compactValueField = valueField ? cloneFieldForCompactRow(valueField) : undefined;
   const valueIsComplex = isComplexCollectionField(valueField);
+  const removeItemLabel = formatProtoformMessage(formatMessage, "auto_form.remove_item", {}, "Remove item");
 
   if (!isVisible) {
     return null;
@@ -90,7 +92,7 @@ export function MapFieldRenderer({
                       path={[...path, String(index), "value"]}
                     />
                     <Button
-                      aria-label="Remove item"
+                      aria-label={removeItemLabel}
                       disabled={isDisabled}
                       onClick={removeEntry}
                       size="icon-sm"
@@ -123,7 +125,7 @@ export function MapFieldRenderer({
                       />
                     ) : null}
                     <Button
-                      aria-label="Remove item"
+                      aria-label={removeItemLabel}
                       disabled={isDisabled}
                       onClick={removeEntry}
                       size="icon-sm"

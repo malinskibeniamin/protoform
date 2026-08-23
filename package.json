@@ -4,6 +4,9 @@
   "private": true,
   "description": "protoform - protovalidate-compatible shadcn forms",
   "type": "module",
+  "bin": {
+    "protoform": "./scripts/protoform.ts"
+  },
   "scripts": {
     "aip:lint": "bun run scripts/check-api-linter.ts",
     "build": "bun run registry:build && blume build --strict && bun run scripts/finalize-docs-build.ts",
@@ -36,6 +39,7 @@
     "migrate:zod": "bun run scripts/migrate-zod-to-protoform.ts",
     "proto:breaking": "bun run scripts/check-proto-breaking.ts",
     "proto:generate": "buf dep update && buf generate --template buf.gen.example.yaml && buf generate --template buf.gen.examples.yaml && buf generate --template buf.gen.conformance.yaml && buf generate --template buf.gen.form.yaml && buf generate --template buf.gen.bookstore-form.yaml && bun run demos:generate && bun run registry:build",
+    "protoform:audit": "bun run scripts/protoform.ts audit",
     "quality:gate": "bun run registry:build && bun run registry:smoke && bun run registry:consumer-smoke && bun run check:boundaries && bun run test:conformance && bun run aip:lint && bun run readiness:gate && bun run test:unit && bun run test:integration && bun run test:browser && bun run test:e2e && bun run docs:blume:translate:check && bun run build && bun run docs:blume:audit && bun run typecheck && bun run lint:no-suppressions && bun run lint && bun run doctor:strict",
     "readiness:gate": "bun run scripts/readiness-report.ts --require-profile-complete",
     "readiness:report": "bun run scripts/readiness-report.ts",

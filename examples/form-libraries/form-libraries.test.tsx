@@ -35,7 +35,7 @@ describe("Formik example", () => {
     render(<FormikExample baseUrl={address} />);
 
     await user.click(screen.getByRole("button", { name: "Create profile" }));
-    expect(await screen.findAllByText("value is required")).toHaveLength(2);
+    expect(await screen.findAllByText("Enter a value.")).toHaveLength(2);
 
     await fillProfile(user);
     await user.click(screen.getByRole("button", { name: "Create profile" }));
@@ -63,9 +63,9 @@ describe("Final Form example", () => {
     const user = userEvent.setup();
     render(<FinalFormExample baseUrl={address} />);
 
-    expect(screen.queryByText("value is required")).not.toBeInTheDocument();
+    expect(screen.queryByText("Enter a value.")).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Create profile" }));
-    expect(await screen.findAllByText("value is required")).toHaveLength(2);
+    expect(await screen.findAllByText("Enter a value.")).toHaveLength(2);
 
     await fillProfile(user);
     await user.click(screen.getByRole("button", { name: "Create profile" }));

@@ -2,6 +2,7 @@
 
 import { TrashIcon } from "lucide-react";
 import React from "react";
+import { formatProtoformMessage } from "../../../lib/core/messages";
 import { Button } from "../../button";
 import { useAutoFormRenderContext, useAutoFormRuntimeContext } from "../context";
 import type { ParsedField } from "../core-types";
@@ -59,7 +60,7 @@ export function ArrayFieldRenderer({
 }) {
   const { uiComponents } = useAutoFormRenderContext();
   const { ArrayController, errors } = useAutoFormEngine();
-  const { testIdPrefix } = useAutoFormRuntimeContext();
+  const { formatMessage, testIdPrefix } = useAutoFormRuntimeContext();
   const fullPath = path.join(".");
   const itemField = field.schema?.[0];
   const error = getFieldErrorMessage(errors, path);
@@ -68,12 +69,14 @@ export function ArrayFieldRenderer({
   const FieldWrapperComponent = field.fieldConfig?.fieldWrapper || uiComponents.FieldWrapper;
   const ArrayWrapperComponent = uiComponents.ArrayWrapper as React.ComponentType<
     React.ComponentProps<typeof uiComponents.ArrayWrapper> & {
+      addButtonLabel?: string;
       addButtonTestId?: string;
       testId?: string;
     }
   >;
   const ArrayElementWrapperComponent = uiComponents.ArrayElementWrapper as React.ComponentType<
     React.ComponentProps<typeof uiComponents.ArrayElementWrapper> & {
+      removeButtonAriaLabel?: string;
       removeButtonTestId?: string;
       testId?: string;
     }
@@ -81,6 +84,13 @@ export function ArrayFieldRenderer({
   const compactItemField = itemField ? cloneFieldForCompactRow(itemField) : undefined;
   const useCompactRows = itemField ? !isComplexCollectionField(itemField) : false;
   const depth = useFormDepth();
+  const addItemLabel = formatProtoformMessage(
+    formatMessage,
+    "auto_form.add_item",
+    { label: String(label) },
+    `Add ${String(label)}`
+  );
+  const removeItemLabel = formatProtoformMessage(formatMessage, "auto_form.remove_item", {}, "Remove item");
 
   if (!isVisible) {
     return null;
@@ -93,6 +103,7 @@ export function ArrayFieldRenderer({
           <>
             <RequiredArraySeeder controller={controller} disabled={isDisabled} field={field} itemField={itemField} />
             <ArrayWrapperComponent
+              addButtonLabel={addItemLabel}
               addButtonTestId={getAutoFormFieldTestId(testIdPrefix, fullPath, "add")}
               field={renderField}
               label={String(label)}
@@ -125,7 +136,7 @@ export function ArrayFieldRenderer({
                         path={[...path, String(index)]}
                       />
                       <Button
-                        aria-label="Remove item"
+                        aria-label={removeItemLabel}
                         disabled={isDisabled}
                         onClick={removeItem}
                         size="icon-sm"
@@ -154,6 +165,7 @@ export function ArrayFieldRenderer({
                     index={index}
                     key={item.key}
                     onRemove={removeItem}
+                    removeButtonAriaLabel={removeItemLabel}
                     removeButtonTestId={removeButtonTestId}
                     testId={rowTestId}
                   >

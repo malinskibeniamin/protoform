@@ -22,7 +22,7 @@ describe("TanStack Form example", () => {
     render(<TanStackFormExample />);
     await user.click(screen.getByRole("button", { name: "Create profile" }));
 
-    expect(await screen.findAllByText("value is required")).toHaveLength(2);
+    expect(await screen.findAllByText("Enter a value.")).toHaveLength(2);
     expect(screen.getByLabelText(displayNamePattern)).toHaveAttribute("aria-invalid", "true");
     expect(screen.getByLabelText(emailPattern)).toHaveAttribute("aria-invalid", "true");
   });

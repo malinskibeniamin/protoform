@@ -36,6 +36,14 @@ export {
   isGenericValidationMessage,
   SERVER_FIELD_ERROR_FALLBACK,
 } from "./humanize-validation-error.js";
+export {
+  type ComposeCreateRequestOptions,
+  type ComposeDeleteRequestOptions,
+  type ComposeUpdateRequestOptions,
+  composeCreateRequest,
+  composeDeleteRequest,
+  composeUpdateRequest,
+} from "./mutation-request.js";
 export { protoPathToFormPath } from "./proto-error-path.js";
 export {
   formValuesToProto,

@@ -1,17 +1,17 @@
 /**
  * Data-provider registry for AutoForm dropdowns.
  *
- * AutoForm is RPC-agnostic: the registry only knows about option lists.
- * Each provider is a React hook that returns `{ options, isLoading?, error? }`.
+ * AutoForm is RPC-agnostic: the registry only knows about option requests and results.
+ * Each provider is a React hook that receives search, pagination, dependency,
+ * selection, and cancellation context.
  * Whether the options are a static array or backed by an RPC is a concern
  * of the hosting app's wiring layer, not AutoForm.
  *
  * The registry is keyed by a string id that mirrors a proto `DataProviderId`
- * enum. The hosting app registers one implementation per id; a CI test
- * enumerates the proto descriptors and asserts completeness.
+ * enum. The hosting app registers one implementation per id.
  */
 
-import type React from "react";
+import React from "react";
 
 export interface DataProviderOption {
   /** Optional helper line shown beneath the label. */
@@ -36,29 +36,109 @@ export interface DataProviderResult {
   error?: unknown;
   /** True while an async source is loading. Static providers may omit this. */
   isLoading?: boolean;
+  /** Opaque cursor passed to the next provider request when the user asks for more options. */
+  nextCursor?: string;
   options: DataProviderOption[];
 }
+
+export interface DataProviderDependencyValues {
+  readonly [path: string]: unknown;
+}
+
+export interface DataProviderRequest {
+  /** Opaque provider-owned cursor for the requested page. */
+  cursor?: string | undefined;
+  /** Values for the dependency paths declared by the provider registration. */
+  dependencyValues: DataProviderDependencyValues;
+  fieldPath: string;
+  query: string;
+  selectedValues: readonly string[];
+  /** Aborted when the request context is replaced or the field unmounts. */
+  signal: AbortSignal;
+}
+
+export type DataProviderStaleSelectionPolicy = "clear" | "error" | "preserve";
 
 /**
  * A data provider is a React hook. Implementations may call `useQuery`,
  * return a memoised constant array, or anything in between — AutoForm
  * never inspects the internals.
  */
-export type DataProvider = () => DataProviderResult;
+export type DataProvider = (request: DataProviderRequest) => DataProviderResult;
 
-export type DataProviderRegistry = Record<string, DataProvider>;
+export interface DataProviderDefinition {
+  /** Form paths whose current values are included in each provider request. */
+  dependencies?: readonly string[];
+  /** Defaults to `preserve`. */
+  staleSelection?: DataProviderStaleSelectionPolicy;
+  useProvider: DataProvider;
+}
+
+export interface ResolvedDataProvider extends DataProviderDefinition {
+  dependencies: readonly string[];
+  staleSelection: DataProviderStaleSelectionPolicy;
+}
+
+export type DataProviderRegistration = DataProvider | DataProviderDefinition;
+export type DataProviderRegistry = Record<string, DataProviderRegistration>;
 
 /**
  * Resolve a data provider by id. Returns `undefined` when the id is not
- * registered; the caller is responsible for rendering a graceful fallback
- * (and, in dev, logging a warning).
+ * registered; the caller is responsible for rendering a graceful fallback.
  */
 export function resolveDataProvider(
   registry: DataProviderRegistry | undefined,
   id: string | undefined
-): DataProvider | undefined {
+): ResolvedDataProvider | undefined {
   if (!(registry && id)) {
     return;
   }
-  return registry[id];
+  const registration = registry[id];
+  if (!registration) {
+    return;
+  }
+  if (typeof registration === "function") {
+    return {
+      dependencies: [],
+      staleSelection: "preserve",
+      useProvider: registration,
+    };
+  }
+  return {
+    dependencies: registration.dependencies ?? [],
+    staleSelection: registration.staleSelection ?? "preserve",
+    useProvider: registration.useProvider,
+  };
+}
+
+export function getStaleSelections(
+  options: readonly DataProviderOption[],
+  selectedValues: readonly string[]
+): string[] {
+  const availableValues = new Set(options.map((option) => option.value));
+  return selectedValues.filter((value) => !availableValues.has(value));
+}
+
+export function useDataProviderSignal(requestKey: string): AbortSignal {
+  const [state, setState] = React.useState(() => ({ controller: new AbortController(), key: requestKey }));
+
+  React.useEffect(
+    function replaceProviderSignal() {
+      if (state.key === requestKey) {
+        return;
+      }
+      state.controller.abort();
+      setState({ controller: new AbortController(), key: requestKey });
+    },
+    [requestKey, state]
+  );
+
+  React.useEffect(
+    function abortProviderSignal() {
+      return () => state.controller.abort();
+    },
+    [state.controller]
+  );
+
+  return state.controller.signal;
 }

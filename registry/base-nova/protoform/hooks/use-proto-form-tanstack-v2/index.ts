@@ -19,6 +19,7 @@ import {
   dirtyFieldsFromValues,
   formValuesToProto,
   type ProtoConversionOptions,
+  type ProtoFormOptions,
 } from "../../lib/protobuf-provider";
 
 type FormValues = Record<string, unknown>;
@@ -44,6 +45,7 @@ export type UseProtoFormOptions<
   "validators"
 > & {
   emptyRepeatedStringPolicies?: ProtoConversionOptions["emptyRepeatedStringPolicies"];
+  formatMessage?: ProtoFormOptions["formatMessage"];
   validators?: TValidators;
 };
 
@@ -87,9 +89,10 @@ export function useProtoForm<
   schema: Desc,
   options: UseProtoFormOptions<Values, Desc, TValidators, TSubmitReturn>
 ): UseProtoFormReturn<Values, Desc, TValidators, TSubmitReturn> {
-  const { emptyRepeatedStringPolicies, validators, ...nativeOptions } = options;
-  const conversionOptions: ProtoConversionOptions = {
+  const { emptyRepeatedStringPolicies, formatMessage, validators, ...nativeOptions } = options;
+  const conversionOptions: ProtoFormOptions = {
     emptyRepeatedStringPolicies,
+    formatMessage,
   };
   const protoValidator: ProtoFormValidator<Values, Desc> = {
     run: createProtoFormSchema<Values, Desc>(schema, conversionOptions),

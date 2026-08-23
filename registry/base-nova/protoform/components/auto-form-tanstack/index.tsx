@@ -4,6 +4,8 @@ import { type TanStackAutoFormApi, TanStackEngine, type TanStackFormOptions } fr
 import { AutoFormCore } from "../auto-form/auto-form-core";
 import type { AutoFormProps as BaseAutoFormProps } from "../auto-form/types";
 
+export type { ProtoformMessageCode, ProtoformMessageFormatter, ProtoformMessageParams } from "../../lib/core/messages";
+
 type FormValues = Record<string, unknown>;
 
 export type AutoFormProps<T extends FormValues = FormValues, TCustomFieldType extends string = never> = Omit<
@@ -12,6 +14,14 @@ export type AutoFormProps<T extends FormValues = FormValues, TCustomFieldType ex
 >;
 
 export type { TanStackAutoFormApi, TanStackFormOptions } from "../auto-form/adapters/tanstack";
+export {
+  type AutoFormAuditDiagnostic,
+  type AutoFormAuditFormat,
+  type AutoFormAuditReport,
+  type AutoFormAuditTarget,
+  auditAutoFormConfigurations,
+  formatAutoFormAuditReport,
+} from "../auto-form/audit";
 export { ShadcnAutoFormFieldComponents } from "../auto-form/auto-form-core";
 export {
   type CelEvaluation,
@@ -23,11 +33,23 @@ export {
 export {
   type AutoFormConfigurationDiagnostic,
   type AutoFormConfigurationDiagnosticCode,
+  type AutoFormDiagnostic,
   type InspectAutoFormConfigurationInput,
   inspectAutoFormConfiguration,
 } from "../auto-form/configuration";
 export { useAutoForm } from "../auto-form/context";
 export type { AutoFormFieldComponents, AutoFormFieldProps } from "../auto-form/core-types";
+export type {
+  DataProvider,
+  DataProviderDefinition,
+  DataProviderDependencyValues,
+  DataProviderOption,
+  DataProviderRegistration,
+  DataProviderRegistry,
+  DataProviderRequest,
+  DataProviderResult,
+  DataProviderStaleSelectionPolicy,
+} from "../auto-form/data-providers";
 export type { AutoFormEngineHandle } from "../auto-form/engine";
 export { defaultRegistry } from "../auto-form/fields";
 export { defaultClassifyField } from "../auto-form/helpers";

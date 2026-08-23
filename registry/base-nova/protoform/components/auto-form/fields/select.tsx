@@ -1,10 +1,23 @@
 "use client";
 
+import React from "react";
+import { formatProtoformMessage } from "../../../lib/core/messages";
+import { Button } from "../../button";
+import { Combobox, type ComboboxOption } from "../../combobox";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "../../select";
 import { useAutoForm } from "../context";
 import type { AutoFormFieldProps } from "../core-types";
-import { type DataProviderOption, resolveDataProvider } from "../data-providers";
+import {
+  type DataProviderOption,
+  type DataProviderRequest,
+  getStaleSelections,
+  type ResolvedDataProvider,
+  resolveDataProvider,
+  useDataProviderSignal,
+} from "../data-providers";
+import { getPathInObject } from "../field-utils";
 import type { FieldTypeDefinition } from "../registry";
+import { safeStringify } from "../utils/serialization";
 import {
   getControlLabel,
   getFlatOptions,
@@ -15,11 +28,14 @@ import {
   useFieldTestIds,
 } from "./shared";
 
-function SelectFieldComponent({ error, field, id, inputProps, label }: AutoFormFieldProps) {
+function SelectFieldComponent({ error, field, id, inputProps, label, path }: AutoFormFieldProps) {
   const testIds = useFieldTestIds(id);
-  const { dataProviders } = useAutoForm();
+  const { dataProviders, formatMessage, formValues } = useAutoForm();
   const providerId = readDataProviderId(field);
   const provider = resolveDataProvider(dataProviders, providerId);
+  const dependencyValues = Object.fromEntries(
+    (provider?.dependencies ?? []).map((dependency) => [dependency, getPathInObject(formValues, dependency.split("."))])
+  );
   const numericOptions = hasNumericOptions(field);
   const currentValue =
     inputProps["value"] === undefined || inputProps["value"] === null ? null : String(inputProps["value"]);
@@ -31,11 +47,13 @@ function SelectFieldComponent({ error, field, id, inputProps, label }: AutoFormF
     return (
       <SelectFieldFromProvider
         currentValue={currentValue}
+        dependencyValues={dependencyValues}
         error={error}
         field={field}
-        fieldLabel={fieldLabel}
         id={id}
         inputProps={inputProps}
+        key={safeStringify(dependencyValues)}
+        path={path}
         provider={provider}
         testIds={testIds}
       />
@@ -45,7 +63,14 @@ function SelectFieldComponent({ error, field, id, inputProps, label }: AutoFormF
   return (
     <Select
       items={[
-        ...(field.required ? [] : [{ label: "Not set", value: null }]),
+        ...(field.required
+          ? []
+          : [
+              {
+                label: formatProtoformMessage(formatMessage, "auto_form.select.not_set", {}, "Not set"),
+                value: null,
+              },
+            ]),
         ...flatOptions.map((option) => ({
           label: renderOptionLabel(option),
           value: option.value,
@@ -67,12 +92,14 @@ function SelectFieldComponent({ error, field, id, inputProps, label }: AutoFormF
         id={id}
         testId={testIds.control}
       >
-        <SelectValue placeholder="Select an option" />
+        <SelectValue
+          placeholder={formatProtoformMessage(formatMessage, "auto_form.select.placeholder", {}, "Select an option")}
+        />
       </SelectTrigger>
       <SelectContent>
         {field.required ? null : (
           <SelectItem testId={testIds.option("not-set")} value={null}>
-            Not set
+            {formatProtoformMessage(formatMessage, "auto_form.select.not_set", {}, "Not set")}
           </SelectItem>
         )}
         {optionGroups?.length
@@ -101,103 +128,194 @@ function SelectFieldComponent({ error, field, id, inputProps, label }: AutoFormF
 
 function SelectFieldFromProvider({
   currentValue,
+  dependencyValues,
   error,
   field,
-  fieldLabel,
   id,
   inputProps,
+  path,
   provider,
   testIds,
 }: {
   currentValue: string | null;
+  dependencyValues: DataProviderRequest["dependencyValues"];
   error: AutoFormFieldProps["error"];
   field: AutoFormFieldProps["field"];
-  fieldLabel: string;
   id: string;
   inputProps: AutoFormFieldProps["inputProps"];
-  provider: () => { options: DataProviderOption[]; isLoading?: boolean; error?: unknown };
+  path: string[];
+  provider: ResolvedDataProvider;
   testIds: ReturnType<typeof useFieldTestIds>;
 }) {
-  const { options, isLoading, error: providerError } = provider();
+  const { formatMessage } = useAutoForm();
+  const [query, setQuery] = React.useState("");
+  const [cursor, setCursor] = React.useState<string>();
+  const [loadedOptions, setLoadedOptions] = React.useState<DataProviderOption[]>([]);
+  const fieldPath = path.join(".");
+  const selectedValues = currentValue === null ? [] : [currentValue];
+  const requestKey = safeStringify({ cursor, dependencyValues, fieldPath, query, selectedValues });
+  const signal = useDataProviderSignal(requestKey);
+  const {
+    options,
+    isLoading,
+    error: providerError,
+    nextCursor,
+  } = provider.useProvider({
+    cursor,
+    dependencyValues,
+    fieldPath,
+    query,
+    selectedValues,
+    signal,
+  });
+  const optionsKey = safeStringify(
+    options.map(({ description, group, label, value }) => ({ description, group, label, value }))
+  );
+  const providerPageKey = requestKey.concat(":", optionsKey);
+  const collectedPageKey = React.useRef<string | undefined>(undefined);
+  const availableOptions =
+    isLoading || providerError ? loadedOptions : mergeProviderOptions(cursor ? loadedOptions : [], options);
+  const staleSelections = isLoading || providerError ? [] : getStaleSelections(availableOptions, selectedValues);
+  const renderedOptions: DataProviderOption[] =
+    provider.staleSelection === "clear"
+      ? availableOptions
+      : [...staleSelections.map((value) => ({ label: value, value })), ...availableOptions];
+
+  React.useEffect(
+    function collectProviderPageEffect() {
+      if (isLoading || providerError || collectedPageKey.current === providerPageKey) {
+        return;
+      }
+      collectedPageKey.current = providerPageKey;
+      setLoadedOptions((currentOptions) => mergeProviderOptions(cursor ? currentOptions : [], options));
+    },
+    [cursor, isLoading, options, providerError, providerPageKey]
+  );
+
+  const applyUnavailableSelectionClear = React.useEffectEvent(() => inputProps["onValueChange"](undefined));
+  const staleSelectionKey =
+    provider.staleSelection === "clear" && staleSelections.length > 0 ? (currentValue ?? "") : undefined;
+
+  React.useEffect(
+    function clearUnavailableSelection() {
+      if (staleSelectionKey !== undefined) {
+        applyUnavailableSelectionClear();
+      }
+    },
+    [staleSelectionKey]
+  );
 
   if (providerError) {
-    // `SelectTrigger` / `SelectValue` are Radix primitives that need a
-    // `Select.Root` context. Wrap them in a disabled `<Select>` so the
-    // failure state still renders as a coherent select-shaped control
-    // rather than throwing a Radix context error.
     return (
-      <Select disabled value="">
-        <SelectTrigger aria-label={fieldLabel} disabled id={id} testId={testIds.control}>
-          <SelectValue placeholder="Failed to load options" />
-        </SelectTrigger>
-      </Select>
+      <Combobox
+        disabled
+        id={id}
+        onChange={() => undefined}
+        options={[]}
+        placeholder={formatProtoformMessage(formatMessage, "auto_form.select.load_error", {}, "Failed to load options")}
+        testId={testIds.control}
+      />
     );
   }
 
-  const grouped = options.reduce<Record<string, DataProviderOption[]>>((acc, option) => {
-    const key = option.group ?? "";
-    acc[key] = acc[key] ? [...acc[key], option] : [option];
-    return acc;
-  }, {});
-  const hasGroups = Object.keys(grouped).some((k) => k !== "");
+  const comboboxOptions: ComboboxOption[] = renderedOptions.map((option) => ({
+    data: option,
+    group: option.group,
+    label: option.label,
+    testId: testIds.option(option.value),
+    value: option.value,
+  }));
 
   return (
-    <Select
-      items={[
-        ...(field.required ? [] : [{ label: "Not set", value: null }]),
-        ...options.map((option) => ({
-          label: <ProviderOptionLabel option={option} />,
-          value: option.value,
-        })),
-      ]}
-      onValueChange={(value) => {
-        if (value === null) {
-          inputProps["onValueChange"](undefined);
-          return;
-        }
-        inputProps["onValueChange"](value);
-      }}
-      value={currentValue}
-    >
-      <SelectTrigger
-        aria-label={fieldLabel}
-        className={error ? "border-destructive" : ""}
-        disabled={inputProps["disabled"] || isLoading}
+    <div className="space-y-2">
+      <Combobox
+        className={error ? "[&_input]:border-destructive" : undefined}
+        clearable={!field.required}
+        disabled={Boolean(inputProps["disabled"])}
+        emptyState={formatProtoformMessage(formatMessage, "auto_form.select.empty", {}, "No options found.")}
         id={id}
-        testId={testIds.control}
-      >
-        <SelectValue placeholder={isLoading ? "Loading…" : "Select an option"} />
-      </SelectTrigger>
-      <SelectContent>
-        {field.required ? null : (
-          <SelectItem testId={testIds.option("not-set")} value={null}>
-            Not set
-          </SelectItem>
+        loading={isLoading}
+        onChange={(value) => {
+          if (value === "") {
+            inputProps["onValueChange"](undefined);
+            return;
+          }
+          inputProps["onValueChange"](field.type === "number" ? Number(value) : value);
+        }}
+        onInputValueChange={(value) => {
+          setQuery(value);
+          setCursor(undefined);
+        }}
+        options={comboboxOptions}
+        placeholder={formatProtoformMessage(
+          formatMessage,
+          isLoading ? "auto_form.select.loading" : "auto_form.select.placeholder",
+          {},
+          isLoading ? "Loading…" : "Select an option"
         )}
-        {options.length === 0 && !isLoading ? (
-          <SelectItem disabled testId={testIds.option("empty")} value="__empty">
-            No options available
-          </SelectItem>
-        ) : null}
-        {hasGroups
-          ? Object.entries(grouped).map(([groupLabel, groupOptions]) => (
-              <SelectGroup key={groupLabel || "ungrouped"} testId={testIds.group(groupLabel || "ungrouped")}>
-                {groupLabel ? <SelectLabel>{groupLabel}</SelectLabel> : null}
-                {groupOptions.map((option) => (
-                  <SelectItem key={option.value} testId={testIds.option(option.value)} value={option.value}>
-                    <ProviderOptionLabel option={option} />
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            ))
-          : options.map((option) => (
-              <SelectItem key={option.value} testId={testIds.option(option.value)} value={option.value}>
-                <ProviderOptionLabel option={option} />
-              </SelectItem>
-            ))}
-      </SelectContent>
-    </Select>
+        renderOption={(option) => {
+          const { data } = option;
+          return isDataProviderOption(data) ? <ProviderOptionLabel option={data} /> : option.label;
+        }}
+        testId={testIds.control}
+        value={currentValue ?? ""}
+      />
+      {provider.staleSelection === "error" && staleSelections.length > 0 ? (
+        <p className="text-destructive text-sm" role="alert">
+          {formatProtoformMessage(
+            formatMessage,
+            "auto_form.select.stale",
+            { value: staleSelections.join(", ") },
+            "Selected value is no longer available."
+          )}
+        </p>
+      ) : null}
+      {nextCursor ? (
+        <Button onClick={() => setCursor(nextCursor)} type="button" variant="outline">
+          {formatProtoformMessage(formatMessage, "auto_form.load_more", {}, "Load more")}
+        </Button>
+      ) : null}
+    </div>
   );
+}
+
+function isDataProviderOption(value: unknown): value is DataProviderOption {
+  return Boolean(
+    value &&
+      typeof value === "object" &&
+      typeof Reflect.get(value, "label") === "string" &&
+      typeof Reflect.get(value, "value") === "string"
+  );
+}
+
+function mergeProviderOptions(
+  currentOptions: DataProviderOption[],
+  pageOptions: readonly DataProviderOption[]
+): DataProviderOption[] {
+  const merged = new Map(currentOptions.map((option) => [option.value, option]));
+  for (const option of pageOptions) {
+    merged.set(option.value, option);
+  }
+  const nextOptions = [...merged.values()];
+  if (
+    nextOptions.length === currentOptions.length &&
+    nextOptions.every((option, index) => {
+      const current = currentOptions[index];
+      if (!current) {
+        return false;
+      }
+      return (
+        current.description === option.description &&
+        current.group === option.group &&
+        current.icon === option.icon &&
+        current.label === option.label &&
+        current.value === option.value
+      );
+    })
+  ) {
+    return currentOptions;
+  }
+  return nextOptions;
 }
 
 function ProviderOptionLabel({ option }: { option: DataProviderOption }) {

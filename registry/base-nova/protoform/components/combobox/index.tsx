@@ -86,6 +86,7 @@ export interface ComboboxProps
    * `loading` is true.
    */
   emptyState?: React.ReactNode | undefined;
+  id?: string | undefined;
   inputTestId?: string | undefined;
   /**
    * When true, an inline spinner is rendered inside the popover and the
@@ -139,6 +140,7 @@ export const Combobox = memo(
     defaultOpen = false,
     preventAutoFocusOnOpen = false,
     inputTestId,
+    id,
     onInputValueChange,
     loading = false,
     emptyState,
@@ -206,7 +208,7 @@ export const Combobox = memo(
     // ── Handlers ──────────────────────────────────────────────────────
 
     const handleActiveDescendantChange = useCallback(
-      (id: string | undefined) => dispatch({ id, type: "SET_ACTIVE_DESCENDANT" }),
+      (descendantId: string | undefined) => dispatch({ id: descendantId, type: "SET_ACTIVE_DESCENDANT" }),
       []
     );
 
@@ -414,6 +416,7 @@ export const Combobox = memo(
             className="relative w-full shadow-none"
             containerClassName={className}
             disabled={disabled}
+            id={id}
             onBlur={handleBlur}
             onChange={handleInputChange}
             onClick={handleInputClick}

@@ -1,7 +1,8 @@
 import type { DescMessage, Message } from "@bufbuild/protobuf";
 import type { FieldMask } from "@bufbuild/protobuf/wkt";
 import type { ReactNode } from "react";
-
+import type { ProtoformMessageFormatter } from "../../lib/core/messages";
+import type { AutoFormDiagnostic } from "./configuration";
 import type {
   AutoFormFieldComponents,
   AutoFormUIComponents,
@@ -120,10 +121,14 @@ export interface AutoFormProps<
   deprecatedFields?: DeprecatedFieldPolicy;
   fieldConfig?: FieldConfigMap<TCustomFieldType>;
   fieldRegistry?: FieldTypeRegistry<FieldTypes<TCustomFieldType>>;
+  /** Translates Protoform-owned runtime copy without changing schema- or server-authored text. */
+  formatMessage?: ProtoformMessageFormatter;
   formComponents?: Partial<AutoFormFieldComponents<FieldTypes<TCustomFieldType>>>;
   formOptions?: TFormOptions;
   formProps?: React.ComponentProps<"form"> | Record<string, unknown>;
   modes?: AutoFormMode[];
+  /** Receives structured configuration diagnostics without coupling Protoform to a logging vendor. */
+  onDiagnostic?: (diagnostic: AutoFormDiagnostic) => void;
   /** Reports distinct engine-neutral dirty-state transitions, including the initial clean state. */
   onDirtyChange?: (isDirty: boolean) => void;
   /**
