@@ -65,7 +65,7 @@ describe("native form adapter registry entries", () => {
   });
 
   it("ships TanStack Form v2 as separate experimental registry items", () => {
-    const packageAlias = "@tanstack/react-form-v2@npm:@tanstack/react-form@2.0.0-alpha.0";
+    const packageAlias = "@tanstack/react-form-v2@npm:@tanstack/react-form@2.0.0-alpha.2";
     const tanstackHook = item("use-proto-form-tanstack-v2");
     const tanstackAutoForm = item("auto-form-tanstack-v2");
 
