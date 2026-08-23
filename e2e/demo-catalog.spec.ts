@@ -145,10 +145,42 @@ test("serves translated hubs and only offers available page languages", async ({
   await expect(page.getByRole("heading", { name: "Oneof branch selection" })).toBeVisible({ timeout: 30_000 });
 });
 
-test("renders the native OpenAPI reference and real RPC method shape", async ({ page }) => {
+test("searches translated docs with non-Latin text", async ({ page }) => {
+  await page.goto("/docs/zh-TW/server-errors");
+  await page.getByRole("button", { exact: true, name: "搜尋" }).click();
+  await page.getByRole("combobox", { exact: true, name: "搜尋文件" }).fill("伺服器錯誤");
+
+  await expect(page.getByRole("option").filter({ hasText: "伺服器錯誤" }).first()).toBeVisible();
+});
+
+test("navigates OpenAPI pages without reloading the document", async ({ page }) => {
+  await page.goto("/docs/reference");
+  await page.evaluate(() => Reflect.set(window, "__protoformNavigationSentinel", "preserved"));
+
+  await page.getByRole("link").filter({ hasText: "Create a book" }).first().click();
+
+  await expect(page.getByRole("heading", { name: "Create a book" })).toBeVisible();
+  await expect.poll(() => page.evaluate(() => Reflect.get(window, "__protoformNavigationSentinel"))).toBe("preserved");
+});
+
+test("renders the native OpenAPI reference and real RPC method shape", async ({ browserName, page }) => {
   await page.goto("/docs/reference");
   await expect(page.getByRole("heading", { name: "Protoform bookstore Connect API" })).toBeVisible();
-  await expect(page.getByRole("link").filter({ hasText: "Create a book" }).first()).toBeVisible();
+  const createBook = page.getByRole("link").filter({ hasText: "Create a book" }).first();
+  await expect(createBook).toBeVisible();
+  await createBook.click();
+  const playground = page.locator("[data-playground]");
+  const playgroundToggle = page.getByText("Try it", { exact: true });
+  await expect(playgroundToggle).toBeVisible();
+  await playgroundToggle.click();
+  await page.getByRole("combobox", { name: "Base URL" }).selectOption("http://127.0.0.1:55012");
+  const requestBody = page.getByRole("textbox", { name: "Request body" });
+  const bookId = `protoform-guide-${browserName}`;
+  await requestBody.fill(
+    (await requestBody.inputValue()).replace(JSON.stringify("protoform-guide"), JSON.stringify(bookId))
+  );
+  await page.getByRole("button", { name: "Send" }).click();
+  await expect(playground).toContainText("200 OK");
 
   await page.goto("/docs/example-bufbuild-descriptors");
   await expect(page).toHaveURL(bufbuildHubUrl);

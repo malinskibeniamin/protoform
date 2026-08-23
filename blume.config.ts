@@ -54,6 +54,9 @@ export default defineConfig({
     spec: "./openapi.yaml",
   },
   redirects: [...demoRedirects],
+  search: {
+    provider: "pagefind",
+  },
   theme: {
     fonts: {
       body: {

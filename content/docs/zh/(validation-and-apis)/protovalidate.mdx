@@ -1,6 +1,6 @@
 ---
 title: Protovalidate
-description: "在 protobuf 契约中统一客户端和服务器端验证。本指南进一步说明如何在 Protoform 中实际应用此功能，并涵盖契约设计、表单生成、字段验证、错误处理、迁移策略、无障碍体验、测试方法与生产环境集成，帮助团队采用经过验证且可维护的实现路径。"
+description: "在 protobuf 契约中统一客户端和服务器端验证。了解适用场景、关键行为、契约设计、表单生成、验证方法、错误处理与实际集成细节。"
 ---
 Protoform 使用 Protovalidate ES，因此验证规则来自 `buf.validate` 注解。
 相同的字段规则和 CEL 不变量可在浏览器和服务器运行时中执行，无需在仅供前端使用的 schema 中重新创建契约。
