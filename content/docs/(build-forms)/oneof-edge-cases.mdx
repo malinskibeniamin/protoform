@@ -33,7 +33,11 @@ caller can show a summary or toast.
 ```tsx
 const result = form.setServerErrors(error)
 if (result.unmapped.length > 0) {
-  toast.error(result.unmapped.map((v) => v.description).join("\n"))
+  toast.add({
+    description: result.unmapped.map((v) => v.description).join("\n"),
+    title: "Some server errors could not be mapped",
+    type: "error",
+  })
 }
 ```
 

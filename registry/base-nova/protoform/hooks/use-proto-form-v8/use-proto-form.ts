@@ -119,7 +119,7 @@ export type UseProtoFormReturn<Desc extends DescMessage> = UseFormReturn<FormSha
  *     navigate(...);
  *   } catch (error) {
  *     const { handled, unmapped } = form.setServerErrors(error);
- *     if (!handled || unmapped.length > 0) toast.error(...);
+ *     if (!handled || unmapped.length > 0) toast.add({ title: "Request failed", type: "error" });
  *   }
  * };
  * ```

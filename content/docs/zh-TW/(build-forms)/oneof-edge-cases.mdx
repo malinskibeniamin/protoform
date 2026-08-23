@@ -1,6 +1,6 @@
 ---
 title: Oneof 與邊界情況
-description: "安全處理產生表單中的 oneof 分支、巢狀訊息、映射、重複欄位、遞迴結構與 protobuf 常用型別。瞭解適用情境、關鍵行為、實作重點、驗證方法與實際整合細節。"
+description: 安全處理產生表單中的 oneof 分支、巢狀訊息、映射、重複欄位、遞迴結構與 protobuf 常用型別，並避免分支切換時殘留無效資料。
 ---
 Protoform 將 protobuf `oneof` 視為一等表單概念，而非鬆散的可辨識聯集。
 
@@ -30,7 +30,11 @@ delivery.webhook.signing_secret_ref
 ```tsx
 const result = form.setServerErrors(error)
 if (result.unmapped.length > 0) {
-  toast.error(result.unmapped.map((v) => v.description).join("\n"))
+  toast.add({
+    description: result.unmapped.map((v) => v.description).join("\n"),
+    title: "Some server errors could not be mapped",
+    type: "error",
+  })
 }
 ```
 

@@ -428,7 +428,6 @@
         "prismjs",
         "react-day-picker",
         "react-simple-code-editor",
-        "sonner",
         "tailwind-merge",
         "zod"
       ],
@@ -814,6 +813,10 @@
           "type": "registry:component"
         },
         {
+          "path": "registry/base-nova/protoform/components/toast/index.tsx",
+          "type": "registry:component"
+        },
+        {
           "path": "registry/base-nova/protoform/components/tooltip/index.tsx",
           "type": "registry:component"
         },
@@ -1095,7 +1098,6 @@
         "react-day-picker",
         "react-hook-form",
         "react-simple-code-editor",
-        "sonner",
         "tailwind-merge",
         "zod"
       ],

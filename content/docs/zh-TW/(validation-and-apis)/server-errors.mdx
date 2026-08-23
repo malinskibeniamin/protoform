@@ -1,6 +1,6 @@
 ---
 title: 伺服器錯誤
-description: "將 API 的結構化 Connect 與 gRPC 錯誤對應為無障礙表單回饋，保留欄位錯誤、錯誤摘要與診斷內容，並避免依賴容易變動的訊息文字。"
+description: 保留 API 的結構化 Connect 與 gRPC 錯誤，轉換為無障礙表單回饋。請參閱實用的 Protoform 實作指南，並提供清楚的復原指引。
 ---
 用戶端驗證可改善回饋，但授權、並行處理、唯一性、配額及目前狀態檢查仍以伺服器為準。Protoform 會將結構化 Connect 與 gRPC 錯誤對應至 3 個位置：欄位錯誤、錯誤摘要和診斷內容。
 
@@ -22,8 +22,8 @@ flowchart TD
 ```tsx
 import type { FieldViolation } from "@/lib/protobuf-provider";
 import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/toast";
 import { useState } from "react";
-import { toast } from "sonner";
 
 const [unmapped, setUnmapped] = useState<FieldViolation[]>([]);
 
@@ -38,7 +38,11 @@ const onSubmit = form.handleSubmit(async (values) => {
     setUnmapped(result.unmapped);
 
     if (!result.handled && !result.context.message) {
-      toast.error("Connector not saved. Check your connection and try again.");
+      toast.add({
+        description: "Check your connection and try again.",
+        title: "Connector not saved",
+        type: "error",
+      });
     }
   }
 });

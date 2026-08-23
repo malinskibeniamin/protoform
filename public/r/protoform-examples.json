@@ -23,7 +23,6 @@
     "react-day-picker",
     "react-hook-form",
     "react-simple-code-editor",
-    "sonner",
     "tailwind-merge",
     "zod"
   ],
