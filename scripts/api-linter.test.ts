@@ -18,7 +18,7 @@ describe("Google API Linter gate", () => {
     for (const aip of [127, 131, 132, 133, 134, 135, 164, 203]) {
       expect(runner).toContain(`core::0${aip}`);
     }
-    expect(ciWorkflow).toContain("actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16");
+    expect(ciWorkflow).toContain("actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e");
     expect(ciWorkflow).toContain("go-version: 1.26.6");
   });
 });

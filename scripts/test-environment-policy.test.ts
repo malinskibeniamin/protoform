@@ -31,7 +31,7 @@ describe("simulated DOM test environment", () => {
     expect(manifest.devDependencies?.["@rstest/browser-react"]).toBe("0.11.9");
     expect(manifest.devDependencies?.["@rstest/core"]).toBe("0.11.9");
     expect(manifest.devDependencies?.["happy-dom"]).toBeDefined();
-    expect(manifest.devDependencies?.["undici"]).toBe("8.9.0");
+    expect(manifest.devDependencies?.["undici"]).toBe("8.10.0");
     expect(manifest.devDependencies?.["jsdom"]).toBeUndefined();
     expect(manifest.devDependencies?.["vitest"]).toBeUndefined();
     expect(Object.values(manifest.scripts ?? {}).join("\n")).not.toContain("vitest");
