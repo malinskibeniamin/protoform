@@ -1,5 +1,6 @@
 import type React from "react";
 import type { ReactNode } from "react";
+import type { FieldWrapperProps, ParsedField, UiRenderable } from "../../lib/form-types";
 
 // Re-export schema contract types from shared lib so existing consumers
 // can continue importing from './core-types' without changes.
@@ -15,8 +16,6 @@ export type {
   SchemaValidationError,
   UiRenderable,
 } from "../../lib/form-types";
-
-import type { FieldWrapperProps, ParsedField, UiRenderable } from "../../lib/form-types";
 
 export { getFieldHints } from "../../lib/form-types";
 

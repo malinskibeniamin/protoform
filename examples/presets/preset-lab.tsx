@@ -1,16 +1,14 @@
 "use client";
 
 import { CheckIcon, CopyIcon, ExternalLinkIcon, Maximize2Icon, Minimize2Icon, MoonIcon, SunIcon } from "lucide-react";
-import { type ComponentProps, type CSSProperties, useEffect, useRef, useState } from "react";
+import { type CSSProperties, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { AutoForm } from "@/registry/base-nova/protoform/components/auto-form";
 import type {
-  FieldWrapperProps,
   SchemaProvider,
   SchemaValidationError,
 } from "@/registry/base-nova/protoform/components/auto-form/core-types";
 import { Button } from "@/registry/base-nova/protoform/components/button";
-import { Field, FieldContent, FieldError, FieldLabel } from "@/registry/base-nova/protoform/components/field";
 import { cn } from "@/registry/base-nova/protoform/lib/utils";
 
 import {
@@ -25,11 +23,14 @@ import {
   presetDefinitions,
   presetRadii,
 } from "./preset-lab-presets";
+import { PresetWorkspaceShell } from "./preset-workspace-shell";
+import { PreviewFieldWrapper } from "./preview-field-wrapper";
+import { PreviewForm } from "./preview-form";
 
 type PreviewValues = Record<string, unknown>;
 
-const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const isoDatePattern = /^\d{4}-\d{2}-\d{2}$/;
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/u;
+const isoDatePattern = /^\d{4}-\d{2}-\d{2}$/u;
 const environmentValues = new Set(["development", "staging", "production"]);
 const reviewTemplateValues = new Set(["access", "architecture", "compliance", "incident", "launch"]);
 
@@ -236,40 +237,6 @@ function buildPreviewSchema(instanceId: string): SchemaProvider<PreviewValues> {
 }
 
 const previewSchema = buildPreviewSchema("preset-preview");
-
-function PreviewForm({ children, className, testId, ...props }: ComponentProps<"form"> & { testId?: string }) {
-  return (
-    <form
-      className={cn(
-        "space-y-4 [&_[data-slot=auto-form-actions]]:mt-2 [&_[data-slot=auto-form-field-row]]:py-3 [&_[data-slot=auto-form-field-row]]:first:pt-0 [&_[data-slot=auto-form-fields]]:grid [&_[data-slot=auto-form-fields]]:gap-x-5 [&_[data-slot=auto-form-fields]]:divide-y-0 sm:[&_[data-slot=auto-form-fields]]:grid-cols-2",
-        className
-      )}
-      data-testid={testId}
-      {...props}
-    >
-      {children}
-    </form>
-  );
-}
-
-function PreviewFieldWrapper({ children, error, field, id, label }: FieldWrapperProps) {
-  return (
-    <Field className="gap-2" data-invalid={Boolean(error)} data-layout="stacked">
-      <FieldLabel className="gap-1.5" htmlFor={id}>
-        <span className="font-medium text-sm">{label}</span>
-        {field.required ? (
-          <span aria-hidden="true" className="text-destructive">
-            *
-          </span>
-        ) : null}
-      </FieldLabel>
-      <FieldContent className="min-w-0 gap-2">
-        {children}
-        {error ? <FieldError>{error}</FieldError> : null}
-      </FieldContent>
-    </Field>
-  );
-}
 
 const previewUiComponents = {
   FieldWrapper: PreviewFieldWrapper,
@@ -527,16 +494,6 @@ function useWorkspaceFullscreen(setStatus: (message: string) => void) {
   };
 }
 
-function getFullscreenDialogProps(isFallbackFullscreen: boolean): {
-  "aria-modal"?: true;
-  role?: "dialog";
-} {
-  if (!isFallbackFullscreen) {
-    return {};
-  }
-  return { "aria-modal": true, role: "dialog" };
-}
-
 export function PresetLab() {
   const [initialSelection] = useState(readInitialSelection);
   const [activePreset, setActivePreset] = useState(initialSelection.preset);
@@ -552,7 +509,6 @@ export function PresetLab() {
     workspaceHost,
     workspaceRef,
   } = useWorkspaceFullscreen(setStatus);
-  const fullscreenDialogProps = getFullscreenDialogProps(isFallbackFullscreen);
   const presetCode = buildPresetCode(activePreset, radius);
   const command = `bunx shadcn@latest create --base base --preset ${presetCode}`;
   const createUrl = `https://ui.shadcn.com/create?base=base&preset=${presetCode}`;
@@ -595,10 +551,11 @@ export function PresetLab() {
   }
 
   async function copyText(value: string, successMessage: string, failureMessage: string) {
+    if (!navigator.clipboard) {
+      setStatus(failureMessage);
+      return;
+    }
     try {
-      if (!navigator.clipboard) {
-        throw new Error("Clipboard access is unavailable.");
-      }
       await navigator.clipboard.writeText(value);
       setStatus(successMessage);
     } catch {
@@ -611,14 +568,11 @@ export function PresetLab() {
       <div ref={inlineHostRef} />
       {workspaceHost
         ? createPortal(
-            <section
-              {...fullscreenDialogProps}
-              aria-labelledby="preset-workspace-heading"
-              className="group/workspace overflow-hidden rounded-2xl border bg-background shadow-sm data-[fullscreen-mode=fallback]:fixed data-[fullscreen-mode=fallback]:inset-0 data-[fullscreen-mode=fallback]:z-50 data-[fullscreen=true]:h-[100dvh] data-[fullscreen=true]:w-full data-[fullscreen=true]:overflow-y-auto data-[fullscreen=true]:rounded-none data-[fullscreen=true]:border-0 md:data-[fullscreen=true]:grid md:data-[fullscreen=true]:grid-rows-[auto_minmax(0,1fr)_auto] md:data-[fullscreen=true]:overflow-hidden"
-              data-fullscreen={isFullscreen}
-              data-fullscreen-mode={fullscreenMode}
-              data-testid="preset-workspace"
-              ref={workspaceRef}
+            <PresetWorkspaceShell
+              fullscreenMode={fullscreenMode}
+              isFallbackFullscreen={isFallbackFullscreen}
+              isFullscreen={isFullscreen}
+              workspaceRef={workspaceRef}
             >
               <h2 className="sr-only" id="preset-workspace-heading">
                 Protoform preset workspace
@@ -721,9 +675,7 @@ export function PresetLab() {
                             <span
                               aria-hidden="true"
                               className="size-3.5 rounded-full border border-foreground/10"
-                              style={{
-                                backgroundColor: variables["--primary"],
-                              }}
+                              style={{ backgroundColor: variables["--primary"] }}
                             />
                             {preset.name}
                             {active ? <CheckIcon aria-hidden="true" className="ml-auto hidden md:block" /> : null}
@@ -793,7 +745,7 @@ export function PresetLab() {
                 </div>
               </div>
 
-              <footer className="grid gap-3 border-t px-3 py-3 sm:px-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+              <footer className="grid gap-3 border-t p-3 sm:px-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
                 <div className="min-w-0">
                   <p aria-live="polite" className="m-0! text-muted-foreground text-xs" role="status">
                     {status ?? activePreset.description}
@@ -840,7 +792,7 @@ export function PresetLab() {
                   </Button>
                 </div>
               </footer>
-            </section>,
+            </PresetWorkspaceShell>,
             workspaceHost
           )
         : null}

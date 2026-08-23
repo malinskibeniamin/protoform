@@ -34,7 +34,7 @@ export function MapFieldRenderer({
   const error = getFieldErrorMessage(errors, path);
   const label = getRenderedLabel(field);
   const { isDisabled, isVisible, renderField } = useFieldPresentation(field, path, inheritedDisabled);
-  const FieldWrapperComponent = field.fieldConfig?.fieldWrapper || uiComponents.FieldWrapper;
+  const FieldWrapperComponent = field.fieldConfig?.fieldWrapper ?? uiComponents.FieldWrapper;
   const ArrayWrapperComponent = uiComponents.ArrayWrapper as React.ComponentType<
     React.ComponentProps<typeof uiComponents.ArrayWrapper> & {
       addButtonTestId?: string;
@@ -57,7 +57,7 @@ export function MapFieldRenderer({
           <ArrayWrapperComponent
             addButtonTestId={getAutoFormFieldTestId(testIdPrefix, fullPath, "add")}
             field={renderField}
-            label={String(label)}
+            label={label}
             onAddItem={() => {
               if (!isDisabled) {
                 controller.append({ key: "", value: createEmptyFieldValue(valueField) });
@@ -100,7 +100,7 @@ export function MapFieldRenderer({
                       type="button"
                       variant="ghost"
                     >
-                      <TrashIcon className="h-4 w-4" />
+                      <TrashIcon className="size-4" />
                     </Button>
                   </div>
                 );
@@ -133,7 +133,7 @@ export function MapFieldRenderer({
                       type="button"
                       variant="ghost"
                     >
-                      <TrashIcon className="h-4 w-4" />
+                      <TrashIcon className="size-4" />
                     </Button>
                   </div>
                   {valueField ? (

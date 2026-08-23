@@ -1,11 +1,11 @@
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 import { render, screen } from "@testing-library/react";
 
 import { formSpacing } from "../form-spacing";
 import { FormField, FormLayout, FormSection, FormSubmit } from "../layout";
 
 describe("FormLayout", () => {
-  it("renders as a form element with the form-spacing token", () => {
+  test("renders as a form element with the form-spacing token", () => {
     render(
       <FormLayout testId="form">
         <div>child</div>
@@ -16,7 +16,7 @@ describe("FormLayout", () => {
     expect(form.className).toContain(formSpacing.form);
   });
 
-  it("forwards native form props", () => {
+  test("forwards native form props", () => {
     const handler = () => undefined;
     render(
       <FormLayout aria-label="Test form" onSubmit={handler} testId="form">
@@ -29,7 +29,7 @@ describe("FormLayout", () => {
 });
 
 describe("FormSection", () => {
-  it("at the form root renders the title as an h2", () => {
+  test("at the form root renders the title as an h2", () => {
     render(
       <FormLayout testId="form">
         <FormSection title="Basic">
@@ -41,7 +41,7 @@ describe("FormSection", () => {
     expect(heading.tagName).toBe("H2");
   });
 
-  it("nested one level deep renders the title as an h3", () => {
+  test("nested one level deep renders the title as an h3", () => {
     render(
       <FormLayout testId="form">
         <FormSection title="Outer">
@@ -55,7 +55,7 @@ describe("FormSection", () => {
     expect(screen.getByText("Inner").tagName).toBe("H3");
   });
 
-  it("nested two levels deep renders the title as an h4", () => {
+  test("nested two levels deep renders the title as an h4", () => {
     render(
       <FormLayout testId="form">
         <FormSection title="L1">
@@ -70,7 +70,7 @@ describe("FormSection", () => {
     expect(screen.getByText("L3").tagName).toBe("H4");
   });
 
-  it("with no title and no description renders no header", () => {
+  test("with no title and no description renders no header", () => {
     const { container } = render(
       <FormLayout>
         <FormSection testId="section">
@@ -84,7 +84,7 @@ describe("FormSection", () => {
     expect(container).toBeTruthy();
   });
 
-  it("shows the divider by default when a title is present", () => {
+  test("shows the divider by default when a title is present", () => {
     render(
       <FormLayout>
         <FormSection testId="section" title="Basic" />
@@ -95,7 +95,7 @@ describe("FormSection", () => {
     expect(header.className).toContain("border-b");
   });
 
-  it("suppresses the divider when divider={false}", () => {
+  test("suppresses the divider when divider={false}", () => {
     render(
       <FormLayout>
         <FormSection divider={false} testId="section" title="Basic" />
@@ -106,7 +106,7 @@ describe("FormSection", () => {
     expect(header.className).not.toContain("border-b");
   });
 
-  it("renders a description when provided", () => {
+  test("renders a description when provided", () => {
     render(
       <FormLayout>
         <FormSection description="AWS credentials and region." title="Aws" />
@@ -115,7 +115,7 @@ describe("FormSection", () => {
     expect(screen.getByText("AWS credentials and region.")).toBeInTheDocument();
   });
 
-  it("marks the heading as required with an asterisk when required", () => {
+  test("marks the heading as required with an asterisk when required", () => {
     render(
       <FormLayout>
         <FormSection required testId="section" title="Basic" />
@@ -127,7 +127,7 @@ describe("FormSection", () => {
 });
 
 describe("FormField", () => {
-  it("renders label, control, and help text with the label-stack token", () => {
+  test("renders label, control, and help text with the label-stack token", () => {
     render(
       <FormField helpText="Your full name" label="Name" testId="field">
         <input id="name" />
@@ -139,7 +139,7 @@ describe("FormField", () => {
     expect(screen.getByText("Your full name")).toBeInTheDocument();
   });
 
-  it("renders error and suppresses help text when both are provided", () => {
+  test("renders error and suppresses help text when both are provided", () => {
     render(
       <FormField error="Required" helpText="Your full name" label="Name" testId="field">
         <input id="name" />
@@ -149,7 +149,7 @@ describe("FormField", () => {
     expect(screen.queryByText("Your full name")).not.toBeInTheDocument();
   });
 
-  it("renders no trailing text when neither error nor helpText is provided", () => {
+  test("renders no trailing text when neither error nor helpText is provided", () => {
     render(
       <FormField label="Name" testId="field">
         <input id="name" />
@@ -162,7 +162,7 @@ describe("FormField", () => {
     expect(spans.length).toBe(0);
   });
 
-  it("attaches htmlFor to the label for accessibility", () => {
+  test("attaches htmlFor to the label for accessibility", () => {
     render(
       <FormField htmlFor="name-input" label="Name" testId="field">
         <input id="name-input" />
@@ -175,7 +175,7 @@ describe("FormField", () => {
 });
 
 describe("FormSubmit", () => {
-  it("renders a submit-typed button by default", () => {
+  test("renders a submit-typed button by default", () => {
     render(<FormSubmit testId="submit">Save</FormSubmit>);
     const button = screen.getByTestId("submit");
     expect(button.tagName).toBe("BUTTON");
@@ -183,7 +183,7 @@ describe("FormSubmit", () => {
     expect(button.textContent).toBe("Save");
   });
 
-  it('defaults to "Submit" when no children are provided', () => {
+  test('defaults to "Submit" when no children are provided', () => {
     render(<FormSubmit testId="submit" />);
     expect(screen.getByTestId("submit").textContent).toBe("Submit");
   });

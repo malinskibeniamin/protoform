@@ -1,6 +1,6 @@
 import { create, setExtension } from "@bufbuild/protobuf";
 import { MessageOptionsSchema } from "@bufbuild/protobuf/wkt";
-import { afterEach, beforeEach, describe, expect, it, rs } from "@rstest/core";
+import { afterEach, beforeEach, describe, expect, rs } from "@rstest/core";
 import { render, screen } from "@testing-library/react";
 
 import { AutoFormExampleSchema } from "../../../lib/protobuf-provider/gen/auto-form-example_pb";
@@ -28,14 +28,14 @@ describe("AutoForm root header", () => {
     AutoFormExampleSchema.proto.options = originalOptions;
   });
 
-  it("renders schema metadata by default", () => {
+  test("renders schema metadata by default", () => {
     render(<AutoForm schema={AutoFormExampleSchema} />);
 
     expect(screen.getByRole("heading", { name: "Request settings" })).toBeInTheDocument();
     expect(screen.getByText("Configure the request.")).toBeInTheDocument();
   });
 
-  it("uses a host renderer with the resolved root metadata", () => {
+  test("uses a host renderer with the resolved root metadata", () => {
     const renderRootHeader = rs.fn(({ title, description }) => (
       <aside aria-label="Form introduction">
         {title ?? "Untitled"}: {description ?? "No description"}
@@ -53,13 +53,13 @@ describe("AutoForm root header", () => {
     );
   });
 
-  it("can hide the root header without invoking a host renderer", () => {
+  test("can hide the root header without invoking a host renderer", () => {
     const renderRootHeader = rs.fn(() => <div>Hidden introduction</div>);
 
     render(<AutoForm renderRootHeader={renderRootHeader} rootHeader="hidden" schema={AutoFormExampleSchema} />);
 
     expect(renderRootHeader).not.toHaveBeenCalled();
     expect(screen.queryByText("Hidden introduction")).not.toBeInTheDocument();
-    expect(screen.getByRole("textbox", { name: /username/i })).toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: /username/iu })).toBeInTheDocument();
   });
 });

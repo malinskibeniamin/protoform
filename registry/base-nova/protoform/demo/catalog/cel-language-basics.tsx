@@ -21,7 +21,7 @@ export function CelLanguageBasicsDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Change scalar values so the cross-field expression moves between valid and invalid states."}
+        Change scalar values so the cross-field expression moves between valid and invalid states.
       </p>
       <AutoForm
         defaultValues={defaultValues}

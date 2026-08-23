@@ -43,7 +43,7 @@ const toggleVariants = cva(
   }
 );
 
-function getPositionClasses(attached: boolean, position: GroupPosition | undefined, orientation: Orientation): string {
+function getPositionClasses(attached: boolean, position: GroupPosition | undefined, orientation: Orientation) {
   if (!(attached && position)) {
     return "rounded-md";
   }
@@ -153,6 +153,8 @@ function ToggleGroup({
   orientation = "horizontal",
   ...props
 }: ToggleGroupProps) {
+  "use no memo";
+
   const isMultiple = type === "multiple";
   const isHorizontal = orientation !== "vertical";
 
@@ -345,8 +347,8 @@ const ToggleGroupItem = React.forwardRef<HTMLButtonElement, ToggleGroupItemProps
       registerItem,
     } = useToggleGroup();
 
-    const positionClasses = getPositionClasses(Boolean(attached), position, orientation);
-    const isVerticalAttached = orientation === "vertical" && Boolean(attached);
+    const positionClasses = getPositionClasses(attached, position, orientation);
+    const isVerticalAttached = orientation === "vertical" && attached;
     const isSingle = type === "single";
 
     // Combined ref: registers the DOM node with the parent group (keyed by

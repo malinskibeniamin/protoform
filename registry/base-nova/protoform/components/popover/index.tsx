@@ -176,6 +176,8 @@ interface PopoverAnchorProps {
 }
 
 function PopoverAnchor({ asChild, children, render }: PopoverAnchorProps) {
+  "use no memo";
+
   const ctx = React.useContext(PopoverAnchorContext);
 
   const setRef = React.useCallback(

@@ -21,7 +21,7 @@ export function CelExecutionDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Edit several values; the same compiled expression plan validates every change."}
+        Edit several values; the same compiled expression plan validates every change.
       </p>
       <AutoForm
         defaultValues={defaultValues}

@@ -1,4 +1,4 @@
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 
 import "@/registry/base-nova/protoform/lib/protobuf-provider/auto-form-example-annotations";
 
@@ -7,7 +7,7 @@ import { protoConversionOptionsFromFieldConfig, resolveSchema } from "../schema"
 import { createMockProvider } from "./test-utils";
 
 describe("resolveSchema", () => {
-  it("maps per-field repeated-string policies to descriptor paths", () => {
+  test("maps per-field repeated-string policies to descriptor paths", () => {
     expect(
       protoConversionOptionsFromFieldConfig({
         aliases: { emptyRepeatedStringPolicy: "preserve" },
@@ -21,13 +21,13 @@ describe("resolveSchema", () => {
       },
     });
   });
-  it("throws for unsupported input types", () => {
+  test("throws for unsupported input types", () => {
     expect(() => resolveSchema("not a schema" as never)).toThrow("Unsupported AutoForm schema input");
     expect(() => resolveSchema(42 as never)).toThrow("Unsupported");
     expect(() => resolveSchema({ random: "object" } as never)).toThrow("Unsupported");
   });
 
-  it("resolves a SchemaProvider", () => {
+  test("resolves a SchemaProvider", () => {
     const provider = createMockProvider([{ key: "name", required: true, type: "string" }]);
 
     const resolved = resolveSchema(provider);
@@ -37,7 +37,7 @@ describe("resolveSchema", () => {
     expect(resolved.protoDesc).toBeUndefined();
   });
 
-  it("resolves a proto descriptor without coupling the shared schema seam to an engine", () => {
+  test("resolves a proto descriptor without coupling the shared schema seam to an engine", () => {
     const resolved = resolveSchema(AutoFormExampleSchema);
     expect(resolved.isProto).toBe(true);
     expect(resolved.protoDesc).toBe(AutoFormExampleSchema);

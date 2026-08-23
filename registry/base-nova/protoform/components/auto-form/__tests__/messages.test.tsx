@@ -1,4 +1,4 @@
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
@@ -6,7 +6,7 @@ import { AutoForm } from "../index";
 import { createMockProvider } from "./test-utils";
 
 describe("AutoForm runtime messages", () => {
-  it("formats Protoform-owned submit copy through stable message codes", () => {
+  test("formats Protoform-owned submit copy through stable message codes", () => {
     const schema = createMockProvider([{ key: "name", required: true, type: "string" }]);
 
     render(
@@ -20,7 +20,7 @@ describe("AutoForm runtime messages", () => {
     expect(screen.getByRole("button", { name: "Send translated" })).toBeVisible();
   });
 
-  it("formats Protoform-owned ARIA labels", () => {
+  test("formats Protoform-owned ARIA labels", () => {
     const schema = createMockProvider(
       [
         {
@@ -49,7 +49,7 @@ describe("AutoForm runtime messages", () => {
     expect(screen.getByRole("button", { name: "Remove translated" })).toBeVisible();
   });
 
-  it("formats a provider empty state", async () => {
+  test("formats a provider empty state", async () => {
     const user = userEvent.setup();
     const schema = createMockProvider([
       {
@@ -74,7 +74,7 @@ describe("AutoForm runtime messages", () => {
     expect(screen.getByText("Nothing translated")).toBeVisible();
   });
 
-  it("formats a static multiselect placeholder", () => {
+  test("formats a static multiselect placeholder", () => {
     const schema = createMockProvider([
       {
         key: "regions",
@@ -96,7 +96,7 @@ describe("AutoForm runtime messages", () => {
     expect(screen.getByText("Choose translated")).toBeVisible();
   });
 
-  it("formats step navigation and progress copy", () => {
+  test("formats step navigation and progress copy", () => {
     const schema = createMockProvider([{ key: "name", required: true, type: "string" }]);
     const translations: Record<string, string> = {
       "auto_form.continue": "Continue translated",

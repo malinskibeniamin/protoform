@@ -6,7 +6,7 @@ const CONDITIONAL_FUNCTION = "_?_:_";
 const INDEX_FUNCTION = "_[_]";
 const COST_FUNCTION = "protoform.consume_cost";
 const UNKNOWN_ERROR_PREFIX = "protoform unknown attribute: ";
-const CEL_IDENTIFIER_PATTERN = /^[A-Za-z_][A-Za-z0-9_]*$/;
+const CEL_IDENTIFIER_PATTERN = /^[A-Za-z_][A-Za-z0-9_]*$/u;
 
 export const DEFAULT_CEL_MAX_COST = 10_000;
 

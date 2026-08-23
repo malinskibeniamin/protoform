@@ -55,6 +55,16 @@
           "type": "registry:component"
         },
         {
+          "path": "registry/base-nova/protoform/demo/bookstore/bookstore-workspace.tsx",
+          "target": "~/components/protoform-bookstore/bookstore-workspace.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/demo/bookstore/book-detail.tsx",
+          "target": "~/components/protoform-bookstore/book-detail.tsx",
+          "type": "registry:component"
+        },
+        {
           "path": "registry/base-nova/protoform/demo/bookstore/create-book-form.tsx",
           "target": "~/components/protoform-bookstore/create-book-form.tsx",
           "type": "registry:component"
@@ -67,6 +77,11 @@
         {
           "path": "registry/base-nova/protoform/demo/bookstore/delete-book-form.tsx",
           "target": "~/components/protoform-bookstore/delete-book-form.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/demo/bookstore/delete-submit-button.tsx",
+          "target": "~/components/protoform-bookstore/delete-submit-button.tsx",
           "type": "registry:component"
         },
         {

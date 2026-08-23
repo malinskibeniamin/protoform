@@ -4,10 +4,12 @@ import type { FormValues } from "../../lib/core/index.js";
 import {
   humanizeValidationError,
   isGenericValidationMessage,
+} from "../../lib/protobuf-provider/humanize-validation-error.js";
+import {
   PROTO_FORM_ROOT_ERROR_KEY,
   type ProtoFormOptions,
   validateFormValuesAgainstProtoSchema,
-} from "../../lib/protobuf-provider/index.js";
+} from "../../lib/protobuf-provider/provider.js";
 import { createDescriptorAwareStandardSchema } from "../../lib/protobuf-provider/validation-schema.js";
 
 function validateFieldNatively(ref: HTMLInputElement, path: string, errors: Record<string, FieldError>) {
@@ -32,8 +34,8 @@ function validateFieldsNatively(errors: Record<string, FieldError>, options: Res
 }
 
 function isFieldArrayRoot(names: string[], path: string): boolean {
-  const escapedPath = path.replace(/[[\]]/g, "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  return names.some((name) => name.replace(/[[\]]/g, "").match(`^${escapedPath}\\.\\d+`));
+  const escapedPath = path.replace(/[[\]]/gu, "").replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
+  return names.some((name) => name.replace(/[[\]]/gu, "").match(`^${escapedPath}\\.\\d+`));
 }
 
 function toNestErrors(

@@ -4,15 +4,15 @@ import type { ParsedField, SchemaValidation } from "./core-types";
 import { getLabel, getPathInObject, sortFieldsByOrder } from "./field-utils";
 import type { AutoFormOptionGroup, AutoFormOptionItem, AutoFormUiRule, FieldTypes } from "./types";
 
-export const NUMERIC_OPTION_PATTERN = /^-?\d+$/;
-export const FIELD_MASK_PATH_SPLIT_PATTERN = /[\n,]/;
+export const NUMERIC_OPTION_PATTERN = /^-?\d+$/u;
+export const FIELD_MASK_PATH_SPLIT_PATTERN = /[\n,]/u;
 
-export const SECRET_FIELD_PATTERN = /(password|secret|token|api[_-]?key|private[_-]?key|credential)/i;
-export const CONSENT_FIELD_PATTERN = /(accept|agree|consent|terms|policy|opt[-_ ]?in)/i;
-export const URL_FIELD_PATTERN = /(url|uri|website|homepage|link)/i;
-export const EMAIL_FIELD_PATTERN = /(email|e-mail)/i;
-export const CURRENCY_FIELD_PATTERN = /(amount|price|cost|balance|budget|revenue|salary|subtotal|total)/i;
-export const LONG_TEXT_FIELD_PATTERN = /(bio|description|details|notes?|summary|message|comment)/i;
+export const SECRET_FIELD_PATTERN = /(password|secret|token|api[_-]?key|private[_-]?key|credential)/iu;
+export const CONSENT_FIELD_PATTERN = /(accept|agree|consent|terms|policy|opt[-_ ]?in)/iu;
+export const URL_FIELD_PATTERN = /(url|uri|website|homepage|link)/iu;
+export const EMAIL_FIELD_PATTERN = /(email|e-mail)/iu;
+export const CURRENCY_FIELD_PATTERN = /(amount|price|cost|balance|budget|revenue|salary|subtotal|total)/iu;
+export const LONG_TEXT_FIELD_PATTERN = /(bio|description|details|notes?|summary|message|comment)/iu;
 
 export function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value && typeof value === "object" && !Array.isArray(value));
@@ -286,7 +286,7 @@ export function createEmptyFieldValue(field: ParsedField | undefined): unknown {
     case "boolean":
       return protoData?.supportsUnset && !field.required ? undefined : false;
     case "select":
-      if (field.required && field.options?.length) {
+      if (field.required && field.options && field.options.length > 0) {
         const firstOptionValue = field.options[0]?.[0];
         return firstOptionValue ? Number(firstOptionValue) || firstOptionValue : undefined;
       }
@@ -412,7 +412,7 @@ export function resolveRenderFieldType<TFieldType extends string = string>(
 
   if (field.type === "array") {
     const itemField = field.schema?.[0];
-    if (itemField?.type === "select" && itemField.options?.length) {
+    if (itemField?.type === "select" && itemField.options && itemField.options.length > 0) {
       return "multiselect";
     }
     if (isSimpleKeyValueLikeObject(itemField)) {
@@ -548,7 +548,7 @@ export function getFieldDescriptionText(field: ParsedField): string | undefined 
 
 function hasSimpleRequiredCount(field: ParsedField): boolean {
   const hints = getFieldHints(field);
-  return Boolean((hints?.minItems ?? 0) > 0 || (hints?.minPairs ?? 0) > 0);
+  return (hints?.minItems ?? 0) > 0 || (hints?.minPairs ?? 0) > 0;
 }
 
 /**
@@ -582,7 +582,7 @@ export function deriveSimpleFields<TFieldType extends string = string>(
       const isSimple = classification === "simple";
 
       if (field.type === "object") {
-        if (isSimple && !hasRequiredDescendants && field.schema?.length) {
+        if (isSimple && !hasRequiredDescendants && field.schema && field.schema.length > 0) {
           return [{ ...field, schema: field.schema }];
         }
         if (isSimple || hasRequiredDescendants) {
@@ -616,7 +616,9 @@ export function collectLeafFieldPaths(fields: ParsedField[], path: string[] = []
     const renderType = resolveRenderFieldType(field);
 
     if (renderType === "object" || renderType === "array" || renderType === "map" || renderType === "oneof") {
-      return field.schema?.length ? collectLeafFieldPaths(field.schema, nextPath) : [nextPath.join(".")];
+      return field.schema && field.schema.length > 0
+        ? collectLeafFieldPaths(field.schema, nextPath)
+        : [nextPath.join(".")];
     }
 
     return [nextPath.join(".")];
@@ -639,7 +641,7 @@ export function filterFieldsByPaths(fields: ParsedField[], paths: string[], curr
         return [];
       }
 
-      if (!field.schema?.length || matchesDirectly) {
+      if (!field.schema || field.schema.length === 0 || matchesDirectly) {
         return [
           {
             ...field,
@@ -662,7 +664,7 @@ export function projectValuesToFields(values: Record<string, unknown>, fields: P
       continue;
     }
 
-    if (field.type === "object" && isRecord(value) && field.schema?.length) {
+    if (field.type === "object" && isRecord(value) && field.schema && field.schema.length > 0) {
       projected[field.key] = projectValuesToFields(value, field.schema);
       continue;
     }

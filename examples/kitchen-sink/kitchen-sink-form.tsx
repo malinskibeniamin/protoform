@@ -1,18 +1,18 @@
 "use client";
 
-import { create, isMessage } from "@bufbuild/protobuf";
+import { create } from "@bufbuild/protobuf";
 import { timestampFromDate } from "@bufbuild/protobuf/wkt";
 import React from "react";
 
 import { Alert, AlertDescription, AlertTitle } from "@/registry/base-nova/protoform/components/alert";
 import { AutoForm, type AutoFormStep } from "@/registry/base-nova/protoform/components/auto-form";
-import { Heading, Text } from "@/registry/base-nova/protoform/components/typography";
 
 import {
   KitchenSinkEnvironment,
   type SubmitKitchenSinkFormRequest,
   SubmitKitchenSinkFormRequestSchema,
 } from "../gen/protoform/examples/v1/forms_pb.js";
+import { KitchenSinkSummary } from "./kitchen-sink-summary.js";
 
 export const client = "only";
 
@@ -90,38 +90,6 @@ const defaultValues = create(SubmitKitchenSinkFormRequestSchema, {
   windowEnd: timestampFromDate(new Date("2026-08-01T12:00:00Z")),
   windowStart: timestampFromDate(new Date("2026-08-01T10:00:00Z")),
 });
-
-function KitchenSinkSummary({ payload }: { payload: unknown }) {
-  if (!isMessage(payload, SubmitKitchenSinkFormRequestSchema)) {
-    return null;
-  }
-
-  return (
-    <div className="space-y-3 rounded-2xl border bg-background p-5 shadow-xs">
-      <Heading level={3}>Policy summary</Heading>
-      <div className="grid gap-3 text-sm sm:grid-cols-3">
-        <div>
-          <Text className="text-muted-foreground" variant="small">
-            Regions
-          </Text>
-          <p className="font-medium">{payload.regions.length}</p>
-        </div>
-        <div>
-          <Text className="text-muted-foreground" variant="small">
-            Services
-          </Text>
-          <p className="font-medium">{payload.services.length}</p>
-        </div>
-        <div>
-          <Text className="text-muted-foreground" variant="small">
-            Rollout stages
-          </Text>
-          <p className="font-medium">{payload.rolloutPercentages.join(" → ")}%</p>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export default function KitchenSinkFormExample() {
   const [acceptedOrganization, setAcceptedOrganization] = React.useState<string>();

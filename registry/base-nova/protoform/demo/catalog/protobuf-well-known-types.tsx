@@ -21,7 +21,7 @@ export function ProtobufWellKnownTypesDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Change time, duration, and mask values, then submit their protobuf representation."}
+        Change time, duration, and mask values, then submit their protobuf representation.
       </p>
       <AutoForm
         defaultValues={defaultValues}

@@ -119,7 +119,7 @@ export const TagsTrigger = ({ className, children, testId, ...props }: TagsTrigg
     >
       <div className="flex flex-wrap items-center gap-1">
         {children}
-        <span className="px-2 py-px text-muted-foreground">Select a tag...</span>
+        <span className="px-2 py-px text-muted-foreground">Select a tag…</span>
       </div>
     </Button>
   </PopoverTrigger>
@@ -148,14 +148,16 @@ export const TagsValue = ({
     >
       <span className="leading-tight">{children}</span>
       {onRemove ? (
-        <button
+        <Button
           aria-label="Remove tag"
           className="size-auto cursor-pointer border-0 bg-transparent p-0 transition-opacity hover:opacity-70"
           onClick={handleRemove}
+          size="icon-xs"
           type="button"
+          variant="ghost"
         >
           <XIcon className="text-muted-foreground" size={12} />
-        </button>
+        </Button>
       ) : null}
     </span>
   );

@@ -15,12 +15,14 @@ import {
 } from "@tanstack/react-form-v2";
 import {
   createUpdateMask as createDirtyUpdateMask,
-  createProtoFormSchema,
   dirtyFieldsFromValues,
+} from "../../lib/protobuf-provider/field-mask";
+import { createProtoFormSchema } from "../../lib/protobuf-provider/form-schema";
+import {
   formValuesToProto,
   type ProtoConversionOptions,
   type ProtoFormOptions,
-} from "../../lib/protobuf-provider";
+} from "../../lib/protobuf-provider/provider";
 
 type FormValues = Record<string, unknown>;
 

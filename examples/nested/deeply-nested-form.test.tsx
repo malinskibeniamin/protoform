@@ -1,10 +1,10 @@
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 import { render, screen } from "@testing-library/react";
 
 import DeeplyNestedFormExample from "./deeply-nested-form.js";
 
 describe("DeeplyNestedFormExample", () => {
-  it("renders a six-level protobuf contract from one AutoForm", () => {
+  test("renders a six-level protobuf contract from one AutoForm", () => {
     render(<DeeplyNestedFormExample />);
 
     expect(screen.getByRole("heading", { name: "Configure a platform blueprint" })).toBeInTheDocument();

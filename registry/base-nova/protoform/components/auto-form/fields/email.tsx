@@ -12,7 +12,7 @@ function EmailFieldComponent(props: AutoFormFieldProps) {
   return (
     <StringLikeInput
       error={props.error}
-      icon={<MailIcon className="h-4 w-4" />}
+      icon={<MailIcon className="size-4" />}
       id={props.id}
       inputProps={props.inputProps}
       placeholder={getFieldUiConfig(props.field).placeholder}

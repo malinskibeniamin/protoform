@@ -1,17 +1,17 @@
-import { beforeEach, describe, expect, it } from "@rstest/core";
+import { beforeEach, describe, expect } from "@rstest/core";
 import { fireEvent, render, screen } from "@testing-library/react";
 
 import { DemoHub } from "./demo-hub";
 
-const autoFormSource = /AutoForm/;
-const demoSchemaSource = /getDemoSchema/;
+const autoFormSource = /AutoForm/u;
+const demoSchemaSource = /getDemoSchema/u;
 
 describe("DemoHub", () => {
   beforeEach(() => {
     window.history.replaceState(null, "", "/docs/protobuf-examples");
   });
 
-  it("opens a directly linked demo and keeps selection in the URL", async () => {
+  test("opens a directly linked demo and keeps selection in the URL", async () => {
     window.history.replaceState(null, "", "/docs/protobuf-examples#protobuf-oneof");
 
     render(<DemoHub category="protobuf" />);
@@ -31,7 +31,7 @@ describe("DemoHub", () => {
     expect(screen.getByRole("heading", { name: "Protobuf maps" })).toBeInTheDocument();
   });
 
-  it("keeps the selected demo source available without a wrapper page", async () => {
+  test("keeps the selected demo source available without a wrapper page", async () => {
     window.history.replaceState(null, "", "/docs/cel-examples#cel-safe-evaluation");
 
     render(<DemoHub category="cel" />);

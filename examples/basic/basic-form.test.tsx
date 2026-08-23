@@ -1,12 +1,12 @@
-import { afterEach, describe, expect, it } from "@rstest/core";
+import { afterEach, describe, expect } from "@rstest/core";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { buildExampleServer } from "../server/server.js";
 import ServerErrorFormExample from "./basic-form.js";
 
-const displayNamePattern = /display name/i;
-const emailPattern = /email/i;
+const displayNamePattern = /display name/iu;
+const emailPattern = /email/iu;
 
 let closeServer: (() => Promise<void>) | undefined;
 
@@ -16,7 +16,7 @@ afterEach(async () => {
 });
 
 describe("server-error form example", () => {
-  it("shows protobuf help in an accessible field tooltip", async () => {
+  test("shows protobuf help in an accessible field tooltip", async () => {
     const user = userEvent.setup();
 
     render(<ServerErrorFormExample />);
@@ -28,7 +28,7 @@ describe("server-error form example", () => {
     );
   });
 
-  it("submits through an in-browser service when no server URL is provided", async () => {
+  test("submits through an in-browser service when no server URL is provided", async () => {
     const user = userEvent.setup();
 
     render(<ServerErrorFormExample />);
@@ -40,8 +40,8 @@ describe("server-error form example", () => {
     expect(await screen.findByRole("status")).toHaveTextContent("profiles/ada-lovelace");
   });
 
-  it("submits a generated protobuf message to the local Connect server", async () => {
-    const server = await buildExampleServer();
+  test("submits a generated protobuf message to the local Connect server", async () => {
+    const server = buildExampleServer();
     const address = await server.listen({ host: "127.0.0.1", port: 0 });
     closeServer = () => server.close();
     const user = userEvent.setup();
@@ -55,8 +55,8 @@ describe("server-error form example", () => {
     expect(await screen.findByRole("status")).toHaveTextContent("profiles/ada-lovelace");
   });
 
-  it("maps structured server details back to the generated field", async () => {
-    const server = await buildExampleServer();
+  test("maps structured server details back to the generated field", async () => {
+    const server = buildExampleServer();
     const address = await server.listen({ host: "127.0.0.1", port: 0 });
     closeServer = () => server.close();
     const user = userEvent.setup();

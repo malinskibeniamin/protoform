@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 
 interface RegistryItem {
   dependencies?: string[];
@@ -25,7 +25,7 @@ function filePaths(registryItem: RegistryItem): string[] {
 }
 
 describe("native form adapter registry entries", () => {
-  it("keeps the shared AutoForm core independent from form engines", () => {
+  test("keeps the shared AutoForm core independent from form engines", () => {
     const core = item("auto-form-core");
 
     expect(core.dependencies).not.toContain("react-hook-form");
@@ -37,7 +37,7 @@ describe("native form adapter registry entries", () => {
     expect(filePaths(core)).not.toContain("registry/base-nova/protoform/components/auto-form/adapters/tanstack-v2.tsx");
   });
 
-  it("ships React Hook Form as the default AutoForm adapter", () => {
+  test("ships React Hook Form as the default AutoForm adapter", () => {
     const reactHookForm = item("auto-form");
 
     expect(reactHookForm.registryDependencies).toEqual(["@protoform/auto-form-core", "@protoform/use-proto-form"]);
@@ -47,7 +47,7 @@ describe("native form adapter registry entries", () => {
     );
   });
 
-  it("ships TanStack Form without pulling React Hook Form", () => {
+  test("ships TanStack Form without pulling React Hook Form", () => {
     const tanstackHook = item("use-proto-form-tanstack");
     const tanstackAutoForm = item("auto-form-tanstack");
 
@@ -64,7 +64,7 @@ describe("native form adapter registry entries", () => {
     );
   });
 
-  it("ships TanStack Form v2 as separate experimental registry items", () => {
+  test("ships TanStack Form v2 as separate experimental registry items", () => {
     const packageAlias = "@tanstack/react-form-v2@npm:@tanstack/react-form@2.0.0-alpha.2";
     const tanstackHook = item("use-proto-form-tanstack-v2");
     const tanstackAutoForm = item("auto-form-tanstack-v2");
@@ -82,7 +82,7 @@ describe("native form adapter registry entries", () => {
     );
   });
 
-  it("ships React Hook Form v8 as separate experimental registry items", () => {
+  test("ships React Hook Form v8 as separate experimental registry items", () => {
     const packageAlias = "react-hook-form-v8@npm:react-hook-form@8.0.0-beta.3";
     const reactHookFormHook = item("use-proto-form-v8");
     const reactHookFormAutoForm = item("auto-form-react-hook-form-v8");

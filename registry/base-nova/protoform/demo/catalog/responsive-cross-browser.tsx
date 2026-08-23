@@ -21,7 +21,7 @@ export function ResponsiveCrossBrowserDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Resize the page to a narrow viewport and complete the same form without horizontal loss."}
+        Resize the page to a narrow viewport and complete the same form without horizontal loss.
       </p>
       <AutoForm
         defaultValues={defaultValues}

@@ -28,34 +28,36 @@ function RadioFieldComponent({ error, field, id, inputProps, label }: AutoFormFi
       testId={testIds.control}
       value={value}
     >
-      {(optionGroups?.length ? optionGroups : [{ label: undefined, options: flatOptions }]).map((group) => (
-        <div
-          className="space-y-2"
-          data-testid={testIds.group(String(group.label ?? group.options.map((option) => option.value).join("-")))}
-          key={`${field.key}-group-${String(group.label ?? group.options.map((option) => option.value).join("-"))}`}
-        >
-          {group.label ? (
-            <Text as="div" className="text-muted-foreground" variant="small">
-              {group.label}
-            </Text>
-          ) : null}
-          <div className="grid gap-3 sm:grid-cols-2">
-            {group.options.map((option) => (
-              <RadioGroupItem
-                data-selected={String(option.value === value)}
-                disabled={inputProps["disabled"]}
-                id={`${field.key}-${option.value}`}
-                key={option.value}
-                testId={testIds.option(option.value)}
-                value={option.value}
-                variant="card"
-              >
-                {renderOptionLabel(option)}
-              </RadioGroupItem>
-            ))}
+      {(optionGroups && optionGroups.length > 0 ? optionGroups : [{ label: undefined, options: flatOptions }]).map(
+        (group) => (
+          <div
+            className="space-y-2"
+            data-testid={testIds.group(String(group.label ?? group.options.map((option) => option.value).join("-")))}
+            key={`${field.key}-group-${String(group.label ?? group.options.map((option) => option.value).join("-"))}`}
+          >
+            {group.label ? (
+              <Text as="div" className="text-muted-foreground" variant="small">
+                {group.label}
+              </Text>
+            ) : null}
+            <div className="grid gap-3 sm:grid-cols-2">
+              {group.options.map((option) => (
+                <RadioGroupItem
+                  data-selected={String(option.value === value)}
+                  disabled={inputProps["disabled"]}
+                  id={`${field.key}-${option.value}`}
+                  key={option.value}
+                  testId={testIds.option(option.value)}
+                  value={option.value}
+                  variant="card"
+                >
+                  {renderOptionLabel(option)}
+                </RadioGroupItem>
+              ))}
+            </div>
           </div>
-        </div>
-      ))}
+        )
+      )}
     </RadioGroup>
   );
 }

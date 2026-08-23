@@ -1,4 +1,4 @@
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 
 import { syncScrollableCodeBlocks } from "./scrollable-code-blocks";
 
@@ -17,7 +17,7 @@ function setDimensions(
 }
 
 describe("syncScrollableCodeBlocks", () => {
-  it("adds keyboard access only while a code block overflows", () => {
+  test("adds keyboard access only while a code block overflows", () => {
     const root = document.createElement("div");
     root.className = "prose";
     root.innerHTML = "<pre><code>long line</code></pre>";
@@ -46,7 +46,7 @@ describe("syncScrollableCodeBlocks", () => {
     expect(code).not.toHaveAttribute("tabindex");
   });
 
-  it("preserves an author-provided tab stop", () => {
+  test("preserves an author-provided tab stop", () => {
     const root = document.createElement("div");
     root.className = "prose";
     root.innerHTML = '<pre><code tabindex="0">short line</code></pre>';

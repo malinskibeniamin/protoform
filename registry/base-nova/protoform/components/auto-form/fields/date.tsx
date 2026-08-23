@@ -48,7 +48,7 @@ function DateFieldComponent({ error, field, id, inputProps, label }: AutoFormFie
               disabled={inputProps["disabled"]}
               testId={`${controlTestId}-calendar`}
             >
-              <CalendarIcon className="h-4 w-4" />
+              <CalendarIcon className="size-4" />
             </InputGroupButton>
           </PopoverTrigger>
         </InputGroupAddon>
@@ -94,7 +94,7 @@ function TimestampFieldComponent({ error, field, id, inputProps, label }: AutoFo
       <InputGroup testId={testIds.controlPart("time")}>
         <InputGroupAddon>
           <InputGroupText>
-            <Clock3Icon className="h-4 w-4" />
+            <Clock3Icon className="size-4" />
           </InputGroupText>
         </InputGroupAddon>
         <InputGroupInput

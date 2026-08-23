@@ -1,6 +1,6 @@
 import { execFileSync } from "node:child_process";
 import { mkdirSync, readFileSync, rmSync, statSync } from "node:fs";
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 
 const external = [
   "@bufbuild/*",
@@ -39,7 +39,7 @@ const entries = [
 ] as const;
 
 describe("bundle budgets", () => {
-  it("enforces registry runtime and example budgets", () => {
+  test("enforces registry runtime and example budgets", () => {
     const outputDirectory = ".tmp/bundle-budget";
     rmSync(outputDirectory, { force: true, recursive: true });
     mkdirSync(outputDirectory, { recursive: true });

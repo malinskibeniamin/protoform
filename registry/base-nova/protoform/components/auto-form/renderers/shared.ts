@@ -41,7 +41,10 @@ export function useFieldPresentation(field: ParsedField, path: string[], inherit
   const isHidden = isFieldHidden(field, deprecatedFields);
   const isImmutable = Boolean(customData["immutable"]);
   const isVisible = !isHidden && evaluateRules(uiConfig.visibleWhen, fieldValue);
-  const isDisabledByRule = uiConfig.disabledWhen?.length ? evaluateRules(uiConfig.disabledWhen, fieldValue) : false;
+  const isDisabledByRule =
+    uiConfig.disabledWhen && uiConfig.disabledWhen.length > 0
+      ? evaluateRules(uiConfig.disabledWhen, fieldValue)
+      : false;
   const isDisabled =
     inheritedDisabled ||
     isDisabledByRule ||
@@ -59,7 +62,7 @@ export function useFieldPresentation(field: ParsedField, path: string[], inherit
 }
 
 export function cloneFieldForCompactRow(field: ParsedField): ParsedField {
-  const label = String(getLabel(field));
+  const label = getLabel(field);
 
   const existingCustomData = (field.fieldConfig?.customData ?? {}) as Record<string, unknown>;
   const existingUi = (existingCustomData["ui"] ?? {}) as Record<string, unknown>;
@@ -94,7 +97,7 @@ export function getRenderedLabel(field: ParsedField): string {
     return field.fieldConfig.label;
   }
 
-  return String(getLabel(field));
+  return getLabel(field);
 }
 
 export function isComplexCollectionField(field: ParsedField | undefined): boolean {

@@ -21,7 +21,7 @@ export function AsyncCancellationDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Change the validated value repeatedly; only the latest result may update the form."}
+        Change the validated value repeatedly; only the latest result may update the form.
       </p>
       <AutoForm
         defaultValues={defaultValues}

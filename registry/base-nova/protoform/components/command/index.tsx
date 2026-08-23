@@ -14,28 +14,25 @@ import { Popover, PopoverAnchor, PopoverContent } from "@/registry/base-nova/pro
 import { Text } from "@/registry/base-nova/protoform/components/typography";
 import { cn, type FixedPositionContentProps, type SharedProps } from "@/registry/base-nova/protoform/lib/utils";
 
-const commandVariants = cva(
-  "flex h-full w-full flex-col overflow-hidden rounded-md bg-popover text-popover-foreground",
-  {
-    defaultVariants: {
-      size: "md",
-      variant: "elevated",
+const commandVariants = cva("flex size-full flex-col overflow-hidden rounded-md bg-popover text-popover-foreground", {
+  defaultVariants: {
+    size: "md",
+    variant: "elevated",
+  },
+  variants: {
+    size: {
+      full: "w-full",
+      lg: "min-w-[500px] max-w-2xl",
+      md: "min-w-[400px] max-w-lg md:min-w-[450px]",
+      sm: "min-w-[300px] max-w-sm",
     },
-    variants: {
-      size: {
-        full: "w-full",
-        lg: "min-w-[500px] max-w-2xl",
-        md: "min-w-[400px] max-w-lg md:min-w-[450px]",
-        sm: "min-w-[300px] max-w-sm",
-      },
-      variant: {
-        dialog: "",
-        elevated: "!border-input border shadow-md",
-        minimal: "",
-      },
+    variant: {
+      dialog: "",
+      elevated: "!border-input border shadow-md",
+      minimal: "",
     },
-  }
-);
+  },
+});
 
 interface CommandProps
   extends React.ComponentProps<typeof CommandPrimitive>,
@@ -89,7 +86,7 @@ function CommandDialog(commandDialogProps: CommandDialogProps) {
         {...openAutoFocusProps}
       >
         <Command
-          className="**:data-[slot=command-input-wrapper]:h-12 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5"
+          className="**:data-[slot=command-input-wrapper]:h-12 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:size-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:size-5"
           variant="dialog"
         >
           {children}

@@ -35,14 +35,14 @@ const ACRONYMS: Record<string, string> = {
 };
 
 function applyAcronyms(label: string): string {
-  return label.replace(/\b[A-Za-z]+\b/g, (word) => ACRONYMS[word.toLowerCase()] ?? word);
+  return label.replace(/\b[A-Za-z]+\b/gu, (word) => ACRONYMS[word.toLowerCase()] ?? word);
 }
 
 function beautifyLabel(label: string): string {
   if (!label) {
     return "";
   }
-  let output = label.replace(/([A-Z])/g, " $1");
+  let output = label.replace(/([A-Z])/gu, " $1");
   output = output.charAt(0).toUpperCase() + output.slice(1);
   if (!Number.isNaN(Number(output))) {
     return "";

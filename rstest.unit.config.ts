@@ -9,6 +9,14 @@ export default defineConfig({
   ],
   globals: true,
   include: ["registry/**/*.test.ts", "examples/**/*.test.ts", "scripts/**/*.test.ts"],
-  plugins: [pluginReact()],
+  plugins: [
+    pluginReact({
+      reactCompiler: {
+        compilationMode: "infer",
+        panicThreshold: "all_errors",
+        target: "19",
+      },
+    }),
+  ],
   testEnvironment: "node",
 });

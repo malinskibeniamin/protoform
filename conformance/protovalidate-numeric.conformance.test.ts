@@ -1,6 +1,6 @@
 // @rstest-environment node
 
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 
 import { createProtoFormSchema } from "../registry/base-nova/protoform/lib/protobuf-provider/index.js";
 import { FloatDoubleRulesSchema, IntegerRulesSchema } from "./gen/protoform/conformance/v1/conformance_pb.js";
@@ -22,7 +22,7 @@ async function expectInvalid(schema: ReturnType<typeof createProtoFormSchema>, f
 }
 
 describe("Protovalidate numeric rule conformance", () => {
-  it.each(["float", "double"])(
+  test.each(["float", "double"])(
     "enforces const, comparisons, membership, finite values, and reversed ranges for %s",
     async (kind) => {
       const schema = createProtoFormSchema(FloatDoubleRulesSchema);
@@ -45,7 +45,7 @@ describe("Protovalidate numeric rule conformance", () => {
     }
   );
 
-  it.each([
+  test.each([
     ["int32", false],
     ["sint32", false],
     ["sfixed32", false],
@@ -70,7 +70,7 @@ describe("Protovalidate numeric rule conformance", () => {
     await expectInvalid(schema, `${kind}Reversed`, value(7));
   });
 
-  it.each([
+  test.each([
     ["uint32", false],
     ["fixed32", false],
     ["uint64", true],

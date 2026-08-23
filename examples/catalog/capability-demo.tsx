@@ -16,7 +16,7 @@ const engineLabels = {
   "tanstack-form": "TanStack Form",
 } as const;
 
-const SENSITIVE_PREVIEW_KEY = /password|secret|apiKey|privateKey|credential|inputToken/i;
+const SENSITIVE_PREVIEW_KEY = /password|secret|apiKey|privateKey|credential|inputToken/iu;
 
 function formatSubmittedValue(value: Record<string, unknown>): string {
   return JSON.stringify(

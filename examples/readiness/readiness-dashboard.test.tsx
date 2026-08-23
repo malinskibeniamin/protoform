@@ -1,4 +1,4 @@
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
@@ -6,7 +6,7 @@ import { getReadinessSummary, readinessRequirements } from "../../readiness/prof
 import { ReadinessDashboard } from "./readiness-dashboard.js";
 
 describe("ReadinessDashboard", () => {
-  it("paginates the capability ledger 25 checks at a time", async () => {
+  test("paginates the capability ledger 25 checks at a time", async () => {
     const user = userEvent.setup();
     render(<ReadinessDashboard />);
 
@@ -31,7 +31,7 @@ describe("ReadinessDashboard", () => {
     expect(within(ledger).getByRole("button", { name: "Previous page" })).toBeEnabled();
   });
 
-  it("resets pagination when search or status filters change", async () => {
+  test("resets pagination when search or status filters change", async () => {
     const user = userEvent.setup();
     render(<ReadinessDashboard />);
 
@@ -61,7 +61,7 @@ describe("ReadinessDashboard", () => {
     expect(within(ledger).getByText("Binary wire compatibility")).toBeVisible();
   });
 
-  it("keeps verified optional and out-of-target checks distinct", async () => {
+  test("keeps verified optional and out-of-target checks distinct", async () => {
     const user = userEvent.setup();
     render(<ReadinessDashboard />);
 
@@ -74,7 +74,7 @@ describe("ReadinessDashboard", () => {
     expect(screen.getAllByText("Out of target")).toHaveLength(2);
   });
 
-  it("shows the score and filters the capability ledger by status", async () => {
+  test("shows the score and filters the capability ledger by status", async () => {
     const user = userEvent.setup();
     const summary = getReadinessSummary(readinessRequirements);
     render(<ReadinessDashboard />);
@@ -116,7 +116,7 @@ describe("ReadinessDashboard", () => {
     expect(screen.getByText("Binary wire compatibility")).toBeVisible();
   });
 
-  it("explains verified checks from the status map", async () => {
+  test("explains verified checks from the status map", async () => {
     const user = userEvent.setup();
     render(<ReadinessDashboard />);
 

@@ -1,45 +1,21 @@
 "use client";
 
-import { Maximize2, Minimize2 } from "lucide-react";
 import React from "react";
 import { createPortal } from "react-dom";
 
-import { Button } from "@/registry/base-nova/protoform/components/button";
 import {
   Dialog,
-  DialogBody,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/registry/base-nova/protoform/components/dialog";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/registry/base-nova/protoform/components/tooltip";
+import { TooltipProvider } from "@/registry/base-nova/protoform/components/tooltip";
+import { DiagramControl } from "./diagram-control";
+import type { ActiveDiagram, DiagramPortal } from "./diagram-maximizer-types";
+import { ExpandedDiagramPreview } from "./expanded-diagram-preview";
 
 const DIAGRAM_SELECTOR = "blume-mermaid, [data-diagram], [data-architecture-diagram]";
-
-interface DiagramPortal {
-  host: HTMLDivElement;
-  id: string;
-  label: string;
-  target: HTMLElement;
-}
-
-interface ActiveDiagram {
-  label: string;
-  target: HTMLElement;
-  trigger: HTMLButtonElement;
-}
-
-interface DiagramControlProps {
-  isFullscreen: boolean;
-  onToggle: (portal: DiagramPortal, trigger: HTMLButtonElement) => Promise<void>;
-  portal: DiagramPortal;
-}
 
 let controlId = 0;
 
@@ -82,71 +58,6 @@ function samePortals(current: DiagramPortal[], next: DiagramPortal[]): boolean {
   return (
     current.length === next.length &&
     current.every((portal, index) => portal.target === next[index]?.target && portal.host === next[index]?.host)
-  );
-}
-
-function ExpandedDiagramPreview({ target }: { target: HTMLElement }) {
-  const previewRef = React.useRef<HTMLDivElement | null>(null);
-
-  React.useEffect(
-    function renderPreview() {
-      const preview: HTMLDivElement | null = previewRef.current;
-      if (!preview) {
-        return;
-      }
-
-      const clone = target.cloneNode(true) as HTMLElement;
-      clone.removeAttribute("data-diagram-enhanced");
-      for (const controls of clone.querySelectorAll("[data-diagram-controls]")) {
-        controls.remove();
-      }
-      clone.setAttribute("data-diagram-expanded", "");
-      clone.tabIndex = 0;
-      preview.replaceChildren(clone);
-
-      return () => preview.replaceChildren();
-    },
-    [target]
-  );
-
-  return (
-    <DialogBody
-      className="flex min-h-0 items-center justify-center overflow-auto p-4 sm:p-8"
-      data-diagram-preview=""
-      data-testid="diagram-preview"
-      ref={previewRef}
-      spacing="none"
-    />
-  );
-}
-
-function DiagramControl({ isFullscreen, onToggle, portal }: DiagramControlProps) {
-  const action = isFullscreen ? "Exit" : "View";
-  const accessibleName = `${action} ${portal.label} full screen`;
-
-  async function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
-    await onToggle(portal, event.currentTarget);
-  }
-
-  return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <Button
-          aria-label={accessibleName}
-          className="bg-background/90 shadow-sm backdrop-blur"
-          onClick={handleClick}
-          size="icon-sm"
-          title={isFullscreen ? "Exit full screen" : "View diagram full screen"}
-          type="button"
-          variant="outline"
-        >
-          {isFullscreen ? <Minimize2 aria-hidden="true" /> : <Maximize2 aria-hidden="true" />}
-        </Button>
-      </TooltipTrigger>
-      <TooltipContent container={portal.host} side="left">
-        {isFullscreen ? "Exit full screen" : "View diagram full screen"}
-      </TooltipContent>
-    </Tooltip>
   );
 }
 
@@ -267,7 +178,7 @@ export function DiagramMaximizer() {
 
       <Dialog onOpenChange={handleDialogOpenChange} open={activeDiagram !== null}>
         <DialogContent
-          className="inset-0 h-[100dvh] max-h-none w-screen max-w-none translate-x-0 translate-y-0 rounded-none border-0 sm:max-w-none"
+          className="translate-0 inset-0 h-[100dvh] max-h-none w-full max-w-none rounded-none border-0 sm:max-w-none"
           data-diagram-dialog=""
           size="full"
         >

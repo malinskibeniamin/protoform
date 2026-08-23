@@ -1,4 +1,4 @@
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 import { render, waitFor } from "@testing-library/react";
 
 import type { AutoFormDiagnostic } from "../configuration";
@@ -6,7 +6,7 @@ import { AutoForm } from "../index";
 import { createMockProvider } from "./test-utils";
 
 describe("AutoForm diagnostic callback", () => {
-  it("delivers structured configuration diagnostics without a logging dependency", async () => {
+  test("delivers structured configuration diagnostics without a logging dependency", async () => {
     const diagnostics: AutoFormDiagnostic[] = [];
     const schema = createMockProvider([
       {
@@ -30,7 +30,7 @@ describe("AutoForm diagnostic callback", () => {
     );
   });
 
-  it("reports a schema resolution cause through the same callback", async () => {
+  test("reports a schema resolution cause through the same callback", async () => {
     const diagnostics: AutoFormDiagnostic[] = [];
     const brokenSchema = {
       getDefaultValues: () => ({}),

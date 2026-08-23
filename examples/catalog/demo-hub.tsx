@@ -1,6 +1,14 @@
 "use client";
 
-import { type ComponentType, type LazyExoticComponent, lazy, Suspense, useEffect, useState } from "react";
+import {
+  type ComponentType,
+  createElement,
+  type LazyExoticComponent,
+  lazy,
+  Suspense,
+  useEffect,
+  useState,
+} from "react";
 
 import { Alert, AlertDescription, AlertTitle } from "@/registry/base-nova/protoform/components/alert";
 import { Badge } from "@/registry/base-nova/protoform/components/badge";
@@ -155,7 +163,7 @@ export function DemoHub({ category }: { category: DemoHubCategory }) {
             <div className="border-border/60 border-y py-8">
               {DemoComponent ? (
                 <Suspense fallback={<ExampleLoading label="Loading selected demo" />}>
-                  <DemoComponent />
+                  {createElement(DemoComponent)}
                 </Suspense>
               ) : (
                 <Alert variant="destructive">
@@ -168,7 +176,7 @@ export function DemoHub({ category }: { category: DemoHubCategory }) {
           <TabsContent value="code">
             {DemoSource ? (
               <Suspense fallback={<ExampleLoading label="Loading selected source" />}>
-                <DemoSource />
+                {createElement(DemoSource)}
               </Suspense>
             ) : (
               <Alert variant="destructive">

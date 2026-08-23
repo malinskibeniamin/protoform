@@ -1,4 +1,4 @@
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 
 import type { ParsedField } from "../core-types";
 import { sliderFieldDefinition } from "../fields/slider";
@@ -15,14 +15,14 @@ function makeField(partial: Partial<ParsedField> & { fieldConfig?: ParsedField["
 }
 
 describe("sliderFieldDefinition.match", () => {
-  it("does NOT match a numeric field with min/max but no slider annotation", () => {
+  test("does NOT match a numeric field with min/max but no slider annotation", () => {
     const field = makeField({
       fieldConfig: { inputProps: { max: 10, min: 0 } },
     });
     expect(sliderFieldDefinition.match(field, buildFieldMatchContext(field))).toBe(false);
   });
 
-  it('matches when customData.control === "slider"', () => {
+  test('matches when customData.control === "slider"', () => {
     const field = makeField({
       fieldConfig: {
         customData: { control: "slider" },
@@ -32,7 +32,7 @@ describe("sliderFieldDefinition.match", () => {
     expect(sliderFieldDefinition.match(field, buildFieldMatchContext(field))).toBe(true);
   });
 
-  it('matches when customData.ui.control === "slider" (proto path)', () => {
+  test('matches when customData.ui.control === "slider" (proto path)', () => {
     const field = makeField({
       fieldConfig: {
         customData: { ui: { control: "slider" } },
@@ -42,7 +42,7 @@ describe("sliderFieldDefinition.match", () => {
     expect(sliderFieldDefinition.match(field, buildFieldMatchContext(field))).toBe(true);
   });
 
-  it("does not match non-number fields even with slider annotation", () => {
+  test("does not match non-number fields even with slider annotation", () => {
     const field = makeField({
       fieldConfig: { customData: { control: "slider" } },
       type: "string",

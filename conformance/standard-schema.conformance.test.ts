@@ -1,4 +1,4 @@
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import { object as zodObject, string as zodString } from "zod";
 import { minLength, object as zodMiniObject, string as zodMiniString } from "zod/mini";
@@ -35,7 +35,7 @@ const implementations: Array<{
   },
 ];
 
-it("supports callable schemas and forwards vendor options", async () => {
+test("supports callable schemas and forwards vendor options", async () => {
   const libraryOptions = { locale: "en-GB" };
   let receivedOptions: StandardSchemaV1.Options | undefined;
   const schema = Object.assign(() => undefined, {
@@ -55,11 +55,11 @@ it("supports callable schemas and forwards vendor options", async () => {
 });
 
 describe.each(implementations)("$name Standard Schema", ({ schema }) => {
-  it("is accepted without a vendor adapter", () => {
+  test("is accepted without a vendor adapter", () => {
     expect(isStandardSchema(schema)).toBe(true);
   });
 
-  it("maps nested issues through every supported form-library adapter", async () => {
+  test("maps nested issues through every supported form-library adapter", async () => {
     const expected = {
       profile: { displayName: expect.stringContaining("2") },
     };

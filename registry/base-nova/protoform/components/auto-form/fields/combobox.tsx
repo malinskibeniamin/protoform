@@ -10,21 +10,22 @@ function ComboboxFieldComponent({ field, id, inputProps }: AutoFormFieldProps) {
   const testIds = useFieldTestIds(id);
   const numericOptions = hasNumericOptions(field);
   const optionGroups = getGroupedOptions(field);
-  const options = optionGroups?.length
-    ? optionGroups.flatMap((group) =>
-        group.options.map((option) => ({
-          group: String(group.label ?? ""),
-          groupTestId: testIds.group(String(group.label ?? option.value)),
-          label: `${group.label ? `${group.label} · ` : ""}${String(option.label ?? option.value)}`,
+  const options =
+    optionGroups && optionGroups.length > 0
+      ? optionGroups.flatMap((group) =>
+          group.options.map((option) => ({
+            group: String(group.label ?? ""),
+            groupTestId: testIds.group(String(group.label ?? option.value)),
+            label: `${group.label ? `${group.label} · ` : ""}${String(option.label ?? option.value)}`,
+            testId: testIds.option(option.value),
+            value: option.value,
+          }))
+        )
+      : getFlatOptions(field).map((option) => ({
+          label: String(option.label ?? option.value),
           testId: testIds.option(option.value),
           value: option.value,
-        }))
-      )
-    : getFlatOptions(field).map((option) => ({
-        label: String(option.label ?? option.value),
-        testId: testIds.option(option.value),
-        value: option.value,
-      }));
+        }));
 
   return (
     <Combobox

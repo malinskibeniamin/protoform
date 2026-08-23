@@ -1,12 +1,12 @@
 // @rstest-environment node
 
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 
 import { parseProtoSchema } from "../registry/base-nova/protoform/lib/protobuf-provider/index.js";
 import { RecursiveLeftSchema, RecursiveNodeSchema } from "./gen/protoform/conformance/v1/conformance_pb.js";
 
 describe("recursive protobuf descriptor conformance", () => {
-  it("bounds self-referential message and repeated-message expansion with a JSON leaf", () => {
+  test("bounds self-referential message and repeated-message expansion with a JSON leaf", () => {
     const parsed = parseProtoSchema(RecursiveNodeSchema);
     const child = parsed.fields.find((field) => field.key === "child");
     const children = parsed.fields.find((field) => field.key === "children");
@@ -19,7 +19,7 @@ describe("recursive protobuf descriptor conformance", () => {
     });
   });
 
-  it("bounds mutually recursive descriptors after one discoverable object level", () => {
+  test("bounds mutually recursive descriptors after one discoverable object level", () => {
     const parsed = parseProtoSchema(RecursiveLeftSchema);
     const right = parsed.fields.find((field) => field.key === "right");
     const left = right?.schema?.find((field) => field.key === "left");

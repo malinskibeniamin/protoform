@@ -33,7 +33,7 @@ export function OneofFieldRenderer({
   const error = getFieldErrorMessage(form.errors, path);
   const label = getRenderedLabel(field);
   const { isDisabled, isVisible, renderField } = useFieldPresentation(field, path, inheritedDisabled);
-  const FieldWrapperComponent = field.fieldConfig?.fieldWrapper || uiComponents.FieldWrapper;
+  const FieldWrapperComponent = field.fieldConfig?.fieldWrapper ?? uiComponents.FieldWrapper;
   const { testIdPrefix } = useAutoFormRuntimeContext();
   const controlTestId = getAutoFormFieldTestId(testIdPrefix, fullPath, "control");
   const depth = useFormDepth();
@@ -133,7 +133,7 @@ export function OneofFieldRenderer({
           }}
           value={oneofValue.case ?? null}
         >
-          <SelectTrigger aria-label={String(label)} disabled={oneofDisabled} id={fullPath} testId={controlTestId}>
+          <SelectTrigger aria-label={label} disabled={oneofDisabled} id={fullPath} testId={controlTestId}>
             <SelectValue placeholder="Choose a field">{selectedValueLabel}</SelectValue>
           </SelectTrigger>
           <SelectContent>

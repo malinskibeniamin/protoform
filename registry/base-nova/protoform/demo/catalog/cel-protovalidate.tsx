@@ -20,9 +20,7 @@ export function CelProtovalidateDemo() {
         <Badge variant="primary-inverted">React Hook Form</Badge>
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
-      <p className="text-muted-foreground text-sm">
-        {"Trigger both a field-local rule and a cross-field message rule."}
-      </p>
+      <p className="text-muted-foreground text-sm">Trigger both a field-local rule and a cross-field message rule.</p>
       <AutoForm
         defaultValues={defaultValues}
         formOptions={{ mode: "onBlur", reValidateMode: "onChange" }}

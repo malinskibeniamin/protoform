@@ -23,23 +23,24 @@ function MultiSelectFieldComponent({ field, id, inputProps }: AutoFormFieldProps
   const itemField = field.schema?.[0];
   const numericOptions = Boolean(itemField?.options?.every(([value]) => NUMERIC_OPTION_PATTERN.test(value)));
   const optionGroups = itemField ? getGroupedOptions(itemField) : undefined;
-  const options = optionGroups?.length
-    ? optionGroups.map((group) => ({
-        children: group.options.map((option) => ({
-          label: renderOptionLabel(option),
-          selectedTestId: testIds.selected(option.value),
-          testId: testIds.option(option.value),
-          value: option.value,
-        })),
-        heading: group.label,
-        testId: testIds.group(String(group.label ?? "group")),
-      }))
-    : (itemField?.options || []).map(([value, optionLabel]) => ({
-        label: optionLabel,
-        selectedTestId: testIds.selected(value),
-        testId: testIds.option(value),
-        value,
-      }));
+  const options =
+    optionGroups && optionGroups.length > 0
+      ? optionGroups.map((group) => ({
+          children: group.options.map((option) => ({
+            label: renderOptionLabel(option),
+            selectedTestId: testIds.selected(option.value),
+            testId: testIds.option(option.value),
+            value: option.value,
+          })),
+          heading: group.label,
+          testId: testIds.group(String(group.label ?? "group")),
+        }))
+      : (itemField?.options ?? []).map(([value, optionLabel]) => ({
+          label: optionLabel,
+          selectedTestId: testIds.selected(value),
+          testId: testIds.option(value),
+          value,
+        }));
 
   return (
     <SimpleMultiSelect
@@ -69,7 +70,7 @@ export const multiselectFieldDefinition: FieldTypeDefinition = {
       return false;
     }
     const itemField = field.schema?.[0];
-    return Boolean(itemField?.type === "select" && itemField.options?.length);
+    return itemField?.type === "select" && itemField.options !== undefined && itemField.options.length > 0;
   },
   name: "multiselect",
   priority: 20,
@@ -83,6 +84,8 @@ export const multiselectFieldDefinition: FieldTypeDefinition = {
 // control that holds every picked method as a chip.
 
 function DataProviderMultiSelectComponent({ field, id, inputProps, path }: AutoFormFieldProps) {
+  "use no memo";
+
   const testIds = useFieldTestIds(id);
   const itemField = field.schema?.[0];
   const providerId = readDataProviderId(itemField);
@@ -135,9 +138,7 @@ function DataProviderMultiSelectComponent({ field, id, inputProps, path }: AutoF
     const labelNode = (
       <span className="flex items-center gap-2" key={option.value}>
         {option.icon ? (
-          <span className="flex h-4 w-4 shrink-0 items-center justify-center [&>svg]:h-full [&>svg]:w-full">
-            {option.icon}
-          </span>
+          <span className="flex size-4 shrink-0 items-center justify-center [&>svg]:size-full">{option.icon}</span>
         ) : null}
         <span>{option.label}</span>
         {option.description ? <span className="text-muted-foreground text-xs">— {option.description}</span> : null}

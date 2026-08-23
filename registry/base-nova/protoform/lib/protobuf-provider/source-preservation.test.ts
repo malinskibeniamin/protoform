@@ -4,7 +4,7 @@ import {
   FieldDescriptorProto_Type,
   FileDescriptorProtoSchema,
 } from "@bufbuild/protobuf/wkt";
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 
 import { formValuesToProto, protoToFormValues } from "./provider.js";
 
@@ -166,7 +166,7 @@ function sourceMessage() {
 }
 
 describe("source-message preservation", () => {
-  it("preserves unknown fields on every surviving message node", () => {
+  test("preserves unknown fields on every surviving message node", () => {
     const source = sourceMessage();
     const sourceRecord = requireRecord(source, "source message");
     const sourceChildren = requireArray(sourceRecord["children"], "source children");
@@ -213,7 +213,7 @@ describe("source-message preservation", () => {
     );
   });
 
-  it("does not resurrect unknown fields from removed messages or changed oneofs", () => {
+  test("does not resurrect unknown fields from removed messages or changed oneofs", () => {
     const source = sourceMessage();
     const sourceRecord = requireRecord(source, "source message");
     const sourceChildren = requireArray(sourceRecord["children"], "source children");

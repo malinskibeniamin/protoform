@@ -12,7 +12,7 @@ import {
 import { create } from "@bufbuild/protobuf";
 import { StructSchema } from "@bufbuild/protobuf/wkt";
 import { Code, ConnectError } from "@connectrpc/connect";
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 
 import {
   extractConnectErrorContext,
@@ -21,7 +21,7 @@ import {
 } from "../registry/base-nova/protoform/lib/protobuf-provider/index.js";
 
 describe("AIP-193 error lifecycle conformance", () => {
-  it("labels every canonical non-OK gRPC status code", () => {
+  test("labels every canonical non-OK gRPC status code", () => {
     expect(
       [
         Code.Canceled,
@@ -61,7 +61,7 @@ describe("AIP-193 error lifecycle conformance", () => {
     ]);
   });
 
-  it("extracts field violations plus localized, retry, request, precondition, quota, and machine details", () => {
+  test("extracts field violations plus localized, retry, request, precondition, quota, and machine details", () => {
     const error = new ConnectError("raw message", Code.ResourceExhausted, {}, [
       {
         desc: BadRequestSchema,

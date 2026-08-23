@@ -5,7 +5,6 @@
     "ultracite/biome/react",
     "ultracite/biome/astro",
     "ultracite/biome/type-aware",
-    "ultracite/biome/jest",
     "ultracite/biome/tanstack"
   ],
   "vcs": {
@@ -33,41 +32,747 @@
     ]
   },
   "formatter": {
+    "enabled": true,
     "lineWidth": 120
   },
   "linter": {
+    "enabled": true,
     "rules": {
+      // Every installed Biome rule is listed explicitly. Enabled rules fail as errors;
+      // incompatible or noisy rules remain visibly off instead of being hidden in presets.
+      "a11y": {
+        "noAccessKey": "error",
+        "noAmbiguousAnchorText": "error",
+        "noAriaHiddenOnFocusable": "error",
+        "noAriaUnsupportedElements": "error",
+        "noAutofocus": "error",
+        "noDistractingElements": "error",
+        "noHeaderScope": "error",
+        "noInteractiveElementToNoninteractiveRole": "error",
+        "noLabelWithoutControl": "error",
+        "noNoninteractiveElementInteractions": "error",
+        "noNoninteractiveElementToInteractiveRole": "error",
+        "noNoninteractiveTabindex": "error",
+        "noPositiveTabindex": "error",
+        "noRedundantAlt": "error",
+        "noRedundantRoles": "error",
+        "noStaticElementInteractions": "error",
+        "noSvgWithoutTitle": "error",
+        "useAltText": "error",
+        "useAnchorContent": "error",
+        "useAriaActivedescendantWithTabindex": "error",
+        "useAriaPropsForRole": "error",
+        "useAriaPropsSupportedByRole": "error",
+        "useButtonType": "error",
+        "useFocusableInteractive": "error",
+        "useGenericFontNames": "error",
+        "useHeadingContent": "error",
+        "useHtmlLang": "error",
+        "useIframeTitle": "error",
+        "useKeyWithClickEvents": "error",
+        "useKeyWithMouseEvents": "error",
+        "useMediaCaption": "error",
+        "useSemanticElements": "error",
+        "useValidAnchor": "error",
+        "useValidAriaProps": "error",
+        "useValidAriaRole": "error",
+        "useValidAriaValues": "error",
+        "useValidAutocomplete": "error",
+        "useValidLang": "error"
+      },
       "complexity": {
-        // TypeScript requires bracket access for values exposed only through index signatures.
-        "useLiteralKeys": "off",
-        // TypeScript's noImplicitReturns requires explicit tail returns in mixed-return functions.
+        "noAdjacentSpacesInRegex": "error",
+        "noArguments": "error",
+        "noBannedTypes": "error",
+        "noCommaOperator": "error",
+        "noDivRegex": "error",
+        "noEmptyTypeParameters": "error",
+        "noExcessiveCognitiveComplexity": {
+          "level": "error",
+          "options": {
+            "maxAllowedComplexity": 15
+          }
+        },
+        "noExcessiveLinesPerFunction": {
+          "level": "error",
+          "options": {
+            "maxLines": 120,
+            "skipBlankLines": true,
+            "skipIifes": true
+          }
+        },
+        "noExcessiveNestedTestSuites": "error",
+        "noExtraBooleanCast": "error",
+        "noFlatMapIdentity": "error",
+        "noForEach": "error",
+        "noImplicitCoercions": "error",
+        "noImportantStyles": "off",
+        "noRedundantDefaultExport": "error",
+        "noStaticOnlyClass": "error",
+        "noThisInStatic": "error",
+        "noUselessCatch": "error",
+        "noUselessCatchBinding": "error",
+        "noUselessConstructor": "error",
+        "noUselessContinue": "error",
+        "noUselessEmptyExport": "error",
+        "noUselessEscapeInRegex": "error",
+        "noUselessFragments": "error",
+        "noUselessLabel": "error",
+        "noUselessLoneBlockStatements": "error",
+        "noUselessRename": "error",
         "noUselessReturn": "off",
-        "noUselessUndefined": "off"
+        "noUselessStringConcat": "error",
+        "noUselessStringRaw": "error",
+        "noUselessSwitchCase": "error",
+        "noUselessTernary": "error",
+        "noUselessThisAlias": "error",
+        "noUselessTypeConstraint": "error",
+        "noUselessUndefined": "error",
+        "noUselessUndefinedInitialization": "error",
+        "noVoid": "error",
+        "useArrayFind": "error",
+        "useArrowFunction": "error",
+        "useDateNow": "error",
+        "useFlatMap": "error",
+        "useIndexOf": "error",
+        "useLiteralKeys": "off",
+        "useMaxParams": "off",
+        "useNumericLiterals": "error",
+        "useOptionalChain": "error",
+        "useRegexLiterals": "error",
+        "useSimpleNumberKeys": "error",
+        "useSimplifiedLogicExpression": "error",
+        "useWhile": "error"
       },
       "correctness": {
-        // Biome's scanner cannot resolve registry aliases and generated protobuf module paths;
-        // the TypeScript compiler validates both with the consumer-compatible resolver.
+        "noBeforeInteractiveScriptOutsideDocument": "error",
+        "noChildrenProp": "error",
+        "noConstAssign": "error",
+        "noConstantCondition": "error",
+        "noConstantMathMinMaxClamp": "error",
+        "noConstructorReturn": "error",
+        "noDuplicateArgumentNames": "error",
+        "noDuplicateAttributes": "error",
+        "noDuplicateEnumValueNames": "error",
+        "noDuplicateInputFieldNames": "error",
+        "noDuplicateVariableNames": "error",
+        "noEmptyCharacterClassInRegex": "error",
+        "noEmptyPattern": "error",
+        "noGlobalDirnameFilename": "error",
+        "noGlobalObjectCalls": "error",
+        "noInnerDeclarations": "error",
+        "noInvalidBuiltinInstantiation": "error",
+        "noInvalidConstructorSuper": "error",
+        "noInvalidDirectionInLinearGradient": "error",
+        "noInvalidGridAreas": "error",
+        "noInvalidPositionAtImportRule": "error",
+        "noInvalidUseBeforeDeclaration": "error",
+        "noMissingVarFunction": "error",
+        "noNestedComponentDefinitions": "error",
+        "noNextAsyncClientComponent": "error",
+        "noNodejsModules": "error",
+        "noNonoctalDecimalEscape": "error",
+        "noPrecisionLoss": "error",
+        "noPrivateImports": "error",
+        "noProcessGlobal": "error",
+        "noQwikUseVisibleTask": "error",
+        "noReactPropAssignments": "error",
+        "noRenderReturnValue": "error",
+        "noRestrictedElements": {
+          "level": "error",
+          "options": {
+            "elements": {
+              "button": "Use Protoform's Button component instead of a native <button> outside primitive implementations.",
+              "input": "Use Protoform's Input component instead of a native <input> outside primitive implementations.",
+              "select": "Use Protoform's Select component instead of a native <select> outside primitive implementations.",
+              "textarea": "Use Protoform's Textarea component instead of a native <textarea> outside primitive implementations."
+            }
+          }
+        },
+        "noSelfAssign": "error",
+        "noSetterReturn": "error",
+        "noSolidDestructuredProps": "off",
+        "noStringCaseMismatch": "error",
+        "noSwitchDeclarations": "error",
+        "noUndeclaredDependencies": "error",
+        "noUndeclaredVariables": "error",
+        "noUnknownFunction": "error",
+        "noUnknownMediaFeatureName": "error",
+        "noUnknownProperty": "error",
+        "noUnknownPseudoClass": "error",
+        "noUnknownPseudoElement": "error",
+        "noUnknownTypeSelector": "error",
+        "noUnknownUnit": "error",
+        "noUnmatchableAnbSelector": "error",
+        "noUnreachable": "error",
+        "noUnreachableSuper": "error",
         "noUnresolvedImports": "off",
-        // Extensionless source imports remain portable when registry files are installed into
-        // consumer projects; TypeScript still validates every resolved module.
-        "useImportExtensions": "off"
+        "noUnsafeFinally": "error",
+        "noUnsafeOptionalChaining": "error",
+        "noUnusedFunctionParameters": "error",
+        "noUnusedImports": {
+          "fix": "safe",
+          "level": "error"
+        },
+        "noUnusedInstantiation": "error",
+        "noUnusedLabels": "error",
+        "noUnusedPrivateClassMembers": "error",
+        "noUnusedVariables": "error",
+        "noVoidElementsWithChildren": "error",
+        "noVoidTypeReturn": "error",
+        "noVueDataObjectDeclaration": "error",
+        "noVueDuplicateKeys": "error",
+        "noVueReservedKeys": "error",
+        "noVueReservedProps": "error",
+        "noVueSetupPropsReactivityLoss": "error",
+        "noVueVIfWithVFor": "error",
+        "useExhaustiveDependencies": "error",
+        "useGraphqlNamedOperations": "error",
+        "useHookAtTopLevel": "error",
+        "useImageSize": "error",
+        "useImportExtensions": "off",
+        "useInlineScriptId": "error",
+        "useIsNan": "error",
+        "useJsonImportAttributes": "error",
+        "useJsxKeyInIterable": "error",
+        "useLoneAnonymousOperation": "error",
+        "useParseIntRadix": "error",
+        "useQwikClasslist": "error",
+        "useQwikMethodUsage": "error",
+        "useQwikValidLexicalScope": "off",
+        "useSingleJsDocAsterisk": "error",
+        "useUniqueElementIds": "off",
+        "useValidForDirection": "error",
+        "useValidTypeof": "error",
+        "useVueVForKey": "error",
+        "useVueValidTemplateRoot": "error",
+        "useVueValidVBind": "error",
+        "useVueValidVCloak": "error",
+        "useVueValidVElse": "error",
+        "useVueValidVElseIf": "error",
+        "useVueValidVHtml": "error",
+        "useVueValidVIf": "error",
+        "useVueValidVOn": "error",
+        "useVueValidVOnce": "error",
+        "useVueValidVPre": "error",
+        "useVueValidVText": "error",
+        "useYield": "error"
+      },
+      "nursery": {
+        "noBaseToString": "error",
+        "noComponentHookFactories": "error",
+        "noConditionalExpect": "off",
+        "noDrizzleDeleteWithoutWhere": "off",
+        "noDrizzleUpdateWithoutWhere": "off",
+        "noDuplicateFieldDefinitionNames": "error",
+        "noDuplicateSelectors": "error",
+        "noEmptyObjectKeys": "error",
+        "noExcessiveNestedCallbacks": "error",
+        "noExcessiveSelectorClasses": "error",
+        "noExtendNative": "error",
+        "noFloatingPromises": "error",
+        "noIdenticalTestTitle": "error",
+        "noImpliedEval": "error",
+        // Dynamic component geometry and theme previews require runtime values; deleting
+        // their inline styles is an unsafe fix that breaks layout and visual state.
+        "noInlineStyles": "off",
+        "noInvalidPropertyInitValue": "error",
+        "noJsRestrictedProperties": "error",
+        "noJsxLeakedDollar": "error",
+        "noJsxNamespace": "error",
+        "noLoopFunc": "error",
+        "noMisleadingReturnType": "error",
+        "noMisusedPromises": "error",
+        "noNegationInEqualityCheck": "error",
+        "noNonScalableViewport": "error",
+        "noPlaywrightElementHandle": "error",
+        "noPlaywrightEval": "error",
+        "noPlaywrightForceOption": "error",
+        "noPlaywrightMissingAwait": "error",
+        "noPlaywrightNetworkidle": "error",
+        "noPlaywrightPagePause": "error",
+        "noPlaywrightUselessAwait": "error",
+        "noPlaywrightWaitForNavigation": "error",
+        "noPlaywrightWaitForSelector": "error",
+        "noPlaywrightWaitForTimeout": "error",
+        "noReactNativeDeepImports": "off",
+        "noReactNativeLiteralColors": "off",
+        "noReactNativeRawText": "off",
+        "noReactStringRefs": "error",
+        "noRestrictedDependencies": "error",
+        "noSvelteLegacyConst": "off",
+        "noSvelteUnnecessaryStateWrap": "off",
+        "noTailwindArbitraryValue": "off",
+        "noTopLevelLiterals": "error",
+        "noUndeclaredClasses": "off",
+        "noUnnecessaryTemplateExpression": "error",
+        "noUnsafePlusOperands": "error",
+        // Type assertions are audited by strict TypeScript checks; this experimental rule
+        // reports hundreds of verified boundary narrowings and generated-data adapters.
+        "noUnsafeTypeAssertion": "off",
+        "noUntrustedLicenses": "error",
+        "noUnusedClasses": "off",
+        "noUselessTypeConversion": "error",
+        "noVueImportCompilerMacros": "off",
+        "noVueRefAsOperand": "off",
+        "noVueVOnNumberValues": "off",
+        "useArraySome": "error",
+        "useAstroClientOnlyDirectiveValue": "off",
+        "useAwaitThenable": "error",
+        // Protoform intentionally supports fullscreen and user-select behavior beyond the
+        // rule's configured Baseline target.
+        "useBaseline": "off",
+        "useConsistentTestIt": {
+          "level": "error",
+          "options": {
+            "function": "test",
+            "withinDescribe": "test"
+          }
+        },
+        "useControlLabel": "error",
+        "useDisposables": "error",
+        "useDomNodeTextContent": "error",
+        "useDomQuerySelector": "error",
+        "useExhaustiveSwitchCases": "error",
+        "useExpect": "off",
+        // Inference remains part of the public TypeScript contract; requiring annotations on
+        // every local and callback would add thousands of redundant declarations.
+        "useExplicitReturnType": "off",
+        "useExplicitType": "off",
+        "useIframeSandbox": "error",
+        "useImportsFirst": "error",
+        "useIncludes": "error",
+        "useMathMinMax": "error",
+        // Positional groups are required by compact protocol and validation expressions where
+        // introducing names would add no safer access path.
+        "useNamedCaptureGroup": "off",
+        "useNamedLayer": "error",
+        "useNullishCoalescing": "off",
+        "usePlaywrightValidDescribeCallback": "off",
+        "useQwikLoaderLocation": "off",
+        "useReactAsyncServerFunction": "error",
+        "useReactCompiler": "error",
+        "useReactFunctionComponentDefinition": "off",
+        "useReactNativePlatformComponents": "off",
+        "useReduceTypeParameter": "error",
+        "useRegexpExec": "error",
+        "useRegexpTest": "error",
+        "useScopedStyles": "off",
+        "useSortedClasses": {
+          "fix": "safe",
+          "level": "error",
+          "options": {
+            "attributes": ["className"],
+            "functions": ["clsx", "cva", "tw", "twMerge", "cn", "twJoin", "tv"]
+          }
+        },
+        "useStringStartsEndsWith": "error",
+        "useSvelteRequireEachKey": "off",
+        "useTailwindShorthandClasses": "off",
+        "useTestHooksInOrder": "error",
+        "useTestHooksOnTop": "error",
+        "useThisInClassMethods": "error",
+        "useUnicodeRegex": "error",
+        "useVarsOnTop": "error",
+        "useVueConsistentDefinePropsDeclaration": "off",
+        "useVueNextTickPromise": "off",
+        "useVueValidVFor": "off"
+      },
+      "performance": {
+        "noAccumulatingSpread": "error",
+        "noAwaitInLoops": "error",
+        "noBarrelFile": "error",
+        "noDelete": "error",
+        "noDynamicNamespaceImportAccess": "error",
+        "noImgElement": "error",
+        "noJsxPropsBind": "error",
+        "noNamespaceImport": "error",
+        "noReExportAll": "error",
+        "noSyncScripts": "error",
+        "noUnwantedPolyfillio": "error",
+        "useGoogleFontPreconnect": "error",
+        "useSolidForComponent": "off",
+        "useTopLevelRegex": "error",
+        "useVueVapor": "error"
+      },
+      "security": {
+        "noBlankTarget": "error",
+        "noDangerouslySetInnerHtml": "error",
+        "noDangerouslySetInnerHtmlWithChildren": "error",
+        "noGlobalEval": "error",
+        "noScriptUrl": "error",
+        "noSecrets": {
+          "level": "error",
+          "options": {
+            "entropyThreshold": 80
+          }
+        }
+      },
+      "style": {
+        "noCommonJs": "error",
+        "noContinue": "off",
+        "noDefaultExport": "error",
+        "noDescendingSpecificity": "error",
+        "noDoneCallback": "error",
+        "noEnum": "error",
+        "noExcessiveClassesPerFile": "error",
+        "noExcessiveLinesPerFile": {
+          "level": "error",
+          "options": {
+            "maxLines": 700,
+            "skipBlankLines": true
+          }
+        },
+        "noExportedImports": "error",
+        "noHeadElement": "error",
+        "noHexColors": "error",
+        "noImplicitBoolean": "off",
+        "noIncrementDecrement": "error",
+        "noInferrableTypes": "error",
+        "noJsxLiterals": "off",
+        "noMagicNumbers": "off",
+        "noMultiAssign": "error",
+        "noMultilineString": "error",
+        "noNamespace": "error",
+        "noNegationElse": "error",
+        "noNestedTernary": "error",
+        "noNonNullAssertion": "error",
+        "noParameterAssign": "error",
+        "noParameterProperties": "error",
+        "noProcessEnv": "error",
+        "noRestrictedGlobals": "error",
+        "noRestrictedImports": {
+          "level": "error",
+          "options": {
+            "paths": {
+              "classnames": "Use clsx or the cn utility instead.",
+              "lodash": "Use native JavaScript methods or lodash-es instead.",
+              "mobx": "Use zustand for client state instead.",
+              "mobx-react": "Use zustand for client state instead.",
+              "mobx-react-lite": "Use zustand for client state instead.",
+              "moment": "Use date-fns instead.",
+              "yup": "Use zod for schema validation instead."
+            }
+          }
+        },
+        "noRestrictedTypes": "error",
+        "noRootType": "error",
+        "noShoutyConstants": "error",
+        "noSubstr": "error",
+        "noTernary": "off",
+        "noUnusedTemplateLiteral": "error",
+        "noUselessElse": "error",
+        "noValueAtRule": "error",
+        "noVueOptionsApi": "error",
+        "noYodaExpression": "error",
+        "useArrayLiterals": "error",
+        "useAsConstAssertion": "error",
+        "useAtIndex": "error",
+        "useBlockStatements": {
+          "fix": "safe",
+          "level": "error"
+        },
+        "useCollapsedElseIf": "error",
+        "useCollapsedIf": "error",
+        "useComponentExportOnlyModules": "off",
+        "useConsistentArrayType": "error",
+        "useConsistentArrowReturn": "error",
+        "useConsistentBuiltinInstantiation": "error",
+        "useConsistentCurlyBraces": "error",
+        "useConsistentEnumValueType": "error",
+        "useConsistentGraphqlDescriptions": "error",
+        "useConsistentMemberAccessibility": "error",
+        "useConsistentMethodSignatures": "error",
+        "useConsistentObjectDefinitions": "error",
+        "useConsistentTypeDefinitions": {
+          "level": "error",
+          "options": {
+            "style": "interface"
+          }
+        },
+        "useConst": "error",
+        "useDefaultParameterLast": "error",
+        "useDefaultSwitchClause": "error",
+        "useDeprecatedReason": "error",
+        "useDestructuring": "error",
+        "useEnumInitializers": "error",
+        "useErrorCause": "error",
+        "useExplicitLengthCheck": "error",
+        "useExponentiationOperator": "error",
+        "useExportType": "error",
+        "useExportsLast": "off",
+        "useFilenamingConvention": {
+          "level": "error",
+          "options": {
+            "requireAscii": true,
+            "filenameCases": ["kebab-case"]
+          }
+        },
+        "useForOf": "error",
+        "useFragmentSyntax": "error",
+        "useGlobalThis": "off",
+        "useGraphqlNamingConvention": "error",
+        "useGroupedAccessorPairs": "error",
+        "useImportType": "error",
+        "useInputName": "error",
+        "useLiteralEnumMembers": "error",
+        "useLoneExecutableDefinition": "error",
+        "useNamingConvention": "off",
+        "useNodeAssertStrict": "error",
+        "useNodejsImportProtocol": "error",
+        "useNumberNamespace": "error",
+        "useNumericSeparators": "error",
+        "useObjectSpread": "error",
+        "useReactFunctionComponents": "error",
+        "useReadonlyClassProperties": "error",
+        "useSelfClosingElements": "error",
+        "useShorthandAssign": "error",
+        "useShorthandFunctionType": "error",
+        "useSingleVarDeclarator": "error",
+        "useSpreadOverApply": "error",
+        "useSymbolDescription": "error",
+        "useTemplate": "error",
+        "useThrowNewError": "error",
+        "useThrowOnlyError": "error",
+        "useTrimStartEnd": "error",
+        "useUnifiedTypeSignatures": "error",
+        "useVueConsistentVBindStyle": "error",
+        "useVueConsistentVOnStyle": "error",
+        "useVueDefineMacrosOrder": "error",
+        "useVueHyphenatedAttributes": "error",
+        "useVueMultiWordComponentNames": "error"
       },
       "suspicious": {
-        "noConsole": "error"
+        "noAlert": "error",
+        "noApproximativeNumericConstant": "error",
+        "noArrayIndexKey": "error",
+        "noAssignInExpressions": "error",
+        "noAsyncPromiseExecutor": "error",
+        "noBiomeFirstException": "error",
+        "noBitwiseOperators": "error",
+        "noCatchAssign": "error",
+        "noClassAssign": "error",
+        "noCommentText": "error",
+        "noCompareNegZero": "error",
+        "noConfusingLabels": "error",
+        "noConfusingVoidType": "error",
+        "noConsole": "error",
+        "noConstEnum": "error",
+        "noConstantBinaryExpressions": "error",
+        "noControlCharactersInRegex": "error",
+        "noDebugger": "error",
+        "noDeprecatedImports": "error",
+        "noDeprecatedMediaType": "error",
+        "noDocumentCookie": "error",
+        "noDocumentImportInPage": "error",
+        "noDoubleEquals": "error",
+        "noDuplicateAtImportRules": "error",
+        "noDuplicateCase": "error",
+        "noDuplicateClassMembers": "error",
+        "noDuplicateCustomProperties": "error",
+        "noDuplicateDependencies": "error",
+        "noDuplicateElseIf": "error",
+        "noDuplicateEnumValues": "error",
+        "noDuplicateFields": "error",
+        "noDuplicateFontNames": "error",
+        "noDuplicateGraphqlOperationName": "error",
+        "noDuplicateJsxProps": "error",
+        "noDuplicateObjectKeys": "error",
+        "noDuplicateParameters": "error",
+        "noDuplicateProperties": "error",
+        "noDuplicateSelectorsKeyframeBlock": "error",
+        "noDuplicateTestHooks": "error",
+        "noDuplicatedSpreadProps": "error",
+        "noEmptyBlock": "error",
+        "noEmptyBlockStatements": "error",
+        "noEmptyInterface": "error",
+        "noEmptySource": "error",
+        "noEqualsToNull": "error",
+        "noEvolvingTypes": "error",
+        "noExplicitAny": "error",
+        "noExportsInTest": "error",
+        "noExtraNonNullAssertion": "error",
+        "noFallthroughSwitchClause": "error",
+        "noFocusedTests": "error",
+        "noForIn": "error",
+        "noFunctionAssign": "error",
+        "noGlobalAssign": "error",
+        "noGlobalIsFinite": "error",
+        "noGlobalIsNan": "error",
+        "noHeadImportInDocument": "error",
+        "noImplicitAnyLet": "error",
+        "noImportAssign": "error",
+        "noImportCycles": "error",
+        "noImportantInKeyframe": "error",
+        "noIrregularWhitespace": "error",
+        "noLabelVar": "error",
+        "noLeakedRender": "error",
+        "noMisleadingCharacterClass": "error",
+        "noMisleadingInstantiator": "error",
+        "noMisplacedAssertion": "error",
+        "noMisrefactoredShorthandAssign": "error",
+        "noNestedPromises": "error",
+        "noNonNullAssertedOptionalChain": "error",
+        "noOctalEscape": "error",
+        "noParametersOnlyUsedInRecursion": "error",
+        "noProto": "error",
+        "noPrototypeBuiltins": "error",
+        "noQuickfixBiome": "error",
+        "noReactForwardRef": "error",
+        "noReactSpecificProps": "off",
+        "noRedeclare": "error",
+        "noRedundantUseStrict": "error",
+        "noReturnAssign": "error",
+        "noSelfCompare": "error",
+        "noShadow": "error",
+        "noShadowRestrictedNames": "error",
+        "noShorthandPropertyOverrides": "error",
+        "noSkippedTests": "error",
+        "noSparseArray": "error",
+        "noSuspiciousSemicolonInJsx": "error",
+        "noTemplateCurlyInString": "error",
+        "noThenProperty": "error",
+        "noTsIgnore": "error",
+        "noUnassignedVariables": "error",
+        "noUndeclaredEnvVars": "error",
+        "noUnknownAtRules": "error",
+        "noUnknownAttribute": "error",
+        "noUnnecessaryConditions": "error",
+        "noUnsafeDeclarationMerging": "error",
+        "noUnsafeNegation": "error",
+        "noUnusedExpressions": "error",
+        "noUselessEscapeInString": "error",
+        "noUselessRegexBackrefs": "error",
+        "noVar": "error",
+        "noVueArrowFuncInWatch": "error",
+        "noWith": "error",
+        "useAdjacentOverloadSignatures": "error",
+        "useArraySortCompare": "error",
+        "useAwait": "error",
+        "useBiomeIgnoreFolder": "error",
+        "useDefaultSwitchClauseLast": "error",
+        "useDeprecatedDate": "error",
+        "useErrorMessage": "error",
+        "useGetterReturn": "error",
+        "useGoogleFontDisplay": "error",
+        "useGuardForIn": "error",
+        "useIsArray": "error",
+        "useIterableCallbackReturn": "error",
+        "useNamespaceKeyword": "error",
+        "useNumberToFixedDigitsArgument": "error",
+        "useRequiredScripts": "error",
+        "useStaticResponseMethods": "error",
+        "useStrictMode": "error"
       }
     }
   },
   "overrides": [
     {
+      // Generated catalog modules expose Blume's static `client` marker before imports.
+      "includes": ["registry/base-nova/protoform/demo/catalog/**"],
+      "linter": {
+        "rules": {
+          "nursery": {
+            "useImportsFirst": "off"
+          }
+        }
+      }
+    },
+    {
+      // React 19's `act` always returns a thenable at runtime, but its void overload hides that
+      // contract from Biome's type-aware rule for async callbacks.
+      "includes": [
+        "registry/base-nova/protoform/hooks/use-proto-form-tanstack-v2/index.test.tsx",
+        "registry/base-nova/protoform/hooks/use-proto-form-tanstack/index.test.tsx",
+        "registry/base-nova/protoform/hooks/use-proto-form-v8/conformance.test.tsx",
+        "registry/base-nova/protoform/hooks/use-proto-form/partial-edit-validation.test.tsx",
+        "registry/base-nova/protoform/hooks/use-proto-form/use-proto-form.test.ts"
+      ],
+      "linter": {
+        "rules": {
+          "nursery": {
+            "useAwaitThenable": "off"
+          }
+        }
+      }
+    },
+    {
+      // Both reported conversions are guarded by `typeof value === "number"`; Biome loses that
+      // narrowing across the recursive JSON-field renderer.
+      "includes": [
+        "registry/base-nova/protoform/components/json-field/index.tsx"
+      ],
+      "linter": {
+        "rules": {
+          "nursery": {
+            "noBaseToString": "off"
+          }
+        }
+      }
+    },
+    {
+      // CEL expression identifiers are bigint values, which Math.min/Math.max cannot accept.
+      "includes": [
+        "registry/base-nova/protoform/components/auto-form/cel-runtime.ts"
+      ],
+      "linter": {
+        "rules": {
+          "nursery": {
+            "useMathMinMax": "off"
+          }
+        }
+      }
+    },
+    {
+      // ResizeObserver requires instance methods even though this no-op DOM mock has no state.
+      "includes": ["rstest.shared.setup.ts"],
+      "linter": {
+        "rules": {
+          "nursery": {
+            "useThisInClassMethods": "off"
+          }
+        }
+      }
+    },
+    {
+      // Biome does not honor React Compiler's explicit "use no memo" directives. These
+      // components are verified by the fail-fast compiler itself, which skips their known
+      // dynamic provider hook, imperative ref, controlled-editor, and layout-measurement boundaries.
+      "includes": [
+        "registry/base-nova/protoform/components/auto-form/field-wrapper.tsx",
+        "registry/base-nova/protoform/components/auto-form/fields/multiselect.tsx",
+        "registry/base-nova/protoform/components/auto-form/fields/select.tsx",
+        "registry/base-nova/protoform/components/auto-form/fields/shared.tsx",
+        "registry/base-nova/protoform/components/json-field/index.tsx",
+        "registry/base-nova/protoform/components/popover/index.tsx",
+        "registry/base-nova/protoform/components/toggle-group/index.tsx"
+      ],
+      "linter": {
+        "rules": {
+          "nursery": {
+            "useReactCompiler": "off"
+          }
+        }
+      }
+    },
+    {
       "includes": ["scripts/**", "*.config.ts"],
       "linter": {
         "rules": {
+          "complexity": {
+            // Tooling entrypoints are orchestration shells rather than reusable application
+            // functions; splitting them only hides their linear workflow.
+            "noExcessiveLinesPerFunction": "off"
+          },
           "correctness": {
             "noNodejsModules": "off",
             "noProcessGlobal": "off"
           },
           "style": {
-            "noDefaultExport": "off"
+            // Build and test tools own their Node environment and configuration contracts.
+            "noDefaultExport": "off",
+            "noExcessiveLinesPerFile": "off",
+            "noProcessEnv": "off"
           },
           "suspicious": {
             "noConsole": "off"
@@ -174,12 +879,37 @@
         "rules": {
           "complexity": {
             "noRedundantDefaultExport": "off"
+          },
+          "style": {
+            "noDefaultExport": "off"
           }
         }
       }
     },
     {
-      // Test-local regexes and assertion helpers are isolated to a single test process.
+      // Blume and Fumadocs load these exact files through required default-export contracts.
+      "includes": [
+        "components.tsx",
+        "content/docs/**/meta.ts",
+        "examples/basic/basic-form.tsx",
+        "examples/complex/complex-form.tsx",
+        "examples/kitchen-sink/kitchen-sink-form.tsx",
+        "examples/learning/cel-re2-form.tsx",
+        "examples/learning/oneof-form.tsx",
+        "examples/learning/two-step-form.tsx",
+        "examples/nested/deeply-nested-form.tsx"
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "noDefaultExport": "off"
+          }
+        }
+      }
+    },
+    {
+      // Tests are executable specifications: native controls, Node fixtures, and long scenario
+      // bodies make the exercised behavior clearer than production abstractions would.
       "includes": [
         "**/*.test.ts",
         "**/*.test.tsx",
@@ -188,13 +918,42 @@
       ],
       "linter": {
         "rules": {
+          "complexity": {
+            "noExcessiveLinesPerFunction": "off"
+          },
+          "correctness": {
+            "noNodejsModules": "off",
+            "noRestrictedElements": "off"
+          },
           "performance": {
             "useTopLevelRegex": "off"
+          },
+          "style": {
+            "noExcessiveLinesPerFile": "off"
           },
           "suspicious": {
             "noMisplacedAssertion": "off"
           }
         }
+      }
+    },
+    {
+      // Rstest supplies its test function globally; Playwright specs remain excluded so their
+      // fixture-aware test API must always be imported from @playwright/test.
+      "includes": ["**/*.test.ts", "**/*.test.tsx"],
+      "javascript": {
+        "globals": ["test"]
+      }
+    },
+    {
+      // Browser-mode Rstest does not expose globals at runtime.
+      "includes": [
+        "**/*.browser.test.ts",
+        "**/*.browser.test.tsx",
+        "**/__browser__/**"
+      ],
+      "javascript": {
+        "globals": []
       }
     },
     {
@@ -205,12 +964,97 @@
         "registry/**/components/json-field/index.tsx",
         "registry/**/lib/protobuf-provider/**",
         "registry/**/demo/bookstore/library-service.ts",
-        "registry/**/hooks/use-proto-form*/proto-resolver.ts"
+        "registry/**/hooks/use-proto-form*/proto-resolver.ts",
+        "registry/**/scripts/protoc-gen-protoform/source-comments.ts"
       ],
       "linter": {
         "rules": {
           "complexity": {
-            "noExcessiveCognitiveComplexity": "off"
+            "noExcessiveCognitiveComplexity": "off",
+            "noExcessiveLinesPerFunction": "off"
+          },
+          "style": {
+            "noExcessiveLinesPerFile": "off"
+          }
+        }
+      }
+    },
+    {
+      // Declarative schema and readiness manifests are data specifications; splitting their
+      // literal tables would obscure coverage without reducing executable complexity.
+      "includes": [
+        "examples/catalog/demo-schemas.ts",
+        "readiness/profile.ts",
+        "registry/**/demo/runtime/demo-schemas.ts"
+      ],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveLinesPerFunction": "off"
+          },
+          "style": {
+            "noExcessiveLinesPerFile": "off"
+          }
+        }
+      }
+    },
+    {
+      // These cohesive interaction state machines keep effects, transitions, and their render
+      // contracts together; extracting fragments would create hidden coupling and prop tunnels.
+      "includes": [
+        "registry/**/components/combobox/index.tsx",
+        "registry/**/components/multi-select/index.tsx",
+        "registry/**/components/toggle-group/index.tsx",
+        "registry/**/hooks/use-proto-form-tanstack/index.ts",
+        "registry/**/hooks/use-proto-form/use-proto-form.ts"
+      ],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveCognitiveComplexity": "off",
+            "noExcessiveLinesPerFunction": "off"
+          }
+        }
+      }
+    },
+    {
+      // These documentation-only workspaces intentionally colocate the controls and live preview
+      // whose shared state they demonstrate; installable Protoform modules remain constrained.
+      "includes": [
+        "examples/presets/preset-lab.tsx",
+        "examples/readiness/readiness-dashboard.tsx"
+      ],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveCognitiveComplexity": "off",
+            "noExcessiveLinesPerFunction": "off"
+          }
+        }
+      }
+    },
+    {
+      // These files implement the restricted primitives themselves, so they must render the
+      // underlying platform element rather than recursively importing their own abstraction.
+      "includes": [
+        "registry/**/components/input/index.tsx",
+        "registry/**/components/textarea/index.tsx"
+      ],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noRestrictedElements": "off"
+          }
+        }
+      }
+    },
+    {
+      // These are Node-only package boundaries, not modules shipped into a browser bundle.
+      "includes": ["examples/server/**", "registry/**/scripts/**"],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noNodejsModules": "off"
           }
         }
       }

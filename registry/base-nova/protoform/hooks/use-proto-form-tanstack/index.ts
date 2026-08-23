@@ -12,18 +12,20 @@ import {
   useForm,
 } from "@tanstack/react-form";
 import { useState } from "react";
+import { createUpdateMask as createDirtyUpdateMask } from "../../lib/protobuf-provider/field-mask";
+import { createProtoFormSchema } from "../../lib/protobuf-provider/form-schema";
 import {
   type ConnectErrorContext,
-  createUpdateMask as createDirtyUpdateMask,
-  createProtoFormSchema,
   extractConnectErrorContext,
   extractFieldViolations,
+} from "../../lib/protobuf-provider/format-error";
+import { humanizeServerFieldError } from "../../lib/protobuf-provider/humanize-validation-error";
+import { protoPathToFormPath } from "../../lib/protobuf-provider/proto-error-path";
+import {
   formValuesToProto,
-  humanizeServerFieldError,
   type ProtoConversionOptions,
   type ProtoFormOptions,
-  protoPathToFormPath,
-} from "../../lib/protobuf-provider";
+} from "../../lib/protobuf-provider/provider";
 
 type FormValues = Record<string, unknown>;
 

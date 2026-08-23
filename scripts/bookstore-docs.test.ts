@@ -1,15 +1,15 @@
 import { existsSync, readFileSync } from "node:fs";
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 
 const ROOT = new URL("../", import.meta.url);
-const SIMULATED_IDE_PATTERN = /stackblitz|fake terminal/i;
+const SIMULATED_IDE_PATTERN = /stackblitz|fake terminal/iu;
 
 function read(path: string): string {
   return readFileSync(new URL(path, ROOT), "utf8");
 }
 
 describe("bookstore flagship documentation", () => {
-  it("ships a native live demo and source workspace", () => {
+  test("ships a native live demo and source workspace", () => {
     const page = read("content/docs/(start-here)/bookstore.mdx");
     const workspace = read("components/docs/bookstore-workspace.astro");
 
@@ -24,7 +24,7 @@ describe("bookstore flagship documentation", () => {
     expect(workspace).toContain("Loading live demo…");
   });
 
-  it("shows real generated artifacts rather than a simulated IDE", () => {
+  test("shows real generated artifacts rather than a simulated IDE", () => {
     expect(existsSync(new URL("conformance/gen/protoform/conformance/v1/aip_pb.ts", ROOT))).toBe(true);
     expect(existsSync(new URL("conformance/gen/protoform/conformance/v1/aip_form.ts", ROOT))).toBe(true);
     expect(read("components/docs/bookstore-workspace.astro")).not.toMatch(SIMULATED_IDE_PATTERN);

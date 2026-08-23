@@ -1,6 +1,6 @@
 import { create, fromBinary, toBinary } from "@bufbuild/protobuf";
 import { FieldOptionsSchema } from "@bufbuild/protobuf/wkt";
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 
 import "./auto-form-example-annotations";
 
@@ -19,9 +19,9 @@ import {
   AutoFormUiMetadataExampleSchema,
 } from "./gen/auto-form-example_pb";
 
-const MESSAGE_LEVEL_ERROR = /minimum threshold must be less than or equal to maximum threshold/i;
-const DATETIME_LOCAL_VALUE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;
-const REQUIRED_FIELD_ERROR = /enter a value/i;
+const MESSAGE_LEVEL_ERROR = /minimum threshold must be less than or equal to maximum threshold/iu;
+const DATETIME_LOCAL_VALUE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/u;
+const REQUIRED_FIELD_ERROR = /enter a value/iu;
 
 function requireDefined<T>(value: T | undefined, name: string): T {
   if (value === undefined) {
@@ -76,7 +76,7 @@ function buildValidProtoFormValues() {
 }
 
 describe("protobuf-provider", () => {
-  it("exposes descriptor deprecation through provider data and render hints", () => {
+  test("exposes descriptor deprecation through provider data and render hints", () => {
     const username = AutoFormExampleSchema.fields.find((field) => field.localName === "username");
     expect(username).toBeDefined();
     if (!username) {
@@ -94,7 +94,7 @@ describe("protobuf-provider", () => {
       username.proto.options = originalOptions;
     }
   });
-  it("parses enums and oneofs into autoform-friendly fields", () => {
+  test("parses enums and oneofs into autoform-friendly fields", () => {
     const parsedSchema = parseProtoSchema(AutoFormExampleSchema);
     const accessTierField = parsedSchema.fields.find((field) => field.key === "accessTier");
     const preferredContactField = parsedSchema.fields.find((field) => field.key === "preferredContact");
@@ -111,7 +111,7 @@ describe("protobuf-provider", () => {
     ]);
   });
 
-  it("hydrates field descriptions from registered proto annotations", () => {
+  test("hydrates field descriptions from registered proto annotations", () => {
     const parsedSchema = parseProtoSchema(AutoFormExampleSchema);
     const usernameField = parsedSchema.fields.find((field) => field.key === "username");
     const preferredContactField = parsedSchema.fields.find((field) => field.key === "preferredContact");
@@ -124,7 +124,7 @@ describe("protobuf-provider", () => {
     expect(preferredPhoneField?.fieldConfig?.description).toBe("Route urgent notices to an E.164 phone number.");
   });
 
-  it("converts protobuf messages into form-friendly values", () => {
+  test("converts protobuf messages into form-friendly values", () => {
     const message = create(AutoFormExampleSchema, {
       accessTier: 3,
       avatarBytes: new Uint8Array([1, 2, 3, 4]),
@@ -197,7 +197,7 @@ describe("protobuf-provider", () => {
     expect(formValues["writablePaths"]).toEqual(["profile"]);
   });
 
-  it("maps nested field and root validation errors through the resolver", async () => {
+  test("maps nested field and root validation errors through the resolver", async () => {
     const resolver = createProtoResolver(AutoFormExampleSchema);
     const result = await resolver(
       {
@@ -238,7 +238,7 @@ describe("protobuf-provider", () => {
     expect(officeLocationsErrors?.[0]?.value?.city?.message).toMatch(REQUIRED_FIELD_ERROR);
   });
 
-  it("preserves an edit source message in React Hook Form resolver output", async () => {
+  test("preserves an edit source message in React Hook Form resolver output", async () => {
     const values = buildValidProtoFormValues();
     const knownSource = formValuesToProto(AutoFormExampleSchema, values);
     const source = fromBinary(
@@ -260,7 +260,7 @@ describe("protobuf-provider", () => {
     });
   });
 
-  it("supports provider-style defaults and synchronous validation", () => {
+  test("supports provider-style defaults and synchronous validation", () => {
     const provider = new ProtoProvider(AutoFormExampleSchema);
     const defaultValues = provider.getDefaultValues();
     const validationResult = provider.validateSchema(buildValidProtoFormValues());
@@ -287,7 +287,7 @@ describe("protobuf-provider", () => {
     });
   });
 
-  it("round-trips optional, wrapper, and JSON-backed protobuf fields", () => {
+  test("round-trips optional, wrapper, and JSON-backed protobuf fields", () => {
     const provider = new ProtoProvider(AutoFormExampleSchema);
     const validationResult = provider.validateSchema({
       ...buildValidProtoFormValues(),
@@ -330,7 +330,7 @@ describe("protobuf-provider", () => {
     );
   });
 
-  it("strips enum type prefix from option labels", () => {
+  test("strips enum type prefix from option labels", () => {
     const parsedSchema = parseProtoSchema(AutoFormExampleSchema);
     const accessTierField = parsedSchema.fields.find((field) => field.key === "accessTier");
 
@@ -352,7 +352,7 @@ describe("protobuf-provider", () => {
     }
   });
 
-  it("normalizes proto field and oneof UI metadata for focused UI demos", () => {
+  test("normalizes proto field and oneof UI metadata for focused UI demos", () => {
     const parsedSchema = parseProtoSchema(AutoFormUiMetadataExampleSchema);
     const providerField = parsedSchema.fields.find((field) => field.key === "provider");
     const regionField = parsedSchema.fields.find((field) => field.key === "region");
@@ -386,7 +386,7 @@ describe("protobuf-provider", () => {
     );
   });
 
-  it("derives sensitive from CONTROL_TYPE_PASSWORD when not explicitly annotated", () => {
+  test("derives sensitive from CONTROL_TYPE_PASSWORD when not explicitly annotated", () => {
     const parsedSchema = parseProtoSchema(AutoFormUiMetadataExampleSchema);
     const apiTokenField = parsedSchema.fields.find((field) => field.key === "apiToken");
 

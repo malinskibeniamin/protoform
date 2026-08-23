@@ -13,7 +13,7 @@ interface AutoFormSlotProps {
 function AutoFormSlot({ children }: AutoFormSlotProps) {
   // AutoFormSlot is a marker component — its props are read by AutoFormFields
   // to determine placement. It never renders itself directly.
-  return <>{children}</>;
+  return children;
 }
 
 // Sentinel to identify AutoFormSlot elements in children

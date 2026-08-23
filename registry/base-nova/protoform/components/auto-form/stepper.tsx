@@ -49,7 +49,7 @@ export function fieldsForStep(fields: ParsedField[], steps: AutoFormStep[], step
 
 export function initialStepIndex(steps: AutoFormStep[], defaultStep: string | undefined): number {
   const index = defaultStep ? steps.findIndex((step) => step.id === defaultStep) : 0;
-  return index >= 0 ? index : 0;
+  return Math.max(index, 0);
 }
 
 export function validateSteps(steps: AutoFormStep[], defaultStep?: string): void {

@@ -72,7 +72,7 @@ async function loadAuditTargets(configPath: string): Promise<AutoFormAuditTarget
   return candidate;
 }
 
-export async function runProtoformCli(arguments_: readonly string[]): Promise<number> {
+export async function runProtoformCli(arguments_: readonly string[]): Promise<0 | 1> {
   const parsed = parseProtoformCliArguments(arguments_);
   const targets = (await Promise.all(parsed.configPaths.map(loadAuditTargets))).flat();
   const report = auditAutoFormConfigurations(targets);

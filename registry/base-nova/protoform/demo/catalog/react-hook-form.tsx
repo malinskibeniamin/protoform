@@ -21,7 +21,7 @@ export function ReactHookFormDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Edit, blur, validate, and submit through the default React Hook Form adapter."}
+        Edit, blur, validate, and submit through the default React Hook Form adapter.
       </p>
       <AutoForm
         defaultValues={defaultValues}

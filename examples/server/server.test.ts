@@ -2,7 +2,7 @@ import { Code, ConnectError, createClient, createRouterTransport } from "@connec
 import { createConnectTransport } from "@connectrpc/connect-node";
 import { callUnaryMethod } from "@connectrpc/connect-query";
 import { createValidateInterceptor } from "@connectrpc/validate";
-import { afterEach, describe, expect, it } from "@rstest/core";
+import { afterEach, describe, expect } from "@rstest/core";
 
 import { LibraryService } from "../../conformance/gen/protoform/conformance/v1/aip_pb.js";
 import { FormExamplesService } from "../gen/protoform/examples/v1/forms_pb.js";
@@ -17,7 +17,7 @@ afterEach(async () => {
 });
 
 describe("form example Connect server", () => {
-  it("serves health checks and reflects browser origins", async () => {
+  test("serves health checks and reflects browser origins", async () => {
     const server = buildExampleServer();
     const address = await server.listen({ host: "127.0.0.1", port: 0 });
     closeServer = () => server.close();
@@ -48,7 +48,7 @@ describe("form example Connect server", () => {
     expect(invalidPreflight.status).toBe(400);
   });
 
-  it("runs the generated route and validation interceptor in process", async () => {
+  test("runs the generated route and validation interceptor in process", async () => {
     const transport = createRouterTransport((router) => router.service(FormExamplesService, formExamplesService), {
       router: { interceptors: [createValidateInterceptor()] },
     });
@@ -67,8 +67,8 @@ describe("form example Connect server", () => {
     ).rejects.toMatchObject({ code: Code.InvalidArgument });
   });
 
-  it("serves generated clients and rejects invalid protobuf requests", async () => {
-    const server = await buildExampleServer();
+  test("serves generated clients and rejects invalid protobuf requests", async () => {
+    const server = buildExampleServer();
     const address = await server.listen({ host: "127.0.0.1", port: 0 });
     closeServer = () => server.close();
     const client = createClient(FormExamplesService, createConnectTransport({ baseUrl: address, httpVersion: "1.1" }));
@@ -84,8 +84,8 @@ describe("form example Connect server", () => {
     );
   });
 
-  it("serves the LibraryService CRUD API and enforces the ISBN-13 CEL rule", async () => {
-    const server = await buildExampleServer();
+  test("serves the LibraryService CRUD API and enforces the ISBN-13 CEL rule", async () => {
+    const server = buildExampleServer();
     const address = await server.listen({ host: "127.0.0.1", port: 0 });
     closeServer = () => server.close();
     const client = createClient(LibraryService, createConnectTransport({ baseUrl: address, httpVersion: "1.1" }));

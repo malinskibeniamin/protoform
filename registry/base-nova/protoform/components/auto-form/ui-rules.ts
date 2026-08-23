@@ -29,7 +29,7 @@ export function evaluateUiRules(
     thisValue: unknown;
   }
 ): boolean {
-  if (!rules?.length) {
+  if (!rules || rules.length === 0) {
     return true;
   }
 

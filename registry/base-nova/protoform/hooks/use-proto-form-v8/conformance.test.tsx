@@ -1,7 +1,7 @@
 import { BadRequestSchema } from "@buf/googleapis_googleapis.bufbuild_es/google/rpc/error_details_pb.js";
 import { create, isMessage } from "@bufbuild/protobuf";
 import { Code, ConnectError } from "@connectrpc/connect";
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 import { renderHook, waitFor } from "@testing-library/react";
 import { act } from "react";
 
@@ -16,7 +16,7 @@ function defaults(overrides: Record<string, unknown> = {}) {
 }
 
 describe("experimental React Hook Form v8 useProtoForm conformance", () => {
-  it("exposes the v8-native form API and creates protobuf messages", () => {
+  test("exposes the v8-native form API and creates protobuf messages", () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: defaults({ age: 25, username: "test_user" }),
@@ -31,7 +31,7 @@ describe("experimental React Hook Form v8 useProtoForm conformance", () => {
     expect(message.username).toBe("test_user");
   });
 
-  it("validates protobuf fields without the v7-only resolver package", async () => {
+  test("validates protobuf fields without the v7-only resolver package", async () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: defaults({ username: "ab" }),
@@ -44,11 +44,11 @@ describe("experimental React Hook Form v8 useProtoForm conformance", () => {
     });
 
     await waitFor(() => {
-      expect(result.current.formState.errors.username?.message).toMatch(/3/);
+      expect(result.current.formState.errors.username?.message).toMatch(/3/u);
     });
   });
 
-  it("builds update masks from fields changed through v8", async () => {
+  test("builds update masks from fields changed through v8", async () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: defaults({ primaryEmail: "old@example.com" }),
@@ -66,7 +66,7 @@ describe("experimental React Hook Form v8 useProtoForm conformance", () => {
     });
   });
 
-  it("maps Connect field violations onto v8 field errors", () => {
+  test("maps Connect field violations onto v8 field errors", () => {
     const { result } = renderHook(() => useProtoForm(AutoFormExampleSchema));
     const error = new ConnectError("Review the highlighted fields.", Code.InvalidArgument, {}, [
       {
@@ -84,7 +84,7 @@ describe("experimental React Hook Form v8 useProtoForm conformance", () => {
     expect(result.current.getFieldState("primaryEmail").error?.message).toBe("Enter a value.");
   });
 
-  it("maps violations through any configured server path prefix", () => {
+  test("maps violations through any configured server path prefix", () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         serverPathPrefixes: ["spec", "instance"],

@@ -41,6 +41,7 @@ export function FinalFormDemo() {
           <form className="space-y-6" onSubmit={handleSubmit}>
             <FinalField<string> name="email">
               {({ input, meta }) => {
+                const { name, onBlur, onChange, onFocus, value } = input;
                 const message =
                   (meta.touched || meta.submitFailed) && typeof meta.error === "string" ? meta.error : undefined;
                 return (
@@ -49,11 +50,15 @@ export function FinalFormDemo() {
                       Email
                     </FieldLabel>
                     <Input
-                      {...input}
                       aria-invalid={Boolean(message) || undefined}
                       id="final-form-email"
+                      name={name}
+                      onBlur={onBlur}
+                      onChange={onChange}
+                      onFocus={onFocus}
                       placeholder="ada@example.com"
                       type="email"
+                      value={value}
                     />
                     <FieldError>{message}</FieldError>
                   </Field>

@@ -1,10 +1,10 @@
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 
 import { auditAutoFormConfigurations, formatAutoFormAuditReport } from "../audit";
 import { createMockProvider } from "./test-utils";
 
 describe("AutoForm audit reports", () => {
-  it("emits deterministic JSON and SARIF from named audit targets", () => {
+  test("emits deterministic JSON and SARIF from named audit targets", () => {
     const report = auditAutoFormConfigurations([
       {
         name: "settings-form",

@@ -21,7 +21,7 @@ export function ProtovalidateStringFormatsDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Enter malformed addresses and identifiers, then correct them without losing other values."}
+        Enter malformed addresses and identifiers, then correct them without losing other values.
       </p>
       <AutoForm
         defaultValues={defaultValues}
