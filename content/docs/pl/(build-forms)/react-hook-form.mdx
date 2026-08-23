@@ -145,10 +145,22 @@ bunx shadcn@latest add @protoform/auto-form-react-hook-form-v8
 import { AutoForm } from "@/components/auto-form-react-hook-form-v8";
 ```
 
-Te elementy instalują v8 pod aliasem pakietu `react-hook-form-v8`, zachowują natywny interfejs API v8 oraz
-używają identyfikatora tablicy pól `key` z v8. Zachowaj oddzielne importy wersji stabilnej i beta do czasu
-ukończenia migracji. Przed przyjęciem ścieżki beta zapoznaj się z nadrzędnymi
-[uwagami do wydania wersji beta v8](https://github.com/react-hook-form/react-hook-form/releases/tag/v8.0.0-beta.0).
+Te elementy instalują v8 pod aliasem pakietu `react-hook-form-v8` i zachowują natywny interfejs API v8.
+Zachowaj oddzielne importy wersji stabilnej i beta do czasu ukończenia migracji. Przed przyjęciem ścieżki
+beta zapoznaj się z nadrzędnym
+[przewodnikiem migracji z v7 do v8](https://react-hook-form.com/migrate-v7-to-v8) oraz
+[uwagami do wydania beta.3](https://github.com/react-hook-form/react-hook-form/releases/tag/v8.0.0-beta.3).
+
+Istotne ograniczenia wersji beta:
+
+- `useFieldArray` udostępnia `field.key` i usuwa `keyName`. Adapter Protoform v8 już używa `key`.
+- Płaskie tablice wartości prostych przechodzą sprawdzanie typów w v8, ale bezpośrednie renderowanie
+  `useFieldArray` nadal ma ograniczenie w czasie działania. Testy Protoform obejmują dodawanie,
+  usuwanie i wysyłanie powtarzanych pól prostych; niestandardowe renderowanie tablic pól sprawdź osobno.
+- `Controller` i `useController` przechowują teraz rzeczywisty element DOM. Przekazuj `field.ref`
+  do pola, aby zachować obsługę fokusu i natywnej walidacji.
+- Używaj `subscribe` zamiast `watch` z wywołaniem zwrotnym. Do zastępowania całej tablicy używaj
+  `replace`; planowane usunięcie aktualizacji tablic przez `setValue` nie trafiło jeszcze do beta.3.
 
 Korzystasz już ze standaryzowanego rozwiązania opartego na innym magazynie stanu formularza? Zobacz natywny hook i generowaną ścieżkę AutoForm w
 [TanStack Form](/docs/tanstack-form) albo adaptery
