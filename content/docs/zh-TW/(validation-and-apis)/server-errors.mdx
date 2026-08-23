@@ -1,6 +1,6 @@
 ---
 title: 伺服器錯誤
-description: 將 API 的結構化 Connect 與 gRPC 錯誤保留為無障礙表單回饋。請參閱 Protoform 實作指南。
+description: 將 API 的結構化 Connect 與 gRPC 錯誤轉換為無障礙表單回饋，並保留欄位錯誤、錯誤摘要與診斷內容。瞭解 Protoform 如何依據標準狀態碼與錯誤詳細資料，建立可復原、可診斷的完整表單體驗，避免依賴容易變動的訊息文字。
 ---
 用戶端驗證可改善回饋，但授權、並行處理、唯一性、配額及目前狀態檢查仍以伺服器為準。Protoform 會將結構化 Connect 與 gRPC 錯誤對應至 3 個位置：欄位錯誤、錯誤摘要和診斷內容。
 
