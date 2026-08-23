@@ -5,7 +5,7 @@ import { Slot } from "@/registry/base-nova/protoform/lib/base-ui-compat";
 import { cn, type SharedProps } from "@/registry/base-nova/protoform/lib/utils";
 
 const badgeVariants = cva(
-  "inline-flex max-w-full shrink-0 items-center justify-center overflow-hidden truncate text-ellipsis whitespace-nowrap rounded-md border font-medium transition-[color,box-shadow] selection:bg-selected selection:text-selected-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&>svg]:pointer-events-none",
+  "inline-flex max-w-full shrink-0 items-center justify-center truncate rounded-md border font-medium transition-[color,box-shadow] selection:bg-selected selection:text-selected-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&>svg]:pointer-events-none",
   {
     defaultVariants: {
       size: "md",

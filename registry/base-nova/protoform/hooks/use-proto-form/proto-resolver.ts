@@ -6,10 +6,12 @@ import type { FormValues } from "../../lib/core/index.js";
 import {
   humanizeValidationError,
   isGenericValidationMessage,
+} from "../../lib/protobuf-provider/humanize-validation-error.js";
+import {
   PROTO_FORM_ROOT_ERROR_KEY,
   type ProtoFormOptions,
   validateFormValuesAgainstProtoSchema,
-} from "../../lib/protobuf-provider/index.js";
+} from "../../lib/protobuf-provider/provider.js";
 import { createDescriptorAwareStandardSchema } from "../../lib/protobuf-provider/validation-schema.js";
 
 export interface ProtoResolverOptions {

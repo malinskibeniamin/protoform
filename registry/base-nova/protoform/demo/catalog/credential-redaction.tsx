@@ -21,7 +21,7 @@ export function CredentialRedactionDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Enter a token and inspect the review state, which never echoes the secret."}
+        Enter a token and inspect the review state, which never echoes the secret.
       </p>
       <AutoForm
         defaultValues={defaultValues}

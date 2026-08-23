@@ -1,9 +1,9 @@
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 
 import { parseProtoformCliArguments } from "./protoform";
 
 describe("protoform CLI", () => {
-  it("parses audit targets and the requested output format", () => {
+  test("parses audit targets and the requested output format", () => {
     expect(parseProtoformCliArguments(["audit", "forms/audit.ts", "--format", "sarif"])).toEqual({
       command: "audit",
       configPaths: ["forms/audit.ts"],
@@ -11,7 +11,7 @@ describe("protoform CLI", () => {
     });
   });
 
-  it("rejects unsupported commands and formats", () => {
+  test("rejects unsupported commands and formats", () => {
     expect(() => parseProtoformCliArguments(["check"])).toThrow("Unknown command");
     expect(() => parseProtoformCliArguments(["audit", "--format", "yaml"])).toThrow("Unsupported format");
   });

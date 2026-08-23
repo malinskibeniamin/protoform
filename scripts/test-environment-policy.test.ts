@@ -1,5 +1,5 @@
 import { existsSync, readFileSync } from "node:fs";
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 
 const repositoryDirectory = new URL("../", import.meta.url);
 const domConfigs = ["rstest.config.ts", "rstest.conformance.config.ts", "rstest.integration.config.ts"] as const;
@@ -17,7 +17,7 @@ const rstestScripts = [
 ] as const;
 
 describe("simulated DOM test environment", () => {
-  it("uses Rstest 0.11.9 with happy-dom and no Vitest wiring", () => {
+  test("uses Rstest 0.11.9 with happy-dom and no Vitest wiring", () => {
     for (const config of domConfigs) {
       expect(readFileSync(new URL(config, repositoryDirectory), "utf8")).toContain('testEnvironment: "happy-dom"');
     }
@@ -36,7 +36,7 @@ describe("simulated DOM test environment", () => {
     expect(manifest.devDependencies?.["vitest"]).toBeUndefined();
     expect(Object.values(manifest.scripts ?? {}).join("\n")).not.toContain("vitest");
     for (const script of rstestScripts) {
-      expect(manifest.scripts?.[script]).toMatch(/^node scripts\/run-tests\.mjs /);
+      expect(manifest.scripts?.[script]).toMatch(/^node scripts\/run-tests\.mjs /u);
       expect(manifest.scripts?.[script]).not.toContain("rstest");
     }
     expect(existsSync(new URL("scripts/run-tests.mjs", repositoryDirectory))).toBe(true);

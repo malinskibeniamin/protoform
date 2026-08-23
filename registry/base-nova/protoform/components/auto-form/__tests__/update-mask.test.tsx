@@ -1,5 +1,5 @@
 import { create } from "@bufbuild/protobuf";
-import { describe, expect, it, rs } from "@rstest/core";
+import { describe, expect, rs } from "@rstest/core";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
@@ -8,7 +8,7 @@ import { MaskableProfileSchema } from "@/examples/gen/protoform/examples/v1/form
 import { AutoForm } from "..";
 
 describe("AutoForm update masks", () => {
-  it("passes only touched protobuf fields to onSubmit", async () => {
+  test("passes only touched protobuf fields to onSubmit", async () => {
     const user = userEvent.setup();
     const onSubmit = rs.fn();
     render(

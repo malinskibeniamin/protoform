@@ -97,6 +97,8 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
   maxCount,
   ...popoverProps
 }) => {
+  "use no memo";
+
   const itemCache = React.useRef(new Map<string, MultiSelectOptionItem>()).current;
 
   const handleValueChange = (state: string[]) => {
@@ -243,7 +245,7 @@ const MultiSelectValue = React.forwardRef<React.ComponentRef<"div">, MultiSelect
     const renderRemain = maxDisplay && value.length > maxDisplay ? value.length - maxDisplay : 0;
     const renderItems = renderRemain ? value.slice(0, maxDisplay) : value;
 
-    if (!value.length) {
+    if (value.length === 0) {
       return <span className="pointer-events-none text-muted-foreground">{placeholder}</span>;
     }
 
@@ -655,7 +657,7 @@ function SimpleMultiSelect({
       </MultiSelectTrigger>
       <MultiSelectContent container={container} testId={testId ? `${testId}-content` : undefined}>
         {searchable ? (
-          <MultiSelectSearch placeholder="Search..." testId={testId ? `${testId}-search` : undefined} />
+          <MultiSelectSearch placeholder="Search…" testId={testId ? `${testId}-search` : undefined} />
         ) : null}
         <MultiSelectList>{renderMultiSelectOptions(normalizedOptions)}</MultiSelectList>
         <MultiSelectEmpty>No items found</MultiSelectEmpty>

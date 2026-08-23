@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from "@rstest/core";
+import { afterEach, describe, expect } from "@rstest/core";
 import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
@@ -11,7 +11,7 @@ afterEach(() => {
 });
 
 describe("Toaster", () => {
-  it("renders and dismisses a toast added through the shared manager", async () => {
+  test("renders and dismisses a toast added through the shared manager", async () => {
     const user = userEvent.setup();
 
     render(

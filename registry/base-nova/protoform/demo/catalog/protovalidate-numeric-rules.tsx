@@ -21,7 +21,7 @@ export function ProtovalidateNumericRulesDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Enter boundary and out-of-range values to compare field-specific numeric messages."}
+        Enter boundary and out-of-range values to compare field-specific numeric messages.
       </p>
       <AutoForm
         defaultValues={defaultValues}

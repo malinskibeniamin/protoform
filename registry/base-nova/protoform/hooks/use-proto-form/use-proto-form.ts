@@ -10,22 +10,24 @@ import {
   type UseFormReturn,
   useForm,
 } from "react-hook-form";
+import { createUpdateMask as createDirtyUpdateMask } from "../../lib/protobuf-provider/field-mask.js";
 import {
   type ConnectErrorContext,
-  createUpdateMask as createDirtyUpdateMask,
   extractConnectErrorContext,
   extractFieldViolations,
+} from "../../lib/protobuf-provider/format-error.js";
+import { humanizeServerFieldError } from "../../lib/protobuf-provider/humanize-validation-error.js";
+import {
   formValuesToProto,
-  humanizeServerFieldError,
   type ProtoConversionOptions,
   type ProtoFormOptions,
-} from "../../lib/protobuf-provider/index.js";
+} from "../../lib/protobuf-provider/provider.js";
 
 import { protoPathToFormPath } from "./proto-error-path.js";
 import type { FlattenProtoOneofs } from "./proto-paths.js";
 import { createProtoResolver } from "./proto-resolver.js";
 
-export type { ConnectErrorContext } from "../../lib/protobuf-provider/index.js";
+export type { ConnectErrorContext } from "../../lib/protobuf-provider/format-error.js";
 
 /** MessageShape with proto oneofs flattened so react-hook-form Path<T> works. */
 type FormShape<Desc extends DescMessage> = FlattenProtoOneofs<MessageShape<Desc>>;
@@ -138,6 +140,8 @@ export function useProtoForm<Desc extends DescMessage>(
   schema: Desc,
   options?: UseProtoFormOptions<Desc>
 ): UseProtoFormReturn<Desc> {
+  "use no memo";
+
   const {
     emptyRepeatedStringPolicies,
     formatMessage,
@@ -359,7 +363,7 @@ function stripPrefix(field: string, prefixes: readonly string[]): string {
 }
 
 function setModifiedPath(target: ModifiedFieldTree, path: string): void {
-  const segments = path.match(/[^.[\]]+/g) ?? [];
+  const segments = path.match(/[^.[\]]+/gu) ?? [];
   let current = target;
   for (const [index, segment] of segments.entries()) {
     if (index === segments.length - 1) {
@@ -382,7 +386,7 @@ function setModifiedPath(target: ModifiedFieldTree, path: string): void {
 }
 
 function clearModifiedPath(target: ModifiedFieldTree, path: string): void {
-  const segments = path.match(/[^.[\]]+/g) ?? [];
+  const segments = path.match(/[^.[\]]+/gu) ?? [];
   const [segment, ...rest] = segments;
   if (!segment) {
     return;

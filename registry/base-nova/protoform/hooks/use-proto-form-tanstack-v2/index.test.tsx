@@ -1,4 +1,4 @@
-import { describe, expect, it, rs } from "@rstest/core";
+import { describe, expect, rs } from "@rstest/core";
 import { renderHook } from "@testing-library/react";
 import { act } from "react";
 
@@ -7,7 +7,7 @@ import { AutoFormExampleSchema } from "../../lib/protobuf-provider/gen/auto-form
 import { useProtoForm } from ".";
 
 describe("experimental TanStack Form v2 useProtoForm", () => {
-  it("keeps the v2-native form surface and adds protobuf helpers", () => {
+  test("keeps the v2-native form surface and adds protobuf helpers", () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: {
@@ -33,7 +33,7 @@ describe("experimental TanStack Form v2 useProtoForm", () => {
     expect(result.current.createUpdateMask().paths).toEqual(["username"]);
   });
 
-  it("runs protobuf validation through the v2 validator pipeline", async () => {
+  test("runs protobuf validation through the v2 validator pipeline", async () => {
     const onSubmit = rs.fn();
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
@@ -55,7 +55,7 @@ describe("experimental TanStack Form v2 useProtoForm", () => {
     expect(result.current.state.isInvalid).toBe(true);
   });
 
-  it("appends the protobuf validator without replacing native v2 validators", async () => {
+  test("appends the protobuf validator without replacing native v2 validators", async () => {
     const onSubmit = rs.fn();
     const nativeValidator = rs.fn(() => ({
       fields: { username: "Native validation failed." },
@@ -79,7 +79,7 @@ describe("experimental TanStack Form v2 useProtoForm", () => {
     expect(onSubmit).not.toHaveBeenCalled();
   });
 
-  it("exposes the validated protobuf message in native schema outputs", async () => {
+  test("exposes the validated protobuf message in native schema outputs", async () => {
     const onSubmit = rs.fn(({ schemaOutputs }) => {
       expect(schemaOutputs[0].$typeName).toBe("protoform.v1.AutoFormExample");
       expect(schemaOutputs[0].username).toBe("protoform_admin");
@@ -98,7 +98,7 @@ describe("experimental TanStack Form v2 useProtoForm", () => {
     expect(onSubmit).toHaveBeenCalledTimes(1);
   });
 
-  it("switches oneof branches without retaining the previous value", () => {
+  test("switches oneof branches without retaining the previous value", () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: {

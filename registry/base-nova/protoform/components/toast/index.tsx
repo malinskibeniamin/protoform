@@ -86,22 +86,18 @@ function ToastDescription({ className, ...props }: ToastPrimitive.Description.Pr
   );
 }
 
-function ToastAction({
-  className,
-  render = <Button size="sm" type="button" variant="outline" />,
-  ...props
-}: ToastPrimitive.Action.Props) {
+function ToastAction({ className, render, ...props }: ToastPrimitive.Action.Props) {
   return (
-    <ToastPrimitive.Action className={cn("shrink-0", className)} data-slot="toast-action" render={render} {...props} />
+    <ToastPrimitive.Action
+      className={cn("shrink-0", className)}
+      data-slot="toast-action"
+      render={render ?? <Button size="sm" type="button" variant="outline" />}
+      {...props}
+    />
   );
 }
 
-function ToastClose({
-  children,
-  className,
-  render = <Button size="icon-sm" type="button" variant="ghost" />,
-  ...props
-}: ToastPrimitive.Close.Props) {
+function ToastClose({ children, className, render, ...props }: ToastPrimitive.Close.Props) {
   return (
     <ToastPrimitive.Close
       aria-label="Close toast"
@@ -110,7 +106,7 @@ function ToastClose({
         className
       )}
       data-slot="toast-close"
-      render={render}
+      render={render ?? <Button size="icon-sm" type="button" variant="ghost" />}
       {...props}
     >
       {children ?? <XIcon aria-hidden="true" />}
@@ -135,7 +131,7 @@ function ToastIcon({ type }: { type: string | undefined }) {
       icon = <OctagonXIcon aria-hidden="true" className="text-destructive" />;
       break;
     case "loading":
-      icon = <Loader2Icon aria-hidden="true" className="animate-spin" />;
+      icon = <Loader2Icon aria-hidden="true" className="motion-safe:animate-spin" />;
       break;
     default:
       return null;

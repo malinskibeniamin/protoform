@@ -3,7 +3,7 @@
 import { fromJson } from "@bufbuild/protobuf";
 import { base64Encode } from "@bufbuild/protobuf/wire";
 import { anyPack, StructSchema, ValueSchema } from "@bufbuild/protobuf/wkt";
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 
 import { createProtoFormSchema } from "../registry/base-nova/protoform/lib/protobuf-provider/index.js";
 import { AnyMatrixSchema, ValidationMatrixSchema } from "./gen/protoform/conformance/v1/conformance_pb.js";
@@ -49,7 +49,7 @@ function issuePaths(
 }
 
 describe("Protovalidate scalar rule conformance", () => {
-  it("enforces bool const for true, false, and the implicit default", async () => {
+  test("enforces bool const for true, false, and the implicit default", async () => {
     const schema = createProtoFormSchema(ValidationMatrixSchema);
 
     const invalidCases = [
@@ -68,7 +68,7 @@ describe("Protovalidate scalar rule conformance", () => {
     }
   });
 
-  it("enforces string const, code-point and byte lengths, pattern, affixes, contains, and membership", async () => {
+  test("enforces string const, code-point and byte lengths, pattern, affixes, contains, and membership", async () => {
     const schema = createProtoFormSchema(ValidationMatrixSchema);
     const invalidCases = [
       ["exactText", "wrong"],
@@ -99,7 +99,7 @@ describe("Protovalidate scalar rule conformance", () => {
     }
   });
 
-  it("validates UUID and trimmed UUID forms without rewriting accepted case", async () => {
+  test("validates UUID and trimmed UUID forms without rewriting accepted case", async () => {
     const schema = createProtoFormSchema(ValidationMatrixSchema);
     const uppercaseUuid = "123E4567-E89B-12D3-A456-426614174000";
     const valid = await schema["~standard"].validate({
@@ -129,7 +129,7 @@ describe("Protovalidate scalar rule conformance", () => {
     }
   });
 
-  it("enforces enum const, defined-only, allow and deny lists, aliases, and unknown values", async () => {
+  test("enforces enum const, defined-only, allow and deny lists, aliases, and unknown values", async () => {
     const schema = createProtoFormSchema(ValidationMatrixSchema);
     const alias = await schema["~standard"].validate({
       ...validValidationInput,
@@ -163,7 +163,7 @@ describe("Protovalidate scalar rule conformance", () => {
 });
 
 describe("Protovalidate collection and Any rule conformance", () => {
-  it("enforces repeated min, max, and uniqueness while allowing duplicate messages", async () => {
+  test("enforces repeated min, max, and uniqueness while allowing duplicate messages", async () => {
     const schema = createProtoFormSchema(ValidationMatrixSchema);
     const duplicateMessages = await schema["~standard"].validate({
       ...validValidationInput,
@@ -185,7 +185,7 @@ describe("Protovalidate collection and Any rule conformance", () => {
     }
   });
 
-  it("enforces map min and max pairs and rejects duplicate rendered keys", async () => {
+  test("enforces map min and max pairs and rejects duplicate rendered keys", async () => {
     const schema = createProtoFormSchema(ValidationMatrixSchema);
 
     const invalidLabels = [
@@ -213,7 +213,7 @@ describe("Protovalidate collection and Any rule conformance", () => {
     }
   });
 
-  it("enforces Any type URL allow and deny lists and rejects malformed form values", async () => {
+  test("enforces Any type URL allow and deny lists and rejects malformed form values", async () => {
     const schema = createProtoFormSchema(AnyMatrixSchema);
     const struct = anyPack(StructSchema, fromJson(StructSchema, { ok: true }));
     const value = anyPack(ValueSchema, fromJson(ValueSchema, "blocked"));

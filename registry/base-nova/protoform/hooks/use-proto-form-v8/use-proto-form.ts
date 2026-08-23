@@ -10,22 +10,24 @@ import {
   type UseFormReturn,
   useForm,
 } from "react-hook-form-v8";
+import { createUpdateMask as createDirtyUpdateMask } from "../../lib/protobuf-provider/field-mask.js";
 import {
   type ConnectErrorContext,
-  createUpdateMask as createDirtyUpdateMask,
   extractConnectErrorContext,
   extractFieldViolations,
+} from "../../lib/protobuf-provider/format-error.js";
+import { humanizeServerFieldError } from "../../lib/protobuf-provider/humanize-validation-error.js";
+import {
   formValuesToProto,
-  humanizeServerFieldError,
   type ProtoConversionOptions,
   type ProtoFormOptions,
-} from "../../lib/protobuf-provider/index.js";
+} from "../../lib/protobuf-provider/provider.js";
 
 import { protoPathToFormPath } from "./proto-error-path.js";
 import type { FlattenProtoOneofs } from "./proto-paths.js";
 import { createProtoResolver } from "./proto-resolver.js";
 
-export type { ConnectErrorContext } from "../../lib/protobuf-provider/index.js";
+export type { ConnectErrorContext } from "../../lib/protobuf-provider/format-error.js";
 
 /** MessageShape with proto oneofs flattened so react-hook-form Path<T> works. */
 type FormShape<Desc extends DescMessage> = FlattenProtoOneofs<MessageShape<Desc>>;

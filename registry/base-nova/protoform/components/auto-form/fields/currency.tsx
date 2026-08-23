@@ -14,7 +14,7 @@ function CurrencyFieldComponent({ error, field, id, inputProps }: AutoFormFieldP
     <InputGroup testId={testIds.control}>
       <InputGroupAddon>
         <InputGroupText>
-          <DollarSignIcon className="h-4 w-4" />
+          <DollarSignIcon className="size-4" />
         </InputGroupText>
       </InputGroupAddon>
       <InputGroupInput

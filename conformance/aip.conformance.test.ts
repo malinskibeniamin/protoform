@@ -4,7 +4,7 @@ import { method_signature } from "@buf/googleapis_googleapis.bufbuild_es/google/
 import { FieldBehavior } from "@buf/googleapis_googleapis.bufbuild_es/google/api/field_behavior_pb.js";
 import { create, getExtension } from "@bufbuild/protobuf";
 import { MethodOptionsSchema } from "@bufbuild/protobuf/wkt";
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 
 import {
   getProtoFieldBehaviors,
@@ -49,7 +49,7 @@ function field(schema: ReturnType<typeof parseProtoSchema>, key: string) {
 }
 
 describe("Google AIP form conformance", () => {
-  it("publishes current standard and soft-delete HTTP contracts", () => {
+  test("publishes current standard and soft-delete HTTP contracts", () => {
     const contracts = Object.fromEntries(
       Object.entries(LibraryService.method).map(([name, method]) => {
         const workflow = getProtoMethodWorkflow(method);
@@ -127,7 +127,7 @@ describe("Google AIP form conformance", () => {
     });
   });
 
-  it("parses AIP-121/123 resource type, pattern, singular, and plural metadata", () => {
+  test("parses AIP-121/123 resource type, pattern, singular, and plural metadata", () => {
     expect(getProtoResourceMetadata(BookSchema)).toEqual({
       nameField: "name",
       patterns: ["publishers/{publisher}/books/{book}"],
@@ -137,7 +137,7 @@ describe("Google AIP form conformance", () => {
     });
   });
 
-  it("keeps AIP-122 full resource names distinct from display names and create IDs", () => {
+  test("keeps AIP-122 full resource names distinct from display names and create IDs", () => {
     const book = parseProtoSchema(BookSchema);
     const createBook = parseProtoSchema(CreateBookRequestSchema);
 
@@ -155,18 +155,18 @@ describe("Google AIP form conformance", () => {
     });
   });
 
-  it("preserves AIP-124 parent and resource associations on request fields", () => {
+  test("preserves AIP-124 parent and resource associations on request fields", () => {
     expect(getProtoResourceReference(CreateBookRequestSchema.field.parent)?.childType).toBe(
       "library.protoform.dev/Book"
     );
     expect(getProtoResourceReference(GetBookRequestSchema.field.name)?.type).toBe("library.protoform.dev/Book");
   });
 
-  it("keeps AIP-185 API versions in the protobuf package", () => {
+  test("keeps AIP-185 API versions in the protobuf package", () => {
     expect(BookSchema.typeName).toBe("protoform.conformance.v1.Book");
   });
 
-  it("treats AIP-148 canonical identity, display, and lifecycle fields correctly", () => {
+  test("treats AIP-148 canonical identity, display, and lifecycle fields correctly", () => {
     const parsed = parseProtoSchema(BookSchema);
 
     expect(field(parsed, "name").required).toBe(false);
@@ -176,7 +176,7 @@ describe("Google AIP form conformance", () => {
     }
   });
 
-  it("models AIP-214 expiration choices and keeps the AIP-216 state server-owned", () => {
+  test("models AIP-214 expiration choices and keeps the AIP-216 state server-owned", () => {
     const parsed = parseProtoSchema(BookSchema);
     const expiration = field(parsed, "expiration");
 
@@ -189,7 +189,7 @@ describe("Google AIP form conformance", () => {
     expect(getProtoFieldCustomData(field(parsed, "state"))?.hidden).toBe(true);
   });
 
-  it("models AIP-164 soft delete lifecycle fields and undelete identity", () => {
+  test("models AIP-164 soft delete lifecycle fields and undelete identity", () => {
     const book = parseProtoSchema(BookSchema);
     const undelete = parseProtoSchema(UndeleteBookRequestSchema);
 
@@ -200,7 +200,7 @@ describe("Google AIP form conformance", () => {
     expect(getProtoResourceReference(UndeleteBookRequestSchema.field.name)?.type).toBe("library.protoform.dev/Book");
   });
 
-  it("models AIP-162 revisions as nested, server-produced snapshot resources", () => {
+  test("models AIP-162 revisions as nested, server-produced snapshot resources", () => {
     const revision = parseProtoSchema(BookRevisionSchema);
 
     expect(getProtoResourceMetadata(BookRevisionSchema)).toEqual({
@@ -214,7 +214,7 @@ describe("Google AIP form conformance", () => {
     expect(getProtoFieldCustomData(field(revision, "createTime"))?.hidden).toBe(true);
   });
 
-  it("applies AIP-203 REQUIRED, OPTIONAL, IDENTIFIER, OUTPUT_ONLY, IMMUTABLE, and INPUT_ONLY in create and update forms", () => {
+  test("applies AIP-203 REQUIRED, OPTIONAL, IDENTIFIER, OUTPUT_ONLY, IMMUTABLE, and INPUT_ONLY in create and update forms", () => {
     const createBook = field(parseProtoSchema(CreateBookRequestSchema), "book");
     const updateBook = field(parseProtoSchema(UpdateBookRequestSchema), "book");
     const createFields = { fields: createBook.schema ?? [] };
@@ -243,7 +243,7 @@ describe("Google AIP form conformance", () => {
     }
   });
 
-  it("models AIP-133 Create with parent, body, resource ID, and no body name input", () => {
+  test("models AIP-133 Create with parent, body, resource ID, and no body name input", () => {
     const parsed = parseProtoSchema(CreateBookRequestSchema);
     const book = field(parsed, "book");
 
@@ -258,7 +258,7 @@ describe("Google AIP form conformance", () => {
     expect(getProtoFieldCustomData(field({ fields: book.schema ?? [] }, "name"))?.hidden).toBe(true);
   });
 
-  it("models AIP-155 request IDs and AIP-163 validation previews as optional mutation controls", () => {
+  test("models AIP-155 request IDs and AIP-163 validation previews as optional mutation controls", () => {
     for (const schema of [CreateBookRequestSchema, UpdateBookRequestSchema, DeleteBookRequestSchema]) {
       const parsed = parseProtoSchema(schema);
 
@@ -267,7 +267,7 @@ describe("Google AIP form conformance", () => {
     }
   });
 
-  it("models AIP-131 Get as a field-1 full resource name with a matching reference", () => {
+  test("models AIP-131 Get as a field-1 full resource name with a matching reference", () => {
     const parsed = parseProtoSchema(GetBookRequestSchema);
 
     expect(parsed.fields).toHaveLength(1);
@@ -279,7 +279,7 @@ describe("Google AIP form conformance", () => {
     expect(getProtoResourceReference(GetBookRequestSchema.field.name)?.type).toBe("library.protoform.dev/Book");
   });
 
-  it("models AIP-132/158/160 List request and response fields without interpreting opaque values", () => {
+  test("models AIP-132/158/160 List request and response fields without interpreting opaque values", () => {
     expect(parseProtoSchema(ListBooksRequestSchema).fields.map((candidate) => candidate.key)).toEqual([
       "parent",
       "pageSize",
@@ -296,7 +296,7 @@ describe("Google AIP form conformance", () => {
     ]);
   });
 
-  it("models AIP-231/233/234/235 batch request and response envelopes", () => {
+  test("models AIP-231/233/234/235 batch request and response envelopes", () => {
     expect(parseProtoSchema(BatchGetBooksRequestSchema).fields).toMatchObject([
       { key: "parent", required: false },
       { key: "names", required: true },
@@ -324,7 +324,7 @@ describe("Google AIP form conformance", () => {
     }
   });
 
-  it("models AIP-135/154 Delete with full name and optional etag", () => {
+  test("models AIP-135/154 Delete with full name and optional etag", () => {
     const parsed = parseProtoSchema(DeleteBookRequestSchema);
 
     expect(parsed.fields.map((candidate) => candidate.key)).toEqual([
@@ -339,14 +339,14 @@ describe("Google AIP form conformance", () => {
     expect(field(parsed, "etag").required).toBe(false);
   });
 
-  it("keeps AIP-134 update masks optional", () => {
+  test("keeps AIP-134 update masks optional", () => {
     expect(field(parseProtoSchema(UpdateBookRequestSchema), "updateMask")).toMatchObject({ required: false });
     expect(field(parseProtoSchema(UpdateProjectSettingsRequestSchema), "updateMask")).toMatchObject({
       required: false,
     });
   });
 
-  it("recognizes AIP-156 singleton resources and their Get/Update-only shapes", () => {
+  test("recognizes AIP-156 singleton resources and their Get/Update-only shapes", () => {
     expect(isSingletonProtoResource(ProjectSettingsSchema)).toBe(true);
     expect(parseProtoSchema(GetProjectSettingsRequestSchema).fields.map((candidate) => candidate.key)).toEqual([
       "name",

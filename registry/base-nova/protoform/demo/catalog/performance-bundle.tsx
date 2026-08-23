@@ -21,7 +21,7 @@ export function PerformanceBundleDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Add and edit collection rows while the automated budgets guard render and bundle regressions."}
+        Add and edit collection rows while the automated budgets guard render and bundle regressions.
       </p>
       <AutoForm
         defaultValues={defaultValues}

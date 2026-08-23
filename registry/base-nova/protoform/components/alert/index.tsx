@@ -23,11 +23,12 @@ const alertVariants = cva(
     },
   }
 );
+const DEFAULT_ALERT_ICON = <InfoIcon />;
 
 const Alert = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"div"> & VariantProps<typeof alertVariants> & SharedProps & { icon?: React.ReactNode }
->(({ className, variant, testId, icon = <InfoIcon />, children, ...props }, ref) => (
+>(({ className, variant, testId, icon = DEFAULT_ALERT_ICON, children, ...props }, ref) => (
   <div
     className={cn(alertVariants({ variant }), className)}
     data-slot="alert"

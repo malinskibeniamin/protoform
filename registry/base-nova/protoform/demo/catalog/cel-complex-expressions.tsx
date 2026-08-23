@@ -21,7 +21,7 @@ export function CelComplexExpressionsDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Edit nested collection values while the composed expression validates the complete graph."}
+        Edit nested collection values while the composed expression validates the complete graph.
       </p>
       <AutoForm
         defaultValues={defaultValues}

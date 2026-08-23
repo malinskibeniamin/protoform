@@ -16,7 +16,7 @@ import { getFieldDescriptionText, getFieldDocsUrl, getFieldHelpText, getFieldUiC
 import { FormDepthProvider, headingLevelForDepth, useFormDepth } from "./layout-context";
 import { getAutoFormFieldTestId } from "./test-ids";
 
-const REGEX_ERROR_PATTERN = /regex pattern\s*`([^`]+)`/;
+const REGEX_ERROR_PATTERN = /regex pattern\s*`([^`]+)`/u;
 
 export const Form = React.forwardRef<HTMLFormElement, React.ComponentProps<"form"> & SharedProps>(
   ({ children, testId, ...props }, ref) => (
@@ -47,7 +47,7 @@ export const ArrayElementWrapper: React.FC<
       type="button"
       variant="ghost"
     >
-      <TrashIcon className="h-4 w-4" />
+      <TrashIcon className="size-4" />
     </Button>
     <div className="pr-8">{children}</div>
   </div>
@@ -63,7 +63,7 @@ export const ArrayWrapper: React.FC<
   <div className={formSpacing.field} data-testid={testId}>
     {children}
     <Button onClick={onAddItem} size="sm" testId={addButtonTestId} type="button" variant="outline">
-      <PlusIcon className="h-4 w-4" />
+      <PlusIcon className="size-4" />
       {addButtonLabel ?? (label ? `Add ${label}` : "Add item")}
     </Button>
   </div>
@@ -71,7 +71,7 @@ export const ArrayWrapper: React.FC<
 
 export const ErrorMessage: React.FC<{ error: string }> = ({ error }) => (
   <Alert variant="destructive">
-    <AlertCircle className="h-4 w-4" />
+    <AlertCircle className="size-4" />
     <AlertTitle>AutoForm error</AlertTitle>
     <AlertDescription>{error}</AlertDescription>
   </Alert>
@@ -127,7 +127,7 @@ export const FieldWrapper: React.FC<FieldWrapperProps> = ({ label, children, id,
               target="_blank"
             >
               View {helpLabel} documentation
-              <ExternalLink aria-hidden className="h-3 w-3" />
+              <ExternalLink aria-hidden className="size-3" />
             </a>
           </>
         ) : null}
@@ -176,7 +176,7 @@ export const FieldWrapper: React.FC<FieldWrapperProps> = ({ label, children, id,
                   type="button"
                   variant="ghost"
                 >
-                  <CircleHelp className="h-4 w-4" />
+                  <CircleHelp className="size-4" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent
@@ -204,6 +204,8 @@ export const ObjectWrapper: React.FC<
     hasError?: boolean | undefined;
   }
 > = ({ label, children, field, testId, hasError }) => {
+  "use no memo";
+
   const depth = useFormDepth();
   const headingLevel = headingLevelForDepth(depth);
   const helpText = getFieldDescriptionText(field);
@@ -230,13 +232,14 @@ export const ObjectWrapper: React.FC<
       <Collapsible onOpenChange={setIsOpen} open={isOpen}>
         <section className={formSpacing.field} data-testid={testId}>
           <CollapsibleTrigger asChild>
-            <button
+            <Button
               className={
                 showDivider
-                  ? `flex w-full items-center justify-between text-left ${formSpacing.sectionDivider}`
-                  : "flex w-full items-center justify-between text-left"
+                  ? `h-auto w-full justify-between rounded-none p-0 text-left font-normal hover:bg-transparent ${formSpacing.sectionDivider}`
+                  : "h-auto w-full justify-between rounded-none p-0 text-left font-normal hover:bg-transparent"
               }
               type="button"
+              variant="ghost"
             >
               <div className={formSpacing.sectionHeader}>
                 <div className="flex items-center gap-2">
@@ -255,8 +258,8 @@ export const ObjectWrapper: React.FC<
                   </Text>
                 ) : null}
               </div>
-              <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200 [[data-state=open]_&]:rotate-180" />
-            </button>
+              <ChevronDown className="size-4 shrink-0 text-muted-foreground transition-transform duration-200 [[data-state=open]_&]:rotate-180" />
+            </Button>
           </CollapsibleTrigger>
           <CollapsibleContent>
             <FormDepthProvider depth={depth + 1}>

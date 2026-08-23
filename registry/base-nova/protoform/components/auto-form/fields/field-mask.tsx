@@ -33,7 +33,7 @@ function FieldMaskFieldComponent({ error, field, id, inputProps }: AutoFormField
         testId={testIds.control}
         value={textValue}
       />
-      {allowedPaths?.length ? (
+      {allowedPaths && allowedPaths.length > 0 ? (
         <Text className="text-muted-foreground" variant="small">
           Allowed paths: {allowedPaths.join(", ")}
         </Text>

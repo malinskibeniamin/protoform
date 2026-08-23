@@ -1,9 +1,9 @@
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 
 import { humanizeServerFieldError, humanizeValidationError } from "./humanize-validation-error";
 
 describe("humanizeServerFieldError", () => {
-  it.each([
+  test.each([
     ["value is required", "Enter a value."],
     ["must contain at least 1 item(s)", "Add at least one item."],
     ["value must contain at least 3 items", "Add at least 3 items."],
@@ -15,7 +15,7 @@ describe("humanizeServerFieldError", () => {
 });
 
 describe("localized validation messages", () => {
-  it("passes a stable code, parameters, and fallback to the host formatter", () => {
+  test("passes a stable code, parameters, and fallback to the host formatter", () => {
     const calls: unknown[][] = [];
 
     const message = humanizeValidationError("value length must be at least 3", (code, params, fallback) => {

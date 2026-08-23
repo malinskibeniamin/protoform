@@ -1,5 +1,5 @@
 import { create } from "@bufbuild/protobuf";
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 import { render, renderHook, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { act } from "react";
@@ -24,11 +24,19 @@ function PartialEditHarness() {
     validationScope: "modified-fields",
   });
   const usernameError = form.formState.errors.username;
+  const { name, onBlur, onChange, ref } = form.register("username");
 
   return (
     <>
       <label htmlFor="partial-edit-username">Username</label>
-      <input id="partial-edit-username" {...form.register("username")} aria-invalid={Boolean(usernameError)} />
+      <input
+        aria-invalid={Boolean(usernameError)}
+        id="partial-edit-username"
+        name={name}
+        onBlur={onBlur}
+        onChange={onChange}
+        ref={ref}
+      />
       <output aria-label="Update mask">{form.createUpdateMask().paths.join(",")}</output>
       {usernameError ? <p role="alert">{usernameError.message}</p> : null}
     </>
@@ -36,7 +44,7 @@ function PartialEditHarness() {
 }
 
 describe("useProtoForm partial-edit validation", () => {
-  it("validates and masks a field modified then restored to its blank baseline", async () => {
+  test("validates and masks a field modified then restored to its blank baseline", async () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: defaults,
@@ -70,7 +78,7 @@ describe("useProtoForm partial-edit validation", () => {
     });
   });
 
-  it("starts a new modification and validation baseline after reset", async () => {
+  test("starts a new modification and validation baseline after reset", async () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: defaults,
@@ -99,7 +107,7 @@ describe("useProtoForm partial-edit validation", () => {
     });
   });
 
-  it("keeps message-level issues when no field has been modified", async () => {
+  test("keeps message-level issues when no field has been modified", async () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: {
@@ -115,11 +123,11 @@ describe("useProtoForm partial-edit validation", () => {
       await result.current.trigger();
     });
 
-    expect(result.current.formState.errors.root?.message).toMatch(/minimum threshold/i);
+    expect(result.current.formState.errors.root?.message).toMatch(/minimum threshold/iu);
     expect(result.current.formState.errors.username).toBeUndefined();
   });
 
-  it("matches nested modified fields to protobuf mask paths", async () => {
+  test("matches nested modified fields to protobuf mask paths", async () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: {
@@ -148,7 +156,7 @@ describe("useProtoForm partial-edit validation", () => {
     });
   });
 
-  it("tracks modification intent from registered input events", async () => {
+  test("tracks modification intent from registered input events", async () => {
     const user = userEvent.setup();
     render(<PartialEditHarness />);
 

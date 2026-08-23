@@ -5,6 +5,7 @@ import { Check, ChevronsUpDown, Plus, Search, X } from "lucide-react";
 import type React from "react";
 import { memo, useCallback, useEffect, useId, useMemo, useReducer, useRef } from "react";
 
+import { Button } from "@/registry/base-nova/protoform/components/button";
 import {
   Command,
   CommandEmpty,
@@ -146,6 +147,8 @@ export const Combobox = memo(
     emptyState,
     renderOption,
   }: ComboboxProps) => {
+    "use no memo";
+
     const [state, dispatch] = useReducer(comboboxReducer, { controlledValue, defaultOpen, options }, (init) =>
       createInitialState(init.options, init.controlledValue, init.defaultOpen)
     );
@@ -163,7 +166,7 @@ export const Combobox = memo(
     );
     const groupedOptions = useMemo(() => groupOptions(filteredOptions), [filteredOptions]);
     const canCreate =
-      !!creatable && inputValue.trim().length > 0 && !options.some((option) => option.value === inputValue);
+      Boolean(creatable) && inputValue.trim().length > 0 && !options.some((option) => option.value === inputValue);
     const navigableValues = useMemo(
       () => getNavigableValues(filteredOptions, canCreate, inputValue),
       [filteredOptions, canCreate, inputValue]
@@ -274,7 +277,7 @@ export const Combobox = memo(
       }
     }, [open]);
 
-    const handleBlur = useCallback(() => {
+    const handleComboboxInputBlur = useCallback(() => {
       if (inputValue.trim() === "" && controlledValue && userHasTyped) {
         onChange("");
         dispatch({ type: "BLUR_CLEAR" });
@@ -387,7 +390,7 @@ export const Combobox = memo(
           case "ArrowRight":
             return handleArrowRightKey(event);
           default:
-            return undefined;
+            return;
         }
       },
       [handleArrowKey, handleEnterKey, handleEscapeKey, handleArrowRightKey]
@@ -417,7 +420,7 @@ export const Combobox = memo(
             containerClassName={className}
             disabled={disabled}
             id={id}
-            onBlur={handleBlur}
+            onBlur={handleComboboxInputBlur}
             onChange={handleInputChange}
             onClick={handleInputClick}
             onKeyDown={handleKeyDown}
@@ -432,16 +435,18 @@ export const Combobox = memo(
             {hasStart ? <InputStart>{start}</InputStart> : null}
             <InputEnd>
               {showClearButton ? (
-                <button
+                <Button
                   aria-label="Clear selection"
-                  className="pointer-events-auto rounded-sm opacity-50 hover:opacity-100"
+                  className="pointer-events-auto size-auto rounded-sm p-0 opacity-50 hover:bg-transparent hover:opacity-100"
                   onClick={handleClear}
                   onMouseDown={preventDefault}
+                  size="icon-xs"
                   tabIndex={-1}
                   type="button"
+                  variant="ghost"
                 >
                   <X size={15} />
-                </button>
+                </Button>
               ) : null}
               <ChevronsUpDown className="opacity-50" size={15} />
             </InputEnd>
@@ -502,7 +507,7 @@ export const Combobox = memo(
                 <CommandGroup>
                   <CommandItem forceMount onSelect={handleCreatableSubmit} value={`${CREATE_ITEM_PREFIX}${inputValue}`}>
                     <Plus className="size-4 shrink-0" />
-                    <span className="truncate">Create "{inputValue}"</span>
+                    <span className="truncate">Create &quot;{inputValue}&quot;</span>
                   </CommandItem>
                 </CommandGroup>
               ) : null}
@@ -521,3 +526,4 @@ export const Combobox = memo(
     );
   }
 );
+Combobox.displayName = "Combobox";

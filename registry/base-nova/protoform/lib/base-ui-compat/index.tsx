@@ -153,7 +153,9 @@ export interface CompatState {
 export function renderWithDataState<S extends CompatState = CompatState>(
   Element: keyof React.JSX.IntrinsicElements = "div"
 ): ComponentRenderFnCompat<HTMLPropsCompat, S> {
-  return (props, state) => React.createElement(Element, { ...props, ...compatStateAttrs(state) });
+  return function renderDataState(props, state) {
+    return React.createElement(Element, { ...props, ...compatStateAttrs(state) });
+  };
 }
 
 /**
@@ -274,8 +276,19 @@ export function renderDescription({
  */
 const warnedKeys = new Set<string>();
 
+function isProductionRuntime(): boolean {
+  const processValue = Reflect.get(globalThis, "process");
+  if (!(typeof processValue === "object" && processValue !== null)) {
+    return false;
+  }
+  const environment = Reflect.get(processValue, "env");
+  return (
+    typeof environment === "object" && environment !== null && Reflect.get(environment, "NODE_ENV") === "production"
+  );
+}
+
 export function devWarnOnce(key: string, _message: string): void {
-  if (process.env.NODE_ENV === "production") {
+  if (isProductionRuntime()) {
     return;
   }
   if (warnedKeys.has(key)) {
@@ -361,7 +374,7 @@ type SlotProps = {
 type SlotElement = React.ReactElement & { ref?: React.Ref<HTMLElement> };
 
 type EventHandler = (...args: unknown[]) => unknown;
-const EVENT_HANDLER_KEY_PATTERN = /^on[A-Z]/;
+const EVENT_HANDLER_KEY_PATTERN = /^on[A-Z]/u;
 
 function isEventHandlerKey(key: string): boolean {
   return EVENT_HANDLER_KEY_PATTERN.test(key);
@@ -469,7 +482,7 @@ type SlottableComponent = React.FC<{ children: React.ReactNode }> & { __slottabl
 
 export const Slottable: SlottableComponent = Object.assign(
   function renderSlottable({ children }: { children: React.ReactNode }) {
-    return <>{children}</>;
+    return children;
   },
   { __slottableId: SLOTTABLE_IDENTIFIER }
 );

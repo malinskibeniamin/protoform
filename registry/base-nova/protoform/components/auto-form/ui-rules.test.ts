@@ -1,4 +1,4 @@
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 
 import { evaluateUiRules } from "./ui-rules";
 
@@ -9,7 +9,7 @@ const readyRule = {
 };
 
 describe("AutoForm UI CEL profile", () => {
-  it("exposes only form and current-field values to UI expressions", () => {
+  test("exposes only form and current-field values to UI expressions", () => {
     expect(
       evaluateUiRules([readyRule], {
         form: { enabled: true },
@@ -24,7 +24,7 @@ describe("AutoForm UI CEL profile", () => {
     ).toBe(false);
   });
 
-  it("fails closed for malformed, unknown, erroring, and non-boolean rules", () => {
+  test("fails closed for malformed, unknown, erroring, and non-boolean rules", () => {
     const context = { form: {}, thisValue: undefined };
     const expressions = ["(", "unknown_name", "1 / 0", "'visible'"];
 
@@ -33,7 +33,7 @@ describe("AutoForm UI CEL profile", () => {
     }
   });
 
-  it("reuses a compiled expression with changing form contexts", () => {
+  test("reuses a compiled expression with changing form contexts", () => {
     expect(
       evaluateUiRules([readyRule], {
         form: { enabled: true },

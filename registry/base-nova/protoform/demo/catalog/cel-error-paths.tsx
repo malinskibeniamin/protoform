@@ -21,7 +21,7 @@ export function CelErrorPathsDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Submit several invalid nested values to see every precise path and dynamic message."}
+        Submit several invalid nested values to see every precise path and dynamic message.
       </p>
       <AutoForm
         defaultValues={defaultValues}

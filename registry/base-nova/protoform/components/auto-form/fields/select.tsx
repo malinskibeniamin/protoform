@@ -102,7 +102,7 @@ function SelectFieldComponent({ error, field, id, inputProps, label, path }: Aut
             {formatProtoformMessage(formatMessage, "auto_form.select.not_set", {}, "Not set")}
           </SelectItem>
         )}
-        {optionGroups?.length
+        {optionGroups && optionGroups.length > 0
           ? optionGroups.map((group) => (
               <SelectGroup
                 key={`${field.key}-group-${String(group.label ?? group.options.map((option) => option.value).join("-"))}`}
@@ -147,6 +147,8 @@ function SelectFieldFromProvider({
   provider: ResolvedDataProvider;
   testIds: ReturnType<typeof useFieldTestIds>;
 }) {
+  "use no memo";
+
   const { formatMessage } = useAutoForm();
   const [query, setQuery] = React.useState("");
   const [cursor, setCursor] = React.useState<string>();
@@ -321,9 +323,7 @@ function mergeProviderOptions(
 function ProviderOptionLabel({ option }: { option: DataProviderOption }) {
   const labelWithIcon = option.icon ? (
     <span className="flex items-center gap-2">
-      <span className="flex h-4 w-4 shrink-0 items-center justify-center [&>svg]:h-full [&>svg]:w-full">
-        {option.icon}
-      </span>
+      <span className="flex size-4 shrink-0 items-center justify-center [&>svg]:size-full">{option.icon}</span>
       <span>{option.label}</span>
     </span>
   ) : (

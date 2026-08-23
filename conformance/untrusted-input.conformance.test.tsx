@@ -1,4 +1,4 @@
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import type { SchemaProvider } from "../registry/base-nova/protoform/components/auto-form/core-types.js";
 import { AutoForm } from "../registry/base-nova/protoform/components/auto-form/index.js";
@@ -10,7 +10,7 @@ import {
 } from "../registry/base-nova/protoform/lib/protobuf-provider/index.js";
 
 describe("untrusted input hardening", () => {
-  it("rejects malformed descriptors, conversion values, and server paths without throwing", async () => {
+  test("rejects malformed descriptors, conversion values, and server paths without throwing", async () => {
     for (const candidate of [null, [], {}, { fields: null }, { kind: "message" }, Object.create(null)]) {
       expect(isProtoMessageDescriptor(candidate)).toBe(false);
     }
@@ -42,7 +42,7 @@ describe("untrusted input hardening", () => {
     expect({}).not.toHaveProperty("polluted");
   });
 
-  it("renders user-controlled error text as text rather than executable HTML", async () => {
+  test("renders user-controlled error text as text rather than executable HTML", async () => {
     const hostileText = '<img src=x onerror="globalThis.polluted=true"> submission failed';
     const provider: SchemaProvider = {
       getDefaultValues: () => ({ value: "safe" }),

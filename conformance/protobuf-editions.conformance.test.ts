@@ -5,7 +5,7 @@ import {
   FeatureSet_VisibilityFeature_DefaultSymbolVisibility,
   SymbolVisibility,
 } from "@bufbuild/protobuf/wkt";
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 
 import {
   createProtoFormSchema,
@@ -15,7 +15,7 @@ import { Editions2024LocalSchema, Editions2024MatrixSchema } from "./gen/protofo
 import { EditionStateSchema, EditionsMatrixSchema } from "./gen/protoform/conformance/v1/editions_pb.js";
 
 describe("Protobuf Editions conformance", () => {
-  it("supports Edition 2024 visibility and option-only imports", async () => {
+  test("supports Edition 2024 visibility and option-only imports", async () => {
     expect(Editions2024MatrixSchema.file.edition).toBe(Edition.EDITION_2024);
     expect(Editions2024MatrixSchema.file.proto.options?.features?.defaultSymbolVisibility).toBe(
       FeatureSet_VisibilityFeature_DefaultSymbolVisibility.STRICT
@@ -27,7 +27,7 @@ describe("Protobuf Editions conformance", () => {
     expect(result.issues).toMatchObject([{ path: ["displayName"] }]);
   });
 
-  it("accepts Editions descriptors and honors field presence controls", async () => {
+  test("accepts Editions descriptors and honors field presence controls", async () => {
     expect(EditionsMatrixSchema.file.edition).toBe(Edition.EDITION_2023);
     expect(EditionsMatrixSchema.field.explicitName.presence).toBe(FeatureSet_FieldPresence.EXPLICIT);
     expect(EditionsMatrixSchema.field.implicitLabel.presence).toBe(FeatureSet_FieldPresence.IMPLICIT);

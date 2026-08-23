@@ -1,6 +1,6 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { relative } from "node:path";
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 import ts from "typescript";
 
 const repositoryDirectory = new URL("../", import.meta.url);
@@ -94,7 +94,7 @@ function findUnwrappedControlsInSource(source: string, fileName: string): string
 }
 
 describe("demo Field policy", () => {
-  it("wraps every visible shadcn control in Field", () => {
+  test("wraps every visible shadcn control in Field", () => {
     const violations = demoDirectories.flatMap((directory) =>
       findFiles(directory, ".tsx").flatMap(findUnwrappedControls)
     );
@@ -102,7 +102,7 @@ describe("demo Field policy", () => {
     expect(violations).toEqual([]);
   });
 
-  it("wraps every visible shadcn control in docs examples in Field", () => {
+  test("wraps every visible shadcn control in docs examples in Field", () => {
     const violations = findFiles(docsDirectory, ".mdx").flatMap((file) => {
       const content = readFileSync(file, "utf8");
       const fileName = relative(repositoryDirectory.pathname, file.pathname);

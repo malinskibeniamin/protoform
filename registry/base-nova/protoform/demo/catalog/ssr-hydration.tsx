@@ -21,7 +21,7 @@ export function SsrHydrationDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Interact immediately after the page loads; the hydrated form retains server-rendered structure."}
+        Interact immediately after the page loads; the hydrated form retains server-rendered structure.
       </p>
       <AutoForm
         defaultValues={defaultValues}

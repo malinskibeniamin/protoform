@@ -66,7 +66,8 @@ export function FinalFormExample({ baseUrl }: { baseUrl?: string }) {
         } catch (error) {
           const submission = mapSubmissionErrors(error);
           if (submission.firstField) {
-            document.getElementById(`${idPrefix}-${submission.firstField}`)?.focus();
+            const fieldId = `${idPrefix}-${submission.firstField}`;
+            document.querySelector<HTMLElement>(`#${CSS.escape(fieldId)}`)?.focus();
           }
           return submission.errors;
         }
@@ -80,6 +81,7 @@ export function FinalFormExample({ baseUrl }: { baseUrl?: string }) {
             <FieldGroup>
               <FinalField<string> name="displayName">
                 {({ input, meta }) => {
+                  const { name, onBlur, onChange, onFocus, value } = input;
                   const errors = splitErrorMessages(
                     meta.submitError ?? (meta.touched || meta.submitFailed ? meta.error : undefined)
                   );
@@ -89,10 +91,14 @@ export function FinalFormExample({ baseUrl }: { baseUrl?: string }) {
                         Display name
                       </FieldLabel>
                       <Input
-                        {...input}
                         aria-invalid={errors.length > 0 || undefined}
-                        id={`${idPrefix}-${input.name}`}
+                        id={`${idPrefix}-${name}`}
+                        name={name}
+                        onBlur={onBlur}
+                        onChange={onChange}
+                        onFocus={onFocus}
                         placeholder="Ada Lovelace"
+                        value={value}
                       />
                       <FieldError errors={errors} />
                     </Field>
@@ -102,6 +108,7 @@ export function FinalFormExample({ baseUrl }: { baseUrl?: string }) {
 
               <FinalField<string> name="email">
                 {({ input, meta }) => {
+                  const { name, onBlur, onChange, onFocus, value } = input;
                   const errors = splitErrorMessages(
                     meta.submitError ?? (meta.touched || meta.submitFailed ? meta.error : undefined)
                   );
@@ -111,11 +118,15 @@ export function FinalFormExample({ baseUrl }: { baseUrl?: string }) {
                         Email
                       </FieldLabel>
                       <Input
-                        {...input}
                         aria-invalid={errors.length > 0 || undefined}
-                        id={`${idPrefix}-${input.name}`}
+                        id={`${idPrefix}-${name}`}
+                        name={name}
+                        onBlur={onBlur}
+                        onChange={onChange}
+                        onFocus={onFocus}
                         placeholder="ada@example.com"
                         type="email"
+                        value={value}
                       />
                       <FieldError errors={errors} />
                     </Field>

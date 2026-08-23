@@ -7,7 +7,7 @@ import { StatusSchema } from "@buf/googleapis_googleapis.bufbuild_es/google/rpc/
 import { create, type DescMethod } from "@bufbuild/protobuf";
 import { AnySchema, MethodOptions_IdempotencyLevel } from "@bufbuild/protobuf/wkt";
 import { Code, ConnectError } from "@connectrpc/connect";
-import { describe, expect, it, rs } from "@rstest/core";
+import { describe, expect, rs } from "@rstest/core";
 
 import { FormExamplesService } from "../../../../../examples/gen/protoform/examples/v1/forms_pb.js";
 import {
@@ -32,7 +32,7 @@ function method(idempotency: MethodOptions_IdempotencyLevel): DescMethod {
 }
 
 describe("runProtoOperation", () => {
-  it("polls named AIP-151 operations and exposes progress until success", async () => {
+  test("polls named AIP-151 operations and exposes progress until success", async () => {
     const updates: boolean[] = [];
     const poll = rs.fn(async () =>
       operation("operations/123", true, {
@@ -53,7 +53,7 @@ describe("runProtoOperation", () => {
     expect(result.done).toBe(true);
   });
 
-  it("cancels the remote operation when the caller aborts", async () => {
+  test("cancels the remote operation when the caller aborts", async () => {
     const controller = new AbortController();
     const cancel = rs.fn(async () => undefined);
 
@@ -69,7 +69,7 @@ describe("runProtoOperation", () => {
     expect(cancel).toHaveBeenCalledWith("operations/123");
   });
 
-  it("surfaces terminal google.rpc.Status failures", async () => {
+  test("surfaces terminal google.rpc.Status failures", async () => {
     const status = create(StatusSchema, {
       code: Code.FailedPrecondition,
       message: "The import source is no longer available.",
@@ -85,7 +85,7 @@ describe("runProtoOperation", () => {
 });
 
 describe("getProtoRetryDecision", () => {
-  it("retries only idempotent unary UNAVAILABLE calls and respects RetryInfo", () => {
+  test("retries only idempotent unary UNAVAILABLE calls and respects RetryInfo", () => {
     const error = new ConnectError("try later", Code.Unavailable, {}, [
       {
         desc: RetryInfoSchema,
@@ -112,7 +112,7 @@ describe("getProtoRetryDecision", () => {
 });
 
 describe("getProtoPartialResult", () => {
-  it("turns AIP-217 unreachable resources into a warning and targeted recovery actions", () => {
+  test("turns AIP-217 unreachable resources into a warning and targeted recovery actions", () => {
     expect(
       getProtoPartialResult({
         unreachable: ["projects/example/locations/europe-west2", "projects/example/locations/us-east1"],
@@ -141,7 +141,7 @@ describe("getProtoPartialResult", () => {
 });
 
 describe("destructive and preview workflow plans", () => {
-  it("requires an AIP-165 purge preview before the destructive confirmation", () => {
+  test("requires an AIP-165 purge preview before the destructive confirmation", () => {
     expect(
       getProtoPurgePlan(
         { filter: "state=DELETED", force: false },
@@ -166,7 +166,7 @@ describe("destructive and preview workflow plans", () => {
     });
   });
 
-  it("distinguishes AIP-236 non-enforcing preview from live commit", () => {
+  test("distinguishes AIP-236 non-enforcing preview from live commit", () => {
     expect(getProtoPolicyPreviewPlan("start-preview")).toEqual({
       action: "start-preview",
       confirmationRequired: false,
@@ -183,7 +183,7 @@ describe("destructive and preview workflow plans", () => {
 });
 
 describe("getProtoStability", () => {
-  it("presents AIP-181 alpha, beta, stable, and deprecated guidance from generated descriptors", () => {
+  test("presents AIP-181 alpha, beta, stable, and deprecated guidance from generated descriptors", () => {
     expect(
       getProtoStability({
         deprecated: false,

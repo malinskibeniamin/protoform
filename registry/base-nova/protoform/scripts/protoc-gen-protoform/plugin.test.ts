@@ -6,10 +6,10 @@ import {
   CodeGeneratorResponse_Feature,
   FileDescriptorSetSchema,
 } from "@bufbuild/protobuf/wkt";
-import { expect, test } from "@rstest/core";
+import { expect } from "@rstest/core";
 import { pluginVersion, protocGenProtoform } from "./plugin.js";
 
-const TRACER_ANNOTATIONS_PATTERN = /export const TracerExampleFormAnnotations = \{[\s\S]*?\n\} as const;/;
+const TRACER_ANNOTATIONS_PATTERN = /export const TracerExampleFormAnnotations = \{[\s\S]*?\n\} as const;/u;
 
 // The descriptor set is checked in; rebuild it from testdata/tracer.proto
 // with `bun run testdata:build` after editing the fixture proto.

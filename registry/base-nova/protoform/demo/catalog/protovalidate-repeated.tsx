@@ -21,7 +21,7 @@ export function ProtovalidateRepeatedDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Add duplicate and invalid rows, then remove one and confirm indexed errors follow the data."}
+        Add duplicate and invalid rows, then remove one and confirm indexed errors follow the data.
       </p>
       <AutoForm
         defaultValues={defaultValues}

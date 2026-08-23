@@ -53,6 +53,9 @@ export default defineConfig({
     route: "/reference",
     spec: "./openapi.yaml",
   },
+  react: {
+    compiler: true,
+  },
   redirects: [...demoRedirects],
   search: {
     provider: "pagefind",

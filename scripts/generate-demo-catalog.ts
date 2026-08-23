@@ -71,6 +71,17 @@ function seoDescription(description: string): string {
   return expanded;
 }
 
+function jsxText(value: string): string {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll("{", "&#123;")
+    .replaceAll("}", "&#125;");
+}
+
 function hubPage(title: string, description: string, category: string): string {
   return `---
 title: ${JSON.stringify(title)}
@@ -354,7 +365,7 @@ function reactHookFormRegistryWrapper(demo: DemoCatalogEntry): string {
   const methodShape =
     demo.slug === "bufbuild-descriptors"
       ? `
-      <div
+      <fieldset
         aria-label="RPC method shape"
         className="grid gap-3 rounded-lg border border-border bg-muted/30 p-4 text-sm sm:grid-cols-2"
       >
@@ -376,7 +387,7 @@ function reactHookFormRegistryWrapper(demo: DemoCatalogEntry): string {
             </dd>
           </div>
         </dl>
-      </div>`
+      </fieldset>`
       : "";
 
   return `${generatedSourceHeader}
@@ -407,7 +418,7 @@ ${schemaDeclaration}
         <Badge variant="outline">Live protobuf contract</Badge>${methodBadge}
       </div>${methodShape}
       <p className="text-muted-foreground text-sm">
-        {${JSON.stringify(demo.tryIt)}}
+        ${jsxText(demo.tryIt)}
       </p>
       <AutoForm
         defaultValues={defaultValues}

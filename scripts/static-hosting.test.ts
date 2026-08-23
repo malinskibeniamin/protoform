@@ -1,11 +1,11 @@
 import { existsSync, readFileSync } from "node:fs";
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 
 const repositoryDirectory = new URL("../", import.meta.url);
 const bunVersion = "1.4.0";
 
 describe("static docs and registry hosting", () => {
-  it("builds one Cloudflare Pages artifact containing docs and registry JSON", () => {
+  test("builds one Cloudflare Pages artifact containing docs and registry JSON", () => {
     const manifest = JSON.parse(readFileSync(new URL("package.json", repositoryDirectory), "utf8")) as {
       scripts?: Record<string, string>;
     };
@@ -37,7 +37,7 @@ describe("static docs and registry hosting", () => {
     expect(deploymentGuide).toContain("`dist`");
   });
 
-  it("pins the Bun toolchain consistently", () => {
+  test("pins the Bun toolchain consistently", () => {
     const manifest = JSON.parse(readFileSync(new URL("package.json", repositoryDirectory), "utf8")) as {
       devDependencies?: Record<string, string>;
       packageManager?: string;

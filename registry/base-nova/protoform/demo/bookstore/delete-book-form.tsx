@@ -2,7 +2,6 @@
 
 import { create } from "@bufbuild/protobuf";
 import { useMutation } from "@connectrpc/connect-query";
-import type { ReactNode } from "react";
 
 import { AutoForm } from "@/registry/base-nova/protoform/components/auto-form";
 import { Button } from "@/registry/base-nova/protoform/components/button";
@@ -12,26 +11,12 @@ import {
   DeleteBookRequestSchema,
   LibraryService,
 } from "@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_pb";
+import { DeleteSubmitButton } from "./delete-submit-button";
 
 interface DeleteBookFormProps {
   book: Book;
   onCancel: () => void;
   onDeleted: () => void;
-}
-
-function DeleteSubmitButton({
-  disabled,
-  testId,
-}: {
-  children: ReactNode;
-  disabled?: boolean | undefined;
-  testId?: string | undefined;
-}) {
-  return (
-    <Button disabled={disabled} testId={testId} type="submit" variant="destructive">
-      {disabled ? "Deleting…" : "Delete book"}
-    </Button>
-  );
 }
 
 const deleteUiComponents = { SubmitButton: DeleteSubmitButton };

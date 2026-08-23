@@ -21,7 +21,7 @@ export function ProtovalidateRequiredDemo() {
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
       <p className="text-muted-foreground text-sm">
-        {"Clear required fields and submit to see every missing value, then select a oneof branch."}
+        Clear required fields and submit to see every missing value, then select a oneof branch.
       </p>
       <AutoForm
         defaultValues={defaultValues}

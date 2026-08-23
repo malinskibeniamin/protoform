@@ -10,9 +10,9 @@ import {
   type LibraryService,
 } from "@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_pb";
 
-const PARENT_PATTERN = /^publishers\/[a-z0-9][a-z0-9-]{2,63}$/;
-const BOOK_ID_PATTERN = /^[a-z][a-z0-9-]{2,62}[a-z0-9]$/;
-const BOOK_NAME_PATTERN = /^(publishers\/[a-z0-9][a-z0-9-]{2,63})\/books\/([a-z][a-z0-9-]{2,62}[a-z0-9])$/;
+const PARENT_PATTERN = /^publishers\/[a-z0-9][a-z0-9-]{2,63}$/u;
+const BOOK_ID_PATTERN = /^[a-z][a-z0-9-]{2,62}[a-z0-9]$/u;
+const BOOK_NAME_PATTERN = /^(publishers\/[a-z0-9][a-z0-9-]{2,63})\/books\/([a-z][a-z0-9-]{2,62}[a-z0-9])$/u;
 const DEFAULT_TTL_MS = 30 * 60 * 1000;
 const DEFAULT_MAX_LIBRARIES = 500;
 const DEFAULT_MAX_BOOKS = 20;
@@ -46,7 +46,7 @@ function connectError(code: Code, message: string): ConnectError {
 }
 
 function parentFromName(name: string): string {
-  const match = name.match(BOOK_NAME_PATTERN);
+  const match = BOOK_NAME_PATTERN.exec(name);
   if (!match?.[1]) {
     throw fieldError("name", "Enter a book name such as publishers/my-library/books/my-book.");
   }

@@ -56,7 +56,7 @@ interface TanStackV2EngineContextValue {
 }
 
 const TanStackV2EngineContext = React.createContext<TanStackV2EngineContextValue | null>(null);
-const DIGITS_PATTERN = /^\d+$/;
+const DIGITS_PATTERN = /^\d+$/u;
 
 function toTanStackV2Path(path: string): string {
   return path
@@ -279,6 +279,9 @@ export function TanStackV2Engine({
   validationMode = "submit",
   values,
 }: TanStackV2EngineProps) {
+  // allow: form-validate [AutoForm injects schema-provider validation through validateSchema]
+  "use no memo";
+
   const formDefaultValuesRef = React.useRef(defaultValues);
   const cleanValuesRef = React.useRef<FormValues>(defaultValues);
   const hasNormalizedDefaultsRef = React.useRef(false);
@@ -408,7 +411,8 @@ export function TanStackV2Engine({
     errors,
     FieldController: TanStackV2FieldController,
     focus: (path) => fieldRefs.current.get(path)?.focus(),
-    getFieldInvalid: (path) => Boolean(fieldErrors.get(path)?.length || nativeFieldErrors.get(path)?.length),
+    getFieldInvalid: (path) =>
+      (fieldErrors.get(path)?.length ?? 0) > 0 || (nativeFieldErrors.get(path)?.length ?? 0) > 0,
     getValues: () => form.state.values,
     handleSubmit: (onValid) => (event) => {
       event.preventDefault();

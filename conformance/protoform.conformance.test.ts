@@ -1,4 +1,4 @@
-import { describe, expect, it } from "@rstest/core";
+import { describe, expect } from "@rstest/core";
 import { AutoFormExampleSchema } from "../registry/base-nova/protoform/lib/protobuf-provider/gen/auto-form-example_pb.js";
 import {
   createProtoFormSchema,
@@ -164,7 +164,7 @@ function getIssuePaths(
 }
 
 describe("required Protoform conformance", () => {
-  it("exposes descriptor validation through Standard Schema v1", () => {
+  test("exposes descriptor validation through Standard Schema v1", () => {
     const schema = createProtoFormSchema(AutoFormExampleSchema);
 
     expect(schema["~standard"]).toMatchObject({
@@ -173,7 +173,7 @@ describe("required Protoform conformance", () => {
     });
   });
 
-  it.each([
+  test.each([
     { key: "username", required: true, type: "string" },
     {
       control: "email",
@@ -203,7 +203,7 @@ describe("required Protoform conformance", () => {
     }).toMatchObject(expectedField);
   });
 
-  it("turns valid form values into a typed protobuf message", async () => {
+  test("turns valid form values into a typed protobuf message", async () => {
     const schema = createProtoFormSchema(AutoFormExampleSchema);
     const result = await schema["~standard"].validate(validInput);
 
@@ -224,14 +224,14 @@ describe("required Protoform conformance", () => {
     expect(Array.from(result.value.avatarBytes)).toEqual([1, 2, 3, 4]);
   });
 
-  it.each(requiredValidationCases)("returns form-shaped paths for $name failures", async ({ input, paths }) => {
+  test.each(requiredValidationCases)("returns form-shaped paths for $name failures", async ({ input, paths }) => {
     const schema = createProtoFormSchema(AutoFormExampleSchema);
     const result = await schema["~standard"].validate(input);
 
     expect(getIssuePaths(result.issues)).toEqual(paths);
   });
 
-  it("returns a root issue for a non-object input instead of throwing", async () => {
+  test("returns a root issue for a non-object input instead of throwing", async () => {
     const schema = createProtoFormSchema(AutoFormExampleSchema);
     const result = await schema["~standard"].validate("not an object");
 
@@ -240,14 +240,14 @@ describe("required Protoform conformance", () => {
 });
 
 describe("recommended Protoform conformance", () => {
-  it.each(recommendedValidationCases)("reports $name with stable paths", async ({ input, paths }) => {
+  test.each(recommendedValidationCases)("reports $name with stable paths", async ({ input, paths }) => {
     const schema = createProtoFormSchema(AutoFormExampleSchema);
     const result = await schema["~standard"].validate(input);
 
     expect(getIssuePaths(result.issues)).toEqual(paths);
   });
 
-  it("round-trips optional, wrapper, JSON, map, bytes, and oneof values", async () => {
+  test("round-trips optional, wrapper, JSON, map, bytes, and oneof values", async () => {
     const schema = createProtoFormSchema(AutoFormExampleSchema);
     const result = await schema["~standard"].validate({
       ...validInput,
@@ -285,7 +285,7 @@ describe("recommended Protoform conformance", () => {
     });
   });
 
-  it("keeps every oneof branch discoverable in descriptor order", () => {
+  test("keeps every oneof branch discoverable in descriptor order", () => {
     const parsedSchema = parseProtoSchema(AutoFormExampleSchema);
     const oneof = parsedSchema.fields.find((field) => field.key === "preferredContact");
 

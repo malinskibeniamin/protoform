@@ -1,4 +1,4 @@
-import { describe, expect, it, rs } from "@rstest/core";
+import { describe, expect, rs } from "@rstest/core";
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
@@ -9,7 +9,7 @@ import type { SchemaProvider } from "../../auto-form/core-types";
 import { AutoForm } from "..";
 
 describe("experimental TanStack Form v2 AutoForm conformance", () => {
-  it("keeps the v2-native API and submits transformed provider output", async () => {
+  test("keeps the v2-native API and submits transformed provider output", async () => {
     const user = userEvent.setup();
     const onSubmit = rs.fn();
     const onFormInit = rs.fn();
@@ -20,7 +20,7 @@ describe("experimental TanStack Form v2 AutoForm conformance", () => {
 
     render(<AutoForm onFormInit={onFormInit} onSubmit={onSubmit} schema={schema} withSubmit />);
 
-    await user.type(screen.getByRole("textbox", { name: /name/i }), " ada ");
+    await user.type(screen.getByRole("textbox", { name: /name/iu }), " ada ");
     await user.click(screen.getByRole("button", { name: "Submit" }));
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
@@ -33,7 +33,7 @@ describe("experimental TanStack Form v2 AutoForm conformance", () => {
     expect(initializedForm && "store" in initializedForm).toBe(false);
   });
 
-  it("uses v2 field state for repeated fields", async () => {
+  test("uses v2 field state for repeated fields", async () => {
     const user = userEvent.setup();
     const onSubmit = rs.fn();
     const schema: SchemaProvider<{ tags: string[] }> = {
@@ -53,7 +53,7 @@ describe("experimental TanStack Form v2 AutoForm conformance", () => {
 
     render(<AutoForm onSubmit={onSubmit} schema={schema} withSubmit />);
 
-    await user.click(screen.getByRole("button", { name: /add tags/i }));
+    await user.click(screen.getByRole("button", { name: /add tags/iu }));
     const inputs = screen.getAllByRole("textbox");
     await user.type(inputs[1] as HTMLInputElement, "second");
     await user.click(screen.getByRole("button", { name: "Submit" }));
@@ -62,7 +62,7 @@ describe("experimental TanStack Form v2 AutoForm conformance", () => {
     expect(onSubmit.mock.calls[0]?.[0]).toEqual({ tags: ["first", "second"] });
   });
 
-  it("clears the previous oneof branch when the selection changes", async () => {
+  test("clears the previous oneof branch when the selection changes", async () => {
     const user = userEvent.setup();
     const onSubmit = rs.fn();
     const schema: SchemaProvider<{
@@ -89,12 +89,12 @@ describe("experimental TanStack Form v2 AutoForm conformance", () => {
 
     render(<AutoForm onSubmit={onSubmit} schema={schema} withSubmit />);
 
-    fireEvent.click(screen.getByRole("combobox", { name: /contact/i }));
-    const phoneOption = await screen.findByRole("option", { name: /phone/i });
+    fireEvent.click(screen.getByRole("combobox", { name: /contact/iu }));
+    const phoneOption = await screen.findByRole("option", { name: /phone/iu });
     fireEvent.pointerEnter(phoneOption, { pointerType: "touch" });
     fireEvent.pointerDown(phoneOption, { pointerType: "touch" });
     fireEvent.click(phoneOption);
-    await user.type(await screen.findByRole("textbox", { name: /phone/i }), "+48123456789");
+    await user.type(await screen.findByRole("textbox", { name: /phone/iu }), "+48123456789");
     await user.click(screen.getByRole("button", { name: "Submit" }));
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
@@ -103,7 +103,7 @@ describe("experimental TanStack Form v2 AutoForm conformance", () => {
     });
   });
 
-  it("renders every provider validation failure through v2 field errors", async () => {
+  test("renders every provider validation failure through v2 field errors", async () => {
     const user = userEvent.setup();
     const onSubmit = rs.fn();
     const schema = createNameSchema(() => ({
@@ -121,10 +121,10 @@ describe("experimental TanStack Form v2 AutoForm conformance", () => {
     const fieldError = await screen.findByRole("alert");
     expect(fieldError).toHaveTextContent("Name is required.");
     expect(fieldError).toHaveTextContent("Name must be unique.");
-    expect(screen.getByRole("textbox", { name: /name/i })).toHaveAttribute("aria-invalid", "true");
+    expect(screen.getByRole("textbox", { name: /name/iu })).toHaveAttribute("aria-invalid", "true");
   });
 
-  it("renders a provider root error once", async () => {
+  test("renders a provider root error once", async () => {
     const user = userEvent.setup();
     const schema = createNameSchema(() => ({
       errors: [{ message: "Provider exploded.", path: [] }],
@@ -135,10 +135,10 @@ describe("experimental TanStack Form v2 AutoForm conformance", () => {
     await user.click(screen.getByRole("button", { name: "Submit" }));
 
     const rootError = await screen.findByRole("alert");
-    expect(rootError.textContent?.match(/Provider exploded\./g)).toHaveLength(1);
+    expect(rootError.textContent?.match(/Provider exploded\./gu)).toHaveLength(1);
   });
 
-  it("surfaces a rejected async provider validation without leaking it", async () => {
+  test("surfaces a rejected async provider validation without leaking it", async () => {
     const user = userEvent.setup();
     const schema = createNameSchema(async (values) => {
       await Promise.resolve();
@@ -149,14 +149,14 @@ describe("experimental TanStack Form v2 AutoForm conformance", () => {
     });
 
     render(<AutoForm schema={schema} withSubmit />);
-    await user.type(screen.getByRole("textbox", { name: /name/i }), "reject");
+    await user.type(screen.getByRole("textbox", { name: /name/iu }), "reject");
     await user.click(screen.getByRole("button", { name: "Submit" }));
 
     const rootError = await screen.findByRole("alert");
-    expect(rootError.textContent?.match(/Async provider exploded\./g)).toHaveLength(1);
+    expect(rootError.textContent?.match(/Async provider exploded\./gu)).toHaveLength(1);
   });
 
-  it("clears provider errors when controlled values reset the form", async () => {
+  test("clears provider errors when controlled values reset the form", async () => {
     const user = userEvent.setup();
     const schema = createNameSchema((values) =>
       values.name
@@ -173,10 +173,10 @@ describe("experimental TanStack Form v2 AutoForm conformance", () => {
     view.rerender(<AutoForm schema={schema} values={{ name: "Ada" }} withSubmit />);
 
     await waitFor(() => expect(screen.queryByText("Enter a name.")).not.toBeInTheDocument());
-    expect(screen.getByRole("textbox", { name: /name/i })).toHaveValue("Ada");
+    expect(screen.getByRole("textbox", { name: /name/iu })).toHaveValue("Ada");
   });
 
-  it("runs provider validation on change when requested", async () => {
+  test("runs provider validation on change when requested", async () => {
     const user = userEvent.setup();
     const schema = createNameSchema((values) =>
       String(values.name).length >= 3
@@ -193,12 +193,12 @@ describe("experimental TanStack Form v2 AutoForm conformance", () => {
     );
 
     render(<AutoForm schema={schema} validationMode="change" />);
-    await user.type(screen.getByRole("textbox", { name: /name/i }), "ab");
+    await user.type(screen.getByRole("textbox", { name: /name/iu }), "ab");
 
     expect(await screen.findByText("Use at least three characters.")).toBeInTheDocument();
   });
 
-  it("runs provider validation on blur when requested", async () => {
+  test("runs provider validation on blur when requested", async () => {
     const user = userEvent.setup();
     const schema = createNameSchema((values) =>
       String(values.name).length >= 3
@@ -215,14 +215,14 @@ describe("experimental TanStack Form v2 AutoForm conformance", () => {
     );
 
     render(<AutoForm schema={schema} validationMode="blur" />);
-    await user.type(screen.getByRole("textbox", { name: /name/i }), "ab");
+    await user.type(screen.getByRole("textbox", { name: /name/iu }), "ab");
     expect(screen.queryByText("Use at least three characters.")).not.toBeInTheDocument();
 
     await user.tab();
     expect(await screen.findByText("Use at least three characters.")).toBeInTheDocument();
   });
 
-  it("ignores stale asynchronous v2 validation results", async () => {
+  test("ignores stale asynchronous v2 validation results", async () => {
     const user = userEvent.setup();
     let resolveFirst: (() => void) | undefined;
     let resolveSecond: (() => void) | undefined;
@@ -247,7 +247,7 @@ describe("experimental TanStack Form v2 AutoForm conformance", () => {
     );
 
     render(<AutoForm schema={schema} validationMode="change" />);
-    await user.type(screen.getByRole("textbox", { name: /name/i }), "ab");
+    await user.type(screen.getByRole("textbox", { name: /name/iu }), "ab");
     await waitFor(() => {
       expect(resolveFirst).toBeTypeOf("function");
       expect(resolveSecond).toBeTypeOf("function");
@@ -258,7 +258,7 @@ describe("experimental TanStack Form v2 AutoForm conformance", () => {
     expect(screen.queryByText("Stale validation result.")).not.toBeInTheDocument();
   });
 
-  it("appends provider validation without replacing native v2 validators", async () => {
+  test("appends provider validation without replacing native v2 validators", async () => {
     const user = userEvent.setup();
     const onSubmit = rs.fn();
     const nativeValidator = rs.fn(() => ({
@@ -282,7 +282,7 @@ describe("experimental TanStack Form v2 AutoForm conformance", () => {
     expect(await screen.findByText("Native validation failed.")).toBeInTheDocument();
   });
 
-  it("runs native v2 submission only after provider validation passes", async () => {
+  test("runs native v2 submission only after provider validation passes", async () => {
     const user = userEvent.setup();
     const nativeOnSubmit = rs.fn();
     const onSubmit = rs.fn();
@@ -301,13 +301,13 @@ describe("experimental TanStack Form v2 AutoForm conformance", () => {
     expect(nativeOnSubmit).not.toHaveBeenCalled();
     expect(onSubmit).not.toHaveBeenCalled();
 
-    await user.type(screen.getByRole("textbox", { name: /name/i }), "Ada");
+    await user.type(screen.getByRole("textbox", { name: /name/iu }), "Ada");
     await user.click(screen.getByRole("button", { name: "Submit" }));
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
     expect(nativeOnSubmit).toHaveBeenCalledTimes(1);
   });
 
-  it("honors validation errors returned by native v2 onSubmit", async () => {
+  test("honors validation errors returned by native v2 onSubmit", async () => {
     const user = userEvent.setup();
     const onSubmit = rs.fn();
 
@@ -330,7 +330,7 @@ describe("experimental TanStack Form v2 AutoForm conformance", () => {
     expect(await screen.findByText("The server rejected this name.")).toBeInTheDocument();
   });
 
-  it("builds update masks from the v2 default-value baseline", async () => {
+  test("builds update masks from the v2 default-value baseline", async () => {
     const user = userEvent.setup();
     const onSubmit = rs.fn();
     render(
@@ -348,7 +348,7 @@ describe("experimental TanStack Form v2 AutoForm conformance", () => {
       />
     );
 
-    const city = screen.getByRole("textbox", { name: /city/i });
+    const city = screen.getByRole("textbox", { name: /city/iu });
     await user.clear(city);
     await user.type(city, "Krakow");
     await user.click(screen.getByRole("button", { name: "Submit" }));
