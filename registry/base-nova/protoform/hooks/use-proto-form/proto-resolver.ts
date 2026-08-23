@@ -63,7 +63,7 @@ export function createProtoResolver<Desc extends DescMessage>(
     const flatErrors: Record<string, { message: string; type: string }> = {};
     for (const [path, entry] of Object.entries(rawErrors)) {
       flatErrors[path] = {
-        message: humanizeValidationError(entry.message),
+        message: humanizeValidationError(entry.message, options.formatMessage),
         type: "validation",
       };
     }
@@ -72,7 +72,7 @@ export function createProtoResolver<Desc extends DescMessage>(
     const rootMessages: string[] = [];
     for (const issue of validationResult.issues) {
       if (issue.path.length === 0) {
-        rootMessages.push(humanizeValidationError(issue.message));
+        rootMessages.push(humanizeValidationError(issue.message, options.formatMessage));
       }
     }
 

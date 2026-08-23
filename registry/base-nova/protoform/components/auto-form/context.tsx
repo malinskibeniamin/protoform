@@ -1,4 +1,5 @@
 import React from "react";
+import type { ProtoformMessageFormatter } from "../../lib/core/messages";
 
 import type { AutoFormFieldComponents, AutoFormUIComponents, ParsedField } from "./core-types";
 import type { DataProviderRegistry } from "./data-providers";
@@ -11,6 +12,7 @@ export interface AutoFormContextValue {
   deprecatedFields: DeprecatedFieldPolicy;
   evaluateRules: (rules: AutoFormUiRule[] | undefined, fieldValue?: unknown) => boolean;
   fieldRegistry?: FieldTypeRegistry<string> | undefined;
+  formatMessage?: ProtoformMessageFormatter | undefined;
   formComponents: AutoFormFieldComponents;
   formValues: Record<string, unknown>;
   getFieldUiConfig: (field: ParsedField) => Record<string, unknown>;
@@ -48,7 +50,13 @@ export function useAutoFormField(path: string[]) {
 export type InternalAutoFormRenderContextValue = Pick<AutoFormContextValue, "uiComponents" | "formComponents">;
 export type InternalAutoFormRuntimeContextValue = Pick<
   AutoFormContextValue,
-  "deprecatedFields" | "formValues" | "evaluateRules" | "fieldRegistry" | "getFieldUiConfig" | "testIdPrefix"
+  | "deprecatedFields"
+  | "formValues"
+  | "evaluateRules"
+  | "fieldRegistry"
+  | "formatMessage"
+  | "getFieldUiConfig"
+  | "testIdPrefix"
 >;
 
 export const AutoFormRenderContext = AutoFormContext;

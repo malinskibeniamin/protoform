@@ -109,4 +109,80 @@ describe("inspectAutoFormConfiguration", () => {
       })
     ).toEqual([]);
   });
+
+  it("reports incompatible built-in controls", () => {
+    expect(
+      inspectAutoFormConfiguration({
+        fieldConfig: {
+          "settings.source": { fieldType: "slider" },
+        },
+        schema,
+      })
+    ).toContainEqual({
+      code: "incompatible-control",
+      message: 'Renderer "slider" is incompatible with field type "string".',
+      path: "settings.source",
+      severity: "error",
+    });
+  });
+
+  it("reports broken step configuration and unsupported schema shapes instead of throwing", () => {
+    const brokenSchema = {
+      getDefaultValues: () => ({}),
+      parseSchema: () => {
+        throw new TypeError("Unsupported descriptor shape.");
+      },
+      validateSchema: () => ({ data: {}, success: true as const }),
+    };
+
+    expect(
+      inspectAutoFormConfiguration({
+        schema,
+        stepper: {
+          steps: [
+            { id: "details", title: "Details" },
+            { id: "details", title: "Review" },
+          ],
+        },
+      })
+    ).toContainEqual(
+      expect.objectContaining({
+        code: "invalid-step-configuration",
+        path: "$",
+        severity: "error",
+      })
+    );
+
+    expect(inspectAutoFormConfiguration({ schema: brokenSchema })).toContainEqual(
+      expect.objectContaining({
+        cause: expect.any(TypeError),
+        code: "unsupported-schema",
+        path: "$",
+      })
+    );
+  });
+
+  it("reports unknown default and field step references", () => {
+    const stepSchema = createMockProvider([
+      { hints: { step: "missing" }, key: "name", required: true, type: "string" },
+    ]);
+
+    expect(
+      inspectAutoFormConfiguration({
+        schema: stepSchema,
+        stepper: {
+          defaultStep: "missing",
+          steps: [
+            { id: "details", title: "Details" },
+            { id: "confirm", title: "Confirm" },
+          ],
+        },
+      })
+    ).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ code: "invalid-step-configuration", path: "$" }),
+        expect.objectContaining({ code: "invalid-step-configuration", path: "name" }),
+      ])
+    );
+  });
 });

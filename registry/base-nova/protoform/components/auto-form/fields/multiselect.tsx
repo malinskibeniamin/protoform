@@ -1,15 +1,25 @@
 "use client";
 
+import React from "react";
+import { formatProtoformMessage } from "../../../lib/core/messages";
 import { SimpleMultiSelect } from "../../multi-select";
 import { useAutoForm } from "../context";
 import type { AutoFormFieldProps } from "../core-types";
-import { resolveDataProvider } from "../data-providers";
+import {
+  type DataProviderOption,
+  getStaleSelections,
+  resolveDataProvider,
+  useDataProviderSignal,
+} from "../data-providers";
+import { getPathInObject } from "../field-utils";
 import { getFieldUiConfig, NUMERIC_OPTION_PATTERN } from "../helpers";
 import type { FieldTypeDefinition } from "../registry";
+import { safeStringify } from "../utils/serialization";
 import { getGroupedOptions, readDataProviderId, renderOptionLabel, useFieldTestIds } from "./shared";
 
 function MultiSelectFieldComponent({ field, id, inputProps }: AutoFormFieldProps) {
   const testIds = useFieldTestIds(id);
+  const { formatMessage } = useAutoForm();
   const itemField = field.schema?.[0];
   const numericOptions = Boolean(itemField?.options?.every(([value]) => NUMERIC_OPTION_PATTERN.test(value)));
   const optionGroups = itemField ? getGroupedOptions(itemField) : undefined;
@@ -39,7 +49,10 @@ function MultiSelectFieldComponent({ field, id, inputProps }: AutoFormFieldProps
         inputProps["onValueChange"](numericOptions ? values.map((value) => Number(value)) : values)
       }
       options={options}
-      placeholder={getFieldUiConfig(field).placeholder || "Select one or more options"}
+      placeholder={
+        getFieldUiConfig(field).placeholder ||
+        formatProtoformMessage(formatMessage, "auto_form.multiselect.placeholder", {}, "Select one or more options")
+      }
       testId={testIds.field}
       value={Array.isArray(inputProps["value"]) ? inputProps["value"].map((value: unknown) => String(value)) : []}
       width="full"
@@ -69,15 +82,45 @@ export const multiselectFieldDefinition: FieldTypeDefinition = {
 // button — one row per method. A multi-select collapses that to a single
 // control that holds every picked method as a chip.
 
-function DataProviderMultiSelectComponent({ field, id, inputProps }: AutoFormFieldProps) {
+function DataProviderMultiSelectComponent({ field, id, inputProps, path }: AutoFormFieldProps) {
   const testIds = useFieldTestIds(id);
   const itemField = field.schema?.[0];
   const providerId = readDataProviderId(itemField);
-  const { dataProviders } = useAutoForm();
+  const { dataProviders, formatMessage, formValues } = useAutoForm();
   const provider = resolveDataProvider(dataProviders, providerId);
-  const { options: providerOptions = [], isLoading } = provider ? provider() : { options: [] };
+  const currentValue = Array.isArray(inputProps["value"])
+    ? inputProps["value"].map((value: unknown) => String(value))
+    : [];
+  const fieldPath = path.join(".");
+  const dependencyValues = Object.fromEntries(
+    (provider?.dependencies ?? []).map((dependency) => [dependency, getPathInObject(formValues, dependency.split("."))])
+  );
+  const signal = useDataProviderSignal(safeStringify({ dependencyValues, fieldPath, selectedValues: currentValue }));
+  const result = provider?.useProvider({
+    cursor: undefined,
+    dependencyValues,
+    fieldPath,
+    query: "",
+    selectedValues: currentValue,
+    signal,
+  });
+  const { options: providerOptions = [], isLoading } = result ?? { options: [] };
+  const staleSelections = isLoading ? [] : getStaleSelections(providerOptions, currentValue);
+  const renderedProviderOptions: DataProviderOption[] =
+    provider?.staleSelection === "clear"
+      ? providerOptions
+      : [...staleSelections.map((value) => ({ label: value, value })), ...providerOptions];
 
-  const options = providerOptions.map((option) => {
+  React.useEffect(
+    function clearUnavailableSelections() {
+      if (provider?.staleSelection === "clear" && staleSelections.length > 0) {
+        inputProps["onValueChange"](currentValue.filter((value) => !staleSelections.includes(value)));
+      }
+    },
+    [currentValue, inputProps, provider?.staleSelection, staleSelections]
+  );
+
+  const options = renderedProviderOptions.map((option) => {
     // `label` is typed as ReactNode on MultiSelectOptionItem, so we can
     // render icon + text + description inline instead of stringifying.
     const labelNode = (
@@ -99,21 +142,37 @@ function DataProviderMultiSelectComponent({ field, id, inputProps }: AutoFormFie
     };
   });
 
-  const currentValue = Array.isArray(inputProps["value"])
-    ? inputProps["value"].map((value: unknown) => String(value))
-    : [];
-
   return (
-    <SimpleMultiSelect
-      disabled={Boolean(inputProps["disabled"] || isLoading)}
-      id={id}
-      onValueChange={(values) => inputProps["onValueChange"](values)}
-      options={options}
-      placeholder={getFieldUiConfig(field).placeholder || (isLoading ? "Loading…" : "Select one or more options")}
-      testId={testIds.field}
-      value={currentValue}
-      width="full"
-    />
+    <div className="space-y-2">
+      <SimpleMultiSelect
+        disabled={Boolean(inputProps["disabled"] || isLoading)}
+        id={id}
+        onValueChange={(values) => inputProps["onValueChange"](values)}
+        options={options}
+        placeholder={
+          getFieldUiConfig(field).placeholder ||
+          formatProtoformMessage(
+            formatMessage,
+            isLoading ? "auto_form.select.loading" : "auto_form.multiselect.placeholder",
+            {},
+            isLoading ? "Loading…" : "Select one or more options"
+          )
+        }
+        testId={testIds.field}
+        value={currentValue}
+        width="full"
+      />
+      {provider?.staleSelection === "error" && staleSelections.length > 0 ? (
+        <p className="text-destructive text-sm" role="alert">
+          {formatProtoformMessage(
+            formatMessage,
+            "auto_form.select.stale",
+            { value: staleSelections.join(", ") },
+            "Selected values are no longer available."
+          )}
+        </p>
+      ) : null}
+    </div>
   );
 }
 

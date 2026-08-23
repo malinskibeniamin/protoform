@@ -1,5 +1,6 @@
 "use client";
 
+import type React from "react";
 import type { Resolver, UseFormProps, UseFormReturn } from "react-hook-form-v8";
 import { createProtoResolver } from "../../hooks/use-proto-form-v8";
 import { ReactHookFormEngine } from "../auto-form/adapters/react-hook-form-v8";
@@ -7,6 +8,8 @@ import { AutoFormCore } from "../auto-form/auto-form-core";
 import { isProtoMessageDescriptor, isProtoProvider } from "../auto-form/proto";
 import { protoConversionOptionsFromFieldConfig } from "../auto-form/schema";
 import type { AutoFormValidationMode, AutoFormProps as BaseAutoFormProps } from "../auto-form/types";
+
+export type { ProtoformMessageCode, ProtoformMessageFormatter, ProtoformMessageParams } from "../../lib/core/messages";
 
 type FormValues = Record<string, unknown>;
 
@@ -21,6 +24,14 @@ export type AutoFormProps<
   TCustomFieldType
 >;
 
+export {
+  type AutoFormAuditDiagnostic,
+  type AutoFormAuditFormat,
+  type AutoFormAuditReport,
+  type AutoFormAuditTarget,
+  auditAutoFormConfigurations,
+  formatAutoFormAuditReport,
+} from "../auto-form/audit";
 export { ShadcnAutoFormFieldComponents } from "../auto-form/auto-form-core";
 export {
   type CelEvaluation,
@@ -32,11 +43,23 @@ export {
 export {
   type AutoFormConfigurationDiagnostic,
   type AutoFormConfigurationDiagnosticCode,
+  type AutoFormDiagnostic,
   type InspectAutoFormConfigurationInput,
   inspectAutoFormConfiguration,
 } from "../auto-form/configuration";
 export { useAutoForm } from "../auto-form/context";
 export type { AutoFormFieldComponents, AutoFormFieldProps } from "../auto-form/core-types";
+export type {
+  DataProvider,
+  DataProviderDefinition,
+  DataProviderDependencyValues,
+  DataProviderOption,
+  DataProviderRegistration,
+  DataProviderRegistry,
+  DataProviderRequest,
+  DataProviderResult,
+  DataProviderStaleSelectionPolicy,
+} from "../auto-form/data-providers";
 export type { AutoFormEngineHandle } from "../auto-form/engine";
 export { defaultRegistry } from "../auto-form/fields";
 export { defaultClassifyField } from "../auto-form/helpers";
@@ -70,22 +93,21 @@ function toHookFormMode(mode: AutoFormValidationMode): "onBlur" | "onChange" | "
   }
 }
 
-export function AutoForm<T extends FormValues = FormValues, TCustomFieldType extends string = never>({
-  formOptions,
-  resolver,
-  ...props
-}: AutoFormProps<T, TCustomFieldType>) {
+export function AutoForm<T extends FormValues = FormValues, TCustomFieldType extends string = never>(
+  props: AutoFormProps<T, TCustomFieldType>
+): React.ReactNode;
+export function AutoForm({ formOptions, resolver, ...props }: AutoFormProps<FormValues, string>) {
   let protoDescriptor = isProtoMessageDescriptor(props.schema) ? props.schema : undefined;
   if (!protoDescriptor && isProtoProvider(props.schema)) {
     protoDescriptor = props.schema.getMessageDescriptor();
   }
-  const conversionOptions = protoConversionOptionsFromFieldConfig(props.fieldConfig);
+  const conversionOptions = {
+    ...protoConversionOptionsFromFieldConfig(props.fieldConfig),
+    formatMessage: props.formatMessage,
+  };
   const resolvedResolver =
-    resolver ??
-    (protoDescriptor
-      ? (createProtoResolver(protoDescriptor, conversionOptions) as unknown as Resolver<FormValues, unknown, T>)
-      : undefined);
-  const engineOptions: UseFormProps<FormValues, unknown, T> = {
+    resolver ?? (protoDescriptor ? createProtoResolver(protoDescriptor, conversionOptions) : undefined);
+  const engineOptions: UseFormProps<FormValues, unknown, FormValues> = {
     ...(formOptions ?? {}),
     ...(props.validationMode
       ? {
@@ -100,10 +122,10 @@ export function AutoForm<T extends FormValues = FormValues, TCustomFieldType ext
   };
 
   return (
-    <AutoFormCore<T, UseFormReturn<FormValues, unknown, T>, TCustomFieldType>
+    <AutoFormCore<FormValues, UseFormReturn<FormValues, unknown, FormValues>, string>
       {...props}
       renderEngine={({ children, defaultValues, values }) => (
-        <ReactHookFormEngine<T>
+        <ReactHookFormEngine<FormValues>
           defaultValues={defaultValues}
           formOptions={engineOptions}
           onDirtyChange={props.onDirtyChange}

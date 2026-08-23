@@ -3,6 +3,8 @@
 // custom messages. Proto-level CEL expressions with custom messages take
 // priority. This utility only fires for generic fallback messages.
 
+import { formatProtoformMessage, type ProtoformMessageFormatter } from "../core/messages.js";
+
 const REGEX_ERROR_PATTERN = /regex pattern\s*`([^`]+)`/;
 const MIN_LEN_PATTERN = /^value length must be at least (\d+)/;
 const MAX_LEN_PATTERN = /^value length must be at most (\d+)/;
@@ -78,76 +80,123 @@ export function isGenericValidationMessage(message: string): boolean {
   return false;
 }
 
-function humanizeLengthConstraint(message: string): string | undefined {
+function humanizeLengthConstraint(message: string, formatter?: ProtoformMessageFormatter): string | undefined {
   const minLenMatch = MIN_LEN_PATTERN.exec(message);
   if (minLenMatch?.[1]) {
-    return minLenMatch[1] === "1" ? "This field is required." : `Must be at least ${minLenMatch[1]} characters.`;
+    const limit = Number(minLenMatch[1]);
+    return limit === 1
+      ? formatProtoformMessage(formatter, "validation.required", {}, "This field is required.")
+      : formatProtoformMessage(formatter, "validation.min_length", { limit }, `Must be at least ${limit} characters.`);
   }
   const maxLenMatch = MAX_LEN_PATTERN.exec(message);
   if (maxLenMatch?.[1]) {
-    return `Must be at most ${maxLenMatch[1]} characters.`;
+    const limit = Number(maxLenMatch[1]);
+    return formatProtoformMessage(
+      formatter,
+      "validation.max_length",
+      { limit },
+      `Must be at most ${limit} characters.`
+    );
   }
   return;
 }
 
-function humanizeItemConstraint(message: string): string | undefined {
+function humanizeItemConstraint(message: string, formatter?: ProtoformMessageFormatter): string | undefined {
   const minItemsMatch = MIN_ITEMS_PATTERN.exec(message);
   if (minItemsMatch?.[1]) {
-    return minItemsMatch[1] === "1" ? "Add at least one item." : `Add at least ${minItemsMatch[1]} items.`;
+    const limit = Number(minItemsMatch[1]);
+    return formatProtoformMessage(
+      formatter,
+      "validation.min_items",
+      { limit },
+      limit === 1 ? "Add at least one item." : `Add at least ${limit} items.`
+    );
   }
   const maxItemsMatch = MAX_ITEMS_PATTERN.exec(message);
   if (maxItemsMatch?.[1]) {
-    return maxItemsMatch[1] === "1" ? "At most one item is allowed." : `At most ${maxItemsMatch[1]} items are allowed.`;
+    const limit = Number(maxItemsMatch[1]);
+    return formatProtoformMessage(
+      formatter,
+      "validation.max_items",
+      { limit },
+      limit === 1 ? "At most one item is allowed." : `At most ${limit} items are allowed.`
+    );
   }
   return;
 }
 
-function humanizeNumericBound(message: string): string | undefined {
+function humanizeNumericBound(message: string, formatter?: ProtoformMessageFormatter): string | undefined {
   const gteMatch = GTE_PATTERN.exec(message);
   if (gteMatch?.[1]) {
-    return `Must be ${gteMatch[1]} or greater.`;
+    return formatProtoformMessage(
+      formatter,
+      "validation.greater_than_or_equal",
+      { limit: gteMatch[1] },
+      `Must be ${gteMatch[1]} or greater.`
+    );
   }
   const lteMatch = LTE_PATTERN.exec(message);
   if (lteMatch?.[1]) {
-    return `Must be ${lteMatch[1]} or less.`;
+    return formatProtoformMessage(
+      formatter,
+      "validation.less_than_or_equal",
+      { limit: lteMatch[1] },
+      `Must be ${lteMatch[1]} or less.`
+    );
   }
   const gtMatch = GT_PATTERN.exec(message);
   if (gtMatch?.[1]) {
-    return `Must be greater than ${gtMatch[1]}.`;
+    return formatProtoformMessage(
+      formatter,
+      "validation.greater_than",
+      { limit: gtMatch[1] },
+      `Must be greater than ${gtMatch[1]}.`
+    );
   }
   const ltMatch = LT_PATTERN.exec(message);
   if (ltMatch?.[1]) {
-    return `Must be less than ${ltMatch[1]}.`;
+    return formatProtoformMessage(
+      formatter,
+      "validation.less_than",
+      { limit: ltMatch[1] },
+      `Must be less than ${ltMatch[1]}.`
+    );
   }
   return;
 }
 
-function humanizeRegexError(message: string): string | undefined {
+function humanizeRegexError(message: string, formatter?: ProtoformMessageFormatter): string | undefined {
   const regexMatch = REGEX_ERROR_PATTERN.exec(message);
   if (!regexMatch?.[1]) {
     return;
   }
   const known = KNOWN_PATTERNS[regexMatch[1]];
-  return known ? `${known.description}. Example: ${known.example}` : message;
+  const fallback = known ? `${known.description}. Example: ${known.example}` : message;
+  return formatProtoformMessage(
+    formatter,
+    "validation.pattern",
+    { example: known?.example ?? "", pattern: regexMatch[1] },
+    fallback
+  );
 }
 
 /**
  * Replace raw protovalidate error messages with human-readable descriptions.
  * Returns the original message if it's already a custom CEL message.
  */
-export function humanizeValidationError(message: string): string {
+export function humanizeValidationError(message: string, formatter?: ProtoformMessageFormatter): string {
   if (message === "value is required") {
-    return "Enter a value.";
+    return formatProtoformMessage(formatter, "validation.required", {}, "Enter a value.");
   }
   if (message === "exactly one field is required in oneof") {
-    return "Select an option.";
+    return formatProtoformMessage(formatter, "validation.oneof_required", {}, "Select an option.");
   }
 
   return (
-    humanizeLengthConstraint(message) ??
-    humanizeItemConstraint(message) ??
-    humanizeNumericBound(message) ??
-    humanizeRegexError(message) ??
+    humanizeLengthConstraint(message, formatter) ??
+    humanizeItemConstraint(message, formatter) ??
+    humanizeNumericBound(message, formatter) ??
+    humanizeRegexError(message, formatter) ??
     message
   );
 }
@@ -155,7 +204,9 @@ export function humanizeValidationError(message: string): string {
 export const SERVER_FIELD_ERROR_FALLBACK = "Review this value and try again.";
 
 /** Humanize a server field violation and ensure blank descriptions stay actionable. */
-export function humanizeServerFieldError(description: string): string {
+export function humanizeServerFieldError(description: string, formatter?: ProtoformMessageFormatter): string {
   const message = description.trim();
-  return message ? humanizeValidationError(message) : SERVER_FIELD_ERROR_FALLBACK;
+  return message
+    ? humanizeValidationError(message, formatter)
+    : formatProtoformMessage(formatter, "validation.server_field", {}, SERVER_FIELD_ERROR_FALLBACK);
 }

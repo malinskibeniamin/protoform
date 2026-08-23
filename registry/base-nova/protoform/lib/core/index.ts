@@ -24,4 +24,10 @@ export {
   type FormValidatorOptions,
   standardSchemaIssuesToFormErrors,
 } from "./form-library-adapters.js";
+export {
+  formatProtoformMessage,
+  type ProtoformMessageCode,
+  type ProtoformMessageFormatter,
+  type ProtoformMessageParams,
+} from "./messages.js";
 export { isStandardSchema, type StandardSchemaV1 } from "./standard-schema.js";

@@ -21,6 +21,7 @@ import {
   formValuesToProto,
   humanizeServerFieldError,
   type ProtoConversionOptions,
+  type ProtoFormOptions,
   protoPathToFormPath,
 } from "../../lib/protobuf-provider";
 
@@ -174,6 +175,7 @@ export function useProtoForm<
     TSubmitMeta
   > & {
     emptyRepeatedStringPolicies?: ProtoConversionOptions["emptyRepeatedStringPolicies"];
+    formatMessage?: ProtoFormOptions["formatMessage"];
     serverPathPrefix?: string;
     serverPathPrefixes?: readonly string[];
   }
@@ -191,9 +193,16 @@ export function useProtoForm<
   TOnServer,
   TSubmitMeta
 > {
-  const { emptyRepeatedStringPolicies, serverPathPrefix, serverPathPrefixes = [], ...nativeOptions } = options;
-  const conversionOptions: ProtoConversionOptions = {
+  const {
     emptyRepeatedStringPolicies,
+    formatMessage,
+    serverPathPrefix,
+    serverPathPrefixes = [],
+    ...nativeOptions
+  } = options;
+  const conversionOptions: ProtoFormOptions = {
+    emptyRepeatedStringPolicies,
+    formatMessage,
   };
   const pathPrefixes = serverPathPrefix ? [serverPathPrefix, ...serverPathPrefixes] : serverPathPrefixes;
   const protoSchema = createProtoFormSchema<Values, Desc>(schema, conversionOptions);

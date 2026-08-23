@@ -8,8 +8,10 @@ import {
 import { usedTypes } from "@bufbuild/protobuf/reflect";
 import { createValidator, RuntimeError, type ValidatorOptions, type Violation } from "@bufbuild/protovalidate";
 import type { StandardSchemaV1 } from "../core/index.js";
+import type { ProtoformMessageFormatter } from "../core/messages.js";
+import { humanizeValidationError } from "./humanize-validation-error.js";
 
-function violationToIssue(violation: Violation): StandardSchemaV1.Issue {
+function violationToIssue(violation: Violation, formatter?: ProtoformMessageFormatter): StandardSchemaV1.Issue {
   const path: PropertyKey[] = [];
 
   for (const segment of violation.field) {
@@ -40,15 +42,21 @@ function violationToIssue(violation: Violation): StandardSchemaV1.Issue {
     }
   }
 
-  return path.length > 0 ? { message: violation.message, path } : { message: violation.message };
+  const message = humanizeValidationError(violation.message, formatter);
+  return path.length > 0 ? { message, path } : { message };
 }
 
 export function createDescriptorAwareStandardSchema<Desc extends DescMessage>(
   desc: Desc,
-  options?: ValidatorOptions
+  options?: ValidatorOptions & { formatMessage?: ProtoformMessageFormatter | undefined }
 ): StandardSchemaV1<MessageShape<Desc>, MessageValidType<Desc>> {
-  const registry = createRegistry(desc, ...usedTypes(desc), ...(options?.registry ? [options.registry] : []));
-  const validator = createValidator({ ...options, registry });
+  const { formatMessage, ...validatorOptions } = options ?? {};
+  const registry = createRegistry(
+    desc,
+    ...usedTypes(desc),
+    ...(validatorOptions.registry ? [validatorOptions.registry] : [])
+  );
+  const validator = createValidator({ ...validatorOptions, registry });
 
   return {
     "~standard": {
@@ -65,7 +73,7 @@ export function createDescriptorAwareStandardSchema<Desc extends DescMessage>(
           case "valid":
             return { value: result.message };
           case "invalid":
-            return { issues: result.violations.map(violationToIssue) };
+            return { issues: result.violations.map((violation) => violationToIssue(violation, formatMessage)) };
           case "error":
             if (result.error instanceof RuntimeError) {
               // Runtime failures are schema defects, not user input errors. Fail

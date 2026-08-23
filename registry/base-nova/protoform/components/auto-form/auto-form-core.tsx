@@ -5,8 +5,9 @@ import React from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/registry/base-nova/protoform/components/alert";
 import { TooltipProvider } from "@/registry/base-nova/protoform/components/tooltip";
 import { Heading, Text } from "@/registry/base-nova/protoform/components/typography";
+import { formatProtoformMessage, type ProtoformMessageFormatter } from "../../lib/core/messages";
 import { createUpdateMask, formValuesToProto, preserveProtoMessageSource } from "../../lib/protobuf-provider";
-
+import { type AutoFormDiagnostic, inspectAutoFormConfiguration } from "./configuration";
 import type { SchemaValidation } from "./core-types";
 import type { AutoFormEngine } from "./engine";
 import {
@@ -90,6 +91,8 @@ function renderModeContent({
   onStepContinue,
   isAdvancing,
   isSubmitting,
+  submitLabel,
+  submittingLabel,
 }: {
   fields: ReturnType<typeof mergeFieldOverrides>;
   testIdPrefix: string;
@@ -106,7 +109,10 @@ function renderModeContent({
   onStepContinue: (fields: ReturnType<typeof mergeFieldOverrides>) => void | Promise<void>;
   isAdvancing: boolean;
   isSubmitting: boolean;
+  submitLabel: string;
+  submittingLabel: string;
 }) {
+  const submitContent = isSubmitting ? submittingLabel : submitLabel;
   if (stepper) {
     const step = stepper.steps[currentStepIndex];
     if (!step) {
@@ -125,7 +131,7 @@ function renderModeContent({
         submit={
           withSubmit ? (
             <SubmitButtonComponent disabled={isSubmitting} testId={buildAutoFormTestId(testIdPrefix, "submit")}>
-              {isSubmitting ? "Submitting…" : "Submit"}
+              {submitContent}
             </SubmitButtonComponent>
           ) : null
         }
@@ -141,7 +147,7 @@ function renderModeContent({
       {withSubmit ? (
         <div className="flex items-center justify-end border-border/60 border-t pt-5" data-slot="auto-form-actions">
           <SubmitButtonComponent disabled={isSubmitting} testId={buildAutoFormTestId(testIdPrefix, "submit")}>
-            {isSubmitting ? "Submitting…" : "Submit"}
+            {submitContent}
           </SubmitButtonComponent>
         </div>
       ) : null}
@@ -174,6 +180,7 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
   showSummary = false,
   renderSummary,
   fieldRegistry,
+  formatMessage,
   dataProviders,
   deprecatedFields = "show",
   classifyField,
@@ -181,6 +188,7 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
   payloadBuilder,
   payloadParser,
   onFieldChange,
+  onDiagnostic,
   renderRootHeader,
   rootHeader = "auto",
   stepper,
@@ -212,10 +220,48 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
   const previousDefaultMode = React.useRef(defaultMode);
   const previousLifecycleValues = React.useRef(engine.values);
   const hasSubmitted = React.useRef(false);
+  const emittedDiagnostics = React.useRef(new Set<string>());
+  const submitLabel = formatProtoformMessage(formatMessage, "auto_form.submit", {}, "Submit");
+  const submittingLabel = formatProtoformMessage(formatMessage, "auto_form.submitting", {}, "Submitting…");
 
   if (stepper) {
-    validateSteps(stepper.steps);
+    validateSteps(stepper.steps, stepper.defaultStep);
   }
+
+  const deliverDiagnostic = React.useEffectEvent((diagnostic: AutoFormDiagnostic) => onDiagnostic?.(diagnostic));
+
+  React.useEffect(
+    function reportConfigurationDiagnostics() {
+      if (!onDiagnostic) {
+        emittedDiagnostics.current.clear();
+        return;
+      }
+
+      const diagnostics = inspectAutoFormConfiguration({
+        ...(dataProviders ? { dataProviders } : {}),
+        ...(fieldConfigOverrides ? { fieldConfig: fieldConfigOverrides } : {}),
+        ...(fieldRegistry ? { fieldRegistry } : {}),
+        schema: resolvedSchema.provider,
+        ...(stepper ? { stepper } : {}),
+      });
+      const activeKeys = new Set<string>();
+      for (const diagnostic of diagnostics) {
+        const key = `${diagnostic.code}:${diagnostic.path}:${diagnostic.message}`;
+        activeKeys.add(key);
+        if (!emittedDiagnostics.current.has(key)) {
+          deliverDiagnostic({
+            ...(diagnostic.cause === undefined ? {} : { cause: diagnostic.cause }),
+            code: diagnostic.code,
+            fieldPath: diagnostic.path,
+            message: diagnostic.message,
+            severity: diagnostic.severity,
+          });
+        }
+      }
+      emittedDiagnostics.current = activeKeys;
+    },
+    [dataProviders, fieldConfigOverrides, fieldRegistry, onDiagnostic, resolvedSchema.provider, stepper]
+  );
 
   React.useEffect(() => {
     if (initializedForm.current !== engine.nativeForm) {
@@ -502,6 +548,8 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
         testId?: string | undefined;
       }>,
       stepper,
+      submitLabel,
+      submittingLabel,
       testIdPrefix,
       withSubmit,
     });
@@ -538,6 +586,7 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
         dataProviders={dataProviders}
         deprecatedFields={deprecatedFields}
         fieldRegistry={fieldRegistry}
+        formatMessage={formatMessage}
         formComponents={mergedFormComponents}
         mode={mode}
         onFieldChange={onFieldChange}
@@ -560,7 +609,9 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
           >
             {engine.rootError ? (
               <Alert variant="destructive">
-                <AlertTitle>Form validation failed</AlertTitle>
+                <AlertTitle>
+                  {formatProtoformMessage(formatMessage, "auto_form.validation_failed", {}, "Form validation failed")}
+                </AlertTitle>
                 <AlertDescription className="whitespace-pre-wrap">{engine.rootError}</AlertDescription>
               </Alert>
             ) : null}
@@ -654,16 +705,36 @@ interface AutoFormErrorBoundaryState {
 }
 
 class AutoFormErrorBoundary extends React.Component<
-  { children: React.ReactNode; resetKey: unknown },
+  {
+    children: React.ReactNode;
+    formatMessage?: ProtoformMessageFormatter | undefined;
+    onDiagnostic?: ((diagnostic: AutoFormDiagnostic) => void) | undefined;
+    resetKey: unknown;
+  },
   AutoFormErrorBoundaryState
 > {
-  constructor(props: { children: React.ReactNode; resetKey: unknown }) {
+  constructor(props: {
+    children: React.ReactNode;
+    formatMessage?: ProtoformMessageFormatter | undefined;
+    onDiagnostic?: ((diagnostic: AutoFormDiagnostic) => void) | undefined;
+    resetKey: unknown;
+  }) {
     super(props);
     this.state = { error: null, resetKey: props.resetKey };
   }
 
   static getDerivedStateFromError(error: Error): Partial<AutoFormErrorBoundaryState> {
     return { error };
+  }
+
+  override componentDidCatch(error: Error) {
+    this.props.onDiagnostic?.({
+      cause: error,
+      code: "render-error",
+      fieldPath: "$",
+      message: error.message,
+      severity: "error",
+    });
   }
 
   static getDerivedStateFromProps(
@@ -677,7 +748,14 @@ class AutoFormErrorBoundary extends React.Component<
     if (this.state.error) {
       return (
         <Alert variant="destructive">
-          <AlertTitle>AutoForm failed to render</AlertTitle>
+          <AlertTitle>
+            {formatProtoformMessage(
+              this.props.formatMessage,
+              "auto_form.render_failed",
+              {},
+              "AutoForm failed to render"
+            )}
+          </AlertTitle>
           <AlertDescription className="whitespace-pre-wrap">{this.state.error.message}</AlertDescription>
         </Alert>
       );
@@ -690,7 +768,11 @@ export function AutoFormCore<T extends Record<string, unknown>, TNativeForm, TCu
   props: AutoFormCoreProps<T, TNativeForm, TCustomFieldType>
 ) {
   return (
-    <AutoFormErrorBoundary resetKey={props.schema}>
+    <AutoFormErrorBoundary
+      formatMessage={props.formatMessage}
+      onDiagnostic={props.onDiagnostic}
+      resetKey={props.schema}
+    >
       <AutoFormCoreInner {...props} />
     </AutoFormErrorBoundary>
   );

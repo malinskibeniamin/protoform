@@ -2,6 +2,7 @@
 
 import type { DescMessage } from "@bufbuild/protobuf";
 import React from "react";
+import type { ProtoformMessageFormatter } from "../../lib/core/messages";
 import type { ProtoConversionOptions } from "../../lib/protobuf-provider";
 
 import { AutoFormContext, type AutoFormContextValue } from "./context";
@@ -45,6 +46,7 @@ interface AutoFormRuntimeProviderProps<TNativeForm> {
   dataProviders?: DataProviderRegistry | undefined;
   deprecatedFields: DeprecatedFieldPolicy;
   fieldRegistry?: FieldTypeRegistry<string> | undefined;
+  formatMessage?: ProtoformMessageFormatter | undefined;
   formComponents: AutoFormFieldComponents;
   mode: AutoFormMode;
   onFieldChange?: ((fieldPath: string, value: unknown, form: TNativeForm) => void | Promise<void>) | undefined;
@@ -327,6 +329,7 @@ export function AutoFormRuntimeProvider<TNativeForm>({
   formComponents,
   testIdPrefix,
   fieldRegistry,
+  formatMessage,
   conversionOptions,
   dataProviders,
   deprecatedFields,
@@ -371,13 +374,23 @@ export function AutoFormRuntimeProvider<TNativeForm>({
       evaluateRules: (rules: AutoFormUiRule[] | undefined, fieldValue?: unknown) =>
         evaluateUiRules(rules, { form: watchedValues, thisValue: fieldValue }),
       fieldRegistry,
+      formatMessage,
       formComponents,
       formValues: watchedValues,
       getFieldUiConfig,
       testIdPrefix,
       uiComponents,
     }),
-    [dataProviders, deprecatedFields, fieldRegistry, formComponents, uiComponents, testIdPrefix, watchedValues]
+    [
+      dataProviders,
+      deprecatedFields,
+      fieldRegistry,
+      formatMessage,
+      formComponents,
+      uiComponents,
+      testIdPrefix,
+      watchedValues,
+    ]
   );
 
   return (

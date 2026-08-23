@@ -18,6 +18,7 @@ import {
   formValuesToProto,
   humanizeServerFieldError,
   type ProtoConversionOptions,
+  type ProtoFormOptions,
 } from "../../lib/protobuf-provider/index.js";
 
 import { protoPathToFormPath } from "./proto-error-path.js";
@@ -37,6 +38,8 @@ type NestedErrors<T> = {
 export interface UseProtoFormOptions<Desc extends DescMessage> extends Omit<UseFormProps<FormShape<Desc>>, "resolver"> {
   /** Per-field repeated-string conversion overrides keyed by descriptor path. */
   emptyRepeatedStringPolicies?: ProtoConversionOptions["emptyRepeatedStringPolicies"];
+  /** Translates Protoform-owned validation copy. */
+  formatMessage?: ProtoFormOptions["formatMessage"];
   /**
    * Strip a leading server-path prefix before mapping server-side field
    * violations onto the form (e.g. `'notification'` when the RPC wraps the
@@ -125,13 +128,15 @@ export function useProtoForm<Desc extends DescMessage>(
 ): UseProtoFormReturn<Desc> {
   const {
     emptyRepeatedStringPolicies,
+    formatMessage,
     serverPathPrefix,
     serverPathPrefixes = [],
     mode = "onChange",
     ...rest
   } = options ?? {};
-  const conversionOptions: ProtoConversionOptions = {
+  const conversionOptions: ProtoFormOptions = {
     emptyRepeatedStringPolicies,
+    formatMessage,
   };
   const pathPrefixes = serverPathPrefix ? [serverPathPrefix, ...serverPathPrefixes] : serverPathPrefixes;
   const sourceMessage = isMessage(rest.defaultValues, schema) ? rest.defaultValues : undefined;

@@ -45,6 +45,7 @@ import type {
   SchemaValidation,
   StandardSchemaV1,
 } from "../core/index.js";
+import type { ProtoformMessageFormatter } from "../core/messages.js";
 import {
   getProtoFieldBehaviors,
   getProtoResourceMetadata,
@@ -190,7 +191,9 @@ export interface ProtoConversionOptions {
   emptyRepeatedStringPolicies?: Readonly<Record<string, EmptyRepeatedStringPolicy>> | undefined;
 }
 
-export interface ProtoFormOptions extends ValidatorOptions, ProtoConversionOptions {}
+export interface ProtoFormOptions extends ValidatorOptions, ProtoConversionOptions {
+  formatMessage?: ProtoformMessageFormatter | undefined;
+}
 
 interface ProtoParserContext {
   ancestors: ReadonlySet<string>;

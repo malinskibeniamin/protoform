@@ -29,16 +29,17 @@ Form.displayName = "Form";
 
 export const ArrayElementWrapper: React.FC<
   ArrayElementWrapperProps & {
+    removeButtonAriaLabel?: string;
     testId?: string;
     removeButtonTestId?: string;
   }
-> = ({ children, onRemove, removeButtonTestId, testId }) => (
+> = ({ children, onRemove, removeButtonAriaLabel = "Remove item", removeButtonTestId, testId }) => (
   <div
     className="relative rounded-xl border border-border/70 bg-card p-5 text-card-foreground shadow-xs"
     data-testid={testId}
   >
     <Button
-      aria-label="Remove item"
+      aria-label={removeButtonAriaLabel}
       className="absolute top-3 right-3"
       onClick={onRemove}
       size="icon-sm"
@@ -54,15 +55,16 @@ export const ArrayElementWrapper: React.FC<
 
 export const ArrayWrapper: React.FC<
   ArrayWrapperProps & {
+    addButtonLabel?: string;
     addButtonTestId?: string;
     testId?: string;
   }
-> = ({ label, children, onAddItem, addButtonTestId, testId }) => (
+> = ({ label, children, onAddItem, addButtonLabel, addButtonTestId, testId }) => (
   <div className={formSpacing.field} data-testid={testId}>
     {children}
     <Button onClick={onAddItem} size="sm" testId={addButtonTestId} type="button" variant="outline">
       <PlusIcon className="h-4 w-4" />
-      {label ? `Add ${label}` : "Add item"}
+      {addButtonLabel ?? (label ? `Add ${label}` : "Add item")}
     </Button>
   </div>
 );

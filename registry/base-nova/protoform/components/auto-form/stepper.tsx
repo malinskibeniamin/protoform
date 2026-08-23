@@ -5,9 +5,12 @@ import type React from "react";
 
 import { Button } from "@/registry/base-nova/protoform/components/button";
 import { Heading, Text } from "@/registry/base-nova/protoform/components/typography";
+import { formatProtoformMessage, type ProtoformMessageFormatter } from "../../lib/core/messages";
 
+import { useAutoFormRuntimeContext } from "./context";
 import type { ParsedField } from "./core-types";
 import { FormDepthProvider, useFormDepth } from "./layout-context";
+import { getStepConfigurationError } from "./step-configuration";
 import type { AutoFormStep, AutoFormStepperOrientation } from "./types";
 
 function getStepState(isCurrent: boolean, isComplete: boolean): "complete" | "current" | "upcoming" {
@@ -17,11 +20,17 @@ function getStepState(isCurrent: boolean, isComplete: boolean): "complete" | "cu
   return isComplete ? "complete" : "upcoming";
 }
 
-function getStepStatusLabel(isCurrent: boolean, isComplete: boolean): string {
+function getStepStatusLabel(
+  formatMessage: ProtoformMessageFormatter | undefined,
+  isCurrent: boolean,
+  isComplete: boolean
+): string {
   if (isCurrent) {
-    return "current step";
+    return formatProtoformMessage(formatMessage, "auto_form.step_current", {}, "current step");
   }
-  return isComplete ? "completed" : "upcoming step";
+  return isComplete
+    ? formatProtoformMessage(formatMessage, "auto_form.step_complete", {}, "completed")
+    : formatProtoformMessage(formatMessage, "auto_form.step_upcoming", {}, "upcoming step");
 }
 
 function fieldStep(field: ParsedField, firstStepId: string, stepIds: Set<string>): string {
@@ -43,19 +52,10 @@ export function initialStepIndex(steps: AutoFormStep[], defaultStep: string | un
   return index >= 0 ? index : 0;
 }
 
-export function validateSteps(steps: AutoFormStep[]): void {
-  if (steps.length < 2) {
-    throw new Error("AutoForm stepper requires at least two steps.");
-  }
-  const ids = new Set<string>();
-  for (const step of steps) {
-    if (!step.id.trim()) {
-      throw new Error("AutoForm step ids must not be empty.");
-    }
-    if (ids.has(step.id)) {
-      throw new Error(`AutoForm step ids must be unique. Duplicate: ${step.id}`);
-    }
-    ids.add(step.id);
+export function validateSteps(steps: AutoFormStep[], defaultStep?: string): void {
+  const error = getStepConfigurationError(steps, defaultStep);
+  if (error) {
+    throw new Error(error);
   }
 }
 
@@ -84,10 +84,22 @@ export function AutoFormStepIndicator({
   currentIndex: number;
   orientation: AutoFormStepperOrientation;
 }) {
+  const { formatMessage } = useAutoFormRuntimeContext();
+  const progressParams = { current: currentIndex + 1, total: steps.length };
+
   return (
-    <nav aria-label="Form progress" className="@container space-y-3" data-orientation={orientation}>
+    <nav
+      aria-label={formatProtoformMessage(formatMessage, "auto_form.form_progress", {}, "Form progress")}
+      className="@container space-y-3"
+      data-orientation={orientation}
+    >
       <Text aria-live="polite" className="text-muted-foreground" variant="small">
-        Step {currentIndex + 1} of {steps.length}
+        {formatProtoformMessage(
+          formatMessage,
+          "auto_form.step_progress",
+          progressParams,
+          `Step ${progressParams.current} of ${progressParams.total}`
+        )}
       </Text>
       <ol
         className={orientation === "vertical" ? "flex flex-col" : "grid gap-0"}
@@ -109,7 +121,7 @@ export function AutoFormStepIndicator({
                 key={step.id}
               >
                 <span className="sr-only">
-                  {step.title}, {getStepStatusLabel(isCurrent, isComplete)}
+                  {step.title}, {getStepStatusLabel(formatMessage, isCurrent, isComplete)}
                 </span>
                 <span aria-hidden="true" className="flex flex-col items-center">
                   <StepMarker index={index} isComplete={isComplete} isCurrent={isCurrent} />
@@ -144,7 +156,7 @@ export function AutoFormStepIndicator({
               key={step.id}
             >
               <span className="sr-only">
-                {step.title}, {getStepStatusLabel(isCurrent, isComplete)}
+                {step.title}, {getStepStatusLabel(formatMessage, isCurrent, isComplete)}
               </span>
               <span className="flex @min-[30rem]:w-16 @min-[64rem]:w-auto min-w-0 shrink-0 @min-[64rem]:flex-row flex-col items-center @min-[64rem]:gap-2 gap-1.5">
                 <StepMarker index={index} isComplete={isComplete} isCurrent={isCurrent} />
@@ -201,6 +213,7 @@ export function AutoFormStepPanel({
 }) {
   const isLastStep = currentIndex === steps.length - 1;
   const depth = useFormDepth();
+  const { formatMessage } = useAutoFormRuntimeContext();
 
   return (
     <div className="space-y-6">
@@ -239,7 +252,7 @@ export function AutoFormStepPanel({
       >
         {currentIndex > 0 ? (
           <Button onClick={onBack} type="button" variant="outline">
-            Back
+            {formatProtoformMessage(formatMessage, "auto_form.back", {}, "Back")}
           </Button>
         ) : (
           <span />
@@ -248,7 +261,9 @@ export function AutoFormStepPanel({
           submit
         ) : (
           <Button disabled={isAdvancing} onClick={onContinue} type="button">
-            {isAdvancing ? "Checking…" : "Continue"}
+            {isAdvancing
+              ? formatProtoformMessage(formatMessage, "auto_form.checking", {}, "Checking…")
+              : formatProtoformMessage(formatMessage, "auto_form.continue", {}, "Continue")}
           </Button>
         )}
       </div>

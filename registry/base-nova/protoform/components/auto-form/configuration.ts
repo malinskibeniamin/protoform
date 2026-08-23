@@ -5,19 +5,29 @@ import { readDataProviderId } from "./fields/shared";
 import { getFieldUiConfig, resolveRenderFieldType } from "./helpers";
 import { buildFieldMatchContext, type FieldTypeRegistry } from "./registry";
 import { mergeFieldOverrides, protoConversionOptionsFromFieldConfig, resolveSchema } from "./schema";
-import type { AutoFormSchemaInput, FieldConfigMap } from "./types";
+import { getStepConfigurationError } from "./step-configuration";
+import type { AutoFormSchemaInput, AutoFormStepperConfig, FieldConfigMap } from "./types";
 
 export type AutoFormConfigurationDiagnosticCode =
+  | "incompatible-control"
   | "invalid-configuration-path"
+  | "invalid-step-configuration"
   | "missing-data-provider"
   | "missing-renderer"
+  | "render-error"
+  | "unsupported-schema"
   | "unsupported-configuration";
 
-export interface AutoFormConfigurationDiagnostic {
+export interface AutoFormDiagnostic {
+  cause?: unknown;
   code: AutoFormConfigurationDiagnosticCode;
+  fieldPath: string;
   message: string;
+  severity: "error" | "warning";
+}
+
+export interface AutoFormConfigurationDiagnostic extends Omit<AutoFormDiagnostic, "fieldPath"> {
   path: string;
-  severity: "error";
 }
 
 export interface InspectAutoFormConfigurationInput<
@@ -28,9 +38,41 @@ export interface InspectAutoFormConfigurationInput<
   fieldConfig?: FieldConfigMap<TCustomFieldType>;
   fieldRegistry?: FieldTypeRegistry<string>;
   schema: AutoFormSchemaInput<T>;
+  stepper?: AutoFormStepperConfig;
 }
 
 const STRUCTURAL_FIELD_TYPES = new Set(["array", "map", "object", "oneof"]);
+const BUILT_IN_RENDERER_TYPES: Readonly<Record<string, readonly string[]>> = {
+  boolean: ["boolean"],
+  bytes: ["bytes"],
+  checkbox: ["boolean"],
+  choicebox: ["select"],
+  combobox: ["select"],
+  currency: ["string"],
+  dataProviderMultiSelect: ["array"],
+  dataProviderSelect: ["number", "string"],
+  date: ["date"],
+  "dropzone-json": ["json", "object"],
+  duration: ["duration"],
+  email: ["string"],
+  fieldMask: ["fieldMask"],
+  int64: ["int64"],
+  json: ["json", "object"],
+  keyValue: ["array", "map"],
+  multiselect: ["array"],
+  number: ["number"],
+  password: ["string"],
+  radio: ["select"],
+  select: ["select"],
+  slider: ["number"],
+  string: ["string"],
+  switch: ["boolean"],
+  textarea: ["string"],
+  timestamp: ["timestamp"],
+  toggle: ["boolean"],
+  toggleGroup: ["select"],
+  url: ["string"],
+};
 
 function collectFields(
   fields: ParsedField[],
@@ -72,6 +114,16 @@ function fieldDiagnostics(
     diagnostics.push({
       code: "missing-renderer",
       message: `Renderer "${renderer}" is not registered.`,
+      path,
+      severity: "error",
+    });
+  }
+
+  const supportedFieldTypes = BUILT_IN_RENDERER_TYPES[renderer];
+  if (supportedFieldTypes && !supportedFieldTypes.includes(field.type)) {
+    diagnostics.push({
+      code: "incompatible-control",
+      message: `Renderer "${renderer}" is incompatible with field type "${field.type}".`,
       path,
       severity: "error",
     });
@@ -120,13 +172,40 @@ export function inspectAutoFormConfiguration<
   fieldConfig,
   fieldRegistry,
   dataProviders,
+  stepper,
 }: InspectAutoFormConfigurationInput<T, TCustomFieldType>): AutoFormConfigurationDiagnostic[] {
-  const resolvedSchema = resolveSchema(schema, protoConversionOptionsFromFieldConfig(fieldConfig));
+  const stepConfigurationError = stepper ? getStepConfigurationError(stepper.steps, stepper.defaultStep) : undefined;
+  const stepDiagnostic: AutoFormConfigurationDiagnostic[] = stepConfigurationError
+    ? [
+        {
+          code: "invalid-step-configuration",
+          message: stepConfigurationError,
+          path: "$",
+          severity: "error",
+        },
+      ]
+    : [];
+
+  let resolvedSchema: ReturnType<typeof resolveSchema>;
+  try {
+    resolvedSchema = resolveSchema(schema, protoConversionOptionsFromFieldConfig(fieldConfig));
+  } catch (cause) {
+    return [
+      ...stepDiagnostic,
+      {
+        cause,
+        code: "unsupported-schema",
+        message: cause instanceof Error ? cause.message : "The schema could not be resolved.",
+        path: "$",
+        severity: "error",
+      },
+    ];
+  }
   const fields = mergeFieldOverrides(resolvedSchema.parsedSchema.fields, fieldConfig);
   const flattenedFields = collectFields(fields);
   const validPaths = new Set(flattenedFields.map((entry) => entry.path));
   const activeRegistry = fieldRegistry ?? defaultRegistry;
-  const diagnostics: AutoFormConfigurationDiagnostic[] = [];
+  const diagnostics: AutoFormConfigurationDiagnostic[] = [...stepDiagnostic];
 
   for (const path of Object.keys(fieldConfig ?? {})) {
     if (!validPaths.has(path)) {
@@ -141,6 +220,14 @@ export function inspectAutoFormConfiguration<
 
   for (const { field, path } of flattenedFields) {
     diagnostics.push(...fieldDiagnostics(field, path, activeRegistry, dataProviders));
+    if (field.hints?.step && stepper && !stepper.steps.some((step) => step.id === field.hints?.step)) {
+      diagnostics.push({
+        code: "invalid-step-configuration",
+        message: 'Field references unknown step "'.concat(field.hints.step, '".'),
+        path,
+        severity: "error",
+      });
+    }
   }
 
   return diagnostics.sort((left, right) => left.path.localeCompare(right.path) || left.code.localeCompare(right.code));

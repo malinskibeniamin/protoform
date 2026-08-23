@@ -102,6 +102,10 @@
           "type": "registry:lib"
         },
         {
+          "path": "registry/base-nova/protoform/lib/core/messages.ts",
+          "type": "registry:lib"
+        },
+        {
           "path": "registry/base-nova/protoform/lib/core/standard-schema.ts",
           "type": "registry:lib"
         }
@@ -195,6 +199,10 @@
         },
         {
           "path": "registry/base-nova/protoform/lib/protobuf-provider/method-workflow.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/protobuf-provider/mutation-request.ts",
           "type": "registry:lib"
         },
         {
@@ -419,6 +427,10 @@
           "type": "registry:component"
         },
         {
+          "path": "registry/base-nova/protoform/components/auto-form/audit.ts",
+          "type": "registry:component"
+        },
+        {
           "path": "registry/base-nova/protoform/components/auto-form/context.tsx",
           "type": "registry:component"
         },
@@ -624,6 +636,10 @@
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/stepper.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/step-configuration.ts",
           "type": "registry:component"
         },
         {
