@@ -29,8 +29,8 @@ lost when a path cannot be attached to a field.
 ```tsx
 import type { FieldViolation } from "@/lib/protobuf-provider";
 import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/toast";
 import { useState } from "react";
-import { toast } from "sonner";
 
 const [unmapped, setUnmapped] = useState<FieldViolation[]>([]);
 
@@ -45,7 +45,11 @@ const onSubmit = form.handleSubmit(async (values) => {
     setUnmapped(result.unmapped);
 
     if (!result.handled && !result.context.message) {
-      toast.error("Connector not saved. Check your connection and try again.");
+      toast.add({
+        description: "Check your connection and try again.",
+        title: "Connector not saved",
+        type: "error",
+      });
     }
   }
 });

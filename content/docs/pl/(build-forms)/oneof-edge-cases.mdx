@@ -1,6 +1,8 @@
 ---
 title: Oneof i przypadki brzegowe
-description: "Bezpieczna obsługa gałęzi oneof, zagnieżdżonych wiadomości, map, pól powtarzanych, rekurencji i typów protobuf w generowanych formularzach."
+description: >-
+  Bezpieczna obsługa gałęzi oneof, zagnieżdżonych wiadomości, map, pól
+  powtarzanych, rekurencji i typów protobuf w generowanych formularzach.
 ---
 Protoform traktuje protobuf `oneof` jako pełnoprawny element formularza, a nie luźną unię dyskryminowaną.
 
@@ -32,7 +34,11 @@ kod wywołujący może wyświetlić podsumowanie lub powiadomienie typu toast.
 ```tsx
 const result = form.setServerErrors(error)
 if (result.unmapped.length > 0) {
-  toast.error(result.unmapped.map((v) => v.description).join("\n"))
+  toast.add({
+    description: result.unmapped.map((v) => v.description).join("\n"),
+    title: "Some server errors could not be mapped",
+    type: "error",
+  })
 }
 ```
 

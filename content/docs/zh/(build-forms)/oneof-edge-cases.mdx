@@ -1,6 +1,6 @@
 ---
 title: Oneof 和边界情况
-description: "安全处理生成表单中的 oneof 分支、嵌套消息、映射、重复字段、递归结构和 protobuf 常用类型。了解适用场景、关键行为、实现要点、验证方法与实际集成细节。"
+description: 安全处理生成表单中的 oneof 分支、嵌套消息、映射、重复字段、递归结构和 protobuf 常用类型。
 ---
 Protoform 将 protobuf `oneof` 视为一等表单概念，而不是松散的可辨识联合类型。
 
@@ -30,7 +30,11 @@ delivery.webhook.signing_secret_ref
 ```tsx
 const result = form.setServerErrors(error)
 if (result.unmapped.length > 0) {
-  toast.error(result.unmapped.map((v) => v.description).join("\n"))
+  toast.add({
+    description: result.unmapped.map((v) => v.description).join("\n"),
+    title: "Some server errors could not be mapped",
+    type: "error",
+  })
 }
 ```
 

@@ -1,7 +1,14 @@
-import { describe, expect, it, rs } from "@rstest/core";
-import { render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, rs } from "@rstest/core";
+import { act, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+
+import { Toaster, toast } from "@/registry/base-nova/protoform/components/toast";
 
 import { JSONField } from ".";
+
+afterEach(() => {
+  act(() => toast.close());
+});
 
 describe("JSONField accessibility", () => {
   it("labels the fallback editor for deeply nested JSON", () => {
@@ -29,5 +36,19 @@ describe("JSONField accessibility", () => {
     render(<JSONField onChange={rs.fn()} schema={{ type: "array" }} value={["overview", 3, true]} />);
 
     expect(await screen.findByRole("textbox", { name: "JSON value" })).toHaveValue('[\n  "overview",\n  3,\n  true\n]');
+  });
+
+  it("shows a success toast after copying JSON", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <Toaster>
+        <JSONField onChange={rs.fn()} schema={{ type: "object" }} value={{ region: "us-east1" }} />
+      </Toaster>
+    );
+
+    await user.click(screen.getByRole("button", { name: "Copy JSON" }));
+
+    expect(await screen.findByText("JSON copied")).toBeVisible();
   });
 });

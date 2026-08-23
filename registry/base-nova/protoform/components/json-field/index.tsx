@@ -4,13 +4,13 @@ import { Braces, FileEdit, SpellCheck, Trash2 } from "lucide-react";
 import Prism from "prismjs";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import EditorModule from "react-simple-code-editor";
-import { toast } from "sonner";
 
 import { Badge } from "@/registry/base-nova/protoform/components/badge";
 import { Button } from "@/registry/base-nova/protoform/components/button";
 import { Combobox, type ComboboxOption } from "@/registry/base-nova/protoform/components/combobox";
 import { CopyButton } from "@/registry/base-nova/protoform/components/copy-button";
 import { Input } from "@/registry/base-nova/protoform/components/input";
+import { toast } from "@/registry/base-nova/protoform/components/toast";
 import { Heading, Text } from "@/registry/base-nova/protoform/components/typography";
 import { cn, type SharedProps } from "@/registry/base-nova/protoform/lib/utils";
 
@@ -804,8 +804,10 @@ const JSONField = ({
             <CopyButton
               content={JSON.stringify(value, null, 2)}
               onCopy={() =>
-                toast.success("JSON copied", {
-                  description: "The JSON data has been successfully copied to your clipboard.",
+                toast.add({
+                  description: "The JSON data was copied to your clipboard.",
+                  title: "JSON copied",
+                  type: "success",
                 })
               }
               size="sm"
