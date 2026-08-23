@@ -9,6 +9,7 @@ import { useAutoForm } from "../context";
 import type { AutoFormFieldProps } from "../core-types";
 import {
   type DataProviderOption,
+  type DataProviderRequest,
   getStaleSelections,
   type ResolvedDataProvider,
   resolveDataProvider,
@@ -29,9 +30,12 @@ import {
 
 function SelectFieldComponent({ error, field, id, inputProps, label, path }: AutoFormFieldProps) {
   const testIds = useFieldTestIds(id);
-  const { dataProviders, formatMessage } = useAutoForm();
+  const { dataProviders, formatMessage, formValues } = useAutoForm();
   const providerId = readDataProviderId(field);
   const provider = resolveDataProvider(dataProviders, providerId);
+  const dependencyValues = Object.fromEntries(
+    (provider?.dependencies ?? []).map((dependency) => [dependency, getPathInObject(formValues, dependency.split("."))])
+  );
   const numericOptions = hasNumericOptions(field);
   const currentValue =
     inputProps["value"] === undefined || inputProps["value"] === null ? null : String(inputProps["value"]);
@@ -43,10 +47,12 @@ function SelectFieldComponent({ error, field, id, inputProps, label, path }: Aut
     return (
       <SelectFieldFromProvider
         currentValue={currentValue}
+        dependencyValues={dependencyValues}
         error={error}
         field={field}
         id={id}
         inputProps={inputProps}
+        key={safeStringify(dependencyValues)}
         path={path}
         provider={provider}
         testIds={testIds}
@@ -122,6 +128,7 @@ function SelectFieldComponent({ error, field, id, inputProps, label, path }: Aut
 
 function SelectFieldFromProvider({
   currentValue,
+  dependencyValues,
   error,
   field,
   id,
@@ -131,6 +138,7 @@ function SelectFieldFromProvider({
   testIds,
 }: {
   currentValue: string | null;
+  dependencyValues: DataProviderRequest["dependencyValues"];
   error: AutoFormFieldProps["error"];
   field: AutoFormFieldProps["field"];
   id: string;
@@ -139,14 +147,10 @@ function SelectFieldFromProvider({
   provider: ResolvedDataProvider;
   testIds: ReturnType<typeof useFieldTestIds>;
 }) {
-  const { formValues, formatMessage } = useAutoForm();
+  const { formatMessage } = useAutoForm();
   const [query, setQuery] = React.useState("");
   const [cursor, setCursor] = React.useState<string>();
   const [loadedOptions, setLoadedOptions] = React.useState<DataProviderOption[]>([]);
-  const dependencyValues = Object.fromEntries(
-    provider.dependencies.map((dependency) => [dependency, getPathInObject(formValues, dependency.split("."))])
-  );
-  const dependencyKey = safeStringify(dependencyValues);
   const fieldPath = path.join(".");
   const selectedValues = currentValue === null ? [] : [currentValue];
   const requestKey = safeStringify({ cursor, dependencyValues, fieldPath, query, selectedValues });
@@ -168,8 +172,6 @@ function SelectFieldFromProvider({
     options.map(({ description, group, label, value }) => ({ description, group, label, value }))
   );
   const providerPageKey = requestKey.concat(":", optionsKey);
-  const providerPageRef = React.useRef(options);
-  providerPageRef.current = options;
   const collectedPageKey = React.useRef<string | undefined>(undefined);
   const availableOptions =
     isLoading || providerError ? loadedOptions : mergeProviderOptions(cursor ? loadedOptions : [], options);
@@ -178,18 +180,6 @@ function SelectFieldFromProvider({
     provider.staleSelection === "clear"
       ? availableOptions
       : [...staleSelections.map((value) => ({ label: value, value })), ...availableOptions];
-  const previousDependencyKey = React.useRef(dependencyKey);
-
-  React.useEffect(
-    function resetProviderCursorWhenDependenciesChange() {
-      if (previousDependencyKey.current !== dependencyKey) {
-        previousDependencyKey.current = dependencyKey;
-        setCursor(undefined);
-        setLoadedOptions([]);
-      }
-    },
-    [dependencyKey]
-  );
 
   React.useEffect(
     function collectProviderPageEffect() {
@@ -197,18 +187,22 @@ function SelectFieldFromProvider({
         return;
       }
       collectedPageKey.current = providerPageKey;
-      setLoadedOptions((currentOptions) => mergeProviderOptions(cursor ? currentOptions : [], providerPageRef.current));
+      setLoadedOptions((currentOptions) => mergeProviderOptions(cursor ? currentOptions : [], options));
     },
-    [cursor, isLoading, providerError, providerPageKey]
+    [cursor, isLoading, options, providerError, providerPageKey]
   );
+
+  const applyUnavailableSelectionClear = React.useEffectEvent(() => inputProps["onValueChange"](undefined));
+  const staleSelectionKey =
+    provider.staleSelection === "clear" && staleSelections.length > 0 ? (currentValue ?? "") : undefined;
 
   React.useEffect(
     function clearUnavailableSelection() {
-      if (provider.staleSelection === "clear" && staleSelections.length > 0) {
-        inputProps["onValueChange"](undefined);
+      if (staleSelectionKey !== undefined) {
+        applyUnavailableSelectionClear();
       }
     },
-    [inputProps, provider.staleSelection, staleSelections]
+    [staleSelectionKey]
   );
 
   if (providerError) {

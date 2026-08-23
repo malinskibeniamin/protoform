@@ -22,7 +22,7 @@ export interface AutoFormAuditReport {
 }
 
 export function auditAutoFormConfigurations(targets: readonly AutoFormAuditTarget[]): AutoFormAuditReport {
-  const diagnostics = [...targets]
+  const diagnostics = Array.from(targets)
     .sort((left, right) => left.name.localeCompare(right.name))
     .flatMap(({ name, source, ...configuration }) =>
       inspectAutoFormConfiguration(configuration).map((diagnostic) => ({

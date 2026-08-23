@@ -121,8 +121,6 @@ export function getStaleSelections(
 
 export function useDataProviderSignal(requestKey: string): AbortSignal {
   const [state, setState] = React.useState(() => ({ controller: new AbortController(), key: requestKey }));
-  const activeController = React.useRef(state.controller);
-  activeController.current = state.controller;
 
   React.useEffect(
     function replaceProviderSignal() {
@@ -135,9 +133,12 @@ export function useDataProviderSignal(requestKey: string): AbortSignal {
     [requestKey, state]
   );
 
-  React.useEffect(function abortProviderOnUnmount() {
-    return () => activeController.current.abort();
-  }, []);
+  React.useEffect(
+    function abortProviderSignal() {
+      return () => state.controller.abort();
+    },
+    [state.controller]
+  );
 
   return state.controller.signal;
 }

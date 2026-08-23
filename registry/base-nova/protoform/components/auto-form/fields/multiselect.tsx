@@ -106,18 +106,27 @@ function DataProviderMultiSelectComponent({ field, id, inputProps, path }: AutoF
   });
   const { options: providerOptions = [], isLoading } = result ?? { options: [] };
   const staleSelections = isLoading ? [] : getStaleSelections(providerOptions, currentValue);
+  const staleSelectionSet = new Set(staleSelections);
   const renderedProviderOptions: DataProviderOption[] =
     provider?.staleSelection === "clear"
       ? providerOptions
       : [...staleSelections.map((value) => ({ label: value, value })), ...providerOptions];
 
+  const applyUnavailableSelectionClear = React.useEffectEvent(() => {
+    inputProps["onValueChange"](currentValue.filter((value) => !staleSelectionSet.has(value)));
+  });
+  const unavailableSelectionKey =
+    provider?.staleSelection === "clear" && staleSelections.length > 0
+      ? safeStringify({ currentValue, staleSelections })
+      : undefined;
+
   React.useEffect(
     function clearUnavailableSelections() {
-      if (provider?.staleSelection === "clear" && staleSelections.length > 0) {
-        inputProps["onValueChange"](currentValue.filter((value) => !staleSelections.includes(value)));
+      if (unavailableSelectionKey !== undefined) {
+        applyUnavailableSelectionClear();
       }
     },
-    [currentValue, inputProps, provider?.staleSelection, staleSelections]
+    [unavailableSelectionKey]
   );
 
   const options = renderedProviderOptions.map((option) => {

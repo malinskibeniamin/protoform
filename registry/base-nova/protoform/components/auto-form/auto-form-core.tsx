@@ -188,7 +188,6 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
   payloadBuilder,
   payloadParser,
   onFieldChange,
-  onDiagnostic,
   renderRootHeader,
   rootHeader = "auto",
   stepper,
@@ -220,48 +219,12 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
   const previousDefaultMode = React.useRef(defaultMode);
   const previousLifecycleValues = React.useRef(engine.values);
   const hasSubmitted = React.useRef(false);
-  const emittedDiagnostics = React.useRef(new Set<string>());
   const submitLabel = formatProtoformMessage(formatMessage, "auto_form.submit", {}, "Submit");
   const submittingLabel = formatProtoformMessage(formatMessage, "auto_form.submitting", {}, "Submitting…");
 
   if (stepper) {
     validateSteps(stepper.steps, stepper.defaultStep);
   }
-
-  const deliverDiagnostic = React.useEffectEvent((diagnostic: AutoFormDiagnostic) => onDiagnostic?.(diagnostic));
-
-  React.useEffect(
-    function reportConfigurationDiagnostics() {
-      if (!onDiagnostic) {
-        emittedDiagnostics.current.clear();
-        return;
-      }
-
-      const diagnostics = inspectAutoFormConfiguration({
-        ...(dataProviders ? { dataProviders } : {}),
-        ...(fieldConfigOverrides ? { fieldConfig: fieldConfigOverrides } : {}),
-        ...(fieldRegistry ? { fieldRegistry } : {}),
-        schema: resolvedSchema.provider,
-        ...(stepper ? { stepper } : {}),
-      });
-      const activeKeys = new Set<string>();
-      for (const diagnostic of diagnostics) {
-        const key = `${diagnostic.code}:${diagnostic.path}:${diagnostic.message}`;
-        activeKeys.add(key);
-        if (!emittedDiagnostics.current.has(key)) {
-          deliverDiagnostic({
-            ...(diagnostic.cause === undefined ? {} : { cause: diagnostic.cause }),
-            code: diagnostic.code,
-            fieldPath: diagnostic.path,
-            message: diagnostic.message,
-            severity: diagnostic.severity,
-          });
-        }
-      }
-      emittedDiagnostics.current = activeKeys;
-    },
-    [dataProviders, fieldConfigOverrides, fieldRegistry, onDiagnostic, resolvedSchema.provider, stepper]
-  );
 
   React.useEffect(() => {
     if (initializedForm.current !== engine.nativeForm) {
@@ -704,27 +667,28 @@ interface AutoFormErrorBoundaryState {
   resetKey: unknown;
 }
 
-class AutoFormErrorBoundary extends React.Component<
-  {
-    children: React.ReactNode;
-    formatMessage?: ProtoformMessageFormatter | undefined;
-    onDiagnostic?: ((diagnostic: AutoFormDiagnostic) => void) | undefined;
-    resetKey: unknown;
-  },
-  AutoFormErrorBoundaryState
-> {
-  constructor(props: {
-    children: React.ReactNode;
-    formatMessage?: ProtoformMessageFormatter | undefined;
-    onDiagnostic?: ((diagnostic: AutoFormDiagnostic) => void) | undefined;
-    resetKey: unknown;
-  }) {
+interface AutoFormErrorBoundaryProps {
+  children: React.ReactNode;
+  configurationDiagnostics: readonly AutoFormDiagnostic[];
+  formatMessage?: ProtoformMessageFormatter | undefined;
+  onDiagnostic?: ((diagnostic: AutoFormDiagnostic) => void) | undefined;
+  resetKey: unknown;
+}
+
+class AutoFormErrorBoundary extends React.Component<AutoFormErrorBoundaryProps, AutoFormErrorBoundaryState> {
+  private emittedDiagnosticKeys = new Set<string>();
+
+  constructor(props: AutoFormErrorBoundaryProps) {
     super(props);
     this.state = { error: null, resetKey: props.resetKey };
   }
 
   static getDerivedStateFromError(error: Error): Partial<AutoFormErrorBoundaryState> {
     return { error };
+  }
+
+  override componentDidMount() {
+    this.reportConfigurationDiagnostics();
   }
 
   override componentDidCatch(error: Error) {
@@ -737,11 +701,32 @@ class AutoFormErrorBoundary extends React.Component<
     });
   }
 
+  override componentDidUpdate() {
+    this.reportConfigurationDiagnostics();
+  }
+
   static getDerivedStateFromProps(
     props: { resetKey: unknown },
     state: AutoFormErrorBoundaryState
   ): AutoFormErrorBoundaryState | null {
     return props.resetKey === state.resetKey ? null : { error: null, resetKey: props.resetKey };
+  }
+
+  private reportConfigurationDiagnostics() {
+    if (!this.props.onDiagnostic) {
+      this.emittedDiagnosticKeys.clear();
+      return;
+    }
+
+    const activeKeys = new Set<string>();
+    for (const diagnostic of this.props.configurationDiagnostics) {
+      const key = `${diagnostic.code}:${diagnostic.fieldPath}:${diagnostic.message}`;
+      activeKeys.add(key);
+      if (!this.emittedDiagnosticKeys.has(key)) {
+        this.props.onDiagnostic(diagnostic);
+      }
+    }
+    this.emittedDiagnosticKeys = activeKeys;
   }
 
   override render() {
@@ -767,8 +752,19 @@ class AutoFormErrorBoundary extends React.Component<
 export function AutoFormCore<T extends Record<string, unknown>, TNativeForm, TCustomFieldType extends string = never>(
   props: AutoFormCoreProps<T, TNativeForm, TCustomFieldType>
 ) {
+  const configurationDiagnostics = props.onDiagnostic
+    ? inspectAutoFormConfiguration<T, TCustomFieldType>({
+        ...(props.dataProviders ? { dataProviders: props.dataProviders } : {}),
+        ...(props.fieldConfig ? { fieldConfig: props.fieldConfig } : {}),
+        ...(props.fieldRegistry ? { fieldRegistry: props.fieldRegistry } : {}),
+        schema: props.schema,
+        ...(props.stepper ? { stepper: props.stepper } : {}),
+      }).map(({ path, ...diagnostic }) => ({ ...diagnostic, fieldPath: path }))
+    : [];
+
   return (
     <AutoFormErrorBoundary
+      configurationDiagnostics={configurationDiagnostics}
       formatMessage={props.formatMessage}
       onDiagnostic={props.onDiagnostic}
       resetKey={props.schema}
