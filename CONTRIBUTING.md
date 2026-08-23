@@ -10,7 +10,7 @@ Thanks for contributing. Protoform accepts focused issues and pull requests on a
 
 ## Development
 
-Requirements: Bun 1.3.14, Node.js 24, Git, and Buf through the checked-in Bun dependency.
+Requirements: Bun 1.4.0, Node.js 24, Git, and Buf through the checked-in Bun dependency.
 
 ```bash
 bun install --frozen-lockfile
