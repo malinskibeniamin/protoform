@@ -134,7 +134,7 @@ if (tanstackAutoForm.dependencies?.includes("react-hook-form")) {
   throw new Error("auto-form-tanstack must not install React Hook Form");
 }
 
-const tanstackV2Alias = "@tanstack/react-form-v2@npm:@tanstack/react-form@2.0.0-alpha.0";
+const tanstackV2Alias = "@tanstack/react-form-v2@npm:@tanstack/react-form@2.0.0-alpha.2";
 const tanstackV2Hook = JSON.parse(readFileSync("public/r/use-proto-form-tanstack-v2.json", "utf8")) as {
   dependencies?: string[];
 };

@@ -39,7 +39,10 @@ export type UseProtoFormOptions<
   Desc extends DescMessage,
   TValidators extends FormValidators<Values>,
   TSubmitReturn,
-> = Omit<FormOptions<Values, ProtoFormValidators<Values, Desc, TValidators>, TSubmitReturn>, "validators"> & {
+> = Omit<
+  FormOptions<Values, ProtoFormValidators<Values, Desc, TValidators>, TSubmitReturn, DefaultReactFormComponentMap>,
+  "validators"
+> & {
   emptyRepeatedStringPolicies?: ProtoConversionOptions["emptyRepeatedStringPolicies"];
   validators?: TValidators;
 };
@@ -92,7 +95,12 @@ export function useProtoForm<
     run: createProtoFormSchema<Values, Desc>(schema, conversionOptions),
     triggers: [],
   };
-  const composedOptions: FormOptions<Values, ProtoFormValidators<Values, Desc, TValidators>, TSubmitReturn> = {
+  const composedOptions: FormOptions<
+    Values,
+    ProtoFormValidators<Values, Desc, TValidators>,
+    TSubmitReturn,
+    DefaultReactFormComponentMap
+  > = {
     ...nativeOptions,
     validators: appendProtoValidator(validators, protoValidator),
   };

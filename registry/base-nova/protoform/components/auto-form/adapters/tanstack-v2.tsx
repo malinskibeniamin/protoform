@@ -39,7 +39,10 @@ type DynamicArrayFieldComponent = React.ComponentType<{
   name: string;
 }>;
 
-export type TanStackFormV2Options = Omit<FormOptions<FormValues, V2Validators, unknown>, "defaultValues">;
+export type TanStackFormV2Options = Omit<
+  FormOptions<FormValues, V2Validators, unknown, DefaultReactFormComponentMap>,
+  "defaultValues"
+>;
 
 export type TanStackV2AutoFormApi = ReactFormApi<FormValues, V2ErrorTypes, DefaultReactFormComponentMap>;
 
