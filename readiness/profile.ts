@@ -80,17 +80,17 @@ export interface ReadinessCategory {
 export const readinessProfile = {
   dependencyRanges: {
     "@bufbuild/cel": "^0.6.0",
-    "@bufbuild/protobuf": "^2.13.0",
+    "@bufbuild/protobuf": "^2.14.0",
     "@bufbuild/protovalidate": "^1.2.0",
     "@standard-schema/spec": "^1.1.0",
-    "@tanstack/react-form": "^1.33.3",
+    "@tanstack/react-form": "^1.33.5",
     "final-form": "^5.0.1",
     formik: "^2.4.9",
     react: "^19.2.8",
     "react-final-form": "^7.0.1",
-    "react-hook-form": "^7.84.0",
+    "react-hook-form": "^7.85.0",
   },
-  reviewedAt: "2026-08-14",
+  reviewedAt: "2026-08-23",
   version: 3,
 };
 
