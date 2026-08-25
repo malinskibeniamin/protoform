@@ -1545,10 +1545,13 @@ function fieldToProtoValue(
       return repeatedListEntries(field, value, options, path).map((entry) =>
         listItemToProtoValue(field, entry, options, path)
       );
-    case "map":
-      return Array.isArray(value)
+    case "map": {
+      const entries = isPlainObject(value)
+        ? Object.entries(value).map(([key, mapValue]) => ({ key, value: mapValue }))
+        : value;
+      return Array.isArray(entries)
         ? Object.fromEntries(
-            value
+            entries
               .map((entry) => {
                 if (!isPlainObject(entry)) {
                   return null;
@@ -1562,6 +1565,7 @@ function fieldToProtoValue(
               .filter((entry): entry is readonly [string, unknown] => entry !== null)
           )
         : {};
+    }
     default:
       return value;
   }
