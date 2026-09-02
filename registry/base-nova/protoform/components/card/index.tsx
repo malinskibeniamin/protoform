@@ -2,7 +2,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { type MotionProps, motion } from "motion/react";
 import React from "react";
 
-import { Heading, Text } from "@/registry/base-nova/protoform/components/typography";
+import { Heading, Text } from "@/components/ui/typography";
 import { cn, type SharedProps } from "@/registry/base-nova/protoform/lib/utils";
 
 const cardVariants = cva(

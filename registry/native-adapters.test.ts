@@ -1,9 +1,10 @@
 import { readFileSync } from "node:fs";
 import { describe, expect } from "@rstest/core";
+import ts from "typescript";
 
 interface RegistryItem {
   dependencies?: string[];
-  files?: Array<{ path: string }>;
+  files?: Array<{ path: string; target?: string }>;
   name: string;
   registryDependencies?: string[];
 }
@@ -11,6 +12,48 @@ interface RegistryItem {
 const registry = JSON.parse(readFileSync("registry.json", "utf8")) as {
   items: RegistryItem[];
 };
+
+const defaultUiModules = [
+  "alert",
+  "badge",
+  "button",
+  "calendar",
+  "card",
+  "checkbox",
+  "choicebox",
+  "collapsible",
+  "combobox",
+  "command",
+  "copy-button",
+  "dialog",
+  "field",
+  "group",
+  "input",
+  "input-group",
+  "json-field",
+  "key-value-field",
+  "label",
+  "multi-select",
+  "popover",
+  "radio-group",
+  "select",
+  "separator",
+  "slider",
+  "spinner",
+  "switch",
+  "tabs",
+  "tags",
+  "textarea",
+  "toast",
+  "toggle",
+  "toggle-group",
+  "tooltip",
+  "typography",
+];
+const defaultUiModuleRoots = defaultUiModules.map(
+  (moduleName) => `registry/base-nova/protoform/components/${moduleName}/`
+);
+const defaultUiModulePaths = defaultUiModuleRoots.map((moduleRoot) => `${moduleRoot}index.tsx`);
 
 function item(name: string): RegistryItem {
   const match = registry.items.find((candidate) => candidate.name === name);
@@ -23,6 +66,105 @@ function item(name: string): RegistryItem {
 function filePaths(registryItem: RegistryItem): string[] {
   return registryItem.files?.map((file) => file.path) ?? [];
 }
+
+function uiImports(path: string): string[] {
+  const source = ts.createSourceFile(path, readFileSync(path, "utf8"), ts.ScriptTarget.Latest, true);
+  const imports: string[] = [];
+
+  for (const statement of source.statements) {
+    if (
+      !(
+        ts.isImportDeclaration(statement) &&
+        ts.isStringLiteral(statement.moduleSpecifier) &&
+        statement.moduleSpecifier.text.startsWith("@/components/ui/")
+      )
+    ) {
+      continue;
+    }
+
+    const moduleName = statement.moduleSpecifier.text;
+    const { importClause } = statement;
+    if (importClause?.name) {
+      imports.push(`${moduleName}:default`);
+    }
+    if (importClause?.namedBindings && ts.isNamedImports(importClause.namedBindings)) {
+      for (const element of importClause.namedBindings.elements) {
+        imports.push(`${moduleName}:${element.propertyName?.text ?? element.name.text}`);
+      }
+    }
+  }
+
+  return imports;
+}
+
+describe("build-time UI adapter registry", () => {
+  test("splits core, React, and optional shadcn capabilities", () => {
+    const core = item("protoform-core");
+    const react = item("protoform-react");
+    const shadcn = item("protoform-shadcn");
+
+    expect(core.registryDependencies).toEqual(["@protoform/protobuf-provider", "@protoform/use-proto-form"]);
+    expect(filePaths(core).some((path) => path.includes("/components/"))).toBe(false);
+
+    expect(react.registryDependencies).toEqual(["@protoform/auto-form-core", "@protoform/protoform-core"]);
+    expect(filePaths(react)).toContain("registry/base-nova/protoform/components/auto-form/index.tsx");
+    expect(filePaths(react)).toContain(
+      "registry/base-nova/protoform/components/auto-form/adapters/react-hook-form.tsx"
+    );
+    expect(
+      filePaths(react).some((path) => defaultUiModuleRoots.some((moduleRoot) => path.startsWith(moduleRoot)))
+    ).toBe(false);
+
+    expect(shadcn.registryDependencies).toEqual(["@protoform/protoform-react"]);
+    expect(filePaths(shadcn)).toEqual(expect.arrayContaining(defaultUiModulePaths));
+    for (const moduleName of defaultUiModules) {
+      const moduleRoot = `registry/base-nova/protoform/components/${moduleName}/`;
+      const moduleFiles = shadcn.files?.filter((file) => file.path.startsWith(moduleRoot)) ?? [];
+      expect(moduleFiles.length, moduleName).toBeGreaterThan(0);
+      for (const file of moduleFiles) {
+        expect(file.target, file.path).toBe(`~/components/ui/${moduleName}/${file.path.slice(moduleRoot.length)}`);
+      }
+    }
+  });
+
+  test("keeps primitive implementations out of the shared AutoForm renderer", () => {
+    const renderer = item("auto-form-core");
+
+    expect(
+      filePaths(renderer).some((path) => defaultUiModuleRoots.some((moduleRoot) => path.startsWith(moduleRoot)))
+    ).toBe(false);
+    expect(filePaths(renderer)).toContain("registry/base-nova/protoform/components/auto-form/ui-adapter.compile.ts");
+  });
+
+  test("keeps the compile-only UI contract synchronized with renderer imports", () => {
+    const contractPath = "registry/base-nova/protoform/components/auto-form/ui-adapter.compile.ts";
+    const rendererImports = filePaths(item("auto-form-core"))
+      .filter((path) => path !== contractPath)
+      .flatMap(uiImports);
+    const contractImports = uiImports(contractPath);
+
+    expect([...new Set(contractImports)].sort()).toEqual([...new Set(rendererImports)].sort());
+  });
+
+  test("keeps the complete core capability free of UI source", () => {
+    const coreItems = [
+      item("protoform-foundation"),
+      item("protobuf-provider"),
+      item("use-proto-form"),
+      item("protoform-core"),
+    ];
+
+    for (const coreItem of coreItems) {
+      expect(
+        filePaths(coreItem).some((path) => path.includes("/components/")),
+        coreItem.name
+      ).toBe(false);
+      for (const path of filePaths(coreItem)) {
+        expect(readFileSync(path, "utf8"), path).not.toMatch(/@\/components\//u);
+      }
+    }
+  });
+});
 
 describe("native form adapter registry entries", () => {
   test("keeps the shared AutoForm core independent from form engines", () => {
@@ -38,9 +180,9 @@ describe("native form adapter registry entries", () => {
   });
 
   test("ships React Hook Form as the default AutoForm adapter", () => {
-    const reactHookForm = item("auto-form");
+    const reactHookForm = item("protoform-react");
 
-    expect(reactHookForm.registryDependencies).toEqual(["@protoform/auto-form-core", "@protoform/use-proto-form"]);
+    expect(reactHookForm.registryDependencies).toEqual(["@protoform/auto-form-core", "@protoform/protoform-core"]);
     expect(reactHookForm.dependencies).toContain("react-hook-form");
     expect(filePaths(reactHookForm)).toContain(
       "registry/base-nova/protoform/components/auto-form/adapters/react-hook-form.tsx"

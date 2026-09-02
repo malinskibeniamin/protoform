@@ -2,9 +2,9 @@
 
 import { isMessage } from "@bufbuild/protobuf";
 import React from "react";
-import { Alert, AlertDescription, AlertTitle } from "@/registry/base-nova/protoform/components/alert";
-import { TooltipProvider } from "@/registry/base-nova/protoform/components/tooltip";
-import { Heading, Text } from "@/registry/base-nova/protoform/components/typography";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { Heading, Text } from "@/components/ui/typography";
 import { formatProtoformMessage, type ProtoformMessageFormatter } from "../../lib/core/messages";
 import { createUpdateMask, formValuesToProto, preserveProtoMessageSource } from "../../lib/protobuf-provider";
 import { type AutoFormDiagnostic, inspectAutoFormConfiguration } from "./configuration";

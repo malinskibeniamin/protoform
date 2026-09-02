@@ -2,8 +2,8 @@
 
 import { TrashIcon } from "lucide-react";
 import type React from "react";
+import { Button } from "@/components/ui/button";
 import { formatProtoformMessage } from "../../../lib/core/messages";
-import { Button } from "../../button";
 import { useAutoFormRenderContext, useAutoFormRuntimeContext } from "../context";
 import type { ParsedField } from "../core-types";
 import { useAutoFormEngine } from "../engine";

@@ -1,6 +1,6 @@
 "use client";
 
-import { KeyValueField } from "../../key-value-field";
+import { KeyValueField } from "@/components/ui/key-value-field";
 import type { AutoFormFieldProps } from "../core-types";
 import {
   denormalizeKeyValueEntries,

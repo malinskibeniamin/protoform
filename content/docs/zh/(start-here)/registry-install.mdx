@@ -24,10 +24,13 @@ registry 会将 Protoform 的全部源代码复制到你的应用中，并且只
 
 ```bash
 # Hook only: React Hook Form + ProtoValidate + server error mapping
-bunx shadcn@latest add @protoform/use-proto-form
+bunx shadcn@latest add @protoform/protoform-core
 
-# AutoForm components: protobuf-driven form renderer + shadcn fields
-bunx shadcn@latest add @protoform/auto-form
+# AutoForm renderer: uses your components.json ui alias
+bunx shadcn@latest add @protoform/protoform-react
+
+# Optional default shadcn UI implementations for greenfield apps
+bunx shadcn@latest add @protoform/protoform-shadcn
 
 # Experimental React Hook Form v8 beta hook
 bunx shadcn@latest add @protoform/use-proto-form-v8
@@ -61,22 +64,31 @@ bunx shadcn@latest add @protoform/bookstore
 
 | 项目 | 适用场景 | 包含内容 |
 | --- | --- | --- |
-| `use-proto-form` | 你已有 shadcn 表单 UI，并希望使用 protobuf 验证 | `useProtoForm`、ProtoValidate resolver、oneof 辅助函数、Connect/gRPC 错误映射 |
+| `protoform-core` | 你已有 shadcn 表单 UI，并希望使用 protobuf 验证 | `useProtoForm`、ProtoValidate resolver、oneof 辅助函数、Connect/gRPC 错误映射 |
 | `use-proto-form-v8` | 你正在评估 React Hook Form v8 beta | 独立的 v8 原生 hook，固定到 `8.0.0-beta.3` |
 | `use-proto-form-tanstack` | 你已在使用 TanStack Form | 原生 TanStack API，以及 protobuf 消息、update mask、oneof 和服务端错误 |
-| `auto-form` | 你希望使用默认引擎生成基于 schema 的字段 | 共享 renderer 和 React Hook Form adapter |
+| `protoform-react` | 你希望使用默认引擎生成基于 schema 的字段 | 共享 renderer 和 React Hook Form adapter |
+| `protoform-shadcn` | 你需要新应用的默认 UI | `protoform-react` 以及安装到 `components/ui` 的可选 shadcn 实现 |
 | `auto-form-react-hook-form-v8` | 你正在评估 React Hook Form v8 beta 上生成的字段 | 独立的 v8 原生 AutoForm adapter 和共享 renderer |
 | `auto-form-tanstack` | 你希望通过 TanStack Form 生成基于 schema 的字段 | 共享 renderer 和 TanStack Form adapter |
 | `use-proto-form-tanstack-v2` | 你正在评估 TanStack Form v2 alpha | 独立的 v2 原生 hook，固定到 `2.0.0-alpha.2` |
 | `auto-form-tanstack-v2` | 你正在评估 TanStack Form v2 alpha 上生成的字段 | 独立的 v2 原生 AutoForm adapter 和共享 renderer |
 | `auto-form-core` | 你正在维护 engine adapter | 由两个 AutoForm 项目安装的引擎无关 renderer |
-| `protoform` | 你希望使用默认产品功能 | React Hook Form hook 和 AutoForm |
+| `protoform` | 你希望使用默认产品功能 | 核心、React renderer 和默认 shadcn UI 实现 |
 | `protoform-examples` | 你希望查看参考演示 | 生成的示例 schema 和演示组件 |
 | `bookstore` | 你希望查看一个完整的 RPC 示例 | 五个方法、生成的 binding、表单和临时服务 |
 
 ## 为什么要拆分？
 
-原生 hook 让团队无需替换字段布局或表单状态 API，即可采用 protobuf 验证。只有在需要时，AutoForm 项目才会添加生成的字段。共享核心可让字段行为保持一致，同时避免让任一表单库成为另一个表单库的依赖项。
+`protoform-core` 包含 protobuf 转换、验证和 `useProtoForm`，不导入 UI。
+`protoform-react` 添加 AutoForm renderer 和字段逻辑，并通过 `components.json` 中的 `ui`
+别名解析所需的 UI 能力。成熟应用可以将该别名指向规范的 `components/ui/*` facade，
+其中只包含直接重新导出或轻量兼容 adapter。
+
+`protoform-shadcn` 是面向新应用的可选默认实现。它将 UI 模块安装到 `components/ui`，
+而不会让这些实现成为 React renderer 的一部分。每个表单的 `AutoFormUIComponents`
+override 继续只负责表单、字段 wrapper、提交按钮、集合 wrapper 和错误，而不是在运行时
+注入每个 primitive。
 
 ## 固定源代码快照
 

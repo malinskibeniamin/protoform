@@ -4,7 +4,7 @@ import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from "lucide-react
 import React from "react";
 import { type DayButton, DayPicker, getDefaultClassNames } from "react-day-picker";
 
-import { Button, buttonVariants } from "@/registry/base-nova/protoform/components/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { cn, type SharedProps } from "@/registry/base-nova/protoform/lib/utils";
 
 function CalendarRoot({

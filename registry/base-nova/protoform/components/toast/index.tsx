@@ -6,7 +6,7 @@ import { Toast as ToastPrimitive } from "@base-ui/react/toast";
 import { CircleCheckIcon, InfoIcon, Loader2Icon, OctagonXIcon, TriangleAlertIcon, XIcon } from "lucide-react";
 import type React from "react";
 
-import { Button } from "@/registry/base-nova/protoform/components/button";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/registry/base-nova/protoform/lib/utils";
 
 const toast = ToastPrimitive.createToastManager();

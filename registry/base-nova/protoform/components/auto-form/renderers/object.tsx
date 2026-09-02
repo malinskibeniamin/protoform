@@ -1,6 +1,6 @@
 "use client";
 
-import { Text } from "../../typography";
+import { Text } from "@/components/ui/typography";
 import { useAutoFormRenderContext, useAutoFormRuntimeContext } from "../context";
 import type { ParsedField } from "../core-types";
 import { useAutoFormEngine } from "../engine";

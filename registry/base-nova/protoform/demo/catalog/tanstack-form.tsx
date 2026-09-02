@@ -4,11 +4,11 @@
 export const client = "only";
 
 import { useState } from "react";
-import { Alert, AlertDescription, AlertTitle } from "@/registry/base-nova/protoform/components/alert";
-import { Badge } from "@/registry/base-nova/protoform/components/badge";
-import { Button } from "@/registry/base-nova/protoform/components/button";
-import { Field, FieldError, FieldLabel } from "@/registry/base-nova/protoform/components/field";
-import { Input } from "@/registry/base-nova/protoform/components/input";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import { EmailContractSchema } from "@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/conformance_pb";
 import { useProtoForm } from "@/registry/base-nova/protoform/hooks/use-proto-form-tanstack";
 import { formatSubmittedValue } from "../../lib/protobuf-provider";

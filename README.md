@@ -42,11 +42,13 @@ Useful items:
 
 | Item | Source copied into the app |
 | --- | --- |
-| `protoform-core` | Framework-neutral field model and Standard Schema adapters |
+| `protoform-foundation` | Framework-neutral field model and Standard Schema adapters |
+| `protoform-core` | Protobuf conversion, validation, and `useProtoForm` without UI |
 | `protobuf-provider` | Protobuf-ES v2, Protovalidate, CEL, field masks, and Connect errors |
 | `use-proto-form` | Native React Hook Form integration |
 | `use-proto-form-tanstack` | Native TanStack Form integration |
-| `auto-form` | React Hook Form AutoForm |
+| `protoform-react` | React Hook Form AutoForm using the consumer UI alias |
+| `protoform-shadcn` | Optional default shadcn UI implementations |
 | `auto-form-tanstack` | TanStack Form AutoForm |
 | `protoc-gen-protoform` | Source-copy Buf plugin |
 | `bookstore` | Complete five-RPC example |

@@ -6,7 +6,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { AnimatePresence, type HTMLMotionProps, motion, type Transition } from "motion/react";
 import React from "react";
 
-import type { GroupContextValue, GroupPosition } from "@/registry/base-nova/protoform/components/group";
+import type { GroupContextValue, GroupPosition } from "@/components/ui/group";
 import { cn, type SharedProps } from "@/registry/base-nova/protoform/lib/utils";
 
 type Orientation = "horizontal" | "vertical";

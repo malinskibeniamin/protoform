@@ -1,6 +1,6 @@
 "use client";
 
-import { Input } from "../../input";
+import { Input } from "@/components/ui/input";
 import type { AutoFormFieldProps } from "../core-types";
 import { getFieldUiConfig } from "../helpers";
 import type { FieldTypeDefinition } from "../registry";

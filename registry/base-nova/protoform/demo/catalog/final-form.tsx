@@ -5,11 +5,11 @@ export const client = "only";
 
 import { useState } from "react";
 import { Field as FinalField, Form as FinalForm } from "react-final-form";
-import { Alert, AlertDescription, AlertTitle } from "@/registry/base-nova/protoform/components/alert";
-import { Badge } from "@/registry/base-nova/protoform/components/badge";
-import { Button } from "@/registry/base-nova/protoform/components/button";
-import { Field, FieldError, FieldLabel } from "@/registry/base-nova/protoform/components/field";
-import { Input } from "@/registry/base-nova/protoform/components/input";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import { EmailContractSchema } from "@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/conformance_pb";
 import { createFinalFormValidator } from "../../lib/core";
 import { createProtoFormSchema, formatSubmittedValue } from "../../lib/protobuf-provider";
@@ -41,7 +41,7 @@ export function FinalFormDemo() {
           <form className="space-y-6" onSubmit={handleSubmit}>
             <FinalField<string> name="email">
               {({ input, meta }) => {
-                const { name, onBlur, onChange, onFocus, value } = input;
+                const { name, onBlur: handleBlur, onChange: handleChange, onFocus: handleFocus, value } = input;
                 const message =
                   (meta.touched || meta.submitFailed) && typeof meta.error === "string" ? meta.error : undefined;
                 return (
@@ -53,9 +53,9 @@ export function FinalFormDemo() {
                       aria-invalid={Boolean(message) || undefined}
                       id="final-form-email"
                       name={name}
-                      onBlur={onBlur}
-                      onChange={onChange}
-                      onFocus={onFocus}
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      onFocus={handleFocus}
                       placeholder="ada@example.com"
                       type="email"
                       value={value}

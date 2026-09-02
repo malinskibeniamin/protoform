@@ -1,14 +1,14 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
-  "name": "auto-form",
-  "title": "Protoform AutoForm",
-  "description": "React Hook Form-first AutoForm with the complete native form API plus Protoform rendering and protobuf helpers.",
+  "name": "protoform-react",
+  "title": "Protoform React",
+  "description": "React Hook Form AutoForm renderer and field logic using the consumer configured ui alias.",
   "dependencies": [
     "react-hook-form"
   ],
   "registryDependencies": [
     "@protoform/auto-form-core",
-    "@protoform/use-proto-form"
+    "@protoform/protoform-core"
   ],
   "files": [
     {

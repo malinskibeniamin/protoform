@@ -3,10 +3,10 @@
 import { Plus, X } from "lucide-react";
 import { type ReactNode, useMemo, useRef } from "react";
 
-import { Button } from "@/registry/base-nova/protoform/components/button";
-import { Combobox, type ComboboxProps } from "@/registry/base-nova/protoform/components/combobox";
-import { Input, type InputProps } from "@/registry/base-nova/protoform/components/input";
-import { Label } from "@/registry/base-nova/protoform/components/label";
+import { Button } from "@/components/ui/button";
+import { Combobox, type ComboboxProps } from "@/components/ui/combobox";
+import { Input, type InputProps } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { findDuplicateIndices, useInputListFocus } from "@/registry/base-nova/protoform/lib/input-utils";
 import type { SharedProps } from "@/registry/base-nova/protoform/lib/utils";
 

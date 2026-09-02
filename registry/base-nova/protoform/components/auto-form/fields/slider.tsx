@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { Input } from "../../input";
-import { Slider } from "../../slider";
+import { Input } from "@/components/ui/input";
+import { Slider } from "@/components/ui/slider";
 import type { AutoFormFieldProps } from "../core-types";
 import { getFieldUiConfig } from "../helpers";
 import type { FieldTypeDefinition } from "../registry";

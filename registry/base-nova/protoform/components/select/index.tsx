@@ -4,7 +4,7 @@ import { Select as SelectPrimitive } from "@base-ui/react/select";
 import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import React from "react";
 
-import { useGroup } from "@/registry/base-nova/protoform/components/group";
+import { useGroup } from "@/components/ui/group";
 import { usePortalContainer } from "@/registry/base-nova/protoform/hooks/use-portal-container";
 import { narrowOpenChange, renderWithDataState } from "@/registry/base-nova/protoform/lib/base-ui-compat";
 import { cn, type PortalContentProps, type SharedProps } from "@/registry/base-nova/protoform/lib/utils";

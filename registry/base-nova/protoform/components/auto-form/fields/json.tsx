@@ -1,6 +1,6 @@
 "use client";
 
-import { JSONField } from "../../json-field";
+import { JSONField } from "@/components/ui/json-field";
 import type { AutoFormFieldProps } from "../core-types";
 import { getProtoFieldCustomData, getProtoJsonSchema } from "../proto";
 import type { FieldTypeDefinition } from "../registry";

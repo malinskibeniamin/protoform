@@ -3,8 +3,8 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import React, { type ElementType } from "react";
 
-import { useGroup } from "@/registry/base-nova/protoform/components/group";
-import { Spinner } from "@/registry/base-nova/protoform/components/spinner";
+import { useGroup } from "@/components/ui/group";
+import { Spinner } from "@/components/ui/spinner";
 import { Slot } from "@/registry/base-nova/protoform/lib/base-ui-compat";
 import { cn, type SharedProps } from "@/registry/base-nova/protoform/lib/utils";
 

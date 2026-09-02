@@ -3,15 +3,8 @@ import { Circle } from "lucide-react";
 import { AnimatePresence, motion, type Transition } from "motion/react";
 import { type ComponentProps, forwardRef, type HTMLAttributes } from "react";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  type CardProps,
-  CardTitle,
-} from "@/registry/base-nova/protoform/components/card";
-import { RadioGroup } from "@/registry/base-nova/protoform/components/radio-group";
+import { Card, CardContent, CardDescription, CardHeader, type CardProps, CardTitle } from "@/components/ui/card";
+import { RadioGroup } from "@/components/ui/radio-group";
 import { renderWithDataState } from "@/registry/base-nova/protoform/lib/base-ui-compat";
 import { cn, type SharedProps } from "@/registry/base-nova/protoform/lib/utils";
 

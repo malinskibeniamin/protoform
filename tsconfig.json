@@ -35,6 +35,7 @@
     "ignoreDeprecations": "6.0",
     "types": ["bun", "@types/node", "@rstest/core/globals"],
     "paths": {
+      "@/components/ui/*": ["./registry/base-nova/protoform/components/*"],
       "@/*": ["./*"]
     }
   },

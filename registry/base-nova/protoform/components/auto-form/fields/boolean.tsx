@@ -1,9 +1,9 @@
 "use client";
 
-import { Checkbox } from "../../checkbox";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../select";
-import { Switch } from "../../switch";
-import { Toggle } from "../../toggle";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Toggle } from "@/components/ui/toggle";
 import type { AutoFormFieldProps } from "../core-types";
 import { CONSENT_FIELD_PATTERN } from "../helpers";
 import { getProtoFieldCustomData } from "../proto";

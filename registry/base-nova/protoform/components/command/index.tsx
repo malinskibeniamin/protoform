@@ -3,15 +3,9 @@ import { Command as CommandPrimitive } from "cmdk";
 import { ChevronRight, SearchIcon } from "lucide-react";
 import React from "react";
 
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/registry/base-nova/protoform/components/dialog";
-import { Popover, PopoverAnchor, PopoverContent } from "@/registry/base-nova/protoform/components/popover";
-import { Text } from "@/registry/base-nova/protoform/components/typography";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Popover, PopoverAnchor, PopoverContent } from "@/components/ui/popover";
+import { Text } from "@/components/ui/typography";
 import { cn, type FixedPositionContentProps, type SharedProps } from "@/registry/base-nova/protoform/lib/utils";
 
 const commandVariants = cva("flex size-full flex-col overflow-hidden rounded-md bg-popover text-popover-foreground", {

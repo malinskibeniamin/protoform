@@ -7,7 +7,7 @@ import {
   ChoiceboxItemHeader,
   ChoiceboxItemIndicator,
   ChoiceboxItemTitle,
-} from "../../choicebox";
+} from "@/components/ui/choicebox";
 import type { AutoFormFieldProps } from "../core-types";
 import { getFieldUiConfig } from "../helpers";
 import type { FieldTypeDefinition } from "../registry";

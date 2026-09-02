@@ -2,7 +2,7 @@ import { afterEach, describe, expect, rs } from "@rstest/core";
 import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import { Toaster, toast } from "@/registry/base-nova/protoform/components/toast";
+import { Toaster, toast } from "@/components/ui/toast";
 
 import { JSONField } from ".";
 

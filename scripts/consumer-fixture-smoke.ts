@@ -152,6 +152,8 @@ async function assertInstalled() {
     "hooks/use-proto-form-v8/index.ts",
     "lib/core/index.ts",
     "lib/protobuf-provider/index.ts",
+    "components/ui/button/index.tsx",
+    "components/ui/select/index.tsx",
     "LICENSES/Apache-2.0.txt",
     "LICENSES/protoform-MIT.txt",
     "LICENSES/shadcn-MIT.txt",
