@@ -9,7 +9,7 @@
     "@tanstack/react-form"
   ],
   "registryDependencies": [
-    "@protoform/protobuf-provider"
+    "@protoform/hook-runtime"
   ],
   "files": [
     {

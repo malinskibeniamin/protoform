@@ -8,7 +8,7 @@
     "@tanstack/react-form-v2@npm:@tanstack/react-form@2.0.0-alpha.2"
   ],
   "registryDependencies": [
-    "@protoform/protobuf-provider"
+    "@protoform/hook-runtime"
   ],
   "files": [
     {

@@ -9,6 +9,7 @@ const expectedItems = [
   "protoform-license",
   "bookstore",
   "protoform-foundation",
+  "hook-runtime",
   "protoform-core",
   "protobuf-provider",
   "protoc-gen-protoform",

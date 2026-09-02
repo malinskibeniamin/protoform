@@ -43,6 +43,7 @@ Useful items:
 | Item | Source copied into the app |
 | --- | --- |
 | `protoform-foundation` | Framework-neutral field model and Standard Schema adapters |
+| `hook-runtime` | Focused protobuf runtime shared by form hooks |
 | `protoform-core` | Protobuf conversion, validation, and `useProtoForm` without UI |
 | `protobuf-provider` | Protobuf-ES v2, Protovalidate, CEL, field masks, and Connect errors |
 | `use-proto-form` | Native React Hook Form integration |

@@ -65,6 +65,7 @@ bunx shadcn@latest add @protoform/bookstore
 
 | Item | Use when | Includes |
 | --- | --- | --- |
+| `hook-runtime` | You are maintaining a form hook adapter | Focused protobuf conversion, validation, field-mask, and Connect error internals |
 | `protoform-core` | You already have a shadcn form UI and want protobuf validation | `useProtoForm`, ProtoValidate resolver, oneof helpers, Connect/gRPC error mapping |
 | `use-proto-form-v8` | You are evaluating React Hook Form v8 beta | Separate v8-native hook pinned to `8.0.0-beta.3` |
 | `use-proto-form-tanstack` | You already use TanStack Form | Native TanStack API plus protobuf messages, update masks, oneofs, and server errors |
@@ -81,7 +82,9 @@ bunx shadcn@latest add @protoform/bookstore
 
 ## Why split it?
 
-`protoform-core` contains protobuf conversion, validation, and `useProtoForm` without UI imports.
+`protoform-core` composes `useProtoForm` with the focused `hook-runtime`, without UI imports or
+generated example schemas. Install `protobuf-provider` for the complete protobuf API and
+`protoform-examples` for generated fixtures and demos.
 `protoform-react` adds AutoForm rendering and field logic, resolving its UI capabilities through the
 `ui` alias in `components.json`. Mature applications can point that alias at a canonical
 `components/ui/*` facade made of direct re-exports or thin compatibility adapters.

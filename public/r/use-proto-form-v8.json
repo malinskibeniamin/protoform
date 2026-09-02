@@ -9,8 +9,7 @@
     "react-hook-form-v8@npm:react-hook-form@8.0.0-beta.3"
   ],
   "registryDependencies": [
-    "@protoform/protoform-foundation",
-    "@protoform/protobuf-provider"
+    "@protoform/hook-runtime"
   ],
   "files": [
     {

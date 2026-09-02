@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-import { access, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { access, cp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { createServer } from "node:http";
 import { extname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -8,6 +8,7 @@ import { $ } from "bun";
 
 const root = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const fixture = join(root, ".tmp", "consumer-fixture");
+const coreFixture = join(root, ".tmp", "core-consumer-fixture");
 const publicDir = join(root, "public");
 const leadingSlashes = /^\/+/u;
 const registryOrigin = "http://127.0.0.1:48741";
@@ -278,9 +279,48 @@ async function assertInstalled() {
   );
 }
 
+async function assertCoreInstalled() {
+  const expected = [
+    "hooks/use-proto-form/index.ts",
+    "lib/core/index.ts",
+    "lib/protobuf-provider/form-schema.ts",
+    "lib/protobuf-provider/gen/buf/validate/validate_pb.ts",
+    "lib/protobuf-provider/provider.ts",
+  ];
+  const unexpected = [
+    "components/auto-form/index.tsx",
+    "lib/protobuf-provider/aip-client-workflow.ts",
+    "lib/protobuf-provider/gen/auto-form-example_pb.ts",
+    "lib/protobuf-provider/index.ts",
+  ];
+
+  await Promise.all(expected.map((relativePath) => access(join(coreFixture, relativePath))));
+  const unexpectedChecks = await Promise.allSettled(
+    unexpected.map((relativePath) => access(join(coreFixture, relativePath)))
+  );
+  for (const [index, check] of unexpectedChecks.entries()) {
+    if (check.status === "fulfilled") {
+      throw new Error(`Core-only shadcn install unexpectedly copied ${unexpected[index]}`);
+    }
+  }
+
+  await writeFile(
+    join(coreFixture, "consumer-smoke.ts"),
+    ["import { useProtoForm } from './hooks/use-proto-form';", "", "void useProtoForm;", ""].join("\n")
+  );
+}
+
 await createFixture();
+await rm(coreFixture, { force: true, recursive: true });
+await cp(fixture, coreFixture, { recursive: true });
 const server = await servePublic();
 try {
+  await $`bun install --cwd ${coreFixture}`;
+  await $`bunx shadcn@latest add @protoform/protoform-core --cwd ${coreFixture} --yes --overwrite`;
+  await assertCoreInstalled();
+  await $`bun run --cwd ${coreFixture} typecheck`;
+  console.log(`Core-only consumer fixture passed: ${coreFixture}`);
+
   await $`bun install --cwd ${fixture}`;
   await $`bunx shadcn@latest add @protoform/bookstore --cwd ${fixture} --yes --overwrite`;
   await $`bunx shadcn@latest add @protoform/auto-form-react-hook-form-v8 --cwd ${fixture} --yes --overwrite`;

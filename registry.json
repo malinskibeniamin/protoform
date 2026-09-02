@@ -127,10 +127,10 @@
       ]
     },
     {
-      "name": "protobuf-provider",
+      "name": "hook-runtime",
       "type": "registry:lib",
-      "title": "Protoform protobuf provider",
-      "description": "Protobuf-ES v2 descriptors, ProtoValidate and CEL validation, AIP helpers, and Connect error mapping.",
+      "title": "Protoform hook runtime",
+      "description": "Focused protobuf conversion, validation, field-mask, and Connect error runtime shared by form hooks.",
       "registryDependencies": ["@protoform/protoform-foundation"],
       "dependencies": [
         "@buf/googleapis_googleapis.bufbuild_es",
@@ -141,19 +141,11 @@
       ],
       "files": [
         {
-          "path": "registry/base-nova/protoform/lib/protobuf-provider/aip-client-workflow.ts",
-          "type": "registry:lib"
-        },
-        {
           "path": "registry/base-nova/protoform/lib/protobuf-provider/aip.ts",
           "type": "registry:lib"
         },
         {
           "path": "registry/base-nova/protoform/lib/protobuf-provider/annotations.ts",
-          "type": "registry:lib"
-        },
-        {
-          "path": "registry/base-nova/protoform/lib/protobuf-provider/auto-form-example-annotations.ts",
           "type": "registry:lib"
         },
         {
@@ -169,26 +161,6 @@
           "type": "registry:lib"
         },
         {
-          "path": "registry/base-nova/protoform/lib/protobuf-provider/format-submitted-value.ts",
-          "type": "registry:lib"
-        },
-        {
-          "path": "registry/base-nova/protoform/lib/protobuf-provider/gen/auto-form-example_form.ts",
-          "type": "registry:lib"
-        },
-        {
-          "path": "registry/base-nova/protoform/lib/protobuf-provider/gen/auto-form-example_pb.ts",
-          "type": "registry:lib"
-        },
-        {
-          "path": "registry/base-nova/protoform/lib/protobuf-provider/gen/protoform/v1/auto_form_example_form.ts",
-          "type": "registry:lib"
-        },
-        {
-          "path": "registry/base-nova/protoform/lib/protobuf-provider/gen/protoform/v1/auto_form_example_pb.ts",
-          "type": "registry:lib"
-        },
-        {
           "path": "registry/base-nova/protoform/lib/protobuf-provider/gen/auto_form_ui_pb.ts",
           "type": "registry:lib"
         },
@@ -197,27 +169,11 @@
           "type": "registry:lib"
         },
         {
-          "path": "registry/base-nova/protoform/lib/protobuf-provider/gen/protoform/v1/auto_form_ui_form.ts",
-          "type": "registry:lib"
-        },
-        {
           "path": "registry/base-nova/protoform/lib/protobuf-provider/gen/protoform/v1/auto_form_ui_pb.ts",
           "type": "registry:lib"
         },
         {
           "path": "registry/base-nova/protoform/lib/protobuf-provider/humanize-validation-error.ts",
-          "type": "registry:lib"
-        },
-        {
-          "path": "registry/base-nova/protoform/lib/protobuf-provider/index.ts",
-          "type": "registry:lib"
-        },
-        {
-          "path": "registry/base-nova/protoform/lib/protobuf-provider/method-workflow.ts",
-          "type": "registry:lib"
-        },
-        {
-          "path": "registry/base-nova/protoform/lib/protobuf-provider/mutation-request.ts",
           "type": "registry:lib"
         },
         {
@@ -234,6 +190,42 @@
         },
         {
           "path": "registry/base-nova/protoform/lib/protobuf-provider/validation-schema.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "protobuf-provider",
+      "type": "registry:lib",
+      "title": "Protoform protobuf provider",
+      "description": "Protobuf-ES v2 descriptors, ProtoValidate and CEL validation, AIP helpers, and Connect error mapping.",
+      "registryDependencies": ["@protoform/hook-runtime"],
+      "dependencies": [
+        "@buf/googleapis_googleapis.bufbuild_es",
+        "@bufbuild/protobuf",
+        "@bufbuild/protovalidate",
+        "@connectrpc/connect",
+        "@standard-schema/spec"
+      ],
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/lib/protobuf-provider/aip-client-workflow.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/protobuf-provider/format-submitted-value.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/protobuf-provider/index.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/protobuf-provider/method-workflow.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/protobuf-provider/mutation-request.ts",
           "type": "registry:lib"
         }
       ]
@@ -324,20 +316,14 @@
           "type": "registry:hook"
         }
       ],
-      "registryDependencies": [
-        "@protoform/protoform-foundation",
-        "@protoform/protobuf-provider"
-      ]
+      "registryDependencies": ["@protoform/hook-runtime"]
     },
     {
       "name": "protoform-core",
       "type": "registry:block",
       "title": "Protoform core",
       "description": "Protobuf conversion, ProtoValidate and CEL validation, and the React Hook Form useProtoForm hook without UI components.",
-      "registryDependencies": [
-        "@protoform/protobuf-provider",
-        "@protoform/use-proto-form"
-      ],
+      "registryDependencies": ["@protoform/use-proto-form"],
       "dependencies": [],
       "files": []
     },
@@ -357,7 +343,7 @@
           "type": "registry:hook"
         }
       ],
-      "registryDependencies": ["@protoform/protobuf-provider"]
+      "registryDependencies": ["@protoform/hook-runtime"]
     },
     {
       "name": "use-proto-form-v8",
@@ -391,10 +377,7 @@
           "type": "registry:hook"
         }
       ],
-      "registryDependencies": [
-        "@protoform/protoform-foundation",
-        "@protoform/protobuf-provider"
-      ]
+      "registryDependencies": ["@protoform/hook-runtime"]
     },
     {
       "name": "use-proto-form-tanstack-v2",
@@ -411,7 +394,7 @@
           "type": "registry:hook"
         }
       ],
-      "registryDependencies": ["@protoform/protobuf-provider"]
+      "registryDependencies": ["@protoform/hook-runtime"]
     },
     {
       "name": "auto-form-core",
@@ -1180,11 +1163,23 @@
           "type": "registry:lib"
         },
         {
+          "path": "registry/base-nova/protoform/lib/protobuf-provider/gen/auto-form-example_form.ts",
+          "type": "registry:lib"
+        },
+        {
           "path": "registry/base-nova/protoform/lib/protobuf-provider/gen/auto-form-example_pb.ts",
           "type": "registry:lib"
         },
         {
+          "path": "registry/base-nova/protoform/lib/protobuf-provider/gen/protoform/v1/auto_form_example_form.ts",
+          "type": "registry:lib"
+        },
+        {
           "path": "registry/base-nova/protoform/lib/protobuf-provider/gen/protoform/v1/auto_form_example_pb.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/protobuf-provider/gen/protoform/v1/auto_form_ui_form.ts",
           "type": "registry:lib"
         },
         {
