@@ -149,18 +149,13 @@ describe("build-time UI adapter registry", () => {
 
     expect(runtime.registryDependencies).toEqual(["@protoform/protoform-foundation"]);
     expect(filePaths(runtime)).toEqual([
-      "registry/base-nova/protoform/lib/protobuf-provider/aip.ts",
-      "registry/base-nova/protoform/lib/protobuf-provider/annotations.ts",
+      "registry/base-nova/protoform/lib/protobuf-provider/descriptor-utils.ts",
       "registry/base-nova/protoform/lib/protobuf-provider/field-mask.ts",
       "registry/base-nova/protoform/lib/protobuf-provider/form-schema.ts",
       "registry/base-nova/protoform/lib/protobuf-provider/format-error.ts",
-      "registry/base-nova/protoform/lib/protobuf-provider/gen/auto_form_ui_pb.ts",
-      "registry/base-nova/protoform/lib/protobuf-provider/gen/buf/validate/validate_pb.ts",
-      "registry/base-nova/protoform/lib/protobuf-provider/gen/protoform/v1/auto_form_ui_pb.ts",
+      "registry/base-nova/protoform/lib/protobuf-provider/hook-runtime.ts",
       "registry/base-nova/protoform/lib/protobuf-provider/humanize-validation-error.ts",
       "registry/base-nova/protoform/lib/protobuf-provider/proto-error-path.ts",
-      "registry/base-nova/protoform/lib/protobuf-provider/provider.ts",
-      "registry/base-nova/protoform/lib/protobuf-provider/ui-options.ts",
       "registry/base-nova/protoform/lib/protobuf-provider/validation-schema.ts",
     ]);
     for (const hookName of hookNames) {
@@ -172,8 +167,8 @@ describe("build-time UI adapter registry", () => {
     const coreLines = new Set(coreFiles)
       .values()
       .reduce((total, path) => total + readFileSync(path, "utf8").split("\n").length, 0);
-    expect(new Set(coreFiles).size).toBeLessThanOrEqual(24);
-    expect(coreLines).toBeLessThan(10_200);
+    expect(new Set(coreFiles).size).toBeLessThanOrEqual(18);
+    expect(coreLines).toBeLessThan(3500);
   });
 
   test("keeps generated fixtures in the examples item", () => {

@@ -66,6 +66,7 @@ bunx shadcn@latest add @protoform/bookstore
 | --- | --- | --- |
 | `hook-runtime` | 你正在维护表单 hook adapter | 专注的 protobuf 转换、验证、field mask 和 Connect 错误内部实现 |
 | `protoform-core` | 你已有 shadcn 表单 UI，并希望使用 protobuf 验证 | `useProtoForm`、ProtoValidate resolver、oneof 辅助函数、Connect/gRPC 错误映射 |
+| `protobuf-provider` | 你需要 AutoForm schema 解析或 AIP 工作流 | 完整的 schema/UI parser、annotation、AIP metadata 和工作流 |
 | `use-proto-form-v8` | 你正在评估 React Hook Form v8 beta | 独立的 v8 原生 hook，固定到 `8.0.0-beta.3` |
 | `use-proto-form-tanstack` | 你已在使用 TanStack Form | 原生 TanStack API，以及 protobuf 消息、update mask、oneof 和服务端错误 |
 | `protoform-react` | 你希望使用默认引擎生成基于 schema 的字段 | 共享 renderer 和 React Hook Form adapter |
@@ -82,7 +83,7 @@ bunx shadcn@latest add @protoform/bookstore
 ## 为什么要拆分？
 
 `protoform-core` 将 `useProtoForm` 与专注的 `hook-runtime` 组合，不导入 UI，也不包含
-生成的示例 schema。安装 `protobuf-provider` 可获得完整的 protobuf API，安装
+schema/UI metadata 解析或 Protoform 生成的 validation/UI descriptor 模块。安装 `protobuf-provider` 可获得完整的 protobuf API，安装
 `protoform-examples` 可获得生成的 fixture 和演示。
 `protoform-react` 添加 AutoForm renderer 和字段逻辑，并通过 `components.json` 中的 `ui`
 别名解析所需的 UI 能力。成熟应用可以将该别名指向规范的 `components/ui/*` facade，

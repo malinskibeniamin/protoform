@@ -283,15 +283,21 @@ async function assertCoreInstalled() {
   const expected = [
     "hooks/use-proto-form/index.ts",
     "lib/core/index.ts",
+    "lib/protobuf-provider/descriptor-utils.ts",
     "lib/protobuf-provider/form-schema.ts",
-    "lib/protobuf-provider/gen/buf/validate/validate_pb.ts",
-    "lib/protobuf-provider/provider.ts",
+    "lib/protobuf-provider/hook-runtime.ts",
   ];
   const unexpected = [
     "components/auto-form/index.tsx",
     "lib/protobuf-provider/aip-client-workflow.ts",
+    "lib/protobuf-provider/aip.ts",
+    "lib/protobuf-provider/annotations.ts",
     "lib/protobuf-provider/gen/auto-form-example_pb.ts",
+    "lib/protobuf-provider/gen/buf/validate/validate_pb.ts",
+    "lib/protobuf-provider/gen/protoform/v1/auto_form_ui_pb.ts",
     "lib/protobuf-provider/index.ts",
+    "lib/protobuf-provider/provider.ts",
+    "lib/protobuf-provider/ui-options.ts",
   ];
 
   await Promise.all(expected.map((relativePath) => access(join(coreFixture, relativePath))));

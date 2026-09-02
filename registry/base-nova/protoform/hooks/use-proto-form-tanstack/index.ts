@@ -19,13 +19,13 @@ import {
   extractConnectErrorContext,
   extractFieldViolations,
 } from "../../lib/protobuf-provider/format-error";
-import { humanizeServerFieldError } from "../../lib/protobuf-provider/humanize-validation-error";
-import { protoPathToFormPath } from "../../lib/protobuf-provider/proto-error-path";
 import {
   formValuesToProto,
   type ProtoConversionOptions,
   type ProtoFormOptions,
-} from "../../lib/protobuf-provider/provider";
+} from "../../lib/protobuf-provider/hook-runtime";
+import { humanizeServerFieldError } from "../../lib/protobuf-provider/humanize-validation-error";
+import { protoPathToFormPath } from "../../lib/protobuf-provider/proto-error-path";
 
 type FormValues = Record<string, unknown>;
 

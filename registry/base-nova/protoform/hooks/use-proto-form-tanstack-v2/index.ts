@@ -22,7 +22,7 @@ import {
   formValuesToProto,
   type ProtoConversionOptions,
   type ProtoFormOptions,
-} from "../../lib/protobuf-provider/provider";
+} from "../../lib/protobuf-provider/hook-runtime";
 
 type FormValues = Record<string, unknown>;
 

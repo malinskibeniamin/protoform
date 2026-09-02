@@ -141,11 +141,7 @@
       ],
       "files": [
         {
-          "path": "registry/base-nova/protoform/lib/protobuf-provider/aip.ts",
-          "type": "registry:lib"
-        },
-        {
-          "path": "registry/base-nova/protoform/lib/protobuf-provider/annotations.ts",
+          "path": "registry/base-nova/protoform/lib/protobuf-provider/descriptor-utils.ts",
           "type": "registry:lib"
         },
         {
@@ -161,15 +157,7 @@
           "type": "registry:lib"
         },
         {
-          "path": "registry/base-nova/protoform/lib/protobuf-provider/gen/auto_form_ui_pb.ts",
-          "type": "registry:lib"
-        },
-        {
-          "path": "registry/base-nova/protoform/lib/protobuf-provider/gen/buf/validate/validate_pb.ts",
-          "type": "registry:lib"
-        },
-        {
-          "path": "registry/base-nova/protoform/lib/protobuf-provider/gen/protoform/v1/auto_form_ui_pb.ts",
+          "path": "registry/base-nova/protoform/lib/protobuf-provider/hook-runtime.ts",
           "type": "registry:lib"
         },
         {
@@ -178,14 +166,6 @@
         },
         {
           "path": "registry/base-nova/protoform/lib/protobuf-provider/proto-error-path.ts",
-          "type": "registry:lib"
-        },
-        {
-          "path": "registry/base-nova/protoform/lib/protobuf-provider/provider.ts",
-          "type": "registry:lib"
-        },
-        {
-          "path": "registry/base-nova/protoform/lib/protobuf-provider/ui-options.ts",
           "type": "registry:lib"
         },
         {
@@ -213,7 +193,27 @@
           "type": "registry:lib"
         },
         {
+          "path": "registry/base-nova/protoform/lib/protobuf-provider/aip.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/protobuf-provider/annotations.ts",
+          "type": "registry:lib"
+        },
+        {
           "path": "registry/base-nova/protoform/lib/protobuf-provider/format-submitted-value.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/protobuf-provider/gen/auto_form_ui_pb.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/protobuf-provider/gen/buf/validate/validate_pb.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/protobuf-provider/gen/protoform/v1/auto_form_ui_pb.ts",
           "type": "registry:lib"
         },
         {
@@ -226,6 +226,14 @@
         },
         {
           "path": "registry/base-nova/protoform/lib/protobuf-provider/mutation-request.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/protobuf-provider/provider.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/protobuf-provider/ui-options.ts",
           "type": "registry:lib"
         }
       ]

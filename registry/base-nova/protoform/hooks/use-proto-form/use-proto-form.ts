@@ -16,12 +16,12 @@ import {
   extractConnectErrorContext,
   extractFieldViolations,
 } from "../../lib/protobuf-provider/format-error.js";
-import { humanizeServerFieldError } from "../../lib/protobuf-provider/humanize-validation-error.js";
 import {
   formValuesToProto,
   type ProtoConversionOptions,
   type ProtoFormOptions,
-} from "../../lib/protobuf-provider/provider.js";
+} from "../../lib/protobuf-provider/hook-runtime.js";
+import { humanizeServerFieldError } from "../../lib/protobuf-provider/humanize-validation-error.js";
 
 import { protoPathToFormPath } from "./proto-error-path.js";
 import type { FlattenProtoOneofs } from "./proto-paths.js";
