@@ -67,6 +67,22 @@ function filePaths(registryItem: RegistryItem): string[] {
   return registryItem.files?.map((file) => file.path) ?? [];
 }
 
+function dependencyClosure(name: string, names = new Set<string>()): Set<string> {
+  if (names.has(name)) {
+    return names;
+  }
+
+  names.add(name);
+  for (const dependency of item(name).registryDependencies ?? []) {
+    dependencyClosure(dependency.replace("@protoform/", ""), names);
+  }
+  return names;
+}
+
+function closureFilePaths(name: string): string[] {
+  return [...dependencyClosure(name)].flatMap((dependency) => filePaths(item(dependency)));
+}
+
 function uiImports(path: string): string[] {
   const source = ts.createSourceFile(path, readFileSync(path, "utf8"), ts.ScriptTarget.Latest, true);
   const imports: string[] = [];
@@ -103,7 +119,7 @@ describe("build-time UI adapter registry", () => {
     const react = item("protoform-react");
     const shadcn = item("protoform-shadcn");
 
-    expect(core.registryDependencies).toEqual(["@protoform/protobuf-provider", "@protoform/use-proto-form"]);
+    expect(core.registryDependencies).toEqual(["@protoform/use-proto-form"]);
     expect(filePaths(core).some((path) => path.includes("/components/"))).toBe(false);
 
     expect(react.registryDependencies).toEqual(["@protoform/auto-form-core", "@protoform/protoform-core"]);
@@ -124,6 +140,52 @@ describe("build-time UI adapter registry", () => {
       for (const file of moduleFiles) {
         expect(file.target, file.path).toBe(`~/components/ui/${moduleName}/${file.path.slice(moduleRoot.length)}`);
       }
+    }
+  });
+
+  test("keeps hook installs on the focused runtime instead of the complete provider", () => {
+    const runtime = item("hook-runtime");
+    const hookNames = ["use-proto-form", "use-proto-form-tanstack", "use-proto-form-tanstack-v2", "use-proto-form-v8"];
+
+    expect(runtime.registryDependencies).toEqual(["@protoform/protoform-foundation"]);
+    expect(filePaths(runtime)).toEqual([
+      "registry/base-nova/protoform/lib/protobuf-provider/descriptor-utils.ts",
+      "registry/base-nova/protoform/lib/protobuf-provider/field-mask.ts",
+      "registry/base-nova/protoform/lib/protobuf-provider/form-schema.ts",
+      "registry/base-nova/protoform/lib/protobuf-provider/format-error.ts",
+      "registry/base-nova/protoform/lib/protobuf-provider/hook-runtime.ts",
+      "registry/base-nova/protoform/lib/protobuf-provider/humanize-validation-error.ts",
+      "registry/base-nova/protoform/lib/protobuf-provider/proto-error-path.ts",
+      "registry/base-nova/protoform/lib/protobuf-provider/validation-schema.ts",
+    ]);
+    for (const hookName of hookNames) {
+      expect(item(hookName).registryDependencies, hookName).toContain("@protoform/hook-runtime");
+      expect(dependencyClosure(hookName), hookName).not.toContain("protobuf-provider");
+    }
+
+    const coreFiles = closureFilePaths("protoform-core").filter((path) => path.startsWith("registry/"));
+    const coreLines = new Set(coreFiles)
+      .values()
+      .reduce((total, path) => total + readFileSync(path, "utf8").split("\n").length, 0);
+    expect(new Set(coreFiles).size).toBeLessThanOrEqual(18);
+    expect(coreLines).toBeLessThan(3500);
+  });
+
+  test("keeps generated fixtures in the examples item", () => {
+    const providerPaths = filePaths(item("protobuf-provider"));
+    const examplePaths = filePaths(item("protoform-examples"));
+    const fixturePaths = [
+      "registry/base-nova/protoform/lib/protobuf-provider/auto-form-example-annotations.ts",
+      "registry/base-nova/protoform/lib/protobuf-provider/gen/auto-form-example_form.ts",
+      "registry/base-nova/protoform/lib/protobuf-provider/gen/auto-form-example_pb.ts",
+      "registry/base-nova/protoform/lib/protobuf-provider/gen/protoform/v1/auto_form_example_form.ts",
+      "registry/base-nova/protoform/lib/protobuf-provider/gen/protoform/v1/auto_form_example_pb.ts",
+      "registry/base-nova/protoform/lib/protobuf-provider/gen/protoform/v1/auto_form_ui_form.ts",
+    ];
+
+    for (const fixturePath of fixturePaths) {
+      expect(providerPaths, fixturePath).not.toContain(fixturePath);
+      expect(examplePaths, fixturePath).toContain(fixturePath);
     }
   });
 

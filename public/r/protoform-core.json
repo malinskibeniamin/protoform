@@ -5,7 +5,6 @@
   "description": "Protobuf conversion, ProtoValidate and CEL validation, and the React Hook Form useProtoForm hook without UI components.",
   "dependencies": [],
   "registryDependencies": [
-    "@protoform/protobuf-provider",
     "@protoform/use-proto-form"
   ],
   "files": [],

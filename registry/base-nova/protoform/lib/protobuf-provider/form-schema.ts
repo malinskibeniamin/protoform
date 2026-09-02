@@ -1,7 +1,7 @@
 import type { DescMessage, MessageValidType } from "@bufbuild/protobuf";
 import type { FormValues, StandardSchemaV1 } from "../core/index.js";
 
-import { type ProtoFormOptions, validateFormValuesAgainstProtoSchema } from "./provider.js";
+import { type ProtoFormOptions, validateFormValuesAgainstProtoSchema } from "./hook-runtime.js";
 import { createDescriptorAwareStandardSchema } from "./validation-schema.js";
 
 function isFormValueObject(value: unknown): value is FormValues {

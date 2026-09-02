@@ -2,14 +2,14 @@ import type { DescMessage, MessageShape, MessageValidType } from "@bufbuild/prot
 import { type FieldError, type FieldErrors, get, type Resolver, type ResolverOptions, set } from "react-hook-form-v8";
 import type { FormValues } from "../../lib/core/index.js";
 import {
-  humanizeValidationError,
-  isGenericValidationMessage,
-} from "../../lib/protobuf-provider/humanize-validation-error.js";
-import {
   PROTO_FORM_ROOT_ERROR_KEY,
   type ProtoFormOptions,
   validateFormValuesAgainstProtoSchema,
-} from "../../lib/protobuf-provider/provider.js";
+} from "../../lib/protobuf-provider/hook-runtime.js";
+import {
+  humanizeValidationError,
+  isGenericValidationMessage,
+} from "../../lib/protobuf-provider/humanize-validation-error.js";
 import { createDescriptorAwareStandardSchema } from "../../lib/protobuf-provider/validation-schema.js";
 
 function validateFieldNatively(ref: HTMLInputElement, path: string, errors: Record<string, FieldError>) {
