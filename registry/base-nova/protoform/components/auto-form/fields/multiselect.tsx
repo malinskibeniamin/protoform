@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
+import { SimpleMultiSelect } from "@/components/ui/multi-select";
 import { formatProtoformMessage } from "../../../lib/core/messages";
-import { SimpleMultiSelect } from "../../multi-select";
 import { useAutoForm } from "../context";
 import type { AutoFormFieldProps } from "../core-types";
 import {

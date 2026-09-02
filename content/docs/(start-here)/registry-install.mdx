@@ -25,10 +25,13 @@ dependencies. No Protoform npm registry or package token is required.
 
 ```bash
 # Hook only: React Hook Form + ProtoValidate + server error mapping
-bunx shadcn@latest add @protoform/use-proto-form
+bunx shadcn@latest add @protoform/protoform-core
 
-# AutoForm components: protobuf-driven form renderer + shadcn fields
-bunx shadcn@latest add @protoform/auto-form
+# AutoForm renderer: uses your components.json ui alias
+bunx shadcn@latest add @protoform/protoform-react
+
+# Optional default shadcn UI implementations for greenfield apps
+bunx shadcn@latest add @protoform/protoform-shadcn
 
 # Experimental React Hook Form v8 beta hook
 bunx shadcn@latest add @protoform/use-proto-form-v8
@@ -62,24 +65,31 @@ bunx shadcn@latest add @protoform/bookstore
 
 | Item | Use when | Includes |
 | --- | --- | --- |
-| `use-proto-form` | You already have a shadcn form UI and want protobuf validation | `useProtoForm`, ProtoValidate resolver, oneof helpers, Connect/gRPC error mapping |
+| `protoform-core` | You already have a shadcn form UI and want protobuf validation | `useProtoForm`, ProtoValidate resolver, oneof helpers, Connect/gRPC error mapping |
 | `use-proto-form-v8` | You are evaluating React Hook Form v8 beta | Separate v8-native hook pinned to `8.0.0-beta.3` |
 | `use-proto-form-tanstack` | You already use TanStack Form | Native TanStack API plus protobuf messages, update masks, oneofs, and server errors |
-| `auto-form` | You want schema-generated fields with the default engine | Shared renderer plus the React Hook Form adapter |
+| `protoform-react` | You want schema-generated fields with the default engine | Shared renderer plus the React Hook Form adapter |
+| `protoform-shadcn` | You want greenfield UI defaults | `protoform-react` plus optional shadcn implementations installed under `components/ui` |
 | `auto-form-react-hook-form-v8` | You are evaluating generated fields on React Hook Form v8 beta | Separate v8-native AutoForm adapter and shared renderer |
 | `auto-form-tanstack` | You want schema-generated fields with TanStack Form | Shared renderer plus the TanStack Form adapter |
 | `use-proto-form-tanstack-v2` | You are evaluating TanStack Form v2 alpha | Separate v2-native hook pinned to `2.0.0-alpha.2` |
 | `auto-form-tanstack-v2` | You are evaluating generated fields on TanStack Form v2 alpha | Separate v2-native AutoForm adapter and shared renderer |
 | `auto-form-core` | You are maintaining an engine adapter | Engine-neutral renderer installed by both AutoForm items |
-| `protoform` | You want the default product surface | React Hook Form hook and AutoForm |
+| `protoform` | You want the default product surface | Core, React renderer, and default shadcn UI implementations |
 | `protoform-examples` | You want reference demos | generated example schemas and demo components |
 | `bookstore` | You want one complete RPC story | five methods, generated bindings, forms, and the temporary service |
 
 ## Why split it?
 
-The native hooks let teams adopt protobuf validation without replacing their field layout or form
-state API. The AutoForm items add generated fields only when that is useful. The shared core keeps
-field behavior aligned without making either form library a dependency of the other.
+`protoform-core` contains protobuf conversion, validation, and `useProtoForm` without UI imports.
+`protoform-react` adds AutoForm rendering and field logic, resolving its UI capabilities through the
+`ui` alias in `components.json`. Mature applications can point that alias at a canonical
+`components/ui/*` facade made of direct re-exports or thin compatibility adapters.
+
+`protoform-shadcn` is the optional default implementation for greenfield applications. It installs
+the UI modules under `components/ui` without making them part of the React renderer. Per-form
+`AutoFormUIComponents` overrides remain focused on the form, field wrappers, submit button,
+collection wrappers, and errors rather than injecting every primitive at runtime.
 
 ## Pin a source snapshot
 

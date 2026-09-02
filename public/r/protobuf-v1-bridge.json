@@ -7,7 +7,7 @@
     "@bufbuild/protobuf@^1.10.1"
   ],
   "registryDependencies": [
-    "@protoform/protoform-core"
+    "@protoform/protoform-foundation"
   ],
   "files": [
     {

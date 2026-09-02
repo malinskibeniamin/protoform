@@ -5,13 +5,13 @@ import Prism from "prismjs";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import EditorModule from "react-simple-code-editor";
 
-import { Badge } from "@/registry/base-nova/protoform/components/badge";
-import { Button } from "@/registry/base-nova/protoform/components/button";
-import { Combobox, type ComboboxOption } from "@/registry/base-nova/protoform/components/combobox";
-import { CopyButton } from "@/registry/base-nova/protoform/components/copy-button";
-import { Input } from "@/registry/base-nova/protoform/components/input";
-import { toast } from "@/registry/base-nova/protoform/components/toast";
-import { Heading, Text } from "@/registry/base-nova/protoform/components/typography";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Combobox, type ComboboxOption } from "@/components/ui/combobox";
+import { CopyButton } from "@/components/ui/copy-button";
+import { Input } from "@/components/ui/input";
+import { toast } from "@/components/ui/toast";
+import { Heading, Text } from "@/components/ui/typography";
 import { cn, type SharedProps } from "@/registry/base-nova/protoform/lib/utils";
 
 function isCommonJsEditorModule(value: unknown): value is { default: typeof EditorModule } {

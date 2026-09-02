@@ -2,11 +2,10 @@
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "protoform",
   "title": "Protoform",
-  "description": "protoform - protovalidate-compatible shadcn forms",
+  "description": "Protoform with React Hook Form and the optional default shadcn UI implementations.",
   "dependencies": [],
   "registryDependencies": [
-    "@protoform/use-proto-form",
-    "@protoform/auto-form"
+    "@protoform/protoform-shadcn"
   ],
   "files": [],
   "type": "registry:block"

@@ -3,8 +3,8 @@
 import { Check } from "lucide-react";
 import type React from "react";
 
-import { Button } from "@/registry/base-nova/protoform/components/button";
-import { Heading, Text } from "@/registry/base-nova/protoform/components/typography";
+import { Button } from "@/components/ui/button";
+import { Heading, Text } from "@/components/ui/typography";
 import { formatProtoformMessage, type ProtoformMessageFormatter } from "../../lib/core/messages";
 
 import { useAutoFormRuntimeContext } from "./context";

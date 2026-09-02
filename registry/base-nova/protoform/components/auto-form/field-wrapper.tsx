@@ -2,13 +2,13 @@
 
 import { AlertCircle, ChevronDown, CircleHelp, ExternalLink, PlusIcon, TrashIcon } from "lucide-react";
 import React from "react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Field, FieldContent, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Heading, Text } from "@/components/ui/typography";
 import { cn, type SharedProps } from "../../lib/utils";
-import { Alert, AlertDescription, AlertTitle } from "../alert";
-import { Button } from "../button";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../collapsible";
-import { Field, FieldContent, FieldDescription, FieldError, FieldLabel } from "../field";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../tooltip";
-import { Heading, Text } from "../typography";
 import { useAutoFormRuntimeContext } from "./context";
 import type { ArrayElementWrapperProps, ArrayWrapperProps, FieldWrapperProps, ObjectWrapperProps } from "./core-types";
 import { formSpacing } from "./form-spacing";

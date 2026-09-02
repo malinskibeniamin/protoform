@@ -1,7 +1,7 @@
 "use client";
 
-import { Alert, AlertDescription, AlertTitle } from "@/registry/base-nova/protoform/components/alert";
-import { Button } from "@/registry/base-nova/protoform/components/button";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import type { Book } from "@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_pb";
 
 export function BookDetail({

@@ -4,9 +4,9 @@
 export const client = "only";
 
 import { useState } from "react";
-import { Alert, AlertDescription, AlertTitle } from "@/registry/base-nova/protoform/components/alert";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 import { AutoForm } from "@/registry/base-nova/protoform/components/auto-form";
-import { Badge } from "@/registry/base-nova/protoform/components/badge";
 import { getDemoSchema } from "@/registry/base-nova/protoform/demo/runtime/demo-schemas";
 import { formatSubmittedValue } from "../../lib/protobuf-provider";
 

@@ -117,11 +117,11 @@ export const client = 'only';
 import { formatSubmittedValue } from '../../lib/protobuf-provider';
 import { useState } from 'react';
 
-import { Alert, AlertDescription, AlertTitle } from '@/registry/base-nova/protoform/components/alert';
-import { Badge } from '@/registry/base-nova/protoform/components/badge';
-import { Button } from '@/registry/base-nova/protoform/components/button';
-import { Field, FieldError, FieldLabel } from '@/registry/base-nova/protoform/components/field';
-import { Input } from '@/registry/base-nova/protoform/components/input';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
 import { useProtoForm } from '@/registry/base-nova/protoform/hooks/use-proto-form-tanstack';
 import { EmailContractSchema } from '@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/conformance_pb';
 
@@ -204,11 +204,11 @@ import { createProtoFormSchema, formatSubmittedValue } from '../../lib/protobuf-
 import { Formik } from "formik";
 import { useState } from 'react';
 
-import { Alert, AlertDescription, AlertTitle } from '@/registry/base-nova/protoform/components/alert';
-import { Badge } from '@/registry/base-nova/protoform/components/badge';
-import { Button } from '@/registry/base-nova/protoform/components/button';
-import { Field, FieldError, FieldLabel } from '@/registry/base-nova/protoform/components/field';
-import { Input } from '@/registry/base-nova/protoform/components/input';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
 import { EmailContractSchema } from '@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/conformance_pb';
 
 interface EmailValues {
@@ -281,11 +281,11 @@ import { createProtoFormSchema, formatSubmittedValue } from '../../lib/protobuf-
 import { useState } from 'react';
 import { Field as FinalField, Form as FinalForm } from "react-final-form";
 
-import { Alert, AlertDescription, AlertTitle } from '@/registry/base-nova/protoform/components/alert';
-import { Badge } from '@/registry/base-nova/protoform/components/badge';
-import { Button } from '@/registry/base-nova/protoform/components/button';
-import { Field, FieldError, FieldLabel } from '@/registry/base-nova/protoform/components/field';
-import { Input } from '@/registry/base-nova/protoform/components/input';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
 import { EmailContractSchema } from '@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/conformance_pb';
 
 interface EmailValues {
@@ -315,16 +315,27 @@ export function FinalFormDemo() {
           <form className="space-y-6" onSubmit={handleSubmit}>
             <FinalField<string> name="email">
               {({ input, meta }) => {
+                const {
+                  name,
+                  onBlur: handleBlur,
+                  onChange: handleChange,
+                  onFocus: handleFocus,
+                  value,
+                } = input;
                 const message = (meta.touched || meta.submitFailed) && typeof meta.error === 'string' ? meta.error : undefined;
                 return (
                   <Field data-invalid={Boolean(message)}>
                     <FieldLabel htmlFor="final-form-email" required>Email</FieldLabel>
                     <Input
-                      {...input}
                       aria-invalid={Boolean(message) || undefined}
                       id="final-form-email"
+                      name={name}
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      onFocus={handleFocus}
                       placeholder="ada@example.com"
                       type="email"
+                      value={value}
                     />
                     <FieldError>{message}</FieldError>
                   </Field>
@@ -402,9 +413,9 @@ import {
   Alert,
   AlertDescription,
   AlertTitle,
-} from '@/registry/base-nova/protoform/components/alert';
+} from '@/components/ui/alert';
 import { AutoForm } from '@/registry/base-nova/protoform/components/auto-form';
-import { Badge } from '@/registry/base-nova/protoform/components/badge';
+import { Badge } from '@/components/ui/badge';
 import { getDemoSchema } from '@/registry/base-nova/protoform/demo/runtime/demo-schemas';
 ${methodImport}${methodDeclaration}
 export function ${wrapperName(demo.slug)}() {

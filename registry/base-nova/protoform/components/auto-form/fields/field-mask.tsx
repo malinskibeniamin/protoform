@@ -1,7 +1,7 @@
 "use client";
 
-import { Textarea } from "../../textarea";
-import { Text } from "../../typography";
+import { Textarea } from "@/components/ui/textarea";
+import { Text } from "@/components/ui/typography";
 import type { AutoFormFieldProps } from "../core-types";
 import { FIELD_MASK_PATH_SPLIT_PATTERN, getFieldUiConfig } from "../helpers";
 import { getProtoFieldCustomData } from "../proto";

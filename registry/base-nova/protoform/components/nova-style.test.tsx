@@ -1,12 +1,12 @@
 import { describe, expect } from "@rstest/core";
 import { render, screen } from "@testing-library/react";
 
-import { Checkbox } from "./checkbox";
-import { RadioGroup, RadioGroupItem } from "./radio-group";
-import { Select, SelectTrigger, SelectValue } from "./select";
-import { Slider } from "./slider";
-import { Switch } from "./switch";
-import { Textarea } from "./textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Select, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 
 describe("Base Nova form controls", () => {
   test("uses Nova textarea geometry by default", () => {

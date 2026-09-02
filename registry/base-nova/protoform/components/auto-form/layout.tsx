@@ -1,10 +1,10 @@
 "use client";
 
 import type React from "react";
+import { Button } from "@/components/ui/button";
+import { FieldLabel } from "@/components/ui/field";
+import { Heading, Text } from "@/components/ui/typography";
 import { cn } from "../../lib/utils";
-import { Button } from "../button";
-import { FieldLabel } from "../field";
-import { Heading, Text } from "../typography";
 import { formSpacing } from "./form-spacing";
 import { FormDepthProvider, headingLevelForDepth, useFormDepth } from "./layout-context";
 

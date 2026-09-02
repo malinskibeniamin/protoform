@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAutoFormRenderContext, useAutoFormRuntimeContext } from "../context";
 import type { ParsedField } from "../core-types";
 import { useAutoFormEngine } from "../engine";

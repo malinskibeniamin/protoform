@@ -3,9 +3,9 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import React from "react";
 
-import { Button } from "@/registry/base-nova/protoform/components/button";
-import { Input } from "@/registry/base-nova/protoform/components/input";
-import { Textarea } from "@/registry/base-nova/protoform/components/textarea";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { cn, type SharedProps } from "@/registry/base-nova/protoform/lib/utils";
 
 function InputGroup({ className, testId, ...props }: React.ComponentProps<"div"> & SharedProps) {

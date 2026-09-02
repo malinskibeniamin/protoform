@@ -3,8 +3,8 @@
 import { format, isValid, parse } from "date-fns";
 import React from "react";
 
-import { Input } from "../../input";
-import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "../../input-group";
+import { Input } from "@/components/ui/input";
+import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "@/components/ui/input-group";
 import { useAutoFormRuntimeContext } from "../context";
 import type { AutoFormFieldProps } from "../core-types";
 import { getFieldUiConfig, NUMERIC_OPTION_PATTERN } from "../helpers";

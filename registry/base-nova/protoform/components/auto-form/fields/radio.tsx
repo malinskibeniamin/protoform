@@ -1,7 +1,7 @@
 "use client";
 
-import { RadioGroup, RadioGroupItem } from "../../radio-group";
-import { Text } from "../../typography";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Text } from "@/components/ui/typography";
 import type { AutoFormFieldProps } from "../core-types";
 import type { FieldTypeDefinition } from "../registry";
 import {

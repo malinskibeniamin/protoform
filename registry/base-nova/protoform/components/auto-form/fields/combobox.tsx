@@ -1,6 +1,6 @@
 "use client";
 
-import { Combobox } from "../../combobox";
+import { Combobox } from "@/components/ui/combobox";
 import type { AutoFormFieldProps } from "../core-types";
 import { getFieldUiConfig } from "../helpers";
 import type { FieldTypeDefinition } from "../registry";

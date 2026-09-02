@@ -5,17 +5,11 @@ import { Check, ChevronsUpDown, Plus, Search, X } from "lucide-react";
 import type React from "react";
 import { memo, useCallback, useEffect, useId, useMemo, useReducer, useRef } from "react";
 
-import { Button } from "@/registry/base-nova/protoform/components/button";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandItem,
-  CommandList,
-} from "@/registry/base-nova/protoform/components/command";
-import { Input, InputEnd, InputStart } from "@/registry/base-nova/protoform/components/input";
-import { Popover, PopoverContent, PopoverTrigger } from "@/registry/base-nova/protoform/components/popover";
-import { Spinner } from "@/registry/base-nova/protoform/components/spinner";
+import { Button } from "@/components/ui/button";
+import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList } from "@/components/ui/command";
+import { Input, InputEnd, InputStart } from "@/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Spinner } from "@/components/ui/spinner";
 import {
   cn,
   type PortalContentProps,

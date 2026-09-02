@@ -2,18 +2,12 @@
 
 import { skipToken, useQuery } from "@connectrpc/connect-query";
 import { type ReactNode, useState } from "react";
-import { Alert, AlertDescription, AlertTitle } from "@/registry/base-nova/protoform/components/alert";
-import { Badge } from "@/registry/base-nova/protoform/components/badge";
-import { Button } from "@/registry/base-nova/protoform/components/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/registry/base-nova/protoform/components/card";
-import { Field, FieldLabel } from "@/registry/base-nova/protoform/components/field";
-import { Input } from "@/registry/base-nova/protoform/components/input";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Field, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import { LibraryService } from "@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_pb";
 import { BookDetail } from "./book-detail";
 import { CreateBookForm } from "./create-book-form";

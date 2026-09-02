@@ -8,6 +8,7 @@ import { demoCatalog } from "../examples/catalog/demo-catalog.js";
 const expectedItems = [
   "protoform-license",
   "bookstore",
+  "protoform-foundation",
   "protoform-core",
   "protobuf-provider",
   "protoc-gen-protoform",
@@ -17,7 +18,8 @@ const expectedItems = [
   "use-proto-form-tanstack",
   "use-proto-form-tanstack-v2",
   "auto-form-core",
-  "auto-form",
+  "protoform-react",
+  "protoform-shadcn",
   "auto-form-react-hook-form-v8",
   "auto-form-tanstack",
   "auto-form-tanstack-v2",
@@ -48,7 +50,7 @@ for (const name of expectedItems) {
   if (item.name !== name) {
     throw new Error(`${path} has name ${item.name}, expected ${name}`);
   }
-  if (name !== "protoform" && (!item.files || item.files.length === 0)) {
+  if (!(name === "protoform" || name === "protoform-core") && (!item.files || item.files.length === 0)) {
     throw new Error(`${path} should include installable files`);
   }
 }
@@ -78,23 +80,31 @@ for (const [target, source] of expectedNotices) {
   }
 }
 
-const autoForm = JSON.parse(readFileSync("public/r/auto-form.json", "utf8")) as {
-  registryDependencies?: string[];
-};
+const dependencyItemSchema = z.object({
+  dependencies: z.array(z.string()).optional(),
+  files: z.array(z.object({ target: z.string().optional() })).optional(),
+  registryDependencies: z.array(z.string()).optional(),
+});
+const protoformReact = dependencyItemSchema.parse(JSON.parse(readFileSync("public/r/protoform-react.json", "utf8")));
 if (
   !(
-    autoForm.registryDependencies?.includes("@protoform/auto-form-core") &&
-    autoForm.registryDependencies.includes("@protoform/use-proto-form")
+    protoformReact.registryDependencies?.includes("@protoform/auto-form-core") &&
+    protoformReact.registryDependencies.includes("@protoform/protoform-core")
   )
 ) {
-  throw new Error("auto-form must depend on the shared core and RHF hook");
+  throw new Error("protoform-react must depend on the shared renderer and core");
+}
+
+const protoformShadcn = dependencyItemSchema.parse(JSON.parse(readFileSync("public/r/protoform-shadcn.json", "utf8")));
+if (
+  protoformShadcn.registryDependencies?.length !== 1 ||
+  protoformShadcn.registryDependencies[0] !== "@protoform/protoform-react" ||
+  !protoformShadcn.files?.every((file) => (file.target ? file.target.startsWith("~/components/ui/") : true))
+) {
+  throw new Error("protoform-shadcn must install optional defaults through the configured ui alias");
 }
 
 const reactHookFormV8Alias = "react-hook-form-v8@npm:react-hook-form@8.0.0-beta.3";
-const dependencyItemSchema = z.object({
-  dependencies: z.array(z.string()).optional(),
-  registryDependencies: z.array(z.string()).optional(),
-});
 const reactHookFormV8Hook = dependencyItemSchema.parse(
   JSON.parse(readFileSync("public/r/use-proto-form-v8.json", "utf8"))
 );

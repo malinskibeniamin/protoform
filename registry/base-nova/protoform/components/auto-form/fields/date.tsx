@@ -2,9 +2,15 @@
 
 import { format } from "date-fns";
 import { CalendarIcon, Clock3Icon } from "lucide-react";
-import { Calendar } from "../../calendar";
-import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput, InputGroupText } from "../../input-group";
-import { Popover, PopoverContent, PopoverTrigger } from "../../popover";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+  InputGroupText,
+} from "@/components/ui/input-group";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import type { AutoFormFieldProps } from "../core-types";
 import { getFieldUiConfig } from "../helpers";
 import type { FieldTypeDefinition } from "../registry";

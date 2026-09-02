@@ -1,7 +1,7 @@
 "use client";
 
 import { DollarSignIcon } from "lucide-react";
-import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "../../input-group";
+import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "@/components/ui/input-group";
 import type { AutoFormFieldProps } from "../core-types";
 import { CURRENCY_FIELD_PATTERN, getFieldUiConfig } from "../helpers";
 import type { FieldTypeDefinition } from "../registry";

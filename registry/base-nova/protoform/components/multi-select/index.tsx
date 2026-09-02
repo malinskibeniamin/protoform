@@ -13,14 +13,9 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-} from "@/registry/base-nova/protoform/components/command";
-import { TagsValue } from "@/registry/base-nova/protoform/components/tags";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/registry/base-nova/protoform/components/tooltip";
+} from "@/components/ui/command";
+import { TagsValue } from "@/components/ui/tags";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useControllableState } from "@/registry/base-nova/protoform/hooks/use-controllable-state";
 import { narrowOpenChange, renderWithDataState } from "@/registry/base-nova/protoform/lib/base-ui-compat";
 import {

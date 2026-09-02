@@ -2,12 +2,12 @@
 
 import { MotionConfig } from "motion/react";
 import type React from "react";
-import { Alert, AlertDescription, AlertTitle } from "../alert";
-import { Button } from "../button";
-import { CopyButton } from "../copy-button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../tabs";
-import { Textarea } from "../textarea";
-import { Heading, Text } from "../typography";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { CopyButton } from "@/components/ui/copy-button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
+import { Heading, Text } from "@/components/ui/typography";
 import { formSpacing } from "./form-spacing";
 import { buildAutoFormTestId } from "./test-ids";
 import type { AutoFormMode, AutoFormSummaryContext } from "./types";

@@ -1,6 +1,6 @@
 "use client";
 
-import { ToggleGroup, ToggleGroupItem } from "../../toggle-group";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import type { AutoFormFieldProps } from "../core-types";
 import { getFieldUiConfig } from "../helpers";
 import type { FieldTypeDefinition } from "../registry";

@@ -4,9 +4,9 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { Eye, EyeOff, Minus, Plus } from "lucide-react";
 import React, { createContext, useEffect, useState } from "react";
 
-import { Button } from "@/registry/base-nova/protoform/components/button";
-import { useFieldContext } from "@/registry/base-nova/protoform/components/field";
-import { useGroup } from "@/registry/base-nova/protoform/components/group";
+import { Button } from "@/components/ui/button";
+import { useFieldContext } from "@/components/ui/field";
+import { useGroup } from "@/components/ui/group";
 import { cn, type SharedProps } from "@/registry/base-nova/protoform/lib/utils";
 
 export const inputVariants = cva(

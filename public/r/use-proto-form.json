@@ -10,7 +10,7 @@
     "react-hook-form"
   ],
   "registryDependencies": [
-    "@protoform/protoform-core",
+    "@protoform/protoform-foundation",
     "@protoform/protobuf-provider"
   ],
   "files": [

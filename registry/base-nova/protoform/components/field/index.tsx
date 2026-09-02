@@ -3,8 +3,8 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { createContext, useContext, useId, useMemo } from "react";
 
-import { Label } from "@/registry/base-nova/protoform/components/label";
-import { Separator } from "@/registry/base-nova/protoform/components/separator";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 import { cn, type SharedProps } from "@/registry/base-nova/protoform/lib/utils";
 
 interface FieldContextValue {

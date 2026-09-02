@@ -3,7 +3,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { X } from "lucide-react";
 import type React from "react";
 
-import { Button } from "@/registry/base-nova/protoform/components/button";
+import { Button } from "@/components/ui/button";
 import { usePortalContainer } from "@/registry/base-nova/protoform/hooks/use-portal-container";
 import {
   asChildTrigger,

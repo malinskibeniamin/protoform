@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Button } from "@/registry/base-nova/protoform/components/button";
+import { Button } from "@/components/ui/button";
 
 export function DeleteSubmitButton({
   disabled,
