@@ -3,13 +3,12 @@
 import { format, isValid, parse } from "date-fns";
 import React from "react";
 
-import { Input } from "@/components/ui/input";
-import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "@/components/ui/input-group";
 import { useAutoFormRuntimeContext } from "../context";
 import type { AutoFormFieldProps } from "../core-types";
 import { getFieldUiConfig, NUMERIC_OPTION_PATTERN } from "../helpers";
 import { getAutoFormChoiceTestId, getAutoFormFieldTestId } from "../test-ids";
 import type { AutoFormOptionGroup, AutoFormOptionItem } from "../types";
+import { Input, InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "../ui-components";
 
 const TIME_ZONE_SUFFIX_PATTERN = /([+-]\d{2}:\d{2}|Z)$/u;
 

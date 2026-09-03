@@ -1,6 +1,5 @@
 "use client";
 
-import { KeyValueField } from "@/components/ui/key-value-field";
 import type { AutoFormFieldProps } from "../core-types";
 import {
   denormalizeKeyValueEntries,
@@ -10,6 +9,7 @@ import {
 } from "../helpers";
 import { getProtoFieldCustomData } from "../proto";
 import type { FieldTypeDefinition } from "../registry";
+import { KeyValueField } from "../ui-components";
 import { useFieldTestIds } from "./shared";
 
 function KeyValueFieldComponent({ field, id, inputProps }: AutoFormFieldProps) {

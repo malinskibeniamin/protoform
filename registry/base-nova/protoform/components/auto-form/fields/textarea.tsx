@@ -1,9 +1,9 @@
 "use client";
 
-import { Textarea } from "@/components/ui/textarea";
 import type { AutoFormFieldProps } from "../core-types";
 import { getFieldUiConfig, LONG_TEXT_FIELD_PATTERN } from "../helpers";
 import type { FieldTypeDefinition } from "../registry";
+import { Textarea } from "../ui-components";
 import { useFieldTestIds } from "./shared";
 
 function TextareaFieldComponent({ error, field, id, inputProps }: AutoFormFieldProps) {

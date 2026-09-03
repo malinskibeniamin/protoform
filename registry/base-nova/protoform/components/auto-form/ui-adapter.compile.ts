@@ -11,7 +11,7 @@ import type {
   ChoiceboxItemTitle,
 } from "@/components/ui/choicebox";
 import type { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import type { Combobox, ComboboxOption } from "@/components/ui/combobox";
+import type { Combobox } from "@/components/ui/combobox";
 import type { CopyButton } from "@/components/ui/copy-button";
 import type { Field, FieldContent, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field";
 import type { Input } from "@/components/ui/input";
@@ -25,7 +25,7 @@ import type {
 import type { JSONField } from "@/components/ui/json-field";
 import type { KeyValueField } from "@/components/ui/key-value-field";
 import type { SimpleMultiSelect } from "@/components/ui/multi-select";
-import type { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import type { Popover, PopoverContent, PopoverTrigger, PopoverTriggerProps } from "@/components/ui/popover";
 import type { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import type {
   Select,
@@ -108,6 +108,6 @@ type RequiredValueExports = [
 ];
 
 export interface ProtoformUIAdapterContract {
-  ComboboxOption: ComboboxOption;
   exports: RequiredValueExports;
+  PopoverTriggerProps: PopoverTriggerProps;
 }

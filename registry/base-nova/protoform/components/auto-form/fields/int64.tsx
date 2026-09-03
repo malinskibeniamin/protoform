@@ -1,9 +1,9 @@
 "use client";
 
-import { Input } from "@/components/ui/input";
 import type { AutoFormFieldProps } from "../core-types";
 import { getFieldUiConfig } from "../helpers";
 import type { FieldTypeDefinition } from "../registry";
+import { Input } from "../ui-components";
 import { useFieldTestIds } from "./shared";
 
 function Int64FieldComponent({ error, field, id, inputProps }: AutoFormFieldProps) {

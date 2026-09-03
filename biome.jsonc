@@ -873,6 +873,20 @@
       }
     },
     {
+      // Renderer proxies are created once at module initialization, not during render;
+      // each returned component has stable identity and safely owns its context hook.
+      "includes": [
+        "registry/base-nova/protoform/components/auto-form/ui-components.tsx"
+      ],
+      "linter": {
+        "rules": {
+          "nursery": {
+            "noComponentHookFactories": "off"
+          }
+        }
+      }
+    },
+    {
       // Registry demo modules are discovered through their required default-export contract.
       "includes": ["registry/**/demo/**/*.tsx"],
       "linter": {

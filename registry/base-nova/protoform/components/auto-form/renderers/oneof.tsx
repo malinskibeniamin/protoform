@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAutoFormRenderContext, useAutoFormRuntimeContext } from "../context";
 import type { ParsedField } from "../core-types";
 import { useAutoFormEngine } from "../engine";
@@ -10,6 +9,7 @@ import { formSpacing } from "../form-spacing";
 import { createEmptyFieldValue, getFieldErrorMessage, getFieldUiConfig } from "../helpers";
 import { FormDepthProvider, useFormDepth } from "../layout-context";
 import { getAutoFormFieldTestId } from "../test-ids";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui-components";
 import { AutoFormFieldRenderer } from ".";
 import { getRenderedLabel, isDeprecatedField, isFieldHidden, useFieldPresentation } from "./shared";
 

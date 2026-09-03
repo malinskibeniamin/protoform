@@ -1,12 +1,10 @@
 "use client";
 
 import type React from "react";
-import { Button } from "@/components/ui/button";
-import { FieldLabel } from "@/components/ui/field";
-import { Heading, Text } from "@/components/ui/typography";
 import { cn } from "../../lib/utils";
 import { formSpacing } from "./form-spacing";
 import { FormDepthProvider, headingLevelForDepth, useFormDepth } from "./layout-context";
+import { Button, FieldLabel, Heading, Text } from "./ui-components";
 
 export interface FormLayoutProps extends Omit<React.ComponentProps<"form">, "children"> {
   children?: React.ReactNode;

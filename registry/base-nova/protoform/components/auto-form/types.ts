@@ -14,6 +14,7 @@ import type {
 import type { AutoFormEngineHandle } from "./engine";
 import type { ProtoFieldRenderType, ProtoUiRule } from "./proto";
 import type { FieldTypeRegistry } from "./registry";
+import type { ProtoformUIComponentMap } from "./ui-component-map";
 
 export type AutoFormMode = "simple" | "advanced" | "json";
 export type AutoFormValidationMode = "submit" | "blur" | "change";
@@ -104,6 +105,8 @@ export interface AutoFormProps<
 > {
   children?: React.ReactNode;
   classifyField?: (field: ParsedField<FieldTypes<TCustomFieldType>>) => "simple" | "advanced";
+  /** Host-owned shadcn-compatible primitives used by the registry-installed renderer. */
+  components?: ProtoformUIComponentMap;
   /**
    * Named data-source implementations consumed by dropdown-style controls
    * annotated with `field_ui.data_provider`. The keys mirror the proto

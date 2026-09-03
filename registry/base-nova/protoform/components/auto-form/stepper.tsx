@@ -3,8 +3,6 @@
 import { Check } from "lucide-react";
 import type React from "react";
 
-import { Button } from "@/components/ui/button";
-import { Heading, Text } from "@/components/ui/typography";
 import { formatProtoformMessage, type ProtoformMessageFormatter } from "../../lib/core/messages";
 
 import { useAutoFormRuntimeContext } from "./context";
@@ -12,6 +10,7 @@ import type { ParsedField } from "./core-types";
 import { FormDepthProvider, useFormDepth } from "./layout-context";
 import { getStepConfigurationError } from "./step-configuration";
 import type { AutoFormStep, AutoFormStepperOrientation } from "./types";
+import { Button, Heading, Text } from "./ui-components";
 
 function getStepState(isCurrent: boolean, isComplete: boolean): "complete" | "current" | "upcoming" {
   if (isCurrent) {

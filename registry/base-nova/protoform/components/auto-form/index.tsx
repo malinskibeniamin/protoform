@@ -7,6 +7,7 @@ import { ReactHookFormEngine } from "./adapters/react-hook-form";
 import { AutoFormCore } from "./auto-form-core";
 import { isProtoMessageDescriptor, isProtoProvider } from "./proto";
 import { protoConversionOptionsFromFieldConfig } from "./schema";
+import { shadcnUIComponents } from "./shadcn-ui-components";
 import type { AutoFormValidationMode, AutoFormProps as BaseAutoFormProps } from "./types";
 
 export type { ProtoformMessageCode, ProtoformMessageFormatter, ProtoformMessageParams } from "../../lib/core/messages";
@@ -64,6 +65,7 @@ export type { AutoFormEngineHandle } from "./engine";
 export { defaultRegistry } from "./fields";
 export { defaultClassifyField } from "./helpers";
 export { type FieldMatchContext, type FieldTypeDefinition, FieldTypeRegistry } from "./registry";
+export { shadcnUIComponents } from "./shadcn-ui-components";
 export { AutoFormSlot } from "./slot";
 export type {
   AutoFormMode,
@@ -79,6 +81,7 @@ export type {
   DeprecatedFieldPolicy,
   FieldTypes,
 } from "./types";
+export type { ProtoformUIComponentMap } from "./ui-component-map";
 
 function toHookFormMode(mode: AutoFormValidationMode): "onBlur" | "onChange" | "onSubmit" {
   switch (mode) {
@@ -96,7 +99,12 @@ function toHookFormMode(mode: AutoFormValidationMode): "onBlur" | "onChange" | "
 export function AutoForm<T extends FormValues = FormValues, TCustomFieldType extends string = never>(
   props: AutoFormProps<T, TCustomFieldType>
 ): React.ReactNode;
-export function AutoForm({ formOptions, resolver, ...props }: AutoFormProps<FormValues, string>) {
+export function AutoForm({
+  components = shadcnUIComponents,
+  formOptions,
+  resolver,
+  ...props
+}: AutoFormProps<FormValues, string>) {
   let protoDescriptor = isProtoMessageDescriptor(props.schema) ? props.schema : undefined;
   if (!protoDescriptor && isProtoProvider(props.schema)) {
     protoDescriptor = props.schema.getMessageDescriptor();
@@ -124,6 +132,7 @@ export function AutoForm({ formOptions, resolver, ...props }: AutoFormProps<Form
   return (
     <AutoFormCore<FormValues, UseFormReturn<FormValues, unknown, FormValues>, string>
       {...props}
+      components={components}
       renderEngine={({ children, defaultValues, values }) => (
         <ReactHookFormEngine<FormValues>
           defaultValues={defaultValues}

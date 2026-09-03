@@ -2,7 +2,6 @@
 
 import { TrashIcon } from "lucide-react";
 import type React from "react";
-import { Button } from "@/components/ui/button";
 import { formatProtoformMessage } from "../../../lib/core/messages";
 import { useAutoFormRenderContext, useAutoFormRuntimeContext } from "../context";
 import type { ParsedField } from "../core-types";
@@ -10,6 +9,7 @@ import { useAutoFormEngine } from "../engine";
 import { formSpacing } from "../form-spacing";
 import { createEmptyFieldValue, getFieldErrorMessage } from "../helpers";
 import { getAutoFormCollectionRemoveTestId, getAutoFormCollectionRowTestId, getAutoFormFieldTestId } from "../test-ids";
+import { Button } from "../ui-components";
 import { AutoFormFieldRenderer } from ".";
 import { cloneFieldForCompactRow, getRenderedLabel, isComplexCollectionField, useFieldPresentation } from "./shared";
 

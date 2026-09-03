@@ -1,9 +1,9 @@
 "use client";
 
-import { Textarea } from "@/components/ui/textarea";
 import type { AutoFormFieldProps } from "../core-types";
 import { getFieldUiConfig } from "../helpers";
 import type { FieldTypeDefinition } from "../registry";
+import { Textarea } from "../ui-components";
 import { useFieldTestIds } from "./shared";
 
 function BytesFieldComponent({ error, field, id, inputProps }: AutoFormFieldProps) {

@@ -1,11 +1,10 @@
 "use client";
 
-import { Textarea } from "@/components/ui/textarea";
-import { Text } from "@/components/ui/typography";
 import type { AutoFormFieldProps } from "../core-types";
 import { FIELD_MASK_PATH_SPLIT_PATTERN, getFieldUiConfig } from "../helpers";
 import { getProtoFieldCustomData } from "../proto";
 import type { FieldTypeDefinition } from "../registry";
+import { Text, Textarea } from "../ui-components";
 import { useFieldTestIds } from "./shared";
 
 function FieldMaskFieldComponent({ error, field, id, inputProps }: AutoFormFieldProps) {

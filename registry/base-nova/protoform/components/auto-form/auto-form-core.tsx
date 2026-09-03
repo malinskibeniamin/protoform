@@ -2,9 +2,6 @@
 
 import { isMessage } from "@bufbuild/protobuf";
 import React from "react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { Heading, Text } from "@/components/ui/typography";
 import { formatProtoformMessage, type ProtoformMessageFormatter } from "../../lib/core/messages";
 import { createUpdateMask, formValuesToProto, preserveProtoMessageSource } from "../../lib/protobuf-provider";
 import { type AutoFormDiagnostic, inspectAutoFormConfiguration } from "./configuration";
@@ -48,6 +45,16 @@ import type {
   AutoFormValidationMode,
   ResolvedSchema,
 } from "./types";
+import type { ProtoformUIComponentMap } from "./ui-component-map";
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+  Heading,
+  ProtoformUIProvider,
+  Text,
+  TooltipProvider,
+} from "./ui-components";
 import { normalizeModes, resolveInitialMode } from "./utils/modes";
 
 const noopOnSubmit = async () => undefined;
@@ -75,7 +82,8 @@ export type AutoFormCoreProps<
   T extends Record<string, unknown>,
   TNativeForm,
   TCustomFieldType extends string = never,
-> = Omit<AutoFormProps<T, TNativeForm, never, never, TCustomFieldType>, "formOptions" | "resolver"> & {
+> = Omit<AutoFormProps<T, TNativeForm, never, never, TCustomFieldType>, "components" | "formOptions" | "resolver"> & {
+  components: ProtoformUIComponentMap;
   renderEngine: AutoFormEngineRender;
 };
 
@@ -765,13 +773,15 @@ export function AutoFormCore<T extends Record<string, unknown>, TNativeForm, TCu
     : [];
 
   return (
-    <AutoFormErrorBoundary
-      configurationDiagnostics={configurationDiagnostics}
-      formatMessage={props.formatMessage}
-      onDiagnostic={props.onDiagnostic}
-      resetKey={props.schema}
-    >
-      <AutoFormCoreInner {...props} />
-    </AutoFormErrorBoundary>
+    <ProtoformUIProvider components={props.components}>
+      <AutoFormErrorBoundary
+        configurationDiagnostics={configurationDiagnostics}
+        formatMessage={props.formatMessage}
+        onDiagnostic={props.onDiagnostic}
+        resetKey={props.schema}
+      >
+        <AutoFormCoreInner {...props} />
+      </AutoFormErrorBoundary>
+    </ProtoformUIProvider>
   );
 }
