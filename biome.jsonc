@@ -1209,6 +1209,32 @@
           }
         }
       }
+    },
+    {
+      // Package entrypoints and build-only bridges intentionally aggregate the versioned public API.
+      "includes": [
+        "packages/*/src/index.ts",
+        "packages/*/src/index.tsx",
+        "packages/*/src/*-bridge.ts"
+      ],
+      "linter": {
+        "rules": {
+          "performance": {
+            "noBarrelFile": "off"
+          }
+        }
+      }
+    },
+    {
+      // Rslib discovers package-local config through the default export required by its loader.
+      "includes": ["packages/*/rslib.config.ts"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noDefaultExport": "off"
+          }
+        }
+      }
     }
   ]
 }

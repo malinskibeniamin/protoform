@@ -1,6 +1,6 @@
 import { describe, expect } from "@rstest/core";
 
-import { expectedReleaseTag, verifyReleaseTag } from "./verify-release-tag";
+import { expectedReleaseTag, verifyPackageVersions, verifyReleaseTag } from "./verify-release-tag";
 
 describe("release tag verification", () => {
   test("requires the immutable tag to match the package version", () => {
@@ -10,5 +10,18 @@ describe("release tag verification", () => {
       "Release tag v1.0.1 does not match package version 1.0.0"
     );
     expect(() => verifyReleaseTag(undefined, "1.0.0")).toThrow("GITHUB_REF_NAME is required");
+  });
+
+  test("requires every published package to share the release version", () => {
+    expect(() =>
+      verifyPackageVersions("1.0.0", [
+        { name: "@protoform/core", version: "1.0.0" },
+        { name: "@protoform/auto-form", version: "1.0.0" },
+        { name: "@protoform/react", version: "1.0.0" },
+      ])
+    ).not.toThrow();
+    expect(() => verifyPackageVersions("1.0.0", [{ name: "@protoform/core", version: "1.0.1" }])).toThrow(
+      "@protoform/core version 1.0.1 does not match release version 1.0.0"
+    );
   });
 });

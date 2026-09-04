@@ -97,7 +97,10 @@ const cardHeaderVariants = cva(
   }
 );
 
-interface CardHeaderProps extends React.ComponentProps<"div">, VariantProps<typeof cardHeaderVariants>, SharedProps {}
+export interface CardHeaderProps
+  extends React.ComponentProps<"div">,
+    VariantProps<typeof cardHeaderVariants>,
+    SharedProps {}
 
 const CardHeader = React.forwardRef<HTMLDivElement, CardHeaderProps>(
   ({ className, spacing, padding, testId, ...props }, ref) => (
@@ -189,7 +192,10 @@ const cardContentVariants = cva("", {
   },
 });
 
-interface CardContentProps extends React.ComponentProps<"div">, VariantProps<typeof cardContentVariants>, SharedProps {}
+export interface CardContentProps
+  extends React.ComponentProps<"div">,
+    VariantProps<typeof cardContentVariants>,
+    SharedProps {}
 
 const CardContent = React.forwardRef<HTMLDivElement, CardContentProps>(
   ({ className, padding, space, testId, ...props }, ref) => (

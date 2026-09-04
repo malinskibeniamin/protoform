@@ -7,7 +7,7 @@ const repositoryRoot = resolve(import.meta.dirname, "..");
 const MIT_LICENSE_PATTERN = /^MIT License/u;
 const PRIVATE_REGISTRY_PATTERN = /npm\.pkg\.github\.com|read:packages/u;
 const PACKAGE_RELEASE_PATTERN = /changeset|npm publish|npm\.pkg\.github/iu;
-const PACKAGE_ARTIFACT_PATTERN = /package-artifacts|tarball|packWorkspacePackages/iu;
+const PACKAGE_ARTIFACT_PATTERN = /package-artifacts|\.tgz|pack-packages/iu;
 const STABLE_REGISTRY_URL = "https://raw.githubusercontent.com/malinskibeniamin/protoform/v1.0.0/public/r/{name}.json";
 const PROTOFORM_LICENSE_DEPENDENCY = "@protoform/protoform-license";
 const PROTOFORM_LICENSE_TARGET = "~/LICENSES/protoform-MIT.txt";
@@ -29,8 +29,8 @@ function sourceFiles(path: string): string[] {
   });
 }
 
-describe("registry-only distribution", () => {
-  test("ships Protoform under MIT without private package workspaces", () => {
+describe("distribution", () => {
+  test("ships Protoform under MIT with public package workspaces", () => {
     const manifest = JSON.parse(readFileSync(resolve(repositoryRoot, "package.json"), "utf8")) as {
       dependencies?: Record<string, string>;
       scripts?: Record<string, string>;
@@ -38,16 +38,17 @@ describe("registry-only distribution", () => {
     };
 
     expect(readFileSync(resolve(repositoryRoot, "LICENSE"), "utf8")).toMatch(MIT_LICENSE_PATTERN);
-    expect(manifest.workspaces).toBeUndefined();
-    expect(existsSync(resolve(repositoryRoot, "packages"))).toBe(false);
+    // allow: test-declarative-metadata workspaces are the package manager's public project boundary.
+    expect(manifest.workspaces).toContain("packages/*");
+    expect(existsSync(resolve(repositoryRoot, "packages"))).toBe(true);
     expect(
       Object.keys(manifest.dependencies ?? {}).filter((dependency) => dependency.startsWith("@malinskibeniamin/"))
     ).toEqual([]);
-    expect(
-      Object.keys(manifest.scripts ?? {}).filter(
-        (script) => script.startsWith("packages:") || script.startsWith("changeset")
-      )
-    ).toEqual([]);
+    expect(Object.keys(manifest.scripts ?? {}).filter((script) => script.startsWith("packages:"))).toEqual([
+      "packages:build",
+      "packages:pack",
+      "packages:smoke",
+    ]);
   });
 
   test("copies license notices with every installable registry item", () => {
@@ -122,7 +123,6 @@ describe("registry-only distribution", () => {
 
     expect(consumerContent).not.toContain("@malinskibeniamin/");
     expect(consumerContent).not.toMatch(PRIVATE_REGISTRY_PATTERN);
-    expect(consumerContent).not.toContain("packages:");
   });
 
   test("documents the public Buf registry and portable bookstore install", () => {
@@ -138,7 +138,7 @@ describe("registry-only distribution", () => {
     expect(bookstore).not.toContain("protoform.dev");
   });
 
-  test("uses the public registry and Git tags as the distribution boundary", () => {
+  test("uses npm packages and Git-tagged source as distribution boundaries", () => {
     const readme = readFileSync(resolve(repositoryRoot, "README.md"), "utf8");
     const release = readFileSync(resolve(repositoryRoot, ".github/workflows/release.yml"), "utf8");
 
@@ -146,17 +146,22 @@ describe("registry-only distribution", () => {
     expect(readme).toContain("Git tags");
     expect(readme).toContain(STABLE_REGISTRY_URL);
     expect(readme).toContain("add @protoform/protoform");
+    expect(readme).toContain("bun add @protoform/core");
+    expect(readme).toContain("bun add @protoform/react");
     expect(release).toContain("tags:");
     expect(release).toContain("public/r LICENSE LICENSES THIRD_PARTY_NOTICES.md");
-    expect(release).not.toMatch(PACKAGE_RELEASE_PATTERN);
+    expect(release).toMatch(PACKAGE_RELEASE_PATTERN);
     expect(existsSync(resolve(repositoryRoot, ".changeset"))).toBe(false);
   });
 
-  test("tests consumers through registry source only", () => {
-    const smoke = readFileSync(resolve(repositoryRoot, "scripts/consumer-fixture-smoke.ts"), "utf8");
+  test("tests source and compiled package consumers", () => {
+    const registrySmoke = readFileSync(resolve(repositoryRoot, "scripts/consumer-fixture-smoke.ts"), "utf8");
+    const packageSmoke = readFileSync(resolve(repositoryRoot, "scripts/package-consumer-smoke.ts"), "utf8");
 
-    expect(smoke).toContain("@protoform/bookstore");
-    expect(smoke).not.toMatch(PACKAGE_ARTIFACT_PATTERN);
+    expect(registrySmoke).toContain("@protoform/bookstore");
+    expect(packageSmoke).toContain("@protoform/core");
+    expect(packageSmoke).toContain("@protoform/react");
+    expect(packageSmoke).toMatch(PACKAGE_ARTIFACT_PATTERN);
   });
 
   test("keeps the source generator explicit and runnable", () => {

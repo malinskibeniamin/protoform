@@ -1,0 +1,46 @@
+{
+  "name": "@protoform/react",
+  "version": "1.0.0",
+  "private": false,
+  "description": "Protoform manual forms and AutoForm for React Hook Form.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/malinskibeniamin/protoform.git",
+    "directory": "packages/react"
+  },
+  "license": "MIT",
+  "sideEffects": false,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "rslib build"
+  },
+  "dependencies": {
+    "@protoform/auto-form": "workspace:^",
+    "@protoform/core": "workspace:^"
+  },
+  "devDependencies": {
+    "@microsoft/api-extractor": "7.59.0",
+    "@rsbuild/plugin-react": "2.1.0",
+    "@rslib/core": "1.0.0"
+  },
+  "peerDependencies": {
+    "react": ">=19.2.0 <20",
+    "react-hook-form": ">=7.81.0 <8"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}

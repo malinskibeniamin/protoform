@@ -1228,7 +1228,7 @@ const aipRequirements: readonly ReadinessRequirement[] = [
     182,
     "External software dependencies",
     "scripts/registry-only-distribution.test.ts",
-    "ships Protoform under MIT without private package workspaces",
+    "ships Protoform under MIT with public package workspaces",
     "Every external runtime dependency is declared by a public source-copy registry item.",
     "reviewing"
   ),
@@ -1504,7 +1504,7 @@ const productionRequirements: readonly ReadinessRequirement[] = [
     "production.registry-dependencies",
     "Registry dependency contract",
     "scripts/registry-only-distribution.test.ts",
-    "ships Protoform under MIT without private package workspaces"
+    "ships Protoform under MIT with public package workspaces"
   ),
   verified(
     "production",

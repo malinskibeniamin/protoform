@@ -13,3 +13,6 @@
 - **Partial-edit validation**: Validation that reports field issues only for modification intent while retaining message-level issues that cannot be attributed safely.
 - **UI component map**: The exhaustive host-owned set of shadcn-compatible primitives used by Protoform's registry-installed renderers.
 - **shadcn adapter**: A registry source file that maps Protoform's UI boundary to the consumer's local shadcn component aliases without copying implementations.
+- **Compiled core package**: `@protoform/core`; the versioned manual-form surface for protobuf conversion, validation, server-error mapping, and `useProtoForm`. It never installs AutoForm.
+- **AutoForm renderer package**: `@protoform/auto-form`; the versioned engine-neutral renderer and field logic. It requires a host-owned UI component map and does not ship shadcn implementations.
+- **React umbrella package**: `@protoform/react`; the versioned React Hook Form surface that composes and re-exports the compiled core package and AutoForm renderer package so both update together.

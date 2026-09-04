@@ -7,12 +7,15 @@
   "bin": {
     "protoform": "./scripts/protoform.ts"
   },
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "aip:lint": "bun run scripts/check-api-linter.ts",
     "build": "bun run registry:build && blume build --strict && bun run scripts/finalize-docs-build.ts",
     "check": "biome check . --error-on-warnings",
     "check:boundaries": "bun run scripts/check-core-boundaries.ts",
-    "ci:gate": "bun run registry:build && bun run registry:smoke && bun run registry:consumer-smoke && bun run check:boundaries && bun run test:conformance && bun run aip:lint && bun run readiness:gate && bun run test:unit && bun run test:integration && bun run docs:blume:translate:check && bun run build && bun run docs:blume:audit && bun run typecheck && bun run lint:no-suppressions && bun run lint && bun run doctor:strict",
+    "ci:gate": "bun run registry:build && bun run registry:smoke && bun run registry:consumer-smoke && bun run packages:smoke && bun run check:boundaries && bun run test:conformance && bun run aip:lint && bun run readiness:gate && bun run test:unit && bun run test:integration && bun run docs:blume:translate:check && bun run build && bun run docs:blume:audit && bun run typecheck && bun run lint:no-suppressions && bun run lint && bun run doctor:strict",
     "demos:generate": "bun run scripts/generate-demo-catalog.ts",
     "dev": "blume dev --port 55011",
     "docs:blume:audit": "blume audit --fail-on info --skip url_style",
@@ -38,10 +41,13 @@
     "lint:fix": "biome check . --write",
     "lint:no-suppressions": "bun run scripts/check-no-suppressions.ts",
     "migrate:zod": "bun run scripts/migrate-zod-to-protoform.ts",
+    "packages:build": "bun run --cwd packages/core build && bun run --cwd packages/auto-form build && bun run --cwd packages/react build",
+    "packages:pack": "bun run packages:build && bun run scripts/pack-packages.ts",
+    "packages:smoke": "bun run packages:pack && bun run scripts/package-consumer-smoke.ts",
     "proto:breaking": "bun run scripts/check-proto-breaking.ts",
     "proto:generate": "buf dep update && buf generate --template buf.gen.example.yaml && buf generate --template buf.gen.examples.yaml && buf generate --template buf.gen.conformance.yaml && buf generate --template buf.gen.form.yaml && buf generate --template buf.gen.bookstore-form.yaml && bun run demos:generate && bun run registry:build",
     "protoform:audit": "bun run scripts/protoform.ts audit",
-    "quality:gate": "bun run registry:build && bun run registry:smoke && bun run registry:consumer-smoke && bun run check:boundaries && bun run test:conformance && bun run aip:lint && bun run readiness:gate && bun run test:unit && bun run test:integration && bun run test:browser && bun run test:e2e && bun run docs:blume:translate:check && bun run build && bun run docs:blume:audit && bun run typecheck && bun run lint:no-suppressions && bun run lint && bun run doctor:strict",
+    "quality:gate": "bun run registry:build && bun run registry:smoke && bun run registry:consumer-smoke && bun run packages:smoke && bun run check:boundaries && bun run test:conformance && bun run aip:lint && bun run readiness:gate && bun run test:unit && bun run test:integration && bun run test:browser && bun run test:e2e && bun run docs:blume:translate:check && bun run build && bun run docs:blume:audit && bun run typecheck && bun run lint:no-suppressions && bun run lint && bun run doctor:strict",
     "readiness:gate": "bun run scripts/readiness-report.ts --require-profile-complete",
     "readiness:report": "bun run scripts/readiness-report.ts",
     "registry:build": "shadcn build",
@@ -66,7 +72,7 @@
     "test:unit": "node scripts/run-tests.mjs unit --reporters verbose",
     "test:unit:ci": "node scripts/run-tests.mjs unit --pool.maxWorkers=1 --reporters dot",
     "test:unit:watch": "node scripts/run-tests.mjs unit --watch --reporters verbose",
-    "typecheck": "bun run typecheck:coverage && bun run typecheck:source && bun run typecheck:tests && bun run docs:blume:check",
+    "typecheck": "bun run packages:build && bun run typecheck:coverage && bun run typecheck:source && bun run typecheck:tests && bun run docs:blume:check",
     "typecheck:coverage": "bun run scripts/check-typescript-coverage.ts",
     "typecheck:source": "tsc --noEmit",
     "typecheck:tests": "tsc --project tsconfig.tests.json --noEmit"
@@ -141,7 +147,8 @@
     "tailwindcss": "^4.3.3",
     "typescript": "npm:@typescript/typescript6@^6.0.3",
     "ultracite": "7.10.6",
-    "undici": "8.10.0"
+    "undici": "8.10.0",
+    "vite": "^8.1.4"
   },
   "packageManager": "bun@1.4.0"
 }
