@@ -111,7 +111,7 @@ export const textVariants = cva("font-sans", {
 });
 
 // Main Heading Component
-interface HeadingProps
+export interface HeadingProps
   extends React.HTMLAttributes<HTMLHeadingElement>,
     VariantProps<typeof headingVariants>,
     SharedProps {
@@ -138,7 +138,7 @@ export const Heading = forwardRef<HTMLHeadingElement, HeadingProps>((componentPr
 Heading.displayName = "Heading";
 
 // Text Component
-interface TextProps extends React.HTMLAttributes<HTMLElement>, VariantProps<typeof textVariants>, SharedProps {
+export interface TextProps extends React.HTMLAttributes<HTMLElement>, VariantProps<typeof textVariants>, SharedProps {
   as?: "p" | "div" | "span" | "small";
   children: React.ReactNode;
 }

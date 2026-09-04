@@ -24,14 +24,16 @@
     "README.md"
   ],
   "scripts": {
-    "build": "tsdown"
+    "build": "rslib build"
   },
   "dependencies": {
     "@protoform/auto-form": "workspace:^",
     "@protoform/core": "workspace:^"
   },
   "devDependencies": {
-    "tsdown": "^0.23.0"
+    "@microsoft/api-extractor": "7.59.0",
+    "@rsbuild/plugin-react": "2.1.0",
+    "@rslib/core": "0.23.2"
   },
   "peerDependencies": {
     "react": ">=19.2.0 <20",

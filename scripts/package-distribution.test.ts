@@ -8,6 +8,7 @@ const packageDirectories = ["core", "auto-form", "react"] as const;
 
 interface PackageManifest {
   dependencies?: Record<string, string>;
+  devDependencies?: Record<string, string>;
   exports?: Record<string, unknown>;
   files?: string[];
   license?: string;
@@ -54,6 +55,17 @@ describe("compiled package distribution", () => {
     expect(readManifest("packages/core").name).toBe("@protoform/core");
     expect(readManifest("packages/auto-form").name).toBe("@protoform/auto-form");
     expect(readManifest("packages/react").name).toBe("@protoform/react");
+  });
+
+  test("builds public packages with Rslib", () => {
+    for (const directory of packageDirectories) {
+      const manifest = readManifest(`packages/${directory}`);
+
+      // allow: test-declarative-metadata build metadata declares the package-build contract.
+      expect(manifest.scripts?.["build"]).toBe("rslib build");
+      expect(manifest.devDependencies).toHaveProperty("@rslib/core");
+      expect(manifest.devDependencies).not.toHaveProperty("tsdown");
+    }
   });
 
   test("keeps manual forms independent from AutoForm", () => {

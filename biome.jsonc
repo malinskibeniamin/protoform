@@ -1226,8 +1226,8 @@
       }
     },
     {
-      // tsdown discovers package-local config through the default export required by its loader.
-      "includes": ["packages/*/tsdown.config.ts"],
+      // Rslib discovers package-local config through the default export required by its loader.
+      "includes": ["packages/*/rslib.config.ts"],
       "linter": {
         "rules": {
           "style": {
