@@ -1,9 +1,9 @@
 "use client";
 
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import type { AutoFormFieldProps } from "../core-types";
 import { getFieldUiConfig } from "../helpers";
 import type { FieldTypeDefinition } from "../registry";
+import { ToggleGroup, ToggleGroupItem } from "../ui-components";
 import { getControlLabel, getFlatOptions, hasNumericOptions, renderOptionLabel, useFieldTestIds } from "./shared";
 
 function ToggleGroupFieldComponent({ error, field, id, inputProps, label }: AutoFormFieldProps) {

@@ -7,6 +7,8 @@ import { AutoFormContext, type AutoFormContextValue } from "../context";
 import type { ParsedField } from "../core-types";
 import { ArrayElementWrapper, ArrayWrapper, FieldWrapper, Form, ObjectWrapper } from "../field-wrapper";
 import { formSpacing } from "../form-spacing";
+import { shadcnUIComponents } from "../shadcn-ui-components";
+import { ProtoformUIProvider } from "../ui-components";
 
 /**
  * Minimal AutoForm context wrapper — just enough for field-wrapper to render.
@@ -22,7 +24,11 @@ function withAutoFormContext(children: React.ReactNode) {
     testIdPrefix: "test",
     uiComponents: {} as AutoFormContextValue["uiComponents"],
   };
-  return <AutoFormContext.Provider value={value}>{children}</AutoFormContext.Provider>;
+  return (
+    <ProtoformUIProvider components={shadcnUIComponents}>
+      <AutoFormContext.Provider value={value}>{children}</AutoFormContext.Provider>
+    </ProtoformUIProvider>
+  );
 }
 
 function makeField(partial: Partial<ParsedField> = {}): ParsedField {
@@ -270,14 +276,14 @@ describe("ArrayWrapper", () => {
 describe("ArrayElementWrapper", () => {
   test("contains each complex repeated item in a distinct native card", () => {
     render(
-      <>
+      <ProtoformUIProvider components={shadcnUIComponents}>
         <ArrayElementWrapper index={0} onRemove={() => undefined} testId="item-0">
           first
         </ArrayElementWrapper>
         <ArrayElementWrapper index={1} onRemove={() => undefined} testId="item-1">
           second
         </ArrayElementWrapper>
-      </>
+      </ProtoformUIProvider>
     );
     const first = screen.getByTestId("item-0");
     const second = screen.getByTestId("item-1");

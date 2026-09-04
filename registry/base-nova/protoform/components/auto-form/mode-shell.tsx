@@ -2,15 +2,23 @@
 
 import { MotionConfig } from "motion/react";
 import type React from "react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import { CopyButton } from "@/components/ui/copy-button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Textarea } from "@/components/ui/textarea";
-import { Heading, Text } from "@/components/ui/typography";
 import { formSpacing } from "./form-spacing";
 import { buildAutoFormTestId } from "./test-ids";
 import type { AutoFormMode, AutoFormSummaryContext } from "./types";
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+  Button,
+  CopyButton,
+  Heading,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  Text,
+  Textarea,
+} from "./ui-components";
 import { safeStringify } from "./utils/serialization";
 
 function getModeLabel(mode: AutoFormMode) {

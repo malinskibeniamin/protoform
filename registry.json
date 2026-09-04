@@ -408,7 +408,7 @@
       "name": "auto-form-core",
       "type": "registry:block",
       "title": "Protoform AutoForm core",
-      "description": "Engine-neutral AutoForm renderer that imports UI capabilities through the consumer configured ui alias.",
+      "description": "Engine-neutral AutoForm renderer that consumes a host-owned shadcn-compatible component map.",
       "registryDependencies": [
         "@protoform/protoform-foundation",
         "@protoform/protobuf-provider"
@@ -657,6 +657,14 @@
           "type": "registry:component"
         },
         {
+          "path": "registry/base-nova/protoform/components/auto-form/ui-component-map.ts",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/ui-components.tsx",
+          "type": "registry:component"
+        },
+        {
           "path": "registry/base-nova/protoform/components/auto-form/cel-runtime.ts",
           "type": "registry:component"
         },
@@ -698,7 +706,7 @@
       "name": "protoform-react",
       "type": "registry:block",
       "title": "Protoform React",
-      "description": "React Hook Form AutoForm renderer and field logic using the consumer configured ui alias.",
+      "description": "React Hook Form AutoForm renderer and field logic using a consumer-owned shadcn-compatible component map.",
       "registryDependencies": [
         "@protoform/auto-form-core",
         "@protoform/protoform-core"
@@ -711,6 +719,10 @@
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/adapters/react-hook-form.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/shadcn-ui-components.ts",
           "type": "registry:component"
         }
       ]
@@ -964,6 +976,10 @@
         {
           "path": "registry/base-nova/protoform/components/auto-form/adapters/tanstack.tsx",
           "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/shadcn-ui-components.ts",
+          "type": "registry:component"
         }
       ]
     },
@@ -984,6 +1000,10 @@
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/adapters/react-hook-form-v8.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/shadcn-ui-components.ts",
           "type": "registry:component"
         }
       ]
@@ -1007,6 +1027,10 @@
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/adapters/tanstack-v2.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/shadcn-ui-components.ts",
           "type": "registry:component"
         }
       ]

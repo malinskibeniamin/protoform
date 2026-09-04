@@ -1,9 +1,9 @@
 "use client";
 
-import { Input } from "@/components/ui/input";
 import type { AutoFormFieldProps } from "../core-types";
 import { getFieldUiConfig } from "../helpers";
 import type { FieldTypeDefinition } from "../registry";
+import { Input } from "../ui-components";
 import { normalizeNumberValue, resolveNumericStep, useFieldTestIds } from "./shared";
 
 function NumberFieldComponent({ error, field, id, inputProps }: AutoFormFieldProps) {

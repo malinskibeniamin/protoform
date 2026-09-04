@@ -1,12 +1,12 @@
 "use client";
 
-import { Text } from "@/components/ui/typography";
 import { useAutoFormRenderContext, useAutoFormRuntimeContext } from "../context";
 import type { ParsedField } from "../core-types";
 import { useAutoFormEngine } from "../engine";
 import { getPathInObject } from "../field-utils";
 import { getFieldErrorMessage } from "../helpers";
 import { getAutoFormFieldTestId } from "../test-ids";
+import { Text } from "../ui-components";
 import { AutoFormFieldRenderer } from ".";
 import { getRenderedLabel, useFieldPresentation } from "./shared";
 

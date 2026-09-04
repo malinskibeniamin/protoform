@@ -229,6 +229,19 @@ describe("build-time UI adapter registry", () => {
 });
 
 describe("native form adapter registry entries", () => {
+  test("ships the consumer shadcn map with every AutoForm adapter", () => {
+    const componentMapPath = "registry/base-nova/protoform/components/auto-form/shadcn-ui-components.ts";
+
+    for (const adapterName of [
+      "protoform-react",
+      "auto-form-react-hook-form-v8",
+      "auto-form-tanstack",
+      "auto-form-tanstack-v2",
+    ]) {
+      expect(filePaths(item(adapterName)), adapterName).toContain(componentMapPath);
+    }
+  });
+
   test("keeps the shared AutoForm core independent from form engines", () => {
     const core = item("auto-form-core");
 

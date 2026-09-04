@@ -1,9 +1,9 @@
 "use client";
 
-import { Combobox } from "@/components/ui/combobox";
 import type { AutoFormFieldProps } from "../core-types";
 import { getFieldUiConfig } from "../helpers";
 import type { FieldTypeDefinition } from "../registry";
+import { Combobox } from "../ui-components";
 import { getFlatOptions, getGroupedOptions, hasNumericOptions, useFieldTestIds } from "./shared";
 
 function ComboboxFieldComponent({ field, id, inputProps }: AutoFormFieldProps) {

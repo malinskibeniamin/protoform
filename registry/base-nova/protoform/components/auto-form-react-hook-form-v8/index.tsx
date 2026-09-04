@@ -7,6 +7,7 @@ import { ReactHookFormEngine } from "../auto-form/adapters/react-hook-form-v8";
 import { AutoFormCore } from "../auto-form/auto-form-core";
 import { isProtoMessageDescriptor, isProtoProvider } from "../auto-form/proto";
 import { protoConversionOptionsFromFieldConfig } from "../auto-form/schema";
+import { shadcnUIComponents } from "../auto-form/shadcn-ui-components";
 import type { AutoFormValidationMode, AutoFormProps as BaseAutoFormProps } from "../auto-form/types";
 
 export type { ProtoformMessageCode, ProtoformMessageFormatter, ProtoformMessageParams } from "../../lib/core/messages";
@@ -96,7 +97,12 @@ function toHookFormMode(mode: AutoFormValidationMode): "onBlur" | "onChange" | "
 export function AutoForm<T extends FormValues = FormValues, TCustomFieldType extends string = never>(
   props: AutoFormProps<T, TCustomFieldType>
 ): React.ReactNode;
-export function AutoForm({ formOptions, resolver, ...props }: AutoFormProps<FormValues, string>) {
+export function AutoForm({
+  components = shadcnUIComponents,
+  formOptions,
+  resolver,
+  ...props
+}: AutoFormProps<FormValues, string>) {
   let protoDescriptor = isProtoMessageDescriptor(props.schema) ? props.schema : undefined;
   if (!protoDescriptor && isProtoProvider(props.schema)) {
     protoDescriptor = props.schema.getMessageDescriptor();
@@ -124,6 +130,7 @@ export function AutoForm({ formOptions, resolver, ...props }: AutoFormProps<Form
   return (
     <AutoFormCore<FormValues, UseFormReturn<FormValues, unknown, FormValues>, string>
       {...props}
+      components={components}
       renderEngine={({ children, defaultValues, values }) => (
         <ReactHookFormEngine<FormValues>
           defaultValues={defaultValues}

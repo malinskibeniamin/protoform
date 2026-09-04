@@ -7,6 +7,33 @@ The project distributes source, not Protoform npm packages. `shadcn add` copies 
 components, generator, or examples into the consuming repository so teams can inspect and adapt
 everything they ship.
 
+## Reuse existing shadcn components
+
+Install `protoform-react` when the app already owns its shadcn-compatible components. This copies
+the renderer and a typed component map, but no UI implementations:
+
+```bash
+bunx shadcn@latest add @protoform/protoform-react
+```
+
+The default `shadcnUIComponents` map points at the app's existing `@/components/ui/*` aliases. A
+vendor can replace individual entries or provide a complete map without changing Protoform's
+renderer:
+
+```tsx
+import { AutoForm, shadcnUIComponents, type ProtoformUIComponentMap } from "@/components/auto-form";
+import { Button } from "@/components/ui/button";
+
+const components = {
+  ...shadcnUIComponents,
+  Button,
+} satisfies ProtoformUIComponentMap;
+
+<AutoForm components={components} schema={RequestSchema} />;
+```
+
+Install `protoform-shadcn` instead when the app wants Protoform's optional default UI source.
+
 ## Flagship example
 
 The bookstore walkthrough connects five real RPCs to one generated contract:
@@ -48,8 +75,8 @@ Useful items:
 | `protobuf-provider` | Full schema/UI parsing, annotations, AIP metadata, and workflows |
 | `use-proto-form` | Native React Hook Form integration |
 | `use-proto-form-tanstack` | Native TanStack Form integration |
-| `protoform-react` | React Hook Form AutoForm using the consumer UI alias |
-| `protoform-shadcn` | Optional default shadcn UI implementations |
+| `protoform-react` | React Hook Form AutoForm using a consumer-owned shadcn component map |
+| `protoform-shadcn` | Optional default shadcn UI source |
 | `auto-form-tanstack` | TanStack Form AutoForm |
 | `protoc-gen-protoform` | Source-copy Buf plugin |
 | `bookstore` | Complete five-RPC example |

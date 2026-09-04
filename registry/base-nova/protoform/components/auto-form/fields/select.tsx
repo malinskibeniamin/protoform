@@ -1,17 +1,6 @@
 "use client";
 
 import React from "react";
-import { Button } from "@/components/ui/button";
-import { Combobox, type ComboboxOption } from "@/components/ui/combobox";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { formatProtoformMessage } from "../../../lib/core/messages";
 import { useAutoForm } from "../context";
 import type { AutoFormFieldProps } from "../core-types";
@@ -25,6 +14,18 @@ import {
 } from "../data-providers";
 import { getPathInObject } from "../field-utils";
 import type { FieldTypeDefinition } from "../registry";
+import {
+  Button,
+  Combobox,
+  type ComboboxOption,
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "../ui-components";
 import { safeStringify } from "../utils/serialization";
 import {
   getControlLabel,

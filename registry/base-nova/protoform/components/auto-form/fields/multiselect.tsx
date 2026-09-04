@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { SimpleMultiSelect } from "@/components/ui/multi-select";
 import { formatProtoformMessage } from "../../../lib/core/messages";
 import { useAutoForm } from "../context";
 import type { AutoFormFieldProps } from "../core-types";
@@ -14,6 +13,7 @@ import {
 import { getPathInObject } from "../field-utils";
 import { getFieldUiConfig, NUMERIC_OPTION_PATTERN } from "../helpers";
 import type { FieldTypeDefinition } from "../registry";
+import { SimpleMultiSelect } from "../ui-components";
 import { safeStringify } from "../utils/serialization";
 import { getGroupedOptions, readDataProviderId, renderOptionLabel, useFieldTestIds } from "./shared";
 
