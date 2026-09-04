@@ -63,7 +63,7 @@ describe("compiled package distribution", () => {
 
       // allow: test-declarative-metadata build metadata declares the package-build contract.
       expect(manifest.scripts?.["build"]).toBe("rslib build");
-      expect(manifest.devDependencies).toHaveProperty("@rslib/core");
+      expect(manifest.devDependencies?.["@rslib/core"]).toBe("1.0.0");
       expect(manifest.devDependencies).not.toHaveProperty("tsdown");
     }
   });
