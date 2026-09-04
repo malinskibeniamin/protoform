@@ -32,6 +32,8 @@ gitleaks git . --log-opts="--remotes=origin" --redact
 - [ ] Required actions remain pinned to reviewed full commit SHAs.
 - [ ] Dependabot is enabled for Bun packages, Actions, and the docs container.
 - [ ] The final release commit produces no uncommitted registry diff after `bun run registry:build`.
+- [ ] `bun run packages:smoke` packs and type-checks core-only and combined React consumers.
+- [ ] The `@protoform` npm scope, first-publish token, and trusted publisher settings are ready.
 
 ## GitHub settings — blocking
 

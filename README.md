@@ -1,13 +1,37 @@
 # Protoform
 
-Protoform is an MIT-licensed shadcn registry for building React forms from protobuf descriptors,
-Protovalidate constraints, CEL rules, and Google AIP conventions.
+Protoform is an MIT-licensed package and shadcn registry for building React forms from protobuf
+descriptors, Protovalidate constraints, CEL rules, and Google AIP conventions.
 
-The project distributes source, not Protoform npm packages. `shadcn add` copies the runtime, hooks,
-components, generator, or examples into the consuming repository so teams can inspect and adapt
-everything they ship.
+Use the compiled packages when the application should update Protoform with a version bump:
 
-## Reuse existing shadcn components
+```bash
+# Manually authored protobuf forms, without AutoForm
+bun add @protoform/core
+
+# useProtoForm and React Hook Form AutoForm together
+bun add @protoform/react
+```
+
+`@protoform/auto-form` is the headless renderer package for adapter authors. `@protoform/react`
+depends on and re-exports both layers, while `@protoform/core` has no AutoForm dependency.
+
+The shadcn registry remains available when a team prefers inspectable source copied into its own
+repository. It can install the runtime, hooks, components, generator, or examples independently.
+
+## Package UI boundary
+
+The compiled AutoForm renderer does not import application-local shadcn modules. Pass a local
+component map instead:
+
+```tsx
+import { AutoForm } from "@protoform/react";
+import { protoformComponents } from "./protoform-components";
+
+<AutoForm components={protoformComponents} schema={RequestSchema} />;
+```
+
+## Source install with existing shadcn components
 
 Install `protoform-react` when the app already owns its shadcn-compatible components. This copies
 the renderer and a typed component map, but no UI implementations:
@@ -48,8 +72,8 @@ and service files. It does not depend on an external playground.
 
 ## Stable release
 
-Protoform 1.0 is the stable source-distribution contract. Install the immutable `v1.0.0` registry
-snapshot directly from GitHub:
+Protoform 1.0 is the stable package and source-distribution contract. Package releases use the same
+version as the immutable Git tag. Install the `v1.0.0` registry snapshot directly from GitHub:
 
 ```json
 {
@@ -102,6 +126,7 @@ release and security-reporting policy.
 
 Protoform follows shadcn's source-distribution model:
 
+- compiled packages use SemVer and update through the application's package manager;
 - the hosted registry exposes current source;
 - Git tags are immutable release snapshots;
 - consumers choose when to run `shadcn add` again and review the source diff.

@@ -1,8 +1,6 @@
 # Releasing Protoform
 
-Protoform releases immutable registry source and a matching GitHub archive. The repository remains
-private until every item in the [open-source release checklist](OPEN_SOURCE_RELEASE_CHECKLIST.md) is
-complete.
+Protoform releases immutable registry source, compiled npm packages, and matching GitHub artifacts.
 
 ## Prepare `1.0.0`
 
@@ -19,12 +17,16 @@ complete.
 
    ```bash
    bun run registry:build
+   bun run packages:smoke
    bun run release:gate
    git diff --exit-code -- public/r
    ```
 
 5. Run the history and working-tree secret scans from the open-source checklist.
-6. Merge the reviewed preparation pull request. Do not create a tag while the repository is private
+6. Confirm the `@protoform` npm scope can publish `core`, `auto-form`, and `react`. Configure
+   `release.yml` as a trusted publisher for each existing package. For the first publication, add a
+   short-lived granular `NPM_TOKEN` secret; remove it after trusted publishing is active.
+7. Merge the reviewed preparation pull request. Do not create a tag while the repository is private
    if the public launch is not approved.
 
 ## Publish `v1.0.0`
@@ -41,10 +43,13 @@ Only the release owner performs these steps after the public-launch checklist is
    git push origin v1.0.0
    ```
 
-4. Monitor the `Release` workflow. It verifies the tag, runs the full release gate, proves registry
-   generation is reproducible, publishes the registry archive and checksum, and creates a build
-   provenance attestation.
-5. In a clean temporary repository, install `@protoform/protoform`, `@protoform/bookstore`, and
+4. Monitor the `Release` workflow. It verifies every package version against the tag, runs the full
+   release gate, publishes `@protoform/core`, `@protoform/auto-form`, and `@protoform/react` in
+   dependency order, then publishes the registry archive, package tarballs, checksums, and build
+   provenance attestations.
+5. In clean temporary repositories, install `@protoform/core` alone and `@protoform/react`; verify
+   manual forms do not install AutoForm while the React package exposes both APIs. Then install
+   `@protoform/protoform`, `@protoform/bookstore`, and
    `@protoform/protoc-gen-protoform` from the tagged raw GitHub URL in the README.
 6. Verify the GitHub release archive checksum and confirm the copied license notices are present.
 
@@ -52,6 +57,8 @@ Only the release owner performs these steps after the public-launch checklist is
 
 - Never move or replace a published tag.
 - If the workflow fails before publishing, fix the cause on `main` and create a new patch version.
+- If npm publishing partially succeeds, do not reuse the version. Bump all 3 packages together and
+  publish a complete patch release.
 - If a released artifact is unsafe, publish a GitHub security advisory, mark the affected range in
   `SECURITY.md`, and release a fixed patch. Do not silently replace artifacts.
 - If GitHub raw delivery is unavailable, direct consumers to the checksum-verified release archive;

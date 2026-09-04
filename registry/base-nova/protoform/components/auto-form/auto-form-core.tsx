@@ -78,11 +78,17 @@ export type AutoFormEngineRender = (props: {
   values?: Record<string, unknown> | undefined;
 }) => React.ReactNode;
 
+type ExplicitUndefinedForOptional<T> = {
+  [Key in keyof T]: Pick<T, never> extends Pick<T, Key> ? T[Key] | undefined : T[Key];
+};
+
 export type AutoFormCoreProps<
   T extends Record<string, unknown>,
   TNativeForm,
   TCustomFieldType extends string = never,
-> = Omit<AutoFormProps<T, TNativeForm, never, never, TCustomFieldType>, "components" | "formOptions" | "resolver"> & {
+> = ExplicitUndefinedForOptional<
+  Omit<AutoFormProps<T, TNativeForm, never, never, TCustomFieldType>, "components" | "formOptions" | "resolver">
+> & {
   components: ProtoformUIComponentMap;
   renderEngine: AutoFormEngineRender;
 };
