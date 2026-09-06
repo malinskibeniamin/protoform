@@ -44,3 +44,19 @@ jobs:
             echo "::notice::Skipping compatibility check because the previous main is unavailable or not an ancestor."
           fi
       - run: bun run ci:gate
+
+  docs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: 1.4.0
+      - run: bun install --frozen-lockfile
+      - run: bunx playwright install --with-deps chromium
+      - run: bun run docs:blume:validate
+      - run: bun run docs:blume:translate:check
+      - name: Build and check redirects, search, agent guidance, locales, and live demos
+        run: bun run docs:blume:test
+      - run: bun run docs:blume:audit

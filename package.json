@@ -20,8 +20,9 @@
     "docs:blume:check": "bun run scripts/check-docs-types.ts",
     "docs:blume:dev": "blume dev --port 55011",
     "docs:blume:doctor": "blume doctor",
-    "docs:blume:e2e": "blume build --strict --isolated && pagefind --site .blume-verify/dist && astro preview --root .blume-verify --host 127.0.0.1 --port 55013",
+    "docs:blume:e2e": "bun run docs:blume:build && blume preview --host 127.0.0.1 --port 55013",
     "docs:blume:eval": "blume eval --agent codex --threshold 1 --timeout 45",
+    "docs:blume:test": "playwright test --config=playwright.config.ts e2e/docs-contract.spec.ts e2e/demo-catalog.spec.ts --project=chromium",
     "docs:blume:translate": "blume translate --codex",
     "docs:blume:translate:check": "blume translate --check",
     "docs:blume:validate": "blume validate",
@@ -143,8 +144,5 @@
     "ultracite": "7.10.6",
     "undici": "8.10.0"
   },
-  "packageManager": "bun@1.4.0",
-  "patchedDependencies": {
-    "blume@1.6.3": "patches/blume@1.6.3.patch"
-  }
+  "packageManager": "bun@1.4.0"
 }
