@@ -88,7 +88,7 @@
     "@tanstack/react-form-v2": "npm:@tanstack/react-form@2.0.0-alpha.2",
     "@tanstack/react-query": "^5.101.4",
     "@tanstack/react-router": "^1.170.31",
-    "blume": "1.5.3",
+    "blume": "1.6.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
@@ -132,16 +132,19 @@
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
     "@typescript/native": "npm:typescript@^7.0.2",
-    "astro": "7.2.4",
+    "astro": "7.3.1",
     "expect-type": "1.4.0",
     "happy-dom": "20.11.6",
     "pagefind": "1.5.2",
     "react-doctor": "0.9.12",
     "react-scan": "0.5.7",
     "tailwindcss": "^4.3.3",
-    "typescript": "npm:@typescript/typescript6@^6.0.3",
+    "typescript": "^6.0.3",
     "ultracite": "7.10.6",
     "undici": "8.10.0"
   },
-  "packageManager": "bun@1.4.0"
+  "packageManager": "bun@1.4.0",
+  "patchedDependencies": {
+    "blume@1.6.3": "patches/blume@1.6.3.patch"
+  }
 }
