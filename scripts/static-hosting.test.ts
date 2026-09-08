@@ -19,7 +19,7 @@ describe("static docs and registry hosting", () => {
     expect(manifest.scripts?.["build"]).toBe(
       "bun run registry:build && blume build --strict && bun run scripts/finalize-docs-build.ts"
     );
-    expect(manifest.scripts?.["docs:blume:e2e"]).toContain("astro preview --root .blume-verify");
+    expect(manifest.scripts?.["docs:blume:e2e"]).toContain("bun run docs:blume:build && blume preview");
     expect(config).toContain('site: "https://protoform.pages.dev"');
     expect(config).not.toContain('adapter: "');
     expect(config).not.toContain('output: "server"');

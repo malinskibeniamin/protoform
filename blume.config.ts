@@ -3,6 +3,19 @@ import { defineConfig } from "blume";
 import { demoRedirects } from "./examples/catalog/demo-docs.js";
 
 export default defineConfig({
+  ai: {
+    llmsTxt: {
+      details: `## Agent guidance
+
+Use Protoform for protobuf-backed React forms with Protovalidate validation.
+Start with [Getting started](https://protoform.pages.dev/docs/getting-started) and
+[Registry installation](https://protoform.pages.dev/docs/registry-install); use the documented registry items and pinned installation URLs.
+Use Protobuf-ES v2 schemas. Choose useProtoForm for an existing UI and AutoForm for schema-driven rendering.
+Keep stable React Hook Form v7 and TanStack Form v1 integrations separate from experimental v8/v2 items; opt into experimental items only when requested.
+Treat the bookstore API reference as a runnable example, not a hosted production service.
+Read the relevant guide and example before generating code; cite its canonical documentation URL.`,
+    },
+  },
   basePath: "/docs",
   content: {
     root: "content/docs",
@@ -41,6 +54,25 @@ export default defineConfig({
       },
     ],
   },
+  integrations: [
+    {
+      hooks: {
+        "astro:config:setup": ({ updateConfig }) => {
+          // Blume uses js-yaml v5, while Astro also installs v4. Bundle each
+          // importer’s version instead of resolving the hoisted v4 at runtime.
+          updateConfig({
+            vite: {
+              environments: {
+                prerender: { resolve: { noExternal: ["js-yaml"] } },
+              },
+              ssr: { noExternal: ["js-yaml"] },
+            },
+          });
+        },
+      },
+      name: "protoform:bundle-blume-yaml",
+    },
+  ],
   navigation: {
     sidebar: {
       display: "group",
@@ -58,6 +90,7 @@ export default defineConfig({
   },
   redirects: [...demoRedirects],
   search: {
+    indexing: { includeCodeBlocks: true },
     provider: "pagefind",
   },
   theme: {
