@@ -7,6 +7,22 @@ The project distributes source, not Protoform npm packages. `shadcn add` copies 
 components, generator, or examples into the consuming repository so teams can inspect and adapt
 everything they ship.
 
+## Manual forms without AutoForm
+
+Install only the core when you want protobuf conversion, validation, and `useProtoForm` with
+your own fields and layout:
+
+```bash
+bunx shadcn@latest add @protoform/protoform-core
+```
+
+This copies editable source without AutoForm renderers or UI primitives. No AutoForm component
+map or provider is required. Add `protoform-react` later for selected generated forms without
+replacing your manual forms.
+
+The `@protoform` names here identify registry items, not Protoform npm packages. Configure the
+registry URL shown under [Stable release](#stable-release) before installing.
+
 ## Reuse existing shadcn components
 
 Install `protoform-react` when the app already owns its shadcn-compatible components. This copies
