@@ -108,11 +108,23 @@ export function useProtoformUIComponents(): ProtoformUIComponentMap {
   return components;
 }
 
+// AutoForm owns error associations even when consumer controls have no Field context.
+export const AutoFormErrorDescriptionContext = React.createContext<string | undefined>(undefined);
+
 function createUIComponent<TComponent extends UIComponent>(
-  name: keyof ProtoformUIComponentMap
+  name: keyof ProtoformUIComponentMap,
+  describesFieldError = false
 ): React.ComponentType<React.ComponentProps<TComponent>> {
   function InjectedUIComponent(props: React.ComponentProps<TComponent>) {
     const Component = useProtoformUIComponents()[name];
+    const errorId = React.useContext(AutoFormErrorDescriptionContext);
+    if (describesFieldError && errorId) {
+      const ariaProps: React.AriaAttributes = props;
+      return React.createElement(Component, {
+        ...props,
+        "aria-describedby": [ariaProps["aria-describedby"], errorId].filter(Boolean).join(" "),
+      });
+    }
     return React.createElement(Component, props);
   }
   InjectedUIComponent.displayName = `Protoform${name}`;
@@ -143,11 +155,11 @@ export const FieldDescription = createUIComponent<typeof FieldDescriptionCompone
 export const FieldError = createUIComponent<typeof FieldErrorComponent>("FieldError");
 export const FieldLabel = createUIComponent<typeof FieldLabelComponent>("FieldLabel");
 export const Heading = createUIComponent<typeof HeadingComponent>("Heading");
-export const Input = createUIComponent<typeof InputComponent>("Input");
+export const Input = createUIComponent<typeof InputComponent>("Input", true);
 export const InputGroup = createUIComponent<typeof InputGroupComponent>("InputGroup");
 export const InputGroupAddon = createUIComponent<typeof InputGroupAddonComponent>("InputGroupAddon");
 export const InputGroupButton = createUIComponent<typeof InputGroupButtonComponent>("InputGroupButton");
-export const InputGroupInput = createUIComponent<typeof InputGroupInputComponent>("InputGroupInput");
+export const InputGroupInput = createUIComponent<typeof InputGroupInputComponent>("InputGroupInput", true);
 export const InputGroupText = createUIComponent<typeof InputGroupTextComponent>("InputGroupText");
 export const JSONField = createUIComponent<typeof JSONFieldComponent>("JSONField");
 export const KeyValueField = createUIComponent<typeof KeyValueFieldComponent>("KeyValueField");
@@ -172,7 +184,7 @@ export const TabsContent = createUIComponent<typeof TabsContentComponent>("TabsC
 export const TabsList = createUIComponent<typeof TabsListComponent>("TabsList");
 export const TabsTrigger = createUIComponent<typeof TabsTriggerComponent>("TabsTrigger");
 export const Text = createUIComponent<typeof TextComponent>("Text");
-export const Textarea = createUIComponent<typeof TextareaComponent>("Textarea");
+export const Textarea = createUIComponent<typeof TextareaComponent>("Textarea", true);
 export const Toggle = createUIComponent<typeof ToggleComponent>("Toggle");
 export const ToggleGroup = createUIComponent<typeof ToggleGroupComponent>("ToggleGroup");
 export const ToggleGroupItem = createUIComponent<typeof ToggleGroupItemComponent>("ToggleGroupItem");

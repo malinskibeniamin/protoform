@@ -13,6 +13,7 @@ import {
   Alert,
   AlertDescription,
   AlertTitle,
+  AutoFormErrorDescriptionContext,
   Button,
   Collapsible,
   CollapsibleContent,
@@ -112,6 +113,7 @@ export const FieldWrapper: React.FC<FieldWrapperProps> = ({ label, children, id,
   const helpText = isCompact ? undefined : getFieldDescriptionText(field);
   const docsUrl = isCompact ? undefined : getFieldDocsUrl(field);
   const error = augmentError(rawError, field);
+  const errorId = React.useId();
   const isDisabled = Boolean(field.fieldConfig?.inputProps?.["disabled"]);
   const hasVisibleLabel = !(typeof label === "string" && label.trim().length === 0);
   const fallbackLabel =
@@ -124,7 +126,12 @@ export const FieldWrapper: React.FC<FieldWrapperProps> = ({ label, children, id,
   const isSplit = depth === 0 && !isCompact;
   let fieldFeedback: React.ReactNode = null;
   if (error) {
-    fieldFeedback = <FieldError testId={getAutoFormFieldTestId(testIdPrefix, id, "error")}>{error}</FieldError>;
+    // Keep the consumer FieldError's own ID intact for controls using its Field context.
+    fieldFeedback = (
+      <div id={errorId}>
+        <FieldError testId={getAutoFormFieldTestId(testIdPrefix, id, "error")}>{error}</FieldError>
+      </div>
+    );
   } else if ((helpText || docsUrl) && !isCompact) {
     fieldFeedback = (
       <FieldDescription testId={getAutoFormFieldTestId(testIdPrefix, id, "description")}>
@@ -204,8 +211,10 @@ export const FieldWrapper: React.FC<FieldWrapperProps> = ({ label, children, id,
         </div>
       )}
       <FieldContent className="min-w-0 gap-2">
-        {children}
-        {fieldFeedback}
+        <AutoFormErrorDescriptionContext.Provider value={error ? errorId : undefined}>
+          {children}
+          {fieldFeedback}
+        </AutoFormErrorDescriptionContext.Provider>
       </FieldContent>
     </Field>
   );
