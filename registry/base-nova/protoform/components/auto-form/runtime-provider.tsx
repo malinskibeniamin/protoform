@@ -2,8 +2,8 @@
 
 import type { DescMessage } from "@bufbuild/protobuf";
 import React from "react";
-import type { ProtoformMessageFormatter } from "../../lib/core/messages";
-import type { ProtoConversionOptions } from "../../lib/protobuf-provider";
+import type { ProtoformMessageFormatter } from "@/registry/base-nova/protoform/lib/core/messages";
+import type { ProtoConversionOptions } from "@/registry/base-nova/protoform/lib/protobuf-provider";
 
 import { AutoFormContext, type AutoFormContextValue } from "./context";
 import type {

@@ -2,7 +2,7 @@
 
 import { AlertCircle, ChevronDown, CircleHelp, ExternalLink, PlusIcon, TrashIcon } from "lucide-react";
 import React from "react";
-import { cn, type SharedProps } from "../../lib/utils";
+import { cn, type SharedProps } from "@/registry/base-nova/protoform/lib/utils/index";
 import { useAutoFormRuntimeContext } from "./context";
 import type { ArrayElementWrapperProps, ArrayWrapperProps, FieldWrapperProps, ObjectWrapperProps } from "./core-types";
 import { formSpacing } from "./form-spacing";

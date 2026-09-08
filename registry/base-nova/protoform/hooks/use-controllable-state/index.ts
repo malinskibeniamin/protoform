@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-
 import { useLayoutEffect } from "@/registry/base-nova/protoform/hooks/use-layout-effect";
 
 // Prevent bundlers from trying to optimize the import

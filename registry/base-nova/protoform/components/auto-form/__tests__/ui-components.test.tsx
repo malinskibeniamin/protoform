@@ -1,10 +1,12 @@
-import { describe, expect } from "@rstest/core";
+import { describe, expect, rs } from "@rstest/core";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type React from "react";
 
+import { AutoForm } from "../host";
 import { shadcnUIComponents } from "../shadcn-ui-components";
-import { Button, ProtoformUIProvider } from "../ui-components";
+import { Button, Input, ProtoformUIProvider } from "../ui-components";
+import { createMockProvider } from "./test-utils";
 
 function ConsumerButton({ children, ...props }: React.ComponentProps<"button">) {
   return (
@@ -15,6 +17,41 @@ function ConsumerButton({ children, ...props }: React.ComponentProps<"button">) 
 }
 
 describe("ProtoformUIProvider", () => {
+  test("shows a missing host control without requiring Alert and recovers when supplied", () => {
+    const schema = createMockProvider([{ key: "title", required: true, type: "string" }]);
+    const { Input: _input, Alert: _alert, ...incomplete } = shadcnUIComponents;
+    const onCaughtError = rs.fn();
+    const view = render(<AutoForm components={incomplete} modes={["simple"]} schema={schema} showSummary={false} />, {
+      onCaughtError,
+    });
+    expect(screen.getByRole("alert")).toHaveTextContent('Protoform requires the "Input" component');
+    view.rerender(
+      <AutoForm components={{ ...incomplete, Input: "input" }} modes={["simple"]} schema={schema} showSummary={false} />
+    );
+    expect(screen.getByRole("textbox", { name: "Title *" })).toBeInTheDocument();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  });
+
+  test("uses only registered host controls and translates test IDs to DOM attributes", () => {
+    render(
+      <ProtoformUIProvider components={{ Input: "input" }}>
+        <Input aria-label="Title" testId="title-control" />
+      </ProtoformUIProvider>
+    );
+    expect(screen.getByRole("textbox", { name: "Title" })).toHaveAttribute("data-testid", "title-control");
+    expect(screen.getByRole("textbox")).not.toHaveAttribute("testId");
+  });
+
+  test("names a missing control and how to supply it", () => {
+    expect(() =>
+      render(
+        <ProtoformUIProvider components={{}}>
+          <Input />
+        </ProtoformUIProvider>
+      )
+    ).toThrow('Protoform requires the "Input" component. Supply it through AutoForm components.');
+  });
+
   test("renders controls from the consumer component map", async () => {
     const user = userEvent.setup();
     let clicked = false;

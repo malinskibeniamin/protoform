@@ -4,10 +4,11 @@ import { access, cp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { createServer } from "node:http";
 import { extname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { $ } from "bun";
+import { $, Glob } from "bun";
 
 const root = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const fixture = join(root, ".tmp", "consumer-fixture");
+const hostFixture = join(root, ".tmp", "host-consumer-fixture");
 const coreFixture = join(root, ".tmp", "core-consumer-fixture");
 const publicDir = join(root, "public");
 const leadingSlashes = /^\/+/u;
@@ -316,25 +317,141 @@ async function assertCoreInstalled() {
   );
 }
 
+async function assertHostInstalled() {
+  await cp(fixture, hostFixture, { recursive: true });
+  const config = JSON.parse(await readFile(join(hostFixture, "components.json"), "utf8"));
+  config.style = "new-york";
+  config.aliases.components = "@/features/forms";
+  config.aliases.ui = "@/design-system/ui";
+  config.aliases.lib = "@/domain/runtime";
+  config.aliases.hooks = "@/features/hooks";
+  config.registries["@host"] = "https://ui.shadcn.com/r/styles/new-york/{name}.json";
+  await writeFile(join(hostFixture, "components.json"), JSON.stringify(config, null, 2));
+  await mkdir(join(hostFixture, "lib"), { recursive: true });
+  await writeFile(
+    join(hostFixture, "lib/utils.ts"),
+    'import { clsx, type ClassValue } from "clsx";\nimport { twMerge } from "tailwind-merge";\nexport function cn(...inputs: ClassValue[]) { return twMerge(clsx(inputs)); }\n'
+  );
+  await $`bun install --cwd ${hostFixture}`;
+  await $`bun add --cwd ${hostFixture} clsx tailwind-merge`;
+  // The host chooses its own registry, aliases and style before Protoform runs.
+  const controls = [
+    "alert",
+    "button",
+    "calendar",
+    "checkbox",
+    "collapsible",
+    "field",
+    "input",
+    "input-group",
+    "popover",
+    "radio-group",
+    "select",
+    "slider",
+    "switch",
+    "tabs",
+    "textarea",
+    "toggle",
+    "toggle-group",
+    "tooltip",
+  ].map((name) => `@host/${name}`);
+  await $`bunx --no-install shadcn add ${controls} --cwd ${hostFixture} --yes`;
+  const hostPaths = [
+    "components.json",
+    "app/globals.css",
+    "lib/utils.ts",
+    ...(await Array.fromAsync(new Glob("design-system/ui/**/*").scan({ cwd: hostFixture, onlyFiles: true }))),
+  ];
+  const before = await Promise.all(
+    hostPaths.map(async (path) => [path, await readFile(join(hostFixture, path), "utf8")] as const)
+  );
+  await $`bunx --no-install shadcn add @protoform/protoform @protoform/protoform-shadcn-host --cwd ${hostFixture} --yes`;
+  await Promise.all(
+    before.map(async ([path, content]) => {
+      if ((await readFile(join(hostFixture, path), "utf8")) !== content) {
+        throw new Error(`Protoform modified host-owned ${path}`);
+      }
+    })
+  );
+  const afterPaths = await Array.fromAsync(
+    new Glob("design-system/ui/**/*").scan({ cwd: hostFixture, onlyFiles: true })
+  );
+  if (afterPaths.length !== hostPaths.length - 3) {
+    throw new Error("Protoform installed unexpected primitives");
+  }
+  await writeFile(
+    join(hostFixture, "consumer-smoke.tsx"),
+    [
+      'import { AutoForm } from "./features/forms/auto-form/host";',
+      'import { shadcnHostComponents } from "./features/forms/auto-form/shadcn-host";',
+      'import type { SchemaProvider } from "./domain/runtime/core";',
+      'import { renderToString } from "react-dom/server";',
+      'const schema: SchemaProvider<{ title: string }> = { getDefaultValues: () => ({ title: "Host-owned UI" }), parseSchema: () => ({ fields: [{ key: "title", type: "string", required: true }] }), validateSchema: (values) => ({ data: values, success: true }) };',
+      'const html = renderToString(<AutoForm components={shadcnHostComponents} schema={schema} modes={["simple"]} showSummary={false} withSubmit />);',
+      'if (!html.includes("Host-owned UI") || !html.includes("data-testid=")) throw new Error("Installed host form did not render its value and test IDs");',
+    ].join("\n")
+  );
+  await $`bun run --cwd ${hostFixture} typecheck`;
+  await $`bun ${join(hostFixture, "consumer-smoke.tsx")}`;
+  await writeFile(
+    join(hostFixture, "index.html"),
+    '<html lang="en"><head><title>Host-owned Protoform</title><style>body{font:16px system-ui;margin:40px;color:#16243b;max-width:800px}input,button{font:inherit;padding:8px;border:1px solid #9aa8bc;border-radius:6px}button{cursor:pointer;margin:8px 8px 8px 0;background:#edf2fa}label{display:block}form{margin:24px 0}h1{font-size:26px}[role=alert]{color:#ad1725;border:1px solid;padding:12px}output{display:block;margin:12px 0}</style></head><body><div id="root"></div><script type="module" src="/browser-smoke.tsx"></script></body></html>'
+  );
+  await writeFile(
+    join(hostFixture, "vite.config.mjs"),
+    `import react from '@vitejs/plugin-react'; export default { plugins: [react()], resolve: { alias: { '@': ${JSON.stringify(hostFixture)} } } };`
+  );
+  await writeFile(
+    join(hostFixture, "browser-smoke.tsx"),
+    [
+      'import React from "react";',
+      'import { createRoot } from "react-dom/client";',
+      'import { AutoForm } from "./features/forms/auto-form/host";',
+      'import { shadcnHostComponents } from "./features/forms/auto-form/shadcn-host";',
+      'import type { SchemaProvider } from "./domain/runtime/core";',
+      'import { Button } from "./design-system/ui/button";',
+      'const schema: SchemaProvider<{title:string}> = { getDefaultValues: () => ({ title: "" }), parseSchema: () => ({ fields: [{ key: "title", type: "string", required: true }, { key: "choice", type: "select", required: true, options: [["first", "First"], ["second", "Second"], ["third", "Third"], ["fourth", "Fourth"]] }] }), validateSchema: (values) => values.title.trim() ? ({success:true,data:values}) : ({success:false,errors:[{path:["title"],message:"Enter a title"}]}) };',
+      "function App() {",
+      "const [missing,setMissing] = React.useState(false);",
+      'const [submitted,setSubmitted] = React.useState("");',
+      "const [selection,setSelection] = React.useState<string | null>(null);",
+      "const {Select,SelectTrigger,SelectValue,SelectContent,SelectItem} = shadcnHostComponents;",
+      "const {Input: _input, ...rest} = shadcnHostComponents;",
+      "const components = missing ? rest : shadcnHostComponents;",
+      'return <main><h1>Protobuf forms. Your design system.</h1><p>new-york primitives · custom registry namespace · no base-nova theme</p><Button onClick={()=>setMissing(!missing)} type="button">{missing ? "Restore input" : "Remove input"}</Button><AutoForm components={components} schema={schema} modes={["simple"]} showSummary={false} withSubmit onSubmit={(values)=>setSubmitted(values.title)} /><output aria-label="Submitted title">{submitted}</output><section aria-label="Nullable selection"><Select value={selection} onValueChange={setSelection}><SelectTrigger aria-label="Nullable selection"><SelectValue /></SelectTrigger><SelectContent><SelectItem value={null}>Not set</SelectItem><SelectItem value="null">Literal null</SelectItem></SelectContent></Select><output aria-label="Selected value">{JSON.stringify(selection)}</output></section></main>;',
+      "}",
+      'const root = document.getElementById("root"); if (!root) throw new Error("Missing root"); createRoot(root).render(<App />);',
+    ].join("\n")
+  );
+  await $`bun run --cwd ${hostFixture} typecheck`;
+  console.log(
+    `Host registry fixture passed with new-york, custom aliases, and ${afterPaths.length} unchanged primitive files: ${hostFixture}`
+  );
+}
+
 await createFixture();
 await rm(coreFixture, { force: true, recursive: true });
 await cp(fixture, coreFixture, { recursive: true });
 const server = await servePublic();
 try {
-  await $`bun install --cwd ${coreFixture}`;
-  await $`bunx shadcn@latest add @protoform/protoform-core --cwd ${coreFixture} --yes --overwrite`;
-  await assertCoreInstalled();
-  await $`bun run --cwd ${coreFixture} typecheck`;
-  console.log(`Core-only consumer fixture passed: ${coreFixture}`);
+  await rm(hostFixture, { force: true, recursive: true });
+  await assertHostInstalled();
+  if (!process.argv.includes("--host-only")) {
+    await $`bun install --cwd ${coreFixture}`;
+    await $`bunx --no-install shadcn add @protoform/protoform-core --cwd ${coreFixture} --yes --overwrite`;
+    await assertCoreInstalled();
+    await $`bun run --cwd ${coreFixture} typecheck`;
+    console.log(`Core-only consumer fixture passed: ${coreFixture}`);
 
-  await $`bun install --cwd ${fixture}`;
-  await $`bunx shadcn@latest add @protoform/bookstore --cwd ${fixture} --yes --overwrite`;
-  await $`bunx shadcn@latest add @protoform/auto-form-react-hook-form-v8 --cwd ${fixture} --yes --overwrite`;
-  await $`bunx shadcn@latest add @protoform/auto-form-tanstack --cwd ${fixture} --yes --overwrite`;
-  await $`bunx shadcn@latest add @protoform/auto-form-tanstack-v2 --cwd ${fixture} --yes --overwrite`;
-  await assertInstalled();
-  await $`bun run --cwd ${fixture} typecheck`;
-  console.log(`Registry-only consumer fixture passed: ${fixture}`);
+    await $`bun install --cwd ${fixture}`;
+    await $`bunx --no-install shadcn add @protoform/bookstore --cwd ${fixture} --yes --overwrite`;
+    await $`bunx --no-install shadcn add @protoform/auto-form-react-hook-form-v8 --cwd ${fixture} --yes --overwrite`;
+    await $`bunx --no-install shadcn add @protoform/auto-form-tanstack --cwd ${fixture} --yes --overwrite`;
+    await $`bunx --no-install shadcn add @protoform/auto-form-tanstack-v2 --cwd ${fixture} --yes --overwrite`;
+    await assertInstalled();
+    await $`bun run --cwd ${fixture} typecheck`;
+    console.log(`Registry-only consumer fixture passed: ${fixture}`);
+  }
 } finally {
   await new Promise<void>((resolveClose, rejectClose) => {
     server.close((error) => (error ? rejectClose(error) : resolveClose()));

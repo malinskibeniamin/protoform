@@ -1,7 +1,7 @@
 import type { DescMessage, Message } from "@bufbuild/protobuf";
 import type { FieldMask } from "@bufbuild/protobuf/wkt";
 import type { ReactNode } from "react";
-import type { ProtoformMessageFormatter } from "../../lib/core/messages";
+import type { ProtoformMessageFormatter } from "@/registry/base-nova/protoform/lib/core/messages";
 import type { AutoFormDiagnostic } from "./configuration";
 import type {
   AutoFormFieldComponents,

@@ -11,5 +11,8 @@
 - **Edit baseline**: The accepted field state at the start of an edit session or after a reset.
 - **Modification intent**: A field the user intentionally changed after the edit baseline. The intent remains even when the current value equals the baseline again.
 - **Partial-edit validation**: Validation that reports field issues only for modification intent while retaining message-level issues that cannot be attributed safely.
-- **UI component map**: The exhaustive host-owned set of shadcn-compatible primitives used by Protoform's registry-installed renderers.
+- **UI component map**: The host-owned controls used by Protoform renderers. Only controls exercised by a form need registration; implementations and their theme remain consumer-owned.
 - **shadcn adapter**: A registry source file that maps Protoform's UI boundary to the consumer's local shadcn component aliases without copying implementations.
+
+- **Host AutoForm entrypoint**: The protobuf-driven form renderer with an explicit UI component map and no bundled primitive implementations.
+- **Legacy UI bundle**: The opt-in demonstration UI, separate from the theme-independent host installation.

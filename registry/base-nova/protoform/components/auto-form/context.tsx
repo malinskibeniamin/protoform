@@ -1,5 +1,5 @@
 import React from "react";
-import type { ProtoformMessageFormatter } from "../../lib/core/messages";
+import type { ProtoformMessageFormatter } from "@/registry/base-nova/protoform/lib/core/messages";
 
 import type { AutoFormFieldComponents, AutoFormUIComponents, ParsedField } from "./core-types";
 import type { DataProviderRegistry } from "./data-providers";

@@ -1,4 +1,4 @@
-import type { ParsedField } from "../../lib/form-types";
+import type { ParsedField } from "@/registry/base-nova/protoform/lib/form-types";
 
 // Common protocol / tech acronyms the default title-casing would
 // otherwise emit as mixed-case ("Api Key", "Tls", "Aws Region", etc.).

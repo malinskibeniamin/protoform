@@ -5,7 +5,11 @@ import { AutoFormCore } from "../auto-form/auto-form-core";
 import { shadcnUIComponents } from "../auto-form/shadcn-ui-components";
 import type { AutoFormProps as BaseAutoFormProps } from "../auto-form/types";
 
-export type { ProtoformMessageCode, ProtoformMessageFormatter, ProtoformMessageParams } from "../../lib/core/messages";
+export type {
+  ProtoformMessageCode,
+  ProtoformMessageFormatter,
+  ProtoformMessageParams,
+} from "@/registry/base-nova/protoform/lib/core/messages";
 
 type FormValues = Record<string, unknown>;
 

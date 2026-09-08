@@ -1,4 +1,4 @@
-import { getFieldHints } from "../../lib/core";
+import { getFieldHints } from "@/registry/base-nova/protoform/lib/core";
 
 import type { ParsedField, SchemaValidation } from "./core-types";
 import { getLabel, getPathInObject, sortFieldsByOrder } from "./field-utils";

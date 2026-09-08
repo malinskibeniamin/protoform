@@ -114,6 +114,19 @@ function uiImports(path: string): string[] {
 }
 
 describe("build-time UI adapter registry", () => {
+  test("default installation leaves host primitives and theme untouched", () => {
+    const closure = [...dependencyClosure("protoform")].map(item);
+    expect(dependencyClosure("protoform")).not.toContain("protoform-shadcn");
+    for (const entry of closure) {
+      for (const file of entry.files ?? []) {
+        expect(file.target ?? "", file.path).not.toMatch(/components\/ui\//u);
+      }
+      expect(entry.dependencies ?? [], entry.name).not.toContain("@base-ui/react");
+      expect(entry).not.toHaveProperty("css");
+      expect(entry).not.toHaveProperty("cssVars");
+    }
+  });
+
   test("splits core, React, and optional shadcn capabilities", () => {
     const core = item("protoform-core");
     const react = item("protoform-react");
@@ -123,7 +136,7 @@ describe("build-time UI adapter registry", () => {
     expect(filePaths(core).some((path) => path.includes("/components/"))).toBe(false);
 
     expect(react.registryDependencies).toEqual(["@protoform/auto-form-core", "@protoform/protoform-core"]);
-    expect(filePaths(react)).toContain("registry/base-nova/protoform/components/auto-form/index.tsx");
+    expect(filePaths(react)).toContain("registry/base-nova/protoform/components/auto-form/host.tsx");
     expect(filePaths(react)).toContain(
       "registry/base-nova/protoform/components/auto-form/adapters/react-hook-form.tsx"
     );
@@ -195,17 +208,14 @@ describe("build-time UI adapter registry", () => {
     expect(
       filePaths(renderer).some((path) => defaultUiModuleRoots.some((moduleRoot) => path.startsWith(moduleRoot)))
     ).toBe(false);
-    expect(filePaths(renderer)).toContain("registry/base-nova/protoform/components/auto-form/ui-adapter.compile.ts");
+    expect(filePaths(renderer)).toContain("registry/base-nova/protoform/components/auto-form/ui-props.ts");
   });
 
-  test("keeps the compile-only UI contract synchronized with renderer imports", () => {
-    const contractPath = "registry/base-nova/protoform/components/auto-form/ui-adapter.compile.ts";
-    const rendererImports = filePaths(item("auto-form-core"))
-      .filter((path) => path !== contractPath)
+  test("keeps the host installation free of consumer UI imports", () => {
+    const imports = closureFilePaths("protoform")
+      .filter((path) => path.endsWith(".ts") || path.endsWith(".tsx"))
       .flatMap(uiImports);
-    const contractImports = uiImports(contractPath);
-
-    expect([...new Set(contractImports)].sort()).toEqual([...new Set(rendererImports)].sort());
+    expect(imports).toEqual([]);
   });
 
   test("keeps the complete core capability free of UI source", () => {
@@ -229,11 +239,11 @@ describe("build-time UI adapter registry", () => {
 });
 
 describe("native form adapter registry entries", () => {
-  test("ships the consumer shadcn map with every AutoForm adapter", () => {
+  test("ships the legacy shadcn map only with explicit legacy adapters", () => {
     const componentMapPath = "registry/base-nova/protoform/components/auto-form/shadcn-ui-components.ts";
 
     for (const adapterName of [
-      "protoform-react",
+      "protoform-shadcn",
       "auto-form-react-hook-form-v8",
       "auto-form-tanstack",
       "auto-form-tanstack-v2",

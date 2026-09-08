@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { formatProtoformMessage } from "../../../lib/core/messages";
+import { formatProtoformMessage } from "@/registry/base-nova/protoform/lib/core/messages";
 import { useAutoForm } from "../context";
 import type { AutoFormFieldProps } from "../core-types";
 import {

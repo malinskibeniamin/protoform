@@ -2,8 +2,10 @@
 
 import { Check } from "lucide-react";
 import type React from "react";
-
-import { formatProtoformMessage, type ProtoformMessageFormatter } from "../../lib/core/messages";
+import {
+  formatProtoformMessage,
+  type ProtoformMessageFormatter,
+} from "@/registry/base-nova/protoform/lib/core/messages";
 
 import { useAutoFormRuntimeContext } from "./context";
 import type { ParsedField } from "./core-types";
