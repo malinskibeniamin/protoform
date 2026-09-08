@@ -87,7 +87,7 @@ defaultRegistry
 // Legacy map-based registry for backwards compatibility during migration
 // ---------------------------------------------------------------------------
 
-export const AutoFormFieldComponentRegistry: AutoFormFieldComponents<FieldTypes> = {
+export const AutoFormFieldComponentRegistry = {
   boolean: booleanFieldDefinition.component,
   bytes: bytesFieldDefinition.component,
   checkbox: checkboxFieldDefinition.component,
@@ -121,7 +121,7 @@ export const AutoFormFieldComponentRegistry: AutoFormFieldComponents<FieldTypes>
   toggle: ToggleFieldComponent,
   toggleGroup: toggleGroupFieldDefinition.component,
   url: urlFieldDefinition.component,
-};
+} satisfies AutoFormFieldComponents<FieldTypes>;
 
 // ---------------------------------------------------------------------------
 // Re-exports
