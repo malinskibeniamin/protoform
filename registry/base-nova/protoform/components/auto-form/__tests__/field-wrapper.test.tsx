@@ -2,13 +2,14 @@ import { describe, expect } from "@rstest/core";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type React from "react";
+import { Input as BundledInput } from "@/components/ui/input";
 
 import { AutoFormContext, type AutoFormContextValue } from "../context";
 import type { ParsedField } from "../core-types";
 import { ArrayElementWrapper, ArrayWrapper, FieldWrapper, Form, ObjectWrapper } from "../field-wrapper";
 import { formSpacing } from "../form-spacing";
 import { shadcnUIComponents } from "../shadcn-ui-components";
-import { ProtoformUIProvider } from "../ui-components";
+import { Input, ProtoformUIProvider } from "../ui-components";
 
 /**
  * Minimal AutoForm context wrapper — just enough for field-wrapper to render.
@@ -193,6 +194,30 @@ describe("ObjectWrapper", () => {
 });
 
 describe("FieldWrapper", () => {
+  test("preserves caller descriptions and isolates error links between fields", () => {
+    const renderFields = (error?: string) =>
+      withAutoFormContext(
+        <Form>
+          <span id="hint">Use your display name.</span>
+          <FieldWrapper error={error} field={makeField()} id="name" label="Name">
+            <Input aria-describedby="hint" id="name" />
+          </FieldWrapper>
+          <FieldWrapper error="Enter a code" field={makeField()} id="code" label="Code">
+            <BundledInput id="code" />
+          </FieldWrapper>
+        </Form>
+      );
+    const { rerender } = render(renderFields("Enter a name"));
+    const name = screen.getByRole("textbox", { name: "Name" });
+    const code = screen.getByRole("textbox", { name: "Code" });
+    expect(name).toHaveAccessibleDescription("Use your display name. Enter a name");
+    expect(code).toHaveAccessibleDescription("Enter a code");
+    rerender(renderFields());
+    expect(name).toHaveAccessibleDescription("Use your display name.");
+    expect(name).toHaveAttribute("aria-describedby", "hint");
+    expect(code).toHaveAccessibleDescription("Enter a code");
+  });
+
   test("uses a responsive label rail for a top-level field", () => {
     render(
       withAutoFormContext(
