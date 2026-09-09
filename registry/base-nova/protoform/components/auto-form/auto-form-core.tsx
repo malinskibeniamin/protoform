@@ -2,8 +2,15 @@
 
 import { isMessage } from "@bufbuild/protobuf";
 import React from "react";
-import { formatProtoformMessage, type ProtoformMessageFormatter } from "../../lib/core/messages";
-import { createUpdateMask, formValuesToProto, preserveProtoMessageSource } from "../../lib/protobuf-provider";
+import {
+  formatProtoformMessage,
+  type ProtoformMessageFormatter,
+} from "@/registry/base-nova/protoform/lib/core/messages";
+import {
+  createUpdateMask,
+  formValuesToProto,
+  preserveProtoMessageSource,
+} from "@/registry/base-nova/protoform/lib/protobuf-provider";
 import { type AutoFormDiagnostic, inspectAutoFormConfiguration } from "./configuration";
 import type { SchemaValidation } from "./core-types";
 import type { AutoFormEngine } from "./engine";
@@ -673,12 +680,14 @@ function AutoFormCoreInner<T extends Record<string, unknown>, TNativeForm, TCust
 }
 
 interface AutoFormErrorBoundaryState {
+  components: ProtoformUIComponentMap;
   error: Error | null;
   resetKey: unknown;
 }
 
 interface AutoFormErrorBoundaryProps {
   children: React.ReactNode;
+  components: ProtoformUIComponentMap;
   configurationDiagnostics: readonly AutoFormDiagnostic[];
   formatMessage?: ProtoformMessageFormatter | undefined;
   onDiagnostic?: ((diagnostic: AutoFormDiagnostic) => void) | undefined;
@@ -690,7 +699,7 @@ class AutoFormErrorBoundary extends React.Component<AutoFormErrorBoundaryProps, 
 
   constructor(props: AutoFormErrorBoundaryProps) {
     super(props);
-    this.state = { error: null, resetKey: props.resetKey };
+    this.state = { components: props.components, error: null, resetKey: props.resetKey };
   }
 
   static getDerivedStateFromError(error: Error): Partial<AutoFormErrorBoundaryState> {
@@ -716,10 +725,12 @@ class AutoFormErrorBoundary extends React.Component<AutoFormErrorBoundaryProps, 
   }
 
   static getDerivedStateFromProps(
-    props: { resetKey: unknown },
+    props: { components: ProtoformUIComponentMap; resetKey: unknown },
     state: AutoFormErrorBoundaryState
   ): AutoFormErrorBoundaryState | null {
-    return props.resetKey === state.resetKey ? null : { error: null, resetKey: props.resetKey };
+    return props.resetKey === state.resetKey && props.components === state.components
+      ? null
+      : { components: props.components, error: null, resetKey: props.resetKey };
   }
 
   private reportConfigurationDiagnostics() {
@@ -741,16 +752,26 @@ class AutoFormErrorBoundary extends React.Component<AutoFormErrorBoundaryProps, 
 
   override render() {
     if (this.state.error) {
+      const title = formatProtoformMessage(
+        this.props.formatMessage,
+        "auto_form.render_failed",
+        {},
+        "AutoForm failed to render"
+      );
+      // A missing host component must not break the error UI itself.
+      if (
+        !(this.props.components.Alert && this.props.components.AlertTitle && this.props.components.AlertDescription)
+      ) {
+        return (
+          <div role="alert">
+            <p>{title}</p>
+            <p>{this.state.error.message}</p>
+          </div>
+        );
+      }
       return (
         <Alert variant="destructive">
-          <AlertTitle>
-            {formatProtoformMessage(
-              this.props.formatMessage,
-              "auto_form.render_failed",
-              {},
-              "AutoForm failed to render"
-            )}
-          </AlertTitle>
+          <AlertTitle>{title}</AlertTitle>
           <AlertDescription className="whitespace-pre-wrap">{this.state.error.message}</AlertDescription>
         </Alert>
       );
@@ -775,6 +796,7 @@ export function AutoFormCore<T extends Record<string, unknown>, TNativeForm, TCu
   return (
     <ProtoformUIProvider components={props.components}>
       <AutoFormErrorBoundary
+        components={props.components}
         configurationDiagnostics={configurationDiagnostics}
         formatMessage={props.formatMessage}
         onDiagnostic={props.onDiagnostic}

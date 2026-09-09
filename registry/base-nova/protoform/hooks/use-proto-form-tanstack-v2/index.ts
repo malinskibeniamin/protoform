@@ -16,13 +16,13 @@ import {
 import {
   createUpdateMask as createDirtyUpdateMask,
   dirtyFieldsFromValues,
-} from "../../lib/protobuf-provider/field-mask";
-import { createProtoFormSchema } from "../../lib/protobuf-provider/form-schema";
+} from "@/registry/base-nova/protoform/lib/protobuf-provider/field-mask";
+import { createProtoFormSchema } from "@/registry/base-nova/protoform/lib/protobuf-provider/form-schema";
 import {
   formValuesToProto,
   type ProtoConversionOptions,
   type ProtoFormOptions,
-} from "../../lib/protobuf-provider/hook-runtime";
+} from "@/registry/base-nova/protoform/lib/protobuf-provider/hook-runtime";
 
 type FormValues = Record<string, unknown>;
 

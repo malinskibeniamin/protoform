@@ -4,6 +4,20 @@
   "homepage": "https://github.com/malinskibeniamin/protoform",
   "items": [
     {
+      "name": "protoform-shadcn-host",
+      "type": "registry:component",
+      "title": "Protoform host UI adapter",
+      "description": "Editable adapter for existing Radix-style shadcn controls. Install missing controls from your own registry; no primitives or theme are copied.",
+      "registryDependencies": ["@protoform/protoform-react"],
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/shadcn-host.tsx",
+          "type": "registry:component",
+          "target": "@components/auto-form/shadcn-host.tsx"
+        }
+      ]
+    },
+    {
       "name": "protoform-license",
       "type": "registry:file",
       "title": "Protoform license notices",
@@ -106,23 +120,28 @@
       "files": [
         {
           "path": "registry/base-nova/protoform/lib/core/field-model.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/core/field-model.ts"
         },
         {
           "path": "registry/base-nova/protoform/lib/core/form-library-adapters.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/core/form-library-adapters.ts"
         },
         {
           "path": "registry/base-nova/protoform/lib/core/index.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/core/index.ts"
         },
         {
           "path": "registry/base-nova/protoform/lib/core/messages.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/core/messages.ts"
         },
         {
           "path": "registry/base-nova/protoform/lib/core/standard-schema.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/core/standard-schema.ts"
         }
       ]
     },
@@ -142,35 +161,43 @@
       "files": [
         {
           "path": "registry/base-nova/protoform/lib/protobuf-provider/descriptor-utils.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/protobuf-provider/descriptor-utils.ts"
         },
         {
           "path": "registry/base-nova/protoform/lib/protobuf-provider/field-mask.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/protobuf-provider/field-mask.ts"
         },
         {
           "path": "registry/base-nova/protoform/lib/protobuf-provider/form-schema.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/protobuf-provider/form-schema.ts"
         },
         {
           "path": "registry/base-nova/protoform/lib/protobuf-provider/format-error.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/protobuf-provider/format-error.ts"
         },
         {
           "path": "registry/base-nova/protoform/lib/protobuf-provider/hook-runtime.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/protobuf-provider/hook-runtime.ts"
         },
         {
           "path": "registry/base-nova/protoform/lib/protobuf-provider/humanize-validation-error.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/protobuf-provider/humanize-validation-error.ts"
         },
         {
           "path": "registry/base-nova/protoform/lib/protobuf-provider/proto-error-path.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/protobuf-provider/proto-error-path.ts"
         },
         {
           "path": "registry/base-nova/protoform/lib/protobuf-provider/validation-schema.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/protobuf-provider/validation-schema.ts"
         }
       ]
     },
@@ -190,51 +217,63 @@
       "files": [
         {
           "path": "registry/base-nova/protoform/lib/protobuf-provider/aip-client-workflow.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/protobuf-provider/aip-client-workflow.ts"
         },
         {
           "path": "registry/base-nova/protoform/lib/protobuf-provider/aip.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/protobuf-provider/aip.ts"
         },
         {
           "path": "registry/base-nova/protoform/lib/protobuf-provider/annotations.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/protobuf-provider/annotations.ts"
         },
         {
           "path": "registry/base-nova/protoform/lib/protobuf-provider/format-submitted-value.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/protobuf-provider/format-submitted-value.ts"
         },
         {
           "path": "registry/base-nova/protoform/lib/protobuf-provider/gen/auto_form_ui_pb.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/protobuf-provider/gen/auto_form_ui_pb.ts"
         },
         {
           "path": "registry/base-nova/protoform/lib/protobuf-provider/gen/buf/validate/validate_pb.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/protobuf-provider/gen/buf/validate/validate_pb.ts"
         },
         {
           "path": "registry/base-nova/protoform/lib/protobuf-provider/gen/protoform/v1/auto_form_ui_pb.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/protobuf-provider/gen/protoform/v1/auto_form_ui_pb.ts"
         },
         {
           "path": "registry/base-nova/protoform/lib/protobuf-provider/index.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/protobuf-provider/index.ts"
         },
         {
           "path": "registry/base-nova/protoform/lib/protobuf-provider/method-workflow.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/protobuf-provider/method-workflow.ts"
         },
         {
           "path": "registry/base-nova/protoform/lib/protobuf-provider/mutation-request.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/protobuf-provider/mutation-request.ts"
         },
         {
           "path": "registry/base-nova/protoform/lib/protobuf-provider/provider.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/protobuf-provider/provider.ts"
         },
         {
           "path": "registry/base-nova/protoform/lib/protobuf-provider/ui-options.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/protobuf-provider/ui-options.ts"
         }
       ]
     },
@@ -283,11 +322,13 @@
       "files": [
         {
           "path": "registry/base-nova/protoform/lib/protobuf-v1-bridge/index.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/protobuf-v1-bridge/index.ts"
         },
         {
           "path": "registry/base-nova/protoform/lib/protobuf-v1-bridge/provider.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/protobuf-v1-bridge/provider.ts"
         }
       ]
     },
@@ -305,23 +346,28 @@
       "files": [
         {
           "path": "registry/base-nova/protoform/hooks/use-proto-form/index.ts",
-          "type": "registry:hook"
+          "type": "registry:hook",
+          "target": "@hooks/use-proto-form/index.ts"
         },
         {
           "path": "registry/base-nova/protoform/hooks/use-proto-form/proto-error-path.ts",
-          "type": "registry:hook"
+          "type": "registry:hook",
+          "target": "@hooks/use-proto-form/proto-error-path.ts"
         },
         {
           "path": "registry/base-nova/protoform/hooks/use-proto-form/proto-paths.ts",
-          "type": "registry:hook"
+          "type": "registry:hook",
+          "target": "@hooks/use-proto-form/proto-paths.ts"
         },
         {
           "path": "registry/base-nova/protoform/hooks/use-proto-form/proto-resolver.ts",
-          "type": "registry:hook"
+          "type": "registry:hook",
+          "target": "@hooks/use-proto-form/proto-resolver.ts"
         },
         {
           "path": "registry/base-nova/protoform/hooks/use-proto-form/use-proto-form.ts",
-          "type": "registry:hook"
+          "type": "registry:hook",
+          "target": "@hooks/use-proto-form/use-proto-form.ts"
         }
       ],
       "registryDependencies": ["@protoform/hook-runtime"]
@@ -348,7 +394,8 @@
       "files": [
         {
           "path": "registry/base-nova/protoform/hooks/use-proto-form-tanstack/index.ts",
-          "type": "registry:hook"
+          "type": "registry:hook",
+          "target": "@hooks/use-proto-form-tanstack/index.ts"
         }
       ],
       "registryDependencies": ["@protoform/hook-runtime"]
@@ -366,23 +413,28 @@
       "files": [
         {
           "path": "registry/base-nova/protoform/hooks/use-proto-form-v8/index.ts",
-          "type": "registry:hook"
+          "type": "registry:hook",
+          "target": "@hooks/use-proto-form-v8/index.ts"
         },
         {
           "path": "registry/base-nova/protoform/hooks/use-proto-form-v8/proto-error-path.ts",
-          "type": "registry:hook"
+          "type": "registry:hook",
+          "target": "@hooks/use-proto-form-v8/proto-error-path.ts"
         },
         {
           "path": "registry/base-nova/protoform/hooks/use-proto-form-v8/proto-paths.ts",
-          "type": "registry:hook"
+          "type": "registry:hook",
+          "target": "@hooks/use-proto-form-v8/proto-paths.ts"
         },
         {
           "path": "registry/base-nova/protoform/hooks/use-proto-form-v8/proto-resolver.ts",
-          "type": "registry:hook"
+          "type": "registry:hook",
+          "target": "@hooks/use-proto-form-v8/proto-resolver.ts"
         },
         {
           "path": "registry/base-nova/protoform/hooks/use-proto-form-v8/use-proto-form.ts",
-          "type": "registry:hook"
+          "type": "registry:hook",
+          "target": "@hooks/use-proto-form-v8/use-proto-form.ts"
         }
       ],
       "registryDependencies": ["@protoform/hook-runtime"]
@@ -399,7 +451,8 @@
       "files": [
         {
           "path": "registry/base-nova/protoform/hooks/use-proto-form-tanstack-v2/index.ts",
-          "type": "registry:hook"
+          "type": "registry:hook",
+          "target": "@hooks/use-proto-form-tanstack-v2/index.ts"
         }
       ],
       "registryDependencies": ["@protoform/hook-runtime"]
@@ -430,275 +483,343 @@
       "files": [
         {
           "path": "registry/base-nova/protoform/components/auto-form/configuration.ts",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/configuration.ts"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/audit.ts",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/audit.ts"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/context.tsx",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/context.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/core-types.ts",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/core-types.ts"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/data-providers.ts",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/data-providers.ts"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/field-utils.ts",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/field-utils.ts"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/field-wrapper.tsx",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/field-wrapper.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/fields/boolean.tsx",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/fields/boolean.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/fields/bytes.tsx",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/fields/bytes.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/fields/choicebox.tsx",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/fields/choicebox.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/fields/combobox.tsx",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/fields/combobox.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/fields/currency.tsx",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/fields/currency.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/fields/date.tsx",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/fields/date.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/fields/duration.tsx",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/fields/duration.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/fields/email.tsx",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/fields/email.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/fields/fallback.tsx",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/fields/fallback.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/auto-form/fields/field-mask.tsx",
-          "type": "registry:component"
+          "path": "registry/base-nova/protoform/components/auto-form/fields/field-mask-control.tsx",
+          "type": "registry:component",
+          "target": "@components/auto-form/fields/field-mask-control.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/fields/index.ts",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/fields/index.ts"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/fields/int64.tsx",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/fields/int64.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/fields/json.tsx",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/fields/json.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/fields/key-value.tsx",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/fields/key-value.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/fields/multiselect.tsx",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/fields/multiselect.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/fields/number.tsx",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/fields/number.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/fields/password.tsx",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/fields/password.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/fields/radio.tsx",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/fields/radio.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/fields/select.tsx",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/fields/select.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/fields/shared.tsx",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/fields/shared.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/fields/slider.tsx",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/fields/slider.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/fields/string.tsx",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/fields/string.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/fields/textarea.tsx",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/fields/textarea.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/fields/toggle-group.tsx",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/fields/toggle-group.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/fields/url.tsx",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/fields/url.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/form-spacing.ts",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/form-spacing.ts"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/helpers.ts",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/helpers.ts"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/auto-form-core.tsx",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/auto-form-core.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/engine.tsx",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/engine.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/layout-context.tsx",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/layout-context.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/layout.tsx",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/layout.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/mode-shell.tsx",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/mode-shell.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/proto/conversion.ts",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/proto/conversion.ts"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/proto/index.ts",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/proto/index.ts"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/proto/schema.ts",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/proto/schema.ts"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/registry.ts",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/registry.ts"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/renderers/array.tsx",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/renderers/array.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/renderers/controlled.tsx",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/renderers/controlled.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/renderers/index.tsx",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/renderers/index.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/renderers/map.tsx",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/renderers/map.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/renderers/object.tsx",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/renderers/object.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/renderers/oneof.tsx",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/renderers/oneof.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/renderers/shared.ts",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/renderers/shared.ts"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/runtime-provider.tsx",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/runtime-provider.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/schema.ts",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/schema.ts"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/slot.tsx",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/slot.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/stepper.tsx",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/stepper.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/step-configuration.ts",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/step-configuration.ts"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/test-ids.ts",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/test-ids.ts"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/types.ts",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/types.ts"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/ui-component-map.ts",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/ui-component-map.ts"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/ui-components.tsx",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/ui-components.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/cel-runtime.ts",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/cel-runtime.ts"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/ui-rules.ts",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/ui-rules.ts"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/utils/modes.ts",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/utils/modes.ts"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/utils/serialization.ts",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/utils/serialization.ts"
         },
         {
           "path": "registry/base-nova/protoform/lib/form-types/index.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/form-types/index.ts"
         },
         {
           "path": "registry/base-nova/protoform/lib/input-utils/index.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/input-utils/index.ts"
         },
         {
           "path": "registry/base-nova/protoform/lib/utils/index.tsx",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/utils/index.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/shadcn-controls.ts",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/shadcn-controls.ts"
         },
         {
-          "path": "registry/base-nova/protoform/components/auto-form/ui-adapter.compile.ts",
-          "type": "registry:component"
+          "path": "registry/base-nova/protoform/components/auto-form/ui-props.ts",
+          "type": "registry:component",
+          "target": "@components/auto-form/ui-props.ts"
         }
       ]
     },
@@ -714,16 +835,14 @@
       "dependencies": ["react-hook-form"],
       "files": [
         {
-          "path": "registry/base-nova/protoform/components/auto-form/index.tsx",
-          "type": "registry:component"
-        },
-        {
           "path": "registry/base-nova/protoform/components/auto-form/adapters/react-hook-form.tsx",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/adapters/react-hook-form.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/auto-form/shadcn-ui-components.ts",
-          "type": "registry:component"
+          "path": "registry/base-nova/protoform/components/auto-form/host.tsx",
+          "type": "registry:component",
+          "target": "@components/auto-form/host.tsx"
         }
       ]
     },
@@ -942,19 +1061,33 @@
         },
         {
           "path": "registry/base-nova/protoform/hooks/use-controllable-state/index.ts",
-          "type": "registry:hook"
+          "type": "registry:hook",
+          "target": "@hooks/use-controllable-state/index.ts"
         },
         {
           "path": "registry/base-nova/protoform/hooks/use-layout-effect/index.ts",
-          "type": "registry:hook"
+          "type": "registry:hook",
+          "target": "@hooks/use-layout-effect/index.ts"
         },
         {
           "path": "registry/base-nova/protoform/hooks/use-portal-container/index.ts",
-          "type": "registry:hook"
+          "type": "registry:hook",
+          "target": "@hooks/use-portal-container/index.ts"
         },
         {
           "path": "registry/base-nova/protoform/lib/base-ui-compat/index.tsx",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/base-ui-compat/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/index.tsx",
+          "type": "registry:component",
+          "target": "@components/auto-form/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/shadcn-ui-components.ts",
+          "type": "registry:component",
+          "target": "@components/auto-form/shadcn-ui-components.ts"
         }
       ]
     },
@@ -971,15 +1104,18 @@
       "files": [
         {
           "path": "registry/base-nova/protoform/components/auto-form-tanstack/index.tsx",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form-tanstack/index.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/adapters/tanstack.tsx",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/adapters/tanstack.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/shadcn-ui-components.ts",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/shadcn-ui-components.ts"
         }
       ]
     },
@@ -996,15 +1132,18 @@
       "files": [
         {
           "path": "registry/base-nova/protoform/components/auto-form-react-hook-form-v8/index.tsx",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form-react-hook-form-v8/index.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/adapters/react-hook-form-v8.tsx",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/adapters/react-hook-form-v8.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/shadcn-ui-components.ts",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/shadcn-ui-components.ts"
         }
       ]
     },
@@ -1023,15 +1162,18 @@
       "files": [
         {
           "path": "registry/base-nova/protoform/components/auto-form-tanstack-v2/index.tsx",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form-tanstack-v2/index.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/adapters/tanstack-v2.tsx",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/adapters/tanstack-v2.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/shadcn-ui-components.ts",
-          "type": "registry:component"
+          "type": "registry:component",
+          "target": "@components/auto-form/shadcn-ui-components.ts"
         }
       ]
     },
@@ -1039,8 +1181,8 @@
       "name": "protoform",
       "type": "registry:block",
       "title": "Protoform",
-      "description": "Protoform with React Hook Form and the optional default shadcn UI implementations.",
-      "registryDependencies": ["@protoform/protoform-shadcn"],
+      "description": "Protobuf-driven React Hook Form and AutoForm behavior. Bring your own UI components; no primitives or theme are installed.",
+      "registryDependencies": ["@protoform/protoform-react"],
       "dependencies": [],
       "files": []
     },
@@ -1192,27 +1334,33 @@
       "files": [
         {
           "path": "registry/base-nova/protoform/lib/protobuf-provider/auto-form-example-annotations.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/protobuf-provider/auto-form-example-annotations.ts"
         },
         {
           "path": "registry/base-nova/protoform/lib/protobuf-provider/gen/auto-form-example_form.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/protobuf-provider/gen/auto-form-example_form.ts"
         },
         {
           "path": "registry/base-nova/protoform/lib/protobuf-provider/gen/auto-form-example_pb.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/protobuf-provider/gen/auto-form-example_pb.ts"
         },
         {
           "path": "registry/base-nova/protoform/lib/protobuf-provider/gen/protoform/v1/auto_form_example_form.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/protobuf-provider/gen/protoform/v1/auto_form_example_form.ts"
         },
         {
           "path": "registry/base-nova/protoform/lib/protobuf-provider/gen/protoform/v1/auto_form_example_pb.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/protobuf-provider/gen/protoform/v1/auto_form_example_pb.ts"
         },
         {
           "path": "registry/base-nova/protoform/lib/protobuf-provider/gen/protoform/v1/auto_form_ui_form.ts",
-          "type": "registry:lib"
+          "type": "registry:lib",
+          "target": "@lib/protobuf-provider/gen/protoform/v1/auto_form_ui_form.ts"
         },
         {
           "path": "registry/base-nova/protoform/demo/auto-form-basic.tsx",

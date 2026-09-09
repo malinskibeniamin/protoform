@@ -1,5 +1,5 @@
 import type { Message } from "@bufbuild/protobuf";
-import type { ProtoConversionOptions } from "../../lib/protobuf-provider";
+import type { ProtoConversionOptions } from "@/registry/base-nova/protoform/lib/protobuf-provider";
 import type { ParsedField, SchemaProvider } from "./core-types";
 import { sortFieldsByOrder } from "./field-utils";
 import { isProtoMessageDescriptor, isProtoProvider, ProtoProvider } from "./proto";

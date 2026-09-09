@@ -2,10 +2,10 @@
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "protoform",
   "title": "Protoform",
-  "description": "Protoform with React Hook Form and the optional default shadcn UI implementations.",
+  "description": "Protobuf-driven React Hook Form and AutoForm behavior. Bring your own UI components; no primitives or theme are installed.",
   "dependencies": [],
   "registryDependencies": [
-    "@protoform/protoform-shadcn"
+    "@protoform/protoform-react"
   ],
   "files": [],
   "type": "registry:block"

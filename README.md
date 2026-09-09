@@ -23,32 +23,87 @@ replacing your manual forms.
 The `@protoform` names here identify registry items, not Protoform npm packages. Configure the
 registry URL shown under [Stable release](#stable-release) before installing.
 
-## Reuse existing shadcn components
+## Bring your own registry and theme (unreleased)
 
-Install `protoform-react` when the app already owns its shadcn-compatible components. This copies
-the renderer and a typed component map, but no UI implementations:
+The changes in this branch are not in the immutable `v1.0.0` snapshot below. Use a registry
+built from this branch to try them.
+
+`protoform` and `protoform-react` install protobuf-driven form behavior, not a design system.
+They do not install UI primitives, change `components.json`, or inject CSS/theme tokens.
+The source directory name `base-nova` is internal: installation uses explicit alias-based targets
+and is tested with `new-york` and custom component paths.
+
+Keep your existing style, theme and aliases. Add your own registry namespace alongside Protoform:
+
+```json
+{
+  "aliases": {
+    "components": "@/features",
+    "ui": "@/design-system/ui",
+    "lib": "@/lib",
+    "hooks": "@/hooks",
+    "utils": "@/lib/utils"
+  },
+  "registries": {
+    "@company": "https://your-company.example/r/{name}.json",
+    "@protoform": "https://your-protoform-registry.example/r/{name}.json"
+  }
+}
+```
+
+These are placeholder registry URLs. Merge the relevant keys into your existing configuration;
+do not replace it. shadcn supports [custom namespaces](https://ui.shadcn.com/docs/registry/namespace)
+and resolves [alias-based targets](https://ui.shadcn.com/docs/registry/registry-item-json) from that configuration.
+
+### Existing Radix-style shadcn components
 
 ```bash
-bunx shadcn@latest add @protoform/protoform-react
+bunx shadcn@latest add @protoform/protoform @protoform/protoform-shadcn-host
 ```
 
-The default `shadcnUIComponents` map points at the app's existing `@/components/ui/*` aliases. A
-vendor can replace individual entries or provide a complete map without changing Protoform's
-renderer:
+The optional `protoform-shadcn-host` item installs one editable adapter file, not primitives.
+It imports your local alert, button, calendar, checkbox, collapsible, field, input, input-group,
+popover, radio-group, select, slider, switch, tabs, textarea, toggle, toggle-group and tooltip
+modules. Install any missing modules from **your** registry, for example
+`bunx shadcn@latest add @company/input @company/button`. Remove unused imports and entries
+from the adapter if you only need a smaller set.
 
 ```tsx
-import { AutoForm, shadcnUIComponents, type ProtoformUIComponentMap } from "@/components/auto-form";
-import { Button } from "@/components/ui/button";
+import { AutoForm } from "@/features/auto-form/host";
+import { shadcnHostComponents } from "@/features/auto-form/shadcn-host";
 
-const components = {
-  ...shadcnUIComponents,
-  Button,
-} satisfies ProtoformUIComponentMap;
-
-<AutoForm components={components} schema={RequestSchema} />;
+<AutoForm components={shadcnHostComponents} schema={RequestSchema} />;
 ```
 
-Install `protoform-shadcn` instead when the app wants Protoform's optional default UI source.
+The adapter composes label, copy feedback, and nullable protobuf selections without modifying
+primitives. Base UI and other custom APIs may require a different mapping; a registry URL alone
+does not make those APIs compatible. Do not change your primitives to match Protoform.
+
+### Custom controls and minimal forms
+
+Pass a component map directly to `AutoForm` when using a different UI API. Only controls rendered
+by your form need entries; the host entrypoint does not eagerly import your UI library. The
+`ui-props.ts` file describes renderer inputs independently of consumer implementation types.
+`testId` is translated to `data-testid` before reaching host controls.
+
+Specialized `Combobox`, `SimpleMultiSelect`, `JSONField`, `KeyValueField`, and `Choicebox*` controls
+are **not** supplied by the standard adapter. Register compatible host implementations through
+`components`, or use `fieldRegistry` / `formComponents` to provide your own field renderer.
+A missing control produces an actionable error naming it; supplying an updated map recovers the
+form. For a minimal text form, use `modes={["simple"]}` and `showSummary={false}` to avoid requiring
+tabs and summary controls.
+
+### Existing consumers
+
+- Keep manual hook installs unchanged.
+- For host-owned UI, change the AutoForm import from `components/auto-form` to
+  `components/auto-form/host` and pass `components` explicitly.
+- `protoform-shadcn` remains an explicit legacy/demo bundle with the old entrypoint and customized
+  UI. It is **not** the bring-your-own-registry path. Installing `protoform` no longer pulls it in.
+- This initial host entrypoint uses React Hook Form v7. Existing experimental and TanStack
+  AutoForm entrypoints retain their legacy default maps; their hook-only installs remain UI-free.
+- Review source diffs when updating. This change does not delete old copied primitives or theme
+  files from an existing app. Remove them only after checking your own references.
 
 ## Flagship example
 
@@ -92,7 +147,8 @@ Useful items:
 | `use-proto-form` | Native React Hook Form integration |
 | `use-proto-form-tanstack` | Native TanStack Form integration |
 | `protoform-react` | React Hook Form AutoForm using a consumer-owned shadcn component map |
-| `protoform-shadcn` | Optional default shadcn UI source |
+| `protoform-shadcn` | Explicit legacy/demo UI source |
+| `protoform-shadcn-host` | Unreleased editable adapter for existing Radix-style controls |
 | `auto-form-tanstack` | TanStack Form AutoForm |
 | `protoc-gen-protoform` | Source-copy Buf plugin |
 | `bookstore` | Complete five-RPC example |

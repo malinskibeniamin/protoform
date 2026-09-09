@@ -1,30 +1,13 @@
 "use client";
 
-import type React from "react";
-import type { Resolver, UseFormProps, UseFormReturn } from "react-hook-form";
-import { createProtoResolver } from "../../hooks/use-proto-form";
-import { ReactHookFormEngine } from "./adapters/react-hook-form";
-import { AutoFormCore } from "./auto-form-core";
-import { isProtoMessageDescriptor, isProtoProvider } from "./proto";
-import { protoConversionOptionsFromFieldConfig } from "./schema";
+import { AutoForm as HostAutoForm, type AutoFormProps as HostAutoFormProps } from "./host";
 import { shadcnUIComponents } from "./shadcn-ui-components";
-import type { AutoFormValidationMode, AutoFormProps as BaseAutoFormProps } from "./types";
 
-export type { ProtoformMessageCode, ProtoformMessageFormatter, ProtoformMessageParams } from "../../lib/core/messages";
-
-type FormValues = Record<string, unknown>;
-
-export type AutoFormProps<
-  T extends FormValues = FormValues,
-  TCustomFieldType extends string = never,
-> = BaseAutoFormProps<
-  T,
-  UseFormReturn<FormValues, unknown, T>,
-  UseFormProps<FormValues, unknown, T>,
-  Resolver<FormValues, unknown, T>,
-  TCustomFieldType
->;
-
+export type {
+  ProtoformMessageCode,
+  ProtoformMessageFormatter,
+  ProtoformMessageParams,
+} from "@/registry/base-nova/protoform/lib/core/messages";
 export {
   type AutoFormAuditDiagnostic,
   type AutoFormAuditFormat,
@@ -83,67 +66,17 @@ export type {
 } from "./types";
 export type { ProtoformUIComponentMap } from "./ui-component-map";
 
-function toHookFormMode(mode: AutoFormValidationMode): "onBlur" | "onChange" | "onSubmit" {
-  switch (mode) {
-    case "blur":
-      return "onBlur";
-    case "change":
-      return "onChange";
-    case "submit":
-      return "onSubmit";
-    default:
-      throw new TypeError(`Unsupported validation mode: ${mode satisfies never}`);
-  }
-}
+export type AutoFormProps<
+  T extends Record<string, unknown> = Record<string, unknown>,
+  TCustomFieldType extends string = never,
+> = Omit<HostAutoFormProps<T, TCustomFieldType>, "components"> & {
+  components?: HostAutoFormProps<T, TCustomFieldType>["components"];
+};
 
-export function AutoForm<T extends FormValues = FormValues, TCustomFieldType extends string = never>(
-  props: AutoFormProps<T, TCustomFieldType>
-): React.ReactNode;
-export function AutoForm({
-  components = shadcnUIComponents,
-  formOptions,
-  resolver,
-  ...props
-}: AutoFormProps<FormValues, string>) {
-  let protoDescriptor = isProtoMessageDescriptor(props.schema) ? props.schema : undefined;
-  if (!protoDescriptor && isProtoProvider(props.schema)) {
-    protoDescriptor = props.schema.getMessageDescriptor();
-  }
-  const conversionOptions = {
-    ...protoConversionOptionsFromFieldConfig(props.fieldConfig),
-    formatMessage: props.formatMessage,
-  };
-  const resolvedResolver =
-    resolver ?? (protoDescriptor ? createProtoResolver(protoDescriptor, conversionOptions) : undefined);
-  const engineOptions: UseFormProps<FormValues, unknown, FormValues> = {
-    ...(formOptions ?? {}),
-    ...(props.validationMode
-      ? {
-          mode: toHookFormMode(props.validationMode),
-        }
-      : {}),
-    ...(props.revalidationMode
-      ? {
-          reValidateMode: props.revalidationMode === "change" ? "onChange" : "onBlur",
-        }
-      : {}),
-  };
-
-  return (
-    <AutoFormCore<FormValues, UseFormReturn<FormValues, unknown, FormValues>, string>
-      {...props}
-      components={components}
-      renderEngine={({ children, defaultValues, values }) => (
-        <ReactHookFormEngine<FormValues>
-          defaultValues={defaultValues}
-          formOptions={engineOptions}
-          onDirtyChange={props.onDirtyChange}
-          resolver={resolvedResolver}
-          values={values}
-        >
-          {children}
-        </ReactHookFormEngine>
-      )}
-    />
-  );
+/** Legacy/demo entrypoint. Consumers bringing their own UI import ./host instead. */
+export function AutoForm<
+  T extends Record<string, unknown> = Record<string, unknown>,
+  TCustomFieldType extends string = never,
+>({ components = shadcnUIComponents, ...props }: AutoFormProps<T, TCustomFieldType>) {
+  return <HostAutoForm<T, TCustomFieldType> {...props} components={components} />;
 }

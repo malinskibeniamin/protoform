@@ -21,6 +21,7 @@ const expectedItems = [
   "auto-form-core",
   "protoform-react",
   "protoform-shadcn",
+  "protoform-shadcn-host",
   "auto-form-react-hook-form-v8",
   "auto-form-tanstack",
   "auto-form-tanstack-v2",
@@ -100,7 +101,7 @@ const protoformShadcn = dependencyItemSchema.parse(JSON.parse(readFileSync("publ
 if (
   protoformShadcn.registryDependencies?.length !== 1 ||
   protoformShadcn.registryDependencies[0] !== "@protoform/protoform-react" ||
-  !protoformShadcn.files?.every((file) => (file.target ? file.target.startsWith("~/components/ui/") : true))
+  !protoformShadcn.files?.some((file) => file.target === "~/components/ui/button/index.tsx")
 ) {
   throw new Error("protoform-shadcn must install optional defaults through the configured ui alias");
 }

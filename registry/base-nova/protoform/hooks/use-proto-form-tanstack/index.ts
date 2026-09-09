@@ -12,20 +12,20 @@ import {
   useForm,
 } from "@tanstack/react-form";
 import { useState } from "react";
-import { createUpdateMask as createDirtyUpdateMask } from "../../lib/protobuf-provider/field-mask";
-import { createProtoFormSchema } from "../../lib/protobuf-provider/form-schema";
+import { createUpdateMask as createDirtyUpdateMask } from "@/registry/base-nova/protoform/lib/protobuf-provider/field-mask";
+import { createProtoFormSchema } from "@/registry/base-nova/protoform/lib/protobuf-provider/form-schema";
 import {
   type ConnectErrorContext,
   extractConnectErrorContext,
   extractFieldViolations,
-} from "../../lib/protobuf-provider/format-error";
+} from "@/registry/base-nova/protoform/lib/protobuf-provider/format-error";
 import {
   formValuesToProto,
   type ProtoConversionOptions,
   type ProtoFormOptions,
-} from "../../lib/protobuf-provider/hook-runtime";
-import { humanizeServerFieldError } from "../../lib/protobuf-provider/humanize-validation-error";
-import { protoPathToFormPath } from "../../lib/protobuf-provider/proto-error-path";
+} from "@/registry/base-nova/protoform/lib/protobuf-provider/hook-runtime";
+import { humanizeServerFieldError } from "@/registry/base-nova/protoform/lib/protobuf-provider/humanize-validation-error";
+import { protoPathToFormPath } from "@/registry/base-nova/protoform/lib/protobuf-provider/proto-error-path";
 
 type FormValues = Record<string, unknown>;
 

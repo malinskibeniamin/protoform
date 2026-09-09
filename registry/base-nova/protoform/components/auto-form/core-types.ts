@@ -1,6 +1,6 @@
 import type React from "react";
 import type { ReactNode } from "react";
-import type { FieldWrapperProps, ParsedField, UiRenderable } from "../../lib/form-types";
+import type { FieldWrapperProps, ParsedField, UiRenderable } from "@/registry/base-nova/protoform/lib/form-types";
 
 // Re-export schema contract types from shared lib so existing consumers
 // can continue importing from './core-types' without changes.
@@ -15,9 +15,9 @@ export type {
   SchemaValidationContext,
   SchemaValidationError,
   UiRenderable,
-} from "../../lib/form-types";
+} from "@/registry/base-nova/protoform/lib/form-types";
 
-export { getFieldHints } from "../../lib/form-types";
+export { getFieldHints } from "@/registry/base-nova/protoform/lib/form-types";
 
 // ---------------------------------------------------------------------------
 // UI component contracts — AutoForm-specific wrapper and field props.

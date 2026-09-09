@@ -1,90 +1,8 @@
 "use client";
 
 import React from "react";
-import type {
-  Alert as AlertComponent,
-  AlertDescription as AlertDescriptionComponent,
-  AlertTitle as AlertTitleComponent,
-} from "@/components/ui/alert";
-import type { Button as ButtonComponent } from "@/components/ui/button";
-import type { Calendar as CalendarComponent } from "@/components/ui/calendar";
-import type { Checkbox as CheckboxComponent } from "@/components/ui/checkbox";
-import type {
-  Choicebox as ChoiceboxComponent,
-  ChoiceboxItem as ChoiceboxItemComponent,
-  ChoiceboxItemContent as ChoiceboxItemContentComponent,
-  ChoiceboxItemHeader as ChoiceboxItemHeaderComponent,
-  ChoiceboxItemIndicator as ChoiceboxItemIndicatorComponent,
-  ChoiceboxItemTitle as ChoiceboxItemTitleComponent,
-} from "@/components/ui/choicebox";
-import type {
-  Collapsible as CollapsibleComponent,
-  CollapsibleContent as CollapsibleContentComponent,
-  CollapsibleTrigger as CollapsibleTriggerComponent,
-} from "@/components/ui/collapsible";
-import type { Combobox as ComboboxComponent } from "@/components/ui/combobox";
-import type { CopyButton as CopyButtonComponent } from "@/components/ui/copy-button";
-import type {
-  Field as FieldComponent,
-  FieldContent as FieldContentComponent,
-  FieldDescription as FieldDescriptionComponent,
-  FieldError as FieldErrorComponent,
-  FieldLabel as FieldLabelComponent,
-} from "@/components/ui/field";
-import type { Input as InputComponent } from "@/components/ui/input";
-import type {
-  InputGroupAddon as InputGroupAddonComponent,
-  InputGroupButton as InputGroupButtonComponent,
-  InputGroup as InputGroupComponent,
-  InputGroupInput as InputGroupInputComponent,
-  InputGroupText as InputGroupTextComponent,
-} from "@/components/ui/input-group";
-import type { JSONField as JSONFieldComponent } from "@/components/ui/json-field";
-import type { KeyValueField as KeyValueFieldComponent } from "@/components/ui/key-value-field";
-import type { SimpleMultiSelect as SimpleMultiSelectComponent } from "@/components/ui/multi-select";
-import type {
-  Popover as PopoverComponent,
-  PopoverContent as PopoverContentComponent,
-  PopoverTrigger as PopoverTriggerComponent,
-  PopoverTriggerProps,
-} from "@/components/ui/popover";
-import type {
-  RadioGroup as RadioGroupComponent,
-  RadioGroupItem as RadioGroupItemComponent,
-} from "@/components/ui/radio-group";
-import type {
-  Select as SelectComponent,
-  SelectContent as SelectContentComponent,
-  SelectGroup as SelectGroupComponent,
-  SelectItem as SelectItemComponent,
-  SelectLabel as SelectLabelComponent,
-  SelectTrigger as SelectTriggerComponent,
-  SelectValue as SelectValueComponent,
-} from "@/components/ui/select";
-import type { Slider as SliderComponent } from "@/components/ui/slider";
-import type { Switch as SwitchComponent } from "@/components/ui/switch";
-import type {
-  Tabs as TabsComponent,
-  TabsContent as TabsContentComponent,
-  TabsList as TabsListComponent,
-  TabsTrigger as TabsTriggerComponent,
-} from "@/components/ui/tabs";
-import type { Textarea as TextareaComponent } from "@/components/ui/textarea";
-import type { Toggle as ToggleComponent } from "@/components/ui/toggle";
-import type {
-  ToggleGroup as ToggleGroupComponent,
-  ToggleGroupItem as ToggleGroupItemComponent,
-} from "@/components/ui/toggle-group";
-import type {
-  Tooltip as TooltipComponent,
-  TooltipContent as TooltipContentComponent,
-  TooltipProvider as TooltipProviderComponent,
-  TooltipTrigger as TooltipTriggerComponent,
-} from "@/components/ui/tooltip";
-import type { Heading as HeadingComponent, Text as TextComponent } from "@/components/ui/typography";
 import type { ProtoformUIComponentMap } from "./ui-component-map";
-
-type UIComponent = React.ElementType;
+import type { ProtoformUIProps } from "./ui-props";
 
 export type { ComboboxOption, ProtoformUIComponentMap } from "./ui-component-map";
 
@@ -111,84 +29,86 @@ export function useProtoformUIComponents(): ProtoformUIComponentMap {
 // AutoForm owns error associations even when consumer controls have no Field context.
 export const AutoFormErrorDescriptionContext = React.createContext<string | undefined>(undefined);
 
-function createUIComponent<TComponent extends UIComponent>(
-  name: keyof ProtoformUIComponentMap,
+function createUIComponent<TName extends keyof ProtoformUIProps>(
+  name: TName,
   describesFieldError = false
-): React.ComponentType<React.ComponentProps<TComponent>> {
-  function InjectedUIComponent(props: React.ComponentProps<TComponent>) {
+): React.ComponentType<ProtoformUIProps[TName]> {
+  function InjectedUIComponent(props: ProtoformUIProps[TName]) {
     const Component = useProtoformUIComponents()[name];
     const errorId = React.useContext(AutoFormErrorDescriptionContext);
-    if (describesFieldError && errorId) {
-      const ariaProps: React.AriaAttributes = props;
-      return React.createElement(Component, {
-        ...props,
-        "aria-describedby": [ariaProps["aria-describedby"], errorId].filter(Boolean).join(" "),
-      });
+    if (!Component) {
+      throw new Error(`Protoform requires the "${name}" component. Supply it through AutoForm components.`);
     }
-    return React.createElement(Component, props);
+    const { testId, ...componentProps } = props;
+    const ariaProps: React.AriaAttributes = props;
+    return React.createElement(Component, {
+      ...componentProps,
+      ...(testId === undefined ? {} : { "data-testid": testId }),
+      ...(describesFieldError && errorId
+        ? { "aria-describedby": [ariaProps["aria-describedby"], errorId].filter(Boolean).join(" ") }
+        : {}),
+    });
   }
   InjectedUIComponent.displayName = `Protoform${name}`;
   return InjectedUIComponent;
 }
 
-export const Alert = createUIComponent<typeof AlertComponent>("Alert");
-export const AlertDescription = createUIComponent<typeof AlertDescriptionComponent>("AlertDescription");
-export const AlertTitle = createUIComponent<typeof AlertTitleComponent>("AlertTitle");
-export const Button = createUIComponent<typeof ButtonComponent>("Button");
-export const Calendar = createUIComponent<typeof CalendarComponent>("Calendar");
-export const Checkbox = createUIComponent<typeof CheckboxComponent>("Checkbox");
-export const Choicebox = createUIComponent<typeof ChoiceboxComponent>("Choicebox");
-export const ChoiceboxItem = createUIComponent<typeof ChoiceboxItemComponent>("ChoiceboxItem");
-export const ChoiceboxItemContent = createUIComponent<typeof ChoiceboxItemContentComponent>("ChoiceboxItemContent");
-export const ChoiceboxItemHeader = createUIComponent<typeof ChoiceboxItemHeaderComponent>("ChoiceboxItemHeader");
-export const ChoiceboxItemIndicator =
-  createUIComponent<typeof ChoiceboxItemIndicatorComponent>("ChoiceboxItemIndicator");
-export const ChoiceboxItemTitle = createUIComponent<typeof ChoiceboxItemTitleComponent>("ChoiceboxItemTitle");
-export const Collapsible = createUIComponent<typeof CollapsibleComponent>("Collapsible");
-export const CollapsibleContent = createUIComponent<typeof CollapsibleContentComponent>("CollapsibleContent");
-export const CollapsibleTrigger = createUIComponent<typeof CollapsibleTriggerComponent>("CollapsibleTrigger");
-export const Combobox = createUIComponent<typeof ComboboxComponent>("Combobox");
-export const CopyButton = createUIComponent<typeof CopyButtonComponent>("CopyButton");
-export const Field = createUIComponent<typeof FieldComponent>("Field");
-export const FieldContent = createUIComponent<typeof FieldContentComponent>("FieldContent");
-export const FieldDescription = createUIComponent<typeof FieldDescriptionComponent>("FieldDescription");
-export const FieldError = createUIComponent<typeof FieldErrorComponent>("FieldError");
-export const FieldLabel = createUIComponent<typeof FieldLabelComponent>("FieldLabel");
-export const Heading = createUIComponent<typeof HeadingComponent>("Heading");
-export const Input = createUIComponent<typeof InputComponent>("Input", true);
-export const InputGroup = createUIComponent<typeof InputGroupComponent>("InputGroup");
-export const InputGroupAddon = createUIComponent<typeof InputGroupAddonComponent>("InputGroupAddon");
-export const InputGroupButton = createUIComponent<typeof InputGroupButtonComponent>("InputGroupButton");
-export const InputGroupInput = createUIComponent<typeof InputGroupInputComponent>("InputGroupInput", true);
-export const InputGroupText = createUIComponent<typeof InputGroupTextComponent>("InputGroupText");
-export const JSONField = createUIComponent<typeof JSONFieldComponent>("JSONField");
-export const KeyValueField = createUIComponent<typeof KeyValueFieldComponent>("KeyValueField");
-export const Popover = createUIComponent<typeof PopoverComponent>("Popover");
-export const PopoverContent = createUIComponent<typeof PopoverContentComponent>("PopoverContent");
-export const PopoverTrigger: React.ComponentType<PopoverTriggerProps> =
-  createUIComponent<typeof PopoverTriggerComponent>("PopoverTrigger");
-export const RadioGroup = createUIComponent<typeof RadioGroupComponent>("RadioGroup");
-export const RadioGroupItem = createUIComponent<typeof RadioGroupItemComponent>("RadioGroupItem");
-export const Select = createUIComponent<typeof SelectComponent>("Select");
-export const SelectContent = createUIComponent<typeof SelectContentComponent>("SelectContent");
-export const SelectGroup = createUIComponent<typeof SelectGroupComponent>("SelectGroup");
-export const SelectItem = createUIComponent<typeof SelectItemComponent>("SelectItem");
-export const SelectLabel = createUIComponent<typeof SelectLabelComponent>("SelectLabel");
-export const SelectTrigger = createUIComponent<typeof SelectTriggerComponent>("SelectTrigger");
-export const SelectValue = createUIComponent<typeof SelectValueComponent>("SelectValue");
-export const SimpleMultiSelect = createUIComponent<typeof SimpleMultiSelectComponent>("SimpleMultiSelect");
-export const Slider = createUIComponent<typeof SliderComponent>("Slider");
-export const Switch = createUIComponent<typeof SwitchComponent>("Switch");
-export const Tabs = createUIComponent<typeof TabsComponent>("Tabs");
-export const TabsContent = createUIComponent<typeof TabsContentComponent>("TabsContent");
-export const TabsList = createUIComponent<typeof TabsListComponent>("TabsList");
-export const TabsTrigger = createUIComponent<typeof TabsTriggerComponent>("TabsTrigger");
-export const Text = createUIComponent<typeof TextComponent>("Text");
-export const Textarea = createUIComponent<typeof TextareaComponent>("Textarea", true);
-export const Toggle = createUIComponent<typeof ToggleComponent>("Toggle");
-export const ToggleGroup = createUIComponent<typeof ToggleGroupComponent>("ToggleGroup");
-export const ToggleGroupItem = createUIComponent<typeof ToggleGroupItemComponent>("ToggleGroupItem");
-export const Tooltip = createUIComponent<typeof TooltipComponent>("Tooltip");
-export const TooltipContent = createUIComponent<typeof TooltipContentComponent>("TooltipContent");
-export const TooltipProvider = createUIComponent<typeof TooltipProviderComponent>("TooltipProvider");
-export const TooltipTrigger = createUIComponent<typeof TooltipTriggerComponent>("TooltipTrigger");
+export const Alert = createUIComponent("Alert");
+export const AlertDescription = createUIComponent("AlertDescription");
+export const AlertTitle = createUIComponent("AlertTitle");
+export const Button = createUIComponent("Button");
+export const Calendar = createUIComponent("Calendar");
+export const Checkbox = createUIComponent("Checkbox");
+export const Choicebox = createUIComponent("Choicebox");
+export const ChoiceboxItem = createUIComponent("ChoiceboxItem");
+export const ChoiceboxItemContent = createUIComponent("ChoiceboxItemContent");
+export const ChoiceboxItemHeader = createUIComponent("ChoiceboxItemHeader");
+export const ChoiceboxItemIndicator = createUIComponent("ChoiceboxItemIndicator");
+export const ChoiceboxItemTitle = createUIComponent("ChoiceboxItemTitle");
+export const Collapsible = createUIComponent("Collapsible");
+export const CollapsibleContent = createUIComponent("CollapsibleContent");
+export const CollapsibleTrigger = createUIComponent("CollapsibleTrigger");
+export const Combobox = createUIComponent("Combobox");
+export const CopyButton = createUIComponent("CopyButton");
+export const Field = createUIComponent("Field");
+export const FieldContent = createUIComponent("FieldContent");
+export const FieldDescription = createUIComponent("FieldDescription");
+export const FieldError = createUIComponent("FieldError");
+export const FieldLabel = createUIComponent("FieldLabel");
+export const Heading = createUIComponent("Heading");
+export const Input = createUIComponent("Input", true);
+export const InputGroup = createUIComponent("InputGroup");
+export const InputGroupAddon = createUIComponent("InputGroupAddon");
+export const InputGroupButton = createUIComponent("InputGroupButton");
+export const InputGroupInput = createUIComponent("InputGroupInput", true);
+export const InputGroupText = createUIComponent("InputGroupText");
+export const JSONField = createUIComponent("JSONField");
+export const KeyValueField = createUIComponent("KeyValueField");
+export const Popover = createUIComponent("Popover");
+export const PopoverContent = createUIComponent("PopoverContent");
+export const PopoverTrigger = createUIComponent("PopoverTrigger");
+export const RadioGroup = createUIComponent("RadioGroup");
+export const RadioGroupItem = createUIComponent("RadioGroupItem");
+export const Select = createUIComponent("Select");
+export const SelectContent = createUIComponent("SelectContent");
+export const SelectGroup = createUIComponent("SelectGroup");
+export const SelectItem = createUIComponent("SelectItem");
+export const SelectLabel = createUIComponent("SelectLabel");
+export const SelectTrigger = createUIComponent("SelectTrigger");
+export const SelectValue = createUIComponent("SelectValue");
+export const SimpleMultiSelect = createUIComponent("SimpleMultiSelect");
+export const Slider = createUIComponent("Slider");
+export const Switch = createUIComponent("Switch");
+export const Tabs = createUIComponent("Tabs");
+export const TabsContent = createUIComponent("TabsContent");
+export const TabsList = createUIComponent("TabsList");
+export const TabsTrigger = createUIComponent("TabsTrigger");
+export const Text = createUIComponent("Text");
+export const Textarea = createUIComponent("Textarea", true);
+export const Toggle = createUIComponent("Toggle");
+export const ToggleGroup = createUIComponent("ToggleGroup");
+export const ToggleGroupItem = createUIComponent("ToggleGroupItem");
+export const Tooltip = createUIComponent("Tooltip");
+export const TooltipContent = createUIComponent("TooltipContent");
+export const TooltipProvider = createUIComponent("TooltipProvider");
+export const TooltipTrigger = createUIComponent("TooltipTrigger");

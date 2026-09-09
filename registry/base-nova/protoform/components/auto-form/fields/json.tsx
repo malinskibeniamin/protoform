@@ -14,13 +14,10 @@ function JsonFieldComponent({ field, id, inputProps }: AutoFormFieldProps) {
       maxDepth={3}
       onBlur={inputProps["onBlur"]}
       onChange={(value) => inputProps["onValueChange"](value)}
-      schema={getProtoJsonSchema(field) as never}
+      schema={getProtoJsonSchema(field)}
       showPlaceholder={false}
       testId={testIds.control}
-      value={
-        ((inputProps["value"] as unknown) ??
-          (getProtoFieldCustomData(field)?.jsonKind === "listValue" ? [] : {})) as never
-      }
+      value={inputProps["value"] ?? (getProtoFieldCustomData(field)?.jsonKind === "listValue" ? [] : {})}
     />
   );
 }

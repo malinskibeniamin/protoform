@@ -2,7 +2,7 @@
 
 import { TrashIcon } from "lucide-react";
 import React from "react";
-import { formatProtoformMessage } from "../../../lib/core/messages";
+import { formatProtoformMessage } from "@/registry/base-nova/protoform/lib/core/messages";
 import { useAutoFormRenderContext, useAutoFormRuntimeContext } from "../context";
 import type { ParsedField } from "../core-types";
 import { type AutoFormArrayController, useAutoFormEngine } from "../engine";

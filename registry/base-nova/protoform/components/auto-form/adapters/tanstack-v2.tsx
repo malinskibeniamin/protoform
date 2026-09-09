@@ -12,9 +12,8 @@ import {
   type ValidationErrorMap,
 } from "@tanstack/react-form-v2";
 import React from "react";
-
-import { useMemoizedArray } from "../../../lib/input-utils";
-import { dirtyFieldsFromValues } from "../../../lib/protobuf-provider";
+import { useMemoizedArray } from "@/registry/base-nova/protoform/lib/input-utils";
+import { dirtyFieldsFromValues } from "@/registry/base-nova/protoform/lib/protobuf-provider";
 import type { SchemaValidation, SchemaValidationError } from "../core-types";
 import {
   type AutoFormArrayController,

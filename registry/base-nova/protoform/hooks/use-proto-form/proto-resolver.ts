@@ -2,17 +2,17 @@ import type { DescMessage, MessageShape, MessageValidType } from "@bufbuild/prot
 import type { FieldMask } from "@bufbuild/protobuf/wkt";
 import { toNestErrors, validateFieldsNatively } from "@hookform/resolvers";
 import type { Resolver } from "react-hook-form";
-import type { FormValues } from "../../lib/core/index.js";
+import type { FormValues } from "@/registry/base-nova/protoform/lib/core/index.js";
 import {
   PROTO_FORM_ROOT_ERROR_KEY,
   type ProtoFormOptions,
   validateFormValuesAgainstProtoSchema,
-} from "../../lib/protobuf-provider/hook-runtime.js";
+} from "@/registry/base-nova/protoform/lib/protobuf-provider/hook-runtime.js";
 import {
   humanizeValidationError,
   isGenericValidationMessage,
-} from "../../lib/protobuf-provider/humanize-validation-error.js";
-import { createDescriptorAwareStandardSchema } from "../../lib/protobuf-provider/validation-schema.js";
+} from "@/registry/base-nova/protoform/lib/protobuf-provider/humanize-validation-error.js";
+import { createDescriptorAwareStandardSchema } from "@/registry/base-nova/protoform/lib/protobuf-provider/validation-schema.js";
 
 export interface ProtoResolverOptions {
   /** Resolve the current validation mask. Omit it to validate the full message. */

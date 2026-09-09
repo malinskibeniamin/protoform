@@ -1,14 +1,14 @@
 import { type DescMessage, isMessage, type MessageShape } from "@bufbuild/protobuf";
-import { getFieldHints } from "../../../lib/core";
+import { getFieldHints } from "@/registry/base-nova/protoform/lib/core";
 
-import type { ParsedField } from "../../../lib/form-types";
-import { type ProtoMapFormEntry, protoToFormValues } from "../../../lib/protobuf-provider";
+import type { ParsedField } from "@/registry/base-nova/protoform/lib/form-types";
+import { type ProtoMapFormEntry, protoToFormValues } from "@/registry/base-nova/protoform/lib/protobuf-provider";
 
 export {
   protoFormValuesToPayload,
   protoPayloadToFormValues,
   protoToFormValues,
-} from "../../../lib/protobuf-provider";
+} from "@/registry/base-nova/protoform/lib/protobuf-provider";
 
 export function getProtoJsonSchema(field: ParsedField): Record<string, unknown> {
   const hints = getFieldHints(field);
