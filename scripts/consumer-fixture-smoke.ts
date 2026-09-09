@@ -333,7 +333,8 @@ async function assertHostInstalled() {
     'import { clsx, type ClassValue } from "clsx";\nimport { twMerge } from "tailwind-merge";\nexport function cn(...inputs: ClassValue[]) { return twMerge(clsx(inputs)); }\n'
   );
   await $`bun install --cwd ${hostFixture}`;
-  await $`bun add --cwd ${hostFixture} clsx tailwind-merge`;
+  await $`bun add --cwd ${hostFixture} clsx tailwind-merge tailwindcss@4.3.3 @tailwindcss/vite@4.3.3`;
+  await cp("scripts/fixtures/host-theme.css", join(hostFixture, "app/globals.css"));
   // The host chooses its own registry, aliases and style before Protoform runs.
   const controls = [
     "alert",
@@ -395,11 +396,11 @@ async function assertHostInstalled() {
   await $`bun ${join(hostFixture, "consumer-smoke.tsx")}`;
   await writeFile(
     join(hostFixture, "index.html"),
-    '<html lang="en"><head><title>Host-owned Protoform</title><style>body{font:16px system-ui;margin:40px;color:#16243b;max-width:800px}input,button{font:inherit;padding:8px;border:1px solid #9aa8bc;border-radius:6px}button{cursor:pointer;margin:8px 8px 8px 0;background:#edf2fa}label{display:block}form{margin:24px 0}h1{font-size:26px}[role=alert]{color:#ad1725;border:1px solid;padding:12px}output{display:block;margin:12px 0}</style></head><body><div id="root"></div><script type="module" src="/browser-smoke.tsx"></script></body></html>'
+    '<html lang="en"><head><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Host-owned Protoform</title><link rel="stylesheet" href="/app/globals.css" /></head><body><div id="root"></div><script type="module" src="/browser-smoke.tsx"></script></body></html>'
   );
   await writeFile(
     join(hostFixture, "vite.config.mjs"),
-    `import react from '@vitejs/plugin-react'; export default { plugins: [react()], resolve: { alias: { '@': ${JSON.stringify(hostFixture)} } } };`
+    `import react from '@vitejs/plugin-react'; import tailwindcss from '@tailwindcss/vite'; export default { plugins: [react(), tailwindcss()], resolve: { alias: { '@': ${JSON.stringify(hostFixture)} } } };`
   );
   await writeFile(
     join(hostFixture, "browser-smoke.tsx"),
@@ -418,7 +419,7 @@ async function assertHostInstalled() {
       "const {Select,SelectTrigger,SelectValue,SelectContent,SelectItem} = shadcnHostComponents;",
       "const {Input: _input, ...rest} = shadcnHostComponents;",
       "const components = missing ? rest : shadcnHostComponents;",
-      'return <main><h1>Protobuf forms. Your design system.</h1><p>new-york primitives · custom registry namespace · no base-nova theme</p><Button onClick={()=>setMissing(!missing)} type="button">{missing ? "Restore input" : "Remove input"}</Button><AutoForm components={components} schema={schema} modes={["simple"]} showSummary={false} withSubmit onSubmit={(values)=>setSubmitted(values.title)} /><output aria-label="Submitted title">{submitted}</output><section aria-label="Nullable selection"><Select value={selection} onValueChange={setSelection}><SelectTrigger aria-label="Nullable selection"><SelectValue /></SelectTrigger><SelectContent><SelectItem value={null}>Not set</SelectItem><SelectItem value="null">Literal null</SelectItem></SelectContent></Select><output aria-label="Selected value">{JSON.stringify(selection)}</output></section></main>;',
+      'return <main className="mx-auto max-w-2xl space-y-6 px-6 py-10"><h1 className="text-2xl font-semibold tracking-tight">Protobuf forms. Your design system.</h1><p className="text-sm text-muted-foreground">new-york primitives · custom registry namespace · no base-nova theme</p><Button onClick={()=>setMissing(!missing)} type="button">{missing ? "Restore input" : "Remove input"}</Button><AutoForm components={components} schema={schema} modes={["simple"]} showSummary={false} withSubmit onSubmit={(values)=>setSubmitted(values.title)} /><output className="block text-sm" aria-label="Submitted title">{submitted}</output><section className="space-y-3 border-t pt-6" aria-label="Nullable selection"><h2 className="text-sm font-medium">Nullable selection</h2><Select value={selection} onValueChange={setSelection}><SelectTrigger aria-label="Nullable selection"><SelectValue /></SelectTrigger><SelectContent><SelectItem value={null}>Not set</SelectItem><SelectItem value="null">Literal null</SelectItem></SelectContent></Select><output className="block text-sm text-muted-foreground" aria-label="Selected value">{JSON.stringify(selection)}</output></section></main>;',
       "}",
       'const root = document.getElementById("root"); if (!root) throw new Error("Missing root"); createRoot(root).render(<App />);',
     ].join("\n")

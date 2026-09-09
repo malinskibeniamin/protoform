@@ -24,6 +24,7 @@ The other fixtures typecheck core-only and legacy installs, including the experi
 
 Chromium at 1100×800 and 390×844:
 
+- Computed host theme color and full-width input: fail if CSS is missing.
 - Required select placeholder and selection.
 - Submit through the host's input and button.
 - Remove a required UI mapping; show the missing component by name.
@@ -39,7 +40,9 @@ Chromium at 1100×800 and 390×844:
 | ![Missing mapping](../../scripts/__screenshots__/host-consumer.browser.spec.ts/desktop/missing-control.png) | ![Missing mapping on mobile](../../scripts/__screenshots__/host-consumer.browser.spec.ts/mobile/missing-control.png) |
 
 These are new-host-entrypoint baselines, not screenshots of a redesigned legacy form. The fixture's
-small stylesheet is consumer-owned and is not shipped by Protoform.
+Tailwind v4 stylesheet and neutral theme are consumer-owned and are not shipped by Protoform.
+The Vite Tailwind plugin compiles both installed primitives and Protoform classes; the browser imports
+the stylesheet. The original handwritten-CSS snapshots were inadequate styling evidence and are replaced.
 
 ## Scope and limitations
 

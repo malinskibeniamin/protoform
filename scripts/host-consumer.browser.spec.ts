@@ -6,6 +6,11 @@ test("host primitives submit, report errors, and recover without a theme depende
   await page.goto("/");
   const input = page.getByRole("textbox", { name: /Title\s*\*/u });
   const choice = page.getByRole("combobox", { exact: true, name: "Choice" });
+  await expect(input).toHaveCSS("width", `${await input.evaluate((element) => element.parentElement?.clientWidth)}px`);
+  await expect(page.getByRole("button", { exact: true, name: "Submit" })).toHaveCSS(
+    "background-color",
+    "rgb(23, 23, 23)"
+  );
   await expect(choice).toHaveText("Select an option");
   await choice.click();
   await page.getByRole("option", { exact: true, name: "First" }).click();
