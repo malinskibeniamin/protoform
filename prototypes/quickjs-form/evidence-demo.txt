@@ -1,0 +1,56 @@
+
+1. Personal account
+  accountType: editable
+  companyName: hidden
+  personalName: editable
+  taxId: hidden
+  status: ready
+  can submit: true; company name retained: ""
+
+2. Business account → company appears; tax ID disabled
+  accountType: editable
+  companyName: editable
+  personalName: hidden
+  taxId: disabled
+  status: ready
+  can submit: true; company name retained: ""
+
+3. Company entered → tax ID enabled
+  accountType: editable
+  companyName: editable
+  personalName: hidden
+  taxId: editable
+  status: ready
+  can submit: true; company name retained: "Acme"
+
+4. Streaming fragment → previous presentation retained; submission blocked
+  accountType: editable
+  companyName: editable
+  personalName: hidden
+  taxId: editable
+  status: waiting for complete script
+  can submit: false; company name retained: "Acme"
+
+5. Hallucinated field → entire proposal rejected, not partially applied
+  accountType: editable
+  companyName: editable
+  personalName: hidden
+  taxId: editable
+  status: Unknown field: invented
+  can submit: false; company name retained: "Acme"
+
+6. Infinite loop rejected (51 ms)
+  accountType: editable
+  companyName: editable
+  personalName: hidden
+  taxId: editable
+  status: Script failed, exceeded resources, or is incomplete
+  can submit: false; company name retained: "Acme"
+
+7. Recovery → personal fields restored; hidden company value retained
+  accountType: editable
+  companyName: hidden
+  personalName: editable
+  taxId: hidden
+  status: ready
+  can submit: true; company name retained: "Acme"
