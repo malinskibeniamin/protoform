@@ -3182,6 +3182,41 @@
       "registryDependencies": ["@protoform/protoform-demo-runtime"],
       "title": "Untrusted input hardening",
       "type": "registry:example"
+    },
+    {
+      "name": "protoform-quickjs",
+      "type": "registry:lib",
+      "title": "Protoform QuickJS rules",
+      "description": "Optional worker-isolated JavaScript presentation rules. No network, DOM, or value mutation capabilities.",
+      "registryDependencies": ["@protoform/protoform-foundation"],
+      "dependencies": ["quickjs-emscripten@0.32.0"],
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/lib/quickjs/client.ts",
+          "type": "registry:lib",
+          "target": "@lib/quickjs/client.ts"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/quickjs/contract.ts",
+          "type": "registry:lib",
+          "target": "@lib/quickjs/contract.ts"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/quickjs/evaluator.ts",
+          "type": "registry:lib",
+          "target": "@lib/quickjs/evaluator.ts"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/quickjs/worker.ts",
+          "type": "registry:lib",
+          "target": "@lib/quickjs/worker.ts"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/quickjs/presentation.ts",
+          "type": "registry:lib",
+          "target": "@lib/quickjs/presentation.ts"
+        }
+      ]
     }
   ]
 }

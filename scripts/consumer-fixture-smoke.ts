@@ -443,6 +443,24 @@ try {
     await assertCoreInstalled();
     await $`bun run --cwd ${coreFixture} typecheck`;
     console.log(`Core-only consumer fixture passed: ${coreFixture}`);
+    await $`bunx --no-install shadcn add @protoform/protoform-quickjs --cwd ${coreFixture} --yes --overwrite`;
+    await writeFile(
+      join(coreFixture, "quickjs-smoke.ts"),
+      [
+        'import { evaluateQuickJsInWorker } from "./lib/quickjs/client";',
+        'import { quickJsFieldConfig } from "./lib/quickjs/presentation";',
+        'const result = await evaluateQuickJsInWorker({ source: "() => ({fields:{company:{visible:false}}})", values: {}, fields: ["company"] });',
+        "document.body.textContent = JSON.stringify(quickJsFieldConfig(result));",
+      ].join("\n")
+    );
+    await writeFile(
+      join(coreFixture, "index.html"),
+      '<!doctype html><html lang="en"><head><title>QuickJS consumer</title></head><body><script type="module" src="/quickjs-smoke.ts"></script></body></html>'
+    );
+    await writeFile(join(coreFixture, "quickjs-vite.config.mjs"), "export default {};");
+    await $`bun run --cwd ${coreFixture} typecheck`;
+    await $`bun ${join(coreFixture, "node_modules/vite/bin/vite.js")} build ${coreFixture} --config ${join(coreFixture, "quickjs-vite.config.mjs")}`;
+    console.log(`Optional QuickJS consumer install and worker build passed: ${coreFixture}`);
 
     await $`bun install --cwd ${fixture}`;
     await $`bunx --no-install shadcn add @protoform/bookstore --cwd ${fixture} --yes --overwrite`;

@@ -55,6 +55,7 @@ jobs:
           bun-version: 1.4.0
       - run: bun install --frozen-lockfile
       - run: bunx playwright install --with-deps chromium
+      - run: bun run test:quickjs
       - run: bun run docs:blume:validate
       - run: bun run docs:blume:translate:check
       - name: Build and check redirects, search, agent guidance, locales, and live demos
