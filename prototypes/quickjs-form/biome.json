@@ -1,0 +1,6 @@
+{
+  "root": true,
+  "files": { "includes": ["**/*.ts", "**/*.json", "!bun.lock"] },
+  "formatter": { "indentStyle": "space" },
+  "linter": { "enabled": true }
+}

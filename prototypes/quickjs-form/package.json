@@ -1,0 +1,20 @@
+{
+  "name": "protoform-quickjs-prototype",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "demo": "bun demo.ts",
+    "test": "vitest run",
+    "lint:fix": "biome check --write .",
+    "type:check": "tsgo --noEmit"
+  },
+  "dependencies": {
+    "quickjs-emscripten": "0.32.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.13",
+    "@types/bun": "1.4.2",
+    "@typescript/native-preview": "7.0.0-dev.20260707.2",
+    "vitest": "5.0.0"
+  }
+}
