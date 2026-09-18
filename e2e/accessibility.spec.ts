@@ -30,7 +30,7 @@ for (const theme of ["light", "dark"] as const) {
     await expect(helpButton).toBeVisible({ timeout: 30_000 });
     await helpButton.hover();
 
-    const content = page.getByTestId("autoform-field-display-name-help-content");
+    const content = page.getByRole("tooltip").locator('[data-slot="tooltip-content"]');
     await expect(content).toBeVisible();
     await expect(content).toContainText("Use the name teammates will recognize");
 

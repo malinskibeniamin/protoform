@@ -259,6 +259,26 @@
         "useYield": "error"
       },
       "nursery": {
+        "noAstroSetHtmlDirective": "error",
+        // Bun is the repository toolchain.
+        "noBunModules": "off",
+        "noInvalidFileInputAccept": "error",
+        "noSvelteAtHtmlTags": "error",
+        "noThisOutsideOfClass": "error",
+        // Blume injects theme variables from its external stylesheets.
+        "noUndeclaredCustomProperties": "off",
+        "noUnmodifiedLoopCondition": "error",
+        "noUnsafeIframeSandbox": "error",
+        "noVueDeprecatedScopedSlots": "error",
+        "noXorAsExponentiation": "error",
+        "useBetterDomTraversing": "error",
+        "useFlatMathMinMax": "error",
+        // Preserve the existing host-theme cascade.
+        "useLayeredStyles": "off",
+        "useModernMathApis": "error",
+        // New naming policy is separate from this dependency upgrade.
+        "useReactNamingConvention": "off",
+        "useVueBaseImport": "error",
         "noBaseToString": "error",
         "noComponentHookFactories": "error",
         "noConditionalExpect": "off",

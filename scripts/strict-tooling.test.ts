@@ -44,11 +44,11 @@ function parseJsonc(value: string, label: string): unknown {
 describe("strict React tooling", () => {
   test("pins the latest analysis toolchain and exposes strict entrypoints", () => {
     expect(packageJson.devDependencies).toMatchObject({
-      "@biomejs/biome": "2.5.10",
+      "@biomejs/biome": "2.5.13",
       "@rsbuild/plugin-react": "2.1.0",
-      "react-doctor": "0.9.12",
+      "react-doctor": "0.9.14",
       "react-scan": "0.5.7",
-      ultracite: "7.10.6",
+      ultracite: "7.12.0",
     });
     expect("babel-plugin-react-compiler" in packageJson.devDependencies).toBe(false);
     expect(packageJson.scripts).toMatchObject({
@@ -107,8 +107,8 @@ describe("strict React tooling", () => {
             : getJsonObject(ruleConfig, `Biome rule configuration in group ${groupIndex}`)["level"]
         )
     );
-    expect(configuredSeverities.filter((severity) => severity === "error")).toHaveLength(469);
-    expect(configuredSeverities.filter((severity) => severity === "off")).toHaveLength(53);
+    expect(configuredSeverities.filter((severity) => severity === "error")).toHaveLength(481);
+    expect(configuredSeverities.filter((severity) => severity === "off")).toHaveLength(57);
 
     expect(configuredRuleGroups).toMatchObject({
       a11y: {
