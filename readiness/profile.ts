@@ -81,7 +81,7 @@ export const readinessProfile = {
   dependencyRanges: {
     "@bufbuild/cel": "^0.6.0",
     "@bufbuild/protobuf": "^2.14.0",
-    "@bufbuild/protovalidate": "^1.2.0",
+    "@bufbuild/protovalidate": "^1.3.0",
     "@standard-schema/spec": "^1.1.0",
     "@tanstack/react-form": "^1.33.5",
     "final-form": "^5.0.1",

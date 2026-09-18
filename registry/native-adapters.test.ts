@@ -114,6 +114,13 @@ function uiImports(path: string): string[] {
 }
 
 describe("build-time UI adapter registry", () => {
+  test.each(["auto-form-core", "hook-runtime", "protobuf-provider", "protoform-examples", "protoform-shadcn"])(
+    "%s requires the native-rule Protovalidate release",
+    (name) => {
+      expect(item(name).dependencies).toContain("@bufbuild/protovalidate@^1.3.0");
+    }
+  );
+
   test("default installation leaves host primitives and theme untouched", () => {
     const closure = [...dependencyClosure("protoform")].map(item);
     expect(dependencyClosure("protoform")).not.toContain("protoform-shadcn");
