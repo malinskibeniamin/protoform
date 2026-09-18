@@ -47,7 +47,8 @@ describe("AutoForm stepper", () => {
     const stepList = progress.querySelector("ol");
     expect(progress).toHaveAttribute("data-orientation", "horizontal");
     expect(stepList).toHaveAttribute("data-layout", "adaptive-horizontal");
-    expect(stepList).toHaveStyle({ gridTemplateColumns: "repeat(5, minmax(0, 1fr))" });
+    expect(stepList).toHaveStyle({ "--step-columns": "repeat(5, minmax(0, 1fr))" });
+    expect(stepList).toHaveClass("grid-cols-(--step-columns)");
     expect(within(progress).getByText("Identity").className).toContain("@min-[30rem]:block");
     expect(within(progress).getByText("Identity").className).toContain("@min-[64rem]:text-left");
   });

@@ -296,7 +296,9 @@ const MultiSelectValue = React.forwardRef<React.ComponentRef<"div">, MultiSelect
 
             return el;
           })}
-          {renderRemain ? <span className="py-.5 text-muted-foreground text-xs leading-4">+{renderRemain}</span> : null}
+          {renderRemain ? (
+            <span className="py-0.5 text-muted-foreground text-xs leading-4">+{renderRemain}</span>
+          ) : null}
         </div>
       </TooltipProvider>
     );
@@ -383,6 +385,17 @@ type MultiSelectItemProps = React.ComponentPropsWithoutRef<typeof CommandItem> &
     onDeselect?: (value: string, item: MultiSelectOptionItem) => void;
   };
 
+function getMultiSelectItemPresentation(label: React.ReactNode, children: React.ReactNode, value: string | undefined) {
+  let labelText: string | undefined;
+  if (typeof label === "string") {
+    labelText = label;
+  } else if (typeof children === "string") {
+    labelText = children;
+  }
+  const keywords = labelText && labelText !== value ? [labelText] : undefined;
+  return { itemLabel: label || (typeof children === "string" ? children : undefined), keywords };
+}
+
 const MultiSelectItem = React.forwardRef<React.ComponentRef<typeof CommandItem>, MultiSelectItemProps>(
   (
     {
@@ -401,9 +414,10 @@ const MultiSelectItem = React.forwardRef<React.ComponentRef<typeof CommandItem>,
   ) => {
     const { value: contextValue, maxCount, onSelect, onDeselect, itemCache } = useMultiSelect();
 
+    const { itemLabel, keywords } = getMultiSelectItemPresentation(label, children, value);
     const item = value
       ? {
-          label: label || (typeof children === "string" ? children : undefined),
+          label: itemLabel,
           selectedTestId,
           testId,
           value,
@@ -416,14 +430,14 @@ const MultiSelectItem = React.forwardRef<React.ComponentRef<typeof CommandItem>,
       function cacheItemMetadata() {
         if (value) {
           itemCache.set(value, {
-            label: label || (typeof children === "string" ? children : undefined),
+            label: itemLabel,
             selectedTestId,
             testId,
             value,
           });
         }
       },
-      [children, itemCache, label, selectedTestId, testId, value]
+      [itemCache, itemLabel, selectedTestId, testId, value]
     );
 
     const disabled = Boolean(disabledProp || (!selected && maxCount && contextValue.length >= maxCount));
@@ -441,14 +455,6 @@ const MultiSelectItem = React.forwardRef<React.ComponentRef<typeof CommandItem>,
         onSelect(value, item);
       }
     };
-
-    let labelText: string | undefined;
-    if (typeof label === "string") {
-      labelText = label;
-    } else if (typeof children === "string") {
-      labelText = children;
-    }
-    const keywords = labelText && labelText !== value ? [labelText] : undefined;
 
     return (
       <CommandItem

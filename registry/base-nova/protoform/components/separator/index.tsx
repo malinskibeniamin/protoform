@@ -12,9 +12,9 @@ const separatorVariants = cva(
     },
     variants: {
       variant: {
-        default: "bg-divider-default",
-        strong: "bg-divider-strong",
-        subtle: "bg-divider-subtle",
+        default: "bg-border",
+        strong: "bg-border",
+        subtle: "bg-border/50",
       },
     },
   }

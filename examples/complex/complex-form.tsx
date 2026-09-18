@@ -49,10 +49,13 @@ export default function ComplexFormExample({
   baseUrl?: string;
   initialProjectId?: string;
 }) {
-  const [result, setResult] = React.useState<{
-    environmentId: string;
-    status: string;
-  }>();
+  const [result, setResult] = React.useState<
+    | {
+        environmentId: string;
+        status: string;
+      }
+    | undefined
+  >(undefined);
   const rpcClient = createClient(FormExamplesService, createFormExamplesTransport(baseUrl));
   const defaultValues = create(SubmitComplexFormRequestSchema, {
     approvalTicket: "OPS-142",

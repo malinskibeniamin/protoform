@@ -15,10 +15,8 @@ const alertVariants = cva(
         destructive:
           "!border-destructive/20 bg-destructive/10 text-destructive *:data-[slot=alert-description]:text-destructive/90 [&>href]:text-current [&>svg]:text-current",
         info: "bg-card text-card-foreground",
-        success:
-          "!border-green-200 dark:!border-green-800/40 bg-green-50 text-green-800 *:data-[slot=alert-description]:text-green-800 dark:bg-green-950/30 dark:text-green-300 dark:*:data-[slot=alert-description]:text-green-300 [&>href]:text-current [&>svg]:text-current",
-        warning:
-          "!border-blue-200 bg-blue-50 text-blue-800 *:data-[slot=alert-description]:text-blue-800 [&>href]:text-current [&>svg]:text-current",
+        success: "border-primary/20 bg-primary/5 text-foreground [&>svg]:text-primary",
+        warning: "border-primary/20 bg-muted text-foreground [&>svg]:text-primary",
       },
     },
   }

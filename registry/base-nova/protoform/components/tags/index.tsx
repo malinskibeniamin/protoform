@@ -101,10 +101,7 @@ export type TagsTriggerProps = ComponentProps<typeof Button> & { testId?: string
 export const TagsTrigger = ({ className, children, testId, ...props }: TagsTriggerProps) => (
   <PopoverTrigger asChild>
     <Button
-      className={cn(
-        "h-auto w-full justify-between p-2 hover:bg-surface-inverse-hover active:bg-surface-default-hover",
-        className
-      )}
+      className={cn("h-auto w-full justify-between p-2 hover:bg-muted active:bg-muted", className)}
       data-testid={testId}
       role="combobox"
       variant="outline"
@@ -133,7 +130,7 @@ export const TagsValue = ({
   return (
     <span
       className={cn(
-        "m-0.5 inline-flex min-h-6 cursor-pointer items-center gap-1.5 rounded-md bg-surface-subtle px-2 py-1 font-medium text-sm text-strong transition-colors hover:bg-surface-strong",
+        "m-0.5 inline-flex min-h-6 cursor-pointer items-center gap-1.5 rounded-md bg-muted px-2 py-1 font-medium text-foreground text-sm transition-colors hover:bg-muted",
         className
       )}
       data-testid={testId}
@@ -159,8 +156,11 @@ export const TagsValue = ({
 export type TagsContentProps = ComponentProps<typeof PopoverContent>;
 export const TagsContent = ({ className, children, ...props }: TagsContentProps) => {
   const { width } = useTagsContext();
+  const widthStyle: NonNullable<TagsContentProps["style"]> & { "--tags-width": string | undefined } = {
+    "--tags-width": width === undefined ? undefined : `${width}px`,
+  };
   return (
-    <PopoverContent className={cn("p-0", className)} style={{ width }} {...props}>
+    <PopoverContent className={cn("w-(--tags-width) p-0", className)} style={widthStyle} {...props}>
       <Command>{children}</Command>
     </PopoverContent>
   );

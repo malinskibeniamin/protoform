@@ -129,7 +129,7 @@ function ToggleFieldComponent({ error, field, id, inputProps, label }: AutoFormF
       />
       <Toggle
         aria-hidden
-        className="pointer-events-none rounded-full px-3"
+        className="pointer-events-none"
         pressed={Boolean(inputProps["value"])}
         size="sm"
         variant="outline"

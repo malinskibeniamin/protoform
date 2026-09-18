@@ -36,7 +36,8 @@
     "types": ["bun", "@types/node", "@rstest/core/globals"],
     "paths": {
       "@/components/ui/*": ["./registry/base-nova/protoform/components/*"],
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@/components/ui": ["./registry/base-nova/protoform/components"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx"],

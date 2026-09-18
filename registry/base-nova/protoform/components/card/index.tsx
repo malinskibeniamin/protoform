@@ -21,7 +21,7 @@ const cardVariants = cva(
         xl: "max-w-xl gap-6 px-12 py-10",
       },
       variant: {
-        elevated: "shadow-elevated",
+        elevated: "shadow-lg",
         ghost: "border-0 bg-transparent shadow-none dark:bg-transparent",
         outlined: "border-1",
         standard: "",

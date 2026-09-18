@@ -113,11 +113,11 @@ export const dotColorVariants = cva("", {
   },
   variants: {
     variant: {
-      disabled: "bg-surface-strong-hover",
-      error: "bg-background-error-strong",
-      info: "bg-background-informative-strong",
-      success: "bg-background-success-strong",
-      warning: "bg-background-warning-strong",
+      disabled: "bg-muted",
+      error: "bg-destructive",
+      info: "bg-primary",
+      success: "bg-primary",
+      warning: "bg-primary",
     },
   },
 });
@@ -131,8 +131,8 @@ export const dotStackedVariants = cva("!border-background", {
       lg: "border-2",
       md: "border-[1.5px]",
       sm: "border",
-      xs: "border-[2px]",
-      xxs: "border-[1px]",
+      xs: "border-2",
+      xxs: "border",
     },
   },
 });

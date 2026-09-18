@@ -72,7 +72,7 @@ export function BookstoreWorkspace({ onReset, parent }: { onReset: () => void; p
             <CardHeader>
               <CardTitle level={3}>
                 <Button
-                  className="h-auto justify-start whitespace-normal p-0 text-left text-lg"
+                  className="h-auto justify-start whitespace-normal text-left"
                   onClick={() => openBook(book.name)}
                   type="button"
                   variant="link"

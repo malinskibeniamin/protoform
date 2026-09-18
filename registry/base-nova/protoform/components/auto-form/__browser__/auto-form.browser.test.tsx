@@ -173,12 +173,9 @@ const matrixProvider: SchemaProvider = {
 
 test("renders a simple shadcn-native auto form in a browser", async () => {
   await render(
-    <>
-      <style>{'[data-testid="browser-simple-form"] textarea { resize: none; }'}</style>
-      <main className="max-w-2xl bg-background p-6 text-foreground">
-        <AutoForm schema={simpleProvider} testId="browser-simple-form" withSubmit />
-      </main>
-    </>
+    <main className="max-w-2xl bg-background p-6 text-foreground [&_textarea]:resize-none">
+      <AutoForm schema={simpleProvider} testId="browser-simple-form" withSubmit />
+    </main>
   );
 
   const form = page.getByTestId("browser-simple-form");
@@ -212,7 +209,7 @@ test("renders every built-in field type through the configured UI alias", async 
   expect(matrixFieldTypes).toEqual(registeredFieldTypes);
 
   await render(
-    <main className="max-w-2xl bg-background p-6 text-foreground">
+    <main className="max-w-2xl bg-background p-6 text-foreground [&_textarea]:resize-none">
       <AutoForm
         dataProviders={{
           statuses: {

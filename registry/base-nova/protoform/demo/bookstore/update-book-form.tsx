@@ -23,7 +23,7 @@ export function UpdateBookForm({ book, onCancel, onUpdated }: UpdateBookFormProp
   const queryClient = useQueryClient();
   const transport = useTransport();
   const mutation = useMutation(LibraryService.method.updateBook);
-  const [formError, setFormError] = useState<string>();
+  const [formError, setFormError] = useState<string | undefined>(undefined);
   const form = useProtoForm(BookFormBinding.descriptor, {
     defaultValues: book,
     mode: "onChange",
