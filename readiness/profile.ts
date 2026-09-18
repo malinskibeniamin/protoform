@@ -86,7 +86,7 @@ export const readinessProfile = {
     "@tanstack/react-form": "^1.33.5",
     "final-form": "^5.0.1",
     formik: "^2.4.9",
-    react: "^19.2.8",
+    react: "^19.3.0",
     "react-final-form": "^7.0.1",
     "react-hook-form": "^7.85.0",
   },

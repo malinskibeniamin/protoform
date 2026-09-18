@@ -56,6 +56,17 @@ test("finds identifiers that appear inside code blocks", async ({ page }) => {
   await expect(page.getByRole("option").filter({ hasText: "Getting started" }).first()).toBeVisible();
 });
 
+test("publishes complete search assets for every configured language", async ({ request }) => {
+  // Chinese locales share the unknown-language WASM; English and Polish stem separately.
+  await Promise.all(
+    ["pagefind.js", "wasm.en.pagefind", "wasm.pl.pagefind", "wasm.unknown.pagefind"].map(async (asset) => {
+      const response = await request.get(`/pagefind/${asset}`);
+      expect(response.ok()).toBe(true);
+      expect((await response.body()).byteLength, asset).toBeGreaterThan(0);
+    })
+  );
+});
+
 for (const locale of ["en", "zh", "zh-TW", "pl"]) {
   for (const hub of demoHubs) {
     test(`serves machine-readable ${hub.slug} for ${locale}`, async ({ request }) => {
@@ -72,4 +83,19 @@ for (const locale of ["en", "zh", "zh-TW", "pl"]) {
       expect((await markdown.text()).trim().length).toBeGreaterThan(0);
     });
   }
+}
+
+for (const previousOverflow of ["", "clip"]) {
+  test(`search restores the page scroll state (${previousOverflow || "default"})`, async ({ page }) => {
+    await page.goto("/docs/getting-started");
+    await page.evaluate((overflow) => {
+      document.documentElement.style.overflow = overflow;
+    }, previousOverflow);
+    await page.getByRole("button", { exact: true, name: "Search" }).click();
+    await expect(page.getByRole("combobox", { exact: true, name: "Search docs" })).toBeVisible();
+    await expect(page.locator("html")).toHaveCSS("overflow", "hidden");
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("combobox", { exact: true, name: "Search docs" })).toBeHidden();
+    await expect(page.locator("html")).toHaveCSS("overflow", previousOverflow || "visible");
+  });
 }
