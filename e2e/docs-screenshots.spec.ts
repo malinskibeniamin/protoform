@@ -275,22 +275,34 @@ test("organizes the docs sidebar by reader task", async ({ page }) => {
 
   await expect(groups.locator(":scope > summary")).toHaveText(sidebarHierarchy.map((group) => group.label));
 
-  await Promise.all(
-    sidebarHierarchy.map((group, index) =>
-      expect(groups.nth(index).locator(":scope > div a")).toHaveText(Array.from(group.pages))
-    )
-  );
-
   const startHere = groups.nth(sidebarHierarchy.findIndex((group) => group.label === "Start here"));
   await expect(startHere).toHaveAttribute("open", "");
   await expect(startHere.getByRole("link", { name: "Getting started" })).toHaveAttribute("aria-current", "page");
-  const examples = groups.nth(sidebarHierarchy.findIndex((group) => group.label === "Examples"));
-  await examples.locator(":scope > summary").click();
-  await expect(examples.getByRole("link", { name: "Bare-bones form" })).toBeVisible();
 
-  const production = groups.nth(sidebarHierarchy.findIndex((group) => group.label === "Production"));
-  await production.locator(":scope > summary").click();
-  await expect(production.getByRole("link", { name: "Production readiness" })).toBeVisible();
+  // Blume defers closed groups: exercise disclosure loading instead of
+  // requiring every section's links to be embedded in the initial document.
+  for (const [index, group] of sidebarHierarchy.entries()) {
+    const section = groups.nth(index);
+    if ((await section.getAttribute("open")) === null) {
+      await section.locator(":scope > summary").click();
+    }
+    await expect(section.locator(":scope > div > ul")).toBeVisible();
+    const subgroups = section.locator("details");
+    for (let child = 0; child < (await subgroups.count()); child += 1) {
+      const subgroup = subgroups.nth(child);
+      if ((await subgroup.getAttribute("open")) === null) {
+        await subgroup.locator(":scope > summary").click();
+      }
+      await expect(subgroup.locator(":scope > div > ul")).toBeVisible();
+    }
+    await expect(section.getByRole("link")).toHaveText(Array.from(group.pages));
+    await expect(section.getByRole("link").first()).toBeVisible();
+  }
+
+  const examples = groups.nth(sidebarHierarchy.findIndex((group) => group.label === "Examples"));
+  await examples.getByRole("link", { exact: true, name: "Bare-bones form" }).click();
+  await expect(page).toHaveURL(/\/docs\/bare-bones-form$/u);
+  await expect(page.getByRole("heading", { exact: true, name: "Bare-bones form" })).toBeVisible();
 });
 
 test("syntax-highlights protobuf field declarations", async ({ page }) => {
