@@ -240,17 +240,27 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {...props}
         aria-describedby={props["aria-describedby"] ?? fieldCtx.errorId}
         aria-invalid={props["aria-invalid"] ?? (fieldCtx.invalid || undefined)}
-        className={cn(inputVariants({ size, variant: inputVariant }), positionClasses, className)}
+        className={cn(
+          inputVariants({ size, variant: inputVariant }),
+          positionClasses,
+          "data-[start-adornment=true]:pl-(--input-start-padding)",
+          "data-[end-adornment=true]:pr-(--input-end-padding)",
+          className
+        )}
+        data-end-adornment={Boolean(endWidth)}
         data-slot="input"
+        data-start-adornment={Boolean(startWidth)}
         data-testid={testId}
         onChange={isNumberInput ? handleInputChange : props.onChange}
         readOnly={readOnly}
         ref={ref}
         step={isNumberInput ? step : undefined}
-        style={{
-          paddingLeft: startWidth ? startWidth + 16 : undefined,
-          paddingRight: endWidth ? endWidth + 16 : undefined,
-        }}
+        style={
+          {
+            "--input-start-padding": `${(startWidth ?? 0) + 16}px`,
+            "--input-end-padding": `${(endWidth ?? 0) + 16}px`,
+          } as React.CSSProperties
+        }
         type={inputType}
         {...inputValueProps}
       />

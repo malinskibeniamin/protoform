@@ -351,10 +351,14 @@ test("opens diagrams in an accessible full-viewport viewer", async ({ page }) =>
   const viewer = page.getByRole("dialog", { name: "Diagram" });
   await expect(viewer).toBeVisible();
   await expect(viewer.locator("[data-diagram-preview] svg").first()).toBeVisible();
-  const box = await viewer.boundingBox();
   const viewport = page.viewportSize();
-  expect(box?.width).toBeGreaterThanOrEqual((viewport?.width ?? 0) - 2);
-  expect(box?.height).toBeGreaterThanOrEqual((viewport?.height ?? 0) - 2);
+  // The real entrance animation scales the dialog. Wait for its final layout.
+  await expect
+    .poll(async () => (await viewer.boundingBox())?.width ?? 0)
+    .toBeGreaterThanOrEqual((viewport?.width ?? 0) - 2);
+  await expect
+    .poll(async () => (await viewer.boundingBox())?.height ?? 0)
+    .toBeGreaterThanOrEqual((viewport?.height ?? 0) - 2);
 
   await page.keyboard.press("Escape");
   await expect(viewer).toBeHidden();

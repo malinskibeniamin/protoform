@@ -96,6 +96,7 @@ function TooltipTrigger({ testId, ...props }: TooltipTriggerProps) {
 type TooltipContentProps = React.ComponentProps<typeof TooltipPrimitive.Popup> &
   SharedProps &
   Pick<PortalContentProps, "container" | "onOpenAutoFocus"> & {
+    variant?: "default" | "detail";
     transition?: Transition;
     arrow?: boolean;
     side?: Side;
@@ -107,6 +108,7 @@ type TooltipContentProps = React.ComponentProps<typeof TooltipPrimitive.Popup> &
 function TooltipContent(contentProps: TooltipContentProps) {
   const {
     className,
+    variant = "default",
     side = "top",
     align = "center",
     sideOffset = 4,
@@ -139,6 +141,7 @@ function TooltipContent(contentProps: TooltipContentProps) {
                 animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
                 className={cn(
                   "relative w-fit origin-(--transform-origin) text-balance rounded-md bg-primary px-3 py-1.5 text-primary-foreground text-sm shadow-md",
+                  variant === "detail" && "bg-foreground py-2 text-background shadow-xl",
                   className
                 )}
                 data-slot="tooltip-content"

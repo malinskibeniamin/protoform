@@ -412,10 +412,9 @@ function TabsContents({
 }: TabsContentsProps) {
   return (
     <motion.div
-      className={cn("overflow-visible", className)}
+      className={cn("h-auto overflow-visible", className)}
       data-slot="tabs-contents"
       layout
-      style={{ height: "auto" }}
       transition={transition}
       {...props}
     >

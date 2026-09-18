@@ -66,29 +66,6 @@ function statusLabel(status: ReadinessRequirement["status"]): string {
   }
 }
 
-function statusSquareClass(status: ReadinessRequirement["status"]): string {
-  switch (status) {
-    case "verified":
-      return "bg-emerald-500 hover:bg-emerald-400 active:bg-emerald-400";
-    case "optional":
-      return "bg-emerald-500/50 hover:bg-emerald-500/65 active:bg-emerald-500/65";
-    case "missing":
-      return "bg-amber-400 hover:bg-amber-300 active:bg-amber-300";
-    case "deferred":
-      return "bg-sky-500 hover:bg-sky-400 active:bg-sky-400";
-    case "unsupported":
-      return "bg-rose-500 hover:bg-rose-400 active:bg-rose-400";
-    case "external":
-      return "bg-muted-foreground/25 hover:bg-muted-foreground/40 active:bg-muted-foreground/40";
-    case "out-of-target":
-      return "bg-muted-foreground/15 hover:bg-muted-foreground/30 active:bg-muted-foreground/30";
-    case "superseded":
-      return "bg-muted-foreground/10 hover:bg-muted-foreground/25 active:bg-muted-foreground/25";
-    default:
-      return status satisfies never;
-  }
-}
-
 function requirementExplanation(requirement: ReadinessRequirement): string {
   if (requirement.status === "verified" || requirement.status === "optional") {
     return requirement.description ?? `Evidence: ${requirement.evidence.testName}`;
@@ -165,7 +142,10 @@ export function ReadinessDashboard() {
               className="h-3 overflow-hidden rounded-full bg-muted"
               role="progressbar"
             >
-              <div className="h-full rounded-full bg-primary" style={{ width: `${summary.percentage}%` }} />
+              <div
+                className="h-full w-(--readiness-width) rounded-full bg-primary"
+                style={{ "--readiness-width": `${summary.percentage}%` } as React.CSSProperties}
+              />
             </div>
             <div className="flex items-center justify-between gap-4 text-sm">
               <span>Required profile</span>
@@ -179,7 +159,10 @@ export function ReadinessDashboard() {
               className="h-2 overflow-hidden rounded-full bg-muted"
               role="progressbar"
             >
-              <div className="h-full rounded-full bg-primary/70" style={{ width: `${requiredSummary.percentage}%` }} />
+              <div
+                className="h-full w-(--readiness-width) rounded-full bg-primary/70"
+                style={{ "--readiness-width": `${requiredSummary.percentage}%` } as React.CSSProperties}
+              />
             </div>
           </div>
         </div>
@@ -196,17 +179,24 @@ export function ReadinessDashboard() {
                   <TooltipTrigger asChild>
                     <Button
                       aria-label={label}
-                      className={`aspect-square h-auto min-h-3 w-full rounded-[2px] p-0 ${statusSquareClass(requirement.status)}`}
+                      className="relative aspect-square h-auto min-h-3 w-full"
                       size="icon-xs"
                       type="button"
                       variant="ghost"
-                    />
+                    >
+                      <span
+                        aria-hidden="true"
+                        className="absolute inset-0 rounded-xs bg-muted-foreground/10 hover:bg-muted-foreground/25 active:bg-muted-foreground/25 data-[status=deferred]:bg-readiness-deferred data-[status=external]:bg-muted-foreground/25 data-[status=missing]:bg-readiness-missing data-[status=optional]:bg-readiness-verified/50 data-[status=out-of-target]:bg-muted-foreground/15 data-[status=unsupported]:bg-readiness-unsupported data-[status=verified]:bg-readiness-verified data-[status=deferred]:active:bg-readiness-deferred-hover data-[status=external]:active:bg-muted-foreground/40 data-[status=missing]:active:bg-readiness-missing-hover data-[status=optional]:active:bg-readiness-verified/65 data-[status=out-of-target]:active:bg-muted-foreground/30 data-[status=unsupported]:active:bg-readiness-unsupported-hover data-[status=verified]:active:bg-readiness-verified-hover data-[status=deferred]:hover:bg-readiness-deferred-hover data-[status=external]:hover:bg-muted-foreground/40 data-[status=missing]:hover:bg-readiness-missing-hover data-[status=optional]:hover:bg-readiness-verified/65 data-[status=out-of-target]:hover:bg-muted-foreground/30 data-[status=unsupported]:hover:bg-readiness-unsupported-hover data-[status=verified]:hover:bg-readiness-verified-hover"
+                        data-status={requirement.status}
+                      />
+                    </Button>
                   </TooltipTrigger>
                   <TooltipContent
                     arrow={false}
-                    className="max-w-xs text-pretty bg-neutral-950 px-3 py-2 text-white shadow-xl"
+                    className="max-w-xs text-pretty"
                     role="tooltip"
                     transition={{ duration: 0 }}
+                    variant="detail"
                   >
                     <span className="block font-semibold">{requirement.title}</span>
                     <span className="mt-1 block text-xs">
@@ -245,7 +235,10 @@ export function ReadinessDashboard() {
                   className="h-1.5 overflow-hidden rounded-full bg-muted"
                   role="progressbar"
                 >
-                  <div className="h-full rounded-full bg-primary" style={{ width: `${categorySummary.percentage}%` }} />
+                  <div
+                    className="h-full w-(--readiness-width) rounded-full bg-primary"
+                    style={{ "--readiness-width": `${categorySummary.percentage}%` } as React.CSSProperties}
+                  />
                 </div>
               </article>
             );

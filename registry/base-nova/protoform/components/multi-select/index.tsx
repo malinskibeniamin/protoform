@@ -296,7 +296,9 @@ const MultiSelectValue = React.forwardRef<React.ComponentRef<"div">, MultiSelect
 
             return el;
           })}
-          {renderRemain ? <span className="py-.5 text-muted-foreground text-xs leading-4">+{renderRemain}</span> : null}
+          {renderRemain ? (
+            <span className="py-0.5 text-muted-foreground text-xs leading-4">+{renderRemain}</span>
+          ) : null}
         </div>
       </TooltipProvider>
     );

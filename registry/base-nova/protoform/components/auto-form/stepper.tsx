@@ -103,10 +103,12 @@ export function AutoFormStepIndicator({
         )}
       </Text>
       <ol
-        className={orientation === "vertical" ? "flex flex-col" : "grid gap-0"}
+        className={orientation === "vertical" ? "flex flex-col" : "grid grid-cols-(--step-columns) gap-0"}
         data-layout={orientation === "horizontal" ? "adaptive-horizontal" : undefined}
         style={
-          orientation === "horizontal" ? { gridTemplateColumns: `repeat(${steps.length}, minmax(0, 1fr))` } : undefined
+          orientation === "horizontal"
+            ? ({ "--step-columns": `repeat(${steps.length}, minmax(0, 1fr))` } as React.CSSProperties)
+            : undefined
         }
       >
         {steps.map((step, index) => {

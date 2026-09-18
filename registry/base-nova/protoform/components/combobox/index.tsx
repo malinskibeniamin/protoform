@@ -435,14 +435,6 @@ export const Combobox = memo(
       [handleArrowKey, handleEnterKey, handleEscapeKey, handleArrowRightKey]
     );
 
-    // ── Memoized props ────────────────────────────────────────────────
-
-    const popoverStyle = useMemo(
-      () => ({ width: inputRef.current?.clientWidth }),
-      // Recalculate when open changes (ref width may have changed)
-      []
-    );
-
     // ── Render ────────────────────────────────────────────────────────
 
     return (
@@ -492,11 +484,10 @@ export const Combobox = memo(
           </Input>
         </PopoverTrigger>
         <PopoverContent
-          className="p-0"
+          className="w-(--anchor-width) p-0"
           container={container}
           initialFocus={preventAutoFocusOnOpen ? false : undefined}
           onMouseDown={preventDefault}
-          style={popoverStyle}
         >
           <Command
             loop

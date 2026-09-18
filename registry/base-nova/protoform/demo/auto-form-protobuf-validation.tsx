@@ -52,7 +52,7 @@ export function AutoFormProtobufValidationDemo() {
         withSubmit
       />
       {submitted ? (
-        <p className="rounded-md border border-success/30 bg-success/10 p-3 text-sm text-success">
+        <p className="rounded-md border border-primary/30 bg-primary/10 p-3 text-primary text-sm">
           Nice — everything validated and the protobuf form submitted.
         </p>
       ) : null}

@@ -31,7 +31,7 @@ export const ChoiceboxItem = forwardRef<HTMLButtonElement, ChoiceboxItemProps>(
         className={cn(
           "flex cursor-pointer flex-row items-start justify-between rounded-md border-2 border-solid p-4 text-left shadow-none transition-all",
           "group-data-[state=checked]:!border-selected",
-          "hover:shadow-elevated",
+          "hover:shadow-lg",
           className
         )}
         data-testid={testId}

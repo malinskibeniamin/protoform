@@ -111,3 +111,15 @@ test("has no serious accessibility violations across representative form states"
   await expect(preview).toHaveCSS("opacity", "1");
   await expectNoSeriousViolations(page);
 });
+
+test("keeps readiness status colors and progress widths visible", async ({ page }) => {
+  await page.goto("/docs/production-readiness");
+  const overall = page.getByRole("progressbar", { name: "Overall readiness", exact: true });
+  await expect(overall).toBeVisible();
+  const fill = overall.locator(":scope > div");
+  await expect(fill).not.toHaveCSS("width", "0px");
+  await expect(fill).not.toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+  const verified = page.locator('[data-status="verified"]').first();
+  await expect(verified).toBeVisible();
+  await expect(verified).not.toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+});

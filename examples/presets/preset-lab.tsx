@@ -16,7 +16,6 @@ import {
   defaultPreset,
   defaultRadius,
   findSupportedPreset,
-  type PresetCssVariables,
   type PresetDefinition,
   type PresetMode,
   type PresetRadius,
@@ -250,17 +249,6 @@ interface InitialSelection {
   status?: string | undefined;
 }
 
-type PreviewRadiusVariable =
-  | "--radius"
-  | "--radius-xs"
-  | "--radius-sm"
-  | "--radius-md"
-  | "--radius-lg"
-  | "--radius-xl"
-  | "--radius-2xl";
-
-type PreviewSelectionVariable = "--selected" | "--selected-foreground" | "--selection" | "--selection-foreground";
-
 function readBlumeTheme(): PresetMode {
   return document.documentElement.dataset["theme"] === "dark" ? "dark" : "light";
 }
@@ -302,26 +290,6 @@ function readInitialSelection(): InitialSelection {
     preset: supportedPreset?.preset ?? defaultPreset,
     radius: supportedPreset?.radius ?? defaultRadius,
     status: statusMessages.length > 0 ? statusMessages.join(" ") : undefined,
-  };
-}
-
-function buildPreviewStyle(
-  variables: PresetCssVariables,
-  radius: string
-): CSSProperties & PresetCssVariables & Record<PreviewRadiusVariable | PreviewSelectionVariable, string> {
-  return {
-    ...variables,
-    "--radius": radius,
-    "--radius-2xl": `calc(${radius} + 8px)`,
-    "--radius-lg": radius,
-    "--radius-md": `calc(${radius} - 2px)`,
-    "--radius-sm": `calc(${radius} - 4px)`,
-    "--radius-xl": `calc(${radius} + 4px)`,
-    "--radius-xs": `calc(${radius} - 6px)`,
-    "--selected": variables["--primary"],
-    "--selected-foreground": variables["--primary-foreground"],
-    "--selection": variables["--primary"],
-    "--selection-foreground": variables["--primary-foreground"],
   };
 }
 
@@ -514,7 +482,6 @@ export function PresetLab() {
   const createUrl = `https://ui.shadcn.com/create?base=base&preset=${presetCode}`;
   const radiusValue = presetRadii.find((candidate) => candidate.value === radius)?.cssValue ?? "0.625rem";
   const previewVariables = mode === "dark" ? activePreset.dark : activePreset.light;
-  const previewStyle = buildPreviewStyle(previewVariables, radiusValue);
 
   useEffect(
     function synchronizePresetUrl() {
@@ -587,9 +554,9 @@ export function PresetLab() {
                       ["muted", previewVariables["--muted"]],
                     ].map(([name, color]) => (
                       <span
-                        className="size-5 rounded-full border-2 border-background"
+                        className="size-5 rounded-full border-2 border-background bg-(--swatch-color)"
                         key={name}
-                        style={{ backgroundColor: color }}
+                        style={{ "--swatch-color": color } as CSSProperties}
                       />
                     ))}
                   </div>
@@ -608,7 +575,6 @@ export function PresetLab() {
                     <Button
                       aria-label="Light preview"
                       aria-pressed={mode === "light"}
-                      className={cn(mode === "light" && "bg-muted")}
                       onClick={() => {
                         setMode("light");
                         setStatus("Light preview selected.");
@@ -623,7 +589,6 @@ export function PresetLab() {
                     <Button
                       aria-label="Dark preview"
                       aria-pressed={mode === "dark"}
-                      className={cn(mode === "dark" && "bg-muted")}
                       onClick={() => {
                         setMode("dark");
                         setStatus("Dark preview selected.");
@@ -663,19 +628,16 @@ export function PresetLab() {
                           <Button
                             aria-label={`Choose ${preset.name} preset`}
                             aria-pressed={active}
-                            className={cn(
-                              "h-9 justify-start gap-2 px-2.5 md:w-full",
-                              active && "bg-muted ring-1 ring-border"
-                            )}
+                            className="h-9 justify-start md:w-full"
                             key={preset.id}
                             onClick={() => selectPreset(preset)}
                             type="button"
-                            variant="ghost"
+                            variant={active ? "outline" : "ghost"}
                           >
                             <span
                               aria-hidden="true"
-                              className="size-3.5 rounded-full border border-foreground/10"
-                              style={{ backgroundColor: variables["--primary"] }}
+                              className="size-3.5 rounded-full border border-foreground/10 bg-(--swatch-color)"
+                              style={{ "--swatch-color": variables["--primary"] } as CSSProperties}
                             />
                             {preset.name}
                             {active ? <CheckIcon aria-hidden="true" className="ml-auto hidden md:block" /> : null}
@@ -691,7 +653,6 @@ export function PresetLab() {
                       {presetRadii.map((candidate) => (
                         <Button
                           aria-pressed={radius === candidate.value}
-                          className={cn("px-2", radius === candidate.value && "bg-muted")}
                           key={candidate.value}
                           onClick={() => {
                             setRadius(candidate.value);
@@ -715,7 +676,39 @@ export function PresetLab() {
                   )}
                   data-preset-id={activePreset.id}
                   data-testid="preset-preview"
-                  style={previewStyle}
+                  style={
+                    {
+                      "--accent": previewVariables["--accent"],
+                      "--accent-foreground": previewVariables["--accent-foreground"],
+                      "--background": previewVariables["--background"],
+                      "--border": previewVariables["--border"],
+                      "--card": previewVariables["--card"],
+                      "--card-foreground": previewVariables["--card-foreground"],
+                      "--destructive": previewVariables["--destructive"],
+                      "--foreground": previewVariables["--foreground"],
+                      "--input": previewVariables["--input"],
+                      "--muted": previewVariables["--muted"],
+                      "--muted-foreground": previewVariables["--muted-foreground"],
+                      "--popover": previewVariables["--popover"],
+                      "--popover-foreground": previewVariables["--popover-foreground"],
+                      "--primary": previewVariables["--primary"],
+                      "--primary-foreground": previewVariables["--primary-foreground"],
+                      "--ring": previewVariables["--ring"],
+                      "--secondary": previewVariables["--secondary"],
+                      "--secondary-foreground": previewVariables["--secondary-foreground"],
+                      "--radius": radiusValue,
+                      "--radius-xs": `calc(${radiusValue} - 6px)`,
+                      "--radius-sm": `calc(${radiusValue} - 4px)`,
+                      "--radius-md": `calc(${radiusValue} - 2px)`,
+                      "--radius-lg": radiusValue,
+                      "--radius-xl": `calc(${radiusValue} + 4px)`,
+                      "--radius-2xl": `calc(${radiusValue} + 8px)`,
+                      "--selected": previewVariables["--primary"],
+                      "--selected-foreground": previewVariables["--primary-foreground"],
+                      "--selection": previewVariables["--primary"],
+                      "--selection-foreground": previewVariables["--primary-foreground"],
+                    } as CSSProperties
+                  }
                 >
                   <div className="flex min-h-[34rem] items-center justify-center p-4 sm:p-8 md:group-data-[fullscreen=true]/workspace:h-full md:group-data-[fullscreen=true]/workspace:min-h-0 md:group-data-[fullscreen=true]/workspace:items-start">
                     <div className="w-full max-w-3xl overflow-hidden rounded-2xl border bg-background shadow-sm">

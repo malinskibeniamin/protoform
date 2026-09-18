@@ -216,7 +216,6 @@ export const FieldWrapper: React.FC<FieldWrapperProps> = ({ label, children, id,
               <TooltipTrigger asChild>
                 <Button
                   aria-label={`Help for ${helpLabel}`}
-                  className="rounded-full text-muted-foreground shadow-none hover:text-foreground"
                   data-testid={getAutoFormFieldTestId(testIdPrefix, id, "help")}
                   size="icon-xs"
                   type="button"
@@ -319,17 +318,9 @@ export const ObjectWrapper: React.FC<
   if (isCollapsible && hasVisibleLabel) {
     return (
       <Collapsible onOpenChange={setIsOpen} open={isOpen}>
-        <section className={formSpacing.field} data-testid={testId}>
+        <section className={cn(formSpacing.field, showDivider && formSpacing.sectionDivider)} data-testid={testId}>
           <CollapsibleTrigger asChild>
-            <Button
-              className={
-                showDivider
-                  ? `h-auto w-full justify-between rounded-none p-0 text-left font-normal hover:bg-transparent ${formSpacing.sectionDivider}`
-                  : "h-auto w-full justify-between rounded-none p-0 text-left font-normal hover:bg-transparent"
-              }
-              type="button"
-              variant="ghost"
-            >
+            <Button className="h-auto w-full justify-between text-left" type="button" variant="ghost">
               <div className={formSpacing.sectionHeader}>
                 <ObjectSectionHeading field={field} headingLevel={headingLevel} label={label} />
               </div>

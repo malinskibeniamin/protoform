@@ -23,7 +23,7 @@ export function DiagramControl({ isFullscreen, onToggle, portal }: DiagramContro
       <TooltipTrigger asChild>
         <Button
           aria-label={accessibleName}
-          className="bg-background/90 shadow-sm backdrop-blur"
+          className=""
           onClick={handleFullscreenToggle}
           size="icon-sm"
           title={isFullscreen ? "Exit full screen" : "View diagram full screen"}

@@ -59,10 +59,10 @@ function DialogClose({ ...props }: DialogCloseProps) {
 function DialogOverlay({ className, ...props }: React.ComponentProps<typeof DialogPrimitive.Backdrop>) {
   return (
     <DialogPrimitive.Backdrop
-      // fill-mode-forwards holds the exit keyframe until Base UI unmounts;
+      // [animation-fill-mode:forwards] holds the exit keyframe until Base UI unmounts;
       // without it the backdrop flashes back to its natural opacity for one frame.
       className={cn(
-        "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/40 fill-mode-forwards backdrop-blur-xs data-[state=closed]:animate-out data-[state=open]:animate-in",
+        "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/40 backdrop-blur-xs [animation-fill-mode:forwards] data-[state=closed]:animate-out data-[state=open]:animate-in",
         className
       )}
       data-slot="dialog-overlay"
@@ -73,7 +73,7 @@ function DialogOverlay({ className, ...props }: React.ComponentProps<typeof Dial
 }
 
 const dialogContentVariants = cva(
-  "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 translate-[-50%] fixed top-[50%] left-[50%] z-50 flex max-h-[85vh] w-full max-w-[calc(100%-2rem)] flex-col overflow-hidden rounded-xl border bg-background fill-mode-forwards shadow-lg duration-200 data-[state=closed]:animate-out data-[state=open]:animate-in",
+  "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 translate-[-50%] fixed top-[50%] left-[50%] z-50 flex max-h-[85vh] w-full max-w-[calc(100%-2rem)] flex-col overflow-hidden rounded-xl border bg-background shadow-lg duration-200 [animation-fill-mode:forwards] data-[state=closed]:animate-out data-[state=open]:animate-in",
   {
     defaultVariants: {
       size: "md",
@@ -89,6 +89,7 @@ const dialogContentVariants = cva(
       },
       variant: {
         centered: "text-center",
+        fullscreen: "rounded-none border-0",
         destructive: "border-destructive/50",
         standard: "",
       },
