@@ -59,6 +59,7 @@
         "@bufbuild/protobuf",
         "@connectrpc/connect",
         "@connectrpc/connect-query",
+        "@hookform/error-message",
         "@tanstack/react-query",
         "react-hook-form"
       ],

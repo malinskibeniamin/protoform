@@ -1,5 +1,5 @@
 import { describe, expect } from "@rstest/core";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { BookstoreDemo } from "./bookstore-demo";
@@ -40,6 +40,13 @@ describe("bookstore flagship demo", () => {
 
     await user.clear(isbn);
     await user.type(isbn, "9783161484100");
+    await waitFor(() => {
+      expect(screen.queryByText("ISBN must have a valid ISBN-13 check digit.")).not.toBeInTheDocument();
+      expect(isbn).toHaveAttribute("aria-invalid", "false");
+      expect(isbn).toHaveAccessibleDescription(
+        "Thirteen digits. The check digit is verified by the CEL rule in the proto."
+      );
+    });
     await user.click(screen.getByRole("button", { name: "Continue" }));
     const bookId = screen.getByRole("textbox", { name: "Book id" });
     expect(bookId).toHaveAttribute("pattern", String.raw`[a-z][a-z0-9\-]{2,62}[a-z0-9]`);
@@ -60,8 +67,10 @@ describe("bookstore flagship demo", () => {
     await user.clear(title);
     await user.click(screen.getByRole("button", { name: "Save changes" }));
     expect(title).toHaveAttribute("aria-invalid", "true");
+    expect(await screen.findByText("Enter a book title.")).toBeVisible();
 
     await user.type(title, "Domain Modeling");
+    await waitFor(() => expect(screen.queryByText("Enter a book title.")).not.toBeInTheDocument());
     await user.click(screen.getByRole("button", { name: "Save changes" }));
     expect(await screen.findByRole("heading", { name: "Domain Modeling" })).toBeVisible();
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { createConnectQueryKey, useMutation, useTransport } from "@connectrpc/connect-query";
+import { ErrorMessage } from "@hookform/error-message";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -110,7 +111,7 @@ export function UpdateBookForm({ book, onCancel, onUpdated }: UpdateBookFormProp
             onChange={handleDisplayNameChange}
             ref={displayNameRef}
           />
-          {titleError ? <FieldError>{titleError}</FieldError> : null}
+          <ErrorMessage as={FieldError} errors={form.formState.errors} name="displayName" />
         </Field>
         <Field>
           <FieldLabel htmlFor="update-book-note">Note</FieldLabel>
