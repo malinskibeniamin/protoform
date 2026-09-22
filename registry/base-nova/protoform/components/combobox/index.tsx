@@ -447,7 +447,7 @@ export const Combobox = memo(
             aria-expanded={open}
             autoComplete="off"
             autoCorrect="off"
-            className="relative w-full shadow-none"
+            className="relative w-full"
             containerClassName={className}
             disabled={disabled}
             id={id}
@@ -468,7 +468,7 @@ export const Combobox = memo(
               {showClearButton ? (
                 <Button
                   aria-label="Clear selection"
-                  className="pointer-events-auto size-auto rounded-sm p-0 opacity-50 hover:bg-transparent hover:opacity-100"
+                  className="pointer-events-auto"
                   onClick={handleClear}
                   onMouseDown={preventDefault}
                   size="icon-xs"

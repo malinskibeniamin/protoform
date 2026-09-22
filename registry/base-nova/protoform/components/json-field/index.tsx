@@ -578,7 +578,7 @@ const JSONField = ({
                     {key}
                     {requiredFields.has(key) && <span className="ml-1 text-destructive">*</span>}
                   </Text>
-                  <Badge className="px-1 py-0 text-xs" variant="outline">
+                  <Badge size="sm" variant="outline">
                     {(subSchema as JSONSchemaType).type ?? "unknown"}
                   </Badge>
                 </div>
@@ -657,7 +657,7 @@ const JSONField = ({
                                   <Text className="text-sm" variant="label">
                                     {key}
                                   </Text>
-                                  <Badge className="px-1 py-0 text-xs" variant="outline">
+                                  <Badge size="sm" variant="outline">
                                     {(subSchema as JSONSchemaType).type ?? "unknown"}
                                   </Badge>
                                   {requiredItemFields.has(key) && <span className="ml-1 text-destructive">*</span>}

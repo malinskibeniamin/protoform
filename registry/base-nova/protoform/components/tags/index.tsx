@@ -101,7 +101,7 @@ export type TagsTriggerProps = ComponentProps<typeof Button> & { testId?: string
 export const TagsTrigger = ({ className, children, testId, ...props }: TagsTriggerProps) => (
   <PopoverTrigger asChild>
     <Button
-      className={cn("h-auto w-full justify-between p-2 hover:bg-muted active:bg-muted", className)}
+      className={cn("h-auto w-full justify-between", className)}
       data-testid={testId}
       role="combobox"
       variant="outline"
@@ -140,7 +140,7 @@ export const TagsValue = ({
       {onRemove ? (
         <Button
           aria-label="Remove tag"
-          className="size-auto cursor-pointer border-0 bg-transparent p-0 transition-opacity hover:opacity-70"
+          className="cursor-pointer"
           onClick={handleRemove}
           size="icon-xs"
           type="button"

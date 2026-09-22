@@ -23,6 +23,7 @@ export const inputVariants = cva(
         sm: "h-7 px-2 py-1 text-sm file:h-5",
       },
       variant: {
+        group: "rounded-none border-0 bg-transparent shadow-none focus-visible:ring-0 dark:bg-transparent",
         password: "pr-10",
         standard: "",
       },
@@ -30,18 +31,7 @@ export const inputVariants = cva(
   }
 );
 
-const stepControlVariants = cva("flex items-center justify-center", {
-  defaultVariants: {
-    size: "md",
-  },
-  variants: {
-    size: {
-      lg: "size-9 [&_svg]:size-4",
-      md: "size-8 [&_svg]:size-3.5",
-      sm: "size-7 [&_svg]:size-3",
-    },
-  },
-});
+const stepControlSizes = { lg: "icon-lg", md: "icon", sm: "icon-sm" } as const;
 
 const inputContainerVariants = cva("", {
   defaultVariants: {
@@ -137,13 +127,14 @@ function getInputMode(
     inputType = showPassword ? "text" : "password";
   }
 
-  let layout: "number" | "password" | typeof variant = variant;
+  let layout: "number" | "password" | "standard" | null | undefined = variant === "group" ? "standard" : variant;
   if (shouldShowControls) {
     layout = "number";
   } else if (isPasswordInput) {
     layout = "password";
   }
-  return { inputType, layout };
+  const inputVariant = isPasswordInput && variant !== "group" ? "password" : variant;
+  return { inputType, inputVariant, layout };
 }
 
 function getInputValueProps(
@@ -191,6 +182,44 @@ function PasswordVisibilityControl({
   );
 }
 
+function NumberInputControls({
+  size,
+  disabled,
+  increment,
+  decrement,
+}: {
+  size: InputProps["size"];
+  disabled: InputProps["disabled"];
+  increment: () => void;
+  decrement: () => void;
+}) {
+  const controlSize = stepControlSizes[size ?? "md"];
+  return (
+    <div className="flex flex-row gap-1">
+      <Button
+        aria-label="Increase value"
+        disabled={disabled}
+        onClick={increment}
+        size={controlSize}
+        type="button"
+        variant="outline"
+      >
+        <Plus />
+      </Button>
+      <Button
+        aria-label="Decrease value"
+        disabled={disabled}
+        onClick={decrement}
+        size={controlSize}
+        type="button"
+        variant="outline"
+      >
+        <Minus />
+      </Button>
+    </div>
+  );
+}
+
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   (
     {
@@ -221,7 +250,6 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const isPasswordInput = type === "password";
     const shouldShowControls = isNumberInput && showStepControls;
     const step = props.step ? Number(props.step) : 1;
-    const inputVariant = isPasswordInput ? "password" : variant;
     const { position: groupPosition, attached: groupAttached } = useGroup();
     const attached = groupAttached || isPasswordInput;
 
@@ -231,7 +259,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
     const positionClasses = getInputGroupClasses(attached, groupPosition);
 
-    const { inputType, layout } = getInputMode(type, variant, showPassword, showStepControls);
+    const { inputType, inputVariant, layout } = getInputMode(type, variant, showPassword, showStepControls);
 
     const inputValueProps = getInputValueProps(isNumberInput, value, props.value, defaultValue);
 
@@ -241,8 +269,9 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         aria-describedby={props["aria-describedby"] ?? fieldCtx.errorId}
         aria-invalid={props["aria-invalid"] ?? (fieldCtx.invalid || undefined)}
         className={cn(
-          inputVariants({ size, variant: inputVariant }),
           positionClasses,
+          inputVariants({ size, variant: inputVariant }),
+          isPasswordInput && "pr-10",
           "data-[start-adornment=true]:pl-(--input-start-padding)",
           "data-[end-adornment=true]:pr-(--input-end-padding)",
           className
@@ -287,28 +316,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             />
           ) : null}
           {shouldShowControls ? (
-            <div className="flex flex-row gap-1">
-              <Button
-                aria-label="Increase value"
-                className={stepControlVariants({ size })}
-                disabled={controlsDisabled}
-                onClick={increment}
-                type="button"
-                variant="outline"
-              >
-                <Plus />
-              </Button>
-              <Button
-                aria-label="Decrease value"
-                className={stepControlVariants({ size })}
-                disabled={controlsDisabled}
-                onClick={decrement}
-                type="button"
-                variant="outline"
-              >
-                <Minus />
-              </Button>
-            </div>
+            <NumberInputControls decrement={decrement} disabled={controlsDisabled} increment={increment} size={size} />
           ) : null}
         </div>
       </InputContext.Provider>

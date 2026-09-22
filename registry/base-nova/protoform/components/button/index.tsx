@@ -36,10 +36,12 @@ const buttonVariants = cva(
         "icon-xs": "size-6 [&_svg]:size-3",
         lg: "h-9 gap-1.5 px-2.5 has-[>svg]:px-2 [&_svg]:size-4",
         md: "h-8 gap-1.5 px-2.5 has-[>svg]:px-2 [&_svg]:size-4",
-        sm: "h-7 gap-1 px-2.5 text-[0.8rem] has-[>svg]:px-2 [&_svg]:size-3.5",
+        sm: "h-7 gap-1 px-2.5 text-xs has-[>svg]:px-2 [&_svg]:size-3.5",
         xs: "h-6 gap-1 px-2 text-xs has-[>svg]:px-1.5 [&_svg]:size-3",
       },
       variant: {
+        calendar:
+          "flex aspect-square size-auto w-full min-w-(--cell-size) flex-col gap-1 bg-transparent font-normal text-foreground leading-none hover:bg-muted hover:text-foreground active:bg-muted/80 data-[range-end=true]:rounded-md data-[range-middle=true]:rounded-none data-[range-start=true]:rounded-md data-[range-end=true]:rounded-r-md data-[range-start=true]:rounded-l-md data-[range-end=true]:bg-selected data-[range-middle=true]:bg-accent data-[range-start=true]:bg-selected data-[selected-single=true]:bg-selected data-[range-end=true]:text-selected-foreground data-[range-middle=true]:text-accent-foreground data-[range-start=true]:text-selected-foreground data-[selected-single=true]:text-selected-foreground group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-10 group-data-[focused=true]/day:border-selected group-data-[focused=true]/day:ring-3 group-data-[focused=true]/day:ring-selected/50 dark:hover:text-accent-foreground [&>span]:text-xs [&>span]:opacity-70",
         accent: [
           "bg-primary text-primary-foreground shadow-xs",
           "hover:bg-primary/90",
@@ -218,7 +220,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       if (isLoading) {
         return (
           <>
-            <span className="invisible inline-flex items-center justify-center [gap:inherit]">{content}</span>
+            <span className="invisible contents">{content}</span>
             <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center">
               <Spinner />
             </span>

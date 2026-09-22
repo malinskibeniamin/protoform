@@ -32,7 +32,7 @@ describe("Base Nova form controls", () => {
   test("uses Nova checkbox geometry by default", () => {
     render(<Checkbox aria-label="Accept terms" />);
 
-    expect(screen.getByRole("checkbox", { name: "Accept terms" })).toHaveClass("size-4", "rounded-[4px]");
+    expect(screen.getByRole("checkbox", { name: "Accept terms" })).toHaveClass("size-4", "rounded-sm");
   });
 
   test("uses Nova radio geometry by default", () => {

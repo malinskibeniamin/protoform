@@ -172,7 +172,9 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
 
 MultiSelect.displayName = "MultiSelect";
 
-interface MultiSelectTriggerProps extends React.ComponentPropsWithoutRef<"div">, SharedProps {}
+interface MultiSelectTriggerProps extends React.ComponentPropsWithoutRef<"div">, SharedProps {
+  width?: keyof typeof widthClasses;
+}
 
 function PreventClick(e: React.MouseEvent | React.TouchEvent) {
   e.preventDefault();
@@ -180,7 +182,7 @@ function PreventClick(e: React.MouseEvent | React.TouchEvent) {
 }
 
 const MultiSelectTrigger = React.forwardRef<React.ComponentRef<"button">, MultiSelectTriggerProps>(
-  ({ className, children, testId, ...props }, forwardedRef) => {
+  ({ className, children, testId, width, ...props }, forwardedRef) => {
     const { disabled } = useMultiSelect();
 
     return (
@@ -196,8 +198,9 @@ const MultiSelectTrigger = React.forwardRef<React.ComponentRef<"button">, MultiS
             data-testid={testId}
             {...props}
             className={cn(
-              "!border-input flex min-h-9 w-fit items-start justify-between gap-2 rounded-md border bg-transparent px-3 py-1.5 text-base shadow-xs outline-none transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 data-[placeholder]:text-muted-foreground *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 md:text-sm dark:bg-input/30 dark:aria-invalid:ring-destructive/40 dark:hover:bg-input/50 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0",
+              "!border-input flex min-h-9 w-fit items-start justify-between gap-2 rounded-md border bg-transparent px-3 py-1.5 text-base shadow-xs outline-none transition focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 data-[placeholder]:text-muted-foreground *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 md:text-sm dark:bg-input/30 dark:aria-invalid:ring-destructive/40 dark:hover:bg-input/50 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0",
               disabled ? "cursor-not-allowed opacity-50" : "cursor-text",
+              width && widthClasses[width],
               className
             )}
             onClick={disabled ? PreventClick : props.onClick}
@@ -322,7 +325,7 @@ const MultiSelectList = React.forwardRef<
   React.ComponentRef<typeof CommandList>,
   React.ComponentPropsWithoutRef<typeof CommandList>
 >(({ className, ...props }, ref) => (
-  <CommandList className={cn("max-h-[unset] px-0 py-1", className)} ref={ref} {...props} />
+  <CommandList className={cn("max-h-[unset]", className)} ref={ref} variant="multi-select" {...props} />
 ));
 
 MultiSelectList.displayName = "MultiSelectList";
@@ -337,8 +340,7 @@ interface MultiSelectContentProps extends React.ComponentPropsWithoutRef<typeof 
 }
 
 const MultiSelectContent = React.forwardRef<React.ComponentRef<typeof PopoverPrimitive.Popup>, MultiSelectContentProps>(
-  (contentProps, ref) => {
-    const { className, children, container, testId, ...props } = contentProps;
+  ({ className, children, container, testId, ...props }, ref) => {
     Reflect.deleteProperty(props, "onOpenAutoFocus");
     const context = useMultiSelect();
 
@@ -364,8 +366,9 @@ const MultiSelectContent = React.forwardRef<React.ComponentRef<typeof PopoverPri
             {...props}
           >
             <Command
-              className={cn("max-h-96 w-full min-w-[var(--anchor-width)] px-1", className)}
+              className={cn("max-h-96 w-full min-w-[var(--anchor-width)]", className)}
               shouldFilter={!context.onSearch}
+              variant="multi-select"
             >
               {children}
             </Command>
@@ -459,7 +462,7 @@ const MultiSelectItem = React.forwardRef<React.ComponentRef<typeof CommandItem>,
     return (
       <CommandItem
         {...props}
-        className={cn(disabled && "cursor-not-allowed text-muted-foreground", className)}
+        className={cn(disabled && "cursor-not-allowed", className)}
         disabled={disabled}
         {...(keywords ? { keywords } : {})}
         {...(!disabled && value ? { onSelect: handleClick } : {})}
@@ -644,11 +647,7 @@ function SimpleMultiSelect({
       testId={testId}
       value={value}
     >
-      <MultiSelectTrigger
-        className={cn(widthClasses[width], className)}
-        id={id}
-        testId={testId ? `${testId}-control` : undefined}
-      >
+      <MultiSelectTrigger className={className} id={id} testId={testId ? `${testId}-control` : undefined} width={width}>
         <MultiSelectValue
           maxDisplay={maxDisplay}
           options={normalizedOptions}

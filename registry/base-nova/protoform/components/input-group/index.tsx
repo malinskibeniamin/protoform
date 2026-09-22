@@ -22,7 +22,7 @@ function InputGroup({ className, testId, ...props }: React.ComponentProps<"div">
   return (
     <div
       className={cn(
-        "group/input-group !border-input relative flex w-full rounded-md border shadow-xs outline-none transition-[color,box-shadow] dark:bg-input/30",
+        "group/input-group !border-input relative flex w-full rounded-md border shadow-xs outline-none transition dark:bg-input/30",
         "h-9 min-w-0 has-[>textarea]:h-auto",
 
         // Conditional alignment
@@ -35,7 +35,7 @@ function InputGroup({ className, testId, ...props }: React.ComponentProps<"div">
         "has-[>[data-align=block-end]]:[&>input]:pt-3",
 
         // Focus state.
-        "has-[[data-slot=input-group-control]:focus-visible]:border-ring has-[[data-slot=input-group-control]:focus-visible]:ring-[3px] has-[[data-slot=input-group-control]:focus-visible]:ring-ring/50",
+        "has-[[data-slot=input-group-control]:focus-visible]:border-ring has-[[data-slot=input-group-control]:focus-visible]:ring-3 has-[[data-slot=input-group-control]:focus-visible]:ring-ring/50",
 
         // Error state.
         "has-[[data-slot][aria-invalid=true]]:border-destructive has-[[data-slot][aria-invalid=true]]:ring-destructive/20 dark:has-[[data-slot][aria-invalid=true]]:ring-destructive/40",
@@ -51,7 +51,7 @@ function InputGroup({ className, testId, ...props }: React.ComponentProps<"div">
 }
 
 const inputGroupAddonVariants = cva(
-  "flex h-auto cursor-text select-none items-center gap-2 py-1.5 font-medium text-muted-foreground text-sm group-data-[disabled=true]/input-group:opacity-50 [&>kbd]:rounded-[calc(var(--radius)-5px)] [&>svg:not([class*='size-'])]:size-4",
+  "flex h-auto cursor-text select-none items-center gap-2 py-1.5 font-medium text-muted-foreground text-sm group-data-[disabled=true]/input-group:opacity-50 [&>kbd]:rounded-sm [&>svg:not([class*='size-'])]:size-4",
   {
     defaultVariants: {
       align: "inline-start",
@@ -89,20 +89,6 @@ function InputGroupAddon({
   );
 }
 
-const inputGroupButtonVariants = cva("flex items-center gap-2 text-sm shadow-none", {
-  defaultVariants: {
-    size: "xs",
-  },
-  variants: {
-    size: {
-      "icon-sm": "size-8 p-0 has-[>svg]:p-0",
-      "icon-xs": "size-6 rounded-[calc(var(--radius)-5px)] p-0 has-[>svg]:p-0",
-      sm: "h-8 gap-1.5 rounded-md px-2.5 has-[>svg]:px-2.5",
-      xs: "h-6 gap-1 rounded-[calc(var(--radius)-5px)] px-2 has-[>svg]:px-2 [&>svg:not([class*='size-'])]:size-3.5",
-    },
-  },
-});
-
 function InputGroupButton({
   className,
   type = "button",
@@ -110,11 +96,12 @@ function InputGroupButton({
   size = "xs",
   testId,
   ...props
-}: Omit<React.ComponentProps<typeof Button>, "size"> & VariantProps<typeof inputGroupButtonVariants> & SharedProps) {
+}: React.ComponentProps<typeof Button> & SharedProps) {
   return (
     <Button
-      className={cn(inputGroupButtonVariants({ size }), className)}
+      className={className}
       data-size={size}
+      size={size}
       testId={testId}
       type={type}
       variant={variant}
@@ -138,15 +125,7 @@ function InputGroupText({ className, ...props }: React.ComponentProps<"span">) {
 function InputGroupInput({ className, testId, ...props }: Omit<React.ComponentProps<"input">, "size"> & SharedProps) {
   return (
     <div className="flex-1">
-      <Input
-        className={cn(
-          "rounded-none border-0 bg-transparent shadow-none focus-visible:ring-0 dark:bg-transparent",
-          className
-        )}
-        data-slot="input-group-control"
-        testId={testId}
-        {...props}
-      />
+      <Input className={className} data-slot="input-group-control" testId={testId} variant="group" {...props} />
     </div>
   );
 }
@@ -154,13 +133,12 @@ function InputGroupInput({ className, testId, ...props }: Omit<React.ComponentPr
 const InputGroupTextarea = React.forwardRef<HTMLTextAreaElement, React.ComponentProps<"textarea"> & SharedProps>(
   ({ className, testId, ...props }, ref) => (
     <Textarea
-      className={cn(
-        "flex-1 resize-none rounded-none border-0 bg-transparent py-3 shadow-none focus-visible:ring-0 dark:bg-transparent",
-        className
-      )}
+      className={cn("flex-1", className)}
       data-slot="input-group-control"
       ref={ref}
+      resize="none"
       testId={testId}
+      variant="group"
       {...props}
     />
   )

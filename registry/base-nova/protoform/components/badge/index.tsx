@@ -5,7 +5,7 @@ import { Slot } from "@/registry/base-nova/protoform/lib/base-ui-compat";
 import { cn, type SharedProps } from "@/registry/base-nova/protoform/lib/utils";
 
 const badgeVariants = cva(
-  "inline-flex max-w-full shrink-0 items-center justify-center truncate rounded-md border font-medium transition-[color,box-shadow] selection:bg-selected selection:text-selected-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&>svg]:pointer-events-none",
+  "inline-flex max-w-full shrink-0 items-center justify-center truncate rounded-md border font-medium transition selection:bg-selected selection:text-selected-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&>svg]:pointer-events-none",
   {
     defaultVariants: {
       size: "md",
@@ -18,7 +18,7 @@ const badgeVariants = cva(
         // Medium: 24px height (from Figma)
         md: "h-6 gap-1 px-2 py-0 text-xs has-[>svg]:px-1.5 [&_svg]:size-3.5",
         // Small: 20px height (from Figma)
-        sm: "h-5 gap-1 px-1.5 py-0 text-[11px] has-[>svg]:px-1 [&_svg]:size-3",
+        sm: "h-5 gap-1 px-1.5 py-0 text-xs has-[>svg]:px-1 [&_svg]:size-3",
       },
       variant: {
         // ACCENT variants use the host theme’s semantic colors.

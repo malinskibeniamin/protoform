@@ -53,17 +53,19 @@
         ]
       }
     ],
-    // stroke-none is a standard SVG utility, not a missing color token.
+    // These standard SVG/animation utilities are not color names.
     "shadcn/no-raw-colors": [
       "error",
       {
-        "allow": ["stroke-none"]
+        "allow": ["stroke-none", "fill-mode-forwards"]
       }
     ],
+    // SVG stroke drawing needs an explicit transition-property list; there is
+    // no Tailwind scale equivalent. Do not broaden this to arbitrary motion.
     "shadcn/no-arbitrary-values": [
       "error",
       {
-        "allow": ["layout"]
+        "allow": ["layout", "transition-[stroke-dashoffset,opacity]"]
       }
     ],
     "shadcn/no-inline-styles": "error",
@@ -83,6 +85,9 @@
     "public/r/**",
     "registry/base-nova/protoform/lib/protobuf-v1-bridge/**"
   ],
+  // No definition-site exemptions: these components are authored or customized.
+  // Any future exemption requires verified unmodified upstream shadcn source
+  // and an exact file path, never a component-directory wildcard.
   "settings": {
     "shadcn": {
       "ui": "@/components/ui",
@@ -91,21 +96,5 @@
         "^@/registry/base-nova/protoform/components/"
       ]
     }
-  },
-  // Upstream recommends these three definition-site exemptions: components
-  // must own their styling and forward className. Usage sites remain strict.
-  // https://github.com/shadcn-ui/lint/blob/main/docs/adoption.md#add-more-rules
-  "overrides": [
-    {
-      "files": [
-        "registry/base-nova/protoform/components/*/index.tsx",
-        "registry/base-nova/protoform/lib/utils/index.tsx"
-      ],
-      "rules": {
-        "shadcn/no-restyle": "off",
-        "shadcn/no-arbitrary-values": "off",
-        "shadcn/require-static-classes": "off"
-      }
-    }
-  ]
+  }
 }

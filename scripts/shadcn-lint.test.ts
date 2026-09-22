@@ -10,6 +10,12 @@ const lintReport = z.object({
 
 const cases = [
   {
+    name: "does not broaden the SVG property-list allowance to arbitrary transitions",
+    prefix: ".tmp/shadcn-lint-",
+    rules: ["no-arbitrary-values"],
+    source: `export function InvalidMotion() { return <div className="transition-[all]" />; }`,
+  },
+  {
     name: "rejects all six design-system violations at usage sites",
     prefix: ".tmp/shadcn-lint-",
     rules: [
@@ -35,13 +41,21 @@ export function Violations({ classes }: { classes: string }) {
 export function Valid({ width }: { width: number }) {
   return <div className="bg-background text-foreground w-(--panel-width)" style={{ "--panel-width": width }}>
     <Button className="w-full mt-4" type="button">Save</Button>
+    <svg><path className="stroke-none fill-mode-forwards transition-[stroke-dashoffset,opacity]" /></svg>
   </div>;
 }`,
   },
   {
-    name: "keeps color, inline-style, and unknown-class checks on component definitions",
+    name: "rejects all six violations in authored component definitions",
     prefix: "registry/base-nova/protoform/components/shadcn-lint-test-",
-    rules: ["no-raw-colors", "no-inline-styles", "no-unknown-classes"],
+    rules: [
+      "no-restyle",
+      "no-raw-colors",
+      "no-arbitrary-values",
+      "no-inline-styles",
+      "no-unknown-classes",
+      "require-static-classes",
+    ],
     source: `import { Button } from "@/components/ui/button";
 export function Definition({ classes }: { classes: string }) {
   return <><Button className="p-[13px]">Owned styling</Button>

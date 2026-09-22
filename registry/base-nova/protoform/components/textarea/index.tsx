@@ -11,6 +11,9 @@ const textareaVariants = cva(
       size: "default",
     },
     variants: {
+      variant: {
+        group: "rounded-none border-0 bg-transparent py-3 shadow-none focus-visible:ring-0 dark:bg-transparent",
+      },
       resize: {
         auto: "field-sizing-content",
         both: "resize",
@@ -30,9 +33,9 @@ const textareaVariants = cva(
 interface TextareaProps extends React.ComponentProps<"textarea">, VariantProps<typeof textareaVariants>, SharedProps {}
 
 const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
-  ({ className, size, resize, testId, ...props }, ref) => (
+  ({ className, size, resize, variant, testId, ...props }, ref) => (
     <textarea
-      className={cn(textareaVariants({ resize, size }), className)}
+      className={cn(textareaVariants({ resize, size, variant }), className)}
       data-slot="textarea"
       data-testid={testId}
       ref={ref}

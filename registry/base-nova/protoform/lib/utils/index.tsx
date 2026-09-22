@@ -129,7 +129,7 @@ export const dotStackedVariants = cva("!border-background", {
   variants: {
     size: {
       lg: "border-2",
-      md: "border-[1.5px]",
+      md: "border-2",
       sm: "border",
       xs: "border-2",
       xxs: "border",
