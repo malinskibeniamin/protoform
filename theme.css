@@ -34,6 +34,9 @@
 }
 
 @theme inline {
+  /* Readiness tooltips deliberately keep a dark surface in both themes. */
+  --color-tooltip-detail: oklch(0.145 0 0);
+  --color-tooltip-detail-foreground: rgb(255 255 255);
   /* Readiness status colors live here, not in UI class strings. */
   --color-readiness-verified: oklch(69.6% 0.17 162.48);
   --color-readiness-verified-hover: oklch(76.5% 0.177 163.223);

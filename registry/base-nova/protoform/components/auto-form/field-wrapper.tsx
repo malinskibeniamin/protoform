@@ -216,6 +216,7 @@ export const FieldWrapper: React.FC<FieldWrapperProps> = ({ label, children, id,
               <TooltipTrigger asChild>
                 <Button
                   aria-label={`Help for ${helpLabel}`}
+                  data-slot="help-trigger"
                   data-testid={getAutoFormFieldTestId(testIdPrefix, id, "help")}
                   size="icon-xs"
                   type="button"

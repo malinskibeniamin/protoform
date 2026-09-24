@@ -18,6 +18,20 @@ async function expectNoSeriousViolations(page: Page) {
 }
 
 for (const theme of ["light", "dark"] as const) {
+  test(`preserves readiness tooltip appearance in ${theme} theme`, async ({ page }) => {
+    await page.goto("/docs/production-readiness");
+    await page.locator("astro-island").first().scrollIntoViewIfNeeded();
+    await page.evaluate((nextTheme) => {
+      document.documentElement.dataset["theme"] = nextTheme;
+    }, theme);
+    await page.locator("astro-island button[aria-label]").first().hover();
+    const content = page.getByRole("tooltip").locator('[data-slot="tooltip-content"]');
+    await expect(content).toBeVisible();
+    // Pre-lint appearance: neutral-950 surface and white text in both themes.
+    await expect(content).toHaveCSS("background-color", "oklch(0.145 0 0)");
+    await expect(content).toHaveCSS("color", "rgb(255, 255, 255)");
+  });
+
   test(`keeps help tooltip text visible in ${theme} theme`, async ({ page }) => {
     await page.goto("/docs/server-error-form");
     await page.evaluate((nextTheme) => {
@@ -28,6 +42,16 @@ for (const theme of ["light", "dark"] as const) {
       name: "Help for Display Name",
     });
     await expect(helpButton).toBeVisible({ timeout: 30_000 });
+    const triggerShape = await helpButton.evaluate((element) => {
+      const style = getComputedStyle(element);
+      return {
+        radius: Number.parseFloat(style.borderRadius),
+        height: element.getBoundingClientRect().height,
+        color: style.color,
+      };
+    });
+    expect(triggerShape.radius).toBeGreaterThanOrEqual(triggerShape.height / 2);
+    expect(triggerShape.color).toBe(theme === "light" ? "oklch(0.53 0 0)" : "oklch(0.68 0 0)");
     await helpButton.hover();
 
     const content = page.getByRole("tooltip").locator('[data-slot="tooltip-content"]');

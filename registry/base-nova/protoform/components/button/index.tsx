@@ -14,6 +14,9 @@ const buttonVariants = cva(
     "whitespace-nowrap rounded-lg border border-transparent bg-clip-padding font-medium text-sm",
     "select-none outline-none transition-all",
     "cursor-pointer",
+    // Optional semantic slot: stock host Buttons can ignore this styling hook
+    // without requiring a Protoform-specific variant in the consumer contract.
+    "data-[slot=help-trigger]:rounded-full data-[slot=help-trigger]:text-muted-foreground data-[slot=help-trigger]:shadow-none data-[slot=help-trigger]:hover:text-foreground",
     "disabled:pointer-events-none disabled:cursor-not-allowed",
     "disabled:opacity-50",
     "focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50",

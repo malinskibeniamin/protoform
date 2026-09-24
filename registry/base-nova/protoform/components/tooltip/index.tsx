@@ -141,7 +141,7 @@ function TooltipContent(contentProps: TooltipContentProps) {
                 animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
                 className={cn(
                   "relative w-fit origin-(--transform-origin) text-balance rounded-md bg-primary px-3 py-1.5 text-primary-foreground text-sm shadow-md",
-                  variant === "detail" && "bg-foreground py-2 text-background shadow-xl",
+                  variant === "detail" && "bg-tooltip-detail py-2 text-tooltip-detail-foreground shadow-xl",
                   className
                 )}
                 data-slot="tooltip-content"
