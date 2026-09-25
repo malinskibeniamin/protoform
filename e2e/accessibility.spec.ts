@@ -47,11 +47,14 @@ for (const theme of ["light", "dark"] as const) {
       return {
         radius: Number.parseFloat(style.borderRadius),
         height: element.getBoundingClientRect().height,
-        color: style.color,
       };
     });
     expect(triggerShape.radius).toBeGreaterThanOrEqual(triggerShape.height / 2);
-    expect(triggerShape.color).toBe(theme === "light" ? "oklch(0.53 0 0)" : "oklch(0.68 0 0)");
+    await expect(helpButton).toHaveCSS("color", theme === "light" ? "oklch(0.53 0 0)" : "oklch(0.68 0 0)");
+    // Keep the 24px hit target without squeezing the question-mark glyph to 12px.
+    await expect(helpButton).toHaveCSS("width", "24px");
+    await expect(helpButton.locator("svg")).toHaveCSS("width", "16px");
+    await expect(helpButton.locator("svg")).toHaveCSS("height", "16px");
     await helpButton.hover();
 
     const content = page.getByRole("tooltip").locator('[data-slot="tooltip-content"]');
