@@ -89,6 +89,7 @@ const dialogContentVariants = cva(
       },
       variant: {
         centered: "text-center",
+        fullscreen: "rounded-none border-0",
         destructive: "border-destructive/50",
         standard: "",
       },
@@ -139,12 +140,7 @@ function DialogContent(contentProps: DialogContentProps) {
         {showCloseButton ? (
           <DialogPrimitive.Close
             render={
-              <Button
-                aria-label="Close"
-                className="absolute top-2 right-2 text-muted-foreground hover:text-foreground"
-                size="icon-sm"
-                variant="ghost"
-              >
+              <Button aria-label="Close" className="absolute top-2 right-2" size="icon-sm" variant="ghost">
                 <X />
               </Button>
             }

@@ -41,7 +41,7 @@ function JsonBlock({ description, jsonText, title }: { title: string; descriptio
       </div>
       <div className="space-y-3 px-5 py-4">
         <div className="flex items-center justify-between gap-3">
-          <Text className="font-medium text-muted-foreground uppercase tracking-[0.12em]" variant="small">
+          <Text className="font-medium text-muted-foreground uppercase tracking-widest" variant="small">
             Payload JSON
           </Text>
           <CopyButton content={jsonText} size="sm" variant="outline">

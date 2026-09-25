@@ -21,7 +21,9 @@ const cardVariants = cva(
         xl: "max-w-xl gap-6 px-12 py-10",
       },
       variant: {
-        elevated: "shadow-elevated",
+        choice:
+          "group-data-[state=checked]:!border-selected rounded-md border-2 border-solid p-4 shadow-none transition-all hover:shadow-lg",
+        elevated: "shadow-lg",
         ghost: "border-0 bg-transparent shadow-none dark:bg-transparent",
         outlined: "border-1",
         standard: "",
@@ -115,15 +117,21 @@ CardHeader.displayName = "CardHeader";
 
 const CardTitle = React.forwardRef<
   HTMLHeadingElement,
-  React.ComponentProps<"div"> & SharedProps & { level?: 1 | 2 | 3 | 4 }
->(({ className, level = 4, testId, children, ...props }, ref) => {
+  React.ComponentProps<"div"> & SharedProps & { level?: 1 | 2 | 3 | 4; spacing?: "loose" }
+>(({ className, level = 4, spacing, testId, children, ...props }, ref) => {
   let content: React.ReactNode = null;
   if (children) {
     content = typeof children === "string" ? <Heading level={level}>{children}</Heading> : children;
   }
 
   return (
-    <div className={className} data-slot="card-title" data-testid={testId} ref={ref} {...props}>
+    <div
+      className={cn(spacing === "loose" && "gap-3", className)}
+      data-slot="card-title"
+      data-testid={testId}
+      ref={ref}
+      {...props}
+    >
       {content}
     </div>
   );
@@ -174,6 +182,10 @@ const cardContentVariants = cva("", {
     space: "md",
   },
   variants: {
+    variant: {
+      "selection-indicator":
+        "!border-input group-data-[state=checked]:!border-selected flex aspect-square size-4 shrink-0 items-center justify-center rounded-full border p-0 text-selected shadow-xs outline-none transition focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:bg-input/30 dark:aria-invalid:ring-destructive/40",
+    },
     padding: {
       lg: "px-8",
       md: "px-6",
@@ -192,9 +204,9 @@ const cardContentVariants = cva("", {
 interface CardContentProps extends React.ComponentProps<"div">, VariantProps<typeof cardContentVariants>, SharedProps {}
 
 const CardContent = React.forwardRef<HTMLDivElement, CardContentProps>(
-  ({ className, padding, space, testId, ...props }, ref) => (
+  ({ className, padding, space, variant, testId, ...props }, ref) => (
     <div
-      className={cn(cardContentVariants({ padding, space }), className)}
+      className={cn(cardContentVariants({ padding, space, variant }), className)}
       data-slot="card-content"
       data-testid={testId}
       ref={ref}

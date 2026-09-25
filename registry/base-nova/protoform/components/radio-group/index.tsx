@@ -120,7 +120,7 @@ function RadioGroupItem({
             {...(style ? { style: style as MotionButtonStyle } : {})}
             className={cn(
               variant === "card"
-                ? "flex h-auto min-h-12 w-full items-center justify-between gap-4 rounded-lg border border-border/70 bg-background px-4 py-3 text-left text-foreground ring-offset-background transition-[border-color,box-shadow,background-color] hover:border-foreground/30 hover:shadow-xs focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[checked]:border-foreground data-[checked]:bg-muted/30 data-[checked]:shadow-xs"
+                ? "flex h-auto min-h-12 w-full items-center justify-between gap-4 rounded-lg border border-border/70 bg-background px-4 py-3 text-left text-foreground ring-offset-background transition hover:border-foreground/30 hover:shadow-xs focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[checked]:border-foreground data-[checked]:bg-muted/30 data-[checked]:shadow-xs"
                 : "!border-input relative flex aspect-square size-4 cursor-pointer items-center justify-center rounded-full border outline-none after:absolute after:-inset-x-3 after:-inset-y-2 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:bg-input/30 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40",
               className
             )}

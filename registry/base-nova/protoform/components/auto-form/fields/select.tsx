@@ -7,6 +7,7 @@ import type { AutoFormFieldProps } from "../core-types";
 import {
   type DataProviderOption,
   type DataProviderRequest,
+  type DataProviderResult,
   getStaleSelections,
   type ResolvedDataProvider,
   resolveDataProvider,
@@ -135,6 +136,48 @@ function SelectFieldComponent({ error, field, id, inputProps, label, path }: Aut
   );
 }
 
+function useProviderOptions({
+  result,
+  cursor,
+  requestKey,
+  selectedValues,
+  staleSelection,
+}: {
+  result: DataProviderResult;
+  cursor: string | undefined;
+  requestKey: string;
+  selectedValues: string[];
+  staleSelection: ResolvedDataProvider["staleSelection"];
+}) {
+  const [loadedOptions, setLoadedOptions] = React.useState<DataProviderOption[]>([]);
+  const { options, isLoading, error: providerError } = result;
+  const optionsKey = safeStringify(
+    options.map(({ description, group, label, value }) => ({ description, group, label, value }))
+  );
+  const providerPageKey = requestKey.concat(":", optionsKey);
+  const collectedPageKey = React.useRef<string | undefined>(undefined);
+  const availableOptions =
+    isLoading || providerError ? loadedOptions : mergeProviderOptions(cursor ? loadedOptions : [], options);
+  const staleSelections = isLoading || providerError ? [] : getStaleSelections(availableOptions, selectedValues);
+  const renderedOptions: DataProviderOption[] =
+    staleSelection === "clear"
+      ? availableOptions
+      : [...staleSelections.map((value) => ({ label: value, value })), ...availableOptions];
+
+  React.useEffect(
+    function collectProviderPageEffect() {
+      if (isLoading || providerError || collectedPageKey.current === providerPageKey) {
+        return;
+      }
+      collectedPageKey.current = providerPageKey;
+      setLoadedOptions((currentOptions) => mergeProviderOptions(cursor ? currentOptions : [], options));
+    },
+    [cursor, isLoading, options, providerError, providerPageKey]
+  );
+
+  return { renderedOptions, staleSelections };
+}
+
 function SelectFieldFromProvider({
   currentValue,
   dependencyValues,
@@ -161,17 +204,11 @@ function SelectFieldFromProvider({
   const { formatMessage } = useAutoForm();
   const [query, setQuery] = React.useState("");
   const [cursor, setCursor] = React.useState<string>();
-  const [loadedOptions, setLoadedOptions] = React.useState<DataProviderOption[]>([]);
   const fieldPath = path.join(".");
   const selectedValues = currentValue === null ? [] : [currentValue];
   const requestKey = safeStringify({ cursor, dependencyValues, fieldPath, query, selectedValues });
   const signal = useDataProviderSignal(requestKey);
-  const {
-    options,
-    isLoading,
-    error: providerError,
-    nextCursor,
-  } = provider.useProvider({
+  const providerResult = provider.useProvider({
     cursor,
     dependencyValues,
     fieldPath,
@@ -179,29 +216,14 @@ function SelectFieldFromProvider({
     selectedValues,
     signal,
   });
-  const optionsKey = safeStringify(
-    options.map(({ description, group, label, value }) => ({ description, group, label, value }))
-  );
-  const providerPageKey = requestKey.concat(":", optionsKey);
-  const collectedPageKey = React.useRef<string | undefined>(undefined);
-  const availableOptions =
-    isLoading || providerError ? loadedOptions : mergeProviderOptions(cursor ? loadedOptions : [], options);
-  const staleSelections = isLoading || providerError ? [] : getStaleSelections(availableOptions, selectedValues);
-  const renderedOptions: DataProviderOption[] =
-    provider.staleSelection === "clear"
-      ? availableOptions
-      : [...staleSelections.map((value) => ({ label: value, value })), ...availableOptions];
-
-  React.useEffect(
-    function collectProviderPageEffect() {
-      if (isLoading || providerError || collectedPageKey.current === providerPageKey) {
-        return;
-      }
-      collectedPageKey.current = providerPageKey;
-      setLoadedOptions((currentOptions) => mergeProviderOptions(cursor ? currentOptions : [], options));
-    },
-    [cursor, isLoading, options, providerError, providerPageKey]
-  );
+  const { isLoading, error: providerError, nextCursor } = providerResult;
+  const { renderedOptions, staleSelections } = useProviderOptions({
+    cursor,
+    requestKey,
+    result: providerResult,
+    selectedValues,
+    staleSelection: provider.staleSelection,
+  });
 
   const applyUnavailableSelectionClear = React.useEffectEvent(() => inputProps["onValueChange"](undefined));
   const staleSelectionKey =

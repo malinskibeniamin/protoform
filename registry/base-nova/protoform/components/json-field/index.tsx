@@ -578,7 +578,7 @@ const JSONField = ({
                     {key}
                     {requiredFields.has(key) && <span className="ml-1 text-destructive">*</span>}
                   </Text>
-                  <Badge className="px-1 py-0 text-xs" variant="outline">
+                  <Badge size="sm" variant="outline">
                     {(subSchema as JSONSchemaType).type ?? "unknown"}
                   </Badge>
                 </div>
@@ -657,7 +657,7 @@ const JSONField = ({
                                   <Text className="text-sm" variant="label">
                                     {key}
                                   </Text>
-                                  <Badge className="px-1 py-0 text-xs" variant="outline">
+                                  <Badge size="sm" variant="outline">
                                     {(subSchema as JSONSchemaType).type ?? "unknown"}
                                   </Badge>
                                   {requiredItemFields.has(key) && <span className="ml-1 text-destructive">*</span>}
@@ -893,16 +893,10 @@ const JSONEditor = ({ value, onChange, error: externalError, label }: JSONEditor
       </label>
       <div className={cn("rounded-md border", displayError ? "border-destructive" : "border-border")}>
         <Editor
-          className="w-full"
+          className="min-h-25 w-full bg-transparent font-mono text-sm"
           highlight={highlightJson}
           onValueChange={handleEditorChange}
           padding={10}
-          style={{
-            backgroundColor: "transparent",
-            fontFamily: '"Fira code", "Fira Mono", monospace',
-            fontSize: 14,
-            minHeight: "100px",
-          }}
           textareaId={editorId}
           value={editorContent}
         />

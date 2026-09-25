@@ -5,7 +5,7 @@ import { Slot } from "@/registry/base-nova/protoform/lib/base-ui-compat";
 import { cn, type SharedProps } from "@/registry/base-nova/protoform/lib/utils";
 
 const badgeVariants = cva(
-  "inline-flex max-w-full shrink-0 items-center justify-center truncate rounded-md border font-medium transition-[color,box-shadow] selection:bg-selected selection:text-selected-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&>svg]:pointer-events-none",
+  "inline-flex max-w-full shrink-0 items-center justify-center truncate rounded-md border font-medium transition selection:bg-selected selection:text-selected-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&>svg]:pointer-events-none",
   {
     defaultVariants: {
       size: "md",
@@ -18,67 +18,61 @@ const badgeVariants = cva(
         // Medium: 24px height (from Figma)
         md: "h-6 gap-1 px-2 py-0 text-xs has-[>svg]:px-1.5 [&_svg]:size-3.5",
         // Small: 20px height (from Figma)
-        sm: "h-5 gap-1 px-1.5 py-0 text-[11px] has-[>svg]:px-1 [&_svg]:size-3",
+        sm: "h-5 gap-1 px-1.5 py-0 text-xs has-[>svg]:px-1 [&_svg]:size-3",
       },
       variant: {
-        // === ACCENT (Brand Red - uses theme brand tokens) ===
-        accent: "border-transparent bg-brand text-inverse [a&]:hover:bg-surface-brand-hover",
-        "accent-inverted": "border-transparent bg-background-brand-subtle text-brand [a&]:hover:bg-brand-alpha-default",
-        "accent-outline": "border-outline-brand bg-transparent text-brand [a&]:hover:bg-brand-alpha-subtle",
+        // ACCENT variants use the host theme’s semantic colors.
+        accent: "border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90",
+        "accent-inverted": "border-transparent bg-primary/10 text-primary [a&]:hover:bg-primary/15",
+        "accent-outline": "border-primary bg-transparent text-primary [a&]:hover:bg-primary/10",
 
-        // === DESTRUCTIVE/ERROR (Red - semantic tokens) ===
+        // DESTRUCTIVE/ERROR variants use the host theme’s semantic colors.
         destructive:
-          "border-transparent bg-surface-error text-inverse focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 [a&]:hover:bg-surface-error-hover",
-        "destructive-inverted":
-          "border-transparent bg-background-error-subtle text-destructive [a&]:hover:bg-destructive-subtle",
-        "destructive-outline":
-          "border-outline-error bg-transparent text-destructive [a&]:hover:bg-background-error-subtle",
+          "border-transparent bg-destructive text-primary-foreground focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 [a&]:hover:bg-destructive/90",
+        "destructive-inverted": "border-transparent bg-destructive/10 text-destructive [a&]:hover:bg-destructive/10",
+        "destructive-outline": "border-destructive bg-transparent text-destructive [a&]:hover:bg-destructive/10",
 
-        // === DISABLED (Muted - semantic tokens) ===
-        disabled: "cursor-not-allowed border-transparent bg-background-disabled text-disabled",
-        "disabled-inverted": "cursor-not-allowed border-transparent bg-surface-subtle text-disabled",
-        "disabled-outline": "cursor-not-allowed border-border-strong bg-transparent text-disabled",
+        // DISABLED variants use the host theme’s semantic colors.
+        disabled: "cursor-not-allowed border-transparent bg-muted text-muted-foreground",
+        "disabled-inverted": "cursor-not-allowed border-transparent bg-muted text-muted-foreground",
+        "disabled-outline": "cursor-not-allowed border-border bg-transparent text-muted-foreground",
 
-        // === INFO (Blue - semantic tokens) ===
-        info: "border-transparent bg-surface-informative text-inverse [a&]:hover:bg-surface-informative-hover",
-        "info-inverted":
-          "border-transparent bg-background-informative-subtle text-info [a&]:hover:bg-background-informative-subtle-hover",
-        "info-outline":
-          "border-outline-informative bg-transparent text-info [a&]:hover:bg-background-informative-subtle",
-        // === NEUTRAL (Grey - semantic tokens) ===
-        neutral:
-          "border-transparent bg-background-inverse-subtle text-inverse [a&]:hover:bg-background-inverse-subtle-hover",
-        "neutral-inverted": "border-transparent bg-surface-subtle [a&]:hover:bg-background-subtle-hover",
-        "neutral-outline": "!border-outline-inverse border [a&]:hover:bg-background-subtle-hover",
+        // INFO variants use the host theme’s semantic colors.
+        info: "border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90",
+        "info-inverted": "border-transparent bg-primary/10 text-primary [a&]:hover:bg-primary/15",
+        "info-outline": "border-primary bg-transparent text-primary [a&]:hover:bg-primary/10",
+        // NEUTRAL variants use the host theme’s semantic colors.
+        neutral: "border-transparent bg-muted text-muted-foreground [a&]:hover:bg-foreground/15",
+        "neutral-inverted": "border-transparent bg-muted [a&]:hover:bg-muted",
+        "neutral-outline": "!border-primary-foreground border [a&]:hover:bg-muted",
 
-        // === OUTLINE (generic) ===
+        // OUTLINE variants use the host theme’s semantic colors.
         outline: "border-border text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
 
-        // === PRIMARY (Indigo) ===
-        primary: "border-transparent bg-primary text-inverse [a&]:hover:bg-primary/90",
+        // PRIMARY variants use the host theme’s semantic colors.
+        primary: "border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90",
         "primary-inverted": "border-transparent bg-primary/10 text-primary [a&]:hover:bg-primary/20",
         "primary-outline": "border-primary text-primary [a&]:hover:bg-primary/10",
 
-        // === SECONDARY (Dark Blue) ===
-        secondary: "border-transparent bg-secondary text-inverse [a&]:hover:bg-secondary/90",
-        "secondary-inverted": "border-transparent bg-secondary/10 text-secondary [a&]:hover:bg-secondary/20",
-        "secondary-outline": "border-secondary text-secondary [a&]:hover:bg-secondary/10",
+        // SECONDARY variants use the host theme’s semantic colors.
+        secondary: "border-transparent bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90",
+        "secondary-inverted": "border-transparent bg-secondary/10 text-secondary-foreground [a&]:hover:bg-secondary/20",
+        "secondary-outline": "border-secondary text-secondary-foreground [a&]:hover:bg-secondary/10",
 
-        // === SIMPLE (Light grey - semantic tokens) ===
-        simple: "text-secondary [a&]:hover:bg-background-subtle-hover",
-        "simple-inverted": "text-secondary [a&]:hover:bg-background-subtle-hover",
-        "simple-outline": "!border-outline-inverse border text-secondary [a&]:hover:bg-background-subtle-hover",
+        // SIMPLE variants use the host theme’s semantic colors.
+        simple: "text-secondary-foreground [a&]:hover:bg-muted",
+        "simple-inverted": "text-secondary-foreground [a&]:hover:bg-muted",
+        "simple-outline": "!border-primary-foreground border text-secondary-foreground [a&]:hover:bg-muted",
 
-        // === SUCCESS (Green - semantic tokens) ===
-        success: "border-transparent bg-surface-success text-inverse [a&]:hover:bg-surface-success-hover",
-        "success-inverted":
-          "border-transparent bg-background-success-subtle text-success [a&]:hover:bg-background-success-subtle-hover",
-        "success-outline": "border-outline-success bg-transparent text-success [a&]:hover:bg-background-success-subtle",
+        // SUCCESS variants use the host theme’s semantic colors.
+        success: "border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90",
+        "success-inverted": "border-transparent bg-primary/10 text-primary [a&]:hover:bg-primary/15",
+        "success-outline": "border-primary bg-transparent text-primary [a&]:hover:bg-primary/10",
 
-        // === WARNING (Yellow/Orange - semantic tokens) ===
-        warning: "border-transparent bg-surface-warning text-inverse [a&]:hover:bg-surface-warning-hover",
-        "warning-inverted": "border-transparent bg-background-warning-subtle text-warning [a&]:hover:bg-warning-subtle",
-        "warning-outline": "border-outline-warning bg-transparent text-warning [a&]:hover:bg-background-warning-subtle",
+        // WARNING variants use the host theme’s semantic colors.
+        warning: "border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90",
+        "warning-inverted": "border-transparent bg-primary/10 text-primary [a&]:hover:bg-primary/10",
+        "warning-outline": "border-primary bg-transparent text-primary [a&]:hover:bg-primary/10",
       },
     },
   }

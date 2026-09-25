@@ -1,3 +1,6 @@
+@import "tailwindcss" reference;
+@import "tw-animate-css";
+
 /* Blume owns the docs shell; map its palette onto shadcn's semantic contract
    so registry components keep their native appearance in every theme. */
 :root {
@@ -31,6 +34,19 @@
 }
 
 @theme inline {
+  /* Readiness tooltips deliberately keep a dark surface in both themes. */
+  --color-tooltip-detail: oklch(0.145 0 0);
+  --color-tooltip-detail-foreground: rgb(255 255 255);
+  /* Readiness status colors live here, not in UI class strings. */
+  --color-readiness-verified: oklch(69.6% 0.17 162.48);
+  --color-readiness-verified-hover: oklch(76.5% 0.177 163.223);
+  --color-readiness-missing: oklch(82.8% 0.189 84.429);
+  --color-readiness-missing-hover: oklch(87.9% 0.169 91.605);
+  --color-readiness-deferred: oklch(68.5% 0.169 237.323);
+  --color-readiness-deferred-hover: oklch(74.6% 0.16 232.661);
+  --color-readiness-unsupported: oklch(64.5% 0.246 16.439);
+  --color-readiness-unsupported-hover: oklch(71.2% 0.194 13.428);
+  --font-display: var(--blume-font-display, var(--font-sans));
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);

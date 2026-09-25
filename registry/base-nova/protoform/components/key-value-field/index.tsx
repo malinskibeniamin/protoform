@@ -226,7 +226,7 @@ export function KeyValueField({
     <div className="flex flex-col gap-2" data-slot="key-value-field" data-testid={testId} ref={containerRef}>
       {label || description ? (
         <div className="flex flex-col gap-0.5">
-          {label ? <Label className="font-medium">{label}</Label> : null}
+          {label ? <Label>{label}</Label> : null}
           {description ? <p className="text-muted-foreground text-sm">{description}</p> : null}
         </div>
       ) : null}

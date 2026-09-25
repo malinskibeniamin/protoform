@@ -115,6 +115,52 @@ export interface ComboboxProps
 
 const DEFAULT_START = <Search className="opacity-50" size={15} />;
 
+function ComboboxEmptyState({ loading, emptyState }: Pick<ComboboxProps, "loading" | "emptyState">) {
+  if (loading) {
+    return (
+      <div aria-busy="true" className="flex items-center gap-2 px-3 py-4 text-muted-foreground text-sm" role="status">
+        <Spinner className="size-4" />
+        <span>Loading…</span>
+      </div>
+    );
+  }
+  return <CommandEmpty>{emptyState ?? "No options found."}</CommandEmpty>;
+}
+
+function ComboboxOptionGroups({
+  options,
+  selectedValue,
+  onSelect,
+  renderOption,
+}: {
+  options: ComboboxOption[];
+  selectedValue: string;
+  onSelect: (option: ComboboxOption) => void;
+  renderOption: ComboboxProps["renderOption"];
+}) {
+  const groupedOptions = groupOptions(options);
+  return (
+    <>
+      {(groupedOptions ?? [{ heading: "", options }]).map((group) => (
+        <CommandGroup heading={group.heading || undefined} key={group.heading || "default"} testId={group.testId}>
+          {group.options.map((option) => (
+            <CommandItem
+              disabled={option.disabled ?? false}
+              key={option.value}
+              onSelect={() => onSelect(option)}
+              testId={option.testId}
+              value={option.label}
+            >
+              {renderOption ? renderOption(option) : option.label}
+              <Check className={cn("ml-auto", selectedValue === option.value ? "opacity-100" : "opacity-0")} />
+            </CommandItem>
+          ))}
+        </CommandGroup>
+      ))}
+    </>
+  );
+}
+
 export const Combobox = memo(
   ({
     options,
@@ -158,7 +204,6 @@ export const Combobox = memo(
       () => filterOptions(options, inputValue, controlledLabel),
       [options, inputValue, controlledLabel]
     );
-    const groupedOptions = useMemo(() => groupOptions(filteredOptions), [filteredOptions]);
     const canCreate =
       Boolean(creatable) && inputValue.trim().length > 0 && !options.some((option) => option.value === inputValue);
     const navigableValues = useMemo(
@@ -390,14 +435,6 @@ export const Combobox = memo(
       [handleArrowKey, handleEnterKey, handleEscapeKey, handleArrowRightKey]
     );
 
-    // ── Memoized props ────────────────────────────────────────────────
-
-    const popoverStyle = useMemo(
-      () => ({ width: inputRef.current?.clientWidth }),
-      // Recalculate when open changes (ref width may have changed)
-      []
-    );
-
     // ── Render ────────────────────────────────────────────────────────
 
     return (
@@ -410,7 +447,7 @@ export const Combobox = memo(
             aria-expanded={open}
             autoComplete="off"
             autoCorrect="off"
-            className="relative w-full shadow-none"
+            className="relative w-full"
             containerClassName={className}
             disabled={disabled}
             id={id}
@@ -431,7 +468,7 @@ export const Combobox = memo(
               {showClearButton ? (
                 <Button
                   aria-label="Clear selection"
-                  className="pointer-events-auto size-auto rounded-sm p-0 opacity-50 hover:bg-transparent hover:opacity-100"
+                  className="pointer-events-auto"
                   onClick={handleClear}
                   onMouseDown={preventDefault}
                   size="icon-xs"
@@ -447,11 +484,10 @@ export const Combobox = memo(
           </Input>
         </PopoverTrigger>
         <PopoverContent
-          className="p-0"
+          className="w-(--anchor-width) p-0"
           container={container}
           initialFocus={preventAutoFocusOnOpen ? false : undefined}
           onMouseDown={preventDefault}
-          style={popoverStyle}
         >
           <Command
             loop
@@ -463,40 +499,13 @@ export const Combobox = memo(
           >
             <ActiveDescendantBridge onIdChange={handleActiveDescendantChange} />
             <CommandList id={listId}>
-              {loading ? (
-                <div
-                  aria-busy="true"
-                  className="flex items-center gap-2 px-3 py-4 text-muted-foreground text-sm"
-                  role="status"
-                >
-                  <Spinner className="size-4" />
-                  <span>Loading…</span>
-                </div>
-              ) : (
-                <CommandEmpty>{emptyState ?? "No options found."}</CommandEmpty>
-              )}
-              {(groupedOptions ?? [{ heading: "", options: filteredOptions }]).map((group) => (
-                <CommandGroup
-                  heading={group.heading || undefined}
-                  key={group.heading || "default"}
-                  testId={group.testId}
-                >
-                  {group.options.map((option) => (
-                    <CommandItem
-                      disabled={option.disabled ?? false}
-                      key={option.value}
-                      onSelect={() => selectOption(option)}
-                      testId={option.testId}
-                      value={option.label}
-                    >
-                      {renderOption ? renderOption(option) : option.label}
-                      <Check
-                        className={cn("ml-auto", controlledValue === option.value ? "opacity-100" : "opacity-0")}
-                      />
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              ))}
+              <ComboboxEmptyState emptyState={emptyState} loading={loading} />
+              <ComboboxOptionGroups
+                onSelect={selectOption}
+                options={filteredOptions}
+                renderOption={renderOption}
+                selectedValue={controlledValue}
+              />
               {canCreate ? (
                 <CommandGroup>
                   <CommandItem forceMount onSelect={handleCreatableSubmit} value={`${CREATE_ITEM_PREFIX}${inputValue}`}>

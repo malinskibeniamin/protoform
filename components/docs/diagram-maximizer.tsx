@@ -178,9 +178,10 @@ export function DiagramMaximizer() {
 
       <Dialog onOpenChange={handleDialogOpenChange} open={activeDiagram !== null}>
         <DialogContent
-          className="translate-0 inset-0 h-[100dvh] max-h-none w-full max-w-none rounded-none border-0 sm:max-w-none"
+          className="translate-0 inset-0 h-[100dvh] max-h-none w-full max-w-none sm:max-w-none"
           data-diagram-dialog=""
           size="full"
+          variant="fullscreen"
         >
           <DialogHeader className="border-border border-b pr-14">
             <DialogTitle>

@@ -851,6 +851,12 @@
       "type": "registry:block",
       "title": "Protoform shadcn defaults",
       "description": "Optional default UI implementations for greenfield Protoform consumers.",
+      "cssVars": {
+        "theme": {
+          "color-tooltip-detail": "oklch(0.145 0 0)",
+          "color-tooltip-detail-foreground": "rgb(255 255 255)"
+        }
+      },
       "registryDependencies": ["@protoform/protoform-react"],
       "dependencies": [
         "@base-ui/react",

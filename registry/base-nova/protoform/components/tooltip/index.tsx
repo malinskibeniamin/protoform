@@ -96,6 +96,7 @@ function TooltipTrigger({ testId, ...props }: TooltipTriggerProps) {
 type TooltipContentProps = React.ComponentProps<typeof TooltipPrimitive.Popup> &
   SharedProps &
   Pick<PortalContentProps, "container" | "onOpenAutoFocus"> & {
+    variant?: "default" | "detail";
     transition?: Transition;
     arrow?: boolean;
     side?: Side;
@@ -107,6 +108,7 @@ type TooltipContentProps = React.ComponentProps<typeof TooltipPrimitive.Popup> &
 function TooltipContent(contentProps: TooltipContentProps) {
   const {
     className,
+    variant = "default",
     side = "top",
     align = "center",
     sideOffset = 4,
@@ -139,6 +141,7 @@ function TooltipContent(contentProps: TooltipContentProps) {
                 animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
                 className={cn(
                   "relative w-fit origin-(--transform-origin) text-balance rounded-md bg-primary px-3 py-1.5 text-primary-foreground text-sm shadow-md",
+                  variant === "detail" && "bg-tooltip-detail py-2 text-tooltip-detail-foreground shadow-xl",
                   className
                 )}
                 data-slot="tooltip-content"
@@ -152,7 +155,7 @@ function TooltipContent(contentProps: TooltipContentProps) {
 
                 {arrow ? (
                   <TooltipPrimitive.Arrow
-                    className="z-50 size-2.5 rotate-45 rounded-[2px] bg-primary fill-primary data-[side=bottom]:top-0 data-[side=left]:right-0 data-[side=top]:bottom-0 data-[side=right]:left-0 data-[side=left]:translate-x-1/2 data-[side=right]:-translate-x-1/2 data-[side=bottom]:-translate-y-1/2 data-[side=top]:translate-y-1/2"
+                    className="z-50 size-2.5 rotate-45 rounded-xs bg-primary fill-primary data-[side=bottom]:top-0 data-[side=left]:right-0 data-[side=top]:bottom-0 data-[side=right]:left-0 data-[side=left]:translate-x-1/2 data-[side=right]:-translate-x-1/2 data-[side=bottom]:-translate-y-1/2 data-[side=top]:translate-y-1/2"
                     data-slot="tooltip-content-arrow"
                   />
                 ) : null}

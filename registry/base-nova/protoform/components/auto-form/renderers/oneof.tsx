@@ -13,6 +13,37 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { AutoFormFieldRenderer } from ".";
 import { getRenderedLabel, isDeprecatedField, isFieldHidden, useFieldPresentation } from "./shared";
 
+function SelectedOneofField({
+  field,
+  path,
+  disabled,
+  depth,
+}: {
+  field: ParsedField | undefined;
+  path: string[];
+  disabled: boolean;
+  depth: number;
+}) {
+  if (field) {
+    if (field.type === "object" && (!field.schema || field.schema.length === 0)) {
+      return (
+        <div className="rounded-lg border border-dashed bg-muted/30 px-4 py-3">
+          <p className="text-muted-foreground text-sm">
+            {getLabel(field)} selected. No additional configuration needed.
+          </p>
+        </div>
+      );
+    }
+    return (
+      <FormDepthProvider depth={depth + 1}>
+        <AutoFormFieldRenderer field={field} inheritedDisabled={disabled} path={[...path, "value"]} />
+      </FormDepthProvider>
+    );
+  }
+
+  return null;
+}
+
 export function OneofFieldRenderer({
   field,
   path,
@@ -57,25 +88,6 @@ export function OneofFieldRenderer({
     selectedValueLabel = "Unavailable selection";
   } else if (!field.required) {
     selectedValueLabel = "Not set";
-  }
-
-  let selectedFieldContent: React.ReactNode = null;
-  if (selectedField) {
-    if (selectedField.type === "object" && (!selectedField.schema || selectedField.schema.length === 0)) {
-      selectedFieldContent = (
-        <div className="rounded-lg border border-dashed bg-muted/30 px-4 py-3">
-          <p className="text-muted-foreground text-sm">
-            {getLabel(selectedField)} selected. No additional configuration needed.
-          </p>
-        </div>
-      );
-    } else {
-      selectedFieldContent = (
-        <FormDepthProvider depth={depth + 1}>
-          <AutoFormFieldRenderer field={selectedField} inheritedDisabled={oneofDisabled} path={[...path, "value"]} />
-        </FormDepthProvider>
-      );
-    }
   }
 
   React.useEffect(() => {
@@ -154,7 +166,7 @@ export function OneofFieldRenderer({
             ))}
           </SelectContent>
         </Select>
-        {selectedFieldContent}
+        <SelectedOneofField depth={depth} disabled={oneofDisabled} field={selectedField} path={path} />
       </div>
     </FieldWrapperComponent>
   );

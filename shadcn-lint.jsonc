@@ -1,0 +1,100 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  // Explicit filename keeps React Doctor’s generated Oxlint config independent.
+  // Biome owns general linting. This runner only enforces design-system rules.
+  "categories": {
+    "correctness": "off"
+  },
+  "jsPlugins": ["@shadcn/lint"],
+  "rules": {
+    "shadcn/no-restyle": [
+      "error",
+      {
+        "allow": ["layout"],
+        // Composition slots own layout; text slots accept typography; form
+        // controls accept semantic error styling and code-entry typography.
+        "contracts": [
+          {
+            "pattern": "^(Text|Heading)$",
+            "allow": [
+              "layout",
+              "typography",
+              "text-muted-foreground",
+              "text-destructive"
+            ]
+          },
+          {
+            "pattern": "^(Field|FieldLabel|FieldContent|AlertDescription|DialogBody|DialogHeader)$",
+            "allow": ["layout", "spacing", "border-border", "border-b"]
+          },
+          {
+            "pattern": "^(Input|Textarea|SelectTrigger|Combobox)$",
+            "allow": [
+              "layout",
+              "border-destructive",
+              "[&_input]:border-destructive",
+              "font-mono",
+              "text-xs",
+              "leading-5"
+            ]
+          },
+          {
+            "pattern": "^TooltipContent$",
+            "allow": ["layout", "typography"]
+          },
+          {
+            "pattern": "^PopoverContent$",
+            "allow": ["layout", "p-0"]
+          },
+          {
+            "pattern": "^Spinner$",
+            "allow": ["layout", "motion-reduce:animate-none"]
+          }
+        ]
+      }
+    ],
+    // These standard SVG/animation utilities are not color names.
+    "shadcn/no-raw-colors": [
+      "error",
+      {
+        "allow": ["stroke-none", "fill-mode-forwards"]
+      }
+    ],
+    // SVG stroke drawing needs an explicit transition-property list; there is
+    // no Tailwind scale equivalent. Do not broaden this to arbitrary motion.
+    "shadcn/no-arbitrary-values": [
+      "error",
+      {
+        "allow": ["layout", "transition-[stroke-dashoffset,opacity]"]
+      }
+    ],
+    "shadcn/no-inline-styles": "error",
+    // Blume supplies the typography plugin; not-prose is its opt-out marker.
+    "shadcn/no-unknown-classes": [
+      "error",
+      {
+        "allow": ["not-prose"]
+      }
+    ],
+    "shadcn/require-static-classes": "error"
+  },
+  "ignorePatterns": [
+    "**/gen/**",
+    "**/*_pb.ts",
+    "**/*_form.ts",
+    "public/r/**",
+    "registry/base-nova/protoform/lib/protobuf-v1-bridge/**"
+  ],
+  // No definition-site exemptions: these components are authored or customized.
+  // Any future exemption requires verified unmodified upstream shadcn source
+  // and an exact file path, never a component-directory wildcard.
+  "settings": {
+    "shadcn": {
+      "ui": "@/components/ui",
+      "componentImports": [
+        "^@/components/ui/",
+        "^@/registry/base-nova/protoform/components/"
+      ]
+    }
+  }
+}

@@ -17,7 +17,7 @@ const rstestScripts = [
 ] as const;
 
 describe("simulated DOM test environment", () => {
-  test("uses Rstest 0.11.9 with happy-dom and no Vitest wiring", () => {
+  test("uses Rstest 0.11.12 with happy-dom and no Vitest wiring", () => {
     for (const config of domConfigs) {
       expect(readFileSync(new URL(config, repositoryDirectory), "utf8")).toContain('testEnvironment: "happy-dom"');
     }
@@ -27,11 +27,11 @@ describe("simulated DOM test environment", () => {
       scripts?: Record<string, string>;
     };
 
-    expect(manifest.devDependencies?.["@rstest/browser"]).toBe("0.11.9");
-    expect(manifest.devDependencies?.["@rstest/browser-react"]).toBe("0.11.9");
-    expect(manifest.devDependencies?.["@rstest/core"]).toBe("0.11.9");
+    expect(manifest.devDependencies?.["@rstest/browser"]).toBe("0.11.12");
+    expect(manifest.devDependencies?.["@rstest/browser-react"]).toBe("0.11.12");
+    expect(manifest.devDependencies?.["@rstest/core"]).toBe("0.11.12");
     expect(manifest.devDependencies?.["happy-dom"]).toBeDefined();
-    expect(manifest.devDependencies?.["undici"]).toBe("8.10.0");
+    expect(manifest.devDependencies?.["undici"]).toBe("8.10.2");
     expect(manifest.devDependencies?.["jsdom"]).toBeUndefined();
     expect(manifest.devDependencies?.["vitest"]).toBeUndefined();
     expect(Object.values(manifest.scripts ?? {}).join("\n")).not.toContain("vitest");

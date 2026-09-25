@@ -18,6 +18,20 @@ async function expectNoSeriousViolations(page: Page) {
 }
 
 for (const theme of ["light", "dark"] as const) {
+  test(`preserves readiness tooltip appearance in ${theme} theme`, async ({ page }) => {
+    await page.goto("/docs/production-readiness");
+    await page.locator("astro-island").first().scrollIntoViewIfNeeded();
+    await page.evaluate((nextTheme) => {
+      document.documentElement.dataset["theme"] = nextTheme;
+    }, theme);
+    await page.locator("astro-island button[aria-label]").first().hover();
+    const content = page.getByRole("tooltip").locator('[data-slot="tooltip-content"]');
+    await expect(content).toBeVisible();
+    // Pre-lint appearance: neutral-950 surface and white text in both themes.
+    await expect(content).toHaveCSS("background-color", "oklch(0.145 0 0)");
+    await expect(content).toHaveCSS("color", "rgb(255, 255, 255)");
+  });
+
   test(`keeps help tooltip text visible in ${theme} theme`, async ({ page }) => {
     await page.goto("/docs/server-error-form");
     await page.evaluate((nextTheme) => {
@@ -28,9 +42,22 @@ for (const theme of ["light", "dark"] as const) {
       name: "Help for Display Name",
     });
     await expect(helpButton).toBeVisible({ timeout: 30_000 });
+    const triggerShape = await helpButton.evaluate((element) => {
+      const style = getComputedStyle(element);
+      return {
+        radius: Number.parseFloat(style.borderRadius),
+        height: element.getBoundingClientRect().height,
+      };
+    });
+    expect(triggerShape.radius).toBeGreaterThanOrEqual(triggerShape.height / 2);
+    await expect(helpButton).toHaveCSS("color", theme === "light" ? "oklch(0.53 0 0)" : "oklch(0.68 0 0)");
+    // Keep the 24px hit target without squeezing the question-mark glyph to 12px.
+    await expect(helpButton).toHaveCSS("width", "24px");
+    await expect(helpButton.locator("svg")).toHaveCSS("width", "16px");
+    await expect(helpButton.locator("svg")).toHaveCSS("height", "16px");
     await helpButton.hover();
 
-    const content = page.getByTestId("autoform-field-display-name-help-content");
+    const content = page.getByRole("tooltip").locator('[data-slot="tooltip-content"]');
     await expect(content).toBeVisible();
     await expect(content).toContainText("Use the name teammates will recognize");
 
@@ -110,4 +137,16 @@ test("has no serious accessibility violations across representative form states"
   await expect(preview.getByText("React Hook Form", { exact: true })).toBeVisible({ timeout: 30_000 });
   await expect(preview).toHaveCSS("opacity", "1");
   await expectNoSeriousViolations(page);
+});
+
+test("keeps readiness status colors and progress widths visible", async ({ page }) => {
+  await page.goto("/docs/production-readiness");
+  const overall = page.getByRole("progressbar", { name: "Overall readiness", exact: true });
+  await expect(overall).toBeVisible();
+  const fill = overall.locator(":scope > div");
+  await expect(fill).not.toHaveCSS("width", "0px");
+  await expect(fill).not.toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+  const verified = page.locator('[data-status="verified"]').first();
+  await expect(verified).toBeVisible();
+  await expect(verified).not.toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
 });

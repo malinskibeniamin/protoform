@@ -54,7 +54,7 @@ describe("static docs and registry hosting", () => {
     ];
 
     expect(manifest.packageManager).toBe(`bun@${bunVersion}`);
-    expect(manifest.devDependencies?.["@types/bun"]).toBe(`^${bunVersion}`);
+    expect(manifest.devDependencies?.["@types/bun"]).toBe("^1.4.2");
     expect(contributingGuide).toContain(`Bun ${bunVersion}`);
 
     for (const path of pinnedFiles) {
