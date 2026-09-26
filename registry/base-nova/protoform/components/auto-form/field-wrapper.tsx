@@ -285,14 +285,59 @@ function ObjectSectionHeading({
   );
 }
 
+function CollapsibleObjectSection({
+  children,
+  depth,
+  field,
+  hasError,
+  headingLevel,
+  label,
+  showDivider,
+  testId,
+}: {
+  children: React.ReactNode;
+  depth: number;
+  field: ObjectWrapperProps["field"];
+  hasError: boolean | undefined;
+  headingLevel: ReturnType<typeof headingLevelForDepth>;
+  label: ObjectWrapperProps["label"];
+  showDivider: boolean;
+  testId: string | undefined;
+}) {
+  const [isOpen, setIsOpen] = React.useState(false);
+
+  // Auto-expand when section has validation errors
+  if (hasError && !isOpen) {
+    setIsOpen(true);
+  }
+
+  return (
+    <Collapsible onOpenChange={setIsOpen} open={isOpen}>
+      <section className={cn(formSpacing.field, showDivider && formSpacing.sectionDivider)} data-testid={testId}>
+        <CollapsibleTrigger asChild>
+          <Button className="h-auto w-full justify-between text-left" type="button" variant="ghost">
+            <div className={formSpacing.sectionHeader}>
+              <ObjectSectionHeading field={field} headingLevel={headingLevel} label={label} />
+            </div>
+            <ChevronDown className="size-4 shrink-0 text-muted-foreground transition-transform duration-200 [[data-state=open]_&]:rotate-180" />
+          </Button>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <FormDepthProvider depth={depth + 1}>
+            <div className={formSpacing.field}>{children}</div>
+          </FormDepthProvider>
+        </CollapsibleContent>
+      </section>
+    </Collapsible>
+  );
+}
+
 export const ObjectWrapper: React.FC<
   ObjectWrapperProps & {
     testId?: string | undefined;
     hasError?: boolean | undefined;
   }
 > = ({ label, children, field, testId, hasError }) => {
-  "use no memo";
-
   const depth = useFormDepth();
   const headingLevel = headingLevelForDepth(depth);
   const hasVisibleLabel = !(typeof label === "string" && label.trim().length === 0);
@@ -307,34 +352,19 @@ export const ObjectWrapper: React.FC<
   const headerClassName = showDivider
     ? `${formSpacing.sectionHeader} ${formSpacing.sectionDivider} ${isSplit ? "sm:border-b-0 sm:pb-0" : ""}`
     : formSpacing.sectionHeader;
-  const [isOpen, setIsOpen] = React.useState(false);
-
-  // Auto-expand when section has validation errors
-  React.useEffect(() => {
-    if (hasError && !isOpen) {
-      setIsOpen(true);
-    }
-  }, [hasError, isOpen]);
-
   if (isCollapsible && hasVisibleLabel) {
     return (
-      <Collapsible onOpenChange={setIsOpen} open={isOpen}>
-        <section className={cn(formSpacing.field, showDivider && formSpacing.sectionDivider)} data-testid={testId}>
-          <CollapsibleTrigger asChild>
-            <Button className="h-auto w-full justify-between text-left" type="button" variant="ghost">
-              <div className={formSpacing.sectionHeader}>
-                <ObjectSectionHeading field={field} headingLevel={headingLevel} label={label} />
-              </div>
-              <ChevronDown className="size-4 shrink-0 text-muted-foreground transition-transform duration-200 [[data-state=open]_&]:rotate-180" />
-            </Button>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <FormDepthProvider depth={depth + 1}>
-              <div className={formSpacing.field}>{children}</div>
-            </FormDepthProvider>
-          </CollapsibleContent>
-        </section>
-      </Collapsible>
+      <CollapsibleObjectSection
+        depth={depth}
+        field={field}
+        hasError={hasError}
+        headingLevel={headingLevel}
+        label={label}
+        showDivider={showDivider}
+        testId={testId}
+      >
+        {children}
+      </CollapsibleObjectSection>
     );
   }
 

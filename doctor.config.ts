@@ -150,6 +150,7 @@ export default defineConfig({
           "examples/basic/basic-form.tsx",
           "examples/presets/preset-lab.tsx",
           "registry/base-nova/protoform/components/multi-select/index.tsx",
+          "registry/base-nova/protoform/components/auto-form/runtime-provider.tsx",
           "registry/base-nova/protoform/demo/bookstore/bookstore-demo.tsx",
         ],
         rules: ["react-doctor/hook-use-state"],

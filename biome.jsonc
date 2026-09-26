@@ -760,8 +760,6 @@
       // dynamic provider hook, imperative ref, controlled-editor, and layout-measurement boundaries.
       "includes": [
         "registry/base-nova/protoform/components/auto-form/data-providers.ts",
-        "registry/base-nova/protoform/components/auto-form/field-wrapper.tsx",
-        "registry/base-nova/protoform/components/auto-form/fields/shared.tsx",
         "registry/base-nova/protoform/components/json-field/index.tsx",
         "registry/base-nova/protoform/components/popover/index.tsx",
         "registry/base-nova/protoform/components/toggle-group/index.tsx"
