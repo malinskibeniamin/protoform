@@ -90,7 +90,7 @@
     "@tanstack/react-form-v2": "npm:@tanstack/react-form@2.0.0-alpha.2",
     "@tanstack/react-query": "^5.102.8",
     "@tanstack/react-router": "^1.170.34",
-    "blume": "1.7.1",
+    "blume": "2.0.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
@@ -148,8 +148,5 @@
     "ultracite": "7.12.0",
     "undici": "8.10.2"
   },
-  "packageManager": "bun@1.4.0",
-  "patchedDependencies": {
-    "blume@1.7.1": "patches/blume@1.7.1.patch"
-  }
+  "packageManager": "bun@1.4.0"
 }

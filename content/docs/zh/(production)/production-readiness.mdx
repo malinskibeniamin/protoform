@@ -6,7 +6,7 @@ description: "查看由完整证据支持的能力概况及其责任边界。了
 
 能力证据概况 v3 将 Protoform 的支持声明转化为版本化、机器可读的能力清单。它涵盖与表单相关的 Protobuf 功能、当前所有 Protovalidate 规则系列、CEL 行为、与表单相关的 Google AIP 指南以及运行时质量。
 
-该目录以当前的 [Protobuf 语言指南](https://protobuf.dev/programming-guides/)、[Protovalidate 标准规则](https://buf.build/docs/reference/protovalidate/rules/)、[CEL 语言概述](https://cel.dev/overview/cel-overview)和[通用 AIP 目录](https://google.aip.dev/general)为依据。该概况将这些宽泛规范收窄到 TypeScript 表单库可以负责的行为，并明确展示不在范围内的责任。
+该目录以当前的 [Protobuf 语言指南](https://protobuf.dev/programming-guides/)、[Protovalidate 标准规则](https://buf.build/docs/reference/protovalidate/rules/)、[CEL 语言概述](https://cel.dev/overview/cel-overview?hl=zh-cn)和[通用 AIP 目录](https://google.aip.dev/general)为依据。该概况将这些宽泛规范收窄到 TypeScript 表单库可以负责的行为，并明确展示不在范围内的责任。
 
 当前 Profile v3 已完整：175 项适用检查中的 175 项都有证据。另有 16 项排除检查保持可见，但不影响百分比：13 项外部检查、1 项已验证可选检查、1 项不在目标范围内的检查和 1 项已被取代的检查。概况完整不代表生产就绪认证，也不能证明当前检出版本已通过发布验证。维护中的 Protobuf-ES v1 桥接已验证为可选迁移支持；规范运行时目标是 Protobuf-ES v2。
 

@@ -136,12 +136,12 @@ test("serves consolidated catalogs through static Markdown routes", async ({ req
 
 test("serves translated hubs and only offers available page languages", async ({ page }) => {
   await page.goto("/docs/reference");
-  await expect(page.locator('[aria-label="Language"]')).toHaveCount(0);
+  await expect(page.locator('[aria-label^="Language:"]')).toHaveCount(0);
 
   await page.goto("/docs/zh/protobuf-examples#protobuf-oneof");
   await expect(page.locator("html")).toHaveAttribute("lang", "zh");
   await expect(page.getByRole("heading", { name: "Protobuf 示例" })).toBeVisible();
-  await expect(page.locator('[aria-label="语言"]')).toBeVisible();
+  await expect(page.locator('[aria-label="语言: 简体中文"]')).toBeVisible();
   await expect(page.getByRole("heading", { name: "Oneof branch selection" })).toBeVisible({ timeout: 30_000 });
 });
 
