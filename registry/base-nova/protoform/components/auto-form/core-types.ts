@@ -43,6 +43,35 @@ export interface ArrayElementWrapperProps {
   onRemove: () => void;
 }
 
+export interface OneofVariant {
+  disabled: boolean;
+  field: ParsedField;
+  key: string;
+  label: string;
+}
+
+/**
+ * Presents a oneof field. AutoForm resolves which variants are available,
+ * applies the selection, and renders variant fields through `renderVariant`.
+ */
+export interface OneofWrapperProps {
+  disabled: boolean;
+  error?: string | undefined;
+  field: ParsedField;
+  id: string;
+  label: string;
+  /** Selects a variant by key, or clears the oneof when `undefined`. */
+  onSelect: (key: string | undefined) => void;
+  /** Renders a variant's fields at the oneof value path. */
+  renderVariant: (variant: ParsedField) => ReactNode;
+  /** The selected variant when it is available. */
+  selected?: ParsedField | undefined;
+  /** The raw selected case, which may name a variant that is no longer available. */
+  selectedKey?: string | undefined;
+  testId: string;
+  variants: OneofVariant[];
+}
+
 export interface AutoFormUIComponents {
   ArrayElementWrapper: React.ComponentType<ArrayElementWrapperProps>;
   ArrayWrapper: React.ComponentType<ArrayWrapperProps>;
@@ -50,6 +79,7 @@ export interface AutoFormUIComponents {
   FieldWrapper: React.ComponentType<FieldWrapperProps>;
   Form: React.ComponentType<React.ComponentProps<"form">>;
   ObjectWrapper: React.ComponentType<ObjectWrapperProps>;
+  OneofWrapper: React.ComponentType<OneofWrapperProps>;
   SubmitButton: React.ComponentType<{
     children: ReactNode;
     disabled?: boolean | undefined;

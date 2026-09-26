@@ -34,6 +34,7 @@ import {
   resolveProtoSourceMessage,
 } from "./proto";
 import { AutoFormFields } from "./renderers";
+import { OneofWrapper } from "./renderers/oneof";
 import { AutoFormRuntimeProvider } from "./runtime-provider";
 import {
   mergeFieldOverrides,
@@ -73,6 +74,7 @@ const ShadcnUIComponents = {
   FieldWrapper,
   Form,
   ObjectWrapper,
+  OneofWrapper,
   SubmitButton,
 };
 
