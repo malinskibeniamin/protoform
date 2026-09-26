@@ -7,6 +7,7 @@ import { demoCatalog } from "../examples/catalog/demo-catalog.js";
 
 const expectedItems = [
   "protoform-license",
+  "protoform-quickjs",
   "bookstore",
   "protoform-foundation",
   "hook-runtime",
