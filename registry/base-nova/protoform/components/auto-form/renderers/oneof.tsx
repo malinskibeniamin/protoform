@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useAutoFormRenderContext, useAutoFormRuntimeContext } from "../context";
-import type { ParsedField } from "../core-types";
+import type { OneofWrapperProps, ParsedField } from "../core-types";
 import { useAutoFormEngine } from "../engine";
 import { getLabel, getPathInObject } from "../field-utils";
 import { formSpacing } from "../form-spacing";
@@ -54,7 +54,7 @@ export function OneofFieldRenderer({
   inheritedDisabled?: boolean;
 }) {
   const { uiComponents } = useAutoFormRenderContext();
-  const { deprecatedFields, evaluateRules } = useAutoFormRuntimeContext();
+  const { deprecatedFields, evaluateRules, testIdPrefix } = useAutoFormRuntimeContext();
   const form = useAutoFormEngine();
   const fullPath = path.join(".");
   const oneofValue = (getPathInObject(form.values, path) as { case?: string; value?: unknown } | undefined) ?? {
@@ -64,9 +64,7 @@ export function OneofFieldRenderer({
   const error = getFieldErrorMessage(form.errors, path);
   const label = getRenderedLabel(field);
   const { isDisabled, isVisible, renderField } = useFieldPresentation(field, path, inheritedDisabled);
-  const FieldWrapperComponent = field.fieldConfig?.fieldWrapper ?? uiComponents.FieldWrapper;
-  const { testIdPrefix } = useAutoFormRuntimeContext();
-  const controlTestId = getAutoFormFieldTestId(testIdPrefix, fullPath, "control");
+  const OneofWrapperComponent = uiComponents.OneofWrapper;
   const depth = useFormDepth();
 
   const ruleVisibleFields = (field.schema ?? []).filter((candidate) => {
@@ -81,14 +79,6 @@ export function OneofFieldRenderer({
   const selectedDeprecatedDisabled =
     deprecatedFields === "disable" && selectedSchemaField !== undefined && isDeprecatedField(selectedSchemaField);
   const oneofDisabled = isDisabled || selectedDeprecatedDisabled;
-  let selectedValueLabel: string | undefined;
-  if (selectedField) {
-    selectedValueLabel = getLabel(selectedField);
-  } else if (oneofValue.case) {
-    selectedValueLabel = "Unavailable selection";
-  } else if (!field.required) {
-    selectedValueLabel = "Not set";
-  }
 
   React.useEffect(() => {
     if (!oneofValue.case) {
@@ -109,64 +99,112 @@ export function OneofFieldRenderer({
     return null;
   }
 
+  function selectVariant(key: string | undefined) {
+    if (oneofDisabled) {
+      return;
+    }
+    if (key === undefined) {
+      form.setValue(fullPath, { case: undefined, value: undefined }, { shouldDirty: true, shouldValidate: true });
+      return;
+    }
+    const nextField = availableFields.find((candidate) => candidate.key === key);
+    if (!nextField) {
+      return;
+    }
+    form.clearErrors([`${fullPath}.value`]);
+    form.setValue(
+      fullPath,
+      {
+        case: key,
+        value: oneofValue.case === key ? oneofValue.value : createEmptyFieldValue(nextField),
+      },
+      { shouldDirty: true, shouldTouch: true, shouldValidate: true }
+    );
+  }
+
   return (
-    <FieldWrapperComponent error={error} field={renderField} id={fullPath} label={label}>
+    <OneofWrapperComponent
+      disabled={oneofDisabled}
+      error={error}
+      field={renderField}
+      id={fullPath}
+      label={label}
+      onSelect={selectVariant}
+      renderVariant={(variant) => (
+        <SelectedOneofField depth={depth} disabled={oneofDisabled} field={variant} path={path} />
+      )}
+      selected={selectedField}
+      selectedKey={oneofValue.case}
+      testId={getAutoFormFieldTestId(testIdPrefix, fullPath, "control")}
+      variants={availableFields.map((candidate) => ({
+        disabled: deprecatedFields === "disable" && isDeprecatedField(candidate),
+        field: candidate,
+        key: candidate.key,
+        label: getLabel(candidate),
+      }))}
+    />
+  );
+}
+
+/** Default oneof presentation: a variant select above the selected variant's fields. */
+export function OneofWrapper({
+  disabled,
+  error,
+  field,
+  id,
+  label,
+  onSelect,
+  renderVariant,
+  selected,
+  selectedKey,
+  testId,
+  variants,
+}: OneofWrapperProps) {
+  const { uiComponents } = useAutoFormRenderContext();
+  const { testIdPrefix } = useAutoFormRuntimeContext();
+  const FieldWrapperComponent = field.fieldConfig?.fieldWrapper ?? uiComponents.FieldWrapper;
+  let selectedValueLabel: string | undefined;
+  if (selected) {
+    selectedValueLabel = getLabel(selected);
+  } else if (selectedKey) {
+    selectedValueLabel = "Unavailable selection";
+  } else if (!field.required) {
+    selectedValueLabel = "Not set";
+  }
+
+  return (
+    <FieldWrapperComponent error={error} field={field} id={id} label={label}>
       <div className={formSpacing.oneofStack}>
         <Select
           items={[
             ...(field.required ? [] : [{ label: "Not set", value: null }]),
-            ...availableFields.map((candidate) => ({
-              label: getLabel(candidate),
-              value: candidate.key,
-            })),
+            ...variants.map((variant) => ({ label: variant.label, value: variant.key })),
           ]}
-          onValueChange={(value) => {
-            if (oneofDisabled) {
-              return;
-            }
-            if (value === null) {
-              form.setValue(
-                fullPath,
-                { case: undefined, value: undefined },
-                { shouldDirty: true, shouldValidate: true }
-              );
-              return;
-            }
-            const nextField = availableFields.find((candidate) => candidate.key === value);
-            form.clearErrors([`${fullPath}.value`]);
-            form.setValue(
-              fullPath,
-              {
-                case: value,
-                value: oneofValue.case === value ? oneofValue.value : createEmptyFieldValue(nextField),
-              },
-              { shouldDirty: true, shouldTouch: true, shouldValidate: true }
-            );
-          }}
-          value={oneofValue.case ?? null}
+          onValueChange={(value) => onSelect(value ?? undefined)}
+          value={selectedKey ?? null}
         >
-          <SelectTrigger aria-label={label} disabled={oneofDisabled} id={fullPath} testId={controlTestId}>
+          <SelectTrigger aria-label={label} disabled={disabled} id={id} testId={testId}>
             <SelectValue placeholder="Choose a field">{selectedValueLabel}</SelectValue>
           </SelectTrigger>
           <SelectContent>
             {field.required ? null : (
-              <SelectItem testId={getAutoFormFieldTestId(testIdPrefix, fullPath, "option-not-set")} value={null}>
+              <SelectItem testId={getAutoFormFieldTestId(testIdPrefix, id, "option-not-set")} value={null}>
                 Not set
               </SelectItem>
             )}
-            {availableFields.map((candidate) => (
+            {variants.map((variant) => (
               <SelectItem
-                disabled={deprecatedFields === "disable" && isDeprecatedField(candidate)}
-                key={candidate.key}
-                testId={getAutoFormFieldTestId(testIdPrefix, fullPath, `option-${candidate.key}`)}
-                value={candidate.key}
+                disabled={variant.disabled}
+                key={variant.key}
+                testId={getAutoFormFieldTestId(testIdPrefix, id, `option-${variant.key}`)}
+                value={variant.key}
               >
-                {getLabel(candidate)}
+                {variant.label}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
-        <SelectedOneofField depth={depth} disabled={oneofDisabled} field={selectedField} path={path} />
+        {selected ? renderVariant(selected) : null}
       </div>
     </FieldWrapperComponent>
   );

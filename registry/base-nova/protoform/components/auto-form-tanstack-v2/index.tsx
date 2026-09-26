@@ -50,6 +50,8 @@ export { useAutoForm } from "../auto-form/context";
 export type {
   AutoFormFieldComponents,
   AutoFormFieldProps,
+  OneofVariant,
+  OneofWrapperProps,
 } from "../auto-form/core-types";
 export type {
   DataProvider,
