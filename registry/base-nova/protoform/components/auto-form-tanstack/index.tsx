@@ -46,9 +46,11 @@ export { useAutoForm } from "../auto-form/context";
 export type { AutoFormFieldComponents, AutoFormFieldProps } from "../auto-form/core-types";
 export type {
   DataProvider,
+  DataProviderComponent,
   DataProviderDefinition,
   DataProviderDependencyValues,
   DataProviderOption,
+  DataProviderProps,
   DataProviderRegistration,
   DataProviderRegistry,
   DataProviderRequest,

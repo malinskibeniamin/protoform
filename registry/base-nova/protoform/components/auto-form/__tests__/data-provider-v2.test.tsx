@@ -1,10 +1,32 @@
 import { describe, expect, rs } from "@rstest/core";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import React from "react";
 
-import type { DataProviderRequest } from "../data-providers";
+import type { DataProviderProps, DataProviderRequest } from "../data-providers";
 import { AutoForm } from "../index";
 import { createMockProvider } from "./test-utils";
+
+const componentProviderRequests: DataProviderRequest[] = [];
+
+function RegionsProvider({ children, request }: DataProviderProps) {
+  componentProviderRequests.push(request);
+  return children({ options: [{ label: "Europe", value: "eu" }] });
+}
+
+function useStatefulRegions() {
+  React.useId();
+  return { options: [{ label: "Europe", value: "eu" }] };
+}
+
+function useStaticRegions() {
+  return { options: [{ label: "Asia", value: "asia" }] };
+}
+
+function useMethods() {
+  React.useId();
+  return { options: [{ label: "GET", value: "get" }] };
+}
 
 describe("AutoForm data providers v2", () => {
   test("supplies search, cursor, dependencies, selected values, cancellation, and stale-selection policy", async () => {
@@ -188,5 +210,54 @@ describe("AutoForm data providers v2", () => {
     await user.paste("project-b");
     await waitFor(() => expect(requests.at(-1)?.dependencyValues).toEqual({ project: "project-b" }));
     expect(initialSignal?.aborted).toBe(true);
+  });
+
+  test("renders options from a component provider", async () => {
+    const user = userEvent.setup();
+    const schema = createMockProvider(
+      [{ fieldConfig: { customData: { dataProvider: "regions" } }, key: "region", required: true, type: "string" }],
+      {}
+    );
+
+    render(<AutoForm dataProviders={{ regions: { component: RegionsProvider } }} schema={schema} />);
+
+    expect(componentProviderRequests.at(-1)).toMatchObject({ fieldPath: "region", query: "" });
+    await user.click(screen.getByRole("combobox", { name: /Region/u }));
+    expect(screen.getByText("Europe")).toBeVisible();
+  });
+
+  test("replaces a select provider with one that calls different hooks", async () => {
+    const user = userEvent.setup();
+    const schema = createMockProvider(
+      [{ fieldConfig: { customData: { dataProvider: "regions" } }, key: "region", required: true, type: "string" }],
+      {}
+    );
+    const view = render(<AutoForm dataProviders={{ regions: useStatefulRegions }} schema={schema} />);
+    view.rerender(<AutoForm dataProviders={{ regions: useStaticRegions }} schema={schema} />);
+
+    await user.click(screen.getByRole("combobox", { name: /Region/u }));
+    expect(screen.getByText("Asia")).toBeVisible();
+  });
+
+  test("renders a multi-select provider registered after the first render", async () => {
+    const user = userEvent.setup();
+    const schema = createMockProvider(
+      [
+        {
+          key: "methods",
+          required: false,
+          schema: [
+            { fieldConfig: { customData: { dataProvider: "methods" } }, key: "value", required: true, type: "string" },
+          ],
+          type: "array",
+        },
+      ],
+      { methods: [] }
+    );
+    const view = render(<AutoForm dataProviders={{}} schema={schema} />);
+    view.rerender(<AutoForm dataProviders={{ methods: useMethods }} schema={schema} />);
+
+    await user.click(screen.getByRole("button", { name: "Multi-select trigger" }));
+    expect(screen.getByText("GET")).toBeVisible();
   });
 });

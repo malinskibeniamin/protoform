@@ -53,9 +53,11 @@ export type {
 } from "../auto-form/core-types";
 export type {
   DataProvider,
+  DataProviderComponent,
   DataProviderDefinition,
   DataProviderDependencyValues,
   DataProviderOption,
+  DataProviderProps,
   DataProviderRegistration,
   DataProviderRegistry,
   DataProviderRequest,

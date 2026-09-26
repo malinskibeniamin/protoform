@@ -759,9 +759,8 @@
       // components are verified by the fail-fast compiler itself, which skips their known
       // dynamic provider hook, imperative ref, controlled-editor, and layout-measurement boundaries.
       "includes": [
+        "registry/base-nova/protoform/components/auto-form/data-providers.ts",
         "registry/base-nova/protoform/components/auto-form/field-wrapper.tsx",
-        "registry/base-nova/protoform/components/auto-form/fields/multiselect.tsx",
-        "registry/base-nova/protoform/components/auto-form/fields/select.tsx",
         "registry/base-nova/protoform/components/auto-form/fields/shared.tsx",
         "registry/base-nova/protoform/components/json-field/index.tsx",
         "registry/base-nova/protoform/components/popover/index.tsx",
@@ -895,7 +894,9 @@
     {
       // Renderer proxies are created once at module initialization, not during render;
       // each returned component has stable identity and safely owns its context hook.
+      // Hook data-provider adapters are cached per hook, so each keeps one identity.
       "includes": [
+        "registry/base-nova/protoform/components/auto-form/data-providers.ts",
         "registry/base-nova/protoform/components/auto-form/ui-components.tsx"
       ],
       "linter": {
