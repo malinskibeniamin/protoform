@@ -153,13 +153,19 @@ function DataProviderMultiSelectResult({
   testIds: ReturnType<typeof useFieldTestIds>;
 }) {
   const { formatMessage } = useAutoForm();
-  const { options: providerOptions, isLoading } = result;
-  const staleSelections = isLoading ? [] : getStaleSelections(providerOptions, currentValue);
+  const { options: providerOptions, isLoading, error: providerError } = result;
+  // A failed load says nothing about which selections still exist, so keep them as they are.
+  const staleSelections = isLoading || providerError ? [] : getStaleSelections(providerOptions, currentValue);
   const staleSelectionSet = new Set(staleSelections);
-  const renderedProviderOptions: DataProviderOption[] =
-    provider?.staleSelection === "clear"
-      ? providerOptions
-      : [...staleSelections.map((value) => ({ label: value, value })), ...providerOptions];
+  let renderedProviderOptions: DataProviderOption[] = [
+    ...staleSelections.map((value) => ({ label: value, value })),
+    ...providerOptions,
+  ];
+  if (providerError) {
+    renderedProviderOptions = currentValue.map((value) => ({ label: value, value }));
+  } else if (provider?.staleSelection === "clear") {
+    renderedProviderOptions = providerOptions;
+  }
 
   const applyUnavailableSelectionClear = React.useEffectEvent(() => {
     inputProps["onValueChange"](currentValue.filter((value) => !staleSelectionSet.has(value)));
@@ -201,7 +207,7 @@ function DataProviderMultiSelectResult({
   return (
     <div className="space-y-2">
       <SimpleMultiSelect
-        disabled={Boolean(inputProps["disabled"] || isLoading)}
+        disabled={Boolean(inputProps["disabled"] || isLoading || providerError)}
         id={id}
         onValueChange={(values) => inputProps["onValueChange"](values)}
         options={options}
@@ -218,6 +224,11 @@ function DataProviderMultiSelectResult({
         value={currentValue}
         width="full"
       />
+      {providerError ? (
+        <p className="text-destructive text-sm" role="alert">
+          {formatProtoformMessage(formatMessage, "auto_form.select.load_error", {}, "Failed to load options")}
+        </p>
+      ) : null}
       {provider?.staleSelection === "error" && staleSelections.length > 0 ? (
         <p className="text-destructive text-sm" role="alert">
           {formatProtoformMessage(

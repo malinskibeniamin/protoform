@@ -20,6 +20,7 @@ source snapshots.
 ### Fixed
 
 - Replacing a data provider, or registering one after the first render, no longer breaks React hook order.
+- A failing multi-select provider no longer clears or flags saved selections; it disables the control and reports the failure.
 
 ### Compatibility
 
