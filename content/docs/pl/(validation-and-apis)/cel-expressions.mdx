@@ -190,6 +190,6 @@ Pełny kontrakt kitchen-sink dodaje pokrycie regionów, zasady publicznych punkt
 - Nie symuluj rekurencji. CEL celowo nie jest zupełny w sensie Turinga. Do przechodzenia grafów o dowolnej głębokości użyj ograniczonego algorytmu backendowego.
 - Traktuj CEL interfejsu użytkownika, taki jak `visible_when`, wyłącznie jako warstwę prezentacji. CEL komunikatów Protovalidate stanowi kontrakt; ukrywanie elementów interfejsu użytkownika nigdy nie może być jedynym sposobem egzekwowania reguły bezpieczeństwa lub integralności danych.
 
-CEL jest deterministyczny, pozbawiony mutacji i zaprojektowany do bezpiecznego obliczania zasad tworzonych przez użytkowników, zgodnie z definicją w [specyfikacji języka CEL](https://github.com/google/cel-spec). Protovalidate dodaje wymagania dotyczące wyniku reguły i adnotacji, egzekwowane przez oficjalne [reguły Buf lint](https://buf.build/docs/lint/rules/).
+CEL jest deterministyczny, pozbawiony mutacji i zaprojektowany do bezpiecznego obliczania zasad tworzonych przez użytkowników, zgodnie z definicją w [specyfikacji języka CEL](https://github.com/cel-expr/cel-spec). Protovalidate dodaje wymagania dotyczące wyniku reguły i adnotacji, egzekwowane przez oficjalne [reguły Buf lint](https://buf.build/docs/lint/rules/).
 
 Zobacz [Gotowość produkcyjną](/docs/production-readiness), aby zapoznać się ze zweryfikowanym zakresem obsługi CEL oraz pozostałymi testami pól, komunikatów, zagnieżdżonych ścieżek, wielu naruszeń i trybów niepowodzenia.
