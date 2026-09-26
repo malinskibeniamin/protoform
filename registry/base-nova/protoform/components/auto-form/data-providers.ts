@@ -2,8 +2,8 @@
  * Data-provider registry for AutoForm dropdowns.
  *
  * AutoForm is RPC-agnostic: the registry only knows about option requests and results.
- * Each provider is a React hook that receives search, pagination, dependency,
- * selection, and cancellation context.
+ * Each provider is a React component (or a hook) that receives search, pagination,
+ * dependency, selection, and cancellation context.
  * Whether the options are a static array or backed by an RPC is a concern
  * of the hosting app's wiring layer, not AutoForm.
  *
@@ -60,21 +60,40 @@ export interface DataProviderRequest {
 export type DataProviderStaleSelectionPolicy = "clear" | "error" | "preserve";
 
 /**
- * A data provider is a React hook. Implementations may call `useQuery`,
- * return a memoised constant array, or anything in between — AutoForm
- * never inspects the internals.
+ * A hook data provider. Implementations may call `useQuery`, return a
+ * memoised constant array, or anything in between — AutoForm never
+ * inspects the internals.
+ *
+ * AutoForm renders each hook inside its own component keyed by function
+ * identity, so pass a stable function: an inline arrow remounts the
+ * provider on every render.
  */
 export type DataProvider = (request: DataProviderRequest) => DataProviderResult;
 
-export interface DataProviderDefinition {
+export interface DataProviderProps {
+  children: (result: DataProviderResult) => React.ReactNode;
+  request: DataProviderRequest;
+}
+
+/**
+ * A component data provider. It may call any hooks and renders `children`
+ * with the current result. Swapping the component remounts the provider,
+ * so implementations never share hook state.
+ */
+export type DataProviderComponent = React.ComponentType<DataProviderProps>;
+
+interface DataProviderOptions {
   /** Form paths whose current values are included in each provider request. */
   dependencies?: readonly string[];
   /** Defaults to `preserve`. */
   staleSelection?: DataProviderStaleSelectionPolicy;
-  useProvider: DataProvider;
 }
 
-export interface ResolvedDataProvider extends DataProviderDefinition {
+export type DataProviderDefinition = DataProviderOptions &
+  ({ component: DataProviderComponent; useProvider?: never } | { component?: never; useProvider: DataProvider });
+
+export interface ResolvedDataProvider {
+  component: DataProviderComponent;
   dependencies: readonly string[];
   staleSelection: DataProviderStaleSelectionPolicy;
 }
@@ -99,16 +118,33 @@ export function resolveDataProvider(
   }
   if (typeof registration === "function") {
     return {
+      component: getHookProviderComponent(registration),
       dependencies: [],
       staleSelection: "preserve",
-      useProvider: registration,
     };
   }
   return {
+    component: registration.component ?? getHookProviderComponent(registration.useProvider),
     dependencies: registration.dependencies ?? [],
     staleSelection: registration.staleSelection ?? "preserve",
-    useProvider: registration.useProvider,
   };
+}
+
+const hookProviderComponents = new WeakMap<DataProvider, DataProviderComponent>();
+
+function getHookProviderComponent(useProvider: DataProvider): DataProviderComponent {
+  const cached = hookProviderComponents.get(useProvider);
+  if (cached) {
+    return cached;
+  }
+  function HookDataProvider({ children, request }: DataProviderProps) {
+    // The hook is a closure value, which the compiler cannot prove stable.
+    // The WeakMap gives each hook its own component, so it never changes here.
+    "use no memo";
+    return children(useProvider(request));
+  }
+  hookProviderComponents.set(useProvider, HookDataProvider);
+  return HookDataProvider;
 }
 
 export function getStaleSelections(

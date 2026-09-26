@@ -199,23 +199,67 @@ function SelectFieldFromProvider({
   provider: ResolvedDataProvider;
   testIds: ReturnType<typeof useFieldTestIds>;
 }) {
-  "use no memo";
-
-  const { formatMessage } = useAutoForm();
   const [query, setQuery] = React.useState("");
   const [cursor, setCursor] = React.useState<string>();
   const fieldPath = path.join(".");
   const selectedValues = currentValue === null ? [] : [currentValue];
   const requestKey = safeStringify({ cursor, dependencyValues, fieldPath, query, selectedValues });
   const signal = useDataProviderSignal(requestKey);
-  const providerResult = provider.useProvider({
-    cursor,
-    dependencyValues,
-    fieldPath,
-    query,
-    selectedValues,
-    signal,
-  });
+  const Provider = provider.component;
+
+  return (
+    <Provider request={{ cursor, dependencyValues, fieldPath, query, selectedValues, signal }}>
+      {(providerResult) => (
+        <SelectFieldFromProviderResult
+          currentValue={currentValue}
+          cursor={cursor}
+          error={error}
+          field={field}
+          id={id}
+          inputProps={inputProps}
+          onCursorChange={setCursor}
+          onQueryChange={setQuery}
+          provider={provider}
+          providerResult={providerResult}
+          requestKey={requestKey}
+          selectedValues={selectedValues}
+          testIds={testIds}
+        />
+      )}
+    </Provider>
+  );
+}
+
+function SelectFieldFromProviderResult({
+  currentValue,
+  cursor,
+  error,
+  field,
+  id,
+  inputProps,
+  onCursorChange,
+  onQueryChange,
+  provider,
+  providerResult,
+  requestKey,
+  selectedValues,
+  testIds,
+}: {
+  currentValue: string | null;
+  cursor: string | undefined;
+  error: AutoFormFieldProps["error"];
+  field: AutoFormFieldProps["field"];
+  id: string;
+  inputProps: AutoFormFieldProps["inputProps"];
+  onCursorChange: (cursor: string | undefined) => void;
+  onQueryChange: (query: string) => void;
+  provider: ResolvedDataProvider;
+  providerResult: DataProviderResult;
+  requestKey: string;
+  selectedValues: string[];
+  testIds: ReturnType<typeof useFieldTestIds>;
+}) {
+  const { formatMessage } = useAutoForm();
   const { isLoading, error: providerError, nextCursor } = providerResult;
   const { renderedOptions, staleSelections } = useProviderOptions({
     cursor,
@@ -276,8 +320,8 @@ function SelectFieldFromProvider({
           inputProps["onValueChange"](field.type === "number" ? Number(value) : value);
         }}
         onInputValueChange={(value) => {
-          setQuery(value);
-          setCursor(undefined);
+          onQueryChange(value);
+          onCursorChange(undefined);
         }}
         options={comboboxOptions}
         placeholder={formatProtoformMessage(
@@ -304,7 +348,7 @@ function SelectFieldFromProvider({
         </p>
       ) : null}
       {nextCursor ? (
-        <Button onClick={() => setCursor(nextCursor)} type="button" variant="outline">
+        <Button onClick={() => onCursorChange(nextCursor)} type="button" variant="outline">
           {formatProtoformMessage(formatMessage, "auto_form.load_more", {}, "Load more")}
         </Button>
       ) : null}

@@ -6,7 +6,9 @@ import { useAutoForm } from "../context";
 import type { AutoFormFieldProps } from "../core-types";
 import {
   type DataProviderOption,
+  type DataProviderResult,
   getStaleSelections,
+  type ResolvedDataProvider,
   resolveDataProvider,
   useDataProviderSignal,
 } from "../data-providers";
@@ -83,13 +85,13 @@ export const multiselectFieldDefinition: FieldTypeDefinition = {
 // button — one row per method. A multi-select collapses that to a single
 // control that holds every picked method as a chip.
 
-function DataProviderMultiSelectComponent({ field, id, inputProps, path }: AutoFormFieldProps) {
-  "use no memo";
+const NO_PROVIDER_RESULT: DataProviderResult = { options: [] };
 
+function DataProviderMultiSelectComponent({ field, id, inputProps, path }: AutoFormFieldProps) {
   const testIds = useFieldTestIds(id);
   const itemField = field.schema?.[0];
   const providerId = readDataProviderId(itemField);
-  const { dataProviders, formatMessage, formValues } = useAutoForm();
+  const { dataProviders, formValues } = useAutoForm();
   const provider = resolveDataProvider(dataProviders, providerId);
   const currentValue = Array.isArray(inputProps["value"])
     ? inputProps["value"].map((value: unknown) => String(value))
@@ -99,15 +101,59 @@ function DataProviderMultiSelectComponent({ field, id, inputProps, path }: AutoF
     (provider?.dependencies ?? []).map((dependency) => [dependency, getPathInObject(formValues, dependency.split("."))])
   );
   const signal = useDataProviderSignal(safeStringify({ dependencyValues, fieldPath, selectedValues: currentValue }));
-  const result = provider?.useProvider({
-    cursor: undefined,
-    dependencyValues,
-    fieldPath,
-    query: "",
-    selectedValues: currentValue,
-    signal,
-  });
-  const { options: providerOptions = [], isLoading } = result ?? { options: [] };
+
+  if (!provider) {
+    return (
+      <DataProviderMultiSelectResult
+        currentValue={currentValue}
+        field={field}
+        id={id}
+        inputProps={inputProps}
+        result={NO_PROVIDER_RESULT}
+        testIds={testIds}
+      />
+    );
+  }
+
+  const Provider = provider.component;
+  return (
+    <Provider
+      request={{ cursor: undefined, dependencyValues, fieldPath, query: "", selectedValues: currentValue, signal }}
+    >
+      {(result) => (
+        <DataProviderMultiSelectResult
+          currentValue={currentValue}
+          field={field}
+          id={id}
+          inputProps={inputProps}
+          provider={provider}
+          result={result}
+          testIds={testIds}
+        />
+      )}
+    </Provider>
+  );
+}
+
+function DataProviderMultiSelectResult({
+  currentValue,
+  field,
+  id,
+  inputProps,
+  provider,
+  result,
+  testIds,
+}: {
+  currentValue: string[];
+  field: AutoFormFieldProps["field"];
+  id: string;
+  inputProps: AutoFormFieldProps["inputProps"];
+  provider?: ResolvedDataProvider | undefined;
+  result: DataProviderResult;
+  testIds: ReturnType<typeof useFieldTestIds>;
+}) {
+  const { formatMessage } = useAutoForm();
+  const { options: providerOptions, isLoading } = result;
   const staleSelections = isLoading ? [] : getStaleSelections(providerOptions, currentValue);
   const staleSelectionSet = new Set(staleSelections);
   const renderedProviderOptions: DataProviderOption[] =

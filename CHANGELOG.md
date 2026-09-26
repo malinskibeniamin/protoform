@@ -11,10 +11,15 @@ source snapshots.
 - Protobuf-ES v2, Protovalidate, CEL, Standard Schema, and Google AIP integration.
 - React Hook Form and TanStack Form hooks and AutoForm adapters.
 - Consumer-owned shadcn-compatible component maps for AutoForm renderers.
+- Component data providers (`{ component }`) that render option results through `children`.
 - Formik and Final Form validation adapters.
 - Source-copy `protoc-gen-protoform` generator.
 - Conformance, accessibility, browser, performance, security, and consumer-installation evidence.
 - Complete bookstore RPC example, static documentation site, and source registry.
+
+### Fixed
+
+- Replacing a data provider, or registering one after the first render, no longer breaks React hook order.
 
 ### Compatibility
 
