@@ -64,17 +64,15 @@ describe.each([
   ["React Hook Form", ReactHookAutoForm],
   ["TanStack Form", TanStackAutoForm],
 ] as const)("%s deprecated field policy", (_name, AutoForm) => {
-  test("shows deprecated fields by default", () => {
-    render(<AutoForm schema={schema} />);
+  test("shows deprecated fields by default and disables them and an active deprecated oneof branch on request", () => {
+    const { rerender } = render(<AutoForm schema={schema} />);
 
     expect(screen.getByRole("textbox", { name: "Legacy name" })).toBeEnabled();
     expect(screen.getByRole("textbox", { name: "Legacy detail" })).toBeEnabled();
     expect(screen.getByRole("combobox", { name: "Contact" })).toBeEnabled();
     expect(screen.getByRole("textbox", { name: "Legacy contact" })).toBeEnabled();
-  });
 
-  test("disables deprecated fields and an active deprecated oneof branch", () => {
-    render(<AutoForm deprecatedFields="disable" schema={schema} />);
+    rerender(<AutoForm deprecatedFields="disable" schema={schema} />);
 
     expect(screen.getByRole("textbox", { name: "Legacy name" })).toBeDisabled();
     expect(screen.getByRole("textbox", { name: "Legacy detail" })).toBeDisabled();

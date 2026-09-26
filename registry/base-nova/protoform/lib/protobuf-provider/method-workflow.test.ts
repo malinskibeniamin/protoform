@@ -72,7 +72,7 @@ function createMethodFixture({
 }
 
 describe("getProtoMethodWorkflow", () => {
-  test("classifies standard unary methods and their path, query, and body fields", () => {
+  test("classifies standard unary methods with their path, query, and body fields and marks streaming RPCs as non-form", () => {
     const get = getProtoMethodWorkflow(
       createMethodFixture({
         input: GetBookRequestSchema,
@@ -121,6 +121,20 @@ describe("getProtoMethodWorkflow", () => {
     ]);
     expect(batchGet.category).toBe("batch");
     expect(get.method.input).toBe(GetBookRequestSchema);
+
+    const workflow = getProtoMethodWorkflow(
+      createMethodFixture({
+        input: GetBookRequestSchema,
+        methodKind: "server_streaming",
+        name: "WatchBooks",
+      })
+    );
+
+    expect(workflow).toMatchObject({
+      category: "custom",
+      execution: "streaming",
+      httpBindings: [],
+    });
   });
 
   test("classifies custom long-running workflows and exposes operation types", () => {
@@ -151,22 +165,6 @@ describe("getProtoMethodWorkflow", () => {
       bodyFields: ["etag", "request_id", "validate_only", "force", "allow_missing"],
       pathFields: ["name"],
       queryFields: [],
-    });
-  });
-
-  test("marks streaming RPCs as non-form workflows", () => {
-    const workflow = getProtoMethodWorkflow(
-      createMethodFixture({
-        input: GetBookRequestSchema,
-        methodKind: "server_streaming",
-        name: "WatchBooks",
-      })
-    );
-
-    expect(workflow).toMatchObject({
-      category: "custom",
-      execution: "streaming",
-      httpBindings: [],
     });
   });
 });

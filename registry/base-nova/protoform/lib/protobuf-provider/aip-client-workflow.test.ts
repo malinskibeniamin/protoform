@@ -32,7 +32,7 @@ function method(idempotency: MethodOptions_IdempotencyLevel): DescMethod {
 }
 
 describe("runProtoOperation", () => {
-  test("polls named AIP-151 operations and exposes progress until success", async () => {
+  test("polls named AIP-151 operations until success or a terminal google.rpc.Status failure", async () => {
     const updates: boolean[] = [];
     const poll = rs.fn(async () =>
       operation("operations/123", true, {
@@ -51,6 +51,18 @@ describe("runProtoOperation", () => {
     expect(poll).toHaveBeenCalledWith("operations/123", expect.any(AbortSignal));
     expect(updates).toEqual([false, true]);
     expect(result.done).toBe(true);
+
+    const status = create(StatusSchema, {
+      code: Code.FailedPrecondition,
+      message: "The import source is no longer available.",
+    });
+
+    await expect(
+      runProtoOperation({
+        poll: async () => operation("operations/unused"),
+        start: async () => operation("operations/123", true, { case: "error", value: status }),
+      })
+    ).rejects.toEqual(expect.any(ProtoOperationError));
   });
 
   test("cancels the remote operation when the caller aborts", async () => {
@@ -67,20 +79,6 @@ describe("runProtoOperation", () => {
       })
     ).rejects.toMatchObject({ name: "AbortError" });
     expect(cancel).toHaveBeenCalledWith("operations/123");
-  });
-
-  test("surfaces terminal google.rpc.Status failures", async () => {
-    const status = create(StatusSchema, {
-      code: Code.FailedPrecondition,
-      message: "The import source is no longer available.",
-    });
-
-    await expect(
-      runProtoOperation({
-        poll: async () => operation("operations/unused"),
-        start: async () => operation("operations/123", true, { case: "error", value: status }),
-      })
-    ).rejects.toEqual(expect.any(ProtoOperationError));
   });
 });
 
@@ -141,7 +139,7 @@ describe("getProtoPartialResult", () => {
 });
 
 describe("destructive and preview workflow plans", () => {
-  test("requires an AIP-165 purge preview before the destructive confirmation", () => {
+  test("requires an AIP-165 purge preview and distinguishes AIP-236 non-enforcing preview from live commit", () => {
     expect(
       getProtoPurgePlan(
         { filter: "state=DELETED", force: false },
@@ -164,9 +162,7 @@ describe("destructive and preview workflow plans", () => {
       mode: "execute",
       warning: "This permanently deletes every resource matching the filter.",
     });
-  });
 
-  test("distinguishes AIP-236 non-enforcing preview from live commit", () => {
     expect(getProtoPolicyPreviewPlan("start-preview")).toEqual({
       action: "start-preview",
       confirmationRequired: false,

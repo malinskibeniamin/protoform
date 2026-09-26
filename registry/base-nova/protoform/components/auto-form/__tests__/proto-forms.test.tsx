@@ -95,7 +95,7 @@ const buildValidProtoDefaults = () => ({
 });
 
 describe("AutoForm – protobuf forms", () => {
-  test("submits protobuf descriptors with protobuf-shaped output", async () => {
+  test("renders registered descriptions and submits protobuf-shaped output", async () => {
     const user = userEvent.setup();
     const onSubmit = rs.fn();
 
@@ -108,6 +108,10 @@ describe("AutoForm – protobuf forms", () => {
         withSubmit
       />
     );
+
+    // Registered proto field descriptions render as field help.
+    expect(screen.getByText("Public handle shown in mentions and admin lists.")).toBeVisible();
+    expect(screen.getByText("Exactly one preferred contact route can be selected at a time.")).toBeVisible();
 
     await user.click(screen.getByRole("button", { name: SUBMIT_BUTTON }));
 
@@ -135,7 +139,7 @@ describe("AutoForm – protobuf forms", () => {
     expect(submittedValue.writablePaths.paths).toEqual(["profile"]);
   }, 10_000);
 
-  test("preserves the edit source message through the React Hook Form adapter", async () => {
+  test("hydrates and preserves the edit source message through the React Hook Form adapter", async () => {
     const user = userEvent.setup();
     const onSubmit = rs.fn();
     const base = formValuesToProto(AutoFormExampleSchema, buildValidProtoDefaults());
@@ -155,7 +159,12 @@ describe("AutoForm – protobuf forms", () => {
       Uint8Array.from([...toBinary(AutoFormExampleSchema, knownSource), 0x98, 0x06, 0x02])
     );
 
-    render(<AutoForm defaultValues={source} onSubmit={onSubmit} schema={AutoFormExampleSchema} withSubmit />);
+    const { unmount } = render(
+      <AutoForm defaultValues={source} onSubmit={onSubmit} schema={AutoFormExampleSchema} withSubmit />
+    );
+    // A proto message passed as defaultValues is normalized into form-friendly values.
+    expect(screen.getByDisplayValue("protoform_admin")).toBeVisible();
+    expect(screen.getByDisplayValue("4001")).toBeVisible();
     await user.click(screen.getByRole("button", { name: SUBMIT_BUTTON }));
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
 
@@ -169,17 +178,10 @@ describe("AutoForm – protobuf forms", () => {
     }
     expect(submitted.$unknown).toEqual(source.$unknown);
     expect(submitted.shippingAddress.$unknown).toEqual(source.shippingAddress.$unknown);
-  }, 10_000);
 
-  test("preserves resolver-normalized protobuf values while restoring source unknown fields", async () => {
-    const user = userEvent.setup();
-    const onSubmit = rs.fn();
-    const knownSource = formValuesToProto(AutoFormExampleSchema, buildValidProtoDefaults());
-    const source = fromBinary(
-      AutoFormExampleSchema,
-      Uint8Array.from([...toBinary(AutoFormExampleSchema, knownSource), 0x98, 0x06, 0x03])
-    );
-
+    // A custom resolver's normalized values survive while source unknown fields are restored.
+    unmount();
+    onSubmit.mockClear();
     render(
       <AutoForm
         defaultValues={source}
@@ -198,16 +200,16 @@ describe("AutoForm – protobuf forms", () => {
     await user.click(screen.getByRole("button", { name: SUBMIT_BUTTON }));
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
 
-    const [submissionCall] = onSubmit.mock.calls;
-    if (!submissionCall) {
+    const [normalizedCall] = onSubmit.mock.calls;
+    if (!normalizedCall) {
       throw new Error("Expected a normalized protobuf value.");
     }
-    const [submitted] = submissionCall;
-    expect(submitted.username).toBe("normalized_admin");
-    expect(submitted.$unknown).toEqual(source.$unknown);
+    const [normalized] = normalizedCall;
+    expect(normalized.username).toBe("normalized_admin");
+    expect(normalized.$unknown).toEqual(source.$unknown);
   }, 10_000);
 
-  test("shows protobuf field-level validation feedback", async () => {
+  test("shows protobuf field-level and message-level validation feedback", async () => {
     const user = userEvent.setup();
     const onSubmit = rs.fn();
 
@@ -215,8 +217,8 @@ describe("AutoForm – protobuf forms", () => {
       <AutoForm
         defaultValues={{
           ...buildValidProtoDefaults(),
-          maximumThreshold: 10,
-          minimumThreshold: 5,
+          maximumThreshold: 4,
+          minimumThreshold: 12,
           preferredContact: { case: "preferredEmail", value: "forms@protoform.com" },
           username: "rp",
         }}
@@ -233,14 +235,8 @@ describe("AutoForm – protobuf forms", () => {
       expect(onSubmit).not.toHaveBeenCalled();
     });
 
-    expect(screen.getByText(FIELD_ERROR_TEXT)).toBeInTheDocument();
-  });
-
-  test("renders registered proto field descriptions", () => {
-    render(<AutoForm defaultValues={buildValidProtoDefaults()} schema={AutoFormExampleSchema} withSubmit />);
-
-    expect(screen.getByText("Public handle shown in mentions and admin lists.")).toBeInTheDocument();
-    expect(screen.getByText("Exactly one preferred contact route can be selected at a time.")).toBeInTheDocument();
+    expect(screen.getByText(FIELD_ERROR_TEXT)).toBeVisible();
+    expect(screen.getByText(MESSAGE_ERROR_TEXT)).toBeVisible();
   });
 
   test("switches protobuf oneof cases and submits the latest selection", async () => {
@@ -324,57 +320,5 @@ describe("AutoForm – protobuf forms", () => {
     await waitFor(() => {
       expect(screen.getAllByRole("button", { name: REMOVE_ITEM_BUTTON })).toHaveLength(initialRemoveCount);
     });
-  });
-
-  test("surfaces protobuf message-level validation feedback", async () => {
-    const user = userEvent.setup();
-    const onSubmit = rs.fn();
-
-    render(
-      <AutoForm
-        defaultValues={{
-          ...buildValidProtoDefaults(),
-          maximumThreshold: 4,
-          minimumThreshold: 12,
-        }}
-        formOptions={{ mode: "all" }}
-        onSubmit={onSubmit}
-        schema={AutoFormExampleSchema}
-        withSubmit
-      />
-    );
-
-    await user.click(screen.getByRole("button", { name: SUBMIT_BUTTON }));
-
-    await waitFor(() => {
-      expect(onSubmit).not.toHaveBeenCalled();
-    });
-
-    expect(screen.getByText(MESSAGE_ERROR_TEXT)).toBeInTheDocument();
-  });
-
-  test("populates form from a proto message instance passed as defaultValues", () => {
-    const message = create(AutoFormExampleSchema, {
-      accessTier: 3,
-      age: 28,
-      bio: "Created from a proto message instance.",
-      employeeNumber: 5001n,
-      homepageUrl: "https://protoform.com",
-      maximumThreshold: 10,
-      minimumThreshold: 1,
-      preferredContact: { case: "preferredEmail", value: "proto@protoform.com" },
-      primaryEmail: "proto@protoform.com",
-      resourceId: "123e4567-e89b-12d3-a456-426614174000",
-      storageQuotaBytes: 8192n,
-      username: "proto_user",
-    });
-
-    render(<AutoForm defaultValues={message as never} onSubmit={rs.fn()} schema={AutoFormExampleSchema} withSubmit />);
-
-    // Proto message ($typeName present) should be normalised into form-friendly values
-    expect(screen.getByDisplayValue("proto_user")).toBeInTheDocument();
-    // bigint fields are converted to string for form inputs
-    expect(screen.getByDisplayValue("5001")).toBeInTheDocument();
-    expect(screen.getByDisplayValue("8192")).toBeInTheDocument();
   });
 });

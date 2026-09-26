@@ -49,26 +49,15 @@ function buildValidProtoFormValues(): Record<string, unknown> {
   };
 }
 
-test("createProtoFormSchema returns a Standard Schema", () => {
+test("valid form values produce a typed message value through a Standard Schema with a consumer-specific input type", async () => {
   const schema = createProtoFormSchema(AutoFormExampleSchema);
 
   expect(isStandardSchema(schema)).toBe(true);
   expect(schema["~standard"].version).toBe(1);
   expect(schema["~standard"].vendor).toBe("protoform");
-});
-
-test("createProtoFormSchema can expose a consumer-specific form input", () => {
-  interface FormInput {
-    username: string;
-  }
-
-  const schema = createProtoFormSchema<FormInput, typeof AutoFormExampleSchema>(AutoFormExampleSchema);
-
-  expectTypeOf(schema["~standard"].types?.input).toEqualTypeOf<FormInput | undefined>();
-});
-
-test("valid form values produce a typed message value", async () => {
-  const schema = createProtoFormSchema(AutoFormExampleSchema);
+  // Consumers can expose a specific form input type.
+  const typed = createProtoFormSchema<{ username: string }, typeof AutoFormExampleSchema>(AutoFormExampleSchema);
+  expectTypeOf(typed["~standard"].types?.input).toEqualTypeOf<{ username: string } | undefined>();
 
   const result = await schema["~standard"].validate(buildValidProtoFormValues());
 
@@ -81,7 +70,7 @@ test("valid form values produce a typed message value", async () => {
   expect(result.value.primaryEmail).toBe("forms@protoform.com");
 });
 
-test("invalid form values produce issues with form-shaped camelCase paths", async () => {
+test("invalid form values produce issues with form-shaped camelCase paths or a root issue", async () => {
   const schema = createProtoFormSchema(AutoFormExampleSchema);
 
   const result = await schema["~standard"].validate({});
@@ -103,16 +92,8 @@ test("invalid form values produce issues with form-shaped camelCase paths", asyn
   for (const path of paths) {
     expect(path).not.toContain("_");
   }
-});
 
-test("non-object input fails with a root issue instead of throwing", async () => {
-  const schema = createProtoFormSchema(AutoFormExampleSchema);
-
-  const result = await schema["~standard"].validate("not an object");
-
-  expect(result.issues).toBeDefined();
-  if (!result.issues) {
-    throw new Error("expected a failure result");
-  }
-  expect(result.issues.length).toBeGreaterThan(0);
+  // Non-object input fails with a root issue instead of throwing.
+  const rootResult = await schema["~standard"].validate("not an object");
+  expect(rootResult.issues?.length).toBeGreaterThan(0);
 });

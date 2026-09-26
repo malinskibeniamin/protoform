@@ -53,82 +53,17 @@ const buildValidProtoDefaults = () => ({
 });
 
 describe("AutoForm – field rendering", () => {
-  test("groups root fields into section rows and anchors the submit action on the right", () => {
-    const schema = createMockProvider([{ key: "name", required: true, type: "string" }]);
-
-    render(<AutoForm schema={schema} withSubmit />);
-
-    expect(screen.getByLabelText(/name/iu).closest('[data-slot="auto-form-field-row"]')).not.toBeNull();
-    expect(screen.getByRole("button", { name: "Submit" }).parentElement).toHaveAttribute(
-      "data-slot",
-      "auto-form-actions"
-    );
-  });
-
-  test("defaults bounded numeric fields to a slider plus number input", () => {
-    const schema = createMockProvider([{ key: "latitude", required: true, type: "number" }]);
-
-    render(
-      <AutoForm
-        defaultValues={{ latitude: 12 }}
-        fieldConfig={{
-          latitude: {
-            inputProps: {
-              max: 90,
-              min: -90,
-            },
-          },
-        }}
-        schema={schema}
-        withSubmit
-      />
-    );
-
-    expect(screen.getByRole("slider")).toBeInTheDocument();
-    expect(screen.getByRole("spinbutton", { name: /latitude/iu })).toBeInTheDocument();
-  });
-
-  test("drops redundant fallback helper copy", () => {
-    render(<AutoForm defaultValues={buildValidProtoDefaults()} schema={AutoFormExampleSchema} withSubmit />);
-
-    expect(screen.queryByText(/this field is required\./iu)).not.toBeInTheDocument();
-    expect(screen.queryByText(/use 2-40 characters\./iu)).not.toBeInTheDocument();
-    expect(screen.queryByText(/use 0-0 characters\./iu)).not.toBeInTheDocument();
-  });
-
-  test("allows object fields to render with the JSONField via fieldType override", () => {
-    const schema = createMockProvider([
-      {
-        key: "extraSettings",
-        required: true,
-        schema: [{ key: "retries", required: true, type: "number" }],
-        type: "object",
-      },
-    ]);
-
-    render(
-      <AutoForm
-        defaultValues={{
-          extraSettings: {
-            retries: 2,
-          },
-        }}
-        fieldConfig={{
-          extraSettings: {
-            fieldType: "json",
-          },
-        }}
-        schema={schema}
-        withSubmit
-      />
-    );
-
-    expect(screen.getByRole("button", { name: SWITCH_TO_FORM_BUTTON })).toBeInTheDocument();
-  });
-
-  test("exposes the selected state on compact radio cards", () => {
+  test("selects built-in renderers and anchors root rows and the submit action", () => {
     const schema = createMockProvider(
       [
+        { key: "name", required: true, type: "string" },
+        { key: "latitude", required: true, type: "number" },
+        {
+          key: "extraSettings",
+          required: true,
+          schema: [{ key: "retries", required: true, type: "number" }],
+          type: "object",
+        },
         {
           key: "environment",
           options: [
@@ -140,16 +75,44 @@ describe("AutoForm – field rendering", () => {
           type: "select",
         },
       ],
-      { environment: "production" }
+      { environment: "production", extraSettings: { retries: 2 }, latitude: 12 }
     );
 
-    render(<AutoForm schema={schema} />);
+    render(
+      <AutoForm
+        fieldConfig={{
+          extraSettings: { fieldType: "json" },
+          latitude: { inputProps: { max: 90, min: -90 } },
+        }}
+        schema={schema}
+        withSubmit
+      />
+    );
 
+    expect(screen.getByRole("textbox", { name: /name/iu }).closest('[data-slot="auto-form-field-row"]')).not.toBeNull();
+    expect(screen.getByRole("button", { name: "Submit" }).parentElement).toHaveAttribute(
+      "data-slot",
+      "auto-form-actions"
+    );
+    // Bounded numeric fields default to a slider plus number input.
+    expect(screen.getByRole("slider")).toBeVisible();
+    expect(screen.getByRole("spinbutton", { name: /latitude/iu })).toBeVisible();
+    // Object fields can render with the JSONField through a fieldType override.
+    expect(screen.getByRole("button", { name: SWITCH_TO_FORM_BUTTON })).toBeVisible();
+    // Small enums render as compact radio cards that expose the selected state.
     const productionOption = screen.getByRole("radio", { name: "Production" });
     expect(productionOption.tagName).toBe("BUTTON");
     expect(productionOption.closest("label")).toBeNull();
     expect(productionOption).toHaveAttribute("data-selected", "true");
     expect(screen.getByRole("radio", { name: "Development" })).toHaveAttribute("data-selected", "false");
     expect(productionOption?.parentElement?.className).toContain("sm:grid-cols-2");
+  });
+
+  test("drops redundant fallback helper copy", () => {
+    render(<AutoForm defaultValues={buildValidProtoDefaults()} schema={AutoFormExampleSchema} withSubmit />);
+
+    expect(screen.queryByText(/this field is required\./iu)).not.toBeInTheDocument();
+    expect(screen.queryByText(/use 2-40 characters\./iu)).not.toBeInTheDocument();
+    expect(screen.queryByText(/use 0-0 characters\./iu)).not.toBeInTheDocument();
   });
 });

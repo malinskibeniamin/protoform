@@ -32,17 +32,23 @@ describe("ProtoformUIProvider", () => {
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
 
-  test("uses only registered host controls and translates test IDs to DOM attributes", () => {
+  test("renders consumer controls, translates test IDs, and names a missing control", async () => {
+    const user = userEvent.setup();
+    const onClick = rs.fn();
+
     render(
-      <ProtoformUIProvider components={{ Input: "input" }}>
+      <ProtoformUIProvider components={{ Button: ConsumerButton, Input: "input" }}>
         <Input aria-label="Title" testId="title-control" />
+        <Button onClick={onClick}>Continue</Button>
       </ProtoformUIProvider>
     );
     expect(screen.getByRole("textbox", { name: "Title" })).toHaveAttribute("data-testid", "title-control");
     expect(screen.getByRole("textbox")).not.toHaveAttribute("testId");
-  });
+    const button = screen.getByRole("button", { name: "Continue" });
+    expect(button).toHaveAttribute("data-consumer-component", "button");
+    await user.click(button);
+    expect(onClick).toHaveBeenCalledOnce();
 
-  test("names a missing control and how to supply it", () => {
     expect(() =>
       render(
         <ProtoformUIProvider components={{}}>
@@ -50,29 +56,5 @@ describe("ProtoformUIProvider", () => {
         </ProtoformUIProvider>
       )
     ).toThrow('Protoform requires the "Input" component. Supply it through AutoForm components.');
-  });
-
-  test("renders controls from the consumer component map", async () => {
-    const user = userEvent.setup();
-    let clicked = false;
-
-    render(
-      <ProtoformUIProvider components={{ ...shadcnUIComponents, Button: ConsumerButton }}>
-        <Button
-          onClick={() => {
-            clicked = true;
-          }}
-        >
-          Continue
-        </Button>
-      </ProtoformUIProvider>
-    );
-
-    const button = screen.getByRole("button", { name: "Continue" });
-    expect(button).toHaveAttribute("data-consumer-component", "button");
-
-    await user.click(button);
-
-    expect(clicked).toBe(true);
   });
 });

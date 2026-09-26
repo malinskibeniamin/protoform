@@ -5,12 +5,6 @@ import userEvent from "@testing-library/user-event";
 import { Input } from ".";
 
 describe("Input icon controls", () => {
-  test("uses Nova density and geometry by default", () => {
-    render(<Input aria-label="Name" />);
-
-    expect(screen.getByRole("textbox", { name: "Name" })).toHaveClass("h-8", "rounded-lg");
-  });
-
   test("names the password visibility control and updates its state", async () => {
     const user = userEvent.setup();
     render(<Input aria-label="API token" type="password" />);

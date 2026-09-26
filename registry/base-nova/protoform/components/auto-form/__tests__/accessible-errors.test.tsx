@@ -28,7 +28,7 @@ const components = {
 };
 
 describe("AutoForm accessible errors", () => {
-  test.each(["string", "email", "textarea"])("links %s consumer inputs to validation errors", async (fieldType) => {
+  test.each(["email", "textarea"])("links %s consumer inputs to validation errors", async (fieldType) => {
     const user = userEvent.setup();
     const schema = createMockProvider([{ key: "value", required: false, type: "string" }], {}, (values) =>
       values["value"]

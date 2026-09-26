@@ -73,20 +73,7 @@ describe("form-library Standard Schema adapters", () => {
     expect(errors[formError]).toBe("Review the highlighted fields.");
   });
 
-  test("returns no errors for valid values", async () => {
-    const schema: StandardSchemaV1<ProfileValues, ProfileValues> = {
-      "~standard": {
-        validate: () => ({ value: values }),
-        vendor: "test",
-        version: 1,
-      },
-    };
-
-    expect(await createFormikValidator(schema)(values)).toEqual({});
-    expect(await createFinalFormValidator(schema)(values)).toEqual({});
-  });
-
-  test("forwards Standard Schema library options", async () => {
+  test("returns no errors for valid values and forwards library options", async () => {
     const libraryOptions = { locale: "en-GB" };
     const receivedOptions: Array<StandardSchemaV1.Options | undefined> = [];
     const schema: StandardSchemaV1<ProfileValues, ProfileValues> = {
@@ -100,9 +87,9 @@ describe("form-library Standard Schema adapters", () => {
       },
     };
 
-    await createFormikValidator(schema)(values);
-    await createFormikValidator(schema, { libraryOptions })(values);
-    await createFinalFormValidator(schema, { libraryOptions })(values);
+    expect(await createFormikValidator(schema)(values)).toEqual({});
+    expect(await createFormikValidator(schema, { libraryOptions })(values)).toEqual({});
+    expect(await createFinalFormValidator(schema, { libraryOptions })(values)).toEqual({});
 
     expect(receivedOptions).toEqual([undefined, { libraryOptions }, { libraryOptions }]);
   });

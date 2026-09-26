@@ -23,36 +23,16 @@ const stubContext = (identity = "test test"): FieldMatchContext => ({
 });
 
 describe("FieldTypeRegistry", () => {
-  test("resolve() returns the highest-priority matching definition", () => {
+  test("lists and resolves definitions by priority and clones independently", () => {
     const registry = new FieldTypeRegistry()
-      .register(makeDef("low", 10, () => true))
-      .register(makeDef("high", 100, () => true));
+      .register(makeDef("alpha", 10, (f) => f.type === "string"))
+      .register(makeDef("beta", 200, (f) => f.type === "string"))
+      .register(makeDef("gamma", 5, () => false));
 
-    const result = registry.resolve(stubField("string"), stubContext());
+    expect(registry.list().map((d) => d.name)).toEqual(["beta", "alpha", "gamma"]);
+    expect(registry.resolve(stubField("string"), stubContext())?.name).toBe("beta");
+    expect(registry.resolve(stubField("number"), stubContext())).toBeUndefined();
 
-    expect(result?.name).toBe("high");
-  });
-
-  test("resolve() returns undefined when no definition matches", () => {
-    const registry = new FieldTypeRegistry().register(makeDef("never", 10, () => false));
-
-    const result = registry.resolve(stubField("string"), stubContext());
-
-    expect(result).toBeUndefined();
-  });
-
-  test("register() with higher priority wins over lower priority for same match", () => {
-    const registry = new FieldTypeRegistry();
-
-    registry.register(makeDef("first", 50, (f) => f.type === "string"));
-    registry.register(makeDef("second", 200, (f) => f.type === "string"));
-
-    const result = registry.resolve(stubField("string"), stubContext());
-
-    expect(result?.name).toBe("second");
-  });
-
-  test("clone() produces an independent copy that does not affect the original", () => {
     const original = new FieldTypeRegistry().register(makeDef("original", 10, () => true));
 
     const cloned = original.clone();
@@ -61,17 +41,5 @@ describe("FieldTypeRegistry", () => {
     expect(original.list()).toHaveLength(1);
     expect(cloned.list()).toHaveLength(2);
     expect(original.list()[0]?.name).toBe("original");
-  });
-
-  test("list() returns all registered definitions", () => {
-    const registry = new FieldTypeRegistry()
-      .register(makeDef("alpha", 10, () => false))
-      .register(makeDef("beta", 20, () => false))
-      .register(makeDef("gamma", 5, () => false));
-
-    const names = registry.list().map((d) => d.name);
-
-    expect(names).toEqual(["beta", "alpha", "gamma"]);
-    expect(registry.list()).toHaveLength(3);
   });
 });

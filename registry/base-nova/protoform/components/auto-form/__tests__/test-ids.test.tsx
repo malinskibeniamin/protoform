@@ -1,7 +1,7 @@
 import "@/registry/base-nova/protoform/lib/protobuf-provider/auto-form-example-annotations";
 
 import { describe, expect } from "@rstest/core";
-import { render, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { AutoFormExampleSchema } from "@/registry/base-nova/protoform/lib/protobuf-provider/gen/auto-form-example_pb";
@@ -70,16 +70,6 @@ const buildValidProtoDefaults = () => ({
 });
 
 describe("AutoForm – test IDs", () => {
-  test("defaults the root test id prefix to autoform", () => {
-    const schema = createMockProvider([{ key: "username", required: true, type: "string" }]);
-
-    render(<AutoForm schema={schema} withSubmit />);
-
-    expect(screen.getByTestId("autoform")).toBeInTheDocument();
-    expect(screen.getByTestId("autoform-field-username")).toBeInTheDocument();
-    expect(screen.getByTestId("autoform-field-username-control")).toBeInTheDocument();
-  });
-
   test("emits stable field, help, and option test ids for zod forms", async () => {
     const user = userEvent.setup();
     const schema = createMockProvider([
@@ -195,7 +185,7 @@ describe("AutoForm – test IDs", () => {
     expect(screen.getByTestId("deploy-form-field-channels-selected-slack")).toBeInTheDocument();
   });
 
-  test("emits stable ids for collections and modes", async () => {
+  test("emits stable ids for collections and modes, and path-based ids under the default prefix for protobuf descriptors", async () => {
     const user = userEvent.setup();
     const schema = createMockProvider([
       { key: "accountName", required: true, type: "string" },
@@ -248,20 +238,14 @@ describe("AutoForm – test IDs", () => {
 
     expect(screen.getByTestId("wizard-form-panel-json")).toBeInTheDocument();
     expect(screen.getByTestId("wizard-form-json-editor")).toBeInTheDocument();
-  });
 
-  test("emits the same path-based ids for protobuf descriptors", () => {
-    render(
-      <AutoForm
-        defaultValues={buildValidProtoDefaults()}
-        schema={AutoFormExampleSchema}
-        testId="proto-form"
-        withSubmit
-      />
-    );
+    cleanup();
+    render(<AutoForm defaultValues={buildValidProtoDefaults()} schema={AutoFormExampleSchema} withSubmit />);
 
-    expect(screen.getByTestId("proto-form-field-username-control")).toBeInTheDocument();
-    expect(screen.getByTestId("proto-form-field-primary-email-control")).toBeInTheDocument();
-    expect(screen.getByTestId("proto-form-field-preferred-contact-control")).toBeInTheDocument();
+    expect(screen.getByTestId("autoform")).toBeInTheDocument();
+    expect(screen.getByTestId("autoform-field-username")).toBeInTheDocument();
+    expect(screen.getByTestId("autoform-field-username-control")).toBeInTheDocument();
+    expect(screen.getByTestId("autoform-field-primary-email-control")).toBeInTheDocument();
+    expect(screen.getByTestId("autoform-field-preferred-contact-control")).toBeInTheDocument();
   });
 });

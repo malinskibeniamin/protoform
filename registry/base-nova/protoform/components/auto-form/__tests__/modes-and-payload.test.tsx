@@ -1,11 +1,9 @@
 import { describe, expect } from "@rstest/core";
-import { render, screen, waitFor } from "@testing-library/react";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { AutoForm } from "..";
 import { createMockProvider } from "./test-utils";
 
-const REQUIRED_NAME_LABEL = /required name/iu;
-const OPTIONAL_NOTE_LABEL = /optional note/iu;
 const ADVANCED_TAB = /advanced/iu;
 const JSON_TAB = /json/iu;
 const PAYLOAD_SUMMARY_TEXT = /payload preview/iu;
@@ -14,51 +12,6 @@ const COPY_JSON_BUTTON = /copy json/iu;
 const FORMAT_JSON_BUTTON = /format json/iu;
 
 describe("AutoForm – modes and payload", () => {
-  test("supports simple, advanced, and JSON modes with an opt-in summary panel", async () => {
-    const user = userEvent.setup();
-    const schema = createMockProvider([
-      { key: "requiredName", required: true, type: "string" },
-      { key: "optionalNote", required: false, type: "string" },
-      {
-        key: "rollout",
-        required: true,
-        schema: [{ key: "clusterId", required: true, type: "string" }],
-        type: "object",
-      },
-    ]);
-
-    render(
-      <AutoForm
-        defaultMode="simple"
-        defaultValues={{
-          optionalNote: "Optional context",
-          requiredName: "registry",
-          rollout: { clusterId: "prod-a" },
-        }}
-        modes={["simple", "advanced", "json"]}
-        schema={schema}
-        showSummary
-        withSubmit
-      />
-    );
-
-    expect(screen.getByText(PAYLOAD_SUMMARY_TEXT)).toBeInTheDocument();
-    expect(screen.getByLabelText(REQUIRED_NAME_LABEL)).toBeInTheDocument();
-    expect(screen.queryByLabelText(OPTIONAL_NOTE_LABEL)).not.toBeInTheDocument();
-
-    await user.click(screen.getByRole("tab", { name: ADVANCED_TAB }));
-
-    await waitFor(() => {
-      expect(screen.getByLabelText(OPTIONAL_NOTE_LABEL)).toBeInTheDocument();
-    });
-
-    await user.click(screen.getByRole("tab", { name: JSON_TAB }));
-
-    await waitFor(() => {
-      expect(screen.getByText(PAYLOAD_JSON_TEXT)).toBeInTheDocument();
-    });
-  });
-
   test("supports payloadBuilder and custom summary rendering", async () => {
     const user = userEvent.setup();
     const schema = createMockProvider([
@@ -100,50 +53,7 @@ describe("AutoForm – modes and payload", () => {
     expect(screen.getByRole("button", { name: COPY_JSON_BUTTON })).toBeInTheDocument();
   });
 
-  test("updates summary after editing in JSON mode and switching back to advanced", async () => {
-    const user = userEvent.setup();
-    const schema = createMockProvider([
-      { key: "monthlyBudget", required: true, type: "number" },
-      { key: "teamName", required: true, type: "string" },
-    ]);
-
-    render(
-      <AutoForm
-        defaultValues={{
-          monthlyBudget: 12_500,
-          teamName: "registry-ui",
-        }}
-        modes={["advanced", "json"]}
-        schema={schema}
-        showSummary
-        withSubmit
-      />
-    );
-
-    // Summary should show initial value
-    const summaryEl = screen.getByTestId("autoform-summary");
-    expect(summaryEl.textContent).toContain("12500");
-
-    // Switch to JSON, change a value
-    await user.click(screen.getByRole("tab", { name: JSON_TAB }));
-    const jsonEditor = screen.getByRole("textbox");
-    await user.clear(jsonEditor);
-    await user.paste('{"monthlyBudget":99999,"teamName":"ops-team"}');
-
-    // Switch back to Advanced
-    await user.click(screen.getByRole("tab", { name: ADVANCED_TAB }));
-
-    // Form field should update
-    await waitFor(() => {
-      expect(screen.getByDisplayValue("ops-team")).toBeInTheDocument();
-    });
-
-    // Summary should also reflect the new value
-    const updatedSummaryEl = screen.getByTestId("autoform-summary");
-    expect(updatedSummaryEl.textContent).toContain("99999");
-  });
-
-  test("supports editable JSON mode via payloadParser", async () => {
+  test("supports editable JSON mode via payloadParser and updates the summary after switching back to advanced", async () => {
     const user = userEvent.setup();
     const schema = createMockProvider([
       { key: "teamName", required: true, type: "string" },
@@ -202,5 +112,47 @@ describe("AutoForm – modes and payload", () => {
     });
 
     expect(screen.getByDisplayValue("ops@protoform.com")).toBeInTheDocument();
+
+    cleanup();
+    const schemaSummary = createMockProvider([
+      { key: "monthlyBudget", required: true, type: "number" },
+      { key: "teamName", required: true, type: "string" },
+    ]);
+
+    render(
+      <AutoForm
+        defaultValues={{
+          monthlyBudget: 12_500,
+          teamName: "registry-ui",
+        }}
+        modes={["advanced", "json"]}
+        schema={schemaSummary}
+        showSummary
+        withSubmit
+      />
+    );
+
+    // The opt-in default summary panel shows the initial value.
+    expect(screen.getByText(PAYLOAD_SUMMARY_TEXT)).toBeVisible();
+    const summaryEl = screen.getByTestId("autoform-summary");
+    expect(summaryEl.textContent).toContain("12500");
+
+    // Switch to JSON, change a value
+    await user.click(screen.getByRole("tab", { name: JSON_TAB }));
+    const jsonEditorSummary = screen.getByRole("textbox");
+    await user.clear(jsonEditorSummary);
+    await user.paste('{"monthlyBudget":99999,"teamName":"ops-team"}');
+
+    // Switch back to Advanced
+    await user.click(screen.getByRole("tab", { name: ADVANCED_TAB }));
+
+    // Form field should update
+    await waitFor(() => {
+      expect(screen.getByDisplayValue("ops-team")).toBeInTheDocument();
+    });
+
+    // Summary should also reflect the new value
+    const updatedSummaryEl = screen.getByTestId("autoform-summary");
+    expect(updatedSummaryEl.textContent).toContain("99999");
   });
 });

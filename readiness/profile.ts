@@ -340,21 +340,21 @@ const protobufRequirements: readonly ReadinessRequirement[] = [
     "protobuf.timestamp",
     "Timestamp",
     "registry/base-nova/protoform/lib/protobuf-provider/index.test.ts",
-    "converts protobuf messages into form-friendly values"
+    "converts protobuf messages into form values, supplies defaults, and round-trips optional, wrapper, and JSON-backed fields"
   ),
   verified(
     "protobuf",
     "protobuf.duration",
     "Duration",
     "registry/base-nova/protoform/lib/protobuf-provider/index.test.ts",
-    "converts protobuf messages into form-friendly values"
+    "converts protobuf messages into form values, supplies defaults, and round-trips optional, wrapper, and JSON-backed fields"
   ),
   verified(
     "protobuf",
     "protobuf.field-mask",
     "FieldMask",
     "registry/base-nova/protoform/lib/protobuf-provider/index.test.ts",
-    "converts protobuf messages into form-friendly values"
+    "converts protobuf messages into form values, supplies defaults, and round-trips optional, wrapper, and JSON-backed fields"
   ),
   verified(
     "protobuf",
@@ -383,7 +383,7 @@ const protobufRequirements: readonly ReadinessRequirement[] = [
     "protobuf.custom-options",
     "Custom UI options",
     "registry/base-nova/protoform/lib/protobuf-provider/render-hints.test.ts",
-    "specific annotation values map onto the right hint properties",
+    "maps field and oneof annotations onto hints without empty hint objects",
     recommended
   ),
   verified(
@@ -801,7 +801,7 @@ const celRequirements: readonly ReadinessRequirement[] = [
     "cel.ui-profile",
     "Restricted UI expression profile",
     "registry/base-nova/protoform/components/auto-form/ui-rules.test.ts",
-    "exposes only form and current-field values to UI expressions"
+    "exposes only form and current-field values and fails closed for malformed, unknown, erroring, and non-boolean rules"
   ),
   verified(
     "cel",
@@ -980,7 +980,7 @@ const aipRequirements: readonly ReadinessRequirement[] = [
     127,
     "HTTP and gRPC transcoding",
     "registry/base-nova/protoform/lib/protobuf-provider/method-workflow.test.ts",
-    "classifies standard unary methods and their path, query, and body fields",
+    "classifies standard unary methods with their path, query, and body fields and marks streaming RPCs as non-form",
     "HTTP annotations partition request fields into path, query, and body roles without changing the typed request descriptor."
   ),
   aipVerified(
@@ -1026,7 +1026,7 @@ const aipRequirements: readonly ReadinessRequirement[] = [
     134,
     "Standard methods: Update",
     "registry/base-nova/protoform/lib/protobuf-provider/field-mask.test.ts",
-    "excludes AIP-owned fields from update masks",
+    "includes only dirty, client-owned protobuf fields and collapses collections",
     "Update masks contain only dirty editable protobuf paths."
   ),
   aipVerified(
@@ -1181,7 +1181,7 @@ const aipRequirements: readonly ReadinessRequirement[] = [
     161,
     "Field masks",
     "registry/base-nova/protoform/lib/protobuf-provider/field-mask.test.ts",
-    "includes only dirty protobuf fields and collapses collections"
+    "includes only dirty, client-owned protobuf fields and collapses collections"
   ),
   aipVerified(
     162,
@@ -1254,7 +1254,7 @@ const aipRequirements: readonly ReadinessRequirement[] = [
     192,
     "Documentation",
     "registry/base-nova/protoform/scripts/protoc-gen-protoform/plugin.test.ts",
-    "emits source comments as registered form annotations",
+    "emits only a _form.ts file matching the golden fixture",
     "Generated bindings preserve public message and field comments as descriptor-keyed form help."
   ),
   aipVerified(
@@ -1378,7 +1378,7 @@ const productionRequirements: readonly ReadinessRequirement[] = [
     "production.standard-schema",
     "Standard Schema interoperability",
     "registry/base-nova/protoform/lib/protobuf-provider/form-schema.test.ts",
-    "createProtoFormSchema returns a Standard Schema"
+    "valid form values produce a typed message value through a Standard Schema with a consumer-specific input type"
   ),
   verified(
     "production",
@@ -1392,7 +1392,7 @@ const productionRequirements: readonly ReadinessRequirement[] = [
     "production.react-hook-form",
     "React Hook Form integration",
     "registry/base-nova/protoform/components/auto-form/__tests__/proto-forms.test.tsx",
-    "submits protobuf descriptors with protobuf-shaped output"
+    "renders registered descriptions and submits protobuf-shaped output"
   ),
   verified(
     "production",
@@ -1420,14 +1420,14 @@ const productionRequirements: readonly ReadinessRequirement[] = [
     "production.auto-form",
     "Descriptor-driven AutoForm",
     "registry/base-nova/protoform/components/auto-form/__tests__/proto-forms.test.tsx",
-    "shows protobuf field-level validation feedback"
+    "shows protobuf field-level and message-level validation feedback"
   ),
   verified(
     "production",
     "production.stepper",
     "Semantic linear steppers",
     "registry/base-nova/protoform/components/auto-form/__tests__/stepper.test.tsx",
-    "renders one step at a time with semantic progress and linear navigation"
+    "renders one step at a time with semantic progress, linear navigation, and a final-step summary"
   ),
   verified(
     "production",
@@ -1441,7 +1441,7 @@ const productionRequirements: readonly ReadinessRequirement[] = [
     "production.submit-failures",
     "Submission failures remain visible",
     "registry/base-nova/protoform/components/auto-form/__tests__/resilience.test.tsx",
-    "shows root error when onSubmit rejects"
+    "shows a root error when onSubmit throws or rejects"
   ),
   verified(
     "production",
@@ -1497,7 +1497,7 @@ const productionRequirements: readonly ReadinessRequirement[] = [
     "production.cancellation",
     "Async cancellation and stale responses",
     "registry/base-nova/protoform/components/auto-form/__tests__/resilience.test.tsx",
-    "aborts active provider validation when the form unmounts"
+    "aborts superseded and unmounted submit contexts and active provider validation"
   ),
   verified(
     "production",

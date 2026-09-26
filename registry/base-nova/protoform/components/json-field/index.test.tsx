@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, rs } from "@rstest/core";
-import { act, render, screen } from "@testing-library/react";
+import { act, cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { Toaster, toast } from "@/components/ui/toast";
@@ -11,7 +11,7 @@ afterEach(() => {
 });
 
 describe("JSONField accessibility", () => {
-  test("labels the fallback editor for deeply nested JSON", () => {
+  test("labels the fallback editor for deeply nested JSON and opens an unconstrained array in JSON mode", async () => {
     render(
       <JSONField
         maxDepth={1}
@@ -30,9 +30,8 @@ describe("JSONField accessibility", () => {
     );
 
     expect(screen.getByRole("textbox", { name: "Audit JSON" })).toBeVisible();
-  });
 
-  test("opens an unconstrained array in JSON mode", async () => {
+    cleanup();
     render(<JSONField onChange={rs.fn()} schema={{ type: "array" }} value={["overview", 3, true]} />);
 
     expect(await screen.findByRole("textbox", { name: "JSON value" })).toHaveValue('[\n  "overview",\n  3,\n  true\n]');

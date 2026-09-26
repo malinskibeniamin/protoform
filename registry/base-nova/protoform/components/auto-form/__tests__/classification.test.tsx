@@ -10,65 +10,27 @@ const REQUIRED_HIDDEN_LABEL = /required hidden/iu;
 const OPTIONAL_PROMOTED_LABEL = /optional promoted/iu;
 
 describe("AutoForm – simple/advanced field classification", () => {
-  test("shows required fields in simple mode and hides optional fields", () => {
+  test("simple mode shows required fields, honors customData.advanced, and advanced mode reveals the rest", async () => {
+    const user = userEvent.setup();
     const schema = createMockProvider([
       { key: "requiredName", required: true, type: "string" },
       { key: "optionalNote", required: false, type: "string" },
-    ]);
-
-    render(
-      <AutoForm
-        defaultMode="simple"
-        defaultValues={{ optionalNote: "world", requiredName: "hello" }}
-        modes={["simple", "advanced"]}
-        schema={schema}
-        withSubmit
-      />
-    );
-
-    expect(screen.getByLabelText(REQUIRED_NAME_LABEL)).toBeInTheDocument();
-    expect(screen.queryByLabelText(OPTIONAL_NOTE_LABEL)).not.toBeInTheDocument();
-  });
-
-  test("hides a required field when customData.advanced is true", () => {
-    const schema = createMockProvider([
-      { key: "requiredName", required: true, type: "string" },
       { key: "requiredHidden", required: true, type: "string" },
-    ]);
-
-    render(
-      <AutoForm
-        defaultMode="simple"
-        defaultValues={{ requiredHidden: "secret", requiredName: "hello" }}
-        fieldConfig={{
-          requiredHidden: {
-            customData: { advanced: true },
-          },
-        }}
-        modes={["simple", "advanced"]}
-        schema={schema}
-        withSubmit
-      />
-    );
-
-    expect(screen.getByLabelText(REQUIRED_NAME_LABEL)).toBeInTheDocument();
-    expect(screen.queryByLabelText(REQUIRED_HIDDEN_LABEL)).not.toBeInTheDocument();
-  });
-
-  test("shows an optional field when customData.advanced is false", () => {
-    const schema = createMockProvider([
-      { key: "requiredName", required: true, type: "string" },
       { key: "optionalPromoted", required: false, type: "string" },
     ]);
 
     render(
       <AutoForm
         defaultMode="simple"
-        defaultValues={{ optionalPromoted: "visible", requiredName: "hello" }}
+        defaultValues={{
+          optionalNote: "world",
+          optionalPromoted: "visible",
+          requiredHidden: "secret",
+          requiredName: "hello",
+        }}
         fieldConfig={{
-          optionalPromoted: {
-            customData: { advanced: false },
-          },
+          optionalPromoted: { customData: { advanced: false } },
+          requiredHidden: { customData: { advanced: true } },
         }}
         modes={["simple", "advanced"]}
         schema={schema}
@@ -76,8 +38,17 @@ describe("AutoForm – simple/advanced field classification", () => {
       />
     );
 
-    expect(screen.getByLabelText(REQUIRED_NAME_LABEL)).toBeInTheDocument();
-    expect(screen.getByLabelText(OPTIONAL_PROMOTED_LABEL)).toBeInTheDocument();
+    expect(screen.getByLabelText(REQUIRED_NAME_LABEL)).toBeVisible();
+    expect(screen.getByLabelText(OPTIONAL_PROMOTED_LABEL)).toBeVisible();
+    expect(screen.queryByLabelText(OPTIONAL_NOTE_LABEL)).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(REQUIRED_HIDDEN_LABEL)).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("tab", { name: /advanced/iu }));
+
+    await waitFor(() => {
+      expect(screen.getByLabelText(OPTIONAL_NOTE_LABEL)).toBeVisible();
+    });
+    expect(screen.getByLabelText(REQUIRED_HIDDEN_LABEL)).toBeVisible();
   });
 
   test("custom classifyField prop controls which fields appear in simple mode", () => {
@@ -97,33 +68,7 @@ describe("AutoForm – simple/advanced field classification", () => {
       />
     );
 
-    expect(screen.getByLabelText(REQUIRED_NAME_LABEL)).toBeInTheDocument();
-    expect(screen.getByLabelText(OPTIONAL_NOTE_LABEL)).toBeInTheDocument();
-  });
-
-  test("switching to advanced mode reveals all fields", async () => {
-    const user = userEvent.setup();
-    const schema = createMockProvider([
-      { key: "requiredName", required: true, type: "string" },
-      { key: "optionalNote", required: false, type: "string" },
-    ]);
-
-    render(
-      <AutoForm
-        defaultMode="simple"
-        defaultValues={{ optionalNote: "hidden initially", requiredName: "hello" }}
-        modes={["simple", "advanced"]}
-        schema={schema}
-        withSubmit
-      />
-    );
-
-    expect(screen.queryByLabelText(OPTIONAL_NOTE_LABEL)).not.toBeInTheDocument();
-
-    await user.click(screen.getByRole("tab", { name: /advanced/iu }));
-
-    await waitFor(() => {
-      expect(screen.getByLabelText(OPTIONAL_NOTE_LABEL)).toBeInTheDocument();
-    });
+    expect(screen.getByLabelText(REQUIRED_NAME_LABEL)).toBeVisible();
+    expect(screen.getByLabelText(OPTIONAL_NOTE_LABEL)).toBeVisible();
   });
 });

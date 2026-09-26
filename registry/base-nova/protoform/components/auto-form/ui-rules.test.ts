@@ -9,7 +9,7 @@ const readyRule = {
 };
 
 describe("AutoForm UI CEL profile", () => {
-  test("exposes only form and current-field values to UI expressions", () => {
+  test("exposes only form and current-field values and fails closed for malformed, unknown, erroring, and non-boolean rules", () => {
     expect(
       evaluateUiRules([readyRule], {
         form: { enabled: true },
@@ -22,29 +22,19 @@ describe("AutoForm UI CEL profile", () => {
         thisValue: "ready",
       })
     ).toBe(false);
-  });
-
-  test("fails closed for malformed, unknown, erroring, and non-boolean rules", () => {
-    const context = { form: {}, thisValue: undefined };
-    const expressions = ["(", "unknown_name", "1 / 0", "'visible'"];
-
-    for (const expression of expressions) {
-      expect(evaluateUiRules([{ expression, id: `ui.${expression}`, message: "" }], context)).toBe(false);
-    }
-  });
-
-  test("reuses a compiled expression with changing form contexts", () => {
-    expect(
-      evaluateUiRules([readyRule], {
-        form: { enabled: true },
-        thisValue: "ready",
-      })
-    ).toBe(true);
+    // The compiled expression is reused with a changing current-field value.
     expect(
       evaluateUiRules([readyRule], {
         form: { enabled: true },
         thisValue: "waiting",
       })
     ).toBe(false);
+
+    const context = { form: {}, thisValue: undefined };
+    const expressions = ["(", "unknown_name", "1 / 0", "'visible'"];
+
+    for (const expression of expressions) {
+      expect(evaluateUiRules([{ expression, id: `ui.${expression}`, message: "" }], context)).toBe(false);
+    }
   });
 });

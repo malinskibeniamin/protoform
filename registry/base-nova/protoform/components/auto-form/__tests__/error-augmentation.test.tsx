@@ -5,27 +5,31 @@ import { AutoForm } from "..";
 import { createMockProvider } from "./test-utils";
 
 describe("AutoForm – regex error augmentation", () => {
-  test("appends example to regex validation errors when field has example configured", async () => {
+  test("appends the configured example only to regex validation errors", async () => {
     const user = userEvent.setup();
-    const schema = createMockProvider([{ key: "resourceId", required: true, type: "string" }], {}, (values) => {
-      const value = values["resourceId"];
-      const resourceId = typeof value === "string" ? value : "";
-      if (!/^[a-f0-9-]{36}$/u.test(resourceId)) {
-        return {
-          errors: [{ message: "Must match regex pattern `^[a-f0-9-]{36}$`", path: ["resourceId"] }],
-          success: false,
-        };
-      }
-      return { data: values, success: true };
-    });
+    const schema = createMockProvider(
+      [
+        { key: "resourceId", required: true, type: "string" },
+        { key: "name", required: true, type: "string" },
+        { key: "code", required: true, type: "string" },
+      ],
+      {},
+      () => ({
+        errors: [
+          { message: "Must match regex pattern `^[a-f0-9-]{36}$`", path: ["resourceId"] },
+          { message: "Must be at least 5 characters", path: ["name"] },
+          { message: "Must match regex pattern `^[A-Z]{3}$`", path: ["code"] },
+        ],
+        success: false,
+      })
+    );
 
     render(
       <AutoForm
-        defaultValues={{ resourceId: "bad" }}
+        defaultValues={{ code: "bad", name: "ab", resourceId: "bad" }}
         fieldConfig={{
-          resourceId: {
-            customData: { example: "123e4567-e89b-12d3-a456-426614174000" },
-          },
+          name: { customData: { example: "protoform" } },
+          resourceId: { customData: { example: "123e4567-e89b-12d3-a456-426614174000" } },
         }}
         formOptions={{ mode: "all" }}
         schema={schema}
@@ -36,72 +40,12 @@ describe("AutoForm – regex error augmentation", () => {
     await user.click(screen.getByRole("button", { name: /submit/iu }));
 
     await waitFor(() => {
-      const errorEl = screen.getByText(/example: 123e4567/iu);
-      expect(errorEl).toBeInTheDocument();
+      expect(screen.getByText(/example: 123e4567/iu)).toBeVisible();
     });
-  });
-
-  test("passes non-regex errors through unchanged", async () => {
-    const user = userEvent.setup();
-    const schema = createMockProvider([{ key: "name", required: true, type: "string" }], {}, (values) => {
-      const value = values["name"];
-      const name = typeof value === "string" ? value : "";
-      if (name.length < 5) {
-        return {
-          errors: [{ message: "Must be at least 5 characters", path: ["name"] }],
-          success: false,
-        };
-      }
-      return { data: values, success: true };
-    });
-
-    render(
-      <AutoForm
-        defaultValues={{ name: "ab" }}
-        fieldConfig={{
-          name: {
-            customData: { example: "protoform" },
-          },
-        }}
-        formOptions={{ mode: "all" }}
-        schema={schema}
-        withSubmit
-      />
-    );
-
-    await user.click(screen.getByRole("button", { name: /submit/iu }));
-
-    await waitFor(() => {
-      expect(screen.getByText(/must be at least 5 characters/iu)).toBeInTheDocument();
-    });
-
-    // The example should NOT be appended to non-regex errors
+    // Non-regex errors and regex errors without a configured example pass through unchanged.
+    expect(screen.getByText(/must be at least 5 characters/iu)).toBeVisible();
     expect(screen.queryByText(/example: protoform/iu)).not.toBeInTheDocument();
-  });
-
-  test("passes regex errors through unchanged when no example is configured", async () => {
-    const user = userEvent.setup();
-    const schema = createMockProvider([{ key: "code", required: true, type: "string" }], {}, (values) => {
-      const value = values["code"];
-      const code = typeof value === "string" ? value : "";
-      if (!/^[A-Z]{3}$/u.test(code)) {
-        return {
-          errors: [{ message: "Must match regex pattern `^[A-Z]{3}$`", path: ["code"] }],
-          success: false,
-        };
-      }
-      return { data: values, success: true };
-    });
-
-    render(<AutoForm defaultValues={{ code: "bad" }} formOptions={{ mode: "all" }} schema={schema} withSubmit />);
-
-    await user.click(screen.getByRole("button", { name: /submit/iu }));
-
-    await waitFor(() => {
-      expect(screen.getByText(/must match regex pattern/iu)).toBeInTheDocument();
-    });
-
-    // No example text should appear since none was configured
-    expect(screen.queryByText(/example:/iu)).not.toBeInTheDocument();
+    expect(screen.getByText(/must match regex pattern `\^\[A-Z\]\{3\}\$`$/iu)).toBeVisible();
+    expect(screen.getAllByText(/example:/iu)).toHaveLength(1);
   });
 });

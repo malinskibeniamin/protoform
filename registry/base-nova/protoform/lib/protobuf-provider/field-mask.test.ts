@@ -7,7 +7,7 @@ import { createFieldMask, createUpdateMask, dirtyFieldsFromValues } from "./fiel
 import { AutoFormExampleSchema } from "./gen/auto-form-example_pb.js";
 
 describe("createFieldMask", () => {
-  test("normalizes and minimizes explicit read-mask paths", () => {
+  test("normalizes and minimizes explicit read-mask paths and collapses a wildcard", () => {
     const mask = createFieldMask(AutoFormExampleSchema, [
       "previousAddresses.city",
       "shippingAddress.postalCode",
@@ -16,17 +16,12 @@ describe("createFieldMask", () => {
     ]);
 
     expect(mask.paths).toEqual(["primary_email", "shipping_address", "previous_addresses"]);
-  });
-
-  test("collapses an explicit wildcard to the full projection", () => {
-    const mask = createFieldMask(AutoFormExampleSchema, ["primaryEmail", "*"]);
-
-    expect(mask.paths).toEqual(["*"]);
+    expect(createFieldMask(AutoFormExampleSchema, ["primaryEmail", "*"]).paths).toEqual(["*"]);
   });
 });
 
 describe("createUpdateMask", () => {
-  test("includes only dirty protobuf fields and collapses collections", () => {
+  test("includes only dirty, client-owned protobuf fields and collapses collections", () => {
     const mask = createUpdateMask(
       AutoFormExampleSchema,
       {
@@ -53,41 +48,8 @@ describe("createUpdateMask", () => {
       "labels",
       "preferred_phone",
     ]);
-  });
 
-  test("masks the initial oneof branch when an edit clears it", () => {
-    const mask = createUpdateMask(
-      AutoFormExampleSchema,
-      { preferredContact: { case: true, value: true } },
-      { preferredContact: { case: undefined } },
-      {
-        preferredContact: {
-          case: "preferredEmail",
-          value: "owner@example.com",
-        },
-      }
-    );
-
-    expect(mask.paths).toEqual(["preferred_email"]);
-  });
-
-  test("keeps a nested dirty leaf inside the active oneof branch", () => {
-    const mask = createUpdateMask(
-      SubmitComplexFormRequestSchema,
-      { credentials: { value: { apiKey: true } } },
-      {
-        credentials: {
-          case: "apiKey",
-          value: { apiKey: "secret-reference" },
-        },
-      }
-    );
-
-    expect(mask.paths).toEqual(["api_key.api_key"]);
-  });
-
-  test("excludes AIP-owned fields from update masks", () => {
-    const mask = createUpdateMask(
+    const maskWithAipFields = createUpdateMask(
       MaskableProfileSchema,
       {
         displayName: true,
@@ -103,12 +65,41 @@ describe("createUpdateMask", () => {
       }
     );
 
-    expect(mask.paths).toEqual(["display_name"]);
+    expect(maskWithAipFields.paths).toEqual(["display_name"]);
+  });
+
+  test("masks the cleared initial oneof branch and nested dirty leaves in the active branch", () => {
+    const mask = createUpdateMask(
+      AutoFormExampleSchema,
+      { preferredContact: { case: true, value: true } },
+      { preferredContact: { case: undefined } },
+      {
+        preferredContact: {
+          case: "preferredEmail",
+          value: "owner@example.com",
+        },
+      }
+    );
+
+    expect(mask.paths).toEqual(["preferred_email"]);
+
+    const nestedMask = createUpdateMask(
+      SubmitComplexFormRequestSchema,
+      { credentials: { value: { apiKey: true } } },
+      {
+        credentials: {
+          case: "apiKey",
+          value: { apiKey: "secret-reference" },
+        },
+      }
+    );
+
+    expect(nestedMask.paths).toEqual(["api_key.api_key"]);
   });
 });
 
 describe("dirtyFieldsFromValues", () => {
-  test("builds a nested dirty tree and collapses changed collections", () => {
+  test("builds a nested dirty tree, collapses changed collections, and ignores equal values", () => {
     expect(
       dirtyFieldsFromValues(
         {
@@ -126,9 +117,6 @@ describe("dirtyFieldsFromValues", () => {
       profile: { city: true },
       tags: true,
     });
-  });
-
-  test("returns an empty tree for deeply equal values", () => {
     expect(
       dirtyFieldsFromValues(
         { profile: { name: "Ada" }, tags: ["forms"] },
