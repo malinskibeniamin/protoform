@@ -1,9 +1,11 @@
 import { defineConfig } from "blume";
+import { openapi } from "blume/reference";
+import { pagefind } from "blume/search";
 
 import { demoRedirects } from "./examples/catalog/demo-docs.js";
 
 export default defineConfig({
-  ai: {
+  agents: {
     llmsTxt: {
       details: `## Agent guidance
 
@@ -78,20 +80,20 @@ Read the relevant guide and example before generating code; cite its canonical d
       display: "group",
     },
   },
-  openapi: {
-    codeSamples: ["curl", "js"],
-    enabled: true,
-    renderer: "blume",
-    route: "/reference",
-    spec: "./openapi.yaml",
-  },
   react: {
     compiler: true,
   },
   redirects: [...demoRedirects],
+  reference: [
+    openapi({
+      codeSamples: ["curl", "js"],
+      route: "/reference",
+      spec: "./openapi.yaml",
+    }),
+  ],
   search: {
     indexing: { includeCodeBlocks: true },
-    provider: "pagefind",
+    provider: pagefind(),
   },
   theme: {
     fonts: {
