@@ -205,8 +205,7 @@ export function StringLikeInput({
   testId: string;
   type?: React.ComponentProps<typeof Input>["type"];
 }) {
-  "use no memo";
-
+  const { ref: inputRef, ...controlProps } = inputProps;
   if (icon) {
     return (
       <InputGroup testId={testId}>
@@ -215,16 +214,16 @@ export function StringLikeInput({
         </InputGroupAddon>
         <InputGroupInput
           aria-invalid={Boolean(error)}
-          disabled={inputProps.disabled}
+          disabled={controlProps.disabled}
           id={id}
-          name={inputProps.name}
-          onBlur={inputProps.onBlur}
-          onChange={(event) => inputProps.onValueChange(event.target.value)}
+          name={controlProps.name}
+          onBlur={controlProps.onBlur}
+          onChange={(event) => controlProps.onValueChange(event.target.value)}
           placeholder={placeholder}
-          ref={inputProps.ref}
+          ref={inputRef}
           testId={`${testId}-input`}
           type={type}
-          value={typeof inputProps.value === "string" ? inputProps.value : ""}
+          value={typeof controlProps.value === "string" ? controlProps.value : ""}
         />
       </InputGroup>
     );
@@ -234,16 +233,16 @@ export function StringLikeInput({
     <Input
       aria-invalid={Boolean(error)}
       className={error ? "border-destructive" : ""}
-      disabled={inputProps.disabled}
+      disabled={controlProps.disabled}
       id={id}
-      name={inputProps.name}
-      onBlur={inputProps.onBlur}
-      onChange={(event) => inputProps.onValueChange(event.target.value)}
+      name={controlProps.name}
+      onBlur={controlProps.onBlur}
+      onChange={(event) => controlProps.onValueChange(event.target.value)}
       placeholder={placeholder}
-      ref={inputProps.ref}
+      ref={inputRef}
       testId={testId}
       type={type}
-      value={typeof inputProps.value === "string" ? inputProps.value : ""}
+      value={typeof controlProps.value === "string" ? controlProps.value : ""}
     />
   );
 }

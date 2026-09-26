@@ -1,5 +1,5 @@
 import { describe, expect } from "@rstest/core";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type React from "react";
 import { Input as BundledInput } from "@/components/ui/input";
@@ -65,6 +65,30 @@ describe("ObjectWrapper", () => {
     await user.click(trigger);
 
     expect(screen.getByText("Advanced fields")).toBeVisible();
+  });
+
+  test("opens a collapsible section with errors and keeps it open once they clear", async () => {
+    const section = (hasError: boolean) =>
+      withAutoFormContext(
+        <Form>
+          <ObjectWrapper
+            field={makeField({ fieldConfig: { customData: { collapsible: true } } })}
+            hasError={hasError}
+            label="Advanced"
+            testId="section"
+          >
+            <div>Advanced fields</div>
+          </ObjectWrapper>
+        </Form>
+      );
+    const view = render(section(false));
+    expect(screen.queryByText("Advanced fields")).toBeNull();
+
+    view.rerender(section(true));
+    await waitFor(() => expect(screen.getByText("Advanced fields")).toBeVisible());
+
+    view.rerender(section(false));
+    await waitFor(() => expect(screen.getByText("Advanced fields")).toBeVisible());
   });
 
   test("uses nested heading levels and label rails, spacing tokens, and dividers only under visible labels", () => {

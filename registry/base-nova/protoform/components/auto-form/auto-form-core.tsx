@@ -209,8 +209,6 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
   validationMode = "submit",
   revalidationMode = "change",
 }: AutoFormContentProps<T, TNativeForm, TCustomFieldType>) {
-  "use no memo";
-
   const testIdPrefix = resolveAutoFormTestIdPrefix(testId);
   const submitController = React.useRef<AbortController | undefined>(undefined);
   const validationController = React.useRef<AbortController | undefined>(undefined);
@@ -295,6 +293,21 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
     return hasSubmitted.current ? revalidationMode : validationMode;
   }
 
+  function beginSubmit() {
+    submitController.current?.abort();
+    validationController.current?.abort();
+    const controller = new AbortController();
+    submitController.current = controller;
+    return controller;
+  }
+
+  function beginValidation() {
+    validationController.current?.abort();
+    const controller = new AbortController();
+    validationController.current = controller;
+    return controller;
+  }
+
   async function runLifecycleValidation(valuesToValidate: Record<string, unknown>) {
     if (engine.validatesSchema) {
       return;
@@ -343,21 +356,6 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
     if (firstErrorField) {
       engine.focus(firstErrorField.key);
     }
-  }
-
-  function beginSubmit() {
-    submitController.current?.abort();
-    validationController.current?.abort();
-    const controller = new AbortController();
-    submitController.current = controller;
-    return controller;
-  }
-
-  function beginValidation() {
-    validationController.current?.abort();
-    const controller = new AbortController();
-    validationController.current = controller;
-    return controller;
   }
 
   function getSubmitContext(signal: AbortSignal): AutoFormSubmitContext {
@@ -428,6 +426,57 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
     setCurrentStepIndex((index) => Math.max(0, index - 1));
   }
 
+  async function validateStepAndAdvance(fieldNames: string[], controller: AbortController) {
+    if (!stepper) {
+      return;
+    }
+    const nativeValid = await engine.trigger(engine.validatesSchema ? undefined : fieldNames);
+    if (controller.signal.aborted) {
+      return;
+    }
+
+    if (engine.validatesSchema) {
+      if (nativeValid) {
+        setCurrentStepIndex((index) => Math.min(stepper.steps.length - 1, index + 1));
+      } else {
+        const firstInvalid = fieldNames.find(engine.getFieldInvalid);
+        if (firstInvalid) {
+          engine.focus(firstInvalid);
+        }
+      }
+      return;
+    }
+
+    const validationResult = await validateWithProvider(engine.getValues(), controller.signal);
+    if (controller.signal.aborted) {
+      return;
+    }
+    const currentFields = new Set(fieldNames);
+    const currentErrors = validationResult.success
+      ? []
+      : validationResult.errors.filter((error) => {
+          const [root] = error.path;
+          return error.path.length === 0 || (typeof root === "string" && currentFields.has(root));
+        });
+    if (currentErrors.length > 0) {
+      engine.setValidationErrors(currentErrors);
+      const firstFieldError = currentErrors.find((error) => error.path.length > 0);
+      if (firstFieldError) {
+        engine.focus(firstFieldError.path.join("."));
+      }
+      return;
+    }
+    if (nativeValid) {
+      setCurrentStepIndex((index) => Math.min(stepper.steps.length - 1, index + 1));
+    }
+  }
+
+  function finishStepAdvance(controller: AbortController) {
+    if (validationController.current === controller && !controller.signal.aborted) {
+      setIsAdvancing(false);
+    }
+  }
+
   async function handleStepContinue(stepFields: ReturnType<typeof mergeFieldOverrides>) {
     if (!stepper || isAdvancing) {
       return;
@@ -438,50 +487,12 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
     engine.clearErrors([...fieldNames, "root", PROTO_FORM_ROOT_ERROR_KEY]);
 
     try {
-      const nativeValid = await engine.trigger(engine.validatesSchema ? undefined : fieldNames);
-      if (controller.signal.aborted) {
-        return;
-      }
-
-      if (engine.validatesSchema) {
-        if (nativeValid) {
-          setCurrentStepIndex((index) => Math.min(stepper.steps.length - 1, index + 1));
-        } else {
-          const firstInvalid = fieldNames.find(engine.getFieldInvalid);
-          if (firstInvalid) {
-            engine.focus(firstInvalid);
-          }
-        }
-        return;
-      }
-
-      const validationResult = await validateWithProvider(engine.getValues(), controller.signal);
-      if (controller.signal.aborted) {
-        return;
-      }
-      const currentFields = new Set(fieldNames);
-      const currentErrors = validationResult.success
-        ? []
-        : validationResult.errors.filter((error) => {
-            const [root] = error.path;
-            return error.path.length === 0 || (typeof root === "string" && currentFields.has(root));
-          });
-      if (currentErrors.length > 0) {
-        engine.setValidationErrors(currentErrors);
-        const firstFieldError = currentErrors.find((error) => error.path.length > 0);
-        if (firstFieldError) {
-          engine.focus(firstFieldError.path.join("."));
-        }
-        return;
-      }
-      if (nativeValid) {
-        setCurrentStepIndex((index) => Math.min(stepper.steps.length - 1, index + 1));
-      }
-    } finally {
-      if (validationController.current === controller && !controller.signal.aborted) {
-        setIsAdvancing(false);
-      }
+      await validateStepAndAdvance(fieldNames, controller);
+    } catch (error) {
+      finishStepAdvance(controller);
+      throw error;
     }
+    finishStepAdvance(controller);
   }
 
   React.useEffect(() => {

@@ -86,6 +86,92 @@ interface AutoFormRuntimeProviderProps<TNativeForm> {
 // validation, proto conversion, payloadBuilder) doesn't block typing on large forms.
 //  -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1 -= 1-
 
+/** Orders asynchronous JSON applies so only the latest one updates the form. */
+class ApplySequence {
+  private current = 0;
+
+  isCurrent(sequence: number): boolean {
+    return this.current === sequence;
+  }
+
+  next(): number {
+    this.current += 1;
+    return this.current;
+  }
+}
+
+function buildPayloadState<TNativeForm>({
+  context,
+  conversionOptions,
+  payloadBuilder,
+  payloadSchema,
+  resolvedSchema,
+  signal,
+  values,
+}: {
+  context: AutoFormPayloadBuilderContext<TNativeForm>;
+  conversionOptions: AutoFormRuntimeProviderProps<TNativeForm>["conversionOptions"];
+  payloadBuilder: AutoFormRuntimeProviderProps<TNativeForm>["payloadBuilder"];
+  payloadSchema: AutoFormRuntimeProviderProps<TNativeForm>["payloadSchema"];
+  resolvedSchema: AutoFormRuntimeProviderProps<TNativeForm>["resolvedSchema"];
+  signal: AbortSignal;
+  values: Record<string, unknown>;
+}): { bestEffort: boolean; payload: unknown } {
+  let validationSuccess = false;
+  let validatedData: unknown;
+  let bestEffort = false;
+
+  try {
+    const validationResult = resolvedSchema.provider.validateSchema(values as never, {
+      signal,
+    });
+    if (isPromiseLike(validationResult)) {
+      // Payload preview is best-effort; the engine's awaited validation path
+      // owns user-visible errors. Observe rejection here to avoid leaking it.
+      Promise.resolve(validationResult).catch(() => undefined);
+      bestEffort = true;
+    } else if (isValidationSuccess(validationResult)) {
+      validationSuccess = true;
+      validatedData = validationResult.data;
+    } else {
+      bestEffort = true;
+    }
+  } catch {
+    bestEffort = true;
+  }
+
+  let payload: unknown;
+
+  if (payloadBuilder) {
+    try {
+      payload = payloadBuilder(values, context);
+    } catch {
+      bestEffort = true;
+    }
+  }
+
+  if (payload === undefined) {
+    if (resolvedSchema.isProto && resolvedSchema.protoDesc) {
+      payload = protoFormValuesToPayload(resolvedSchema.protoDesc, values, conversionOptions);
+      bestEffort ||= !validationSuccess;
+    } else if (validationSuccess) {
+      payload = validatedData;
+    } else {
+      payload = values;
+      bestEffort = true;
+    }
+  }
+
+  if (payloadSchema && payload !== undefined) {
+    const validation = payloadSchema.safeParse(payload);
+    if (!validation.success) {
+      bestEffort = true;
+    }
+  }
+
+  return { bestEffort, payload };
+}
+
 function AutoFormPayloadController<TNativeForm>({
   watchedValues,
   methods,
@@ -111,8 +197,6 @@ function AutoFormPayloadController<TNativeForm>({
   conversionOptions: AutoFormRuntimeProviderProps<TNativeForm>["conversionOptions"];
   renderContent: AutoFormRuntimeProviderProps<TNativeForm>["renderContent"];
 }) {
-  "use no memo";
-
   const deferredValues = React.useDeferredValue(watchedValues);
   const payloadValidationController = React.useMemo(() => new AbortController(), []);
 
@@ -145,88 +229,45 @@ function AutoFormPayloadController<TNativeForm>({
     ]
   );
 
-  const payloadState = React.useMemo(() => {
-    let validationSuccess = false;
-    let validatedData: unknown;
-    let bestEffort = false;
-
-    try {
-      const validationResult = resolvedSchema.provider.validateSchema(deferredValues as never, {
+  const payloadState = React.useMemo(
+    () =>
+      buildPayloadState({
+        context: payloadContextBase as AutoFormPayloadBuilderContext<TNativeForm>,
+        conversionOptions,
+        payloadBuilder,
+        payloadSchema,
+        resolvedSchema,
         signal: payloadValidationController.signal,
-      });
-      if (isPromiseLike(validationResult)) {
-        // Payload preview is best-effort; the engine's awaited validation path
-        // owns user-visible errors. Observe rejection here to avoid leaking it.
-        Promise.resolve(validationResult).catch(() => undefined);
-        bestEffort = true;
-      } else if (isValidationSuccess(validationResult)) {
-        validationSuccess = true;
-        validatedData = validationResult.data;
-      } else {
-        bestEffort = true;
-      }
-    } catch {
-      bestEffort = true;
-    }
-
-    let payload: unknown;
-
-    if (payloadBuilder) {
-      try {
-        payload = payloadBuilder(deferredValues, payloadContextBase as AutoFormPayloadBuilderContext<TNativeForm>);
-      } catch {
-        bestEffort = true;
-      }
-    }
-
-    if (payload === undefined) {
-      if (resolvedSchema.isProto && resolvedSchema.protoDesc) {
-        payload = protoFormValuesToPayload(resolvedSchema.protoDesc, deferredValues, conversionOptions);
-        bestEffort ||= !validationSuccess;
-      } else if (validationSuccess) {
-        payload = validatedData;
-      } else {
-        payload = deferredValues;
-        bestEffort = true;
-      }
-    }
-
-    if (payloadSchema && payload !== undefined) {
-      const validation = payloadSchema.safeParse(payload);
-      if (!validation.success) {
-        bestEffort = true;
-      }
-    }
-
-    return { bestEffort, payload };
-  }, [
-    deferredValues,
-    conversionOptions,
-    payloadBuilder,
-    payloadContextBase,
-    payloadSchema,
-    payloadValidationController.signal,
-    resolvedSchema.isProto,
-    resolvedSchema.protoDesc,
-    resolvedSchema.provider,
-  ]);
+        values: deferredValues,
+      }),
+    [
+      deferredValues,
+      conversionOptions,
+      payloadBuilder,
+      payloadContextBase,
+      payloadSchema,
+      payloadValidationController.signal,
+      resolvedSchema,
+    ]
+  );
 
   const payloadText = React.useMemo(() => safeStringify(payloadState.payload), [payloadState.payload]);
   const [jsonEditorText, setJsonEditorText] = React.useState(payloadText);
   const [jsonEditorError, setJsonEditorError] = React.useState<string>();
 
-  React.useEffect(() => {
+  const [editorSyncedFrom, setEditorSyncedFrom] = React.useState({ jsonEditorError, payloadText });
+  if (editorSyncedFrom.jsonEditorError !== jsonEditorError || editorSyncedFrom.payloadText !== payloadText) {
+    setEditorSyncedFrom({ jsonEditorError, payloadText });
     if (!jsonEditorError) {
       setJsonEditorText(payloadText);
     }
-  }, [jsonEditorError, payloadText]);
+  }
 
-  const applySeqRef = React.useRef(0);
+  const [applySequence] = React.useState(() => new ApplySequence());
 
   const applyPayloadToForm = React.useCallback(
     async (incoming: unknown) => {
-      applySeqRef.current += 1;
-      const seq = applySeqRef.current;
+      const seq = applySequence.next();
       try {
         let nextValues: Record<string, unknown> | undefined;
 
@@ -239,7 +280,7 @@ function AutoFormPayloadController<TNativeForm>({
           nextValues = incoming;
         }
 
-        if (applySeqRef.current !== seq) {
+        if (!applySequence.isCurrent(seq)) {
           return;
         }
 
@@ -251,13 +292,13 @@ function AutoFormPayloadController<TNativeForm>({
         methods.reset(nextValues, { keepDefaultValues: true });
         setJsonEditorError(undefined);
       } catch (error) {
-        if (applySeqRef.current !== seq) {
+        if (!applySequence.isCurrent(seq)) {
           return;
         }
         setJsonEditorError(error instanceof Error ? error.message : "AutoForm could not apply this payload.");
       }
     },
-    [methods, payloadContextBase, payloadParser, resolvedSchema.isProto, resolvedSchema.protoDesc]
+    [applySequence, methods, payloadContextBase, payloadParser, resolvedSchema.isProto, resolvedSchema.protoDesc]
   );
 
   const handleJsonTextChange = React.useCallback(

@@ -17,6 +17,10 @@ source snapshots.
 - Conformance, accessibility, browser, performance, security, and consumer-installation evidence.
 - Complete bookstore RPC example, static documentation site, and source registry.
 
+### Changed
+
+- AutoForm core, its runtime provider, object sections, and string inputs compile under React Compiler without `"use no memo"`.
+
 ### Fixed
 
 - Replacing a data provider, or registering one after the first render, no longer breaks React hook order.
