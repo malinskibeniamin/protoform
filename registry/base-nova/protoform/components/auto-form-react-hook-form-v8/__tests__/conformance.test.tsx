@@ -1,5 +1,5 @@
 import { describe, expect, rs } from "@rstest/core";
-import { render, screen, waitFor } from "@testing-library/react";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import type { SchemaProvider } from "../../auto-form/core-types";
@@ -61,7 +61,7 @@ describe("experimental React Hook Form v8 AutoForm conformance", () => {
     expect(onSubmit.mock.calls[0]?.[0]).toEqual({ tags: ["second"] });
   });
 
-  test("renders every provider validation failure and focuses the first v8 field", async () => {
+  test("renders every provider field failure, focuses the first v8 field, and renders a root error once", async () => {
     const user = userEvent.setup();
     const schema = createNameSchema(() => ({
       errors: [
@@ -80,16 +80,14 @@ describe("experimental React Hook Form v8 AutoForm conformance", () => {
     expect(fieldError).toHaveTextContent("Name must be unique.");
     expect(input).toHaveAttribute("aria-invalid", "true");
     expect(input).toHaveFocus();
-  });
 
-  test("renders a provider root error once", async () => {
-    const user = userEvent.setup();
-    const schema = createNameSchema(() => ({
+    cleanup();
+    const schemaRoot = createNameSchema(() => ({
       errors: [{ message: "Provider exploded.", path: [] }],
       success: false,
     }));
 
-    render(<AutoForm schema={schema} withSubmit />);
+    render(<AutoForm schema={schemaRoot} withSubmit />);
     await user.click(screen.getByRole("button", { name: "Submit" }));
 
     const rootError = await screen.findByRole("alert");

@@ -1,5 +1,5 @@
 import { describe, expect, rs } from "@rstest/core";
-import { act, render, screen, waitFor, within } from "@testing-library/react";
+import { act, cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { AutoForm } from "..";
@@ -12,26 +12,7 @@ const steps = [
 ];
 
 describe("AutoForm stepper", () => {
-  test("renders a vertical progress rail through the stepper config", () => {
-    const schema = createMockProvider([
-      { hints: { step: "basics" }, key: "name", required: true, type: "string" },
-      { hints: { step: "delivery" }, key: "region", required: true, type: "string" },
-      { hints: { step: "review" }, key: "approval", required: true, type: "string" },
-    ]);
-
-    render(<AutoForm schema={schema} stepper={{ orientation: "vertical", steps }} withSubmit />);
-
-    const progress = screen.getByRole("navigation", { name: "Form progress" });
-    expect(progress).toHaveAttribute("data-orientation", "vertical");
-    expect(progress.parentElement).toHaveAttribute("data-layout", "stepper-vertical");
-    expect(within(progress).getAllByTestId("step-connector")).toHaveLength(2);
-    for (const connector of within(progress).getAllByTestId("step-connector")) {
-      expect(connector).toHaveAttribute("data-orientation", "vertical");
-    }
-    expect(within(progress).getByText("Basics").closest("li")).toHaveAttribute("aria-current", "step");
-  });
-
-  test("keeps horizontal steps on one row and adapts labels to its container", () => {
+  test("renders an adaptive horizontal row by default and a vertical rail through the stepper config", () => {
     const schema = createMockProvider([{ key: "name", required: true, type: "string" }]);
     const fiveSteps = [
       { id: "identity", title: "Identity" },
@@ -51,42 +32,21 @@ describe("AutoForm stepper", () => {
     expect(stepList).toHaveClass("grid-cols-(--step-columns)");
     expect(within(progress).getByText("Identity").className).toContain("@min-[30rem]:block");
     expect(within(progress).getByText("Identity").className).toContain("@min-[64rem]:text-left");
+
+    cleanup();
+    render(<AutoForm schema={schema} stepper={{ orientation: "vertical", steps }} withSubmit />);
+
+    const rail = screen.getByRole("navigation", { name: "Form progress" });
+    expect(rail).toHaveAttribute("data-orientation", "vertical");
+    expect(rail.parentElement).toHaveAttribute("data-layout", "stepper-vertical");
+    expect(within(rail).getAllByTestId("step-connector")).toHaveLength(2);
+    for (const connector of within(rail).getAllByTestId("step-connector")) {
+      expect(connector).toHaveAttribute("data-orientation", "vertical");
+    }
+    expect(within(rail).getByText("Basics").closest("li")).toHaveAttribute("aria-current", "step");
   });
 
-  test("renders one step at a time with semantic progress and linear navigation", async () => {
-    const user = userEvent.setup();
-    const schema = createMockProvider([
-      { hints: { step: "basics" }, key: "name", required: true, type: "string" },
-      { hints: { step: "delivery" }, key: "region", required: true, type: "string" },
-      { hints: { step: "review" }, key: "approval", required: true, type: "string" },
-    ]);
-
-    render(<AutoForm schema={schema} stepper={{ steps }} withSubmit />);
-
-    const progress = screen.getByRole("navigation", { name: "Form progress" });
-    expect(progress).toBeInTheDocument();
-    expect(screen.getByText("Step 1 of 3")).toBeInTheDocument();
-    expect(within(progress).getByText("Basics, current step")).toHaveClass("sr-only");
-    expect(within(progress).getByText("Basics").closest("li")).toHaveAttribute("aria-current", "step");
-    expect(screen.getByLabelText(/name/iu)).toBeInTheDocument();
-    expect(screen.queryByLabelText(/region/iu)).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Back" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Submit" })).not.toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Basics" }).closest("section")).toHaveAttribute("data-layout", "split");
-    expect(within(progress).getByText("Basics").closest("li")).toHaveAttribute("data-state", "current");
-    expect(within(progress).getByText("Delivery").closest("li")).toHaveAttribute("data-state", "upcoming");
-    expect(within(progress).getAllByTestId("step-connector")).toHaveLength(2);
-    expect(screen.getByRole("button", { name: "Continue" }).className).toContain("bg-primary");
-
-    await user.click(screen.getByRole("button", { name: "Continue" }));
-
-    expect(screen.getByText("Step 2 of 3")).toBeInTheDocument();
-    expect(screen.getByLabelText(/region/iu)).toBeInTheDocument();
-    expect(screen.queryByLabelText(/name/iu)).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Back" })).toBeInTheDocument();
-  });
-
-  test("shows the summary only on the final review step", async () => {
+  test("renders one step at a time with semantic progress, linear navigation, and a final-step summary", async () => {
     const user = userEvent.setup();
     const schema = createMockProvider(
       [
@@ -107,48 +67,35 @@ describe("AutoForm stepper", () => {
       />
     );
 
+    const progress = screen.getByRole("navigation", { name: "Form progress" });
+    expect(progress).toBeInTheDocument();
+    expect(screen.getByText("Step 1 of 3")).toBeInTheDocument();
+    expect(within(progress).getByText("Basics, current step")).toHaveClass("sr-only");
+    expect(within(progress).getByText("Basics").closest("li")).toHaveAttribute("aria-current", "step");
+    expect(screen.getByLabelText(/name/iu)).toBeInTheDocument();
+    expect(screen.queryByLabelText(/region/iu)).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Back" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Submit" })).not.toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Basics" }).closest("section")).toHaveAttribute("data-layout", "split");
+    expect(within(progress).getByText("Basics").closest("li")).toHaveAttribute("data-state", "current");
+    expect(within(progress).getByText("Delivery").closest("li")).toHaveAttribute("data-state", "upcoming");
+    expect(within(progress).getAllByTestId("step-connector")).toHaveLength(2);
+    expect(screen.getByRole("button", { name: "Continue" }).className).toContain("bg-primary");
     expect(screen.queryByText("Review summary")).not.toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Continue" }));
+
+    expect(screen.getByText("Step 2 of 3")).toBeInTheDocument();
+    expect(screen.getByLabelText(/region/iu)).toBeInTheDocument();
+    expect(screen.queryByLabelText(/name/iu)).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Back" })).toBeInTheDocument();
     expect(screen.queryByText("Review summary")).not.toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Continue" }));
     expect(screen.getByText("Review summary")).toBeVisible();
   });
 
-  test("blocks Continue on current-step errors without exposing later-step errors", async () => {
-    const user = userEvent.setup();
-    const schema = createMockProvider(
-      [
-        { hints: { step: "basics" }, key: "name", required: true, type: "string" },
-        { hints: { step: "delivery" }, key: "region", required: true, type: "string" },
-        { hints: { step: "review" }, key: "approval", required: true, type: "string" },
-      ],
-      {},
-      (values) => ({
-        errors: [
-          ...(values["name"] ? [] : [{ message: "Enter a name.", path: ["name"] }]),
-          ...(values["region"] ? [] : [{ message: "Choose a region.", path: ["region"] }]),
-        ],
-        success: false,
-      })
-    );
-
-    render(<AutoForm schema={schema} stepper={{ steps }} withSubmit />);
-
-    await user.click(screen.getByRole("button", { name: "Continue" }));
-
-    expect(screen.getByText("Step 1 of 3")).toBeInTheDocument();
-    expect(screen.getByText("Enter a name.")).toBeInTheDocument();
-    expect(screen.queryByText("Choose a region.")).not.toBeInTheDocument();
-
-    await user.type(screen.getByLabelText(/name/iu), "Ada");
-    await user.click(screen.getByRole("button", { name: "Continue" }));
-
-    expect(screen.getByText("Step 2 of 3")).toBeInTheDocument();
-  });
-
-  test("blocks Continue on resolver root errors", async () => {
+  test("blocks Continue on resolver root errors and keeps the earlier step when Back cancels pending validation", async () => {
     const user = userEvent.setup();
     const schema = createMockProvider(
       [
@@ -174,12 +121,10 @@ describe("AutoForm stepper", () => {
 
     expect(screen.getByText("Step 1 of 2")).toBeInTheDocument();
     expect(screen.getByText("The request is not ready.")).toBeInTheDocument();
-  });
 
-  test("keeps the earlier step active when Back cancels pending validation", async () => {
-    const user = userEvent.setup();
+    cleanup();
     let finishValidation: (() => void) | undefined;
-    const schema = createMockProvider(
+    const schemaPending = createMockProvider(
       [
         { hints: { step: "basics" }, key: "name", required: true, type: "string" },
         { hints: { step: "delivery" }, key: "region", required: true, type: "string" },
@@ -196,7 +141,7 @@ describe("AutoForm stepper", () => {
           });
           return { errors: {}, values };
         }}
-        schema={schema}
+        schema={schemaPending}
         stepper={{ defaultStep: "delivery", steps }}
         withSubmit
       />
@@ -243,9 +188,11 @@ describe("AutoForm stepper", () => {
     expect(onSubmit).toHaveBeenCalledTimes(1);
     expect(submit).toBeDisabled();
 
-    act(() => {
+    await act(async () => {
       finishSubmit?.();
+      await Promise.resolve();
     });
+    await waitFor(() => expect(submit).toBeEnabled());
   });
 
   test("returns to the owning step when submission reports a field error", async () => {
@@ -311,6 +258,9 @@ describe("AutoForm stepper", () => {
     await user.tab();
     await user.keyboard("{Enter}");
     expect(screen.getByText("Enter a name.")).toBeVisible();
+    // Continue blocks on current-step errors without exposing later-step errors.
+    expect(screen.getByText("Step 1 of 3")).toBeVisible();
+    expect(screen.queryByText("Choose a region.")).not.toBeInTheDocument();
     expect(screen.getByLabelText(/name/iu)).toHaveFocus();
 
     await user.keyboard("Ada");

@@ -12,38 +12,19 @@ function specConformingSchema() {
   };
 }
 
-test("accepts a spec-conforming Standard Schema v1 object", () => {
+test("accepts spec-conforming Standard Schema v1 objects and rejects everything else", () => {
   expect(isStandardSchema(specConformingSchema())).toBe(true);
-});
+  expect(isStandardSchema(Object.assign(() => undefined, specConformingSchema()))).toBe(true);
 
-test("accepts a callable Standard Schema v1 implementation", () => {
-  const schema = Object.assign(() => undefined, specConformingSchema());
+  for (const value of [null, undefined, "schema", 42, {}, { standard: { version: 1 } }]) {
+    expect(isStandardSchema(value)).toBe(false);
+  }
 
-  expect(isStandardSchema(schema)).toBe(true);
-});
+  const wrongVersion = specConformingSchema();
+  (wrongVersion["~standard"] as { version: number }).version = 2;
+  expect(isStandardSchema(wrongVersion)).toBe(false);
 
-test("rejects primitives and null", () => {
-  expect(isStandardSchema(null)).toBe(false);
-  expect(isStandardSchema(undefined)).toBe(false);
-  expect(isStandardSchema("schema")).toBe(false);
-  expect(isStandardSchema(42)).toBe(false);
-});
-
-test("rejects objects without the ~standard marker", () => {
-  expect(isStandardSchema({})).toBe(false);
-  expect(isStandardSchema({ standard: { version: 1 } })).toBe(false);
-});
-
-test("rejects a ~standard marker with the wrong version", () => {
-  const schema = specConformingSchema();
-  const marker = schema["~standard"] as { version: number };
-  marker.version = 2;
-  expect(isStandardSchema(schema)).toBe(false);
-});
-
-test("rejects a ~standard marker without a validate function", () => {
-  const schema = specConformingSchema();
-  const marker = schema["~standard"] as { validate?: unknown };
-  marker.validate = undefined;
-  expect(isStandardSchema(schema)).toBe(false);
+  const noValidate = specConformingSchema();
+  (noValidate["~standard"] as { validate?: unknown }).validate = undefined;
+  expect(isStandardSchema(noValidate)).toBe(false);
 });

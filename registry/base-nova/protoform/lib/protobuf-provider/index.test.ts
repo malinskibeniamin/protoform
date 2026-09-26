@@ -76,7 +76,39 @@ function buildValidProtoFormValues() {
 }
 
 describe("protobuf-provider", () => {
-  test("exposes descriptor deprecation through provider data and render hints", () => {
+  test("parses enums, oneofs, descriptions, and deprecation into autoform-friendly fields", () => {
+    const parsedSchema = parseProtoSchema(AutoFormExampleSchema);
+    const accessTierField = parsedSchema.fields.find((field) => field.key === "accessTier");
+    const preferredContactField = parsedSchema.fields.find((field) => field.key === "preferredContact");
+
+    expect(accessTierField?.type).toBe("select");
+    expect(accessTierField?.options?.some(([value]) => value === "0")).toBe(false);
+    expect(accessTierField?.options?.some(([value]) => value === "1")).toBe(true);
+
+    expect(preferredContactField?.type).toBe("oneof");
+    expect(preferredContactField?.schema?.map((field) => field.key)).toEqual([
+      "preferredEmail",
+      "preferredPhone",
+      "doNotContact",
+    ]);
+
+    // Option labels are humanized without the "AccessTier" type prefix.
+    const labels = accessTierField?.options?.map(([, label]) => label) ?? [];
+    expect(labels).toEqual(expect.arrayContaining(["Viewer", "Editor", "Admin"]));
+    for (const label of labels) {
+      expect(label.startsWith("Access Tier")).toBe(false);
+    }
+
+    // Field descriptions hydrate from registered proto annotations.
+    const usernameField = parsedSchema.fields.find((field) => field.key === "username");
+    const preferredPhoneField = preferredContactField?.schema?.find((field) => field.key === "preferredPhone");
+
+    expect(usernameField?.fieldConfig?.description).toBe("Public handle shown in mentions and admin lists.");
+    expect(preferredContactField?.fieldConfig?.description).toBe(
+      "Exactly one preferred contact route can be selected at a time."
+    );
+    expect(preferredPhoneField?.fieldConfig?.description).toBe("Route urgent notices to an E.164 phone number.");
+
     const username = AutoFormExampleSchema.fields.find((field) => field.localName === "username");
     expect(username).toBeDefined();
     if (!username) {
@@ -94,37 +126,8 @@ describe("protobuf-provider", () => {
       username.proto.options = originalOptions;
     }
   });
-  test("parses enums and oneofs into autoform-friendly fields", () => {
-    const parsedSchema = parseProtoSchema(AutoFormExampleSchema);
-    const accessTierField = parsedSchema.fields.find((field) => field.key === "accessTier");
-    const preferredContactField = parsedSchema.fields.find((field) => field.key === "preferredContact");
 
-    expect(accessTierField?.type).toBe("select");
-    expect(accessTierField?.options?.some(([value]) => value === "0")).toBe(false);
-    expect(accessTierField?.options?.some(([value]) => value === "1")).toBe(true);
-
-    expect(preferredContactField?.type).toBe("oneof");
-    expect(preferredContactField?.schema?.map((field) => field.key)).toEqual([
-      "preferredEmail",
-      "preferredPhone",
-      "doNotContact",
-    ]);
-  });
-
-  test("hydrates field descriptions from registered proto annotations", () => {
-    const parsedSchema = parseProtoSchema(AutoFormExampleSchema);
-    const usernameField = parsedSchema.fields.find((field) => field.key === "username");
-    const preferredContactField = parsedSchema.fields.find((field) => field.key === "preferredContact");
-    const preferredPhoneField = preferredContactField?.schema?.find((field) => field.key === "preferredPhone");
-
-    expect(usernameField?.fieldConfig?.description).toBe("Public handle shown in mentions and admin lists.");
-    expect(preferredContactField?.fieldConfig?.description).toBe(
-      "Exactly one preferred contact route can be selected at a time."
-    );
-    expect(preferredPhoneField?.fieldConfig?.description).toBe("Route urgent notices to an E.164 phone number.");
-  });
-
-  test("converts protobuf messages into form-friendly values", () => {
+  test("converts protobuf messages into form values, supplies defaults, and round-trips optional, wrapper, and JSON-backed fields", () => {
     const message = create(AutoFormExampleSchema, {
       accessTier: 3,
       avatarBytes: new Uint8Array([1, 2, 3, 4]),
@@ -195,9 +198,67 @@ describe("protobuf-provider", () => {
     expect(formValues["createdAt"]).toMatch(DATETIME_LOCAL_VALUE);
     expect(formValues["reminderInterval"]).toBe("300s");
     expect(formValues["writablePaths"]).toEqual(["profile"]);
+
+    const provider = new ProtoProvider(AutoFormExampleSchema);
+    const defaultValues = provider.getDefaultValues();
+    expect(defaultValues["tags"]).toEqual([]);
+    expect(defaultValues["labels"]).toEqual([]);
+    expect(defaultValues["preferredContact"]).toEqual({
+      case: undefined,
+      value: undefined,
+    });
+
+    const validationResult = provider.validateSchema({
+      ...buildValidProtoFormValues(),
+      betaTester: true,
+      bonusPoints: 42,
+      dashboardBlocks: ["overview", "alerts"],
+      featuredValue: "feature-rollout",
+      middleName: "UI",
+      nickname: "Harbor",
+      preferences: {
+        density: "comfortable",
+        theme: "dark",
+      },
+    });
+
+    expect(validationResult.success).toBe(true);
+
+    if (!validationResult.success) {
+      throw new Error("Expected optional and JSON-backed protobuf fields to validate.");
+    }
+
+    const data = validationResult.data as Record<string, unknown>;
+    expect(data["$typeName"]).toBe("protoform.v1.AutoFormExample");
+    expect(data["employeeNumber"]).toBe(4001n);
+    expect(data["labels"]).toEqual({ team: "frontend" });
+    expect(data["preferredContact"]).toEqual({
+      case: "preferredEmail",
+      value: "forms@protoform.com",
+    });
+
+    const roundTrippedValues = protoToFormValues(
+      AutoFormExampleSchema,
+      validationResult.data as AutoFormExample | undefined
+    );
+
+    expect(roundTrippedValues).toEqual(
+      expect.objectContaining({
+        betaTester: true,
+        bonusPoints: 42,
+        dashboardBlocks: ["overview", "alerts"],
+        featuredValue: "feature-rollout",
+        middleName: "UI",
+        nickname: "Harbor",
+        preferences: {
+          density: "comfortable",
+          theme: "dark",
+        },
+      })
+    );
   });
 
-  test("maps nested field and root validation errors through the resolver", async () => {
+  test("maps nested field and root validation errors and preserves the edit source message through the resolver", async () => {
     const resolver = createProtoResolver(AutoFormExampleSchema);
     const result = await resolver(
       {
@@ -236,120 +297,26 @@ describe("protobuf-provider", () => {
     expect(rootError?.message).toMatch(MESSAGE_LEVEL_ERROR);
     expect(formRootError?.message).toMatch(MESSAGE_LEVEL_ERROR);
     expect(officeLocationsErrors?.[0]?.value?.city?.message).toMatch(REQUIRED_FIELD_ERROR);
-  });
 
-  test("preserves an edit source message in React Hook Form resolver output", async () => {
     const values = buildValidProtoFormValues();
     const knownSource = formValuesToProto(AutoFormExampleSchema, values);
     const source = fromBinary(
       AutoFormExampleSchema,
       Uint8Array.from([...toBinary(AutoFormExampleSchema, knownSource), 0x98, 0x06, 0x01])
     );
-    const resolver = createProtoResolver(AutoFormExampleSchema, {}, source);
+    const resolverForEdit = createProtoResolver(AutoFormExampleSchema, {}, source);
 
-    const result = await resolver({ ...values, username: "edited_admin" }, undefined, {
+    const resultForEdit = await resolverForEdit({ ...values, username: "edited_admin" }, undefined, {
       criteriaMode: "firstError",
       fields: {},
       names: [],
       shouldUseNativeValidation: false,
     } as never);
 
-    expect(result.values).toMatchObject({
+    expect(resultForEdit.values).toMatchObject({
       $unknown: source.$unknown,
       username: "edited_admin",
     });
-  });
-
-  test("supports provider-style defaults and synchronous validation", () => {
-    const provider = new ProtoProvider(AutoFormExampleSchema);
-    const defaultValues = provider.getDefaultValues();
-    const validationResult = provider.validateSchema(buildValidProtoFormValues());
-
-    expect(defaultValues["tags"]).toEqual([]);
-    expect(defaultValues["labels"]).toEqual([]);
-    expect(defaultValues["preferredContact"]).toEqual({
-      case: undefined,
-      value: undefined,
-    });
-    expect(validationResult.success).toBe(true);
-
-    if (!validationResult.success) {
-      throw new Error("Expected synchronous protobuf validation to succeed.");
-    }
-
-    const data = validationResult.data as Record<string, unknown>;
-    expect(data["$typeName"]).toBe("protoform.v1.AutoFormExample");
-    expect(data["employeeNumber"]).toBe(4001n);
-    expect(data["labels"]).toEqual({ team: "frontend" });
-    expect(data["preferredContact"]).toEqual({
-      case: "preferredEmail",
-      value: "forms@protoform.com",
-    });
-  });
-
-  test("round-trips optional, wrapper, and JSON-backed protobuf fields", () => {
-    const provider = new ProtoProvider(AutoFormExampleSchema);
-    const validationResult = provider.validateSchema({
-      ...buildValidProtoFormValues(),
-      betaTester: true,
-      bonusPoints: 42,
-      dashboardBlocks: ["overview", "alerts"],
-      featuredValue: "feature-rollout",
-      middleName: "UI",
-      nickname: "Harbor",
-      preferences: {
-        density: "comfortable",
-        theme: "dark",
-      },
-    });
-
-    expect(validationResult.success).toBe(true);
-
-    if (!validationResult.success) {
-      throw new Error("Expected optional and JSON-backed protobuf fields to validate.");
-    }
-
-    const roundTrippedValues = protoToFormValues(
-      AutoFormExampleSchema,
-      validationResult.data as AutoFormExample | undefined
-    );
-
-    expect(roundTrippedValues).toEqual(
-      expect.objectContaining({
-        betaTester: true,
-        bonusPoints: 42,
-        dashboardBlocks: ["overview", "alerts"],
-        featuredValue: "feature-rollout",
-        middleName: "UI",
-        nickname: "Harbor",
-        preferences: {
-          density: "comfortable",
-          theme: "dark",
-        },
-      })
-    );
-  });
-
-  test("strips enum type prefix from option labels", () => {
-    const parsedSchema = parseProtoSchema(AutoFormExampleSchema);
-    const accessTierField = parsedSchema.fields.find((field) => field.key === "accessTier");
-
-    expect(accessTierField?.options).toBeDefined();
-
-    const labels = accessTierField?.options?.map(([, label]) => label);
-    if (!labels) {
-      throw new Error("Expected access-tier option labels.");
-    }
-
-    // Labels should be humanized without the "AccessTier" type prefix
-    expect(labels).toContain("Viewer");
-    expect(labels).toContain("Editor");
-    expect(labels).toContain("Admin");
-
-    // No label should start with "Access Tier"
-    for (const label of labels) {
-      expect(label.startsWith("Access Tier")).toBe(false);
-    }
   });
 
   test("normalizes proto field and oneof UI metadata for focused UI demos", () => {
@@ -384,10 +351,8 @@ describe("protobuf-provider", () => {
         visibleWhen: [expect.objectContaining({ expression: "form.enableSupportMode && form.supportTier != 0" })],
       })
     );
-  });
 
-  test("derives sensitive from CONTROL_TYPE_PASSWORD when not explicitly annotated", () => {
-    const parsedSchema = parseProtoSchema(AutoFormUiMetadataExampleSchema);
+    // CONTROL_TYPE_PASSWORD derives sensitive when it is not explicitly annotated.
     const apiTokenField = parsedSchema.fields.find((field) => field.key === "apiToken");
 
     expect(getProtoFieldCustomData(requireDefined(apiTokenField, "API token field"))?.ui).toEqual(

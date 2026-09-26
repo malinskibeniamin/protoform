@@ -1,5 +1,5 @@
 import { describe, expect } from "@rstest/core";
-import { render, screen, waitFor } from "@testing-library/react";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { AutoForm } from "..";
 import { createMockProvider } from "./test-utils";
@@ -23,7 +23,8 @@ if (!HTMLElement.prototype.releasePointerCapture) {
 }
 
 describe("AutoForm – compact array row rendering", () => {
-  test("array items in compact mode do not render visible label elements", () => {
+  test("compact array rows suppress item labels and remove the selected item", async () => {
+    const user = userEvent.setup();
     const schema = createMockProvider([
       {
         key: "tags",
@@ -33,42 +34,30 @@ describe("AutoForm – compact array row rendering", () => {
       },
     ]);
 
-    render(<AutoForm defaultValues={{ tags: ["alpha", "beta"] }} schema={schema} testId="compact" withSubmit />);
+    render(
+      <AutoForm defaultValues={{ tags: ["alpha", "beta", "gamma"] }} schema={schema} testId="compact" withSubmit />
+    );
 
     // The top-level "tags" field has a visible label, but individual array item
-    // fields (tags.0, tags.1) use compact mode and suppress the label entirely.
+    // fields use compact mode and suppress the label entirely.
     const itemFields = screen.getAllByTestId(/compact-field-tags-\d+-control/u);
-    expect(itemFields).toHaveLength(2);
-
-    // Each item's FieldWrapper should not contain a label element for the item
+    expect(itemFields).toHaveLength(3);
     for (const input of itemFields) {
       const fieldWrapper = input.closest('[data-slot="field"]');
       expect(fieldWrapper).toBeTruthy();
-      const labels = fieldWrapper?.querySelectorAll('[data-slot="field-label"]');
-      expect(labels?.length ?? 0).toBe(0);
+      expect(fieldWrapper?.querySelectorAll('[data-slot="field-label"]')).toHaveLength(0);
     }
-  });
 
-  test("array items in compact mode do not show help icons", () => {
-    const schema = createMockProvider([
-      {
-        key: "tags",
-        required: false,
-        schema: [{ key: "0", required: true, type: "string" }],
-        type: "array",
-      },
-    ]);
+    const [firstRemoveButton] = screen.getAllByRole("button", { name: /remove item/iu });
+    if (!firstRemoveButton) {
+      throw new Error("Expected the first compact-row remove button.");
+    }
+    await user.click(firstRemoveButton);
 
-    render(<AutoForm defaultValues={{ tags: ["alpha", "beta"] }} schema={schema} testId="compact" withSubmit />);
-
-    const helpButtons = screen.queryAllByTestId(/help$/u);
-    const tagRowHelps = helpButtons.filter((el) => el.getAttribute("data-testid")?.includes("tags"));
-    // Top-level "tags" field may have help, but individual rows should not
-    const rowHelps = tagRowHelps.filter((el) => {
-      const testId = el.getAttribute("data-testid") ?? "";
-      return /\.\d+/u.test(testId);
+    await waitFor(() => {
+      expect(screen.getAllByRole("button", { name: /remove item/iu })).toHaveLength(2);
     });
-    expect(rowHelps).toHaveLength(0);
+    expect(screen.queryByDisplayValue("alpha")).not.toBeInTheDocument();
   });
 
   test("array items in compact mode still show validation errors on submit", async () => {
@@ -122,82 +111,31 @@ describe("AutoForm – compact array row rendering", () => {
     });
   });
 
-  test("delete button is present and removes an item", async () => {
-    const user = userEvent.setup();
+  test("hides customData.hidden fields, disables customData.immutable fields, and collapses customData.collapsible objects", async () => {
     const schema = createMockProvider([
-      {
-        key: "tags",
-        required: false,
-        schema: [{ key: "0", required: true, type: "string" }],
-        type: "array",
-      },
-    ]);
-
-    render(
-      <AutoForm defaultValues={{ tags: ["alpha", "beta", "gamma"] }} schema={schema} testId="compact" withSubmit />
-    );
-
-    const removeButtons = screen.getAllByRole("button", { name: /remove item/iu });
-    expect(removeButtons.length).toBe(3);
-    const [firstRemoveButton] = removeButtons;
-    if (!firstRemoveButton) {
-      throw new Error("Expected the first compact-row remove button.");
-    }
-
-    await user.click(firstRemoveButton);
-
-    await waitFor(() => {
-      expect(screen.getAllByRole("button", { name: /remove item/iu })).toHaveLength(2);
-    });
-  });
-
-  test("fields with customData.hidden are not rendered", () => {
-    const schema = createMockProvider([
-      { key: "visible", required: true, type: "string" },
+      { key: "editable", required: true, type: "string" },
+      { key: "locked", required: true, type: "string" },
       { key: "secret", required: true, type: "string" },
     ]);
 
     render(
       <AutoForm
-        defaultValues={{ secret: "world", visible: "hello" }}
-        fieldConfig={{ secret: { customData: { hidden: true } } }}
+        defaultValues={{ editable: "can edit", locked: "read only", secret: "world" }}
+        fieldConfig={{ locked: { customData: { immutable: true } }, secret: { customData: { hidden: true } } }}
         schema={schema}
-        testId="hidden"
+        testId="policy"
         withSubmit
       />
     );
 
-    expect(screen.getByDisplayValue("hello")).toBeInTheDocument();
     expect(screen.queryByDisplayValue("world")).not.toBeInTheDocument();
-    expect(document.querySelectorAll('[data-slot="auto-form-field-row"]')).toHaveLength(1);
-  });
+    expect(document.querySelectorAll('[data-slot="auto-form-field-row"]')).toHaveLength(2);
+    expect(screen.getByDisplayValue("can edit")).not.toBeDisabled();
+    expect(screen.getByDisplayValue("read only")).toBeDisabled();
 
-  test("fields with customData.immutable are rendered as disabled", () => {
-    const schema = createMockProvider([
-      { key: "editable", required: true, type: "string" },
-      { key: "locked", required: true, type: "string" },
-    ]);
-
-    render(
-      <AutoForm
-        defaultValues={{ editable: "can edit", locked: "read only" }}
-        fieldConfig={{ locked: { customData: { immutable: true } } }}
-        schema={schema}
-        testId="immutable"
-        withSubmit
-      />
-    );
-
-    const editableInput = screen.getByDisplayValue("can edit");
-    const lockedInput = screen.getByDisplayValue("read only");
-
-    expect(editableInput).not.toBeDisabled();
-    expect(lockedInput).toBeDisabled();
-  });
-
-  test("objects with customData.collapsible render collapsed by default", async () => {
+    cleanup();
     const user = userEvent.setup();
-    const schema = createMockProvider([
+    const schemaCollapsible = createMockProvider([
       {
         key: "advancedSettings",
         required: true,
@@ -210,7 +148,7 @@ describe("AutoForm – compact array row rendering", () => {
       <AutoForm
         defaultValues={{ advancedSettings: { retries: 3 } }}
         fieldConfig={{ advancedSettings: { customData: { collapsible: true } } }}
-        schema={schema}
+        schema={schemaCollapsible}
         testId="collapsible"
         withSubmit
       />

@@ -7,11 +7,15 @@ import { AutoFormExampleSchema } from "../../lib/protobuf-provider/gen/auto-form
 import { useProtoForm } from ".";
 
 describe("experimental TanStack Form v2 useProtoForm", () => {
-  test("keeps the v2-native form surface and adds protobuf helpers", () => {
+  test("keeps the v2-native form surface and adds protobuf message, mask, and oneof helpers", () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: {
           age: 0,
+          preferredContact: {
+            case: "preferredEmail",
+            value: "ada@example.com",
+          },
           username: "",
         },
       })
@@ -31,9 +35,19 @@ describe("experimental TanStack Form v2 useProtoForm", () => {
 
     expect(result.current.createMessage().username).toBe("ada_user");
     expect(result.current.createUpdateMask().paths).toEqual(["username"]);
+
+    // Switching oneof branches does not retain the previous value.
+    act(() => {
+      result.current.setOneofValue("preferredContact", "preferredPhone", "+48123456789");
+    });
+
+    expect(result.current.createMessage().preferredContact).toEqual({
+      case: "preferredPhone",
+      value: "+48123456789",
+    });
   });
 
-  test("runs protobuf validation through the v2 validator pipeline", async () => {
+  test("runs protobuf validation through the v2 validator pipeline alongside native validators and exposes the validated message", async () => {
     const onSubmit = rs.fn();
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
@@ -53,72 +67,46 @@ describe("experimental TanStack Form v2 useProtoForm", () => {
     expect(onSubmit).not.toHaveBeenCalled();
     expect(errors).not.toHaveLength(0);
     expect(result.current.state.isInvalid).toBe(true);
-  });
 
-  test("appends the protobuf validator without replacing native v2 validators", async () => {
-    const onSubmit = rs.fn();
+    // Valid values expose the validated protobuf message in native schema outputs.
+    const onValidSubmit = rs.fn();
+    const { result: valid } = renderHook(() =>
+      useProtoForm(AutoFormExampleSchema, {
+        defaultValues: buildValidProtoFormValues(),
+        onSubmit: onValidSubmit,
+      })
+    );
+
+    await act(async () => {
+      await valid.current.handleSubmit();
+    });
+
+    expect(onValidSubmit).toHaveBeenCalledTimes(1);
+    const [{ schemaOutputs }] = onValidSubmit.mock.calls[0] ?? [];
+    expect(schemaOutputs[0].$typeName).toBe("protoform.v1.AutoFormExample");
+    expect(schemaOutputs[0].username).toBe("protoform_admin");
+
+    const onSubmitNative = rs.fn();
     const nativeValidator = rs.fn(() => ({
       fields: { username: "Native validation failed." },
     }));
-    const { result } = renderHook(() =>
+    const { result: resultNative } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: {
           age: 25,
           username: "valid_user",
         },
-        onSubmit,
+        onSubmit: onSubmitNative,
         validators: [{ run: nativeValidator, triggers: [] }],
       })
     );
 
     await act(async () => {
-      await result.current.handleSubmit();
+      await resultNative.current.handleSubmit();
     });
 
     expect(nativeValidator).toHaveBeenCalledTimes(1);
-    expect(onSubmit).not.toHaveBeenCalled();
-  });
-
-  test("exposes the validated protobuf message in native schema outputs", async () => {
-    const onSubmit = rs.fn(({ schemaOutputs }) => {
-      expect(schemaOutputs[0].$typeName).toBe("protoform.v1.AutoFormExample");
-      expect(schemaOutputs[0].username).toBe("protoform_admin");
-    });
-    const { result } = renderHook(() =>
-      useProtoForm(AutoFormExampleSchema, {
-        defaultValues: buildValidProtoFormValues(),
-        onSubmit,
-      })
-    );
-
-    await act(async () => {
-      await result.current.handleSubmit();
-    });
-
-    expect(onSubmit).toHaveBeenCalledTimes(1);
-  });
-
-  test("switches oneof branches without retaining the previous value", () => {
-    const { result } = renderHook(() =>
-      useProtoForm(AutoFormExampleSchema, {
-        defaultValues: {
-          preferredContact: {
-            case: "preferredEmail",
-            value: "ada@example.com",
-          },
-          username: "valid_user",
-        },
-      })
-    );
-
-    act(() => {
-      result.current.setOneofValue("preferredContact", "preferredPhone", "+48123456789");
-    });
-
-    expect(result.current.createMessage().preferredContact).toEqual({
-      case: "preferredPhone",
-      value: "+48123456789",
-    });
+    expect(onSubmitNative).not.toHaveBeenCalled();
   });
 });
 

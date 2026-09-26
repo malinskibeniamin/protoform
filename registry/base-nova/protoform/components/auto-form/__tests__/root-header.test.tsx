@@ -35,14 +35,14 @@ describe("AutoForm root header", () => {
     expect(screen.getByText("Configure the request.")).toBeInTheDocument();
   });
 
-  test("uses a host renderer with the resolved root metadata", () => {
+  test("uses a host renderer with the resolved root metadata and skips it when hidden", () => {
     const renderRootHeader = rs.fn(({ title, description }) => (
       <aside aria-label="Form introduction">
         {title ?? "Untitled"}: {description ?? "No description"}
       </aside>
     ));
 
-    render(<AutoForm renderRootHeader={renderRootHeader} schema={AutoFormExampleSchema} />);
+    const { rerender } = render(<AutoForm renderRootHeader={renderRootHeader} schema={AutoFormExampleSchema} />);
 
     expect(renderRootHeader).toHaveBeenCalledWith({
       description: "Configure the request.",
@@ -51,15 +51,12 @@ describe("AutoForm root header", () => {
     expect(screen.getByRole("complementary", { name: "Form introduction" })).toHaveTextContent(
       "Request settings: Configure the request."
     );
-  });
 
-  test("can hide the root header without invoking a host renderer", () => {
-    const renderRootHeader = rs.fn(() => <div>Hidden introduction</div>);
-
-    render(<AutoForm renderRootHeader={renderRootHeader} rootHeader="hidden" schema={AutoFormExampleSchema} />);
+    renderRootHeader.mockClear();
+    rerender(<AutoForm renderRootHeader={renderRootHeader} rootHeader="hidden" schema={AutoFormExampleSchema} />);
 
     expect(renderRootHeader).not.toHaveBeenCalled();
-    expect(screen.queryByText("Hidden introduction")).not.toBeInTheDocument();
-    expect(screen.getByRole("textbox", { name: /username/iu })).toBeInTheDocument();
+    expect(screen.queryByRole("complementary", { name: "Form introduction" })).not.toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: /username/iu })).toBeVisible();
   });
 });

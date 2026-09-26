@@ -16,10 +16,10 @@ function defaults(overrides: Record<string, unknown> = {}) {
 }
 
 describe("experimental React Hook Form v8 useProtoForm conformance", () => {
-  test("exposes the v8-native form API and creates protobuf messages", () => {
+  test("exposes the v8-native form API, creates protobuf messages, and builds update masks", async () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
-        defaultValues: defaults({ age: 25, username: "test_user" }),
+        defaultValues: defaults({ age: 25, primaryEmail: "old@example.com", username: "test_user" }),
       })
     );
 
@@ -29,6 +29,17 @@ describe("experimental React Hook Form v8 useProtoForm conformance", () => {
     expect(isMessage(message, AutoFormExampleSchema)).toBe(true);
     expect(message.age).toBe(25);
     expect(message.username).toBe("test_user");
+
+    // Update masks follow fields changed through v8.
+    act(() => {
+      result.current.setValue("primaryEmail", "new@example.com", {
+        shouldDirty: true,
+      });
+    });
+
+    await waitFor(() => {
+      expect(result.current.createUpdateMask().paths).toEqual(["primary_email"]);
+    });
   });
 
   test("validates protobuf fields without the v7-only resolver package", async () => {
@@ -48,25 +59,7 @@ describe("experimental React Hook Form v8 useProtoForm conformance", () => {
     });
   });
 
-  test("builds update masks from fields changed through v8", async () => {
-    const { result } = renderHook(() =>
-      useProtoForm(AutoFormExampleSchema, {
-        defaultValues: defaults({ primaryEmail: "old@example.com" }),
-      })
-    );
-
-    act(() => {
-      result.current.setValue("primaryEmail", "new@example.com", {
-        shouldDirty: true,
-      });
-    });
-
-    await waitFor(() => {
-      expect(result.current.createUpdateMask().paths).toEqual(["primary_email"]);
-    });
-  });
-
-  test("maps Connect field violations onto v8 field errors", () => {
+  test("maps Connect field violations, including prefixed paths, onto v8 field errors", () => {
     const { result } = renderHook(() => useProtoForm(AutoFormExampleSchema));
     const error = new ConnectError("Review the highlighted fields.", Code.InvalidArgument, {}, [
       {
@@ -82,15 +75,14 @@ describe("experimental React Hook Form v8 useProtoForm conformance", () => {
     });
 
     expect(result.current.getFieldState("primaryEmail").error?.message).toBe("Enter a value.");
-  });
 
-  test("maps violations through any configured server path prefix", () => {
-    const { result } = renderHook(() =>
+    // Violations also map through any configured server path prefix.
+    const { result: prefixed } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         serverPathPrefixes: ["spec", "instance"],
       })
     );
-    const error = new ConnectError("Review the highlighted fields.", Code.InvalidArgument, {}, [
+    const prefixedError = new ConnectError("Review the highlighted fields.", Code.InvalidArgument, {}, [
       {
         desc: BadRequestSchema,
         value: {
@@ -102,13 +94,13 @@ describe("experimental React Hook Form v8 useProtoForm conformance", () => {
       },
     ]);
 
-    let mapped: ReturnType<typeof result.current.setServerErrors> | undefined;
+    let mapped: ReturnType<typeof prefixed.current.setServerErrors> | undefined;
     act(() => {
-      mapped = result.current.setServerErrors(error);
+      mapped = prefixed.current.setServerErrors(prefixedError);
     });
 
-    expect(result.current.getFieldState("primaryEmail").error?.message).toBe("Enter a value.");
-    expect(result.current.getFieldState("tags").error?.message).toBe("Add at least one item.");
+    expect(prefixed.current.getFieldState("primaryEmail").error?.message).toBe("Enter a value.");
+    expect(prefixed.current.getFieldState("tags").error?.message).toBe("Add at least one item.");
     expect(mapped?.handled).toBe(true);
     expect(mapped?.unmapped).toEqual([]);
   });

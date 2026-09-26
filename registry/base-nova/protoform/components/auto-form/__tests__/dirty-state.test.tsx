@@ -1,5 +1,5 @@
 import { describe, expect, rs } from "@rstest/core";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { AutoForm as TanStackAutoForm } from "../../auto-form-tanstack";
@@ -59,7 +59,7 @@ describe.each([
   ["React Hook Form", ReactHookAutoForm],
   ["TanStack Form", TanStackAutoForm],
 ] as const)("%s dirty-state lifecycle", (_name, FormComponent) => {
-  test("reports clean initially, emits distinct changes, and marks the saved values clean synchronously", async () => {
+  test("reports clean initially, emits distinct changes, marks saved values clean synchronously, and adopts reset values as the baseline", async () => {
     const user = userEvent.setup();
     const onDirtyChange = rs.fn();
     let cleanBeforeNavigation = false;
@@ -84,27 +84,25 @@ describe.each([
     await waitFor(() => expect(onDirtyChange).toHaveBeenLastCalledWith(true));
     await user.type(screen.getByRole("textbox", { name: /name/iu }), "Ada");
     await waitFor(() => expect(onDirtyChange).toHaveBeenLastCalledWith(false));
-  });
 
-  test("establishes reset values as the new clean baseline", async () => {
-    const user = userEvent.setup();
-    const onDirtyChange = rs.fn();
-    const onSubmit = rs.fn((_values, _nativeForm, context) => {
+    cleanup();
+    const onDirtyChangeReset = rs.fn();
+    const onSubmitReset = rs.fn((_values, _nativeForm, context) => {
       context.form.reset({ name: "Saved on the server" });
     });
 
-    render(<FormComponent onDirtyChange={onDirtyChange} onSubmit={onSubmit} schema={schema} withSubmit />);
+    render(<FormComponent onDirtyChange={onDirtyChangeReset} onSubmit={onSubmitReset} schema={schema} withSubmit />);
 
     const input = screen.getByRole("textbox", { name: /name/iu });
     await user.type(input, "Draft");
-    await waitFor(() => expect(onDirtyChange).toHaveBeenLastCalledWith(true));
+    await waitFor(() => expect(onDirtyChangeReset).toHaveBeenLastCalledWith(true));
     await user.click(screen.getByRole("button", { name: "Submit" }));
 
     await waitFor(() => expect(input).toHaveValue("Saved on the server"));
-    await waitFor(() => expect(onDirtyChange).toHaveBeenLastCalledWith(false));
+    await waitFor(() => expect(onDirtyChangeReset).toHaveBeenLastCalledWith(false));
 
     await user.type(input, "!");
-    await waitFor(() => expect(onDirtyChange).toHaveBeenLastCalledWith(true));
+    await waitFor(() => expect(onDirtyChangeReset).toHaveBeenLastCalledWith(true));
   });
 
   test("tracks nested, array, map, and oneof changes", async () => {

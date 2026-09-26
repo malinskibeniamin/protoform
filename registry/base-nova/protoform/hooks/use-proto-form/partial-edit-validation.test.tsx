@@ -44,7 +44,7 @@ function PartialEditHarness() {
 }
 
 describe("useProtoForm partial-edit validation", () => {
-  test("validates and masks a field modified then restored to its blank baseline", async () => {
+  test("validates and masks a field modified then restored to its blank baseline until reset", async () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: defaults,
@@ -76,26 +76,8 @@ describe("useProtoForm partial-edit validation", () => {
       expect(result.current.formState.errors.username).toBeDefined();
       expect(result.current.createUpdateMask().paths).toEqual(["username"]);
     });
-  });
 
-  test("starts a new modification and validation baseline after reset", async () => {
-    const { result } = renderHook(() =>
-      useProtoForm(AutoFormExampleSchema, {
-        defaultValues: defaults,
-        validationScope: "modified-fields",
-      })
-    );
-
-    await act(async () => {
-      result.current.setValue("username", "", {
-        shouldDirty: true,
-        shouldValidate: true,
-      });
-      await result.current.trigger();
-    });
-    expect(result.current.formState.errors.username).toBeDefined();
-    expect(result.current.createUpdateMask().paths).toEqual(["username"]);
-
+    // Reset starts a new modification and validation baseline.
     await act(async () => {
       result.current.reset(result.current.getValues());
       await result.current.trigger();

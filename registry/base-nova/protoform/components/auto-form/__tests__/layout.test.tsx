@@ -1,5 +1,5 @@
 import { describe, expect } from "@rstest/core";
-import { render as renderWithTestingLibrary, screen } from "@testing-library/react";
+import { cleanup, render as renderWithTestingLibrary, screen } from "@testing-library/react";
 import type React from "react";
 
 import { formSpacing } from "../form-spacing";
@@ -14,18 +14,7 @@ function render(children: React.ReactNode) {
 }
 
 describe("FormLayout", () => {
-  test("renders as a form element with the form-spacing token", () => {
-    render(
-      <FormLayout testId="form">
-        <div>child</div>
-      </FormLayout>
-    );
-    const form = screen.getByTestId("form");
-    expect(form.tagName).toBe("FORM");
-    expect(form.className).toContain(formSpacing.form);
-  });
-
-  test("forwards native form props", () => {
+  test("renders a form element with the form-spacing token and forwards native form props", () => {
     const handler = () => undefined;
     render(
       <FormLayout aria-label="Test form" onSubmit={handler} testId="form">
@@ -33,38 +22,14 @@ describe("FormLayout", () => {
       </FormLayout>
     );
     const form = screen.getByTestId("form");
+    expect(form.tagName).toBe("FORM");
+    expect(form.className).toContain(formSpacing.form);
     expect(form.getAttribute("aria-label")).toBe("Test form");
   });
 });
 
 describe("FormSection", () => {
-  test("at the form root renders the title as an h2", () => {
-    render(
-      <FormLayout testId="form">
-        <FormSection title="Basic">
-          <div>body</div>
-        </FormSection>
-      </FormLayout>
-    );
-    const heading = screen.getByText("Basic");
-    expect(heading.tagName).toBe("H2");
-  });
-
-  test("nested one level deep renders the title as an h3", () => {
-    render(
-      <FormLayout testId="form">
-        <FormSection title="Outer">
-          <FormSection title="Inner">
-            <div>body</div>
-          </FormSection>
-        </FormSection>
-      </FormLayout>
-    );
-    expect(screen.getByText("Outer").tagName).toBe("H2");
-    expect(screen.getByText("Inner").tagName).toBe("H3");
-  });
-
-  test("nested two levels deep renders the title as an h4", () => {
+  test("renders nested heading levels and the header description, required marker, and optional divider only when needed", () => {
     render(
       <FormLayout testId="form">
         <FormSection title="L1">
@@ -76,124 +41,78 @@ describe("FormSection", () => {
         </FormSection>
       </FormLayout>
     );
+    expect(screen.getByText("L1").tagName).toBe("H2");
+    expect(screen.getByText("L2").tagName).toBe("H3");
     expect(screen.getByText("L3").tagName).toBe("H4");
-  });
 
-  test("with no title and no description renders no header", () => {
-    const { container } = render(
+    cleanup();
+    render(
       <FormLayout>
-        <FormSection testId="section">
+        <FormSection description="AWS credentials and region." required testId="titled" title="Aws" />
+        <FormSection divider={false} testId="undivided" title="Basic" />
+        <FormSection testId="untitled">
           <div>body</div>
         </FormSection>
       </FormLayout>
     );
-    const section = screen.getByTestId("section");
-    expect(section.querySelector("h2, h3, h4, h5")).toBeNull();
-    expect(section.textContent).toContain("body");
-    expect(container).toBeTruthy();
-  });
+    const titled = screen.getByTestId("titled");
+    expect(screen.getByText("AWS credentials and region.")).toBeVisible();
+    expect(titled.textContent).toContain("*");
+    expect((titled.firstElementChild as HTMLElement).className).toContain("border-b");
+    expect((screen.getByTestId("undivided").firstElementChild as HTMLElement).className).not.toContain("border-b");
 
-  test("shows the divider by default when a title is present", () => {
-    render(
-      <FormLayout>
-        <FormSection testId="section" title="Basic" />
-      </FormLayout>
-    );
-    const section = screen.getByTestId("section");
-    const header = section.firstElementChild as HTMLElement;
-    expect(header.className).toContain("border-b");
-  });
-
-  test("suppresses the divider when divider={false}", () => {
-    render(
-      <FormLayout>
-        <FormSection divider={false} testId="section" title="Basic" />
-      </FormLayout>
-    );
-    const section = screen.getByTestId("section");
-    const header = section.firstElementChild as HTMLElement;
-    expect(header.className).not.toContain("border-b");
-  });
-
-  test("renders a description when provided", () => {
-    render(
-      <FormLayout>
-        <FormSection description="AWS credentials and region." title="Aws" />
-      </FormLayout>
-    );
-    expect(screen.getByText("AWS credentials and region.")).toBeInTheDocument();
-  });
-
-  test("marks the heading as required with an asterisk when required", () => {
-    render(
-      <FormLayout>
-        <FormSection required testId="section" title="Basic" />
-      </FormLayout>
-    );
-    const section = screen.getByTestId("section");
-    expect(section.textContent).toContain("*");
+    const untitled = screen.getByTestId("untitled");
+    expect(untitled.querySelector("h2, h3, h4, h5")).toBeNull();
+    expect(untitled.textContent).toContain("body");
   });
 });
 
 describe("FormField", () => {
-  test("renders label, control, and help text with the label-stack token", () => {
+  test("renders label, control, and help text, replaces help with the error, and renders no trailing text without either", () => {
     render(
-      <FormField helpText="Your full name" label="Name" testId="field">
+      <FormField helpText="Your full name" htmlFor="name" label="Name" testId="field">
         <input id="name" />
       </FormField>
     );
     const field = screen.getByTestId("field");
     expect(field.className).toContain(formSpacing.labelStack);
-    expect(screen.getByText("Name")).toBeInTheDocument();
-    expect(screen.getByText("Your full name")).toBeInTheDocument();
-  });
+    expect(screen.getByText("Name").closest("label")?.getAttribute("for")).toBe("name");
+    expect(screen.getByText("Your full name")).toBeVisible();
 
-  test("renders error and suppresses help text when both are provided", () => {
-    render(
-      <FormField error="Required" helpText="Your full name" label="Name" testId="field">
+    cleanup();
+    const { rerender } = render(
+      <FormField error="Required" helpText="Your full name" label="Name" testId="fieldError">
         <input id="name" />
       </FormField>
     );
-    expect(screen.getByText("Required")).toBeInTheDocument();
+    expect(screen.getByText("Required")).toBeVisible();
     expect(screen.queryByText("Your full name")).not.toBeInTheDocument();
-  });
 
-  test("renders no trailing text when neither error nor helpText is provided", () => {
-    render(
-      <FormField label="Name" testId="field">
-        <input id="name" />
-      </FormField>
+    rerender(
+      <ProtoformUIProvider components={shadcnUIComponents}>
+        <FormField label="Name" testId="fieldError">
+          <input id="name" />
+        </FormField>
+      </ProtoformUIProvider>
     );
-    const field = screen.getByTestId("field");
-    // Label + input only — no help/error text nodes.
-    const spans = field.querySelectorAll("span.text-muted-foreground, span.text-destructive");
-    // The required asterisk is not present either.
-    expect(spans.length).toBe(0);
-  });
-
-  test("attaches htmlFor to the label for accessibility", () => {
-    render(
-      <FormField htmlFor="name-input" label="Name" testId="field">
-        <input id="name-input" />
-      </FormField>
-    );
-    const label = screen.getByText("Name").closest("label");
-    expect(label).not.toBeNull();
-    expect(label?.getAttribute("for")).toBe("name-input");
+    const fieldError = screen.getByTestId("fieldError");
+    expect(fieldError.querySelectorAll("span.text-muted-foreground, span.text-destructive")).toHaveLength(0);
   });
 });
 
 describe("FormSubmit", () => {
-  test("renders a submit-typed button by default", () => {
-    render(<FormSubmit testId="submit">Save</FormSubmit>);
+  test('renders a submit-typed button that defaults to "Submit"', () => {
+    const { rerender } = render(<FormSubmit testId="submit">Save</FormSubmit>);
     const button = screen.getByTestId("submit");
     expect(button.tagName).toBe("BUTTON");
     expect(button.getAttribute("type")).toBe("submit");
     expect(button.textContent).toBe("Save");
-  });
 
-  test('defaults to "Submit" when no children are provided', () => {
-    render(<FormSubmit testId="submit" />);
+    rerender(
+      <ProtoformUIProvider components={shadcnUIComponents}>
+        <FormSubmit testId="submit" />
+      </ProtoformUIProvider>
+    );
     expect(screen.getByTestId("submit").textContent).toBe("Submit");
   });
 });

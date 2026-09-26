@@ -1,5 +1,5 @@
 import { describe, expect, rs } from "@rstest/core";
-import { render, screen, waitFor } from "@testing-library/react";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { AutoForm } from "..";
 import type { SchemaProvider } from "../core-types";
@@ -11,10 +11,10 @@ const USERNAME_LABEL = /username/iu;
 const usernameProvider = createMockProvider([{ key: "username", required: true, type: "string" }]);
 
 describe("AutoForm – onSubmit error handling", () => {
-  test("shows root error when onSubmit throws", async () => {
+  test("shows a root error when onSubmit throws or rejects", async () => {
     const user = userEvent.setup();
 
-    render(
+    const view = render(
       <AutoForm
         onSubmit={() => {
           throw new Error("API failed");
@@ -26,70 +26,52 @@ describe("AutoForm – onSubmit error handling", () => {
 
     await user.type(screen.getByLabelText(USERNAME_LABEL), "alice");
     await user.click(screen.getByRole("button", { name: SUBMIT_BUTTON }));
-
     await waitFor(() => {
-      expect(screen.getByText(/api failed/iu)).toBeInTheDocument();
+      expect(screen.getByText(/api failed/iu)).toBeVisible();
     });
-  });
 
-  test("shows root error when onSubmit rejects", async () => {
-    const user = userEvent.setup();
-
+    view.unmount();
     render(
       <AutoForm onSubmit={() => Promise.reject(new Error("Network error"))} schema={usernameProvider} withSubmit />
     );
 
     await user.type(screen.getByLabelText(USERNAME_LABEL), "bob");
     await user.click(screen.getByRole("button", { name: SUBMIT_BUTTON }));
-
     await waitFor(() => {
-      expect(screen.getByText(/network error/iu)).toBeInTheDocument();
+      expect(screen.getByText(/network error/iu)).toBeVisible();
     });
   });
 
-  test("aborts the previous submit context before a newer attempt", async () => {
+  test("aborts superseded and unmounted submit contexts and active provider validation", async () => {
     const user = userEvent.setup();
     const signals: AbortSignal[] = [];
-    const onSubmit = rs.fn(async (_values, _form, context) => {
-      signals.push(context.signal);
-      await Promise.resolve();
-    });
+    let finish: (() => void) | undefined;
+    const onSubmit = rs.fn(
+      (_values, _form, context) =>
+        new Promise<void>((resolve) => {
+          signals.push(context.signal);
+          finish = resolve;
+        })
+    );
 
-    render(<AutoForm onSubmit={onSubmit} schema={usernameProvider} withSubmit />);
+    const view = render(<AutoForm onSubmit={onSubmit} schema={usernameProvider} withSubmit />);
     await user.type(screen.getByLabelText(USERNAME_LABEL), "alice");
     await user.click(screen.getByRole("button", { name: SUBMIT_BUTTON }));
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
+    finish?.();
+    await waitFor(() => expect(screen.getByRole("button", { name: SUBMIT_BUTTON })).toBeEnabled());
     await user.click(screen.getByRole("button", { name: SUBMIT_BUTTON }));
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(2));
 
     expect(signals[0]?.aborted).toBe(true);
     expect(signals[1]?.aborted).toBe(false);
-  });
 
-  test("aborts active submission when the form unmounts", async () => {
-    const user = userEvent.setup();
-    let signal: AbortSignal | undefined;
-    let finish: (() => void) | undefined;
-    const onSubmit = rs.fn(
-      (_values, _form, context) =>
-        new Promise<void>((resolve) => {
-          ({ signal } = context);
-          finish = resolve;
-        })
-    );
-    const view = render(<AutoForm onSubmit={onSubmit} schema={usernameProvider} withSubmit />);
-
-    await user.type(screen.getByLabelText(USERNAME_LABEL), "alice");
-    await user.click(screen.getByRole("button", { name: SUBMIT_BUTTON }));
-    await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
     view.unmount();
 
-    expect(signal?.aborted).toBe(true);
+    expect(signals[1]?.aborted).toBe(true);
     finish?.();
-  });
 
-  test("aborts active provider validation when the form unmounts", async () => {
-    const user = userEvent.setup();
+    cleanup();
     let validationSignal: AbortSignal | undefined;
     let finishValidation: (() => void) | undefined;
     const provider: SchemaProvider = {
@@ -101,7 +83,7 @@ describe("AutoForm – onSubmit error handling", () => {
           finishValidation = () => resolve({ data: { username: "alice" }, success: true });
         }),
     };
-    const view = render(
+    const viewValidation = render(
       <AutoForm
         schema={provider}
         stepper={{
@@ -116,7 +98,7 @@ describe("AutoForm – onSubmit error handling", () => {
 
     await user.click(screen.getByRole("button", { name: "Continue" }));
     await waitFor(() => expect(validationSignal).toBeDefined());
-    view.unmount();
+    viewValidation.unmount();
 
     expect(validationSignal?.aborted).toBe(true);
     finishValidation?.();

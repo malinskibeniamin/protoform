@@ -8,34 +8,7 @@ import { AutoFormExampleSchema } from "../../lib/protobuf-provider/gen/auto-form
 import { useProtoForm } from ".";
 
 describe("useProtoForm server errors", () => {
-  test("humanizes mapped violations and keeps unmapped violations unchanged", () => {
-    const { result } = renderHook(() => useProtoForm(AutoFormExampleSchema));
-    const error = new ConnectError("Review the highlighted fields.", Code.InvalidArgument, {}, [
-      {
-        desc: BadRequestSchema,
-        value: {
-          fieldViolations: [
-            { description: "value is required", field: "primary_email" },
-            { description: "must contain at least 1 item(s)", field: "tags" },
-            { description: "   ", field: "homepage_url" },
-            { description: "value is required", field: "unknown_field" },
-          ],
-        },
-      },
-    ]);
-
-    let mapped: ReturnType<typeof result.current.setServerErrors> | undefined;
-    act(() => {
-      mapped = result.current.setServerErrors(error);
-    });
-
-    expect(result.current.getFieldState("primaryEmail").error?.message).toBe("Enter a value.");
-    expect(result.current.getFieldState("tags").error?.message).toBe("Add at least one item.");
-    expect(result.current.getFieldState("homepageUrl").error?.message).toBe("Review this value and try again.");
-    expect(mapped?.unmapped).toEqual([{ description: "value is required", field: "unknown_field" }]);
-  });
-
-  test("maps violations through singular and plural server path prefixes", () => {
+  test("humanizes violations mapped through singular and plural server path prefixes and keeps unmapped ones unchanged", () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         serverPathPrefix: "request",

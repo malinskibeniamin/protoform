@@ -1,5 +1,5 @@
 import { describe, expect, rs } from "@rstest/core";
-import { render, screen, waitFor } from "@testing-library/react";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import type { DataProviderRequest } from "../data-providers";
@@ -81,41 +81,7 @@ describe("AutoForm data providers v2", () => {
     expect(activeSignal?.aborted).toBe(true);
   });
 
-  test("keeps a selected value that is present in the first provider page", async () => {
-    const user = userEvent.setup();
-    const onSubmit = rs.fn();
-    const schema = createMockProvider(
-      [
-        {
-          fieldConfig: { customData: { dataProvider: "regions" } },
-          key: "region",
-          required: true,
-          type: "string",
-        },
-      ],
-      { region: "eu" }
-    );
-
-    render(
-      <AutoForm
-        dataProviders={{
-          regions: {
-            staleSelection: "clear",
-            useProvider: () => ({ options: [{ label: "Europe", value: "eu" }] }),
-          },
-        }}
-        onSubmit={onSubmit}
-        schema={schema}
-        withSubmit
-      />
-    );
-
-    await user.click(screen.getByRole("button", { name: "Submit" }));
-    await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
-    expect(onSubmit.mock.calls[0]?.[0]).toMatchObject({ region: "eu" });
-  });
-
-  test("clears optional numeric provider values without coercing them to zero", async () => {
+  test("keeps a selected value present in the first page and clears optional numeric values without coercing them to zero", async () => {
     const user = userEvent.setup();
     const onSubmit = rs.fn();
     const schema = createMockProvider(
@@ -143,6 +109,38 @@ describe("AutoForm data providers v2", () => {
     await user.click(screen.getByRole("button", { name: "Submit" }));
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
     expect(onSubmit.mock.calls[0]?.[0]).toMatchObject({ regionId: undefined });
+
+    cleanup();
+    const onSubmitKept = rs.fn();
+    const schemaKept = createMockProvider(
+      [
+        {
+          fieldConfig: { customData: { dataProvider: "regions" } },
+          key: "region",
+          required: true,
+          type: "string",
+        },
+      ],
+      { region: "eu" }
+    );
+
+    render(
+      <AutoForm
+        dataProviders={{
+          regions: {
+            staleSelection: "clear",
+            useProvider: () => ({ options: [{ label: "Europe", value: "eu" }] }),
+          },
+        }}
+        onSubmit={onSubmitKept}
+        schema={schemaKept}
+        withSubmit
+      />
+    );
+
+    await user.click(screen.getByRole("button", { name: "Submit" }));
+    await waitFor(() => expect(onSubmitKept).toHaveBeenCalledTimes(1));
+    expect(onSubmitKept.mock.calls[0]?.[0]).toMatchObject({ region: "eu" });
   });
 
   test("aborts a repeated-field provider when a dependency changes", async () => {

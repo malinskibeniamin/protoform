@@ -12,25 +12,7 @@ describe("descriptor-driven mutation request composers", () => {
     name: "publishers/acme/books/domain-modeling",
   });
 
-  test("composes standard create request controls around a resource", () => {
-    const request = composeCreateRequest(LibraryService.method.createBook, {
-      parent: "publishers/acme",
-      requestId: "00000000-0000-4000-8000-000000000001",
-      resource: book,
-      resourceId: "domain-modeling",
-      validateOnly: true,
-    });
-
-    expect(request).toMatchObject({
-      book,
-      bookId: "domain-modeling",
-      parent: "publishers/acme",
-      requestId: "00000000-0000-4000-8000-000000000001",
-      validateOnly: true,
-    });
-  });
-
-  test("composes update and delete controls without performing an RPC", () => {
+  test("composes create, update, and delete controls without performing an RPC", () => {
     const updateMask = create(FieldMaskSchema, { paths: ["display_name"] });
 
     expect(
@@ -48,6 +30,22 @@ describe("descriptor-driven mutation request composers", () => {
         validateOnly: true,
       })
     ).toMatchObject({ etag: "etag-1", name: book.name, validateOnly: true });
+
+    const request = composeCreateRequest(LibraryService.method.createBook, {
+      parent: "publishers/acme",
+      requestId: "00000000-0000-4000-8000-000000000001",
+      resource: book,
+      resourceId: "domain-modeling",
+      validateOnly: true,
+    });
+
+    expect(request).toMatchObject({
+      book,
+      bookId: "domain-modeling",
+      parent: "publishers/acme",
+      requestId: "00000000-0000-4000-8000-000000000001",
+      validateOnly: true,
+    });
   });
 
   test("rejects a descriptor whose standard method shape is ambiguous", () => {

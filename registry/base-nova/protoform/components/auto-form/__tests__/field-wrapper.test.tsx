@@ -42,18 +42,6 @@ function makeField(partial: Partial<ParsedField> = {}): ParsedField {
   } as ParsedField;
 }
 
-describe("Form", () => {
-  test("renders with the form spacing token", () => {
-    render(
-      <Form testId="form">
-        <div>child</div>
-      </Form>
-    );
-    const form = screen.getByTestId("form");
-    expect(form.className).toContain(formSpacing.form);
-  });
-});
-
 describe("ObjectWrapper", () => {
   test("toggles a collapsible section through the Protoform button", async () => {
     const user = userEvent.setup();
@@ -79,117 +67,47 @@ describe("ObjectWrapper", () => {
     expect(screen.getByText("Advanced fields")).toBeVisible();
   });
 
-  test("uses a split label rail only for top-level sections", () => {
+  test("uses nested heading levels and label rails, spacing tokens, and dividers only under visible labels", () => {
     render(
       withAutoFormContext(
-        <Form>
+        <Form testId="form">
           <ObjectWrapper field={makeField({ key: "outer" })} label="Outer" testId="outer">
             <ObjectWrapper field={makeField({ key: "inner" })} label="Inner" testId="inner">
               <div>body</div>
             </ObjectWrapper>
           </ObjectWrapper>
-        </Form>
-      )
-    );
-
-    expect(screen.getByTestId("outer")).toHaveAttribute("data-layout", "split");
-    expect(screen.getByTestId("inner")).toHaveAttribute("data-layout", "stacked");
-  });
-
-  test("at the form root renders the title as an h2", () => {
-    render(
-      withAutoFormContext(
-        <Form>
-          <ObjectWrapper field={makeField({ key: "basic" })} label="Basic" testId="section">
+          <ObjectWrapper field={makeField()} label="Basic" testId="labelled">
+            <div data-testid="body-child">body</div>
+          </ObjectWrapper>
+          <ObjectWrapper field={makeField()} label="" testId="unlabelled">
             <div>body</div>
           </ObjectWrapper>
-        </Form>
-      )
-    );
-    expect(screen.getByText("Basic").tagName).toBe("H2");
-  });
-
-  test("nested one level deep renders the title as an h3", () => {
-    render(
-      withAutoFormContext(
-        <Form>
-          <ObjectWrapper field={makeField({ key: "outer" })} label="Outer" testId="outer">
-            <ObjectWrapper field={makeField({ key: "inner" })} label="Inner" testId="inner">
-              <div>body</div>
-            </ObjectWrapper>
-          </ObjectWrapper>
-        </Form>
-      )
-    );
-    expect(screen.getByText("Outer").tagName).toBe("H2");
-    expect(screen.getByText("Inner").tagName).toBe("H3");
-  });
-
-  test("renders a divider under the heading when a label is present", () => {
-    render(
-      withAutoFormContext(
-        <Form>
-          <ObjectWrapper field={makeField()} label="Basic" testId="section">
-            <div>body</div>
-          </ObjectWrapper>
-        </Form>
-      )
-    );
-    const section = screen.getByTestId("section");
-    const header = section.firstElementChild as HTMLElement;
-    expect(header.className).toContain("border-b");
-  });
-
-  test("suppresses the divider when there is no visible label", () => {
-    render(
-      withAutoFormContext(
-        <Form>
-          <ObjectWrapper field={makeField()} label="" testId="section">
-            <div>body</div>
-          </ObjectWrapper>
-        </Form>
-      )
-    );
-    const section = screen.getByTestId("section");
-    const firstChild = section.firstElementChild as HTMLElement;
-    // Without a visible label, no header is rendered — first child is the body wrapper.
-    expect(firstChild.className).not.toContain("border-b");
-  });
-
-  test("suppresses the divider when customData.showDivider is false", () => {
-    render(
-      withAutoFormContext(
-        <Form>
           <ObjectWrapper
             field={makeField({ fieldConfig: { customData: { showDivider: false } } })}
             label="No Rule"
-            testId="section"
+            testId="undivided"
           >
             <div>body</div>
           </ObjectWrapper>
         </Form>
       )
     );
-    const section = screen.getByTestId("section");
-    const header = section.firstElementChild as HTMLElement;
-    // Header still renders (label visible) but the divider token is dropped —
-    // parity with FormSection's `divider={false}` escape hatch.
-    expect(header.className).not.toContain("border-b");
-  });
+    const firstChild = (testId: string) => screen.getByTestId(testId).firstElementChild as HTMLElement;
 
-  test("applies the field-spacing token to its children", () => {
-    render(
-      withAutoFormContext(
-        <Form>
-          <ObjectWrapper field={makeField()} label="Basic" testId="section">
-            <div data-testid="body-child">body</div>
-          </ObjectWrapper>
-        </Form>
-      )
-    );
-    const child = screen.getByTestId("body-child");
-    const wrapper = child.parentElement as HTMLElement;
-    expect(wrapper.className).toContain(formSpacing.field);
+    // Root sections use h2 and a split label rail; nested sections use h3 and a stacked rail.
+    expect(screen.getByText("Outer").tagName).toBe("H2");
+    expect(screen.getByText("Inner").tagName).toBe("H3");
+    expect(screen.getByTestId("outer")).toHaveAttribute("data-layout", "split");
+    expect(screen.getByTestId("inner")).toHaveAttribute("data-layout", "stacked");
+
+    expect(screen.getByTestId("form").className).toContain(formSpacing.form);
+    expect((screen.getByTestId("body-child").parentElement as HTMLElement).className).toContain(formSpacing.field);
+    expect(firstChild("labelled").className).toContain("border-b");
+    // Without a visible label, no header is rendered — first child is the body wrapper.
+    expect(firstChild("unlabelled").className).not.toContain("border-b");
+    // The header still renders but drops the divider — parity with FormSection's `divider={false}`.
+    expect(screen.getByText("No Rule")).toBeVisible();
+    expect(firstChild("undivided").className).not.toContain("border-b");
   });
 });
 
@@ -218,21 +136,7 @@ describe("FieldWrapper", () => {
     expect(code).toHaveAccessibleDescription("Enter a code");
   });
 
-  test("uses a responsive label rail for a top-level field", () => {
-    render(
-      withAutoFormContext(
-        <Form>
-          <FieldWrapper field={makeField({ key: "name" })} id="name" label="Name">
-            <input id="name" />
-          </FieldWrapper>
-        </Form>
-      )
-    );
-
-    expect(screen.getByTestId("test-field-name")).toHaveAttribute("data-layout", "split");
-  });
-
-  test("renders field help as a named shadcn button with an outline question icon", () => {
+  test("renders field help as a named shadcn button in a responsive label rail", () => {
     render(
       withAutoFormContext(
         <Form>
@@ -251,19 +155,6 @@ describe("FieldWrapper", () => {
           >
             <input id="name" />
           </FieldWrapper>
-        </Form>
-      )
-    );
-
-    const helpButton = screen.getByRole("button", { name: "Help for Name" });
-    expect(helpButton.className).toContain("focus-visible:ring-3");
-    expect(helpButton.querySelector("svg")).toHaveAttribute("fill", "none");
-  });
-
-  test("keeps help-only annotations in a tooltip instead of duplicating them inline", () => {
-    render(
-      withAutoFormContext(
-        <Form>
           <FieldWrapper
             field={makeField({
               fieldConfig: { customData: { help: "Choose between 1 and 12 replicas." } },
@@ -278,28 +169,29 @@ describe("FieldWrapper", () => {
       )
     );
 
-    expect(screen.getByRole("button", { name: "Help for Replicas" })).toBeInTheDocument();
+    const helpButton = screen.getByRole("button", { name: "Help for Name" });
+    expect(helpButton.className).toContain("focus-visible:ring-3");
+    expect(helpButton.querySelector("svg")).toHaveAttribute("fill", "none");
+    expect(screen.getByTestId("test-field-name")).toHaveAttribute("data-layout", "split");
+    // Help-only annotations stay in the tooltip instead of duplicating inline.
+    expect(screen.getByRole("button", { name: "Help for Replicas" })).toBeVisible();
     expect(screen.queryByText("Choose between 1 and 12 replicas.")).not.toBeInTheDocument();
   });
 });
 
 describe("ArrayWrapper", () => {
-  test("renders with the field-spacing token and an add button", () => {
-    render(
+  test("renders with the field-spacing token and an add button, and contains complex items in native cards", () => {
+    const { unmount } = render(
       withAutoFormContext(
         <ArrayWrapper field={makeField()} label="Seed Brokers" onAddItem={() => undefined} testId="array">
           <div>item</div>
         </ArrayWrapper>
       )
     );
-    const wrapper = screen.getByTestId("array");
-    expect(wrapper.className).toContain(formSpacing.field);
-    expect(screen.getByRole("button", { name: /add seed brokers/iu })).toBeInTheDocument();
-  });
-});
+    expect(screen.getByTestId("array").className).toContain(formSpacing.field);
+    expect(screen.getByRole("button", { name: /add seed brokers/iu })).toBeVisible();
+    unmount();
 
-describe("ArrayElementWrapper", () => {
-  test("contains each complex repeated item in a distinct native card", () => {
     render(
       <ProtoformUIProvider components={shadcnUIComponents}>
         <ArrayElementWrapper index={0} onRemove={() => undefined} testId="item-0">

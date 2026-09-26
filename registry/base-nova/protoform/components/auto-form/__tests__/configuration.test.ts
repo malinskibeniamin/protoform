@@ -129,7 +129,7 @@ describe("inspectAutoFormConfiguration", () => {
     });
   });
 
-  test("reports broken step configuration and unsupported schema shapes instead of throwing", () => {
+  test("reports broken step configuration, unknown step references, and unsupported schema shapes instead of throwing", () => {
     const brokenSchema = {
       getDefaultValues: () => ({}),
       parseSchema: () => {
@@ -163,9 +163,8 @@ describe("inspectAutoFormConfiguration", () => {
         path: "$",
       })
     );
-  });
 
-  test("reports unknown default and field step references", () => {
+    // Unknown default and field step references are reported too.
     const stepSchema = createMockProvider([
       { hints: { step: "missing" }, key: "name", required: true, type: "string" },
     ]);

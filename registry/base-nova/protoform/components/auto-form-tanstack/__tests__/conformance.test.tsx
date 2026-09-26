@@ -1,6 +1,6 @@
 import { create, fromBinary, toBinary } from "@bufbuild/protobuf";
 import { describe, expect, rs } from "@rstest/core";
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import "@/registry/base-nova/protoform/lib/protobuf-provider/auto-form-example-annotations";
@@ -36,7 +36,7 @@ describe("TanStack AutoForm conformance", () => {
     expect(onFormInit.mock.calls[0]?.[0].Subscribe).toBeTypeOf("function");
   });
 
-  test("uses native TanStack state for repeated fields", async () => {
+  test("uses native TanStack state for repeated fields and clears the previous oneof branch", async () => {
     const user = userEvent.setup();
     const onSubmit = rs.fn();
     const schema: SchemaProvider<{ tags: string[] }> = {
@@ -63,12 +63,10 @@ describe("TanStack AutoForm conformance", () => {
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
     expect(onSubmit.mock.calls[0]?.[0]).toEqual({ tags: ["first", "second"] });
-  });
 
-  test("clears the previous oneof branch when the selection changes", async () => {
-    const user = userEvent.setup();
-    const onSubmit = rs.fn();
-    const schema: SchemaProvider<{
+    cleanup();
+    const onSubmitOneof = rs.fn();
+    const schemaOneof: SchemaProvider<{
       contact: { case?: string; value?: unknown };
     }> = {
       getDefaultValues: () => ({
@@ -90,7 +88,7 @@ describe("TanStack AutoForm conformance", () => {
       validateSchema: (values) => ({ data: values, success: true }),
     };
 
-    render(<AutoForm onSubmit={onSubmit} schema={schema} withSubmit />);
+    render(<AutoForm onSubmit={onSubmitOneof} schema={schemaOneof} withSubmit />);
 
     fireEvent.click(screen.getByRole("combobox", { name: /contact/iu }));
     const phoneOption = await screen.findByRole("option", { name: /phone/iu });
@@ -100,40 +98,13 @@ describe("TanStack AutoForm conformance", () => {
     await user.type(await screen.findByRole("textbox", { name: /phone/iu }), "+48123456789");
     await user.click(screen.getByRole("button", { name: "Submit" }));
 
-    await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
-    expect(onSubmit.mock.calls[0]?.[0]).toEqual({
+    await waitFor(() => expect(onSubmitOneof).toHaveBeenCalledTimes(1));
+    expect(onSubmitOneof.mock.calls[0]?.[0]).toEqual({
       contact: { case: "phone", value: "+48123456789" },
     });
   });
 
-  test("blocks submission and renders every provider failure", async () => {
-    const user = userEvent.setup();
-    const onSubmit = rs.fn();
-    const schema: SchemaProvider<{ name: string }> = {
-      getDefaultValues: () => ({ name: "" }),
-      parseSchema: () => ({
-        fields: [{ key: "name", required: true, type: "string" }],
-      }),
-      validateSchema: () => ({
-        errors: [
-          { message: "Name is required.", path: ["name"] },
-          { message: "Name must be unique.", path: ["name"] },
-        ],
-        success: false,
-      }),
-    };
-
-    render(<AutoForm onSubmit={onSubmit} schema={schema} withSubmit />);
-    await user.click(screen.getByRole("button", { name: "Submit" }));
-
-    expect(onSubmit).not.toHaveBeenCalled();
-    const fieldError = await screen.findByRole("alert");
-    expect(fieldError).toHaveTextContent("Name is required.");
-    expect(fieldError).toHaveTextContent("Name must be unique.");
-    expect(screen.getByRole("textbox", { name: /name/iu })).toHaveAttribute("aria-invalid", "true");
-  });
-
-  test("validates with the shared change lifecycle", async () => {
+  test("validates with the shared change and blur lifecycles", async () => {
     const user = userEvent.setup();
     const schema: SchemaProvider<{ name: string }> = {
       getDefaultValues: () => ({ name: "" }),
@@ -149,34 +120,17 @@ describe("TanStack AutoForm conformance", () => {
             },
     };
 
-    render(<AutoForm schema={schema} validationMode="change" />);
+    const view = render(<AutoForm schema={schema} validationMode="change" />);
     await user.type(screen.getByRole("textbox", { name: /name/iu }), "ab");
-
-    expect(await screen.findByText("Use at least three characters.")).toBeInTheDocument();
-  });
-
-  test("validates with the shared blur lifecycle", async () => {
-    const user = userEvent.setup();
-    const schema: SchemaProvider<{ name: string }> = {
-      getDefaultValues: () => ({ name: "" }),
-      parseSchema: () => ({
-        fields: [{ key: "name", required: true, type: "string" }],
-      }),
-      validateSchema: (values) =>
-        values.name.length >= 3
-          ? { data: values, success: true }
-          : {
-              errors: [{ message: "Use at least three characters.", path: ["name"] }],
-              success: false,
-            },
-    };
+    expect(await screen.findByText("Use at least three characters.")).toBeVisible();
+    view.unmount();
 
     render(<AutoForm schema={schema} validationMode="blur" />);
     await user.type(screen.getByRole("textbox", { name: /name/iu }), "ab");
     expect(screen.queryByText("Use at least three characters.")).not.toBeInTheDocument();
 
     await user.tab();
-    expect(await screen.findByText("Use at least three characters.")).toBeInTheDocument();
+    expect(await screen.findByText("Use at least three characters.")).toBeVisible();
   });
 
   test("ignores stale asynchronous lifecycle results", async () => {
@@ -214,7 +168,7 @@ describe("TanStack AutoForm conformance", () => {
     expect(screen.queryByText("Stale validation result.")).not.toBeInTheDocument();
   });
 
-  test("retains native TanStack submit validators", async () => {
+  test("retains native TanStack submit validators and revalidates failed submissions on the shared lifecycle", async () => {
     const user = userEvent.setup();
     const onSubmit = rs.fn();
     const nativeValidator = rs.fn(() => "Native validation failed.");
@@ -239,9 +193,31 @@ describe("TanStack AutoForm conformance", () => {
     expect(nativeValidator).toHaveBeenCalledTimes(1);
     expect(onSubmit).not.toHaveBeenCalled();
     expect(await screen.findByText("Native validation failed.")).toBeInTheDocument();
+
+    cleanup();
+    const schemaRevalidation: SchemaProvider<{ name: string }> = {
+      getDefaultValues: () => ({ name: "" }),
+      parseSchema: () => ({
+        fields: [{ key: "name", required: true, type: "string" }],
+      }),
+      validateSchema: (values) =>
+        values.name
+          ? { data: values, success: true }
+          : {
+              errors: [{ message: "Enter a name.", path: ["name"] }],
+              success: false,
+            },
+    };
+
+    render(<AutoForm revalidationMode="change" schema={schemaRevalidation} validationMode="submit" withSubmit />);
+    await user.click(screen.getByRole("button", { name: "Submit" }));
+    expect(await screen.findByText("Enter a name.")).toBeInTheDocument();
+
+    await user.type(screen.getByRole("textbox", { name: /name/iu }), "Ada");
+    await waitFor(() => expect(screen.queryByText("Enter a name.")).not.toBeInTheDocument());
   });
 
-  test("runs native TanStack submission only after provider validation passes", async () => {
+  test("renders every provider failure and runs native TanStack submission only after validation passes", async () => {
     const user = userEvent.setup();
     const nativeOnSubmit = rs.fn();
     const onSubmit = rs.fn();
@@ -254,14 +230,21 @@ describe("TanStack AutoForm conformance", () => {
         values.name
           ? { data: values, success: true }
           : {
-              errors: [{ message: "Enter a name.", path: ["name"] }],
+              errors: [
+                { message: "Enter a name.", path: ["name"] },
+                { message: "Name must be unique.", path: ["name"] },
+              ],
               success: false,
             },
     };
 
     render(<AutoForm formOptions={{ onSubmit: nativeOnSubmit }} onSubmit={onSubmit} schema={schema} withSubmit />);
     await user.click(screen.getByRole("button", { name: "Submit" }));
-    expect(await screen.findByText("Enter a name.")).toBeInTheDocument();
+    // Every provider failure renders and blocks submission.
+    const fieldError = await screen.findByRole("alert");
+    expect(fieldError).toHaveTextContent("Enter a name.");
+    expect(fieldError).toHaveTextContent("Name must be unique.");
+    expect(screen.getByRole("textbox", { name: /name/iu })).toHaveAttribute("aria-invalid", "true");
     expect(nativeOnSubmit).not.toHaveBeenCalled();
     expect(onSubmit).not.toHaveBeenCalled();
 
@@ -272,49 +255,13 @@ describe("TanStack AutoForm conformance", () => {
     expect(nativeOnSubmit.mock.calls[0]?.[0].value).toEqual({ name: "Ada" });
   });
 
-  test("builds update masks from native TanStack dirty metadata", async () => {
+  test("builds update masks from native TanStack dirty metadata and preserves the edit source message", async () => {
     const user = userEvent.setup();
     const onSubmit = rs.fn((_message, _nativeForm, context) => {
       if (onSubmit.mock.calls.length === 1) {
         context.form.markClean();
       }
     });
-    render(
-      <AutoForm
-        defaultValues={{
-          city: "Warsaw",
-          country: 4,
-          lineOne: "1 Main Street",
-          postalCode: "00-001",
-          state: "Mazowieckie",
-        }}
-        onSubmit={onSubmit}
-        schema={AddressSchema}
-        withSubmit
-      />
-    );
-
-    const city = screen.getByRole("textbox", { name: /city/iu });
-    await user.clear(city);
-    await user.type(city, "Krakow");
-    await user.click(screen.getByRole("button", { name: "Submit" }));
-
-    await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
-    expect(onSubmit.mock.calls[0]?.[2].updateMask.paths).toEqual(["city"]);
-
-    await user.clear(city);
-    await user.type(city, "Gdansk");
-    await user.clear(city);
-    await user.type(city, "Krakow");
-    await user.click(screen.getByRole("button", { name: "Submit" }));
-
-    await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(2));
-    expect(onSubmit.mock.calls[1]?.[2].updateMask.paths).toEqual([]);
-  });
-
-  test("preserves the edit source message through the TanStack adapter", async () => {
-    const user = userEvent.setup();
-    const onSubmit = rs.fn();
     const knownSource = create(AddressSchema, {
       city: "Warsaw",
       country: 4,
@@ -326,40 +273,25 @@ describe("TanStack AutoForm conformance", () => {
       AddressSchema,
       Uint8Array.from([...toBinary(AddressSchema, knownSource), 0x98, 0x06, 0x01])
     );
-
     render(<AutoForm defaultValues={source} onSubmit={onSubmit} schema={AddressSchema} withSubmit />);
+
     const city = screen.getByRole("textbox", { name: /city/iu });
     await user.clear(city);
     await user.type(city, "Krakow");
     await user.click(screen.getByRole("button", { name: "Submit" }));
+
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
+    expect(onSubmit.mock.calls[0]?.[2].updateMask.paths).toEqual(["city"]);
+    expect(onSubmit.mock.calls[0]?.[0].city).toBe("Krakow");
+    expect(onSubmit.mock.calls[0]?.[0].$unknown).toEqual(source.$unknown);
 
-    const submitted = onSubmit.mock.calls[0]?.[0];
-    expect(submitted.city).toBe("Krakow");
-    expect(submitted.$unknown).toEqual(source.$unknown);
-  });
-
-  test("revalidates failed submissions on the shared lifecycle", async () => {
-    const user = userEvent.setup();
-    const schema: SchemaProvider<{ name: string }> = {
-      getDefaultValues: () => ({ name: "" }),
-      parseSchema: () => ({
-        fields: [{ key: "name", required: true, type: "string" }],
-      }),
-      validateSchema: (values) =>
-        values.name
-          ? { data: values, success: true }
-          : {
-              errors: [{ message: "Enter a name.", path: ["name"] }],
-              success: false,
-            },
-    };
-
-    render(<AutoForm revalidationMode="change" schema={schema} validationMode="submit" withSubmit />);
+    await user.clear(city);
+    await user.type(city, "Gdansk");
+    await user.clear(city);
+    await user.type(city, "Krakow");
     await user.click(screen.getByRole("button", { name: "Submit" }));
-    expect(await screen.findByText("Enter a name.")).toBeInTheDocument();
 
-    await user.type(screen.getByRole("textbox", { name: /name/iu }), "Ada");
-    await waitFor(() => expect(screen.queryByText("Enter a name.")).not.toBeInTheDocument());
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(2));
+    expect(onSubmit.mock.calls[1]?.[2].updateMask.paths).toEqual([]);
   });
 });

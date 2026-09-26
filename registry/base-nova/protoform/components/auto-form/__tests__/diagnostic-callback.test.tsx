@@ -1,13 +1,14 @@
-import { describe, expect } from "@rstest/core";
-import { render, waitFor } from "@testing-library/react";
+import { describe, expect, rs } from "@rstest/core";
+import { render, screen, waitFor } from "@testing-library/react";
 
 import type { AutoFormDiagnostic } from "../configuration";
 import { AutoForm } from "../index";
 import { createMockProvider } from "./test-utils";
 
 describe("AutoForm diagnostic callback", () => {
-  test("delivers structured configuration diagnostics without a logging dependency", async () => {
+  test("delivers configuration diagnostics and schema resolution causes without a logging dependency", async () => {
     const diagnostics: AutoFormDiagnostic[] = [];
+    const onDiagnostic = (diagnostic: AutoFormDiagnostic) => diagnostics.push(diagnostic);
     const schema = createMockProvider([
       {
         fieldConfig: { customData: { dataProvider: "regions" } },
@@ -16,9 +17,15 @@ describe("AutoForm diagnostic callback", () => {
         type: "string",
       },
     ]);
+    const brokenSchema = {
+      getDefaultValues: () => ({}),
+      parseSchema: () => {
+        throw new TypeError("Unsupported schema shape.");
+      },
+      validateSchema: () => ({ data: {}, success: true as const }),
+    };
 
-    render(<AutoForm onDiagnostic={(diagnostic) => diagnostics.push(diagnostic)} schema={schema} />);
-
+    render(<AutoForm onDiagnostic={onDiagnostic} schema={schema} />);
     await waitFor(() =>
       expect(diagnostics).toContainEqual(
         expect.objectContaining({
@@ -28,20 +35,10 @@ describe("AutoForm diagnostic callback", () => {
         })
       )
     );
-  });
 
-  test("reports a schema resolution cause through the same callback", async () => {
-    const diagnostics: AutoFormDiagnostic[] = [];
-    const brokenSchema = {
-      getDefaultValues: () => ({}),
-      parseSchema: () => {
-        throw new TypeError("Unsupported schema shape.");
-      },
-      validateSchema: () => ({ data: {}, success: true as const }),
-    };
-
-    render(<AutoForm onDiagnostic={(diagnostic) => diagnostics.push(diagnostic)} schema={brokenSchema} />);
-
+    // Suppress React's expected error-boundary console noise.
+    const consoleError = rs.spyOn(console, "error").mockImplementation(() => undefined);
+    render(<AutoForm onDiagnostic={onDiagnostic} schema={brokenSchema} />);
     await waitFor(() =>
       expect(diagnostics).toContainEqual(
         expect.objectContaining({
@@ -52,5 +49,8 @@ describe("AutoForm diagnostic callback", () => {
         })
       )
     );
+    // The error boundary replaces the broken form with an alert.
+    expect(screen.getByText(/autoform failed to render/iu)).toBeVisible();
+    consoleError.mockRestore();
   });
 });
