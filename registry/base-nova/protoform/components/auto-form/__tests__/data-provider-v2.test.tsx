@@ -28,6 +28,10 @@ function useMethods() {
   return { options: [{ label: "GET", value: "get" }] };
 }
 
+function useFailingMethods() {
+  return { error: new Error("Service unavailable"), options: [] };
+}
+
 describe("AutoForm data providers v2", () => {
   test("supplies search, cursor, dependencies, selected values, cancellation, and stale-selection policy", async () => {
     const user = userEvent.setup();
@@ -259,5 +263,41 @@ describe("AutoForm data providers v2", () => {
 
     await user.click(screen.getByRole("button", { name: "Multi-select trigger" }));
     expect(screen.getByText("GET")).toBeVisible();
+  });
+
+  test("keeps multi-select values and reports the failure when the provider errors", async () => {
+    const user = userEvent.setup();
+    const onSubmit = rs.fn();
+    const schema = createMockProvider(
+      [
+        {
+          key: "methods",
+          required: false,
+          schema: [
+            { fieldConfig: { customData: { dataProvider: "methods" } }, key: "value", required: true, type: "string" },
+          ],
+          type: "array",
+        },
+      ],
+      { methods: ["get"] }
+    );
+
+    render(
+      <AutoForm
+        dataProviders={{
+          methods: { staleSelection: "clear", useProvider: useFailingMethods },
+        }}
+        onSubmit={onSubmit}
+        schema={schema}
+        withSubmit
+      />
+    );
+
+    await user.click(screen.getByRole("button", { name: "Submit" }));
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
+    expect(onSubmit.mock.calls[0]?.[0]).toMatchObject({ methods: ["get"] });
+    expect(screen.getByRole("alert")).toHaveTextContent("Failed to load options");
+    expect(screen.getByRole("button", { name: "Multi-select trigger" })).toHaveAttribute("aria-disabled", "true");
+    expect(screen.getByText("get")).toBeVisible();
   });
 });
