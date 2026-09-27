@@ -29,4 +29,20 @@ describe("protoPathToFormPath", () => {
     expect(protoPathToFormPath(AutoFormExampleSchema, "preferred_contact")).toBe("preferredContact");
     expect(protoPathToFormPath(AutoFormUiMetadataExampleSchema, "support_contact")).toBe("supportContact");
   });
+
+  test("maps repeated-field indexes in bracket and dot notation", () => {
+    expect(protoPathToFormPath(AutoFormExampleSchema, "previous_addresses[1].postal_code")).toBe(
+      "previousAddresses.1.postalCode"
+    );
+    expect(protoPathToFormPath(AutoFormExampleSchema, "previous_addresses.1.postal_code")).toBe(
+      "previousAddresses.1.postalCode"
+    );
+    expect(protoPathToFormPath(AutoFormExampleSchema, "previous_addresses[1]")).toBe("previousAddresses.1");
+    expect(protoPathToFormPath(AutoFormExampleSchema, "tags[2]")).toBe("tags.2");
+
+    expect(protoPathToFormPath(AutoFormExampleSchema, "tags[2].value")).toBeNull();
+    expect(protoPathToFormPath(AutoFormExampleSchema, "shipping_address[0]")).toBeNull();
+    expect(protoPathToFormPath(AutoFormExampleSchema, "previous_addresses[1].not_a_field")).toBeNull();
+    expect(protoPathToFormPath(AutoFormExampleSchema, "previous_addresses.postal_code")).toBeNull();
+  });
 });

@@ -26,6 +26,7 @@ source snapshots.
 
 - Replacing a data provider, or registering one after the first render, no longer breaks React hook order.
 - A failing multi-select provider no longer clears or flags saved selections; it disables the control and reports the failure.
+- Server field violations on repeated-field items (`items[0].name` or `items.0.name`) map to the item field instead of falling back to a form-level error.
 
 ### Compatibility
 
