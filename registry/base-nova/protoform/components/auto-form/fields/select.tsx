@@ -260,7 +260,7 @@ function SelectFieldFromProviderResult({
   testIds: ReturnType<typeof useFieldTestIds>;
 }) {
   const { formatMessage } = useAutoForm();
-  const { isLoading, error: providerError, nextCursor } = providerResult;
+  const { emptyState, isLoading, error: providerError, nextCursor } = providerResult;
   const { renderedOptions, staleSelections } = useProviderOptions({
     cursor,
     requestKey,
@@ -309,7 +309,9 @@ function SelectFieldFromProviderResult({
         className={error ? "[&_input]:border-destructive" : undefined}
         clearable={!field.required}
         disabled={Boolean(inputProps["disabled"])}
-        emptyState={formatProtoformMessage(formatMessage, "auto_form.select.empty", {}, "No options found.")}
+        emptyState={
+          emptyState ?? formatProtoformMessage(formatMessage, "auto_form.select.empty", {}, "No options found.")
+        }
         id={id}
         loading={isLoading}
         onChange={(value) => {
