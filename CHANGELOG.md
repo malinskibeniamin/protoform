@@ -12,6 +12,7 @@ source snapshots.
 - React Hook Form and TanStack Form hooks and AutoForm adapters.
 - Consumer-owned shadcn-compatible component maps for AutoForm renderers.
 - Component data providers (`{ component }`) that render option results through `children`.
+- Data provider results can supply an `emptyState` that single-select dropdowns show when there are no options.
 - A replaceable `OneofWrapper` UI component; AutoForm supplies the available variants, selection, and variant rendering.
 - Formik and Final Form validation adapters.
 - Source-copy `protoc-gen-protoform` generator.

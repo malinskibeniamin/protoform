@@ -32,6 +32,11 @@ export interface DataProviderOption {
 }
 
 export interface DataProviderResult {
+  /**
+   * Content a single-select dropdown shows when the provider returns no options,
+   * such as a link to create the missing resource. Defaults to "No options found.".
+   */
+  emptyState?: React.ReactNode;
   /** Non-null when the provider failed to load. */
   error?: unknown;
   /** True while an async source is loading. Static providers may omit this. */

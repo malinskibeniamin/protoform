@@ -32,6 +32,10 @@ function useFailingMethods() {
   return { error: new Error("Service unavailable"), options: [] };
 }
 
+function EmptyRegionsProvider({ children }: DataProviderProps) {
+  return children({ emptyState: <a href="/regions/new">Create a region</a>, options: [] });
+}
+
 describe("AutoForm data providers v2", () => {
   test("supplies search, cursor, dependencies, selected values, cancellation, and stale-selection policy", async () => {
     const user = userEvent.setup();
@@ -297,5 +301,19 @@ describe("AutoForm data providers v2", () => {
     expect(screen.getByRole("alert")).toHaveTextContent("Failed to load options");
     expect(screen.getByRole("button", { name: "Multi-select trigger" })).toHaveAttribute("aria-disabled", "true");
     expect(screen.getByText("get")).toBeVisible();
+  });
+
+  test("renders the provider's empty state when it returns no options", async () => {
+    const user = userEvent.setup();
+    const schema = createMockProvider(
+      [{ fieldConfig: { customData: { dataProvider: "regions" } }, key: "region", required: true, type: "string" }],
+      {}
+    );
+
+    render(<AutoForm dataProviders={{ regions: { component: EmptyRegionsProvider } }} schema={schema} />);
+
+    await user.click(screen.getByRole("combobox", { name: /Region/u }));
+    expect(screen.getByRole("link", { name: "Create a region" })).toBeVisible();
+    expect(screen.queryByText("No options found.")).toBeNull();
   });
 });
