@@ -2,6 +2,7 @@
 
 import { create } from "@bufbuild/protobuf";
 import { createConnectQueryKey, useMutation, useTransport } from "@connectrpc/connect-query";
+import { ErrorMessage } from "@hookform/error-message";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 
@@ -106,7 +107,7 @@ export function CreateBookForm({ onCancel, onCreated, parent }: CreateBookFormPr
               onChange={handleDisplayNameChange}
               ref={displayNameRef}
             />
-            {titleError ? <FieldError>{titleError}</FieldError> : null}
+            <ErrorMessage as={FieldError} errors={form.formState.errors} name="displayName" />
           </Field>
           <Field data-invalid={Boolean(isbnError)}>
             <FieldLabel htmlFor="create-book-isbn">ISBN-13</FieldLabel>
@@ -121,9 +122,8 @@ export function CreateBookForm({ onCancel, onCreated, parent }: CreateBookFormPr
               placeholder="9783161484100"
               ref={isbnRef}
             />
-            {isbnError ? (
-              <FieldError>{isbnError}</FieldError>
-            ) : (
+            <ErrorMessage as={FieldError} errors={form.formState.errors} name="isbn" />
+            {!isbnError && (
               <FieldDescription id="create-book-isbn-help">
                 Thirteen digits. The check digit is verified by the CEL rule in the proto.
               </FieldDescription>
