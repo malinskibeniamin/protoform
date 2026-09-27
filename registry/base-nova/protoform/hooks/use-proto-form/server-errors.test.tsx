@@ -40,4 +40,24 @@ describe("useProtoForm server errors", () => {
     expect(mapped?.handled).toBe(true);
     expect(mapped?.unmapped).toEqual([{ description: "value is required", field: "other.unknown_field" }]);
   });
+
+  test("maps violations on repeated-field items to the item's form path", () => {
+    const { result } = renderHook(() => useProtoForm(AutoFormExampleSchema));
+    const error = new ConnectError("Review the highlighted fields.", Code.InvalidArgument, {}, [
+      {
+        desc: BadRequestSchema,
+        value: {
+          fieldViolations: [{ description: "value is required", field: "previous_addresses[0].postal_code" }],
+        },
+      },
+    ]);
+
+    let mapped: ReturnType<typeof result.current.setServerErrors> | undefined;
+    act(() => {
+      mapped = result.current.setServerErrors(error);
+    });
+
+    expect(result.current.getFieldState("previousAddresses.0.postalCode").error?.message).toBe("Enter a value.");
+    expect(mapped?.unmapped).toEqual([]);
+  });
 });
