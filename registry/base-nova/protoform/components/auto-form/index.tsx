@@ -32,7 +32,7 @@ export {
   inspectAutoFormConfiguration,
 } from "./configuration";
 export { useAutoForm } from "./context";
-export type { AutoFormFieldComponents, AutoFormFieldProps } from "./core-types";
+export type { AutoFormFieldComponents, AutoFormFieldProps, OneofVariant, OneofWrapperProps } from "./core-types";
 export type {
   DataProvider,
   DataProviderComponent,
