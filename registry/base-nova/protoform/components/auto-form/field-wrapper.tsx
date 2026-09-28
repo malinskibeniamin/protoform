@@ -2,7 +2,7 @@
 
 import { AlertCircle, ChevronDown, CircleHelp, ExternalLink, PlusIcon, TrashIcon } from "lucide-react";
 import React from "react";
-import { cn, type SharedProps } from "@/registry/base-nova/protoform/lib/utils/index";
+import { cn } from "@/registry/base-nova/protoform/lib/utils";
 import { useAutoFormRuntimeContext } from "./context";
 import type { ArrayElementWrapperProps, ArrayWrapperProps, FieldWrapperProps, ObjectWrapperProps } from "./core-types";
 import { formSpacing } from "./form-spacing";
@@ -32,7 +32,7 @@ import {
 
 const REGEX_ERROR_PATTERN = /regex pattern\s*`([^`]+)`/u;
 
-export const Form = React.forwardRef<HTMLFormElement, React.ComponentProps<"form"> & SharedProps>(
+export const Form = React.forwardRef<HTMLFormElement, React.ComponentProps<"form"> & { testId?: string | undefined }>(
   ({ children, testId, ...props }, ref) => (
     <form className={formSpacing.form} data-testid={testId} ref={ref} {...props}>
       <FormDepthProvider depth={0}>{children}</FormDepthProvider>
