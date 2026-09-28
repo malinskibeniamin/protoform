@@ -218,6 +218,18 @@ describe("build-time UI adapter registry", () => {
     expect(filePaths(renderer)).toContain("registry/base-nova/protoform/components/auto-form/ui-props.ts");
   });
 
+  test("uses the consumer's utils alias instead of shipping its own class helpers", () => {
+    const closure = [...dependencyClosure("protoform")].map(item);
+    for (const entry of closure) {
+      for (const file of entry.files ?? []) {
+        expect(file.target ?? "", file.path).not.toMatch(/^@lib\/(utils|input-utils)\//u);
+      }
+      expect(entry.dependencies ?? [], entry.name).not.toEqual(
+        expect.arrayContaining([expect.stringMatching(/^(clsx|tailwind-merge|class-variance-authority)(@|$)/u)])
+      );
+    }
+  });
+
   test("keeps the host installation free of consumer UI imports", () => {
     const imports = closureFilePaths("protoform")
       .filter((path) => path.endsWith(".ts") || path.endsWith(".tsx"))
