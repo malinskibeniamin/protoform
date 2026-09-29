@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect } from "@rstest/core";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
 import { DemoHub } from "./demo-hub";
 
@@ -29,6 +29,9 @@ describe("DemoHub", () => {
 
     expect(window.location.hash).toBe("#protobuf-maps");
     expect(screen.getByRole("heading", { name: "Protobuf maps" })).toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.queryByRole("status", { name: "Loading selected demo" })).not.toBeInTheDocument()
+    );
   });
 
   test("keeps the selected demo source available without a wrapper page", async () => {

@@ -329,7 +329,7 @@ describe("native form adapter registry entries", () => {
   });
 
   test("ships React Hook Form v8 as separate experimental registry items", () => {
-    const packageAlias = "react-hook-form-v8@npm:react-hook-form@8.0.0-beta.3";
+    const packageAlias = "react-hook-form-v8@npm:react-hook-form@8.0.0-beta.4";
     const reactHookFormHook = item("use-proto-form-v8");
     const reactHookFormAutoForm = item("auto-form-react-hook-form-v8");
 

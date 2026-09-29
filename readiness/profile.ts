@@ -88,9 +88,9 @@ export const readinessProfile = {
     formik: "^2.4.9",
     react: "^19.3.0",
     "react-final-form": "^7.0.1",
-    "react-hook-form": "^7.87.0",
+    "react-hook-form": "^7.89.0",
   },
-  reviewedAt: "2026-08-23",
+  reviewedAt: "2026-09-29",
   version: 3,
 };
 

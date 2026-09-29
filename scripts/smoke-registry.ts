@@ -106,7 +106,7 @@ if (
   throw new Error("protoform-shadcn must install optional defaults through the configured ui alias");
 }
 
-const reactHookFormV8Alias = "react-hook-form-v8@npm:react-hook-form@8.0.0-beta.3";
+const reactHookFormV8Alias = "react-hook-form-v8@npm:react-hook-form@8.0.0-beta.4";
 const reactHookFormV8Hook = dependencyItemSchema.parse(
   JSON.parse(readFileSync("public/r/use-proto-form-v8.json", "utf8"))
 );

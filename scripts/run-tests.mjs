@@ -1,4 +1,4 @@
-import { runCLI } from "@rstest/core";
+import { runCLI } from "@rstest/core/api";
 
 const configs = {
   browser: "rstest.browser.config.ts",

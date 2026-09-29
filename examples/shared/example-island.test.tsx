@@ -1,5 +1,5 @@
 import { expect } from "@rstest/core";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import type { ComponentType } from "react";
 
 import AipResourceFormExampleIsland from "../../islands/AipResourceFormExample.js";
@@ -71,8 +71,9 @@ const islandCases: ReadonlyArray<{
   },
 ];
 
-test.each(islandCases)("shows the $label status while its chunk loads", ({ Island, label }) => {
+test.each(islandCases)("shows the $label status until its chunk loads", async ({ Island, label }) => {
   render(<Island />);
 
-  expect(screen.getByRole("status", { name: label })).toBeInTheDocument();
+  expect(screen.getByRole("status", { name: label })).toBeVisible();
+  await waitFor(() => expect(screen.queryByRole("status", { name: label })).not.toBeInTheDocument());
 });
