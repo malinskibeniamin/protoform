@@ -76,4 +76,24 @@ describe("OneofWrapper", () => {
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
     expect(onSubmit.mock.calls[0]?.[0]).toMatchObject({ contact: { case: undefined } });
   });
+
+  test("moves focus to the default variant select when the oneof reports an error", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <AutoForm
+        onSubmit={async (_values, form) => {
+          await Promise.resolve();
+          form.setError("contact", { message: "Choose a contact method.", type: "server" }, { shouldFocus: true });
+        }}
+        schema={schema}
+        withSubmit
+      />
+    );
+
+    await user.click(screen.getByRole("button", { name: "Submit" }));
+
+    expect(await screen.findByText("Choose a contact method.")).toBeVisible();
+    await waitFor(() => expect(screen.getByRole("combobox", { name: "Contact" })).toHaveFocus());
+  });
 });

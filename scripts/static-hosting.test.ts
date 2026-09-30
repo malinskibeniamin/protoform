@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { describe, expect } from "@rstest/core";
 
 const repositoryDirectory = new URL("../", import.meta.url);
-const bunVersion = "1.4.0";
+const bunVersion = "1.4.2";
 
 describe("static docs and registry hosting", () => {
   test("builds one Cloudflare Pages artifact containing docs and registry JSON", () => {

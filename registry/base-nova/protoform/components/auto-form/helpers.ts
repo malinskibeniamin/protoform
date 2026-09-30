@@ -629,12 +629,13 @@ export function filterFieldsByPaths(fields: ParsedField[], paths: string[], curr
   if (paths.length === 0) {
     return [];
   }
+  const pathSet = new Set(paths);
 
   return sortFieldsByOrder(
     fields.flatMap((field) => {
       const nextPath = [...currentPath, field.key];
       const fullPath = nextPath.join(".");
-      const matchesDirectly = paths.some((path) => path === fullPath);
+      const matchesDirectly = pathSet.has(fullPath);
       const hasDescendantMatch = paths.some((path) => path.startsWith(`${fullPath}.`));
 
       if (!(matchesDirectly || hasDescendantMatch)) {

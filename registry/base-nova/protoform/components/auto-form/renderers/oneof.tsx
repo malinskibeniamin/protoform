@@ -162,6 +162,7 @@ export function OneofWrapper({
 }: OneofWrapperProps) {
   const { uiComponents } = useAutoFormRenderContext();
   const { testIdPrefix } = useAutoFormRuntimeContext();
+  const { FieldController } = useAutoFormEngine();
   const FieldWrapperComponent = field.fieldConfig?.fieldWrapper ?? uiComponents.FieldWrapper;
   let selectedValueLabel: string | undefined;
   if (selected) {
@@ -175,35 +176,46 @@ export function OneofWrapper({
   return (
     <FieldWrapperComponent error={error} field={field} id={id} label={label}>
       <div className={formSpacing.oneofStack}>
-        <Select
-          items={[
-            ...(field.required ? [] : [{ label: "Not set", value: null }]),
-            ...variants.map((variant) => ({ label: variant.label, value: variant.key })),
-          ]}
-          onValueChange={(value) => onSelect(value ?? undefined)}
-          value={selectedKey ?? null}
-        >
-          <SelectTrigger aria-label={label} disabled={disabled} id={id} testId={testId}>
-            <SelectValue placeholder="Choose a field">{selectedValueLabel}</SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            {field.required ? null : (
-              <SelectItem testId={getAutoFormFieldTestId(testIdPrefix, id, "option-not-set")} value={null}>
-                Not set
-              </SelectItem>
-            )}
-            {variants.map((variant) => (
-              <SelectItem
-                disabled={variant.disabled}
-                key={variant.key}
-                testId={getAutoFormFieldTestId(testIdPrefix, id, `option-${variant.key}`)}
-                value={variant.key}
+        <FieldController name={id}>
+          {({ ref }) => (
+            <Select
+              items={[
+                ...(field.required ? [] : [{ label: "Not set", value: null }]),
+                ...variants.map((variant) => ({ label: variant.label, value: variant.key })),
+              ]}
+              onValueChange={(value) => onSelect(value ?? undefined)}
+              value={selectedKey ?? null}
+            >
+              <SelectTrigger
+                aria-invalid={Boolean(error)}
+                aria-label={label}
+                disabled={disabled}
+                id={id}
+                ref={ref}
+                testId={testId}
               >
-                {variant.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+                <SelectValue placeholder="Choose a field">{selectedValueLabel}</SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                {field.required ? null : (
+                  <SelectItem testId={getAutoFormFieldTestId(testIdPrefix, id, "option-not-set")} value={null}>
+                    Not set
+                  </SelectItem>
+                )}
+                {variants.map((variant) => (
+                  <SelectItem
+                    disabled={variant.disabled}
+                    key={variant.key}
+                    testId={getAutoFormFieldTestId(testIdPrefix, id, `option-${variant.key}`)}
+                    value={variant.key}
+                  >
+                    {variant.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        </FieldController>
         {selected ? renderVariant(selected) : null}
       </div>
     </FieldWrapperComponent>

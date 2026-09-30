@@ -59,9 +59,8 @@
         "@bufbuild/protobuf",
         "@connectrpc/connect",
         "@connectrpc/connect-query",
-        "@hookform/error-message",
         "@tanstack/react-query",
-        "react-hook-form"
+        "react-hook-form@^7.89.0"
       ],
       "files": [
         {
@@ -409,7 +408,7 @@
       "dependencies": [
         "@bufbuild/protobuf",
         "@connectrpc/connect",
-        "react-hook-form-v8@npm:react-hook-form@8.0.0-beta.3"
+        "react-hook-form-v8@npm:react-hook-form@8.0.0-beta.4"
       ],
       "files": [
         {
@@ -1132,7 +1131,7 @@
         "@protoform/auto-form-core",
         "@protoform/use-proto-form-v8"
       ],
-      "dependencies": ["react-hook-form-v8@npm:react-hook-form@8.0.0-beta.3"],
+      "dependencies": ["react-hook-form-v8@npm:react-hook-form@8.0.0-beta.4"],
       "files": [
         {
           "path": "registry/base-nova/protoform/components/auto-form-react-hook-form-v8/index.tsx",

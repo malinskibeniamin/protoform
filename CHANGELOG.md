@@ -22,6 +22,8 @@ source snapshots.
 ### Changed
 
 - AutoForm core, its runtime provider, object sections, and string inputs compile under React Compiler without `"use no memo"`.
+- The bookstore demo shows field errors with React Hook Form's built-in `ErrorMessage` bound to `control`, so it no longer installs `@hookform/error-message`.
+- The experimental React Hook Form v8 items install `8.0.0-beta.4`.
 
 ### Fixed
 
@@ -29,6 +31,7 @@ source snapshots.
 - A failing multi-select provider no longer clears or flags saved selections; it disables the control and reports the failure.
 - Server field violations on repeated-field items (`items[0].name` or `items.0.name`) map to the item field instead of falling back to a form-level error.
 - A submit from outside the form (a `form` attribute button or `requestSubmit()`) while a submission is running is ignored instead of calling `onSubmit` again and hiding the first submission's error.
+- The default oneof variant select registers with the form engine, so an error on the oneof moves focus to it and marks it `aria-invalid`.
 - The `protoform` install uses the consumer's `utils` alias for `cn` instead of shipping its own `lib/utils` and `lib/input-utils`, and no longer adds `clsx`, `tailwind-merge`, or `zod`.
 
 ### Compatibility
@@ -36,6 +39,6 @@ source snapshots.
 - React 19.2 or later within major version 19.
 - Protobuf-ES 2.13 or later within major version 2.
 - Protovalidate 1.2 or later within major version 1.
-- React Hook Form 7.81 or TanStack Form 1.33, according to the installed adapter.
+- React Hook Form 7.81 or TanStack Form 1.33, according to the installed adapter. The bookstore demo needs React Hook Form 7.88 or later.
 
 Release date is set when the verified `v1.0.0` tag is created.
