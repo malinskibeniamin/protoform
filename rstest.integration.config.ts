@@ -20,6 +20,7 @@ export default defineConfig({
   ],
   pool: {
     maxWorkers: 4,
+    type: "vmThreads",
   },
   setupFiles: ["./rstest.setup.ts"],
   testEnvironment: "happy-dom",

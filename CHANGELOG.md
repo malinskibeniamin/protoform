@@ -22,6 +22,8 @@ source snapshots.
 ### Changed
 
 - AutoForm core, its runtime provider, object sections, and string inputs compile under React Compiler without `"use no memo"`.
+- The bookstore demo shows field errors with React Hook Form's built-in `ErrorMessage` bound to `control`, so it no longer installs `@hookform/error-message`.
+- The experimental React Hook Form v8 items install `8.0.0-beta.4`.
 
 ### Fixed
 
@@ -35,6 +37,6 @@ source snapshots.
 - React 19.2 or later within major version 19.
 - Protobuf-ES 2.13 or later within major version 2.
 - Protovalidate 1.2 or later within major version 1.
-- React Hook Form 7.81 or TanStack Form 1.33, according to the installed adapter.
+- React Hook Form 7.81 or TanStack Form 1.33, according to the installed adapter. The bookstore demo needs React Hook Form 7.88 or later.
 
 Release date is set when the verified `v1.0.0` tag is created.

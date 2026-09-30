@@ -4,7 +4,7 @@
   "title": "Experimental Protoform AutoForm for React Hook Form v8",
   "description": "Experimental AutoForm adapter for the React Hook Form v8 beta with its native form API plus Protoform rendering and protobuf helpers.",
   "dependencies": [
-    "react-hook-form-v8@npm:react-hook-form@8.0.0-beta.3"
+    "react-hook-form-v8@npm:react-hook-form@8.0.0-beta.4"
   ],
   "registryDependencies": [
     "@protoform/auto-form-core",
