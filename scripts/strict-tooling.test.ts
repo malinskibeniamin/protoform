@@ -46,11 +46,11 @@ describe("strict React tooling", () => {
     expect(packageJson.devDependencies).toMatchObject({
       "@biomejs/biome": "2.5.13",
       "@shadcn/lint": "0.2.0",
-      oxlint: "1.85.0",
-      "@rsbuild/plugin-react": "2.1.0",
+      oxlint: "1.86.0",
+      "@rsbuild/plugin-react": "2.1.1",
       "react-doctor": "0.9.14",
       "react-scan": "0.5.7",
-      ultracite: "7.12.1",
+      ultracite: "7.12.2",
     });
     expect("babel-plugin-react-compiler" in packageJson.devDependencies).toBe(false);
     expect(packageJson.scripts).toMatchObject({
