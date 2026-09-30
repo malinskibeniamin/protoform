@@ -42,6 +42,42 @@ describe("AutoForm – onSubmit error handling", () => {
     });
   });
 
+  test("ignores submits from outside the form while a submission is in flight", async () => {
+    const user = userEvent.setup();
+    let failSave: ((error: Error) => void) | undefined;
+    const onSubmit = rs
+      .fn()
+      .mockImplementationOnce(
+        () =>
+          new Promise<void>((_resolve, reject) => {
+            failSave = reject;
+          })
+      )
+      .mockResolvedValue(undefined);
+
+    render(
+      <>
+        <AutoForm
+          defaultValues={{ username: "alice" }}
+          formProps={{ id: "external-submit-form" }}
+          onSubmit={onSubmit}
+          schema={usernameProvider}
+        />
+        <button form="external-submit-form" type="submit">
+          Save
+        </button>
+      </>
+    );
+
+    await user.dblClick(screen.getByRole("button", { name: "Save" }));
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
+    failSave?.(new Error("Save failed"));
+    expect(await screen.findByText("Save failed")).toBeVisible();
+
+    await user.click(screen.getByRole("button", { name: "Save" }));
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(2));
+  });
+
   test("aborts superseded and unmounted submit contexts and active provider validation", async () => {
     const user = userEvent.setup();
     const signals: AbortSignal[] = [];
