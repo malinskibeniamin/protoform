@@ -213,6 +213,7 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
 }: AutoFormContentProps<T, TNativeForm, TCustomFieldType>) {
   const testIdPrefix = resolveAutoFormTestIdPrefix(testId);
   const submitController = React.useRef<AbortController | undefined>(undefined);
+  const submissionInFlight = React.useRef(false);
   const validationController = React.useRef<AbortController | undefined>(undefined);
   const initializedForm = React.useRef<unknown>(undefined);
   const advancedFields = mergeFieldOverrides(resolvedSchema.parsedSchema.fields, fieldConfigOverrides);
@@ -401,6 +402,18 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
   }
 
   async function handleSubmit(submittedValues: Record<string, unknown>) {
+    // Submits from outside the form (a `form` attribute button or requestSubmit) are not
+    // disabled by isSubmitting, so ignore them until the running submission settles.
+    if (submissionInFlight.current) {
+      return;
+    }
+    submissionInFlight.current = true;
+    await runSubmission(submittedValues).finally(() => {
+      submissionInFlight.current = false;
+    });
+  }
+
+  async function runSubmission(submittedValues: Record<string, unknown>) {
     hasSubmitted.current = true;
     const controller = beginSubmit();
     engine.clearErrors(["root", PROTO_FORM_ROOT_ERROR_KEY]);
