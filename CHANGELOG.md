@@ -30,6 +30,7 @@ source snapshots.
 - Replacing a data provider, or registering one after the first render, no longer breaks React hook order.
 - A failing multi-select provider no longer clears or flags saved selections; it disables the control and reports the failure.
 - Server field violations on repeated-field items (`items[0].name` or `items.0.name`) map to the item field instead of falling back to a form-level error.
+- The default oneof variant select registers with the form engine, so an error on the oneof moves focus to it and marks it `aria-invalid`.
 - The `protoform` install uses the consumer's `utils` alias for `cn` instead of shipping its own `lib/utils` and `lib/input-utils`, and no longer adds `clsx`, `tailwind-merge`, or `zod`.
 
 ### Compatibility
