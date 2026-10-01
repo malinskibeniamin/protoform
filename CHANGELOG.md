@@ -12,7 +12,7 @@ source snapshots.
 - React Hook Form and TanStack Form hooks and AutoForm adapters.
 - Consumer-owned shadcn-compatible component maps for AutoForm renderers.
 - Component data providers (`{ component }`) that render option results through `children`.
-- Data provider results can supply an `emptyState` that single-select dropdowns show when there are no options.
+- Data provider results can supply an `emptyState` that select and multi-select dropdowns show when there are no options.
 - A replaceable `OneofWrapper` UI component; AutoForm supplies the available variants, selection, and variant rendering.
 - Formik and Final Form validation adapters.
 - Source-copy `protoc-gen-protoform` generator.
@@ -30,6 +30,9 @@ source snapshots.
 - Replacing a data provider, or registering one after the first render, no longer breaks React hook order.
 - A failing multi-select provider no longer clears or flags saved selections; it disables the control and reports the failure.
 - Server field violations on repeated-field items (`items[0].name` or `items.0.name`) map to the item field instead of falling back to a form-level error.
+- The provider-backed select puts its control test id on the input (`inputTestId`), like the combobox field, so it exists before the dropdown opens.
+- `formComponents` also accepts a string-keyed component map, so wrappers can merge their own defaults with caller overrides without casting.
+- The license item installs only Protoform's MIT license (`LICENSES/protoform-MIT.txt`). It no longer copies third-party license texts or the repository's `THIRD_PARTY_NOTICES.md` into the app.
 - A submit from outside the form (a `form` attribute button or `requestSubmit()`) while a submission is running is ignored instead of calling `onSubmit` again and hiding the first submission's error.
 - The default oneof variant select registers with the form engine, so an error on the oneof moves focus to it and marks it `aria-invalid`.
 - The `protoform` install uses the consumer's `utils` alias for `cn` instead of shipping its own `lib/utils` and `lib/input-utils`, and no longer adds `clsx`, `tailwind-merge`, or `zod`.

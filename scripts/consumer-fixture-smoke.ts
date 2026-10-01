@@ -156,11 +156,8 @@ async function assertInstalled() {
     "lib/protobuf-provider/index.ts",
     "components/ui/button/index.tsx",
     "components/ui/select/index.tsx",
-    "LICENSES/Apache-2.0.txt",
     "LICENSES/protoform-MIT.txt",
-    "LICENSES/shadcn-MIT.txt",
     "proto/protoform/conformance/v1/aip.proto",
-    "THIRD_PARTY_NOTICES.md",
   ];
   const checks = await Promise.allSettled(expected.map((relativePath) => access(join(fixture, relativePath))));
   for (const [index, check] of checks.entries()) {
@@ -170,12 +167,7 @@ async function assertInstalled() {
       });
     }
   }
-  const notices = [
-    ["LICENSES/protoform-MIT.txt", "LICENSE"],
-    ["LICENSES/Apache-2.0.txt", "LICENSES/Apache-2.0.txt"],
-    ["LICENSES/shadcn-MIT.txt", "LICENSES/shadcn-MIT.txt"],
-    ["THIRD_PARTY_NOTICES.md", "THIRD_PARTY_NOTICES.md"],
-  ] as const;
+  const notices = [["LICENSES/protoform-MIT.txt", "LICENSE"]] as const;
   await Promise.all(
     notices.map(async ([installedPath, repositoryPath]) => {
       const [installedNotice, repositoryNotice] = await Promise.all([

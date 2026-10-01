@@ -595,6 +595,8 @@ type SimpleMultiSelectProps = PortalRootProps &
     maxDisplay?: number;
     searchable?: boolean;
     width?: "sm" | "md" | "lg" | "xl" | "full" | "auto";
+    /** Shown when no option matches. Defaults to "No items found". */
+    emptyState?: React.ReactNode;
   };
 
 const widthClasses = {
@@ -623,6 +625,7 @@ function SimpleMultiSelect({
   defaultOpen,
   onOpenChange,
   testId,
+  emptyState = "No items found",
 }: SimpleMultiSelectProps) {
   // Convert simple string array to option objects
   const normalizedOptions: MultiSelectOption[] = React.useMemo(
@@ -660,7 +663,7 @@ function SimpleMultiSelect({
           <MultiSelectSearch placeholder="Search…" testId={testId ? `${testId}-search` : undefined} />
         ) : null}
         <MultiSelectList>{renderMultiSelectOptions(normalizedOptions)}</MultiSelectList>
-        <MultiSelectEmpty>No items found</MultiSelectEmpty>
+        <MultiSelectEmpty>{emptyState}</MultiSelectEmpty>
       </MultiSelectContent>
     </MultiSelect>
   );

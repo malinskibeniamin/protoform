@@ -112,6 +112,7 @@ export interface ProtoformUIProps {
   SelectValue: Container & { placeholder?: React.ReactNode };
   SimpleMultiSelect: Shared & {
     disabled?: boolean;
+    emptyState?: React.ReactNode;
     id?: string;
     onValueChange: (values: string[]) => void;
     options: (
