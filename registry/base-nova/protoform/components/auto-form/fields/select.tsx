@@ -287,10 +287,10 @@ function SelectFieldFromProviderResult({
       <Combobox
         disabled
         id={id}
+        inputTestId={testIds.control}
         onChange={() => undefined}
         options={[]}
         placeholder={formatProtoformMessage(formatMessage, "auto_form.select.load_error", {}, "Failed to load options")}
-        testId={testIds.control}
       />
     );
   }
@@ -313,6 +313,7 @@ function SelectFieldFromProviderResult({
           emptyState ?? formatProtoformMessage(formatMessage, "auto_form.select.empty", {}, "No options found.")
         }
         id={id}
+        inputTestId={testIds.control}
         loading={isLoading}
         onChange={(value) => {
           if (value === "") {
@@ -336,7 +337,6 @@ function SelectFieldFromProviderResult({
           const { data } = option;
           return isDataProviderOption(data) ? <ProviderOptionLabel option={data} /> : option.label;
         }}
-        testId={testIds.control}
         value={currentValue ?? ""}
       />
       {provider.staleSelection === "error" && staleSelections.length > 0 ? (

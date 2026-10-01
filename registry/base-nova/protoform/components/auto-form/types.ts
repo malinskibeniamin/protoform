@@ -126,7 +126,11 @@ export interface AutoFormProps<
   fieldRegistry?: FieldTypeRegistry<FieldTypes<TCustomFieldType>>;
   /** Translates Protoform-owned runtime copy without changing schema- or server-authored text. */
   formatMessage?: ProtoformMessageFormatter;
-  formComponents?: Partial<AutoFormFieldComponents<FieldTypes<TCustomFieldType>>>;
+  /**
+   * Field components keyed by render type. A plain string-keyed map is also accepted so wrappers
+   * can merge their own defaults with caller overrides without casting.
+   */
+  formComponents?: Partial<AutoFormFieldComponents<FieldTypes<TCustomFieldType>>> | Partial<AutoFormFieldComponents>;
   formOptions?: TFormOptions;
   formProps?: React.ComponentProps<"form"> | Record<string, unknown>;
   modes?: AutoFormMode[];

@@ -33,7 +33,7 @@ export interface DataProviderOption {
 
 export interface DataProviderResult {
   /**
-   * Content a single-select dropdown shows when the provider returns no options,
+   * Content a select or multi-select dropdown shows when the provider returns no options,
    * such as a link to create the missing resource. Defaults to "No options found.".
    */
   emptyState?: React.ReactNode;

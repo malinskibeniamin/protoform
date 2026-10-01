@@ -316,4 +316,38 @@ describe("AutoForm data providers v2", () => {
     expect(screen.getByRole("link", { name: "Create a region" })).toBeVisible();
     expect(screen.queryByText("No options found.")).toBeNull();
   });
+
+  test("puts the control test id on the provider select's input", () => {
+    const schema = createMockProvider(
+      [{ fieldConfig: { customData: { dataProvider: "regions" } }, key: "region", required: true, type: "string" }],
+      {}
+    );
+
+    render(<AutoForm dataProviders={{ regions: { component: RegionsProvider } }} schema={schema} testId="deploy" />);
+
+    expect(screen.getByTestId("deploy-field-region-control")).toBe(screen.getByRole("combobox", { name: /Region/u }));
+  });
+
+  test("renders the provider's empty state in a multi-select with no options", async () => {
+    const user = userEvent.setup();
+    const schema = createMockProvider(
+      [
+        {
+          key: "methods",
+          required: false,
+          schema: [
+            { fieldConfig: { customData: { dataProvider: "methods" } }, key: "value", required: true, type: "string" },
+          ],
+          type: "array",
+        },
+      ],
+      { methods: [] }
+    );
+
+    render(<AutoForm dataProviders={{ methods: { component: EmptyRegionsProvider } }} schema={schema} />);
+
+    await user.click(screen.getByRole("button", { name: "Multi-select trigger" }));
+    expect(screen.getByRole("link", { name: "Create a region" })).toBeVisible();
+    expect(screen.queryByText("No items found")).toBeNull();
+  });
 });

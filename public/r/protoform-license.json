@@ -23,10 +23,10 @@
       "target": "~/LICENSES/shadcn-MIT.txt"
     },
     {
-      "path": "THIRD_PARTY_NOTICES.md",
-      "content": "# Third-party notices\n\nProtoform is MIT-licensed. Some files also include or adapt third-party work under compatible\nlicenses. Those terms continue to apply to the relevant files.\n\n## Apache-licensed generated bindings\n\nGenerated bindings under `conformance/gen`, `examples/gen`, and\n`registry/base-nova/protoform/**/gen` include material derived from schemas published by Buf\nTechnologies, Inc. and Google LLC. The generated files retain their upstream copyright and Apache\n2.0 headers. The full license is in [LICENSES/Apache-2.0.txt](LICENSES/Apache-2.0.txt).\n\n## shadcn/ui\n\nSome UI component source under `registry/base-nova/protoform` is adapted from\n[shadcn/ui](https://github.com/shadcn-ui/ui). It is used under the MIT License. The upstream notice\nis in [LICENSES/shadcn-MIT.txt](LICENSES/shadcn-MIT.txt).\n\n## Blume\n\nThe documentation site uses [Blume](https://github.com/haydenbleasel/blume) under the MIT License.\nThe upstream notice is in [LICENSES/blume-MIT.txt](LICENSES/blume-MIT.txt).\n\n## Contributor Covenant\n\n`CODE_OF_CONDUCT.md` is adapted from Contributor Covenant 2.1 under the Creative Commons\nAttribution 4.0 License. Attribution and license links appear in that file.\n",
+      "path": "LICENSES/protoform-THIRD_PARTY_NOTICES.md",
+      "content": "# Protoform third-party notices\n\nThis application includes source copied from the Protoform registry. Protoform is licensed under the\nMIT License; the full text is in `protoform-MIT.txt` next to this file.\n\nSome copied files include or adapt third-party work. Those terms continue to apply to the files\nlisted below.\n\n## Generated Protovalidate bindings\n\nGenerated protobuf bindings under `lib/protobuf-provider/gen` include material derived from schemas\npublished by Buf Technologies, Inc. These files keep their upstream copyright and Apache 2.0\nheaders. The full license is in `Apache-2.0.txt` next to this file.\n\n## shadcn/ui\n\nUI primitives installed by the optional `protoform-shadcn` bundle are adapted from\n[shadcn/ui](https://github.com/shadcn-ui/ui) and used under the MIT License. The upstream notice is\nin `shadcn-MIT.txt` next to this file. Installs that map Protoform to their own components do not\ninclude these primitives.\n",
       "type": "registry:file",
-      "target": "~/THIRD_PARTY_NOTICES.md"
+      "target": "~/LICENSES/protoform-THIRD_PARTY_NOTICES.md"
     }
   ],
   "type": "registry:file"

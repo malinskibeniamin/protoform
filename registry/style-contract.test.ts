@@ -38,8 +38,8 @@ describe("Protoform registry style", () => {
         type: "registry:file",
       },
       {
-        path: "THIRD_PARTY_NOTICES.md",
-        target: "~/THIRD_PARTY_NOTICES.md",
+        path: "LICENSES/protoform-THIRD_PARTY_NOTICES.md",
+        target: "~/LICENSES/protoform-THIRD_PARTY_NOTICES.md",
         type: "registry:file",
       },
       {

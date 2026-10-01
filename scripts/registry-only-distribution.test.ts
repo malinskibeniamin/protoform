@@ -13,7 +13,7 @@ const PROTOFORM_LICENSE_DEPENDENCY = "@protoform/protoform-license";
 const PROTOFORM_LICENSE_TARGET = "~/LICENSES/protoform-MIT.txt";
 const APACHE_LICENSE_TARGET = "~/LICENSES/Apache-2.0.txt";
 const SHADCN_LICENSE_TARGET = "~/LICENSES/shadcn-MIT.txt";
-const THIRD_PARTY_NOTICES_TARGET = "~/THIRD_PARTY_NOTICES.md";
+const THIRD_PARTY_NOTICES_TARGET = "~/LICENSES/protoform-THIRD_PARTY_NOTICES.md";
 
 interface RegistryItem {
   files?: Array<{ path: string; target?: string; type: string }>;
@@ -50,6 +50,16 @@ describe("registry-only distribution", () => {
     ).toEqual([]);
   });
 
+  test("ships consumer notices that only describe installed source", () => {
+    const notices = readFileSync(resolve(repositoryRoot, "LICENSES/protoform-THIRD_PARTY_NOTICES.md"), "utf8");
+    for (const repositoryOnly of ["CODE_OF_CONDUCT", "Blume", "conformance/gen", "examples/gen"]) {
+      expect(notices, repositoryOnly).not.toContain(repositoryOnly);
+    }
+    for (const licenseFile of ["protoform-MIT.txt", "Apache-2.0.txt", "shadcn-MIT.txt"]) {
+      expect(notices, licenseFile).toContain(licenseFile);
+    }
+  });
+
   test("copies license notices with every installable registry item", () => {
     const registry = JSON.parse(readFileSync(resolve(repositoryRoot, "registry.json"), "utf8")) as {
       items: RegistryItem[];
@@ -75,7 +85,7 @@ describe("registry-only distribution", () => {
           type: "registry:file",
         },
         {
-          path: "THIRD_PARTY_NOTICES.md",
+          path: "LICENSES/protoform-THIRD_PARTY_NOTICES.md",
           target: THIRD_PARTY_NOTICES_TARGET,
           type: "registry:file",
         },

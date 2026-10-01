@@ -153,7 +153,7 @@ function DataProviderMultiSelectResult({
   testIds: ReturnType<typeof useFieldTestIds>;
 }) {
   const { formatMessage } = useAutoForm();
-  const { options: providerOptions, isLoading, error: providerError } = result;
+  const { emptyState, options: providerOptions, isLoading, error: providerError } = result;
   // A failed load says nothing about which selections still exist, so keep them as they are.
   const staleSelections = isLoading || providerError ? [] : getStaleSelections(providerOptions, currentValue);
   const staleSelectionSet = new Set(staleSelections);
@@ -208,6 +208,7 @@ function DataProviderMultiSelectResult({
     <div className="space-y-2">
       <SimpleMultiSelect
         disabled={Boolean(inputProps["disabled"] || isLoading || providerError)}
+        emptyState={emptyState}
         id={id}
         onValueChange={(values) => inputProps["onValueChange"](values)}
         options={options}
