@@ -49,6 +49,31 @@ test("publishes actionable agent guidance without enabling a server", async ({ r
   expect(text).toContain("https://protoform.pages.dev/docs/registry-install");
 });
 
+test("publishes a discoverable site skill with canonical documentation links", async ({ request }) => {
+  const response = await request.get("/skill.md");
+  expect(response.ok()).toBe(true);
+  const skill = await response.text();
+  expect(skill).toMatch(/^---\nname: protoform\n/u);
+  expect(skill).toContain("https://protoform.pages.dev/docs/getting-started.md");
+  expect(skill).toContain("https://protoform.pages.dev/docs/registry-install.md");
+  expect(skill).toContain("https://protoform.pages.dev/llms.txt");
+
+  const canonicalPath = "/.well-known/agent-skills/protoform/SKILL.md";
+  const indexResponse = await request.get("/.well-known/agent-skills/index.json");
+  expect(indexResponse.ok()).toBe(true);
+  const index = z
+    .object({ skills: z.array(z.object({ name: z.string(), type: z.string(), url: z.string() })) })
+    .parse(await indexResponse.json());
+  expect(index.skills).toContainEqual({ name: "protoform", type: "skill-md", url: canonicalPath });
+  const canonicalSkill = await request.get(canonicalPath);
+  expect(canonicalSkill.ok()).toBe(true);
+  expect(await canonicalSkill.text()).toBe(skill);
+
+  const guidance = await request.get("/llms.txt");
+  expect(guidance.ok()).toBe(true);
+  expect(await guidance.text()).toContain(`https://protoform.pages.dev${canonicalPath}`);
+});
+
 test("finds identifiers that appear inside code blocks", async ({ page }) => {
   await page.goto("/docs/getting-started");
   await page.getByRole("button", { exact: true, name: "Search" }).click();

@@ -134,15 +134,41 @@ test("serves consolidated catalogs through static Markdown routes", async ({ req
   expect(rpcMarkdown).not.toContain("LibraryService.method.createBook");
 });
 
-test("serves translated hubs and only offers available page languages", async ({ page }) => {
-  await page.goto("/docs/reference");
-  await expect(page.locator('[aria-label^="Language:"]')).toHaveCount(0);
+for (const path of [
+  "/docs/reference",
+  "/docs/reference/library-rpc/protoform-conformance-v1-library-service-get-book",
+]) {
+  test(`only offers available reference languages at ${path}`, async ({ page }) => {
+    await page.goto(path);
+    await expect(page.locator('[aria-label^="Language:"]')).toHaveCount(0);
+    await expect(
+      page.locator('a[href^="/docs/zh/reference"], a[href^="/docs/zh-TW/reference"], a[href^="/docs/pl/reference"]')
+    ).toHaveCount(0);
+  });
+}
 
+test("serves translated hubs and only offers available page languages", async ({ page }) => {
   await page.goto("/docs/zh/protobuf-examples#protobuf-oneof");
   await expect(page.locator("html")).toHaveAttribute("lang", "zh");
   await expect(page.getByRole("heading", { name: "Protobuf 示例" })).toBeVisible();
-  await expect(page.locator('[aria-label="语言: 简体中文"]')).toBeVisible();
+  await expect(page.locator("header").getByLabel("语言: 简体中文", { exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Oneof branch selection" })).toBeVisible({ timeout: 30_000 });
+});
+
+test("switches translated pages from the mobile drawer without offering missing translations", async ({ page }) => {
+  await page.setViewportSize({ height: 844, width: 390 });
+  await page.goto("/docs/reference");
+  await page.getByRole("button", { exact: true, name: "Toggle navigation" }).click();
+  await expect(page.locator('[aria-label^="Language:"]')).toHaveCount(0);
+
+  await page.goto("/docs/getting-started");
+  await page.getByRole("button", { exact: true, name: "Toggle navigation" }).click();
+  const drawer = page.getByRole("complementary", { exact: true, name: "Primary" });
+  await drawer.getByLabel("Language: English", { exact: true }).click();
+  await drawer.getByRole("link", { exact: true, name: "Polski" }).click();
+  await expect(page).toHaveURL(/\/docs\/pl\/getting-started$/u);
+  await expect(page.locator("html")).toHaveAttribute("lang", "pl");
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
 });
 
 test("searches translated docs with non-Latin text", async ({ page }) => {

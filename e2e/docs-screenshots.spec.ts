@@ -322,7 +322,20 @@ test("organizes the docs sidebar by reader task", async ({ page }) => {
     await expect(section.getByRole("link").first()).toBeVisible();
   }
 
+  const reference = groups.nth(sidebarHierarchy.findIndex((group) => group.label === "Reference"));
+  const referenceToggle = reference.locator(":scope > summary");
+  await referenceToggle.focus();
+  await page.keyboard.press("Space");
+  await expect(reference).not.toHaveAttribute("open", "");
+  await page.keyboard.press("Enter");
+  await expect(reference.getByRole("link", { exact: true, name: "Overview" })).toBeVisible();
+  await reference.getByRole("link", { exact: true, name: "Overview" }).click();
+  await expect(page).toHaveURL(/\/docs\/reference$/u);
+  await expect(page.getByRole("heading", { name: "Protoform bookstore Connect API" })).toBeVisible();
+
+  // Re-query after Blume's client-side navigation replaces the sidebar.
   const examples = groups.nth(sidebarHierarchy.findIndex((group) => group.label === "Examples"));
+  await examples.locator(":scope > summary").click();
   await examples.getByRole("link", { exact: true, name: "Bare-bones form" }).click();
   await expect(page).toHaveURL(/\/docs\/bare-bones-form$/u);
   await expect(page.getByRole("heading", { exact: true, name: "Bare-bones form" })).toBeVisible();
