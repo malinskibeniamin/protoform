@@ -32,7 +32,7 @@ source snapshots.
 - Server field violations on repeated-field items (`items[0].name` or `items.0.name`) map to the item field instead of falling back to a form-level error.
 - The provider-backed select puts its control test id on the input (`inputTestId`), like the combobox field, so it exists before the dropdown opens.
 - `formComponents` also accepts a string-keyed component map, so wrappers can merge their own defaults with caller overrides without casting.
-- The license item installs consumer-specific notices at `LICENSES/protoform-THIRD_PARTY_NOTICES.md` instead of the repository's `THIRD_PARTY_NOTICES.md` at the app root.
+- The license item installs only Protoform's MIT license (`LICENSES/protoform-MIT.txt`). It no longer copies third-party license texts or the repository's `THIRD_PARTY_NOTICES.md` into the app.
 - A submit from outside the form (a `form` attribute button or `requestSubmit()`) while a submission is running is ignored instead of calling `onSubmit` again and hiding the first submission's error.
 - The default oneof variant select registers with the form engine, so an error on the oneof moves focus to it and marks it `aria-invalid`.
 - The `protoform` install uses the consumer's `utils` alias for `cn` instead of shipping its own `lib/utils` and `lib/input-utils`, and no longer adds `clsx`, `tailwind-merge`, or `zod`.

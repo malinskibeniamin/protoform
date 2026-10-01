@@ -70,12 +70,7 @@ if (hook.files.some((file) => file.path.includes("/components/auto-form/"))) {
 const license = JSON.parse(readFileSync("public/r/protoform-license.json", "utf8")) as {
   files?: Array<{ content?: string; target?: string }>;
 };
-const expectedNotices = [
-  ["~/LICENSES/protoform-MIT.txt", "LICENSE"],
-  ["~/LICENSES/Apache-2.0.txt", "LICENSES/Apache-2.0.txt"],
-  ["~/LICENSES/shadcn-MIT.txt", "LICENSES/shadcn-MIT.txt"],
-  ["~/LICENSES/protoform-THIRD_PARTY_NOTICES.md", "LICENSES/protoform-THIRD_PARTY_NOTICES.md"],
-] as const;
+const expectedNotices = [["~/LICENSES/protoform-MIT.txt", "LICENSE"]] as const;
 for (const [target, source] of expectedNotices) {
   if (!license.files?.some((file) => file.target === target && file.content === readFileSync(source, "utf8"))) {
     throw new Error(`protoform-license must distribute ${source}`);

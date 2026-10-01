@@ -28,21 +28,6 @@ describe("Protoform registry style", () => {
         type: "registry:file",
       },
       {
-        path: "LICENSES/Apache-2.0.txt",
-        target: "~/LICENSES/Apache-2.0.txt",
-        type: "registry:file",
-      },
-      {
-        path: "LICENSES/shadcn-MIT.txt",
-        target: "~/LICENSES/shadcn-MIT.txt",
-        type: "registry:file",
-      },
-      {
-        path: "LICENSES/protoform-THIRD_PARTY_NOTICES.md",
-        target: "~/LICENSES/protoform-THIRD_PARTY_NOTICES.md",
-        type: "registry:file",
-      },
-      {
         path: "conformance/proto/protoform/conformance/v1/aip.proto",
         target: "~/proto/protoform/conformance/v1/aip.proto",
         type: "registry:file",
