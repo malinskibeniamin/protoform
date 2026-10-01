@@ -267,6 +267,29 @@ test.beforeAll(async () => {
   await mkdir(screenshotDir, { recursive: true });
 });
 
+for (const scenario of [
+  { colorScheme: "light", locale: "en", name: "desktop-light", search: "Search", width: 1280 },
+  { colorScheme: "dark", locale: "en", name: "desktop-dark", search: "Search", width: 1280 },
+  { colorScheme: "light", locale: "en", name: "mobile-light", search: "Search", width: 390 },
+  { colorScheme: "light", locale: "pl", name: "polish-light", search: "Szukaj", width: 1280 },
+] as const) {
+  test(`keeps docs navigation usable: ${scenario.name}`, async ({ page }) => {
+    await page.setViewportSize({ height: 844, width: scenario.width });
+    await page.emulateMedia({ colorScheme: scenario.colorScheme, reducedMotion: "reduce" });
+    const localePrefix = scenario.locale === "en" ? "" : `${scenario.locale}/`;
+    await page.goto(`/docs/${localePrefix}getting-started`);
+    await page.evaluate(() => document.fonts.ready);
+    await expect(page.locator("header")).toHaveScreenshot(`blume-header-${scenario.name}.png`);
+
+    await page.getByRole("button", { exact: true, name: scenario.search }).focus();
+    await page.keyboard.press("Enter");
+    await expect(page.getByRole("combobox")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("combobox")).toBeHidden();
+    await expect(page.getByRole("button", { exact: true, name: scenario.search })).toBeFocused();
+  });
+}
+
 test("organizes the docs sidebar by reader task", async ({ page }) => {
   await page.goto("/docs/getting-started");
 
@@ -299,7 +322,20 @@ test("organizes the docs sidebar by reader task", async ({ page }) => {
     await expect(section.getByRole("link").first()).toBeVisible();
   }
 
+  const reference = groups.nth(sidebarHierarchy.findIndex((group) => group.label === "Reference"));
+  const referenceToggle = reference.locator(":scope > summary");
+  await referenceToggle.focus();
+  await page.keyboard.press("Space");
+  await expect(reference).not.toHaveAttribute("open", "");
+  await page.keyboard.press("Enter");
+  await expect(reference.getByRole("link", { exact: true, name: "Overview" })).toBeVisible();
+  await reference.getByRole("link", { exact: true, name: "Overview" }).click();
+  await expect(page).toHaveURL(/\/docs\/reference$/u);
+  await expect(page.getByRole("heading", { name: "Protoform bookstore Connect API" })).toBeVisible();
+
+  // Re-query after Blume's client-side navigation replaces the sidebar.
   const examples = groups.nth(sidebarHierarchy.findIndex((group) => group.label === "Examples"));
+  await examples.locator(":scope > summary").click();
   await examples.getByRole("link", { exact: true, name: "Bare-bones form" }).click();
   await expect(page).toHaveURL(/\/docs\/bare-bones-form$/u);
   await expect(page.getByRole("heading", { exact: true, name: "Bare-bones form" })).toBeVisible();
