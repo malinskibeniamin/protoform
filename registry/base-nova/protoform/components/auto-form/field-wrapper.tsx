@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { AlertCircle, ChevronDown, CircleHelp, ExternalLink, PlusIcon, TrashIcon } from "lucide-react";
-import React from "react";
-import { cn } from "@/registry/base-nova/protoform/lib/utils";
-import { useAutoFormRuntimeContext } from "./context";
-import type { ArrayElementWrapperProps, ArrayWrapperProps, FieldWrapperProps, ObjectWrapperProps } from "./core-types";
-import { formSpacing } from "./form-spacing";
-import { getFieldDescriptionText, getFieldDocsUrl, getFieldHelpText, getFieldUiConfig } from "./helpers";
-import { FormDepthProvider, headingLevelForDepth, useFormDepth } from "./layout-context";
-import { getAutoFormFieldTestId } from "./test-ids";
+import { AlertCircle, ChevronDown, CircleHelp, ExternalLink, PlusIcon, TrashIcon } from 'lucide-react';
+import React from 'react';
+import { cn } from '@/registry/base-nova/protoform/lib/utils';
+import { useAutoFormRuntimeContext } from './context';
+import type { ArrayElementWrapperProps, ArrayWrapperProps, FieldWrapperProps, ObjectWrapperProps } from './core-types';
+import { formSpacing } from './form-spacing';
+import { getFieldDescriptionText, getFieldDocsUrl, getFieldHelpText, getFieldUiConfig } from './helpers';
+import { FormDepthProvider, headingLevelForDepth, useFormDepth } from './layout-context';
+import { getAutoFormFieldTestId } from './test-ids';
 import {
   Alert,
   AlertDescription,
@@ -28,18 +28,18 @@ import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "./ui-components";
+} from './ui-components';
 
 const REGEX_ERROR_PATTERN = /regex pattern\s*`([^`]+)`/u;
 
-export const Form = React.forwardRef<HTMLFormElement, React.ComponentProps<"form"> & { testId?: string | undefined }>(
+export const Form = React.forwardRef<HTMLFormElement, React.ComponentProps<'form'> & { testId?: string | undefined }>(
   ({ children, testId, ...props }, ref) => (
     <form className={formSpacing.form} data-testid={testId} ref={ref} {...props}>
       <FormDepthProvider depth={0}>{children}</FormDepthProvider>
     </form>
   )
 );
-Form.displayName = "Form";
+Form.displayName = 'Form';
 
 export const ArrayElementWrapper: React.FC<
   ArrayElementWrapperProps & {
@@ -47,7 +47,7 @@ export const ArrayElementWrapper: React.FC<
     testId?: string;
     removeButtonTestId?: string;
   }
-> = ({ children, onRemove, removeButtonAriaLabel = "Remove item", removeButtonTestId, testId }) => (
+> = ({ children, onRemove, removeButtonAriaLabel = 'Remove item', removeButtonTestId, testId }) => (
   <div
     className="relative rounded-xl border border-border/70 bg-card p-5 text-card-foreground shadow-xs"
     data-testid={testId}
@@ -78,7 +78,7 @@ export const ArrayWrapper: React.FC<
     {children}
     <Button onClick={onAddItem} size="sm" testId={addButtonTestId} type="button" variant="outline">
       <PlusIcon className="size-4" />
-      {addButtonLabel ?? (label ? `Add ${label}` : "Add item")}
+      {addButtonLabel ?? (label ? `Add ${label}` : 'Add item')}
     </Button>
   </div>
 );
@@ -92,10 +92,10 @@ export const ErrorMessage: React.FC<{ error: string }> = ({ error }) => (
 );
 
 function augmentError(
-  error: FieldWrapperProps["error"],
-  field: FieldWrapperProps["field"]
-): FieldWrapperProps["error"] {
-  if (!(typeof error === "string" && REGEX_ERROR_PATTERN.test(error))) {
+  error: FieldWrapperProps['error'],
+  field: FieldWrapperProps['field']
+): FieldWrapperProps['error'] {
+  if (!(typeof error === 'string' && REGEX_ERROR_PATTERN.test(error))) {
     return error;
   }
   const uiConfig = getFieldUiConfig(field);
@@ -114,34 +114,33 @@ function FieldFeedback({
   isCompact,
   testIdPrefix,
 }: {
-  field: FieldWrapperProps["field"];
-  error: FieldWrapperProps["error"];
+  field: FieldWrapperProps['field'];
+  error: FieldWrapperProps['error'];
   errorId: string;
   id: string;
   helpLabel: string;
   isCompact: boolean;
-  testIdPrefix: ReturnType<typeof useAutoFormRuntimeContext>["testIdPrefix"];
+  testIdPrefix: ReturnType<typeof useAutoFormRuntimeContext>['testIdPrefix'];
 }) {
   const helpText = isCompact ? undefined : getFieldDescriptionText(field);
   const docsUrl = isCompact ? undefined : getFieldDocsUrl(field);
   if (error) {
-    // Keep the consumer FieldError's own ID intact for controls using its Field context.
     return (
       <div id={errorId}>
-        <FieldError testId={getAutoFormFieldTestId(testIdPrefix, id, "error")}>{error}</FieldError>
+        <FieldError testId={getAutoFormFieldTestId(testIdPrefix, id, 'error')}>{error}</FieldError>
       </div>
     );
   }
   if ((helpText || docsUrl) && !isCompact) {
     return (
-      <FieldDescription testId={getAutoFormFieldTestId(testIdPrefix, id, "description")}>
+      <FieldDescription testId={getAutoFormFieldTestId(testIdPrefix, id, 'description')}>
         {helpText ? <span>{helpText}</span> : null}
         {docsUrl ? (
           <>
-            {helpText ? " " : null}
+            {helpText ? ' ' : null}
             <a
               className="inline-flex items-center gap-1 text-primary underline-offset-2 hover:underline"
-              data-testid={getAutoFormFieldTestId(testIdPrefix, id, "docs-link")}
+              data-testid={getAutoFormFieldTestId(testIdPrefix, id, 'docs-link')}
               href={docsUrl}
               rel="noreferrer"
               target="_blank"
@@ -158,13 +157,13 @@ function FieldFeedback({
   return null;
 }
 
-function getWrapperLabels(field: FieldWrapperProps["field"], label: FieldWrapperProps["label"]) {
-  const hasVisibleLabel = !(typeof label === "string" && label.trim().length === 0);
+function getWrapperLabels(field: FieldWrapperProps['field'], label: FieldWrapperProps['label']) {
+  const hasVisibleLabel = !(typeof label === 'string' && label.trim().length === 0);
   const fallbackLabel =
-    typeof field.fieldConfig?.label === "string" && field.fieldConfig.label.trim().length > 0
+    typeof field.fieldConfig?.label === 'string' && field.fieldConfig.label.trim().length > 0
       ? field.fieldConfig.label
       : field.key;
-  const helpLabel = typeof label === "string" && label.trim().length > 0 ? label : fallbackLabel;
+  const helpLabel = typeof label === 'string' && label.trim().length > 0 ? label : fallbackLabel;
   const displayedLabel: React.ReactNode = hasVisibleLabel ? label : fallbackLabel;
   return { hasVisibleLabel, helpLabel, displayedLabel };
 }
@@ -172,36 +171,28 @@ function getWrapperLabels(field: FieldWrapperProps["field"], label: FieldWrapper
 export const FieldWrapper: React.FC<FieldWrapperProps> = ({ label, children, id, field, error: rawError }) => {
   const depth = useFormDepth();
   const { testIdPrefix } = useAutoFormRuntimeContext();
-  const isCompact = Boolean((field.fieldConfig?.customData as Record<string, unknown> | undefined)?.["compactRow"]);
-  const tooltipText = isCompact ? "" : getFieldHelpText(field);
+  const isCompact = Boolean((field.fieldConfig?.customData as Record<string, unknown> | undefined)?.['compactRow']);
+  const tooltipText = isCompact ? '' : getFieldHelpText(field);
   const error = augmentError(rawError, field);
   const errorId = React.useId();
-  const isDisabled = Boolean(field.fieldConfig?.inputProps?.["disabled"]);
+  const isDisabled = Boolean(field.fieldConfig?.inputProps?.['disabled']);
   const { hasVisibleLabel, helpLabel, displayedLabel } = getWrapperLabels(field, label);
   const fieldTestId = getAutoFormFieldTestId(testIdPrefix, id);
   const isSplit = depth === 0 && !isCompact;
 
-  // Match the non-AutoForm usage pattern in managed-create-form.tsx:
-  // `<Field>` with label / control / description / error as *direct*
-  // siblings, so the Field component's native `gap-3` drives the
-  // label → input → description → error rhythm. The previous
-  // `<Field gap-2><FieldContent gap-2>` nesting produced a cramped
-  // 8px label/input gap and misaligned the internal rhythm from every
-  // manually-constructed form in the app — users could spot the
-  // AutoForm at a glance from the tighter stack alone.
   return (
     <Field
       className={
-        isSplit ? "grid items-start gap-x-8 gap-y-2 sm:grid-cols-[minmax(10rem,0.34fr)_minmax(0,1fr)]" : undefined
+        isSplit ? 'grid items-start gap-x-8 gap-y-2 sm:grid-cols-[minmax(10rem,0.34fr)_minmax(0,1fr)]' : undefined
       }
       data-disabled={isDisabled}
       data-invalid={Boolean(error)}
-      data-layout={isSplit ? "split" : "stacked"}
+      data-layout={isSplit ? 'split' : 'stacked'}
       testId={fieldTestId}
     >
       {isCompact ? null : (
-        <div className={cn("flex min-w-0 items-center gap-2", isSplit && "sm:pt-2")}>
-          <FieldLabel className={hasVisibleLabel ? "items-center gap-2" : "sr-only"} htmlFor={id}>
+        <div className={cn('flex min-w-0 items-center gap-2', isSplit && 'sm:pt-2')}>
+          <FieldLabel className={hasVisibleLabel ? 'items-center gap-2' : 'sr-only'} htmlFor={id}>
             <Text as="span" variant="labelStrongSmall">
               {displayedLabel}
             </Text>
@@ -217,7 +208,7 @@ export const FieldWrapper: React.FC<FieldWrapperProps> = ({ label, children, id,
                 <Button
                   aria-label={`Help for ${helpLabel}`}
                   data-slot="help-trigger"
-                  data-testid={getAutoFormFieldTestId(testIdPrefix, id, "help")}
+                  data-testid={getAutoFormFieldTestId(testIdPrefix, id, 'help')}
                   size="icon-xs"
                   type="button"
                   variant="ghost"
@@ -228,7 +219,7 @@ export const FieldWrapper: React.FC<FieldWrapperProps> = ({ label, children, id,
               <TooltipContent
                 className="max-w-sm text-pretty text-xs"
                 role="tooltip"
-                testId={getAutoFormFieldTestId(testIdPrefix, id, "help-content")}
+                testId={getAutoFormFieldTestId(testIdPrefix, id, 'help-content')}
               >
                 {tooltipText}
               </TooltipContent>
@@ -259,8 +250,8 @@ function ObjectSectionHeading({
   label,
   headingLevel,
 }: {
-  field: ObjectWrapperProps["field"];
-  label: ObjectWrapperProps["label"];
+  field: ObjectWrapperProps['field'];
+  label: ObjectWrapperProps['label'];
   headingLevel: ReturnType<typeof headingLevelForDepth>;
 }) {
   const helpText = getFieldDescriptionText(field);
@@ -297,16 +288,15 @@ function CollapsibleObjectSection({
 }: {
   children: React.ReactNode;
   depth: number;
-  field: ObjectWrapperProps["field"];
+  field: ObjectWrapperProps['field'];
   hasError: boolean | undefined;
   headingLevel: ReturnType<typeof headingLevelForDepth>;
-  label: ObjectWrapperProps["label"];
+  label: ObjectWrapperProps['label'];
   showDivider: boolean;
   testId: string | undefined;
 }) {
   const [isOpen, setIsOpen] = React.useState(false);
 
-  // Auto-expand when section has validation errors
   if (hasError && !isOpen) {
     setIsOpen(true);
   }
@@ -340,17 +330,13 @@ export const ObjectWrapper: React.FC<
 > = ({ label, children, field, testId, hasError }) => {
   const depth = useFormDepth();
   const headingLevel = headingLevelForDepth(depth);
-  const hasVisibleLabel = !(typeof label === "string" && label.trim().length === 0);
+  const hasVisibleLabel = !(typeof label === 'string' && label.trim().length === 0);
   const customData = (field.fieldConfig?.customData ?? {}) as Record<string, unknown>;
-  const isCollapsible = Boolean(customData["collapsible"]);
-  // Divider under a section header. Defaults to true for parity with the
-  // historical ObjectWrapper behavior. Consumers can opt out by setting
-  // `customData.showDivider = false` — same escape hatch as FormSection's
-  // `divider` prop so both entry points agree on when a rule renders.
-  const showDivider = customData["showDivider"] !== false && hasVisibleLabel;
+  const isCollapsible = Boolean(customData['collapsible']);
+  const showDivider = customData['showDivider'] !== false && hasVisibleLabel;
   const isSplit = depth === 0 && hasVisibleLabel && !isCollapsible;
   const headerClassName = showDivider
-    ? `${formSpacing.sectionHeader} ${formSpacing.sectionDivider} ${isSplit ? "sm:border-b-0 sm:pb-0" : ""}`
+    ? `${formSpacing.sectionHeader} ${formSpacing.sectionDivider} ${isSplit ? 'sm:border-b-0 sm:pb-0' : ''}`
     : formSpacing.sectionHeader;
   if (isCollapsible && hasVisibleLabel) {
     return (
@@ -372,10 +358,10 @@ export const ObjectWrapper: React.FC<
     <section
       className={
         isSplit
-          ? "grid items-start gap-6 sm:grid-cols-[minmax(10rem,0.34fr)_minmax(0,1fr)] sm:gap-x-8"
+          ? 'grid items-start gap-6 sm:grid-cols-[minmax(10rem,0.34fr)_minmax(0,1fr)] sm:gap-x-8'
           : formSpacing.field
       }
-      data-layout={isSplit ? "split" : "stacked"}
+      data-layout={isSplit ? 'split' : 'stacked'}
       data-testid={testId}
     >
       {hasVisibleLabel ? (
@@ -384,7 +370,7 @@ export const ObjectWrapper: React.FC<
         </div>
       ) : null}
       <FormDepthProvider depth={depth + 1}>
-        <div className={cn("min-w-0", formSpacing.field)}>{children}</div>
+        <div className={cn('min-w-0', formSpacing.field)}>{children}</div>
       </FormDepthProvider>
     </section>
   );

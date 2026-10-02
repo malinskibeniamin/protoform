@@ -1,17 +1,17 @@
-import { describe, expect } from "@rstest/core";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import type { SchemaProvider } from "../registry/base-nova/protoform/components/auto-form/core-types.js";
-import { AutoForm } from "../registry/base-nova/protoform/components/auto-form/index.js";
-import { protoPathToFormPath } from "../registry/base-nova/protoform/hooks/use-proto-form/index.js";
-import { AutoFormExampleSchema } from "../registry/base-nova/protoform/lib/protobuf-provider/gen/auto-form-example_pb.js";
+import { describe, expect } from '@rstest/core';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import type { SchemaProvider } from '../registry/base-nova/protoform/components/auto-form/core-types.js';
+import { AutoForm } from '../registry/base-nova/protoform/components/auto-form/index.js';
+import { protoPathToFormPath } from '../registry/base-nova/protoform/hooks/use-proto-form/index.js';
+import { AutoFormExampleSchema } from '../registry/base-nova/protoform/lib/protobuf-provider/gen/auto-form-example_pb.js';
 import {
   createProtoFormSchema,
   isProtoMessageDescriptor,
-} from "../registry/base-nova/protoform/lib/protobuf-provider/index.js";
+} from '../registry/base-nova/protoform/lib/protobuf-provider/index.js';
 
-describe("untrusted input hardening", () => {
-  test("rejects malformed descriptors, conversion values, and server paths without throwing", async () => {
-    for (const candidate of [null, [], {}, { fields: null }, { kind: "message" }, Object.create(null)]) {
+describe('untrusted input hardening', () => {
+  test('rejects malformed descriptors, conversion values, and server paths without throwing', async () => {
+    for (const candidate of [null, [], {}, { fields: null }, { kind: 'message' }, Object.create(null)]) {
       expect(isProtoMessageDescriptor(candidate)).toBe(false);
     }
 
@@ -20,34 +20,34 @@ describe("untrusted input hardening", () => {
       [
         null,
         [],
-        "not-an-object",
-        { avatarBytes: "%%%" },
-        { createdAt: "not-a-date" },
-        { labels: { key: "wrong-shape" } },
-        { reminderInterval: "forever" },
-        { writablePaths: ["", "__proto__", "[999999999]"] },
-      ].map((value) => expect(Promise.resolve(schema["~standard"].validate(value))).resolves.toHaveProperty("issues"))
+        'not-an-object',
+        { avatarBytes: '%%%' },
+        { createdAt: 'not-a-date' },
+        { labels: { key: 'wrong-shape' } },
+        { reminderInterval: 'forever' },
+        { writablePaths: ['', '__proto__', '[999999999]'] },
+      ].map((value) => expect(Promise.resolve(schema['~standard'].validate(value))).resolves.toHaveProperty('issues'))
     );
 
     for (const path of [
-      "",
-      "__proto__.polluted",
-      "constructor.prototype.polluted",
-      "shipping_address[-1]",
-      "shipping_address[999999999999999999999]",
-      "shipping_address.<script>",
+      '',
+      '__proto__.polluted',
+      'constructor.prototype.polluted',
+      'shipping_address[-1]',
+      'shipping_address[999999999999999999999]',
+      'shipping_address.<script>',
     ]) {
       expect(protoPathToFormPath(AutoFormExampleSchema, path)).toBeNull();
     }
-    expect({}).not.toHaveProperty("polluted");
+    expect({}).not.toHaveProperty('polluted');
   });
 
-  test("renders user-controlled error text as text rather than executable HTML", async () => {
+  test('renders user-controlled error text as text rather than executable HTML', async () => {
     const hostileText = '<img src=x onerror="globalThis.polluted=true"> submission failed';
     const provider: SchemaProvider = {
-      getDefaultValues: () => ({ value: "safe" }),
+      getDefaultValues: () => ({ value: 'safe' }),
       parseSchema: () => ({
-        fields: [{ fieldConfig: { label: "Value" }, key: "value", required: true, type: "string" }],
+        fields: [{ fieldConfig: { label: 'Value' }, key: 'value', required: true, type: 'string' }],
       }),
       validateSchema: (values) => ({ data: values, success: true }),
     };
@@ -56,9 +56,9 @@ describe("untrusted input hardening", () => {
     };
     const view = render(<AutoForm onSubmit={submitHostileText} schema={provider} withSubmit />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+    fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
     await waitFor(() => expect(screen.getByText(hostileText)).toBeInTheDocument());
-    expect(view.container.querySelector("img")).toBeNull();
-    expect(globalThis).not.toHaveProperty("polluted");
+    expect(view.container.querySelector('img')).toBeNull();
+    expect(globalThis).not.toHaveProperty('polluted');
   });
 });

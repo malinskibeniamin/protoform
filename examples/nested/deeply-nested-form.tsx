@@ -1,30 +1,30 @@
-"use client";
+'use client';
 
-import { create } from "@bufbuild/protobuf";
+import { create } from '@bufbuild/protobuf';
 
-import { AutoForm } from "@/registry/base-nova/protoform/components/auto-form";
+import { AutoForm } from '@/registry/base-nova/protoform/components/auto-form';
 
 import {
   type SubmitDeeplyNestedFormRequest,
   SubmitDeeplyNestedFormRequestSchema,
-} from "../gen/protoform/examples/v1/forms_pb.js";
+} from '../gen/protoform/examples/v1/forms_pb.js';
 
-export const client = "only";
+export const client = 'only';
 
 const defaultValues = create(SubmitDeeplyNestedFormRequestSchema, {
   architecture: {
     networks: [
       {
-        name: "private-core",
+        name: 'private-core',
         subnets: [
           {
-            cidr: "10.42.0.0/24",
-            name: "application",
+            cidr: '10.42.0.0/24',
+            name: 'application',
             routes: [
               {
-                destinationCidr: "0.0.0.0/0",
-                metadata: { managedBy: "network-team" },
-                nextHop: "egress-gateway",
+                destinationCidr: '0.0.0.0/0',
+                metadata: { managedBy: 'network-team' },
+                nextHop: 'egress-gateway',
               },
             ],
           },
@@ -35,26 +35,26 @@ const defaultValues = create(SubmitDeeplyNestedFormRequestSchema, {
       {
         containers: [
           {
-            containerImage: "registry.example.com/platform/api:v3",
+            containerImage: 'registry.example.com/platform/api:v3',
             environment: {
-              LOG_LEVEL: "info",
-              REGION: "eu-west1",
+              LOG_LEVEL: 'info',
+              REGION: 'eu-west1',
             },
-            name: "api",
+            name: 'api',
             ports: [
               {
                 containerPort: 8080,
-                name: "http",
-                protocol: "TCP",
+                name: 'http',
+                protocol: 'TCP',
               },
             ],
           },
         ],
         healthCheck: {
-          case: "http",
-          value: { path: "/ready", port: 8080 },
+          case: 'http',
+          value: { path: '/ready', port: 8080 },
         },
-        name: "control-plane",
+        name: 'control-plane',
         resources: {
           autoscaling: {
             maximumReplicas: 20,
@@ -70,16 +70,16 @@ const defaultValues = create(SubmitDeeplyNestedFormRequestSchema, {
   delivery: {
     stages: [
       {
-        approvals: [{ group: "platform-owners", requiredApprovers: 2 }],
-        name: "production",
+        approvals: [{ group: 'platform-owners', requiredApprovers: 2 }],
+        name: 'production',
         observability: {
-          alertChannels: ["platform-on-call"],
+          alertChannels: ['platform-on-call'],
           dashboards: {
-            service: "https://observability.example.com/d/api",
+            service: 'https://observability.example.com/d/api',
           },
         },
         rolloutStrategy: {
-          case: "canary",
+          case: 'canary',
           value: { trafficPercentages: [5, 25, 50, 100] },
         },
       },
@@ -87,18 +87,18 @@ const defaultValues = create(SubmitDeeplyNestedFormRequestSchema, {
   },
   extensionPolicy: {
     audit: { retentionDays: 365 },
-    featureGates: ["adaptive-scaling", "regional-failover"],
+    featureGates: ['adaptive-scaling', 'regional-failover'],
   },
-  labels: { owner: "platform-team", tier: "critical" },
+  labels: { owner: 'platform-team', tier: 'critical' },
   organization: {
     governance: {
-      escalationChain: [{ email: "on-call@example.com", name: "Platform on-call" }],
+      escalationChain: [{ email: 'on-call@example.com', name: 'Platform on-call' }],
       primaryOwner: {
-        email: "owner@example.com",
-        name: "Ada Lovelace",
+        email: 'owner@example.com',
+        name: 'Ada Lovelace',
       },
     },
-    organizationSlug: "northstar-platform",
+    organizationSlug: 'northstar-platform',
   },
 });
 

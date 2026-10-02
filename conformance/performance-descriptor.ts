@@ -1,9 +1,9 @@
-import { create, createFileRegistry, type DescMessage } from "@bufbuild/protobuf";
+import { create, createFileRegistry, type DescMessage } from '@bufbuild/protobuf';
 import {
   FieldDescriptorProto_Label,
   FieldDescriptorProto_Type,
   FileDescriptorProtoSchema,
-} from "@bufbuild/protobuf/wkt";
+} from '@bufbuild/protobuf/wkt';
 
 export function createPerformanceDescriptor(fieldCount: number): DescMessage {
   const suffix = String(fieldCount);
@@ -21,8 +21,8 @@ export function createPerformanceDescriptor(fieldCount: number): DescMessage {
       },
     ],
     name: `protoform/performance/form_${suffix}.proto`,
-    package: "protoform.performance",
-    syntax: "proto3",
+    package: 'protoform.performance',
+    syntax: 'proto3',
   });
   const descriptor = createFileRegistry(file, () => undefined).getMessage(`protoform.performance.Form${suffix}`);
   if (!descriptor) {

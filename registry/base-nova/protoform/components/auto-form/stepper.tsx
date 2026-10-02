@@ -1,24 +1,24 @@
-"use client";
+'use client';
 
-import { Check } from "lucide-react";
-import type React from "react";
+import { Check } from 'lucide-react';
+import type React from 'react';
 import {
   formatProtoformMessage,
   type ProtoformMessageFormatter,
-} from "@/registry/base-nova/protoform/lib/core/messages";
+} from '@/registry/base-nova/protoform/lib/core/messages';
 
-import { useAutoFormRuntimeContext } from "./context";
-import type { ParsedField } from "./core-types";
-import { FormDepthProvider, useFormDepth } from "./layout-context";
-import { getStepConfigurationError } from "./step-configuration";
-import type { AutoFormStep, AutoFormStepperOrientation } from "./types";
-import { Button, Heading, Text } from "./ui-components";
+import { useAutoFormRuntimeContext } from './context';
+import type { ParsedField } from './core-types';
+import { FormDepthProvider, useFormDepth } from './layout-context';
+import { getStepConfigurationError } from './step-configuration';
+import type { AutoFormStep, AutoFormStepperOrientation } from './types';
+import { Button, Heading, Text } from './ui-components';
 
-function getStepState(isCurrent: boolean, isComplete: boolean): "complete" | "current" | "upcoming" {
+function getStepState(isCurrent: boolean, isComplete: boolean): 'complete' | 'current' | 'upcoming' {
   if (isCurrent) {
-    return "current";
+    return 'current';
   }
-  return isComplete ? "complete" : "upcoming";
+  return isComplete ? 'complete' : 'upcoming';
 }
 
 function getStepStatusLabel(
@@ -27,11 +27,11 @@ function getStepStatusLabel(
   isComplete: boolean
 ): string {
   if (isCurrent) {
-    return formatProtoformMessage(formatMessage, "auto_form.step_current", {}, "current step");
+    return formatProtoformMessage(formatMessage, 'auto_form.step_current', {}, 'current step');
   }
   return isComplete
-    ? formatProtoformMessage(formatMessage, "auto_form.step_complete", {}, "completed")
-    : formatProtoformMessage(formatMessage, "auto_form.step_upcoming", {}, "upcoming step");
+    ? formatProtoformMessage(formatMessage, 'auto_form.step_complete', {}, 'completed')
+    : formatProtoformMessage(formatMessage, 'auto_form.step_upcoming', {}, 'upcoming step');
 }
 
 function fieldStep(field: ParsedField, firstStepId: string, stepIds: Set<string>): string {
@@ -66,8 +66,8 @@ function StepMarker({ index, isComplete, isCurrent }: { index: number; isComplet
       aria-hidden="true"
       className={
         isCurrent || isComplete
-          ? "flex size-7 shrink-0 items-center justify-center rounded-full bg-primary font-semibold text-primary-foreground text-xs"
-          : "flex size-7 shrink-0 items-center justify-center rounded-full border border-border bg-background font-semibold text-muted-foreground text-xs"
+          ? 'flex size-7 shrink-0 items-center justify-center rounded-full bg-primary font-semibold text-primary-foreground text-xs'
+          : 'flex size-7 shrink-0 items-center justify-center rounded-full border border-border bg-background font-semibold text-muted-foreground text-xs'
       }
       data-slot="step-marker"
     >
@@ -90,24 +90,24 @@ export function AutoFormStepIndicator({
 
   return (
     <nav
-      aria-label={formatProtoformMessage(formatMessage, "auto_form.form_progress", {}, "Form progress")}
+      aria-label={formatProtoformMessage(formatMessage, 'auto_form.form_progress', {}, 'Form progress')}
       className="@container space-y-3"
       data-orientation={orientation}
     >
       <Text aria-live="polite" className="text-muted-foreground" variant="small">
         {formatProtoformMessage(
           formatMessage,
-          "auto_form.step_progress",
+          'auto_form.step_progress',
           progressParams,
           `Step ${progressParams.current} of ${progressParams.total}`
         )}
       </Text>
       <ol
-        className={orientation === "vertical" ? "flex flex-col" : "grid grid-cols-(--step-columns) gap-0"}
-        data-layout={orientation === "horizontal" ? "adaptive-horizontal" : undefined}
+        className={orientation === 'vertical' ? 'flex flex-col' : 'grid grid-cols-(--step-columns) gap-0'}
+        data-layout={orientation === 'horizontal' ? 'adaptive-horizontal' : undefined}
         style={
-          orientation === "horizontal"
-            ? ({ "--step-columns": `repeat(${steps.length}, minmax(0, 1fr))` } as React.CSSProperties)
+          orientation === 'horizontal'
+            ? ({ '--step-columns': `repeat(${steps.length}, minmax(0, 1fr))` } as React.CSSProperties)
             : undefined
         }
       >
@@ -115,10 +115,10 @@ export function AutoFormStepIndicator({
           const isCurrent = index === currentIndex;
           const isComplete = index < currentIndex;
 
-          if (orientation === "vertical") {
+          if (orientation === 'vertical') {
             return (
               <li
-                aria-current={isCurrent ? "step" : undefined}
+                aria-current={isCurrent ? 'step' : undefined}
                 className="flex min-w-0 gap-3"
                 data-state={getStepState(isCurrent, isComplete)}
                 key={step.id}
@@ -130,7 +130,7 @@ export function AutoFormStepIndicator({
                   <StepMarker index={index} isComplete={isComplete} isCurrent={isCurrent} />
                   {index < steps.length - 1 ? (
                     <span
-                      className={isComplete ? "min-h-5 w-px flex-1 bg-primary" : "min-h-5 w-px flex-1 bg-border"}
+                      className={isComplete ? 'min-h-5 w-px flex-1 bg-primary' : 'min-h-5 w-px flex-1 bg-border'}
                       data-orientation="vertical"
                       data-testid="step-connector"
                     />
@@ -140,8 +140,8 @@ export function AutoFormStepIndicator({
                   aria-hidden="true"
                   className={
                     isCurrent
-                      ? "min-w-0 pt-1 pb-5 font-semibold text-sm"
-                      : "min-w-0 pt-1 pb-5 text-muted-foreground text-sm"
+                      ? 'min-w-0 pt-1 pb-5 font-semibold text-sm'
+                      : 'min-w-0 pt-1 pb-5 text-muted-foreground text-sm'
                   }
                   data-slot="step-label"
                 >
@@ -153,7 +153,7 @@ export function AutoFormStepIndicator({
 
           return (
             <li
-              aria-current={isCurrent ? "step" : undefined}
+              aria-current={isCurrent ? 'step' : undefined}
               className="flex min-w-0 items-start"
               data-state={getStepState(isCurrent, isComplete)}
               key={step.id}
@@ -167,8 +167,8 @@ export function AutoFormStepIndicator({
                   aria-hidden="true"
                   className={
                     isCurrent
-                      ? "@min-[30rem]:block hidden @min-[64rem]:w-auto w-full @min-[64rem]:max-w-32 truncate @min-[64rem]:text-left text-center font-semibold @min-[64rem]:text-sm text-xs"
-                      : "@min-[30rem]:block hidden @min-[64rem]:w-auto w-full @min-[64rem]:max-w-32 truncate @min-[64rem]:text-left text-center @min-[64rem]:text-sm text-muted-foreground text-xs"
+                      ? '@min-[30rem]:block hidden @min-[64rem]:w-auto w-full @min-[64rem]:max-w-32 truncate @min-[64rem]:text-left text-center font-semibold @min-[64rem]:text-sm text-xs'
+                      : '@min-[30rem]:block hidden @min-[64rem]:w-auto w-full @min-[64rem]:max-w-32 truncate @min-[64rem]:text-left text-center @min-[64rem]:text-sm text-muted-foreground text-xs'
                   }
                   data-slot="step-label"
                 >
@@ -179,7 +179,7 @@ export function AutoFormStepIndicator({
                 <span
                   aria-hidden="true"
                   className={
-                    isComplete ? "mt-3.5 h-px min-w-0 flex-1 bg-primary" : "mt-3.5 h-px min-w-0 flex-1 bg-border"
+                    isComplete ? 'mt-3.5 h-px min-w-0 flex-1 bg-primary' : 'mt-3.5 h-px min-w-0 flex-1 bg-border'
                   }
                   data-orientation="horizontal"
                   data-testid="step-connector"
@@ -222,9 +222,9 @@ export function AutoFormStepPanel({
     <div className="space-y-6">
       <div
         className={
-          orientation === "vertical"
-            ? "grid items-start gap-6 md:grid-cols-[minmax(10rem,0.26fr)_minmax(0,1fr)] md:gap-8"
-            : "space-y-6"
+          orientation === 'vertical'
+            ? 'grid items-start gap-6 md:grid-cols-[minmax(10rem,0.26fr)_minmax(0,1fr)] md:gap-8'
+            : 'space-y-6'
         }
         data-layout={`stepper-${orientation}`}
       >
@@ -255,7 +255,7 @@ export function AutoFormStepPanel({
       >
         {currentIndex > 0 ? (
           <Button onClick={onBack} type="button" variant="outline">
-            {formatProtoformMessage(formatMessage, "auto_form.back", {}, "Back")}
+            {formatProtoformMessage(formatMessage, 'auto_form.back', {}, 'Back')}
           </Button>
         ) : (
           <span />
@@ -265,8 +265,8 @@ export function AutoFormStepPanel({
         ) : (
           <Button disabled={isAdvancing} onClick={onContinue} type="button">
             {isAdvancing
-              ? formatProtoformMessage(formatMessage, "auto_form.checking", {}, "Checking…")
-              : formatProtoformMessage(formatMessage, "auto_form.continue", {}, "Continue")}
+              ? formatProtoformMessage(formatMessage, 'auto_form.checking', {}, 'Checking…')
+              : formatProtoformMessage(formatMessage, 'auto_form.continue', {}, 'Continue')}
           </Button>
         )}
       </div>

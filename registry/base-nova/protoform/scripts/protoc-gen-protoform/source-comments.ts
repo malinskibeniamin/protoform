@@ -1,5 +1,5 @@
-import type { DescMessage } from "@bufbuild/protobuf";
-import { getComments } from "@bufbuild/protoplugin";
+import type { DescMessage } from '@bufbuild/protobuf';
+import { getComments } from '@bufbuild/protoplugin';
 
 export interface ProtoAnnotationEntry {
   key: string;
@@ -21,11 +21,11 @@ function sourceFileMessages(message: DescMessage): DescMessage[] {
       visit(nested);
     }
     for (const field of current.fields) {
-      if (field.fieldKind === "message") {
+      if (field.fieldKind === 'message') {
         visit(field.message);
-      } else if (field.fieldKind === "list" && field.listKind === "message") {
+      } else if (field.fieldKind === 'list' && field.listKind === 'message') {
         visit(field.message);
-      } else if (field.fieldKind === "map" && field.mapKind === "message") {
+      } else if (field.fieldKind === 'map' && field.mapKind === 'message') {
         visit(field.message);
       }
     }

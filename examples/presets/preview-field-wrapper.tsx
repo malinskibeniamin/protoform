@@ -1,5 +1,5 @@
-import type { FieldWrapperProps } from "@/registry/base-nova/protoform/components/auto-form/core-types";
-import { Field, FieldContent, FieldError, FieldLabel } from "@/registry/base-nova/protoform/components/field";
+import type { FieldWrapperProps } from '@/registry/base-nova/protoform/components/auto-form/core-types';
+import { Field, FieldContent, FieldError, FieldLabel } from '@/registry/base-nova/protoform/components/field';
 
 export function PreviewFieldWrapper({ children, error, field, id, label }: FieldWrapperProps) {
   return (

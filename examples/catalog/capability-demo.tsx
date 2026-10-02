@@ -1,19 +1,19 @@
-"use client";
+'use client';
 
-import { useState } from "react";
+import { useState } from 'react';
 
-import { Alert, AlertDescription, AlertTitle } from "@/registry/base-nova/protoform/components/alert";
-import { AutoForm } from "@/registry/base-nova/protoform/components/auto-form";
-import { Badge } from "@/registry/base-nova/protoform/components/badge";
+import { Alert, AlertDescription, AlertTitle } from '@/registry/base-nova/protoform/components/alert';
+import { AutoForm } from '@/registry/base-nova/protoform/components/auto-form';
+import { Badge } from '@/registry/base-nova/protoform/components/badge';
 
-import { getDemo } from "./demo-catalog.js";
-import { getDemoSchema } from "./demo-schemas.js";
+import { getDemo } from './demo-catalog.js';
+import { getDemoSchema } from './demo-schemas.js';
 
 const engineLabels = {
-  "final-form": "Final Form",
-  formik: "Formik",
-  "react-hook-form": "React Hook Form",
-  "tanstack-form": "TanStack Form",
+  'final-form': 'Final Form',
+  formik: 'Formik',
+  'react-hook-form': 'React Hook Form',
+  'tanstack-form': 'TanStack Form',
 } as const;
 
 const SENSITIVE_PREVIEW_KEY = /password|secret|apiKey|privateKey|credential|inputToken/iu;
@@ -23,9 +23,9 @@ function formatSubmittedValue(value: Record<string, unknown>): string {
     value,
     (key, nestedValue: unknown) => {
       if (SENSITIVE_PREVIEW_KEY.test(key)) {
-        return "[redacted]";
+        return '[redacted]';
       }
-      if (typeof nestedValue === "bigint") {
+      if (typeof nestedValue === 'bigint') {
         return nestedValue.toString();
       }
       if (nestedValue instanceof Uint8Array) {
@@ -61,7 +61,7 @@ export function CapabilityDemo({ demoId }: { demoId: string }) {
       <p className="text-muted-foreground text-sm">{demo.tryIt}</p>
       <AutoForm
         defaultValues={defaultValues}
-        formOptions={{ mode: "onBlur", reValidateMode: "onChange" }}
+        formOptions={{ mode: 'onBlur', reValidateMode: 'onChange' }}
         onFieldChange={() => setSubmittedValue(undefined)}
         onSubmit={(values) => setSubmittedValue(formatSubmittedValue(values))}
         schema={schema}

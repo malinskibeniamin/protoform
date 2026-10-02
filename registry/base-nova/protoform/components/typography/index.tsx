@@ -1,121 +1,107 @@
-"use client";
+'use client';
 
-import { Link as TanStackLink } from "@tanstack/react-router";
-import { cva, type VariantProps } from "class-variance-authority";
-import React, { forwardRef } from "react";
+import { Link as TanStackLink } from '@tanstack/react-router';
+import { cva, type VariantProps } from 'class-variance-authority';
+import React, { forwardRef } from 'react';
 
-import { cn, type SharedProps } from "@/registry/base-nova/protoform/lib/utils";
+import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
-// Heading variants using cva
-// Based on Figma design system: Inter Display, font-medium (500), 100% line-height, tight tracking
-const headingVariants = cva("font-display font-medium leading-none tracking-tight", {
+const headingVariants = cva('font-display font-medium leading-none tracking-tight', {
   defaultVariants: {
-    align: "left",
+    align: 'left',
     level: 1,
   },
   variants: {
     align: {
-      center: "text-center",
-      left: "text-left",
-      right: "text-right",
+      center: 'text-center',
+      left: 'text-left',
+      right: 'text-right',
     },
     level: {
-      1: "text-2xl",
-      2: "text-xl",
-      3: "text-lg",
-      4: "text-base",
-      5: "text-sm",
+      1: 'text-2xl',
+      2: 'text-xl',
+      3: 'text-lg',
+      4: 'text-base',
+      5: 'text-sm',
     },
   },
 });
 
-export const textVariants = cva("font-sans", {
+export const textVariants = cva('font-sans', {
   defaultVariants: {
-    align: "left",
-    variant: "body",
+    align: 'left',
+    variant: 'body',
   },
   variants: {
     align: {
-      center: "text-center",
-      left: "text-left",
-      right: "text-right",
+      center: 'text-center',
+      left: 'text-left',
+      right: 'text-right',
     },
     variant: {
-      // Legacy variant names (mapped to Figma equivalents - NOT backward compatible for styles)
-      body: "font-normal text-sm leading-6 tracking-tight", // → bodyMedium
-      bodyLarge: "font-normal text-base leading-6 tracking-tight", // 1rem, line-height 1.5rem, tight tracking
-      bodyMedium: "font-normal text-sm leading-5 tracking-normal", // 0.875rem, line-height 1.25rem
-      bodySmall: "font-normal text-xs leading-4 tracking-normal", // 0.75rem, line-height 1rem
-      bodyStrongLarge: "font-medium text-base leading-6 tracking-tight", // 1rem, line-height 1.5rem, tight tracking
-      bodyStrongMedium: "font-medium text-sm leading-5 tracking-normal", // 0.875rem, line-height 1.25rem
-      bodyStrongSmall: "font-medium text-xs leading-4 tracking-normal", // 0.75rem, line-height 1rem
+      body: 'font-normal text-sm leading-6 tracking-tight',
+      bodyLarge: 'font-normal text-base leading-6 tracking-tight',
+      bodyMedium: 'font-normal text-sm leading-5 tracking-normal',
+      bodySmall: 'font-normal text-xs leading-4 tracking-normal',
+      bodyStrongLarge: 'font-medium text-base leading-6 tracking-tight',
+      bodyStrongMedium: 'font-medium text-sm leading-5 tracking-normal',
+      bodyStrongSmall: 'font-medium text-xs leading-4 tracking-normal',
 
-      // Body Strong variants - Inter, font-medium (500)
-      bodyStrongXLarge: "font-medium text-lg leading-7 tracking-tight", // 1.125rem, line-height 1.75rem, tight tracking
+      bodyStrongXLarge: 'font-medium text-lg leading-7 tracking-tight',
 
-      // Body - Inter, font-normal (400)
-      bodyXLarge: "font-normal text-lg leading-7 tracking-tight", // 1.125rem, line-height 1.75rem, tight tracking
+      bodyXLarge: 'font-normal text-lg leading-7 tracking-tight',
 
-      // Buttons - Inter, font-semibold (600), line-height 100%
-      buttonLarge: "font-semibold text-lg leading-none tracking-tight", // 1.125rem, tight tracking
-      buttonMedium: "font-semibold text-base leading-none tracking-normal", // 1rem
-      buttonSmall: "font-semibold text-sm leading-none tracking-normal", // 0.875rem
-      buttonXSmall: "font-semibold text-xs leading-none tracking-tight", // 0.75rem, tight tracking
+      buttonLarge: 'font-semibold text-lg leading-none tracking-tight',
+      buttonMedium: 'font-semibold text-base leading-none tracking-normal',
+      buttonSmall: 'font-semibold text-sm leading-none tracking-normal',
+      buttonXSmall: 'font-semibold text-xs leading-none tracking-tight',
 
-      // Captions - Inter, font-normal (400), positive tracking
-      captionMedium: "font-normal text-xs leading-4 tracking-normal", // 0.75rem, 0.01em
-      captionSmall: "font-normal text-xs leading-4 tracking-normal", // 0.625rem (10px), 0.01em
+      captionMedium: 'font-normal text-xs leading-4 tracking-normal',
+      captionSmall: 'font-normal text-xs leading-4 tracking-normal',
 
-      // Caption Strong variants - Inter, font-medium (500)
-      captionStrongMedium: "font-medium text-xs leading-4 tracking-normal", // 0.75rem, 0.01em
-      captionStrongSmall: "font-medium text-xs leading-4 tracking-normal", // 0.625rem, 0.05em
-      label: "font-semibold text-sm leading-5 tracking-normal", // → labelStrongSmall
+      captionStrongMedium: 'font-medium text-xs leading-4 tracking-normal',
+      captionStrongSmall: 'font-medium text-xs leading-4 tracking-normal',
+      label: 'font-semibold text-sm leading-5 tracking-normal',
 
-      // Labels - Inter, font-normal (400)
-      labelLarge: "font-normal text-lg leading-6 tracking-normal", // 1.125rem, line-height 1.5rem, -0.0125em
-      labelMedium: "font-normal text-base leading-6 tracking-tight", // 1rem, line-height 1.5rem, -0.025em
-      labelSmall: "font-normal text-sm leading-5 tracking-normal", // 0.875rem, line-height 1.25rem
+      labelLarge: 'font-normal text-lg leading-6 tracking-normal',
+      labelMedium: 'font-normal text-base leading-6 tracking-tight',
+      labelSmall: 'font-normal text-sm leading-5 tracking-normal',
 
-      // Label Strong variants - Inter, font-semibold (600)
-      labelStrongLarge: "font-semibold text-lg leading-6 tracking-tight", // 1.125rem, line-height 1.5rem, tight tracking
-      labelStrongMedium: "font-semibold text-base leading-6 tracking-tight", // 1rem, line-height 1.5rem, tight tracking
-      labelStrongSmall: "font-semibold text-sm leading-5 tracking-normal", // 0.875rem, line-height 1.25rem
-      labelStrongXSmall: "font-semibold text-xs leading-4 tracking-normal", // 0.75rem, line-height 1rem
-      labelXSmall: "font-normal text-xs leading-4 tracking-normal", // 0.75rem, line-height 1rem
-      large: "font-normal text-base leading-7 tracking-tight", // → bodyXLarge
-      lead: "font-normal text-lg text-muted-foreground leading-7 tracking-tight", // → bodyLarge + muted
-      muted: "font-normal text-muted-foreground text-sm leading-5 tracking-normal", // → bodyMedium + muted
+      labelStrongLarge: 'font-semibold text-lg leading-6 tracking-tight',
+      labelStrongMedium: 'font-semibold text-base leading-6 tracking-tight',
+      labelStrongSmall: 'font-semibold text-sm leading-5 tracking-normal',
+      labelStrongXSmall: 'font-semibold text-xs leading-4 tracking-normal',
+      labelXSmall: 'font-normal text-xs leading-4 tracking-normal',
+      large: 'font-normal text-base leading-7 tracking-tight',
+      lead: 'font-normal text-lg text-muted-foreground leading-7 tracking-tight',
+      muted: 'font-normal text-muted-foreground text-sm leading-5 tracking-normal',
 
-      // Numbers - Inter, font-normal (400), tighter tracking for tabular display
-      numberLarge: "font-normal text-lg tabular-nums leading-6 tracking-normal", // 1.125rem, -0.05em
-      numberMedium: "font-normal text-base tabular-nums leading-6 tracking-normal", // 1rem, -0.05em
-      numberSmall: "font-normal text-sm tabular-nums leading-5 tracking-normal", // 0.875rem, -0.05em
+      numberLarge: 'font-normal text-lg tabular-nums leading-6 tracking-normal',
+      numberMedium: 'font-normal text-base tabular-nums leading-6 tracking-normal',
+      numberSmall: 'font-normal text-sm tabular-nums leading-5 tracking-normal',
 
-      // Number Strong variants - Inter, font-medium (500)
-      numberStrongLarge: "font-medium text-lg tabular-nums leading-6 tracking-normal", // 1.125rem, -0.05em
-      numberStrongMedium: "font-medium text-base tabular-nums leading-6 tracking-normal", // 1rem, -0.05em
-      numberStrongSmall: "font-medium text-sm tabular-nums leading-5 tracking-normal", // 0.875rem, -0.05em
-      numberStrongXSmall: "font-medium text-xs tabular-nums leading-4 tracking-normal", // 0.75rem, -0.025em
-      numberXSmall: "font-normal text-xs tabular-nums leading-4 tracking-normal", // 0.75rem, -0.025em
-      small: "font-normal text-xs leading-5 tracking-normal", // → bodyMedium
+      numberStrongLarge: 'font-medium text-lg tabular-nums leading-6 tracking-normal',
+      numberStrongMedium: 'font-medium text-base tabular-nums leading-6 tracking-normal',
+      numberStrongSmall: 'font-medium text-sm tabular-nums leading-5 tracking-normal',
+      numberStrongXSmall: 'font-medium text-xs tabular-nums leading-4 tracking-normal',
+      numberXSmall: 'font-normal text-xs tabular-nums leading-4 tracking-normal',
+      small: 'font-normal text-xs leading-5 tracking-normal',
 
-      // Titles - Inter Display, font-medium (500)
-      titleLarge: "font-display font-medium text-4xl leading-10 tracking-tight", // 2rem, line-height 2.5rem
-      titleMedium: "font-display font-medium text-2xl leading-8 tracking-tight", // 1.5rem, line-height 2rem
-      titleMediumSemibold: "font-display font-semibold text-2xl leading-8 tracking-tight", // 1.5rem, 600, line-height 2rem
-      titleSmall: "font-display font-medium text-xl leading-7 tracking-tight", // 1.25rem, line-height 1.75rem
-      titleXSmall: "font-display font-medium text-lg leading-6 tracking-tight", // 1.125rem, line-height 1.5rem
-      xLarge: "font-display font-medium text-lg leading-6 tracking-tight", // → titleXSmall
+      titleLarge: 'font-display font-medium text-4xl leading-10 tracking-tight',
+      titleMedium: 'font-display font-medium text-2xl leading-8 tracking-tight',
+      titleMediumSemibold: 'font-display font-semibold text-2xl leading-8 tracking-tight',
+      titleSmall: 'font-display font-medium text-xl leading-7 tracking-tight',
+      titleXSmall: 'font-display font-medium text-lg leading-6 tracking-tight',
+      xLarge: 'font-display font-medium text-lg leading-6 tracking-tight',
     },
   },
 });
 
-// Main Heading Component
 interface HeadingProps
   extends React.HTMLAttributes<HTMLHeadingElement>,
     VariantProps<typeof headingVariants>,
     SharedProps {
-  as?: "h1" | "h2" | "h3" | "h4" | "h5";
+  as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5';
   children: React.ReactNode;
 }
 
@@ -128,25 +114,21 @@ export const Heading = forwardRef<HTMLHeadingElement, HeadingProps>((componentPr
     HeadingTag,
     {
       className: cn(headingVariants({ align, level: headingLevel }), className),
-      "data-testid": testId,
+      'data-testid': testId,
       ref,
       ...props,
     },
     children
   );
 });
-Heading.displayName = "Heading";
+Heading.displayName = 'Heading';
 
-// Text Component
 interface TextProps extends React.HTMLAttributes<HTMLElement>, VariantProps<typeof textVariants>, SharedProps {
-  as?: "p" | "div" | "span" | "small";
+  as?: 'p' | 'div' | 'span' | 'small';
   children: React.ReactNode;
 }
 
-// Defaults to <div> so Text can safely wrap block-level children (lists, inputs, etc.)
-// without emitting React `validateDOMNesting` warnings. Consumers that need paragraph
-// semantics can opt in via `as="p"`.
-export function Text({ variant, align, as = "div", className, children, testId, ...props }: TextProps) {
+export function Text({ variant, align, as = 'div', className, children, testId, ...props }: TextProps) {
   const Component = as;
 
   return (
@@ -156,28 +138,26 @@ export function Text({ variant, align, as = "div", className, children, testId, 
   );
 }
 
-// Blockquote Component
 interface BlockquoteProps extends React.HTMLAttributes<HTMLQuoteElement>, SharedProps {
   children: React.ReactNode;
 }
 
 export function Blockquote({ className, children, testId, ...props }: BlockquoteProps) {
   return (
-    <blockquote className={cn("border-l-2 pl-6 italic", className)} data-testid={testId} {...props}>
+    <blockquote className={cn('border-l-2 pl-6 italic', className)} data-testid={testId} {...props}>
       {children}
     </blockquote>
   );
 }
 
-// List Component
 interface ListProps extends React.HTMLAttributes<HTMLUListElement | HTMLOListElement>, SharedProps {
   children: React.ReactNode;
   ordered?: boolean;
 }
 
 export function List({ ordered = false, className, children, testId, ...props }: ListProps) {
-  const ListTag = ordered ? "ol" : "ul";
-  const listClass = ordered ? "mt-1 mb-3 ml-6 list-decimal [&>li]:mt-1" : "mt-1 mb-3 ml-6 list-disc [&>li]:mt-0.5";
+  const ListTag = ordered ? 'ol' : 'ul';
+  const listClass = ordered ? 'mt-1 mb-3 ml-6 list-decimal [&>li]:mt-1' : 'mt-1 mb-3 ml-6 list-disc [&>li]:mt-0.5';
 
   return (
     <ListTag className={cn(listClass, className)} data-testid={testId} {...props}>
@@ -186,7 +166,6 @@ export function List({ ordered = false, className, children, testId, ...props }:
   );
 }
 
-// List Item Component
 interface ListItemProps extends React.HTMLAttributes<HTMLLIElement>, SharedProps {
   children: React.ReactNode;
 }
@@ -199,20 +178,18 @@ export function ListItem({ className, children, testId, ...props }: ListItemProp
   );
 }
 
-// Optional List Item Text component to emulate prose p-in-li behavior
 interface ListItemTextProps extends React.HTMLAttributes<HTMLParagraphElement>, SharedProps {
   children: React.ReactNode;
 }
 
 export function ListItemText({ className, children, testId, ...props }: ListItemTextProps) {
   return (
-    <p className={cn("my-0 inline", className)} data-testid={testId} {...props}>
+    <p className={cn('my-0 inline', className)} data-testid={testId} {...props}>
       {children}
     </p>
   );
 }
 
-// Inline Code Component
 interface InlineCodeProps extends React.HTMLAttributes<HTMLElement>, SharedProps {
   children: React.ReactNode;
 }
@@ -220,7 +197,7 @@ interface InlineCodeProps extends React.HTMLAttributes<HTMLElement>, SharedProps
 export function InlineCode({ className, children, testId, ...props }: InlineCodeProps) {
   return (
     <code
-      className={cn("relative rounded bg-muted px-1 py-0.5 font-mono font-semibold text-sm", className)}
+      className={cn('relative rounded bg-muted px-1 py-0.5 font-mono font-semibold text-sm', className)}
       data-testid={testId}
       {...props}
     >
@@ -229,19 +206,15 @@ export function InlineCode({ className, children, testId, ...props }: InlineCode
   );
 }
 
-// Base props shared by both link types
 type BaseLinkProps = SharedProps & {
   children: React.ReactNode;
   className?: string;
 };
 
-// Discriminated union for link types
-// TanStack Router variant uses explicit props because ComponentProps<typeof TanStackLink>
-// ties params to a specific route literal, which breaks when `to` is a plain string.
 type LinkProps =
   | (BaseLinkProps &
       React.AnchorHTMLAttributes<HTMLAnchorElement> & {
-        as?: never; // Default to anchor - don't allow 'as' when using anchor
+        as?: never;
         href: string;
       })
   | (BaseLinkProps & {
@@ -251,17 +224,15 @@ type LinkProps =
       search?: Record<string, unknown>;
       hash?: string;
       replace?: boolean;
-      preload?: false | "intent" | "render" | "viewport";
+      preload?: false | 'intent' | 'render' | 'viewport';
       [key: string]: unknown;
     });
 
-// Link styles matching Figma: primary color, dotted underline with offset
 const linkStyles =
-  "font-medium text-primary decoration-dotted underline underline-offset-3 hover:text-primary/80 transition-colors";
+  'font-medium text-primary decoration-dotted underline underline-offset-3 hover:text-primary/80 transition-colors';
 
 export function Link({ className, children, testId, ...props }: LinkProps) {
-  if ("as" in props && props.as === TanStackLink) {
-    // Render as TanStack Router Link when explicitly specified
+  if ('as' in props && props.as === TanStackLink) {
     const { as: _, ...routerProps } = props;
     return (
       <TanStackLink className={cn(linkStyles, className)} data-testid={testId} {...routerProps}>
@@ -269,7 +240,6 @@ export function Link({ className, children, testId, ...props }: LinkProps) {
       </TanStackLink>
     );
   }
-  // Render as anchor tag (default)
 
   return (
     <a className={cn(linkStyles, className)} data-testid={testId} {...props}>
@@ -278,7 +248,6 @@ export function Link({ className, children, testId, ...props }: LinkProps) {
   );
 }
 
-// Preformatted Code Block Component
 interface PreProps extends React.HTMLAttributes<HTMLPreElement>, SharedProps {
   children: React.ReactNode;
 }
@@ -286,7 +255,7 @@ interface PreProps extends React.HTMLAttributes<HTMLPreElement>, SharedProps {
 export function Pre({ className, children, testId, ...props }: PreProps) {
   return (
     <pre
-      className={cn("my-6 overflow-y-auto rounded-md bg-muted p-4 text-sm", className)}
+      className={cn('my-6 overflow-y-auto rounded-md bg-muted p-4 text-sm', className)}
       data-testid={testId}
       {...props}
     >
@@ -295,21 +264,19 @@ export function Pre({ className, children, testId, ...props }: PreProps) {
   );
 }
 
-// Horizontal Rule Component
 interface HrProps extends React.HTMLAttributes<HTMLHRElement>, SharedProps {}
 
 export function Hr({ className, testId, ...props }: HrProps) {
-  return <hr className={cn("my-10", className)} data-testid={testId} {...props} />;
+  return <hr className={cn('my-10', className)} data-testid={testId} {...props} />;
 }
 
-// Description List Components
 interface DlProps extends React.HTMLAttributes<HTMLDListElement>, SharedProps {
   children: React.ReactNode;
 }
 
 export function Dl({ className, children, testId, ...props }: DlProps) {
   return (
-    <dl className={cn("my-6", className)} data-testid={testId} {...props}>
+    <dl className={cn('my-6', className)} data-testid={testId} {...props}>
       {children}
     </dl>
   );
@@ -321,7 +288,7 @@ interface DtProps extends React.HTMLAttributes<HTMLElement>, SharedProps {
 
 export function Dt({ className, children, testId, ...props }: DtProps) {
   return (
-    <dt className={cn("font-semibold tracking-tight", className)} data-testid={testId} {...props}>
+    <dt className={cn('font-semibold tracking-tight', className)} data-testid={testId} {...props}>
       {children}
     </dt>
   );
@@ -339,7 +306,6 @@ export function Dd({ className, children, testId, ...props }: DdProps) {
   );
 }
 
-// Details/Summary Components
 interface DetailsProps extends React.DetailsHTMLAttributes<HTMLDetailsElement>, SharedProps {
   children: React.ReactNode;
 }
@@ -358,33 +324,31 @@ interface SummaryProps extends React.HTMLAttributes<HTMLElement>, SharedProps {
 
 export function Summary({ className, children, testId, ...props }: SummaryProps) {
   return (
-    <summary className={cn("cursor-pointer font-semibold tracking-tight", className)} data-testid={testId} {...props}>
+    <summary className={cn('cursor-pointer font-semibold tracking-tight', className)} data-testid={testId} {...props}>
       {children}
     </summary>
   );
 }
 
-// Marked/Highlight Component
 interface MarkProps extends React.HTMLAttributes<HTMLElement>, SharedProps {
   children: React.ReactNode;
 }
 
 export function Mark({ className, children, testId, ...props }: MarkProps) {
   return (
-    <mark className={cn("bg-accent", className)} data-testid={testId} {...props}>
+    <mark className={cn('bg-accent', className)} data-testid={testId} {...props}>
       {children}
     </mark>
   );
 }
 
-// Small text Component
 interface SmallProps extends React.HTMLAttributes<HTMLElement>, SharedProps {
   children: React.ReactNode;
 }
 
 export function Small({ className, children, testId, ...props }: SmallProps) {
   return (
-    <small className={cn("text-xs leading-none", className)} data-testid={testId} {...props}>
+    <small className={cn('text-xs leading-none', className)} data-testid={testId} {...props}>
       {children}
     </small>
   );

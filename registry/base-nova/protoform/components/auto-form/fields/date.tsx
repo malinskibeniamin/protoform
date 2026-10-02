@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { format } from "date-fns";
-import { CalendarIcon, Clock3Icon } from "lucide-react";
-import type { AutoFormFieldProps } from "../core-types";
-import { getFieldUiConfig } from "../helpers";
-import type { FieldTypeDefinition } from "../registry";
+import { format } from 'date-fns';
+import { CalendarIcon, Clock3Icon } from 'lucide-react';
+import type { AutoFormFieldProps } from '../core-types';
+import { getFieldUiConfig } from '../helpers';
+import type { FieldTypeDefinition } from '../registry';
 import {
   Calendar,
   InputGroup,
@@ -15,7 +15,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "../ui-components";
+} from '../ui-components';
 import {
   buildTimestampValue,
   getControlLabel,
@@ -24,16 +24,12 @@ import {
   parseCalendarDate,
   resolveControlTestId,
   useFieldTestIds,
-} from "./shared";
-
-// ---------------------------------------------------------------------------
-// DateFieldComponent
-// ---------------------------------------------------------------------------
+} from './shared';
 
 function DateFieldComponent({ error, field, id, inputProps, label }: AutoFormFieldProps) {
   const testIds = useFieldTestIds(id);
   const controlTestId = resolveControlTestId(inputProps, testIds.control);
-  const value = normalizeDateValue(inputProps["value"]);
+  const value = normalizeDateValue(inputProps['value']);
   const selectedDate = parseCalendarDate(value);
 
   return (
@@ -41,11 +37,11 @@ function DateFieldComponent({ error, field, id, inputProps, label }: AutoFormFie
       <InputGroup testId={controlTestId}>
         <InputGroupInput
           aria-invalid={Boolean(error)}
-          disabled={inputProps["disabled"]}
+          disabled={inputProps['disabled']}
           id={id}
-          onBlur={inputProps["onBlur"]}
-          onChange={(event) => inputProps["onValueChange"](event.target.value)}
-          placeholder={getFieldUiConfig(field).placeholder || "YYYY-MM-DD"}
+          onBlur={inputProps['onBlur']}
+          onChange={(event) => inputProps['onValueChange'](event.target.value)}
+          placeholder={getFieldUiConfig(field).placeholder || 'YYYY-MM-DD'}
           testId={`${controlTestId}-input`}
           value={value}
         />
@@ -53,7 +49,7 @@ function DateFieldComponent({ error, field, id, inputProps, label }: AutoFormFie
           <PopoverTrigger asChild>
             <InputGroupButton
               aria-label={`Open calendar for ${getControlLabel(label, field)}`}
-              disabled={inputProps["disabled"]}
+              disabled={inputProps['disabled']}
               testId={`${controlTestId}-calendar`}
             >
               <CalendarIcon className="size-4" />
@@ -65,7 +61,7 @@ function DateFieldComponent({ error, field, id, inputProps, label }: AutoFormFie
         <Calendar
           mode="single"
           onSelect={(date) => {
-            inputProps["onValueChange"](date ? format(date, "yyyy-MM-dd") : "");
+            inputProps['onValueChange'](date ? format(date, 'yyyy-MM-dd') : '');
           }}
           selected={selectedDate}
         />
@@ -74,14 +70,10 @@ function DateFieldComponent({ error, field, id, inputProps, label }: AutoFormFie
   );
 }
 
-// ---------------------------------------------------------------------------
-// TimestampFieldComponent
-// ---------------------------------------------------------------------------
-
 function TimestampFieldComponent({ error, field, id, inputProps, label }: AutoFormFieldProps) {
   const testIds = useFieldTestIds(id);
-  const dateValue = normalizeDateValue(inputProps["value"]);
-  const timeValue = normalizeTimeValue(inputProps["value"]);
+  const dateValue = normalizeDateValue(inputProps['value']);
+  const timeValue = normalizeTimeValue(inputProps['value']);
 
   return (
     <div className="space-y-2" data-testid={testIds.control}>
@@ -91,15 +83,15 @@ function TimestampFieldComponent({ error, field, id, inputProps, label }: AutoFo
         id={id}
         inputProps={{
           ...inputProps,
-          onValueChange: (nextDate: string) => inputProps["onValueChange"](buildTimestampValue(nextDate, timeValue)),
-          testId: testIds.controlPart("date"),
+          onValueChange: (nextDate: string) => inputProps['onValueChange'](buildTimestampValue(nextDate, timeValue)),
+          testId: testIds.controlPart('date'),
           value: dateValue,
         }}
         label={label}
         path={[]}
         value={dateValue}
       />
-      <InputGroup testId={testIds.controlPart("time")}>
+      <InputGroup testId={testIds.controlPart('time')}>
         <InputGroupAddon>
           <InputGroupText>
             <Clock3Icon className="size-4" />
@@ -107,11 +99,11 @@ function TimestampFieldComponent({ error, field, id, inputProps, label }: AutoFo
         </InputGroupAddon>
         <InputGroupInput
           aria-invalid={Boolean(error)}
-          disabled={inputProps["disabled"]}
-          onBlur={inputProps["onBlur"]}
-          onChange={(event) => inputProps["onValueChange"](buildTimestampValue(dateValue, event.target.value))}
+          disabled={inputProps['disabled']}
+          onBlur={inputProps['onBlur']}
+          onChange={(event) => inputProps['onValueChange'](buildTimestampValue(dateValue, event.target.value))}
           placeholder="HH:mm"
-          testId={testIds.controlPart("time-input")}
+          testId={testIds.controlPart('time-input')}
           value={timeValue}
         />
       </InputGroup>
@@ -123,14 +115,14 @@ export { DateFieldComponent, TimestampFieldComponent };
 
 export const dateFieldDefinition: FieldTypeDefinition = {
   component: DateFieldComponent,
-  match: (field) => field.type === "date",
-  name: "date",
+  match: (field) => field.type === 'date',
+  name: 'date',
   priority: 10,
 };
 
 export const timestampFieldDefinition: FieldTypeDefinition = {
   component: TimestampFieldComponent,
-  match: (field) => field.type === "timestamp",
-  name: "timestamp",
+  match: (field) => field.type === 'timestamp',
+  name: 'timestamp',
   priority: 10,
 };

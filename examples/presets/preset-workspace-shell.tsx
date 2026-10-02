@@ -1,15 +1,15 @@
-import type { ReactNode, Ref } from "react";
+import type { ReactNode, Ref } from 'react';
 
 interface PresetWorkspaceShellProps {
   children: ReactNode;
-  fullscreenMode: "fallback" | "native" | "none";
+  fullscreenMode: 'fallback' | 'native' | 'none';
   isFallbackFullscreen: boolean;
   isFullscreen: boolean;
   workspaceRef: Ref<HTMLElement>;
 }
 
 const workspaceClassName =
-  "group/workspace overflow-hidden rounded-2xl border bg-background shadow-sm data-[fullscreen-mode=fallback]:fixed data-[fullscreen-mode=fallback]:inset-0 data-[fullscreen-mode=fallback]:z-50 data-[fullscreen=true]:h-[100dvh] data-[fullscreen=true]:w-full data-[fullscreen=true]:overflow-y-auto data-[fullscreen=true]:rounded-none data-[fullscreen=true]:border-0 md:data-[fullscreen=true]:grid md:data-[fullscreen=true]:grid-rows-[auto_minmax(0,1fr)_auto] md:data-[fullscreen=true]:overflow-hidden";
+  'group/workspace overflow-hidden rounded-2xl border bg-background shadow-sm data-[fullscreen-mode=fallback]:fixed data-[fullscreen-mode=fallback]:inset-0 data-[fullscreen-mode=fallback]:z-50 data-[fullscreen=true]:h-[100dvh] data-[fullscreen=true]:w-full data-[fullscreen=true]:overflow-y-auto data-[fullscreen=true]:rounded-none data-[fullscreen=true]:border-0 md:data-[fullscreen=true]:grid md:data-[fullscreen=true]:grid-rows-[auto_minmax(0,1fr)_auto] md:data-[fullscreen=true]:overflow-hidden';
 
 export function PresetWorkspaceShell({
   children,

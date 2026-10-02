@@ -1,5 +1,5 @@
-import type { ReactNode } from "react";
-import { Button } from "@/components/ui/button";
+import type { ReactNode } from 'react';
+import { Button } from '@/components/ui/button';
 
 export function DeleteSubmitButton({
   disabled,
@@ -11,7 +11,7 @@ export function DeleteSubmitButton({
 }) {
   return (
     <Button disabled={disabled} testId={testId} type="submit" variant="destructive">
-      {disabled ? "Deleting…" : "Delete book"}
+      {disabled ? 'Deleting…' : 'Delete book'}
     </Button>
   );
 }

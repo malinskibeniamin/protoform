@@ -1,32 +1,32 @@
-import { create, fromBinary, toBinary } from "@bufbuild/protobuf";
-import { describe, expect, rs } from "@rstest/core";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { create, fromBinary, toBinary } from '@bufbuild/protobuf';
+import { describe, expect, rs } from '@rstest/core';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
-import "@/registry/base-nova/protoform/lib/protobuf-provider/auto-form-example-annotations";
+import '@/registry/base-nova/protoform/lib/protobuf-provider/auto-form-example-annotations';
 
-import { formValuesToProto } from "@/registry/base-nova/protoform/lib/protobuf-provider";
+import { formValuesToProto } from '@/registry/base-nova/protoform/lib/protobuf-provider';
 import {
   AddressSchema,
   AutoFormExampleSchema,
-} from "@/registry/base-nova/protoform/lib/protobuf-provider/gen/auto-form-example_pb";
+} from '@/registry/base-nova/protoform/lib/protobuf-provider/gen/auto-form-example_pb';
 
-import { AutoForm } from "..";
+import { AutoForm } from '..';
 
 if (!HTMLElement.prototype.hasPointerCapture) {
-  Object.defineProperty(HTMLElement.prototype, "hasPointerCapture", {
+  Object.defineProperty(HTMLElement.prototype, 'hasPointerCapture', {
     value: () => false,
   });
 }
 
 if (!HTMLElement.prototype.setPointerCapture) {
-  Object.defineProperty(HTMLElement.prototype, "setPointerCapture", {
+  Object.defineProperty(HTMLElement.prototype, 'setPointerCapture', {
     value: () => undefined,
   });
 }
 
 if (!HTMLElement.prototype.releasePointerCapture) {
-  Object.defineProperty(HTMLElement.prototype, "releasePointerCapture", {
+  Object.defineProperty(HTMLElement.prototype, 'releasePointerCapture', {
     value: () => undefined,
   });
 }
@@ -36,84 +36,78 @@ const REMOVE_ITEM_BUTTON = /remove item/iu;
 const PREFERRED_CONTACT_LABEL = /preferred contact/iu;
 const PREFERRED_PHONE_LABEL = /preferred phone/iu;
 const SUBMIT_BUTTON = /submit/iu;
-// The proto resolver humanizes generic protovalidate messages — `min_len: 3`
-// surfaces as "Must be at least 3 characters." rather than the raw text.
 const FIELD_ERROR_TEXT = /must be at least 3 characters/iu;
 const MESSAGE_ERROR_TEXT = /minimum threshold must be less than or equal to maximum threshold/iu;
 
 const buildValidProtoDefaults = () => ({
   accessTier: 3,
   age: 34,
-  avatarBytes: "AQIDBA==",
-  // accessTier=3 makes the conditionally-visible billingAddress sub-form render,
-  // and its proto-required children (lineOne, city, state, postalCode) validate
-  // even when the user hasn't touched them — supply valid defaults so submit fires.
+  avatarBytes: 'AQIDBA==',
   billingAddress: {
-    city: "San Francisco",
+    city: 'San Francisco',
     country: 1,
-    lineOne: "500 Harbor Way",
-    postalCode: "94107",
-    state: "CA",
+    lineOne: '500 Harbor Way',
+    postalCode: '94107',
+    state: 'CA',
   },
-  bio: "A protobuf-backed form with Buf reflection and Protovalidate.",
-  createdAt: "2026-03-17T09:00",
-  employeeNumber: "4001",
-  homepageUrl: "https://protoform.com",
-  labels: [{ key: "team", value: "frontend" }],
+  bio: 'A protobuf-backed form with Buf reflection and Protovalidate.',
+  createdAt: '2026-03-17T09:00',
+  employeeNumber: '4001',
+  homepageUrl: 'https://protoform.com',
+  labels: [{ key: 'team', value: 'frontend' }],
   maximumThreshold: 10,
   minimumThreshold: 5,
   officeLocations: [
     {
-      key: "hq",
+      key: 'hq',
       value: {
-        city: "San Francisco",
+        city: 'San Francisco',
         country: 1,
-        lineOne: "500 Harbor Way",
-        postalCode: "94107",
-        state: "CA",
+        lineOne: '500 Harbor Way',
+        postalCode: '94107',
+        state: 'CA',
       },
     },
   ],
   preferredContact: {
-    case: "preferredEmail",
-    value: "forms@protoform.com",
+    case: 'preferredEmail',
+    value: 'forms@protoform.com',
   },
-  primaryEmail: "forms@protoform.com",
-  reminderInterval: "300s",
-  resourceId: "123e4567-e89b-12d3-a456-426614174000",
+  primaryEmail: 'forms@protoform.com',
+  reminderInterval: '300s',
+  resourceId: '123e4567-e89b-12d3-a456-426614174000',
   shippingAddress: {
-    city: "San Francisco",
+    city: 'San Francisco',
     country: 1,
-    lineOne: "500 Harbor Way",
-    postalCode: "94107",
-    state: "CA",
+    lineOne: '500 Harbor Way',
+    postalCode: '94107',
+    state: 'CA',
   },
-  storageQuotaBytes: "4096",
-  tags: ["forms"],
-  username: "protoform_admin",
-  writablePaths: ["profile"],
+  storageQuotaBytes: '4096',
+  tags: ['forms'],
+  username: 'protoform_admin',
+  writablePaths: ['profile'],
 });
 
-describe("AutoForm – protobuf forms", () => {
-  test("renders registered descriptions and submits protobuf-shaped output", async () => {
+describe('AutoForm – protobuf forms', () => {
+  test('renders registered descriptions and submits protobuf-shaped output', async () => {
     const user = userEvent.setup();
     const onSubmit = rs.fn();
 
     render(
       <AutoForm
         defaultValues={buildValidProtoDefaults()}
-        formOptions={{ mode: "all" }}
+        formOptions={{ mode: 'all' }}
         onSubmit={onSubmit}
         schema={AutoFormExampleSchema}
         withSubmit
       />
     );
 
-    // Registered proto field descriptions render as field help.
-    expect(screen.getByText("Public handle shown in mentions and admin lists.")).toBeVisible();
-    expect(screen.getByText("Exactly one preferred contact route can be selected at a time.")).toBeVisible();
+    expect(screen.getByText('Public handle shown in mentions and admin lists.')).toBeVisible();
+    expect(screen.getByText('Exactly one preferred contact route can be selected at a time.')).toBeVisible();
 
-    await user.click(screen.getByRole("button", { name: SUBMIT_BUTTON }));
+    await user.click(screen.getByRole('button', { name: SUBMIT_BUTTON }));
 
     await waitFor(() => {
       expect(onSubmit).toHaveBeenCalledTimes(1);
@@ -121,30 +115,30 @@ describe("AutoForm – protobuf forms", () => {
 
     const [submissionCall] = onSubmit.mock.calls;
     if (!submissionCall) {
-      throw new Error("Expected a submitted protobuf value.");
+      throw new Error('Expected a submitted protobuf value.');
     }
     const [submittedValue] = submissionCall;
-    expect(submittedValue.$typeName).toBe("protoform.v1.AutoFormExample");
+    expect(submittedValue.$typeName).toBe('protoform.v1.AutoFormExample');
     expect(submittedValue.employeeNumber).toBe(4001n);
     expect(submittedValue.storageQuotaBytes).toBe(4096n);
     expect(Array.from(submittedValue.avatarBytes)).toEqual([1, 2, 3, 4]);
-    expect(submittedValue.labels).toEqual({ team: "frontend" });
-    expect(submittedValue.officeLocations.hq.city).toBe("San Francisco");
+    expect(submittedValue.labels).toEqual({ team: 'frontend' });
+    expect(submittedValue.officeLocations.hq.city).toBe('San Francisco');
     expect(submittedValue.preferredContact).toEqual({
-      case: "preferredEmail",
-      value: "forms@protoform.com",
+      case: 'preferredEmail',
+      value: 'forms@protoform.com',
     });
-    expect(submittedValue.createdAt.$typeName).toBe("google.protobuf.Timestamp");
-    expect(submittedValue.reminderInterval.$typeName).toBe("google.protobuf.Duration");
-    expect(submittedValue.writablePaths.paths).toEqual(["profile"]);
+    expect(submittedValue.createdAt.$typeName).toBe('google.protobuf.Timestamp');
+    expect(submittedValue.reminderInterval.$typeName).toBe('google.protobuf.Duration');
+    expect(submittedValue.writablePaths.paths).toEqual(['profile']);
   }, 10_000);
 
-  test("hydrates and preserves the edit source message through the React Hook Form adapter", async () => {
+  test('hydrates and preserves the edit source message through the React Hook Form adapter', async () => {
     const user = userEvent.setup();
     const onSubmit = rs.fn();
     const base = formValuesToProto(AutoFormExampleSchema, buildValidProtoDefaults());
     if (!base.shippingAddress) {
-      throw new Error("Expected valid defaults to include a shipping address.");
+      throw new Error('Expected valid defaults to include a shipping address.');
     }
     const addressWithUnknown = fromBinary(
       AddressSchema,
@@ -162,24 +156,22 @@ describe("AutoForm – protobuf forms", () => {
     const { unmount } = render(
       <AutoForm defaultValues={source} onSubmit={onSubmit} schema={AutoFormExampleSchema} withSubmit />
     );
-    // A proto message passed as defaultValues is normalized into form-friendly values.
-    expect(screen.getByDisplayValue("protoform_admin")).toBeVisible();
-    expect(screen.getByDisplayValue("4001")).toBeVisible();
-    await user.click(screen.getByRole("button", { name: SUBMIT_BUTTON }));
+    expect(screen.getByDisplayValue('protoform_admin')).toBeVisible();
+    expect(screen.getByDisplayValue('4001')).toBeVisible();
+    await user.click(screen.getByRole('button', { name: SUBMIT_BUTTON }));
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
 
     const [submissionCall] = onSubmit.mock.calls;
     if (!submissionCall) {
-      throw new Error("Expected an edited protobuf value.");
+      throw new Error('Expected an edited protobuf value.');
     }
     const [submitted] = submissionCall;
     if (!(submitted.shippingAddress && source.shippingAddress)) {
-      throw new Error("Expected submitted and source shipping addresses.");
+      throw new Error('Expected submitted and source shipping addresses.');
     }
     expect(submitted.$unknown).toEqual(source.$unknown);
     expect(submitted.shippingAddress.$unknown).toEqual(source.shippingAddress.$unknown);
 
-    // A custom resolver's normalized values survive while source unknown fields are restored.
     unmount();
     onSubmit.mockClear();
     render(
@@ -190,26 +182,26 @@ describe("AutoForm – protobuf forms", () => {
           errors: {},
           values: formValuesToProto(AutoFormExampleSchema, {
             ...values,
-            username: "normalized_admin",
+            username: 'normalized_admin',
           }),
         })}
         schema={AutoFormExampleSchema}
         withSubmit
       />
     );
-    await user.click(screen.getByRole("button", { name: SUBMIT_BUTTON }));
+    await user.click(screen.getByRole('button', { name: SUBMIT_BUTTON }));
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
 
     const [normalizedCall] = onSubmit.mock.calls;
     if (!normalizedCall) {
-      throw new Error("Expected a normalized protobuf value.");
+      throw new Error('Expected a normalized protobuf value.');
     }
     const [normalized] = normalizedCall;
-    expect(normalized.username).toBe("normalized_admin");
+    expect(normalized.username).toBe('normalized_admin');
     expect(normalized.$unknown).toEqual(source.$unknown);
   }, 10_000);
 
-  test("shows protobuf field-level and message-level validation feedback", async () => {
+  test('shows protobuf field-level and message-level validation feedback', async () => {
     const user = userEvent.setup();
     const onSubmit = rs.fn();
 
@@ -219,17 +211,17 @@ describe("AutoForm – protobuf forms", () => {
           ...buildValidProtoDefaults(),
           maximumThreshold: 4,
           minimumThreshold: 12,
-          preferredContact: { case: "preferredEmail", value: "forms@protoform.com" },
-          username: "rp",
+          preferredContact: { case: 'preferredEmail', value: 'forms@protoform.com' },
+          username: 'rp',
         }}
-        formOptions={{ mode: "all" }}
+        formOptions={{ mode: 'all' }}
         onSubmit={onSubmit}
         schema={AutoFormExampleSchema}
         withSubmit
       />
     );
 
-    await user.click(screen.getByRole("button", { name: SUBMIT_BUTTON }));
+    await user.click(screen.getByRole('button', { name: SUBMIT_BUTTON }));
 
     await waitFor(() => {
       expect(onSubmit).not.toHaveBeenCalled();
@@ -239,51 +231,43 @@ describe("AutoForm – protobuf forms", () => {
     expect(screen.getByText(MESSAGE_ERROR_TEXT)).toBeVisible();
   });
 
-  test("switches protobuf oneof cases and submits the latest selection", async () => {
+  test('switches protobuf oneof cases and submits the latest selection', async () => {
     const user = userEvent.setup();
     const onSubmit = rs.fn();
 
     render(
       <AutoForm
         defaultValues={buildValidProtoDefaults()}
-        formOptions={{ mode: "all" }}
+        formOptions={{ mode: 'all' }}
         onSubmit={onSubmit}
         schema={AutoFormExampleSchema}
         withSubmit
       />
     );
 
-    // Base UI's Select.Trigger binds its open handler to React's click event.
-    // The simulated pointerdown+mousedown sequence is flaky in DOM emulators.
-    // (the option must be "highlighted" for onClick to commit the selection).
-    // fireEvent.click opens deterministically; we then simulate pointerEnter to
-    // highlight the phone option before clicking it so Base UI commits.
-    fireEvent.click(screen.getByRole("combobox", { name: PREFERRED_CONTACT_LABEL }));
+    fireEvent.click(screen.getByRole('combobox', { name: PREFERRED_CONTACT_LABEL }));
 
-    const phoneOption = await screen.findByRole("option", { name: PREFERRED_PHONE_LABEL });
-    // Base UI's Select.Item onClick bails if the item is not highlighted AND the
-    // pointer type is not 'touch'. Setting pointerType='touch' via pointerEnter
-    // bypasses the highlight guard so fireEvent.click commits selection.
-    fireEvent.pointerEnter(phoneOption, { pointerType: "touch" });
-    fireEvent.pointerDown(phoneOption, { pointerType: "touch" });
+    const phoneOption = await screen.findByRole('option', { name: PREFERRED_PHONE_LABEL });
+    fireEvent.pointerEnter(phoneOption, { pointerType: 'touch' });
+    fireEvent.pointerDown(phoneOption, { pointerType: 'touch' });
     fireEvent.click(phoneOption);
 
     const phoneInput = await screen.findByLabelText(PREFERRED_PHONE_LABEL);
-    fireEvent.change(phoneInput, { target: { value: "+14155550123" } });
+    fireEvent.change(phoneInput, { target: { value: '+14155550123' } });
 
-    await user.click(screen.getByRole("button", { name: SUBMIT_BUTTON }));
+    await user.click(screen.getByRole('button', { name: SUBMIT_BUTTON }));
 
     await waitFor(() => {
       expect(onSubmit).toHaveBeenCalledTimes(1);
     });
 
     expect(onSubmit.mock.calls[0]?.[0].preferredContact).toEqual({
-      case: "preferredPhone",
-      value: "+14155550123",
+      case: 'preferredPhone',
+      value: '+14155550123',
     });
   });
 
-  test("updates protobuf collection values when rows are added and removed", async () => {
+  test('updates protobuf collection values when rows are added and removed', async () => {
     const user = userEvent.setup();
 
     render(
@@ -292,7 +276,7 @@ describe("AutoForm – protobuf forms", () => {
           ...buildValidProtoDefaults(),
           labels: [],
           officeLocations: [],
-          tags: ["forms"],
+          tags: ['forms'],
         }}
         onSubmit={rs.fn()}
         schema={AutoFormExampleSchema}
@@ -301,24 +285,24 @@ describe("AutoForm – protobuf forms", () => {
       />
     );
 
-    expect(screen.getByDisplayValue("forms")).toBeInTheDocument();
-    const removeButtonsBefore = screen.getAllByRole("button", { name: REMOVE_ITEM_BUTTON });
+    expect(screen.getByDisplayValue('forms')).toBeInTheDocument();
+    const removeButtonsBefore = screen.getAllByRole('button', { name: REMOVE_ITEM_BUTTON });
     const initialRemoveCount = removeButtonsBefore.length;
 
-    await user.click(screen.getByRole("button", { name: TAGS_ADD_BUTTON }));
+    await user.click(screen.getByRole('button', { name: TAGS_ADD_BUTTON }));
 
     await waitFor(() => {
-      expect(screen.getAllByRole("button", { name: REMOVE_ITEM_BUTTON })).toHaveLength(initialRemoveCount + 1);
+      expect(screen.getAllByRole('button', { name: REMOVE_ITEM_BUTTON })).toHaveLength(initialRemoveCount + 1);
     });
 
-    const addedRowRemoveButton = screen.getAllByRole("button", { name: REMOVE_ITEM_BUTTON }).at(initialRemoveCount);
+    const addedRowRemoveButton = screen.getAllByRole('button', { name: REMOVE_ITEM_BUTTON }).at(initialRemoveCount);
     if (!addedRowRemoveButton) {
-      throw new Error("Expected a remove button for the newly added row.");
+      throw new Error('Expected a remove button for the newly added row.');
     }
     await user.click(addedRowRemoveButton);
 
     await waitFor(() => {
-      expect(screen.getAllByRole("button", { name: REMOVE_ITEM_BUTTON })).toHaveLength(initialRemoveCount);
+      expect(screen.getAllByRole('button', { name: REMOVE_ITEM_BUTTON })).toHaveLength(initialRemoveCount);
     });
   });
 });

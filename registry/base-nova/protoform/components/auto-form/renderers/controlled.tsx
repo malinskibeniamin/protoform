@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import type React from "react";
-import { useAutoFormRenderContext, useAutoFormRuntimeContext } from "../context";
-import type { AutoFormFieldProps, ParsedField } from "../core-types";
-import { useAutoFormEngine } from "../engine";
-import { getAutoFormFieldTestId } from "../test-ids";
-import { getRenderedLabel, useFieldPresentation } from "./shared";
+import type React from 'react';
+import { useAutoFormRenderContext, useAutoFormRuntimeContext } from '../context';
+import type { AutoFormFieldProps, ParsedField } from '../core-types';
+import { useAutoFormEngine } from '../engine';
+import { getAutoFormFieldTestId } from '../test-ids';
+import { getRenderedLabel, useFieldPresentation } from './shared';
 
 export function ControlledFieldRenderer({
   field,
@@ -20,7 +20,7 @@ export function ControlledFieldRenderer({
 }) {
   const { formComponents, uiComponents } = useAutoFormRenderContext();
   const { FieldController } = useAutoFormEngine();
-  const fullPath = path.join(".");
+  const fullPath = path.join('.');
   const label = getRenderedLabel(field);
   const {
     isVisible,
@@ -49,7 +49,7 @@ export function ControlledFieldRenderer({
   return (
     <FieldController name={fullPath}>
       {(controller) => {
-        const error = controller.errors.join("\n") || undefined;
+        const error = controller.errors.join('\n') || undefined;
         return (
           <FieldWrapperComponent error={error} field={renderField} id={fullPath} label={label}>
             <FieldComponent
@@ -65,7 +65,7 @@ export function ControlledFieldRenderer({
                 onValueChange: controller.onChange,
                 ref: controller.ref,
                 required: renderField.required,
-                testId: getAutoFormFieldTestId(testIdPrefix, path, "control"),
+                testId: getAutoFormFieldTestId(testIdPrefix, path, 'control'),
                 value: controller.value,
               }}
               label={label}

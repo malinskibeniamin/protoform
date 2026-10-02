@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import type { AutoFormFieldProps } from "../core-types";
-import { getFieldUiConfig } from "../helpers";
-import type { FieldTypeDefinition } from "../registry";
+import type { AutoFormFieldProps } from '../core-types';
+import { getFieldUiConfig } from '../helpers';
+import type { FieldTypeDefinition } from '../registry';
 import {
   Choicebox,
   ChoiceboxItem,
@@ -10,26 +10,26 @@ import {
   ChoiceboxItemHeader,
   ChoiceboxItemIndicator,
   ChoiceboxItemTitle,
-} from "../ui-components";
-import { getControlLabel, getFlatOptions, hasNumericOptions, renderOptionLabel, useFieldTestIds } from "./shared";
+} from '../ui-components';
+import { getControlLabel, getFlatOptions, hasNumericOptions, renderOptionLabel, useFieldTestIds } from './shared';
 
 function ChoiceboxFieldComponent({ error, field, id, inputProps, label }: AutoFormFieldProps) {
   const testIds = useFieldTestIds(id);
   const numericOptions = hasNumericOptions(field);
-  const value = inputProps["value"] === undefined || inputProps["value"] === null ? "" : String(inputProps["value"]);
+  const value = inputProps['value'] === undefined || inputProps['value'] === null ? '' : String(inputProps['value']);
   const options = getFlatOptions(field);
 
   return (
     <Choicebox
       aria-invalid={Boolean(error)}
       aria-label={getControlLabel(label, field)}
-      onValueChange={(nextValue) => inputProps["onValueChange"](numericOptions ? Number(nextValue) : nextValue)}
+      onValueChange={(nextValue) => inputProps['onValueChange'](numericOptions ? Number(nextValue) : nextValue)}
       testId={testIds.control}
       value={value}
     >
       {options.map((option) => (
         <ChoiceboxItem
-          disabled={inputProps["disabled"]}
+          disabled={inputProps['disabled']}
           key={option.value}
           testId={testIds.option(option.value)}
           value={option.value}
@@ -51,11 +51,11 @@ export { ChoiceboxFieldComponent };
 export const choiceboxFieldDefinition: FieldTypeDefinition = {
   component: ChoiceboxFieldComponent,
   match: (field) => {
-    if (field.type !== "select") {
+    if (field.type !== 'select') {
       return false;
     }
-    return getFieldUiConfig(field).control === "choicebox";
+    return getFieldUiConfig(field).control === 'choicebox';
   },
-  name: "choicebox",
+  name: 'choicebox',
   priority: 25,
 };

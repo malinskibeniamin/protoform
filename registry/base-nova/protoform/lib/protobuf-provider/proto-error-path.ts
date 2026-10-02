@@ -1,16 +1,11 @@
-import type { DescField, DescMessage, DescOneof } from "@bufbuild/protobuf";
+import type { DescField, DescMessage, DescOneof } from '@bufbuild/protobuf';
 
-/**
- * Convert a server-side proto field path into the camelCase form path used by
- * Protoform adapters. Oneof branches flatten under `{oneofLocalName}.value`.
- * Repeated-field indexes may use `items[0]` or `items.0`.
- */
 export function protoPathToFormPath(schema: DescMessage, serverPath: string): string | null {
   if (!serverPath) {
     return null;
   }
-  const path = walk(schema, serverPath.replace(LIST_INDEX_PATTERN, ".$1").split("."));
-  return path ? path.join(".") : null;
+  const path = walk(schema, serverPath.replace(LIST_INDEX_PATTERN, '.$1').split('.'));
+  return path ? path.join('.') : null;
 }
 
 const LIST_INDEX_PATTERN = /\[(\d+)\]/gu;
@@ -29,7 +24,7 @@ function walk(current: DescMessage, segments: readonly string[]): string[] | nul
     return null;
   }
 
-  if (resolved.kind === "oneof") {
+  if (resolved.kind === 'oneof') {
     if (rest.length === 0) {
       return [resolved.oneof.localName];
     }
@@ -42,15 +37,15 @@ function walk(current: DescMessage, segments: readonly string[]): string[] | nul
       return null;
     }
     const tail = walkInto(branch, afterBranch);
-    return tail === null ? null : [resolved.oneof.localName, "value", ...tail];
+    return tail === null ? null : [resolved.oneof.localName, 'value', ...tail];
   }
 
   const { field } = resolved;
-  const formPath = field.oneof ? [field.oneof.localName, "value"] : [field.localName];
+  const formPath = field.oneof ? [field.oneof.localName, 'value'] : [field.localName];
   if (rest.length === 0) {
     return formPath;
   }
-  if (field.fieldKind === "list") {
+  if (field.fieldKind === 'list') {
     return walkListItem(field, formPath, rest);
   }
   if (!field.message) {
@@ -82,21 +77,21 @@ function walkInto(field: DescField, segments: readonly string[]): string[] | nul
   return field.message ? walk(field.message, segments) : null;
 }
 
-type Resolved = { kind: "field"; field: DescField } | { kind: "oneof"; oneof: DescOneof };
+type Resolved = { kind: 'field'; field: DescField } | { kind: 'oneof'; oneof: DescOneof };
 
 function findMember(message: DescMessage, protoName: string): Resolved | undefined {
   for (const member of message.members) {
-    if (member.kind === "oneof") {
+    if (member.kind === 'oneof') {
       if (member.name === protoName) {
-        return { kind: "oneof", oneof: member };
+        return { kind: 'oneof', oneof: member };
       }
       const field = member.fields.find((candidate) => candidate.name === protoName);
       if (field) {
-        return { field, kind: "field" };
+        return { field, kind: 'field' };
       }
     } else if (member.name === protoName) {
-      return { field: member, kind: "field" };
+      return { field: member, kind: 'field' };
     }
   }
-  return;
+  return undefined;
 }

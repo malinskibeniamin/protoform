@@ -1,11 +1,11 @@
-import { describe, expect } from "@rstest/core";
-import type { StandardSchemaV1 } from "@standard-schema/spec";
+import { describe, expect } from '@rstest/core';
+import type { StandardSchemaV1 } from '@standard-schema/spec';
 
 import {
   createFinalFormValidator,
   createFormikValidator,
   standardSchemaIssuesToFormErrors,
-} from "./form-library-adapters.js";
+} from './form-library-adapters.js';
 
 interface ProfileValues {
   contacts: Array<{ email: string }>;
@@ -14,49 +14,49 @@ interface ProfileValues {
 
 function failingSchema(): StandardSchemaV1<ProfileValues, ProfileValues> {
   return {
-    "~standard": {
+    '~standard': {
       validate: () => ({
         issues: [
-          { message: "Display name is required.", path: ["displayName"] },
+          { message: 'Display name is required.', path: ['displayName'] },
           {
-            message: "Enter a valid email address.",
-            path: ["contacts", 0, { key: "email" }],
+            message: 'Enter a valid email address.',
+            path: ['contacts', 0, { key: 'email' }],
           },
           {
-            message: "Use an approved email domain.",
-            path: ["contacts", 0, "email"],
+            message: 'Use an approved email domain.',
+            path: ['contacts', 0, 'email'],
           },
-          { message: "Review the highlighted fields.", path: [] },
+          { message: 'Review the highlighted fields.', path: [] },
         ],
       }),
-      vendor: "test",
+      vendor: 'test',
       version: 1,
     },
   };
 }
 
 const values: ProfileValues = {
-  contacts: [{ email: "invalid" }],
-  displayName: "",
+  contacts: [{ email: 'invalid' }],
+  displayName: '',
 };
 
-describe("form-library Standard Schema adapters", () => {
-  test("maps Standard Schema issues for Formik", async () => {
+describe('form-library Standard Schema adapters', () => {
+  test('maps Standard Schema issues for Formik', async () => {
     const validate = createFormikValidator(failingSchema());
 
     expect(await validate(values)).toEqual({
-      _form: "Review the highlighted fields.",
+      _form: 'Review the highlighted fields.',
       contacts: [
         {
-          email: "Enter a valid email address.\nUse an approved email domain.",
+          email: 'Enter a valid email address.\nUse an approved email domain.',
         },
       ],
-      displayName: "Display name is required.",
+      displayName: 'Display name is required.',
     });
   });
 
-  test("maps Standard Schema issues for Final Form", async () => {
-    const formError = Symbol("form-error");
+  test('maps Standard Schema issues for Final Form', async () => {
+    const formError = Symbol('form-error');
     const validate = createFinalFormValidator(failingSchema(), {
       rootErrorKey: formError,
     });
@@ -65,24 +65,24 @@ describe("form-library Standard Schema adapters", () => {
     expect(errors).toMatchObject({
       contacts: [
         {
-          email: "Enter a valid email address.\nUse an approved email domain.",
+          email: 'Enter a valid email address.\nUse an approved email domain.',
         },
       ],
-      displayName: "Display name is required.",
+      displayName: 'Display name is required.',
     });
-    expect(errors[formError]).toBe("Review the highlighted fields.");
+    expect(errors[formError]).toBe('Review the highlighted fields.');
   });
 
-  test("returns no errors for valid values and forwards library options", async () => {
-    const libraryOptions = { locale: "en-GB" };
+  test('returns no errors for valid values and forwards library options', async () => {
+    const libraryOptions = { locale: 'en-GB' };
     const receivedOptions: Array<StandardSchemaV1.Options | undefined> = [];
     const schema: StandardSchemaV1<ProfileValues, ProfileValues> = {
-      "~standard": {
+      '~standard': {
         validate: (_value, options) => {
           receivedOptions.push(options);
           return { value: values };
         },
-        vendor: "test",
+        vendor: 'test',
         version: 1,
       },
     };
@@ -94,15 +94,15 @@ describe("form-library Standard Schema adapters", () => {
     expect(receivedOptions).toEqual([undefined, { libraryOptions }, { libraryOptions }]);
   });
 
-  test("does not allow issue paths to mutate object prototypes", () => {
+  test('does not allow issue paths to mutate object prototypes', () => {
     const errors = standardSchemaIssuesToFormErrors([
       {
-        message: "Unsafe path was isolated.",
-        path: ["__proto__", "polluted"],
+        message: 'Unsafe path was isolated.',
+        path: ['__proto__', 'polluted'],
       },
     ]);
 
-    expect(Object.hasOwn(errors, "__proto__")).toBe(true);
-    expect(Reflect.get(Object.prototype, "polluted")).toBeUndefined();
+    expect(Object.hasOwn(errors, '__proto__')).toBe(true);
+    expect(Reflect.get(Object.prototype, 'polluted')).toBeUndefined();
   });
 });

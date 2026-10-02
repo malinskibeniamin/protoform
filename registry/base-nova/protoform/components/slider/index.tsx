@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { Slider as SliderPrimitive } from "@base-ui/react/slider";
-import type React from "react";
+import { Slider as SliderPrimitive } from '@base-ui/react/slider';
+import type React from 'react';
 
-import { cn, type SharedProps } from "@/registry/base-nova/protoform/lib/utils";
+import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
-type SliderProps = Omit<React.ComponentProps<typeof SliderPrimitive.Root>, "value" | "defaultValue" | "onValueChange"> &
+type SliderProps = Omit<React.ComponentProps<typeof SliderPrimitive.Root>, 'value' | 'defaultValue' | 'onValueChange'> &
   SharedProps & {
     value?: number | readonly number[];
     defaultValue?: number | readonly number[];
@@ -27,7 +27,7 @@ function Slider({
   max = 100,
   testId,
   onValueChange,
-  "aria-label": ariaLabel,
+  'aria-label': ariaLabel,
   ...props
 }: SliderProps) {
   let values: readonly number[] = [min, max];
@@ -47,7 +47,7 @@ function Slider({
   return (
     <SliderPrimitive.Root
       className={cn(
-        "relative flex w-full touch-none select-none items-center data-[orientation=vertical]:h-full data-[orientation=vertical]:min-h-40 data-[orientation=vertical]:w-auto data-[orientation=vertical]:flex-col data-[disabled]:opacity-50",
+        'relative flex w-full touch-none select-none items-center data-[orientation=vertical]:h-full data-[orientation=vertical]:min-h-40 data-[orientation=vertical]:w-auto data-[orientation=vertical]:flex-col data-[disabled]:opacity-50',
         className
       )}
       data-slot="slider"
@@ -62,7 +62,7 @@ function Slider({
       <SliderPrimitive.Control className="relative flex w-full grow touch-none select-none items-center data-[orientation=vertical]:h-full data-[orientation=vertical]:w-auto data-[orientation=vertical]:flex-col">
         <SliderPrimitive.Track
           className={cn(
-            "relative grow select-none overflow-hidden rounded-full bg-muted data-[orientation=horizontal]:h-1 data-[orientation=vertical]:h-full data-[orientation=horizontal]:w-full data-[orientation=vertical]:w-1"
+            'relative grow select-none overflow-hidden rounded-full bg-muted data-[orientation=horizontal]:h-1 data-[orientation=vertical]:h-full data-[orientation=horizontal]:w-full data-[orientation=vertical]:w-1'
           )}
           data-slot="slider-track"
         >

@@ -1,8 +1,8 @@
-import type React from "react";
+import type React from 'react';
 
-import type { AutoFormFieldProps, ParsedField } from "./core-types";
-import { getLabel } from "./field-utils";
-import { getProtoFieldCustomData } from "./proto";
+import type { AutoFormFieldProps, ParsedField } from './core-types';
+import { getLabel } from './field-utils';
+import { getProtoFieldCustomData } from './proto';
 
 export interface FieldTypeDefinition<TName extends string = string> {
   component: React.ComponentType<AutoFormFieldProps>;
@@ -12,7 +12,7 @@ export interface FieldTypeDefinition<TName extends string = string> {
 }
 
 export interface FieldMatchContext {
-  identity: string; // `${field.key} ${label}`.toLowerCase()
+  identity: string;
   inputType: string;
   maxLength: number;
 }
@@ -48,7 +48,7 @@ export class FieldTypeRegistry<TName extends string = never> {
 export function buildFieldMatchContext(field: ParsedField): FieldMatchContext {
   const label = String(field.fieldConfig?.label ?? getLabel(field));
   const identity = `${field.key} ${label}`.toLowerCase();
-  const inputType = String(field.fieldConfig?.inputProps?.["type"] ?? getProtoFieldCustomData(field)?.inputType ?? "");
-  const maxLength = Number(field.fieldConfig?.inputProps?.["maxLength"] ?? 0);
+  const inputType = String(field.fieldConfig?.inputProps?.['type'] ?? getProtoFieldCustomData(field)?.inputType ?? '');
+  const maxLength = Number(field.fieldConfig?.inputProps?.['maxLength'] ?? 0);
   return { identity, inputType, maxLength };
 }

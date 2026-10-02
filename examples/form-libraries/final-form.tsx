@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { createClient } from "@connectrpc/connect";
-import { FORM_ERROR } from "final-form";
-import React from "react";
-import { Field as FinalField, Form as FinalForm } from "react-final-form";
-import { Alert, AlertDescription, AlertTitle } from "@/registry/base-nova/protoform/components/alert";
-import { Button } from "@/registry/base-nova/protoform/components/button";
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/registry/base-nova/protoform/components/field";
-import { Input } from "@/registry/base-nova/protoform/components/input";
-import { createFinalFormValidator, standardSchemaIssuesToFormErrors } from "@/registry/base-nova/protoform/lib/core";
-import { createFormExamplesTransport } from "../browser-transport.js";
-import { FormExamplesService } from "../gen/protoform/examples/v1/forms_pb.js";
+import { createClient } from '@connectrpc/connect';
+import { FORM_ERROR, type SubmissionErrors } from 'final-form';
+import React from 'react';
+import { Field as FinalField, Form as FinalForm } from 'react-final-form';
+import { Alert, AlertDescription, AlertTitle } from '@/registry/base-nova/protoform/components/alert';
+import { Button } from '@/registry/base-nova/protoform/components/button';
+import { Field, FieldError, FieldGroup, FieldLabel } from '@/registry/base-nova/protoform/components/field';
+import { Input } from '@/registry/base-nova/protoform/components/input';
+import { createFinalFormValidator, standardSchemaIssuesToFormErrors } from '@/registry/base-nova/protoform/lib/core';
+import { createFormExamplesTransport } from '../browser-transport.js';
+import { FormExamplesService } from '../gen/protoform/examples/v1/forms_pb.js';
 import {
   type BasicFormValues,
   firstServerErrorField,
@@ -18,7 +18,7 @@ import {
   mapProfileServerErrors,
   profileSchema,
   splitErrorMessages,
-} from "./profile-form.js";
+} from './profile-form.js';
 
 const validate = createFinalFormValidator(profileSchema, {
   rootErrorKey: FORM_ERROR,
@@ -29,11 +29,11 @@ function mapSubmissionErrors(error: unknown) {
   const issues = [
     ...serverErrors.displayName.map((message) => ({
       message,
-      path: ["displayName"],
+      path: ['displayName'],
     })),
     ...serverErrors.email.map((message) => ({
       message,
-      path: ["email"],
+      path: ['email'],
     })),
     ...serverErrors.root.map((message) => ({ message, path: [] })),
   ];
@@ -53,16 +53,15 @@ export function FinalFormExample({ baseUrl }: { baseUrl?: string }) {
   return (
     <FinalForm<BasicFormValues>
       initialValues={initialProfileValues}
-      onSubmit={async (values) => {
+      onSubmit={async (values): Promise<SubmissionErrors> => {
         setProfileId(undefined);
-        const result = await profileSchema["~standard"].validate(values);
+        const result = await profileSchema['~standard'].validate(values);
         if (result.issues) {
-          return { [FORM_ERROR]: "Form values changed after validation." };
+          return { [FORM_ERROR]: 'Form values changed after validation.' };
         }
         try {
           const response = await client.submitBasicForm(result.value);
           setProfileId(response.profileId);
-          return;
         } catch (error) {
           const submission = mapSubmissionErrors(error);
           if (submission.firstField) {
@@ -71,6 +70,7 @@ export function FinalFormExample({ baseUrl }: { baseUrl?: string }) {
           }
           return submission.errors;
         }
+        return undefined;
       }}
       validate={validate}
     >

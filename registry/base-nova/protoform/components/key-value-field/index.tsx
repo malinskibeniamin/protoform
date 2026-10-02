@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { Plus, X } from "lucide-react";
-import { type ReactNode, useMemo, useRef } from "react";
+import { Plus, X } from 'lucide-react';
+import { type ReactNode, useMemo, useRef } from 'react';
 
-import { Button } from "@/components/ui/button";
-import { Combobox, type ComboboxProps } from "@/components/ui/combobox";
-import { Input, type InputProps } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { findDuplicateIndices, useInputListFocus } from "@/registry/base-nova/protoform/lib/input-utils";
-import type { SharedProps } from "@/registry/base-nova/protoform/lib/utils";
+import { Button } from '@/components/ui/button';
+import { Combobox, type ComboboxProps } from '@/components/ui/combobox';
+import { Input, type InputProps } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { findDuplicateIndices, useInputListFocus } from '@/registry/base-nova/protoform/lib/input-utils';
+import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
 export interface KeyValuePair {
   key: string;
@@ -17,8 +17,8 @@ export interface KeyValuePair {
 
 const EMPTY_KEY_VALUE_PAIRS: KeyValuePair[] = [];
 
-type InputFieldConfig = { mode?: "input" } & Omit<InputProps, "value" | "onChange" | "disabled" | "aria-invalid">;
-type ComboboxFieldConfig = { mode: "combobox" } & Omit<ComboboxProps, "value" | "onChange" | "disabled">;
+type InputFieldConfig = { mode?: 'input' } & Omit<InputProps, 'value' | 'onChange' | 'disabled' | 'aria-invalid'>;
+type ComboboxFieldConfig = { mode: 'combobox' } & Omit<ComboboxProps, 'value' | 'onChange' | 'disabled'>;
 export type KeyValueFieldConfig = InputFieldConfig | ComboboxFieldConfig;
 
 export interface KeyValueFieldError {
@@ -55,7 +55,7 @@ function FieldRenderer({
   isInvalid: boolean;
   testId?: string | undefined;
 }) {
-  if (config.mode === "combobox") {
+  if (config.mode === 'combobox') {
     const { mode: _m, ...comboboxProps } = config;
     return <Combobox {...comboboxProps} disabled={disabled} onChange={onChange} testId={testId} value={value} />;
   }
@@ -149,7 +149,7 @@ function KeyValueRow({
       >
         <X size={16} />
       </Button>
-      <ErrorRow keyError={isDuplicate ? "Duplicate key" : error?.key} valueError={error?.value} />
+      <ErrorRow keyError={isDuplicate ? 'Duplicate key' : error?.key} valueError={error?.value} />
       {onAdd && isLast ? (
         <Button
           className="col-span-2"
@@ -175,9 +175,9 @@ export function KeyValueField({
   errors,
   label,
   description,
-  addButtonLabel = "Add",
-  keyFieldProps = { placeholder: "Key" },
-  valueFieldProps = { placeholder: "Value" },
+  addButtonLabel = 'Add',
+  keyFieldProps = { placeholder: 'Key' },
+  valueFieldProps = { placeholder: 'Value' },
   showAddButton = true,
   disabled,
   maxItems,
@@ -191,7 +191,7 @@ export function KeyValueField({
   const isAtLimit = maxItems !== undefined && value.length >= maxItems;
 
   const handleAdd = () => {
-    onChange?.([...value, { key: "", value: "" }]);
+    onChange?.([...value, { key: '', value: '' }]);
     onAdd();
   };
 

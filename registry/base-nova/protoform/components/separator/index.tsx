@@ -1,48 +1,42 @@
-import { Separator as SeparatorPrimitive } from "@base-ui/react/separator";
-import { cva, type VariantProps } from "class-variance-authority";
-import type React from "react";
+import { Separator as SeparatorPrimitive } from '@base-ui/react/separator';
+import { cva, type VariantProps } from 'class-variance-authority';
+import type React from 'react';
 
-import { cn, type SharedProps } from "@/registry/base-nova/protoform/lib/utils";
+import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
 const separatorVariants = cva(
-  "shrink-0 data-[orientation=horizontal]:h-px data-[orientation=vertical]:h-full data-[orientation=horizontal]:w-full data-[orientation=vertical]:w-px",
+  'shrink-0 data-[orientation=horizontal]:h-px data-[orientation=vertical]:h-full data-[orientation=horizontal]:w-full data-[orientation=vertical]:w-px',
   {
     defaultVariants: {
-      variant: "default",
+      variant: 'default',
     },
     variants: {
       variant: {
-        default: "bg-border",
-        strong: "bg-border",
-        subtle: "bg-border/50",
+        default: 'bg-border',
+        strong: 'bg-border',
+        subtle: 'bg-border/50',
       },
     },
   }
 );
 
-export type SeparatorVariant = VariantProps<typeof separatorVariants>["variant"];
+export type SeparatorVariant = VariantProps<typeof separatorVariants>['variant'];
 
 type SeparatorProps = React.ComponentProps<typeof SeparatorPrimitive> &
   SharedProps & {
     variant?: SeparatorVariant;
-    /**
-     * When `true` (the Radix default), the separator is purely decorative and
-     * will not be announced to assistive tech (`role="none"` + `aria-hidden`).
-     * When `false`, the native Base UI `role="separator"` with an orientation
-     * is used. Honored faithfully — this is not a compat no-op.
-     */
     decorative?: boolean;
   };
 
 function Separator({
   className,
-  orientation = "horizontal",
+  orientation = 'horizontal',
   decorative = true,
   variant,
   testId,
   ...props
 }: SeparatorProps) {
-  const a11yProps = decorative ? { "aria-hidden": true, role: "none" as const } : {};
+  const a11yProps = decorative ? { 'aria-hidden': true, role: 'none' as const } : {};
   return (
     <SeparatorPrimitive
       className={cn(separatorVariants({ variant }), className)}

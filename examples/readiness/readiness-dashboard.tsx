@@ -1,76 +1,76 @@
-"use client";
+'use client';
 
-import React from "react";
-import { Badge } from "@/registry/base-nova/protoform/components/badge";
-import { Button } from "@/registry/base-nova/protoform/components/button";
-import { Field, FieldLabel } from "@/registry/base-nova/protoform/components/field";
-import { Input } from "@/registry/base-nova/protoform/components/input";
+import React from 'react';
+import { Badge } from '@/registry/base-nova/protoform/components/badge';
+import { Button } from '@/registry/base-nova/protoform/components/button';
+import { Field, FieldLabel } from '@/registry/base-nova/protoform/components/field';
+import { Input } from '@/registry/base-nova/protoform/components/input';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/registry/base-nova/protoform/components/tooltip";
+} from '@/registry/base-nova/protoform/components/tooltip';
 import {
   getReadinessSummary,
   type ReadinessRequirement,
   readinessCategories,
   readinessProfile,
   readinessRequirements,
-} from "../../readiness/profile.js";
-import { RequirementDetail } from "./requirement-detail.js";
-import { RequirementStatus } from "./requirement-status.js";
+} from '../../readiness/profile.js';
+import { RequirementDetail } from './requirement-detail.js';
+import { RequirementStatus } from './requirement-status.js';
 
-type StatusFilter = "all" | "gaps" | ReadinessRequirement["status"];
+type StatusFilter = 'all' | 'gaps' | ReadinessRequirement['status'];
 const PAGE_SIZE = 25;
 
 const statusFilters: ReadonlyArray<{
   label: string;
   value: StatusFilter;
 }> = [
-  { label: "All", value: "all" },
-  { label: "Gaps", value: "gaps" },
-  { label: "Verified", value: "verified" },
-  { label: "Optional", value: "optional" },
-  { label: "Deferred", value: "deferred" },
-  { label: "Unsupported", value: "unsupported" },
-  { label: "External", value: "external" },
-  { label: "Out of target", value: "out-of-target" },
-  { label: "Superseded", value: "superseded" },
+  { label: 'All', value: 'all' },
+  { label: 'Gaps', value: 'gaps' },
+  { label: 'Verified', value: 'verified' },
+  { label: 'Optional', value: 'optional' },
+  { label: 'Deferred', value: 'deferred' },
+  { label: 'Unsupported', value: 'unsupported' },
+  { label: 'External', value: 'external' },
+  { label: 'Out of target', value: 'out-of-target' },
+  { label: 'Superseded', value: 'superseded' },
 ];
 
-function isGapStatus(status: ReadinessRequirement["status"]): boolean {
-  return ["missing", "deferred", "unsupported"].includes(status);
+function isGapStatus(status: ReadinessRequirement['status']): boolean {
+  return ['missing', 'deferred', 'unsupported'].includes(status);
 }
 
-function statusLabel(status: ReadinessRequirement["status"]): string {
+function statusLabel(status: ReadinessRequirement['status']): string {
   switch (status) {
-    case "verified":
-      return "Verified";
-    case "optional":
-      return "Verified optional";
-    case "missing":
-      return "Gap";
-    case "deferred":
-      return "Deferred";
-    case "unsupported":
-      return "Unsupported";
-    case "external":
-      return "External";
-    case "out-of-target":
-      return "Out of target";
-    case "superseded":
-      return "Superseded";
+    case 'verified':
+      return 'Verified';
+    case 'optional':
+      return 'Verified optional';
+    case 'missing':
+      return 'Gap';
+    case 'deferred':
+      return 'Deferred';
+    case 'unsupported':
+      return 'Unsupported';
+    case 'external':
+      return 'External';
+    case 'out-of-target':
+      return 'Out of target';
+    case 'superseded':
+      return 'Superseded';
     default:
       return status satisfies never;
   }
 }
 
 function requirementExplanation(requirement: ReadinessRequirement): string {
-  if (requirement.status === "verified" || requirement.status === "optional") {
+  if (requirement.status === 'verified' || requirement.status === 'optional') {
     return requirement.description ?? `Evidence: ${requirement.evidence.testName}`;
   }
-  if (requirement.status === "missing") {
+  if (requirement.status === 'missing') {
     return `Next test: ${requirement.nextTest}`;
   }
   return requirement.rationale;
@@ -78,27 +78,27 @@ function requirementExplanation(requirement: ReadinessRequirement): string {
 
 export function ReadinessDashboard() {
   const [page, setPage] = React.useState(1);
-  const [query, setQuery] = React.useState("");
+  const [query, setQuery] = React.useState('');
   const [status, setStatus] = React.useState<StatusFilter>(() =>
-    readinessRequirements.some((requirement) => isGapStatus(requirement.status)) ? "gaps" : "verified"
+    readinessRequirements.some((requirement) => isGapStatus(requirement.status)) ? 'gaps' : 'verified'
   );
   const summary = getReadinessSummary(readinessRequirements);
   const requiredSummary = getReadinessSummary(
-    readinessRequirements.filter((requirement) => requirement.level === "required")
+    readinessRequirements.filter((requirement) => requirement.level === 'required')
   );
   const normalizedQuery = query.trim().toLowerCase();
   const filteredRequirements = readinessRequirements.filter((requirement) => {
     const matchesStatus =
-      status === "all" || (status === "gaps" ? isGapStatus(requirement.status) : requirement.status === status);
+      status === 'all' || (status === 'gaps' ? isGapStatus(requirement.status) : requirement.status === status);
     const searchable = [
       requirement.id,
       requirement.title,
-      requirement.description ?? "",
-      requirement.status === "verified" || requirement.status === "optional" ? requirement.evidence.testName : "",
-      "nextTest" in requirement ? requirement.nextTest : "",
-      "rationale" in requirement ? requirement.rationale : "",
+      requirement.description ?? '',
+      requirement.status === 'verified' || requirement.status === 'optional' ? requirement.evidence.testName : '',
+      'nextTest' in requirement ? requirement.nextTest : '',
+      'rationale' in requirement ? requirement.rationale : '',
     ]
-      .join(" ")
+      .join(' ')
       .toLowerCase();
     return matchesStatus && searchable.includes(normalizedQuery);
   });
@@ -118,12 +118,12 @@ export function ReadinessDashboard() {
             </p>
             <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2">
               <p className="m-0 font-semibold text-5xl tracking-tight">{summary.percentage}%</p>
-              <Badge variant={summary.profileComplete ? "success" : "warning-inverted"}>
-                Profile complete: {summary.profileComplete ? "yes" : "not yet"}
+              <Badge variant={summary.profileComplete ? 'success' : 'warning-inverted'}>
+                Profile complete: {summary.profileComplete ? 'yes' : 'not yet'}
               </Badge>
             </div>
             <p className="mt-3 mb-0 text-muted-foreground text-sm">
-              {summary.verified} of {summary.applicable} applicable checks verified.{" "}
+              {summary.verified} of {summary.applicable} applicable checks verified.{' '}
               {summary.deferred + summary.unsupported} open checks count against readiness. {summary.excluded} excluded
               checks stay visible but do not affect the percentage.
             </p>
@@ -144,7 +144,7 @@ export function ReadinessDashboard() {
             >
               <div
                 className="h-full w-(--readiness-width) rounded-full bg-primary"
-                style={{ "--readiness-width": `${summary.percentage}%` } as React.CSSProperties}
+                style={{ '--readiness-width': `${summary.percentage}%` } as React.CSSProperties}
               />
             </div>
             <div className="flex items-center justify-between gap-4 text-sm">
@@ -161,7 +161,7 @@ export function ReadinessDashboard() {
             >
               <div
                 className="h-full w-(--readiness-width) rounded-full bg-primary/70"
-                style={{ "--readiness-width": `${requiredSummary.percentage}%` } as React.CSSProperties}
+                style={{ '--readiness-width': `${requiredSummary.percentage}%` } as React.CSSProperties}
               />
             </div>
           </div>
@@ -237,7 +237,7 @@ export function ReadinessDashboard() {
                 >
                   <div
                     className="h-full w-(--readiness-width) rounded-full bg-primary"
-                    style={{ "--readiness-width": `${categorySummary.percentage}%` } as React.CSSProperties}
+                    style={{ '--readiness-width': `${categorySummary.percentage}%` } as React.CSSProperties}
                   />
                 </div>
               </article>
@@ -284,7 +284,7 @@ export function ReadinessDashboard() {
                   }}
                   size="sm"
                   type="button"
-                  variant={status === filter.value ? "primary" : "outline"}
+                  variant={status === filter.value ? 'primary' : 'outline'}
                 >
                   {filter.label}
                 </Button>

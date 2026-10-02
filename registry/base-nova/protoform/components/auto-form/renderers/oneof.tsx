@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import React from "react";
-import { useAutoFormRenderContext, useAutoFormRuntimeContext } from "../context";
-import type { OneofWrapperProps, ParsedField } from "../core-types";
-import { useAutoFormEngine } from "../engine";
-import { getLabel, getPathInObject } from "../field-utils";
-import { formSpacing } from "../form-spacing";
-import { createEmptyFieldValue, getFieldErrorMessage, getFieldUiConfig } from "../helpers";
-import { FormDepthProvider, useFormDepth } from "../layout-context";
-import { getAutoFormFieldTestId } from "../test-ids";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui-components";
-import { AutoFormFieldRenderer } from ".";
-import { getRenderedLabel, isDeprecatedField, isFieldHidden, useFieldPresentation } from "./shared";
+import React from 'react';
+import { useAutoFormRenderContext, useAutoFormRuntimeContext } from '../context';
+import type { OneofWrapperProps, ParsedField } from '../core-types';
+import { useAutoFormEngine } from '../engine';
+import { getLabel, getPathInObject } from '../field-utils';
+import { formSpacing } from '../form-spacing';
+import { createEmptyFieldValue, getFieldErrorMessage, getFieldUiConfig } from '../helpers';
+import { FormDepthProvider, useFormDepth } from '../layout-context';
+import { getAutoFormFieldTestId } from '../test-ids';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui-components';
+import { AutoFormFieldRenderer } from '.';
+import { getRenderedLabel, isDeprecatedField, isFieldHidden, useFieldPresentation } from './shared';
 
 function SelectedOneofField({
   field,
@@ -25,7 +25,7 @@ function SelectedOneofField({
   depth: number;
 }) {
   if (field) {
-    if (field.type === "object" && (!field.schema || field.schema.length === 0)) {
+    if (field.type === 'object' && (!field.schema || field.schema.length === 0)) {
       return (
         <div className="rounded-lg border border-dashed bg-muted/30 px-4 py-3">
           <p className="text-muted-foreground text-sm">
@@ -36,7 +36,7 @@ function SelectedOneofField({
     }
     return (
       <FormDepthProvider depth={depth + 1}>
-        <AutoFormFieldRenderer field={field} inheritedDisabled={disabled} path={[...path, "value"]} />
+        <AutoFormFieldRenderer field={field} inheritedDisabled={disabled} path={[...path, 'value']} />
       </FormDepthProvider>
     );
   }
@@ -56,7 +56,7 @@ export function OneofFieldRenderer({
   const { uiComponents } = useAutoFormRenderContext();
   const { deprecatedFields, evaluateRules, testIdPrefix } = useAutoFormRuntimeContext();
   const form = useAutoFormEngine();
-  const fullPath = path.join(".");
+  const fullPath = path.join('.');
   const oneofValue = (getPathInObject(form.values, path) as { case?: string; value?: unknown } | undefined) ?? {
     case: undefined,
     value: undefined,
@@ -77,7 +77,7 @@ export function OneofFieldRenderer({
   const selectedField = availableFields.find((candidate) => candidate.key === oneofValue.case);
   const selectedSchemaField = (field.schema ?? []).find((candidate) => candidate.key === oneofValue.case);
   const selectedDeprecatedDisabled =
-    deprecatedFields === "disable" && selectedSchemaField !== undefined && isDeprecatedField(selectedSchemaField);
+    deprecatedFields === 'disable' && selectedSchemaField !== undefined && isDeprecatedField(selectedSchemaField);
   const oneofDisabled = isDisabled || selectedDeprecatedDisabled;
 
   React.useEffect(() => {
@@ -135,9 +135,9 @@ export function OneofFieldRenderer({
       )}
       selected={selectedField}
       selectedKey={oneofValue.case}
-      testId={getAutoFormFieldTestId(testIdPrefix, fullPath, "control")}
+      testId={getAutoFormFieldTestId(testIdPrefix, fullPath, 'control')}
       variants={availableFields.map((candidate) => ({
-        disabled: deprecatedFields === "disable" && isDeprecatedField(candidate),
+        disabled: deprecatedFields === 'disable' && isDeprecatedField(candidate),
         field: candidate,
         key: candidate.key,
         label: getLabel(candidate),
@@ -146,7 +146,6 @@ export function OneofFieldRenderer({
   );
 }
 
-/** Default oneof presentation: a variant select above the selected variant's fields. */
 export function OneofWrapper({
   disabled,
   error,
@@ -168,9 +167,9 @@ export function OneofWrapper({
   if (selected) {
     selectedValueLabel = getLabel(selected);
   } else if (selectedKey) {
-    selectedValueLabel = "Unavailable selection";
+    selectedValueLabel = 'Unavailable selection';
   } else if (!field.required) {
-    selectedValueLabel = "Not set";
+    selectedValueLabel = 'Not set';
   }
 
   return (
@@ -180,7 +179,7 @@ export function OneofWrapper({
           {({ ref }) => (
             <Select
               items={[
-                ...(field.required ? [] : [{ label: "Not set", value: null }]),
+                ...(field.required ? [] : [{ label: 'Not set', value: null }]),
                 ...variants.map((variant) => ({ label: variant.label, value: variant.key })),
               ]}
               onValueChange={(value) => onSelect(value ?? undefined)}
@@ -198,7 +197,7 @@ export function OneofWrapper({
               </SelectTrigger>
               <SelectContent>
                 {field.required ? null : (
-                  <SelectItem testId={getAutoFormFieldTestId(testIdPrefix, id, "option-not-set")} value={null}>
+                  <SelectItem testId={getAutoFormFieldTestId(testIdPrefix, id, 'option-not-set')} value={null}>
                     Not set
                   </SelectItem>
                 )}

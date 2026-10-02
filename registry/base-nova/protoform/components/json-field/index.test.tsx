@@ -1,17 +1,17 @@
-import { afterEach, describe, expect, rs } from "@rstest/core";
-import { act, cleanup, render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { afterEach, describe, expect, rs } from '@rstest/core';
+import { act, cleanup, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
-import { Toaster, toast } from "@/components/ui/toast";
+import { Toaster, toast } from '@/components/ui/toast';
 
-import { JSONField } from ".";
+import { JSONField } from '.';
 
 afterEach(() => {
   act(() => toast.close());
 });
 
-describe("JSONField accessibility", () => {
-  test("labels the fallback editor for deeply nested JSON and opens an unconstrained array in JSON mode", async () => {
+describe('JSONField accessibility', () => {
+  test('labels the fallback editor for deeply nested JSON and opens an unconstrained array in JSON mode', async () => {
     render(
       <JSONField
         maxDepth={1}
@@ -19,35 +19,35 @@ describe("JSONField accessibility", () => {
         schema={{
           properties: {
             audit: {
-              properties: { retentionDays: { type: "number" } },
-              type: "object",
+              properties: { retentionDays: { type: 'number' } },
+              type: 'object',
             },
           },
-          type: "object",
+          type: 'object',
         }}
         value={{ audit: { retentionDays: 30 } }}
       />
     );
 
-    expect(screen.getByRole("textbox", { name: "Audit JSON" })).toBeVisible();
+    expect(screen.getByRole('textbox', { name: 'Audit JSON' })).toBeVisible();
 
     cleanup();
-    render(<JSONField onChange={rs.fn()} schema={{ type: "array" }} value={["overview", 3, true]} />);
+    render(<JSONField onChange={rs.fn()} schema={{ type: 'array' }} value={['overview', 3, true]} />);
 
-    expect(await screen.findByRole("textbox", { name: "JSON value" })).toHaveValue('[\n  "overview",\n  3,\n  true\n]');
+    expect(await screen.findByRole('textbox', { name: 'JSON value' })).toHaveValue('[\n  "overview",\n  3,\n  true\n]');
   });
 
-  test("shows a success toast after copying JSON", async () => {
+  test('shows a success toast after copying JSON', async () => {
     const user = userEvent.setup();
 
     render(
       <Toaster>
-        <JSONField onChange={rs.fn()} schema={{ type: "object" }} value={{ region: "us-east1" }} />
+        <JSONField onChange={rs.fn()} schema={{ type: 'object' }} value={{ region: 'us-east1' }} />
       </Toaster>
     );
 
-    await user.click(screen.getByRole("button", { name: "Copy JSON" }));
+    await user.click(screen.getByRole('button', { name: 'Copy JSON' }));
 
-    expect(await screen.findByText("JSON copied")).toBeVisible();
+    expect(await screen.findByText('JSON copied')).toBeVisible();
   });
 });

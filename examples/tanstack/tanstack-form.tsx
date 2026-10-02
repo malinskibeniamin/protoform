@@ -1,24 +1,24 @@
-"use client";
+'use client';
 
-import { createClient } from "@connectrpc/connect";
-import React from "react";
-import { Alert, AlertDescription, AlertTitle } from "@/registry/base-nova/protoform/components/alert";
-import { Button } from "@/registry/base-nova/protoform/components/button";
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/registry/base-nova/protoform/components/field";
-import { Input } from "@/registry/base-nova/protoform/components/input";
-import { useProtoForm } from "@/registry/base-nova/protoform/hooks/use-proto-form-tanstack";
-import { createFormExamplesTransport } from "../browser-transport.js";
-import { FormExamplesService, SubmitBasicFormRequestSchema } from "../gen/protoform/examples/v1/forms_pb.js";
+import { createClient } from '@connectrpc/connect';
+import React from 'react';
+import { Alert, AlertDescription, AlertTitle } from '@/registry/base-nova/protoform/components/alert';
+import { Button } from '@/registry/base-nova/protoform/components/button';
+import { Field, FieldError, FieldGroup, FieldLabel } from '@/registry/base-nova/protoform/components/field';
+import { Input } from '@/registry/base-nova/protoform/components/input';
+import { useProtoForm } from '@/registry/base-nova/protoform/hooks/use-proto-form-tanstack';
+import { createFormExamplesTransport } from '../browser-transport.js';
+import { FormExamplesService, SubmitBasicFormRequestSchema } from '../gen/protoform/examples/v1/forms_pb.js';
 
 function fieldErrorMessage(error: unknown): string | undefined {
-  if (typeof error === "string") {
+  if (typeof error === 'string') {
     return error;
   }
-  if (error && typeof error === "object") {
-    const message = Reflect.get(error, "message");
-    return typeof message === "string" ? message : undefined;
+  if (error && typeof error === 'object') {
+    const message = Reflect.get(error, 'message');
+    return typeof message === 'string' ? message : undefined;
   }
-  return;
+  return undefined;
 }
 
 export function TanStackFormExample({ baseUrl }: { baseUrl?: string }) {
@@ -27,8 +27,8 @@ export function TanStackFormExample({ baseUrl }: { baseUrl?: string }) {
   const client = createClient(FormExamplesService, createFormExamplesTransport(baseUrl));
   const form = useProtoForm(SubmitBasicFormRequestSchema, {
     defaultValues: {
-      displayName: "",
-      email: "",
+      displayName: '',
+      email: '',
     },
     onSubmit: async ({ value }) => {
       setProfileId(undefined);
@@ -43,7 +43,7 @@ export function TanStackFormExample({ baseUrl }: { baseUrl?: string }) {
           messages.unshift(result.context.message);
         }
         if (!result.handled && messages.length === 0) {
-          messages.push(error instanceof Error ? error.message : "The request could not be sent.");
+          messages.push(error instanceof Error ? error.message : 'The request could not be sent.');
         }
         setRootErrors(messages);
       }
@@ -57,7 +57,7 @@ export function TanStackFormExample({ baseUrl }: { baseUrl?: string }) {
         event.preventDefault();
         event.stopPropagation();
         form.handleSubmit().catch((error: unknown) => {
-          setRootErrors([error instanceof Error ? error.message : "The request could not be sent."]);
+          setRootErrors([error instanceof Error ? error.message : 'The request could not be sent.']);
         });
       }}
     >
@@ -79,7 +79,7 @@ export function TanStackFormExample({ baseUrl }: { baseUrl?: string }) {
                   placeholder="Ada Lovelace"
                   value={field.state.value}
                 />
-                <FieldError>{field.state.meta.errors.map(fieldErrorMessage).filter(Boolean).join("\n")}</FieldError>
+                <FieldError>{field.state.meta.errors.map(fieldErrorMessage).filter(Boolean).join('\n')}</FieldError>
               </Field>
             );
           }}
@@ -103,7 +103,7 @@ export function TanStackFormExample({ baseUrl }: { baseUrl?: string }) {
                   type="email"
                   value={field.state.value}
                 />
-                <FieldError>{field.state.meta.errors.map(fieldErrorMessage).filter(Boolean).join("\n")}</FieldError>
+                <FieldError>{field.state.meta.errors.map(fieldErrorMessage).filter(Boolean).join('\n')}</FieldError>
               </Field>
             );
           }}
