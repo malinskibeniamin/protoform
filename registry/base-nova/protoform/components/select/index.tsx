@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import { Select as SelectPrimitive } from "@base-ui/react/select";
-import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from "lucide-react";
-import React from "react";
+import { Select as SelectPrimitive } from '@base-ui/react/select';
+import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from 'lucide-react';
+import React from 'react';
 
-import { useGroup } from "@/components/ui/group";
-import { usePortalContainer } from "@/registry/base-nova/protoform/hooks/use-portal-container";
-import { narrowOpenChange, renderWithDataState } from "@/registry/base-nova/protoform/lib/base-ui-compat";
-import { cn, type PortalContentProps, type SharedProps } from "@/registry/base-nova/protoform/lib/utils";
+import { useGroup } from '@/components/ui/group';
+import { usePortalContainer } from '@/registry/base-nova/protoform/hooks/use-portal-container';
+import { narrowOpenChange, renderWithDataState } from '@/registry/base-nova/protoform/lib/base-ui-compat';
+import { cn, type PortalContentProps, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
 type SelectRootProps = Omit<
   React.ComponentProps<typeof SelectPrimitive.Root>,
-  "defaultValue" | "onOpenChange" | "onValueChange" | "value"
+  'defaultValue' | 'onOpenChange' | 'onValueChange' | 'value'
 > &
   SharedProps & {
     defaultValue?: string | null;
@@ -20,8 +20,6 @@ type SelectRootProps = Omit<
     value?: string | null;
   };
 
-// Base UI types `value` as `unknown` because `Select.Root` is generic; the
-// registry pins it to `string | null`, so validate at the boundary.
 function adaptSelectValueChange(
   handler: ((value: string | null) => void) | undefined
 ): ((value: unknown) => void) | undefined {
@@ -29,8 +27,8 @@ function adaptSelectValueChange(
     return;
   }
   return (value) => {
-    if (value !== null && typeof value !== "string") {
-      throw new TypeError("Select values must be strings or null.");
+    if (value !== null && typeof value !== 'string') {
+      throw new TypeError('Select values must be strings or null.');
     }
     handler(value);
   };
@@ -48,27 +46,21 @@ function Select({ testId, onOpenChange, onValueChange, ...props }: SelectRootPro
   );
 }
 
-Select.displayName = "Select";
+Select.displayName = 'Select';
 
 function SelectGroup({ testId, ...props }: React.ComponentProps<typeof SelectPrimitive.Group> & SharedProps) {
   return <SelectPrimitive.Group data-slot="select-group" data-testid={testId} {...props} />;
 }
 
-SelectGroup.displayName = "SelectGroup";
+SelectGroup.displayName = 'SelectGroup';
 
-type SelectValueProps = Omit<React.ComponentProps<typeof SelectPrimitive.Value>, "children"> & {
+type SelectValueProps = Omit<React.ComponentProps<typeof SelectPrimitive.Value>, 'children'> & {
   placeholder?: React.ReactNode;
   children?: React.ReactNode | ((value: unknown) => React.ReactNode);
 };
 
-// Base UI only resolves an item's label after the popup has mounted. Until then
-// it stringifies the raw value, which flashes `1` instead of `Any` for
-// enum-backed selects with a controlled value. Pass a render-prop child or an
-// `items` map on `<Select>` to close the gap — see the `select-enum-label` demo.
 function SelectValue({ placeholder, children, ...props }: SelectValueProps) {
-  // Fall back to placeholder when the render-prop returns null/undefined; Base
-  // UI's primitive ignores `placeholder` once `children` is set.
-  if (typeof children === "function") {
+  if (typeof children === 'function') {
     const renderValue = children;
     return (
       <SelectPrimitive.Value data-slot="select-value" placeholder={placeholder} {...props}>
@@ -85,31 +77,31 @@ function SelectValue({ placeholder, children, ...props }: SelectValueProps) {
   if (children !== undefined) {
     return (
       <SelectPrimitive.Value data-slot="select-value" placeholder={placeholder} {...props}>
-        {children as React.ComponentProps<typeof SelectPrimitive.Value>["children"]}
+        {children as React.ComponentProps<typeof SelectPrimitive.Value>['children']}
       </SelectPrimitive.Value>
     );
   }
   return <SelectPrimitive.Value data-slot="select-value" placeholder={placeholder} {...props} />;
 }
 
-SelectValue.displayName = "SelectValue";
+SelectValue.displayName = 'SelectValue';
 
 const SelectTrigger = React.forwardRef<
   React.ComponentRef<typeof SelectPrimitive.Trigger>,
   React.ComponentProps<typeof SelectPrimitive.Trigger> &
     SharedProps & {
-      size?: "sm" | "default" | "lg";
+      size?: 'sm' | 'default' | 'lg';
     }
->(({ className, size = "default", children, testId, ...props }, ref) => {
+>(({ className, size = 'default', children, testId, ...props }, ref) => {
   const { position: groupPosition, attached } = useGroup();
 
-  let positionClasses = "rounded-lg";
-  if (attached && groupPosition === "first") {
-    positionClasses = "rounded-r-none rounded-l-lg border-r-0";
-  } else if (attached && groupPosition === "last") {
-    positionClasses = "rounded-r-lg rounded-l-none border-l-0";
-  } else if (attached && groupPosition === "middle") {
-    positionClasses = "rounded-none border-r-0 border-l-0";
+  let positionClasses = 'rounded-lg';
+  if (attached && groupPosition === 'first') {
+    positionClasses = 'rounded-r-none rounded-l-lg border-r-0';
+  } else if (attached && groupPosition === 'last') {
+    positionClasses = 'rounded-r-lg rounded-l-none border-l-0';
+  } else if (attached && groupPosition === 'middle') {
+    positionClasses = 'rounded-none border-r-0 border-l-0';
   }
 
   return (
@@ -123,7 +115,7 @@ const SelectTrigger = React.forwardRef<
       data-slot="select-trigger"
       data-testid={testId}
       ref={ref}
-      render={renderWithDataState("button")}
+      render={renderWithDataState('button')}
       {...props}
     >
       {children}
@@ -138,18 +130,16 @@ const SelectTrigger = React.forwardRef<
   );
 });
 
-SelectTrigger.displayName = "SelectTrigger";
+SelectTrigger.displayName = 'SelectTrigger';
 
 type SelectContentProps = React.ComponentProps<typeof SelectPrimitive.Popup> &
   SharedProps &
-  Pick<PortalContentProps, "container"> & {
-    /** @deprecated Kept for API parity; Base UI positioning is automatic. */
-    position?: "item-aligned" | "popper";
-    side?: "top" | "right" | "bottom" | "left";
-    align?: "start" | "center" | "end";
+  Pick<PortalContentProps, 'container'> & {
+    position?: 'item-aligned' | 'popper';
+    side?: 'top' | 'right' | 'bottom' | 'left';
+    align?: 'start' | 'center' | 'end';
     sideOffset?: number;
     alignOffset?: number;
-    /** Set `true` to overlay the selected item on the trigger (Base UI's native default). */
     alignItemWithTrigger?: boolean;
   };
 
@@ -160,15 +150,15 @@ const SelectContent = React.forwardRef<React.ComponentRef<typeof SelectPrimitive
       children,
       testId,
       container,
-      side = "bottom",
+      side = 'bottom',
       align,
       sideOffset = 4,
       alignOffset,
       alignItemWithTrigger = false,
       ...props
     } = contentProps;
-    const position = Reflect.get(props, "position") ?? "popper";
-    Reflect.deleteProperty(props, "position");
+    const position = Reflect.get(props, 'position') ?? 'popper';
+    Reflect.deleteProperty(props, 'position');
     const portalContainer = usePortalContainer();
     return (
       <SelectPrimitive.Portal container={container ?? portalContainer}>
@@ -182,22 +172,22 @@ const SelectContent = React.forwardRef<React.ComponentRef<typeof SelectPrimitive
         >
           <SelectPrimitive.Popup
             className={cn(
-              "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 relative z-50 max-h-(--available-height) min-w-36 origin-(--transform-origin) overflow-hidden rounded-lg bg-popover text-popover-foreground shadow-md ring-1 ring-foreground/10 data-[state=closed]:animate-out data-[state=open]:animate-in",
-              position === "popper" &&
-                "data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=bottom]:translate-y-1 data-[side=top]:-translate-y-1",
+              'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 relative z-50 max-h-(--available-height) min-w-36 origin-(--transform-origin) overflow-hidden rounded-lg bg-popover text-popover-foreground shadow-md ring-1 ring-foreground/10 data-[state=closed]:animate-out data-[state=open]:animate-in',
+              position === 'popper' &&
+                'data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=bottom]:translate-y-1 data-[side=top]:-translate-y-1',
               className
             )}
             data-slot="select-content"
             data-testid={testId}
             ref={ref}
-            render={renderWithDataState("div")}
+            render={renderWithDataState('div')}
             {...props}
           >
             <SelectScrollUpButton />
             <SelectPrimitive.List
               className={cn(
-                "max-h-(--available-height) w-full overflow-y-auto overflow-x-hidden p-1",
-                position === "popper" && "min-w-[var(--anchor-width)] scroll-my-1"
+                'max-h-(--available-height) w-full overflow-y-auto overflow-x-hidden p-1',
+                position === 'popper' && 'min-w-[var(--anchor-width)] scroll-my-1'
               )}
             >
               {children}
@@ -210,21 +200,21 @@ const SelectContent = React.forwardRef<React.ComponentRef<typeof SelectPrimitive
   }
 );
 
-SelectContent.displayName = "SelectContent";
+SelectContent.displayName = 'SelectContent';
 
 const SelectLabel = React.forwardRef<
   React.ComponentRef<typeof SelectPrimitive.GroupLabel>,
   React.ComponentProps<typeof SelectPrimitive.GroupLabel>
 >(({ className, ...props }, ref) => (
   <SelectPrimitive.GroupLabel
-    className={cn("px-2 py-1.5 text-muted-foreground text-xs", className)}
+    className={cn('px-2 py-1.5 text-muted-foreground text-xs', className)}
     data-slot="select-label"
     ref={ref}
     {...props}
   />
 ));
 
-SelectLabel.displayName = "SelectLabel";
+SelectLabel.displayName = 'SelectLabel';
 
 const SelectItem = React.forwardRef<
   React.ComponentRef<typeof SelectPrimitive.Item>,
@@ -249,28 +239,28 @@ const SelectItem = React.forwardRef<
   </SelectPrimitive.Item>
 ));
 
-SelectItem.displayName = "SelectItem";
+SelectItem.displayName = 'SelectItem';
 
 const SelectSeparator = React.forwardRef<
   React.ComponentRef<typeof SelectPrimitive.Separator>,
   React.ComponentProps<typeof SelectPrimitive.Separator>
 >(({ className, ...props }, ref) => (
   <SelectPrimitive.Separator
-    className={cn("pointer-events-none -mx-1 my-1 h-px bg-border", className)}
+    className={cn('pointer-events-none -mx-1 my-1 h-px bg-border', className)}
     data-slot="select-separator"
     ref={ref}
     {...props}
   />
 ));
 
-SelectSeparator.displayName = "SelectSeparator";
+SelectSeparator.displayName = 'SelectSeparator';
 
 const SelectScrollUpButton = React.forwardRef<
   React.ComponentRef<typeof SelectPrimitive.ScrollUpArrow>,
   React.ComponentProps<typeof SelectPrimitive.ScrollUpArrow>
 >(({ className, ...props }, ref) => (
   <SelectPrimitive.ScrollUpArrow
-    className={cn("flex cursor-pointer items-center justify-center py-1", className)}
+    className={cn('flex cursor-pointer items-center justify-center py-1', className)}
     data-slot="select-scroll-up-button"
     ref={ref}
     {...props}
@@ -279,14 +269,14 @@ const SelectScrollUpButton = React.forwardRef<
   </SelectPrimitive.ScrollUpArrow>
 ));
 
-SelectScrollUpButton.displayName = "SelectScrollUpButton";
+SelectScrollUpButton.displayName = 'SelectScrollUpButton';
 
 const SelectScrollDownButton = React.forwardRef<
   React.ComponentRef<typeof SelectPrimitive.ScrollDownArrow>,
   React.ComponentProps<typeof SelectPrimitive.ScrollDownArrow>
 >(({ className, ...props }, ref) => (
   <SelectPrimitive.ScrollDownArrow
-    className={cn("flex cursor-pointer items-center justify-center py-1", className)}
+    className={cn('flex cursor-pointer items-center justify-center py-1', className)}
     data-slot="select-scroll-down-button"
     ref={ref}
     {...props}
@@ -295,7 +285,7 @@ const SelectScrollDownButton = React.forwardRef<
   </SelectPrimitive.ScrollDownArrow>
 ));
 
-SelectScrollDownButton.displayName = "SelectScrollDownButton";
+SelectScrollDownButton.displayName = 'SelectScrollDownButton';
 
 export {
   Select,

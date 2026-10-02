@@ -1,5 +1,3 @@
-// Repository adapter for generated bindings. Registry consumers receive the
-// canonical implementation at this path directly.
 export {
   getProtoFieldBehaviors,
   getProtoResourceMetadata,
@@ -7,18 +5,18 @@ export {
   isSingletonProtoResource,
   type ProtoResourceMetadata,
   type ProtoResourceReference,
-} from "@/registry/base-nova/protoform/lib/protobuf-provider/aip";
+} from '@/registry/base-nova/protoform/lib/protobuf-provider/aip';
 export {
   getRegisteredProtoAnnotations,
   type ProtoAnnotations,
   registerProtoAnnotations,
-} from "@/registry/base-nova/protoform/lib/protobuf-provider/annotations";
+} from '@/registry/base-nova/protoform/lib/protobuf-provider/annotations';
 export {
   createFieldMask,
   createUpdateMask,
   dirtyFieldsFromValues,
-} from "@/registry/base-nova/protoform/lib/protobuf-provider/field-mask";
-export { createProtoFormSchema } from "@/registry/base-nova/protoform/lib/protobuf-provider/form-schema";
+} from '@/registry/base-nova/protoform/lib/protobuf-provider/field-mask';
+export { createProtoFormSchema } from '@/registry/base-nova/protoform/lib/protobuf-provider/form-schema';
 export {
   type ConnectErrorContext,
   extractConnectErrorContext,
@@ -30,15 +28,15 @@ export {
   type HelpLink,
   type PreconditionViolation,
   type QuotaViolation,
-} from "@/registry/base-nova/protoform/lib/protobuf-provider/format-error";
-export { formatSubmittedValue } from "@/registry/base-nova/protoform/lib/protobuf-provider/format-submitted-value";
+} from '@/registry/base-nova/protoform/lib/protobuf-provider/format-error';
+export { formatSubmittedValue } from '@/registry/base-nova/protoform/lib/protobuf-provider/format-submitted-value';
 export {
   humanizeServerFieldError,
   humanizeValidationError,
   isGenericValidationMessage,
   SERVER_FIELD_ERROR_FALLBACK,
-} from "@/registry/base-nova/protoform/lib/protobuf-provider/humanize-validation-error";
-export { protoPathToFormPath } from "@/registry/base-nova/protoform/lib/protobuf-provider/proto-error-path";
+} from '@/registry/base-nova/protoform/lib/protobuf-provider/humanize-validation-error';
+export { protoPathToFormPath } from '@/registry/base-nova/protoform/lib/protobuf-provider/proto-error-path';
 export {
   formValuesToProto,
   formValuesToProtoInit,
@@ -64,7 +62,7 @@ export {
   protoPayloadToFormValues,
   protoToFormValues,
   validateFormValuesAgainstProtoSchema,
-} from "@/registry/base-nova/protoform/lib/protobuf-provider/provider";
+} from '@/registry/base-nova/protoform/lib/protobuf-provider/provider';
 export {
   getProtoFieldUi,
   getProtoMessageUi,
@@ -72,4 +70,4 @@ export {
   type ProtoFieldUiConfig,
   type ProtoMessageUiConfig,
   type ProtoUiRule,
-} from "@/registry/base-nova/protoform/lib/protobuf-provider/ui-options";
+} from '@/registry/base-nova/protoform/lib/protobuf-provider/ui-options';

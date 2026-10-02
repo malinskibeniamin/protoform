@@ -4,37 +4,37 @@ import {
   isMessage,
   type MessageShape,
   type MessageValidType,
-} from "@bufbuild/protobuf";
-import { usedTypes } from "@bufbuild/protobuf/reflect";
-import { createValidator, RuntimeError, type ValidatorOptions, type Violation } from "@bufbuild/protovalidate";
-import type { StandardSchemaV1 } from "../core/index.js";
-import type { ProtoformMessageFormatter } from "../core/messages.js";
-import { humanizeValidationError } from "./humanize-validation-error.js";
+} from '@bufbuild/protobuf';
+import { usedTypes } from '@bufbuild/protobuf/reflect';
+import { createValidator, RuntimeError, type ValidatorOptions, type Violation } from '@bufbuild/protovalidate';
+import type { StandardSchemaV1 } from '../core/index.js';
+import type { ProtoformMessageFormatter } from '../core/messages.js';
+import { humanizeValidationError } from './humanize-validation-error.js';
 
 function violationToIssue(violation: Violation, formatter?: ProtoformMessageFormatter): StandardSchemaV1.Issue {
   const path: PropertyKey[] = [];
 
   for (const segment of violation.field) {
     switch (segment.kind) {
-      case "field":
+      case 'field':
         if (segment.oneof) {
-          path.push(segment.oneof.localName, "value");
+          path.push(segment.oneof.localName, 'value');
         } else {
           path.push(segment.localName);
         }
         break;
-      case "oneof":
+      case 'oneof':
         path.push(segment.localName);
         break;
-      case "list_sub":
+      case 'list_sub':
         path.push(segment.index);
         break;
-      case "map_sub":
+      case 'map_sub':
         path.push(
-          typeof segment.key === "string" || typeof segment.key === "number" ? segment.key : String(segment.key)
+          typeof segment.key === 'string' || typeof segment.key === 'number' ? segment.key : String(segment.key)
         );
         break;
-      case "extension":
+      case 'extension':
         path.push(`[${segment.typeName}]`);
         break;
       default:
@@ -59,25 +59,23 @@ export function createDescriptorAwareStandardSchema<Desc extends DescMessage>(
   const validator = createValidator({ ...validatorOptions, registry });
 
   return {
-    "~standard": {
+    '~standard': {
       validate: (value) => {
-        if (typeof value !== "object" || value === null) {
-          return { issues: [{ message: "Expected an object" }] };
+        if (typeof value !== 'object' || value === null) {
+          return { issues: [{ message: 'Expected an object' }] };
         }
         if (!isMessage(value, desc)) {
-          return { issues: [{ message: "Expected a protobuf message" }] };
+          return { issues: [{ message: 'Expected a protobuf message' }] };
         }
 
         const result = validator.validate(desc, value);
         switch (result.kind) {
-          case "valid":
+          case 'valid':
             return { value: result.message };
-          case "invalid":
+          case 'invalid':
             return { issues: result.violations.map((violation) => violationToIssue(violation, formatMessage)) };
-          case "error":
+          case 'error':
             if (result.error instanceof RuntimeError) {
-              // Runtime failures are schema defects, not user input errors. Fail
-              // open so form adapters never surface CEL internals to end users.
               return {
                 value: result.message as MessageValidType<Desc>,
               };
@@ -87,7 +85,7 @@ export function createDescriptorAwareStandardSchema<Desc extends DescMessage>(
             return result satisfies never;
         }
       },
-      vendor: "protoform",
+      vendor: 'protoform',
       version: 1,
     },
   };

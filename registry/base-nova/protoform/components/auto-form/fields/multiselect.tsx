@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import React from "react";
-import { formatProtoformMessage } from "@/registry/base-nova/protoform/lib/core/messages";
-import { useAutoForm } from "../context";
-import type { AutoFormFieldProps } from "../core-types";
+import React from 'react';
+import { formatProtoformMessage } from '@/registry/base-nova/protoform/lib/core/messages';
+import { useAutoForm } from '../context';
+import type { AutoFormFieldProps } from '../core-types';
 import {
   type DataProviderOption,
   type DataProviderResult,
@@ -11,13 +11,13 @@ import {
   type ResolvedDataProvider,
   resolveDataProvider,
   useDataProviderSignal,
-} from "../data-providers";
-import { getPathInObject } from "../field-utils";
-import { getFieldUiConfig, NUMERIC_OPTION_PATTERN } from "../helpers";
-import type { FieldTypeDefinition } from "../registry";
-import { SimpleMultiSelect } from "../ui-components";
-import { safeStringify } from "../utils/serialization";
-import { getGroupedOptions, readDataProviderId, renderOptionLabel, useFieldTestIds } from "./shared";
+} from '../data-providers';
+import { getPathInObject } from '../field-utils';
+import { getFieldUiConfig, NUMERIC_OPTION_PATTERN } from '../helpers';
+import type { FieldTypeDefinition } from '../registry';
+import { SimpleMultiSelect } from '../ui-components';
+import { safeStringify } from '../utils/serialization';
+import { getGroupedOptions, readDataProviderId, renderOptionLabel, useFieldTestIds } from './shared';
 
 function MultiSelectFieldComponent({ field, id, inputProps }: AutoFormFieldProps) {
   const testIds = useFieldTestIds(id);
@@ -35,7 +35,7 @@ function MultiSelectFieldComponent({ field, id, inputProps }: AutoFormFieldProps
             value: option.value,
           })),
           heading: group.label,
-          testId: testIds.group(String(group.label ?? "group")),
+          testId: testIds.group(String(group.label ?? 'group')),
         }))
       : (itemField?.options ?? []).map(([value, optionLabel]) => ({
           label: optionLabel,
@@ -48,19 +48,19 @@ function MultiSelectFieldComponent({ field, id, inputProps }: AutoFormFieldProps
 
   return (
     <SimpleMultiSelect
-      {...(inputProps["disabled"] === undefined ? {} : { disabled: inputProps["disabled"] })}
+      {...(inputProps['disabled'] === undefined ? {} : { disabled: inputProps['disabled'] })}
       id={id}
       onValueChange={(values) =>
-        inputProps["onValueChange"](numericOptions ? values.map((value) => Number(value)) : values)
+        inputProps['onValueChange'](numericOptions ? values.map((value) => Number(value)) : values)
       }
       options={options}
       placeholder={
-        placeholder !== undefined && placeholder !== ""
+        placeholder !== undefined && placeholder !== ''
           ? placeholder
-          : formatProtoformMessage(formatMessage, "auto_form.multiselect.placeholder", {}, "Select one or more options")
+          : formatProtoformMessage(formatMessage, 'auto_form.multiselect.placeholder', {}, 'Select one or more options')
       }
       testId={testIds.field}
-      value={Array.isArray(inputProps["value"]) ? inputProps["value"].map((value: unknown) => String(value)) : []}
+      value={Array.isArray(inputProps['value']) ? inputProps['value'].map((value: unknown) => String(value)) : []}
       width="full"
     />
   );
@@ -71,22 +71,15 @@ export { MultiSelectFieldComponent };
 export const multiselectFieldDefinition: FieldTypeDefinition = {
   component: MultiSelectFieldComponent,
   match: (field) => {
-    if (field.type !== "array") {
+    if (field.type !== 'array') {
       return false;
     }
     const itemField = field.schema?.[0];
-    return itemField?.type === "select" && itemField.options !== undefined && itemField.options.length > 0;
+    return itemField?.type === 'select' && itemField.options !== undefined && itemField.options.length > 0;
   },
-  name: "multiselect",
+  name: 'multiselect',
   priority: 20,
 };
-
-// ── Data-provider-backed multi-select ─────────────────────────────────
-// Matches `repeated string` whose item carries a `data_provider`
-// annotation, e.g. OpenAPI `include_methods` / `exclude_methods`. The
-// previous behavior rendered a list of single dropdowns with an "Add"
-// button — one row per method. A multi-select collapses that to a single
-// control that holds every picked method as a chip.
 
 const NO_PROVIDER_RESULT: DataProviderResult = { options: [] };
 
@@ -96,12 +89,12 @@ function DataProviderMultiSelectComponent({ field, id, inputProps, path }: AutoF
   const providerId = readDataProviderId(itemField);
   const { dataProviders, formValues } = useAutoForm();
   const provider = resolveDataProvider(dataProviders, providerId);
-  const currentValue = Array.isArray(inputProps["value"])
-    ? inputProps["value"].map((value: unknown) => String(value))
+  const currentValue = Array.isArray(inputProps['value'])
+    ? inputProps['value'].map((value: unknown) => String(value))
     : [];
-  const fieldPath = path.join(".");
+  const fieldPath = path.join('.');
   const dependencyValues = Object.fromEntries(
-    (provider?.dependencies ?? []).map((dependency) => [dependency, getPathInObject(formValues, dependency.split("."))])
+    (provider?.dependencies ?? []).map((dependency) => [dependency, getPathInObject(formValues, dependency.split('.'))])
   );
   const signal = useDataProviderSignal(safeStringify({ dependencyValues, fieldPath, selectedValues: currentValue }));
 
@@ -121,7 +114,7 @@ function DataProviderMultiSelectComponent({ field, id, inputProps, path }: AutoF
   const Provider = provider.component;
   return (
     <Provider
-      request={{ cursor: undefined, dependencyValues, fieldPath, query: "", selectedValues: currentValue, signal }}
+      request={{ cursor: undefined, dependencyValues, fieldPath, query: '', selectedValues: currentValue, signal }}
     >
       {(result) => (
         <DataProviderMultiSelectResult
@@ -148,9 +141,9 @@ function DataProviderMultiSelectResult({
   testIds,
 }: {
   currentValue: string[];
-  field: AutoFormFieldProps["field"];
+  field: AutoFormFieldProps['field'];
   id: string;
-  inputProps: AutoFormFieldProps["inputProps"];
+  inputProps: AutoFormFieldProps['inputProps'];
   provider?: ResolvedDataProvider | undefined;
   result: DataProviderResult;
   testIds: ReturnType<typeof useFieldTestIds>;
@@ -159,7 +152,6 @@ function DataProviderMultiSelectResult({
   const { emptyState, options: providerOptions, isLoading, error: providerError } = result;
   const hasProviderError = Boolean(providerError);
   const { placeholder } = getFieldUiConfig(field);
-  // A failed load says nothing about which selections still exist, so keep them as they are.
   const staleSelections =
     isLoading === true || hasProviderError ? [] : getStaleSelections(providerOptions, currentValue);
   const staleSelectionSet = new Set(staleSelections);
@@ -169,15 +161,15 @@ function DataProviderMultiSelectResult({
   ];
   if (hasProviderError) {
     renderedProviderOptions = currentValue.map((value) => ({ label: value, value }));
-  } else if (provider?.staleSelection === "clear") {
+  } else if (provider?.staleSelection === 'clear') {
     renderedProviderOptions = providerOptions;
   }
 
   const applyUnavailableSelectionClear = React.useEffectEvent(() => {
-    inputProps["onValueChange"](currentValue.filter((value) => !staleSelectionSet.has(value)));
+    inputProps['onValueChange'](currentValue.filter((value) => !staleSelectionSet.has(value)));
   });
   const unavailableSelectionKey =
-    provider?.staleSelection === "clear" && staleSelections.length > 0
+    provider?.staleSelection === 'clear' && staleSelections.length > 0
       ? safeStringify({ currentValue, staleSelections })
       : undefined;
 
@@ -191,8 +183,6 @@ function DataProviderMultiSelectResult({
   );
 
   const options = renderedProviderOptions.map((option) => {
-    // `label` is typed as ReactNode on MultiSelectOptionItem, so we can
-    // render icon + text + description inline instead of stringifying.
     const labelNode = (
       <span className="flex items-center gap-2" key={option.value}>
         {option.icon ? (
@@ -213,18 +203,18 @@ function DataProviderMultiSelectResult({
   return (
     <div className="space-y-2">
       <SimpleMultiSelect
-        disabled={Boolean(inputProps["disabled"] || isLoading === true || providerError)}
+        disabled={Boolean(inputProps['disabled'] || isLoading === true || providerError)}
         emptyState={emptyState}
         id={id}
-        onValueChange={(values) => inputProps["onValueChange"](values)}
+        onValueChange={(values) => inputProps['onValueChange'](values)}
         options={options}
         placeholder={
           [placeholder].find(Boolean) ??
           formatProtoformMessage(
             formatMessage,
-            isLoading === true ? "auto_form.select.loading" : "auto_form.multiselect.placeholder",
+            isLoading === true ? 'auto_form.select.loading' : 'auto_form.multiselect.placeholder',
             {},
-            isLoading === true ? "Loading…" : "Select one or more options"
+            isLoading === true ? 'Loading…' : 'Select one or more options'
           )
         }
         testId={testIds.field}
@@ -233,16 +223,16 @@ function DataProviderMultiSelectResult({
       />
       {hasProviderError ? (
         <p className="text-destructive text-sm" role="alert">
-          {formatProtoformMessage(formatMessage, "auto_form.select.load_error", {}, "Failed to load options")}
+          {formatProtoformMessage(formatMessage, 'auto_form.select.load_error', {}, 'Failed to load options')}
         </p>
       ) : null}
-      {provider?.staleSelection === "error" && staleSelections.length > 0 ? (
+      {provider?.staleSelection === 'error' && staleSelections.length > 0 ? (
         <p className="text-destructive text-sm" role="alert">
           {formatProtoformMessage(
             formatMessage,
-            "auto_form.select.stale",
-            { value: staleSelections.join(", ") },
-            "Selected values are no longer available."
+            'auto_form.select.stale',
+            { value: staleSelections.join(', ') },
+            'Selected values are no longer available.'
           )}
         </p>
       ) : null}
@@ -253,17 +243,15 @@ function DataProviderMultiSelectResult({
 export const dataProviderMultiselectFieldDefinition: FieldTypeDefinition = {
   component: DataProviderMultiSelectComponent,
   match: (field) => {
-    if (field.type !== "array") {
+    if (field.type !== 'array') {
       return false;
     }
     const itemField = field.schema?.[0];
-    if (!itemField || (itemField.type !== "string" && itemField.type !== "number")) {
+    if (!itemField || (itemField.type !== 'string' && itemField.type !== 'number')) {
       return false;
     }
     return readDataProviderId(itemField) !== undefined;
   },
-  name: "dataProviderMultiSelect",
-  // Higher than the default `multiselect` (20) so an annotated item wins
-  // over the legacy "array-of-select-enum" branch even when both match.
+  name: 'dataProviderMultiSelect',
   priority: 120,
 };

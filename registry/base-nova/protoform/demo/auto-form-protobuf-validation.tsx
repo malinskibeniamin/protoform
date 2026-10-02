@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import { useState } from "react";
+import { useState } from 'react';
 
-import { AutoForm } from "@/registry/base-nova/protoform/components/auto-form";
-import "@/registry/base-nova/protoform/lib/protobuf-provider/auto-form-example-annotations";
+import { AutoForm } from '@/registry/base-nova/protoform/components/auto-form';
+import '@/registry/base-nova/protoform/lib/protobuf-provider/auto-form-example-annotations';
 
-import { AutoFormExampleSchema } from "@/registry/base-nova/protoform/lib/protobuf-provider/gen/auto-form-example_pb";
+import { AutoFormExampleSchema } from '@/registry/base-nova/protoform/lib/protobuf-provider/gen/auto-form-example_pb';
 
 const defaultValues = {
   age: 11,
-  createdAt: "",
-  employeeNumber: "0",
-  homepageUrl: "not-a-url",
+  createdAt: '',
+  employeeNumber: '0',
+  homepageUrl: 'not-a-url',
   labels: [],
   maximumThreshold: 4,
   minimumThreshold: 12,
@@ -19,18 +19,18 @@ const defaultValues = {
     case: undefined,
     value: undefined,
   },
-  primaryEmail: "oops",
-  resourceId: "bad-id",
+  primaryEmail: 'oops',
+  resourceId: 'bad-id',
   shippingAddress: {
-    city: "",
+    city: '',
     country: 0,
-    lineOne: "1",
-    postalCode: "12",
-    state: "",
+    lineOne: '1',
+    postalCode: '12',
+    state: '',
   },
-  storageQuotaBytes: "12",
+  storageQuotaBytes: '12',
   tags: [],
-  username: "rp",
+  username: 'rp',
 };
 
 export function AutoFormProtobufValidationDemo() {
@@ -44,7 +44,7 @@ export function AutoFormProtobufValidationDemo() {
       </p>
       <AutoForm
         defaultValues={defaultValues}
-        formOptions={{ mode: "all", reValidateMode: "onChange" }}
+        formOptions={{ mode: 'all', reValidateMode: 'onChange' }}
         onSubmit={() => {
           setSubmitted(true);
         }}

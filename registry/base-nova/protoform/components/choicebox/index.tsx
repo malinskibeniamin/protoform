@@ -1,24 +1,24 @@
-import { Radio as RadioGroupPrimitive } from "@base-ui/react/radio";
-import { Circle } from "lucide-react";
-import { AnimatePresence, motion, type Transition } from "motion/react";
-import { type ComponentProps, forwardRef, type HTMLAttributes } from "react";
+import { Radio as RadioGroupPrimitive } from '@base-ui/react/radio';
+import { Circle } from 'lucide-react';
+import { AnimatePresence, motion, type Transition } from 'motion/react';
+import { type ComponentProps, forwardRef, type HTMLAttributes } from 'react';
 
-import { Card, CardContent, CardDescription, CardHeader, type CardProps, CardTitle } from "@/components/ui/card";
-import { RadioGroup } from "@/components/ui/radio-group";
-import { renderWithDataState } from "@/registry/base-nova/protoform/lib/base-ui-compat";
-import { cn, type SharedProps } from "@/registry/base-nova/protoform/lib/utils";
+import { Card, CardContent, CardDescription, CardHeader, type CardProps, CardTitle } from '@/components/ui/card';
+import { RadioGroup } from '@/components/ui/radio-group';
+import { renderWithDataState } from '@/registry/base-nova/protoform/lib/base-ui-compat';
+import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
-const DEFAULT_TRANSITION = { damping: 16, stiffness: 200, type: "spring" } satisfies Transition;
+const DEFAULT_TRANSITION = { damping: 16, stiffness: 200, type: 'spring' } satisfies Transition;
 
 export type ChoiceboxProps = ComponentProps<typeof RadioGroup> & SharedProps;
 
 export const Choicebox = ({ className, testId, ...props }: ChoiceboxProps) => (
-  <RadioGroup className={cn("w-full", className)} data-testid={testId} {...props} />
+  <RadioGroup className={cn('w-full', className)} data-testid={testId} {...props} />
 );
 
 export type ChoiceboxItemProps = ComponentProps<typeof RadioGroupPrimitive.Root> &
   SharedProps &
-  Partial<Pick<CardProps, "size">>;
+  Partial<Pick<CardProps, 'size'>>;
 
 export const ChoiceboxItem = forwardRef<HTMLButtonElement, ChoiceboxItemProps>(
   ({ className, children, testId, size, ...props }, ref) => (
@@ -27,10 +27,10 @@ export const ChoiceboxItem = forwardRef<HTMLButtonElement, ChoiceboxItemProps>(
       className="group"
       nativeButton
       ref={ref}
-      render={renderWithDataState("button")}
+      render={renderWithDataState('button')}
     >
       <Card
-        className={cn("flex cursor-pointer flex-row items-start justify-between text-left", className)}
+        className={cn('flex cursor-pointer flex-row items-start justify-between text-left', className)}
         data-testid={testId}
         size={size}
         variant="choice"
@@ -41,24 +41,24 @@ export const ChoiceboxItem = forwardRef<HTMLButtonElement, ChoiceboxItemProps>(
   )
 );
 
-ChoiceboxItem.displayName = "ChoiceboxItem";
+ChoiceboxItem.displayName = 'ChoiceboxItem';
 
 export type ChoiceboxItemHeaderProps = ComponentProps<typeof CardHeader>;
 
 export const ChoiceboxItemHeader = ({ className, ...props }: ComponentProps<typeof CardHeader>) => (
-  <CardHeader className={cn("flex-1", className)} {...props} />
+  <CardHeader className={cn('flex-1', className)} {...props} />
 );
 
 export type ChoiceboxItemTitleProps = ComponentProps<typeof CardTitle>;
 
 export const ChoiceboxItemTitle = ({ className, ...props }: ChoiceboxItemTitleProps) => (
-  <CardTitle className={cn("flex items-center", className)} spacing="loose" {...props} />
+  <CardTitle className={cn('flex items-center', className)} spacing="loose" {...props} />
 );
 
 export type ChoiceboxItemSubtitleProps = HTMLAttributes<HTMLSpanElement>;
 
 export const ChoiceboxItemSubtitle = ({ className, ...props }: ChoiceboxItemSubtitleProps) => (
-  <span className={cn("font-normal text-muted-foreground text-xs", className)} {...props} />
+  <span className={cn('font-normal text-muted-foreground text-xs', className)} {...props} />
 );
 
 export type ChoiceboxItemDescriptionProps = ComponentProps<typeof CardDescription>;
@@ -83,7 +83,7 @@ export const ChoiceboxItemIndicator = ({
   ...props
 }: ChoiceboxItemIndicatorProps) => (
   <RadioGroupPrimitive.Indicator
-    className={cn("flex items-center justify-center data-[unchecked]:hidden", className)}
+    className={cn('flex items-center justify-center data-[unchecked]:hidden', className)}
     data-slot="radio-group-indicator"
     {...props}
   >

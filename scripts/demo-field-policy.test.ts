@@ -1,26 +1,26 @@
-import { readdirSync, readFileSync } from "node:fs";
-import { relative } from "node:path";
-import { describe, expect } from "@rstest/core";
-import ts from "typescript";
+import { readdirSync, readFileSync } from 'node:fs';
+import { relative } from 'node:path';
+import { describe, expect } from '@rstest/core';
+import ts from 'typescript';
 
-const repositoryDirectory = new URL("../", import.meta.url);
-const docsDirectory = new URL("../content/docs/", import.meta.url);
+const repositoryDirectory = new URL('../', import.meta.url);
+const docsDirectory = new URL('../content/docs/', import.meta.url);
 const demoDirectories = [
-  new URL("../examples/", import.meta.url),
-  new URL("../islands/", import.meta.url),
-  new URL("../registry/base-nova/protoform/demo/", import.meta.url),
+  new URL('../examples/', import.meta.url),
+  new URL('../islands/', import.meta.url),
+  new URL('../registry/base-nova/protoform/demo/', import.meta.url),
 ] as const;
 const controlNames = new Set([
-  "Checkbox",
-  "Combobox",
-  "DatePicker",
-  "Input",
-  "RadioGroup",
-  "Select",
-  "Slider",
-  "Switch",
-  "Textarea",
-  "ToggleGroup",
+  'Checkbox',
+  'Combobox',
+  'DatePicker',
+  'Input',
+  'RadioGroup',
+  'Select',
+  'Slider',
+  'Switch',
+  'Textarea',
+  'ToggleGroup',
 ]);
 const tsxFencePattern = /```tsx[^\n]*\n([\s\S]*?)\n```/gu;
 
@@ -32,22 +32,22 @@ function findFiles(directory: URL, extension: string): URL[] {
       return findFiles(new URL(`${entry.name}/`, directory), extension);
     }
 
-    return entry.name.endsWith(extension) && !entry.name.includes(".test.") ? [entryUrl] : [];
+    return entry.name.endsWith(extension) && !entry.name.includes('.test.') ? [entryUrl] : [];
   });
 }
 
 function isHiddenInput(node: ts.JsxOpeningLikeElement, sourceFile: ts.SourceFile): boolean {
-  if (node.tagName.getText(sourceFile) !== "Input") {
+  if (node.tagName.getText(sourceFile) !== 'Input') {
     return false;
   }
 
   return node.attributes.properties.some(
     (attribute) =>
       ts.isJsxAttribute(attribute) &&
-      attribute.name.getText(sourceFile) === "type" &&
+      attribute.name.getText(sourceFile) === 'type' &&
       attribute.initializer !== undefined &&
       ts.isStringLiteral(attribute.initializer) &&
-      attribute.initializer.text === "hidden"
+      attribute.initializer.text === 'hidden'
   );
 }
 
@@ -55,7 +55,7 @@ function hasFieldAncestor(node: ts.Node, sourceFile: ts.SourceFile): boolean {
   let ancestor = node.parent;
 
   while (ancestor) {
-    if (ts.isJsxElement(ancestor) && ancestor.openingElement.tagName.getText(sourceFile) === "Field") {
+    if (ts.isJsxElement(ancestor) && ancestor.openingElement.tagName.getText(sourceFile) === 'Field') {
       return true;
     }
     ancestor = ancestor.parent;
@@ -65,7 +65,7 @@ function hasFieldAncestor(node: ts.Node, sourceFile: ts.SourceFile): boolean {
 }
 
 function findUnwrappedControls(file: URL): string[] {
-  const source = readFileSync(file, "utf8");
+  const source = readFileSync(file, 'utf8');
   const fileName = relative(repositoryDirectory.pathname, file.pathname);
 
   return findUnwrappedControlsInSource(source, fileName);
@@ -93,22 +93,22 @@ function findUnwrappedControlsInSource(source: string, fileName: string): string
   return violations;
 }
 
-describe("demo Field policy", () => {
-  test("wraps every visible shadcn control in Field", () => {
+describe('demo Field policy', () => {
+  test('wraps every visible shadcn control in Field', () => {
     const violations = demoDirectories.flatMap((directory) =>
-      findFiles(directory, ".tsx").flatMap(findUnwrappedControls)
+      findFiles(directory, '.tsx').flatMap(findUnwrappedControls)
     );
 
     expect(violations).toEqual([]);
   });
 
-  test("wraps every visible shadcn control in docs examples in Field", () => {
-    const violations = findFiles(docsDirectory, ".mdx").flatMap((file) => {
-      const content = readFileSync(file, "utf8");
+  test('wraps every visible shadcn control in docs examples in Field', () => {
+    const violations = findFiles(docsDirectory, '.mdx').flatMap((file) => {
+      const content = readFileSync(file, 'utf8');
       const fileName = relative(repositoryDirectory.pathname, file.pathname);
 
       return [...content.matchAll(tsxFencePattern)].flatMap((match, index) =>
-        findUnwrappedControlsInSource(match[1] ?? "", `${fileName}#tsx-${index + 1}`)
+        findUnwrappedControlsInSource(match[1] ?? '', `${fileName}#tsx-${index + 1}`)
       );
     });
 

@@ -1,41 +1,41 @@
-"use client";
+'use client';
 
-import { skipToken, useQuery } from "@connectrpc/connect-query";
-import { type ReactNode, useState } from "react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Field, FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { LibraryService } from "@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_pb";
-import { BookDetail } from "./book-detail";
-import { CreateBookForm } from "./create-book-form";
-import { DeleteBookForm } from "./delete-book-form";
-import { UpdateBookForm } from "./update-book-form";
+import { skipToken, useQuery } from '@connectrpc/connect-query';
+import { type ReactNode, useState } from 'react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Field, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { LibraryService } from '@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_pb';
+import { BookDetail } from './book-detail';
+import { CreateBookForm } from './create-book-form';
+import { DeleteBookForm } from './delete-book-form';
+import { UpdateBookForm } from './update-book-form';
 
-type View = "create" | "delete" | "detail" | "edit" | "list";
+type View = 'create' | 'delete' | 'detail' | 'edit' | 'list';
 
 export function BookstoreWorkspace({ onReset, parent }: { onReset: () => void; parent: string }) {
-  const [view, setView] = useState<View>("list");
+  const [view, setView] = useState<View>('list');
   const [selectedName, setSelectedName] = useState<string>();
-  const [filter, setFilter] = useState("");
+  const [filter, setFilter] = useState('');
   const list = useQuery(LibraryService.method.listBooks, { filter, parent });
   const detail = useQuery(LibraryService.method.getBook, selectedName ? { name: selectedName } : skipToken);
 
   function openBook(name: string) {
     setSelectedName(name);
-    setView("detail");
+    setView('detail');
   }
 
   function returnToList() {
     setSelectedName(undefined);
-    setView("list");
+    setView('list');
   }
 
   function resetLibrary() {
     returnToList();
-    setFilter("");
+    setFilter('');
     onReset();
   }
 
@@ -83,7 +83,7 @@ export function BookstoreWorkspace({ onReset, parent }: { onReset: () => void; p
               <CardDescription>{book.isbn}</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="line-clamp-2 text-muted-foreground text-sm">{book.note || "No note yet."}</p>
+              <p className="line-clamp-2 text-muted-foreground text-sm">{book.note || 'No note yet.'}</p>
             </CardContent>
           </Card>
         ))}
@@ -110,7 +110,7 @@ export function BookstoreWorkspace({ onReset, parent }: { onReset: () => void; p
         </Button>
       </header>
 
-      {view === "list" ? (
+      {view === 'list' ? (
         <section aria-labelledby="book-list-title" className="space-y-5">
           <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
             <div>
@@ -119,7 +119,7 @@ export function BookstoreWorkspace({ onReset, parent }: { onReset: () => void; p
               </h2>
               <p className="text-muted-foreground text-sm">Live ListBooks results from your temporary library.</p>
             </div>
-            <Button onClick={() => setView("create")} type="button">
+            <Button onClick={() => setView('create')} type="button">
               Create book
             </Button>
           </div>
@@ -137,28 +137,28 @@ export function BookstoreWorkspace({ onReset, parent }: { onReset: () => void; p
         </section>
       ) : null}
 
-      {view === "create" ? (
+      {view === 'create' ? (
         <CreateBookForm onCancel={returnToList} onCreated={(name) => openBook(name)} parent={parent} />
       ) : null}
 
-      {view === "detail" ? (
+      {view === 'detail' ? (
         <BookDetail
           book={selected}
           error={detail.error?.message}
           isPending={detail.isPending}
           onBack={returnToList}
-          onDelete={() => setView("delete")}
-          onEdit={() => setView("edit")}
+          onDelete={() => setView('delete')}
+          onEdit={() => setView('edit')}
           onRetry={() => detail.refetch()}
         />
       ) : null}
 
-      {view === "edit" && selected ? (
-        <UpdateBookForm book={selected} onCancel={() => setView("detail")} onUpdated={() => setView("detail")} />
+      {view === 'edit' && selected ? (
+        <UpdateBookForm book={selected} onCancel={() => setView('detail')} onUpdated={() => setView('detail')} />
       ) : null}
 
-      {view === "delete" && selected ? (
-        <DeleteBookForm book={selected} onCancel={() => setView("detail")} onDeleted={handleDeleted} />
+      {view === 'delete' && selected ? (
+        <DeleteBookForm book={selected} onCancel={() => setView('detail')} onDeleted={handleDeleted} />
       ) : null}
     </div>
   );

@@ -33,7 +33,38 @@
   },
   "formatter": {
     "enabled": true,
+    "formatWithErrors": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineEnding": "lf",
     "lineWidth": 120
+  },
+  "javascript": {
+    "formatter": {
+      "arrowParentheses": "always",
+      "bracketSameLine": false,
+      "quoteStyle": "single",
+      "quoteProperties": "asNeeded",
+      "semicolons": "always",
+      "trailingCommas": "es5"
+    }
+  },
+  "json": {
+    "formatter": {
+      "enabled": true,
+      "indentStyle": "space",
+      "indentWidth": 2,
+      "lineEnding": "lf",
+      "lineWidth": 120,
+      "trailingCommas": "none"
+    }
+  },
+  "css": {
+    "formatter": {
+      "lineEnding": "lf",
+      "lineWidth": 120,
+      "quoteStyle": "single"
+    }
   },
   "linter": {
     "enabled": true,
@@ -106,7 +137,7 @@
         "noFlatMapIdentity": "error",
         "noForEach": "error",
         "noImplicitCoercions": "error",
-        "noImportantStyles": "off",
+        "noImportantStyles": "error",
         "noRedundantDefaultExport": "error",
         "noStaticOnlyClass": "error",
         "noThisInStatic": "error",
@@ -120,7 +151,7 @@
         "noUselessLabel": "error",
         "noUselessLoneBlockStatements": "error",
         "noUselessRename": "error",
-        "noUselessReturn": "off",
+        "noUselessReturn": "error",
         "noUselessStringConcat": "error",
         "noUselessStringRaw": "error",
         "noUselessSwitchCase": "error",
@@ -261,8 +292,7 @@
       "nursery": {
         "noAstroConflictingSetDirectives": "error",
         "noAstroSetHtmlDirective": "error",
-        // Bun is the repository toolchain.
-        "noBunModules": "off",
+        "noBunModules": "error",
         "noInvalidFileInputAccept": "error",
         "noSvelteAtHtmlTags": "error",
         "noThisOutsideOfClass": "error",
@@ -388,7 +418,12 @@
         // introducing names would add no safer access path.
         "useNamedCaptureGroup": "off",
         "useNamedLayer": "error",
-        "useNullishCoalescing": "off",
+        "useNullishCoalescing": {
+          "level": "error",
+          "options": {
+            "ignorePrimitives": true
+          }
+        },
         "usePlaywrightValidDescribeCallback": "off",
         "usePromiseRejectErrors": "error",
         "useQwikLoaderLocation": "off",
@@ -412,7 +447,7 @@
         "useStringStartsEndsWith": "error",
         "useSvelteKitRuneImports": "error",
         "useSvelteRequireEachKey": "off",
-        "useTailwindShorthandClasses": "off",
+        "useTailwindShorthandClasses": "error",
         "useTestHooksInOrder": "error",
         "useTestHooksOnTop": "error",
         "useThisInClassMethods": "error",
@@ -430,7 +465,8 @@
         "noDelete": "error",
         "noDynamicNamespaceImportAccess": "error",
         "noImgElement": "error",
-        "noJsxPropsBind": "error",
+        // React Compiler stabilizes component-local functions without manual memoization.
+        "noJsxPropsBind": "off",
         "noNamespaceImport": "error",
         "noReExportAll": "error",
         "noSyncScripts": "error",
@@ -761,9 +797,7 @@
     {
       // Standard Schema path keys are PropertyKey primitives, not objects. Biome loses
       // the imported union's primitive types at the recursive path-conversion boundary.
-      "includes": [
-        "registry/base-nova/protoform/lib/protobuf-provider/hook-runtime.ts"
-      ],
+      "includes": ["registry/base-nova/protoform/lib/protobuf-provider/hook-runtime.ts"],
       "linter": {
         "rules": {
           "nursery": {
@@ -775,9 +809,7 @@
     {
       // Both reported conversions are guarded by `typeof value === "number"`; Biome loses that
       // narrowing across the recursive JSON-field renderer.
-      "includes": [
-        "registry/base-nova/protoform/components/json-field/index.tsx"
-      ],
+      "includes": ["registry/base-nova/protoform/components/json-field/index.tsx"],
       "linter": {
         "rules": {
           "nursery": {
@@ -788,9 +820,7 @@
     },
     {
       // CEL expression identifiers are bigint values, which Math.min/Math.max cannot accept.
-      "includes": [
-        "registry/base-nova/protoform/components/auto-form/cel-runtime.ts"
-      ],
+      "includes": ["registry/base-nova/protoform/components/auto-form/cel-runtime.ts"],
       "linter": {
         "rules": {
           "nursery": {
@@ -854,17 +884,6 @@
       }
     },
     {
-      // React Compiler stabilizes component-local functions without manual memoization.
-      "includes": ["**/*.tsx"],
-      "linter": {
-        "rules": {
-          "performance": {
-            "noJsxPropsBind": "off"
-          }
-        }
-      }
-    },
-    {
       // The controller contract intentionally uses TypeScript's bivariant callback pattern so
       // value-specific field adapters remain assignable without weakening values to any.
       "includes": ["registry/**/components/auto-form/core-types.ts"],
@@ -904,7 +923,24 @@
     },
     {
       // Registry primitives preserve the ref-forwarding API expected by installed consumers.
-      "includes": ["registry/**/*.tsx"],
+      "includes": [
+        "registry/base-nova/protoform/components/alert/index.tsx",
+        "registry/base-nova/protoform/components/auto-form/field-wrapper.tsx",
+        "registry/base-nova/protoform/components/button/index.tsx",
+        "registry/base-nova/protoform/components/card/index.tsx",
+        "registry/base-nova/protoform/components/checkbox/index.tsx",
+        "registry/base-nova/protoform/components/choicebox/index.tsx",
+        "registry/base-nova/protoform/components/input-group/index.tsx",
+        "registry/base-nova/protoform/components/input/index.tsx",
+        "registry/base-nova/protoform/components/label/index.tsx",
+        "registry/base-nova/protoform/components/multi-select/index.tsx",
+        "registry/base-nova/protoform/components/select/index.tsx",
+        "registry/base-nova/protoform/components/tabs/index.tsx",
+        "registry/base-nova/protoform/components/textarea/index.tsx",
+        "registry/base-nova/protoform/components/toggle-group/index.tsx",
+        "registry/base-nova/protoform/components/typography/index.tsx",
+        "registry/base-nova/protoform/lib/base-ui-compat/index.tsx"
+      ],
       "linter": {
         "rules": {
           "suspicious": {
@@ -915,11 +951,7 @@
     },
     {
       // Registry entrypoints are the public install units consumed by shadcn-compatible clients.
-      "includes": [
-        "registry/**/index.ts",
-        "registry/**/index.tsx",
-        "registry/**/core-types.ts"
-      ],
+      "includes": ["registry/**/index.ts", "registry/**/index.tsx", "registry/**/core-types.ts"],
       "linter": {
         "rules": {
           "performance": {
@@ -999,12 +1031,7 @@
     {
       // Tests are executable specifications: native controls, Node fixtures, and long scenario
       // bodies make the exercised behavior clearer than production abstractions would.
-      "includes": [
-        "**/*.test.ts",
-        "**/*.test.tsx",
-        "**/*.spec.ts",
-        "**/*.spec.tsx"
-      ],
+      "includes": ["**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts", "**/*.spec.tsx"],
       "linter": {
         "rules": {
           "complexity": {
@@ -1036,11 +1063,7 @@
     },
     {
       // Browser-mode Rstest does not expose globals at runtime.
-      "includes": [
-        "**/*.browser.test.ts",
-        "**/*.browser.test.tsx",
-        "**/__browser__/**"
-      ],
+      "includes": ["**/*.browser.test.ts", "**/*.browser.test.tsx", "**/__browser__/**"],
       "javascript": {
         "globals": []
       }
@@ -1109,10 +1132,7 @@
     {
       // These documentation-only workspaces intentionally colocate the controls and live preview
       // whose shared state they demonstrate; installable Protoform modules remain constrained.
-      "includes": [
-        "examples/presets/preset-lab.tsx",
-        "examples/readiness/readiness-dashboard.tsx"
-      ],
+      "includes": ["examples/presets/preset-lab.tsx", "examples/readiness/readiness-dashboard.tsx"],
       "linter": {
         "rules": {
           "complexity": {
@@ -1125,10 +1145,7 @@
     {
       // These files implement the restricted primitives themselves, so they must render the
       // underlying platform element rather than recursively importing their own abstraction.
-      "includes": [
-        "registry/**/components/input/index.tsx",
-        "registry/**/components/textarea/index.tsx"
-      ],
+      "includes": ["registry/**/components/input/index.tsx", "registry/**/components/textarea/index.tsx"],
       "linter": {
         "rules": {
           "correctness": {
@@ -1162,10 +1179,7 @@
     {
       // These workflows are intentionally sequential because each iteration mutates shared
       // browser or request state before the next one starts.
-      "includes": [
-        "e2e/docs-screenshots.spec.ts",
-        "registry/**/lib/protobuf-provider/aip-client-workflow.ts"
-      ],
+      "includes": ["e2e/docs-screenshots.spec.ts", "registry/**/lib/protobuf-provider/aip-client-workflow.ts"],
       "linter": {
         "rules": {
           "performance": {
@@ -1267,6 +1281,71 @@
           "a11y": {
             "useSemanticElements": "off"
           }
+        }
+      }
+    },
+    {
+      // Biome's Tailwind parser rejects valid arbitrary variants such as `[[data-slot=x]+&]:` and
+      // dynamic `grid-cols-${n}` candidates, so the shorthand rule cannot run on these files.
+      "includes": [
+        "registry/**/components/auto-form/field-wrapper.tsx",
+        "registry/**/components/calendar/index.tsx",
+        "registry/**/components/dialog/index.tsx",
+        "registry/**/components/field/index.tsx",
+        "registry/**/components/input-group/index.tsx",
+        "registry/**/components/tabs/index.tsx"
+      ],
+      "linter": {
+        "rules": {
+          "nursery": {
+            "useTailwindShorthandClasses": "off"
+          }
+        }
+      }
+    },
+    {
+      // Biome infers `RegExp.prototype.exec` as never returning null, so it misreports the
+      // optional chaining these match-or-skip parsers rely on.
+      "includes": [
+        "registry/**/demo/bookstore/library-service.ts",
+        "registry/**/lib/protobuf-provider/humanize-validation-error.ts"
+      ],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noUnnecessaryConditions": "off"
+          }
+        }
+      }
+    },
+    {
+      // Fullscreen diagrams and Shiki tokens carry inline styles that only `!important` can override.
+      "includes": ["theme.css"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noImportantStyles": "off"
+          }
+        }
+      }
+    },
+    {
+      // The consumer smoke test drives the Bun shell and glob APIs directly.
+      "includes": ["scripts/consumer-fixture-smoke.ts"],
+      "linter": {
+        "rules": {
+          "nursery": {
+            "noBunModules": "off"
+          }
+        }
+      }
+    },
+    {
+      // `blume translate` fingerprints these files byte-for-byte, so they keep the translator's quote style.
+      "includes": ["content/docs/**/meta.ts"],
+      "javascript": {
+        "formatter": {
+          "quoteStyle": "double"
         }
       }
     },

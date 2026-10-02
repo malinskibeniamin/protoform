@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import React from "react";
+import React from 'react';
 
-import type { SchemaValidationError } from "./core-types";
+import type { SchemaValidationError } from './core-types';
 
 export interface AutoFormFieldController {
   errors: string[];
@@ -26,7 +26,6 @@ export interface AutoFormEngineHandle {
   clearErrors: (paths?: string[]) => void;
   focus: (path: string) => void;
   getValues: () => Record<string, unknown>;
-  /** Establish the current values as the new clean baseline. */
   markClean: () => void;
   reset: (values: Record<string, unknown>, options?: { keepDefaultValues?: boolean }) => void;
   setValue: (
@@ -60,7 +59,6 @@ export type AutoFormEngine = AutoFormEngineHandle & {
   setRootError: (message: string) => void;
   setValidationErrors: (errors: SchemaValidationError[]) => void;
   trigger: (paths?: string[]) => Promise<boolean>;
-  /** Native validation already returns the schema's transformed output. */
   validatesSchema: boolean;
   values: Record<string, unknown>;
 };
@@ -74,25 +72,25 @@ export function AutoFormEngineProvider({ children, engine }: { children: React.R
 export function useAutoFormEngine(): AutoFormEngine {
   const engine = React.useContext(AutoFormEngineContext);
   if (!(engine !== null && Boolean(engine))) {
-    throw new Error("AutoForm engine controls must be used inside an AutoForm engine provider.");
+    throw new Error('AutoForm engine controls must be used inside an AutoForm engine provider.');
   }
   return engine;
 }
 
 export function errorMessage(value: unknown): string | undefined {
-  if (typeof value === "string") {
+  if (typeof value === 'string') {
     return value;
   }
   if (value instanceof Error) {
     return value.message;
   }
-  if (value !== null && typeof value === "object") {
-    const message = Reflect.get(value, "message");
-    if (typeof message === "string") {
+  if (value !== null && typeof value === 'object') {
+    const message = Reflect.get(value, 'message');
+    if (typeof message === 'string') {
       return message;
     }
   }
-  return;
+  return undefined;
 }
 
 export function errorMessages(values: unknown[]): string[] {

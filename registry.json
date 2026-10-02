@@ -35,10 +35,7 @@
       "type": "registry:block",
       "title": "Bookstore RPC demo",
       "description": "Five live Book RPC flows: list, get, RHF stepper create with ISBN CEL, update masks with etags, and AutoForm delete.",
-      "registryDependencies": [
-        "@protoform/protoform-shadcn",
-        "@protoform/protoform-demo-runtime"
-      ],
+      "registryDependencies": ["@protoform/protoform-shadcn", "@protoform/protoform-demo-runtime"],
       "dependencies": [
         "@buf/googleapis_googleapis.bufbuild_es",
         "@bufbuild/protobuf",
@@ -322,12 +319,7 @@
       "type": "registry:hook",
       "title": "useProtoForm",
       "description": "React Hook Form adapter for ProtoValidate ES, CEL rules, protobuf defaults, oneofs, and Connect/gRPC field violations.",
-      "dependencies": [
-        "@bufbuild/protobuf",
-        "@connectrpc/connect",
-        "@hookform/resolvers",
-        "react-hook-form"
-      ],
+      "dependencies": ["@bufbuild/protobuf", "@connectrpc/connect", "@hookform/resolvers", "react-hook-form"],
       "files": [
         {
           "path": "registry/base-nova/protoform/hooks/use-proto-form/index.ts",
@@ -371,11 +363,7 @@
       "type": "registry:hook",
       "title": "useProtoForm for TanStack Form",
       "description": "TanStack Form adapter that preserves the native form API and adds protobuf messages, update masks, oneofs, and Connect/gRPC field violations.",
-      "dependencies": [
-        "@bufbuild/protobuf",
-        "@connectrpc/connect",
-        "@tanstack/react-form"
-      ],
+      "dependencies": ["@bufbuild/protobuf", "@connectrpc/connect", "@tanstack/react-form"],
       "files": [
         {
           "path": "registry/base-nova/protoform/hooks/use-proto-form-tanstack/index.ts",
@@ -429,10 +417,7 @@
       "type": "registry:hook",
       "title": "Experimental useProtoForm for TanStack Form v2",
       "description": "Experimental TanStack Form v2 alpha adapter with the native atom, validator-array, and schema-output APIs plus protobuf messages, update masks, and oneofs.",
-      "dependencies": [
-        "@bufbuild/protobuf",
-        "@tanstack/react-form-v2@npm:@tanstack/react-form@2.0.0-alpha.2"
-      ],
+      "dependencies": ["@bufbuild/protobuf", "@tanstack/react-form-v2@npm:@tanstack/react-form@2.0.0-alpha.2"],
       "files": [
         {
           "path": "registry/base-nova/protoform/hooks/use-proto-form-tanstack-v2/index.ts",
@@ -447,10 +432,7 @@
       "type": "registry:block",
       "title": "Protoform AutoForm core",
       "description": "Engine-neutral AutoForm renderer that consumes a host-owned shadcn-compatible component map.",
-      "registryDependencies": [
-        "@protoform/protoform-foundation",
-        "@protoform/protobuf-provider"
-      ],
+      "registryDependencies": ["@protoform/protoform-foundation", "@protoform/protobuf-provider"],
       "dependencies": [
         "@buf/googleapis_googleapis.bufbuild_es",
         "@bufbuild/cel",
@@ -800,10 +782,7 @@
       "type": "registry:block",
       "title": "Protoform React",
       "description": "React Hook Form AutoForm renderer and field logic using a consumer-owned shadcn-compatible component map.",
-      "registryDependencies": [
-        "@protoform/auto-form-core",
-        "@protoform/protoform-core"
-      ],
+      "registryDependencies": ["@protoform/auto-form-core", "@protoform/protoform-core"],
       "dependencies": ["react-hook-form"],
       "files": [
         {
@@ -1084,10 +1063,7 @@
       "type": "registry:block",
       "title": "Protoform AutoForm for TanStack Form",
       "description": "TanStack Form-native AutoForm with the complete native form API plus Protoform rendering and protobuf helpers.",
-      "registryDependencies": [
-        "@protoform/auto-form-core",
-        "@protoform/use-proto-form-tanstack"
-      ],
+      "registryDependencies": ["@protoform/auto-form-core", "@protoform/use-proto-form-tanstack"],
       "dependencies": ["@tanstack/react-form"],
       "files": [
         {
@@ -1112,10 +1088,7 @@
       "type": "registry:block",
       "title": "Experimental Protoform AutoForm for React Hook Form v8",
       "description": "Experimental AutoForm adapter for the React Hook Form v8 beta with its native form API plus Protoform rendering and protobuf helpers.",
-      "registryDependencies": [
-        "@protoform/auto-form-core",
-        "@protoform/use-proto-form-v8"
-      ],
+      "registryDependencies": ["@protoform/auto-form-core", "@protoform/use-proto-form-v8"],
       "dependencies": ["react-hook-form-v8@npm:react-hook-form@8.0.0-beta.4"],
       "files": [
         {
@@ -1140,14 +1113,8 @@
       "type": "registry:block",
       "title": "Experimental Protoform AutoForm for TanStack Form v2",
       "description": "Experimental AutoForm adapter for the TanStack Form v2 alpha with native atoms, validator arrays, ArrayField state, and submit validation errors.",
-      "registryDependencies": [
-        "@protoform/auto-form-core",
-        "@protoform/use-proto-form-tanstack-v2"
-      ],
-      "dependencies": [
-        "@tanstack/react-form-v2@npm:@tanstack/react-form@2.0.0-alpha.2",
-        "zod"
-      ],
+      "registryDependencies": ["@protoform/auto-form-core", "@protoform/use-proto-form-tanstack-v2"],
+      "dependencies": ["@tanstack/react-form-v2@npm:@tanstack/react-form@2.0.0-alpha.2", "zod"],
       "files": [
         {
           "path": "registry/base-nova/protoform/components/auto-form-tanstack-v2/index.tsx",
@@ -2960,10 +2927,7 @@
         }
       ],
       "name": "tanstack-form-demo",
-      "registryDependencies": [
-        "@protoform/protoform-demo-runtime",
-        "@protoform/use-proto-form-tanstack"
-      ],
+      "registryDependencies": ["@protoform/protoform-demo-runtime", "@protoform/use-proto-form-tanstack"],
       "title": "TanStack Form interoperability",
       "type": "registry:example"
     },

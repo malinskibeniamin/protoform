@@ -1,19 +1,16 @@
-import { Radio as RadioPrimitive } from "@base-ui/react/radio";
-import { RadioGroup as RadioGroupPrimitive } from "@base-ui/react/radio-group";
-import { Circle } from "lucide-react";
-import { AnimatePresence, type HTMLMotionProps, motion, type Transition } from "motion/react";
-import React from "react";
+import { Radio as RadioPrimitive } from '@base-ui/react/radio';
+import { RadioGroup as RadioGroupPrimitive } from '@base-ui/react/radio-group';
+import { Circle } from 'lucide-react';
+import { AnimatePresence, type HTMLMotionProps, motion, type Transition } from 'motion/react';
+import React from 'react';
 
-import { cn, type SharedProps } from "@/registry/base-nova/protoform/lib/utils";
+import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
 const DEFAULT_TRANSITION = { duration: 0.15 } satisfies Transition;
 
-// Radix RadioGroup supported an `orientation` prop; Base UI's RadioGroup does not
-// declare one. Preserve the public API by accepting it and forwarding as
-// `aria-orientation` + data attribute.
-type RadioGroupOrientation = "vertical" | "horizontal";
+type RadioGroupOrientation = 'vertical' | 'horizontal';
 
-type RadioGroupProps = Omit<React.ComponentProps<typeof RadioGroupPrimitive>, "onValueChange"> &
+type RadioGroupProps = Omit<React.ComponentProps<typeof RadioGroupPrimitive>, 'onValueChange'> &
   SharedProps & {
     orientation?: RadioGroupOrientation;
     onValueChange?: (value: string) => void;
@@ -21,7 +18,7 @@ type RadioGroupProps = Omit<React.ComponentProps<typeof RadioGroupPrimitive>, "o
   };
 
 function RadioGroup(allProps: RadioGroupProps) {
-  const { className, orientation = "vertical", testId, onValueChange, ...props } = allProps;
+  const { className, orientation = 'vertical', testId, onValueChange, ...props } = allProps;
 
   const handleValueChange = React.useMemo(() => {
     if (!onValueChange) {
@@ -30,19 +27,13 @@ function RadioGroup(allProps: RadioGroupProps) {
     return (next: unknown) => onValueChange(next as string);
   }, [onValueChange]);
 
-  // Radix parity: when consumers explicitly pass `value` (controlled mode) but
-  // their source-of-truth starts as `undefined` (e.g. react-hook-form
-  // `field.value` before the first change), Base UI's `useControlled` warns on
-  // the undefined → string transition. Radix tolerated this silently. Normalize
-  // undefined → '' only when `value` was explicitly passed — uncontrolled mode
-  // via `defaultValue` (without `value`) keeps working unchanged.
-  const hasValueProp = "value" in allProps;
-  const valueOverride = hasValueProp && allProps.value === undefined ? { value: "" } : undefined;
+  const hasValueProp = 'value' in allProps;
+  const valueOverride = hasValueProp && allProps.value === undefined ? { value: '' } : undefined;
 
   return (
     <RadioGroupPrimitive
       aria-orientation={orientation}
-      className={cn("grid w-full gap-2", orientation === "horizontal" && "grid-cols-2", className)}
+      className={cn('grid w-full gap-2', orientation === 'horizontal' && 'grid-cols-2', className)}
       data-orientation={orientation}
       data-slot="radio-group"
       data-testid={testId}
@@ -60,7 +51,7 @@ type RadioGroupIndicatorProps = React.ComponentProps<typeof RadioPrimitive.Indic
 function RadioGroupIndicator({ className, transition, ...props }: RadioGroupIndicatorProps) {
   return (
     <RadioPrimitive.Indicator
-      className={cn("flex items-center justify-center data-[unchecked]:hidden", className)}
+      className={cn('flex items-center justify-center data-[unchecked]:hidden', className)}
       data-slot="radio-group-indicator"
       keepMounted
       {...props}
@@ -83,20 +74,20 @@ function RadioGroupIndicator({ className, transition, ...props }: RadioGroupIndi
 }
 
 type RadioGroupItemProps = React.ComponentProps<typeof RadioPrimitive.Root> &
-  HTMLMotionProps<"button"> &
+  HTMLMotionProps<'button'> &
   SharedProps & {
     transition?: Transition;
-    variant?: "card" | "default";
+    variant?: 'card' | 'default';
   };
 
-type MotionButtonStyle = NonNullable<HTMLMotionProps<"button">["style"]>;
+type MotionButtonStyle = NonNullable<HTMLMotionProps<'button'>['style']>;
 
 function RadioGroupItem({
   children,
   className,
   transition = DEFAULT_TRANSITION,
   testId,
-  variant = "default",
+  variant = 'default',
   ...props
 }: RadioGroupItemProps) {
   return (
@@ -104,7 +95,7 @@ function RadioGroupItem({
       {...(props as React.ComponentProps<typeof RadioPrimitive.Root>)}
       nativeButton
       render={(
-        rootProps: React.ComponentPropsWithoutRef<"button">,
+        rootProps: React.ComponentPropsWithoutRef<'button'>,
         state: { checked?: boolean; disabled?: boolean }
       ) => {
         const {
@@ -121,22 +112,22 @@ function RadioGroupItem({
             {...motionButtonProps}
             {...(style ? { style: style as MotionButtonStyle } : {})}
             className={cn(
-              variant === "card"
-                ? "flex h-auto min-h-12 w-full items-center justify-between gap-4 rounded-lg border border-border/70 bg-background px-4 py-3 text-left text-foreground ring-offset-background transition hover:border-foreground/30 hover:shadow-xs focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[checked]:border-foreground data-[checked]:bg-muted/30 data-[checked]:shadow-xs"
-                : "!border-input relative flex aspect-square size-4 cursor-pointer items-center justify-center rounded-full border outline-none after:absolute after:-inset-x-3 after:-inset-y-2 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:bg-input/30 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40",
+              variant === 'card'
+                ? 'flex h-auto min-h-12 w-full items-center justify-between gap-4 rounded-lg border border-border/70 bg-background px-4 py-3 text-left text-foreground ring-offset-background transition hover:border-foreground/30 hover:shadow-xs focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[checked]:border-foreground data-[checked]:bg-muted/30 data-[checked]:shadow-xs'
+                : '!border-input relative flex aspect-square size-4 cursor-pointer items-center justify-center rounded-full border outline-none after:absolute after:-inset-x-3 after:-inset-y-2 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:bg-input/30 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40',
               className
             )}
             data-slot="radio-group-item"
-            data-state={state.checked === true ? "checked" : "unchecked"}
+            data-state={state.checked === true ? 'checked' : 'unchecked'}
             data-testid={testId}
-            {...(variant === "default" ? { whileHover: { scale: 1.05 }, whileTap: { scale: 0.95 } } : {})}
+            {...(variant === 'default' ? { whileHover: { scale: 1.05 }, whileTap: { scale: 0.95 } } : {})}
           >
             {children}
-            {variant === "card" ? (
+            {variant === 'card' ? (
               <span
                 aria-hidden="true"
                 className="!border-input flex aspect-square size-5 shrink-0 items-center justify-center rounded-full border text-selected"
-                data-state={state.checked === true ? "checked" : "unchecked"}
+                data-state={state.checked === true ? 'checked' : 'unchecked'}
               >
                 <RadioGroupIndicator data-slot="radio-group-item-indicator" transition={transition} />
               </span>

@@ -1,7 +1,7 @@
-import { Heading, Text } from "@/registry/base-nova/protoform/components/typography";
+import { Heading, Text } from '@/registry/base-nova/protoform/components/typography';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
 function redactCredentials(payload: unknown): unknown {
@@ -10,8 +10,8 @@ function redactCredentials(payload: unknown): unknown {
   }
 
   const redacted = structuredClone(payload);
-  if (isRecord(redacted["apiKey"])) {
-    redacted["apiKey"]["apiKey"] = "[redacted]";
+  if (isRecord(redacted['apiKey'])) {
+    redacted['apiKey']['apiKey'] = '[redacted]';
   }
   return redacted;
 }

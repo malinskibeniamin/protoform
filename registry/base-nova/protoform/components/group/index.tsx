@@ -1,9 +1,9 @@
-"use client";
-import React, { createContext, useContext } from "react";
+'use client';
+import React, { createContext, useContext } from 'react';
 
-import { cn, type SharedProps } from "@/registry/base-nova/protoform/lib/utils";
+import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
-type GroupPosition = "first" | "middle" | "last";
+type GroupPosition = 'first' | 'middle' | 'last';
 
 interface GroupContextValue {
   attached: boolean;
@@ -41,17 +41,17 @@ const Group = ({
         return;
       }
       if (index === 0) {
-        return "first";
+        return 'first';
       }
       if (index === childCount - 1) {
-        return "last";
+        return 'last';
       }
-      return "middle";
+      return 'middle';
     };
 
     const position = getPosition();
     const element = child as React.ReactElement;
-    const key = element.key === null || element.key === "" ? `group-item-${index}` : element.key;
+    const key = element.key === null || element.key === '' ? `group-item-${index}` : element.key;
 
     return (
       <GroupItemContext attached={attached} key={key} position={position}>
@@ -62,7 +62,7 @@ const Group = ({
 
   return (
     <div
-      className={cn("flex w-full items-stretch", attached !== true && "items-end gap-1.5", className)}
+      className={cn('flex w-full items-stretch', attached !== true && 'items-end gap-1.5', className)}
       data-testid={testId}
     >
       {content}

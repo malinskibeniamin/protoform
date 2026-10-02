@@ -1,13 +1,13 @@
-import { BadRequestSchema } from "@buf/googleapis_googleapis.bufbuild_es/google/rpc/error_details_pb.js";
-import { create, isMessage } from "@bufbuild/protobuf";
-import { Code, ConnectError } from "@connectrpc/connect";
-import { describe, expect } from "@rstest/core";
-import { renderHook, waitFor } from "@testing-library/react";
-import { act } from "react";
+import { BadRequestSchema } from '@buf/googleapis_googleapis.bufbuild_es/google/rpc/error_details_pb.js';
+import { create, isMessage } from '@bufbuild/protobuf';
+import { Code, ConnectError } from '@connectrpc/connect';
+import { describe, expect } from '@rstest/core';
+import { renderHook, waitFor } from '@testing-library/react';
+import { act } from 'react';
 
-import "../../lib/protobuf-provider/auto-form-example-annotations.js";
-import { AutoFormExampleSchema } from "../../lib/protobuf-provider/gen/auto-form-example_pb.js";
-import { useProtoForm } from "./index.js";
+import '../../lib/protobuf-provider/auto-form-example-annotations.js';
+import { AutoFormExampleSchema } from '../../lib/protobuf-provider/gen/auto-form-example_pb.js';
+import { useProtoForm } from './index.js';
 
 const emptyDefaults = create(AutoFormExampleSchema) as Record<string, unknown>;
 
@@ -15,38 +15,37 @@ function defaults(overrides: Record<string, unknown> = {}) {
   return { ...emptyDefaults, ...overrides };
 }
 
-describe("experimental React Hook Form v8 useProtoForm conformance", () => {
-  test("exposes the v8-native form API, creates protobuf messages, and builds update masks", async () => {
+describe('experimental React Hook Form v8 useProtoForm conformance', () => {
+  test('exposes the v8-native form API, creates protobuf messages, and builds update masks', async () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
-        defaultValues: defaults({ age: 25, primaryEmail: "old@example.com", username: "test_user" }),
+        defaultValues: defaults({ age: 25, primaryEmail: 'old@example.com', username: 'test_user' }),
       })
     );
 
-    expect(result.current.register).toBeTypeOf("function");
+    expect(result.current.register).toBeTypeOf('function');
     expect(result.current.control).toBeDefined();
     const message = result.current.createMessage();
     expect(isMessage(message, AutoFormExampleSchema)).toBe(true);
     expect(message.age).toBe(25);
-    expect(message.username).toBe("test_user");
+    expect(message.username).toBe('test_user');
 
-    // Update masks follow fields changed through v8.
     act(() => {
-      result.current.setValue("primaryEmail", "new@example.com", {
+      result.current.setValue('primaryEmail', 'new@example.com', {
         shouldDirty: true,
       });
     });
 
     await waitFor(() => {
-      expect(result.current.createUpdateMask().paths).toEqual(["primary_email"]);
+      expect(result.current.createUpdateMask().paths).toEqual(['primary_email']);
     });
   });
 
-  test("validates protobuf fields without the v7-only resolver package", async () => {
+  test('validates protobuf fields without the v7-only resolver package', async () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
-        defaultValues: defaults({ username: "ab" }),
-        mode: "all",
+        defaultValues: defaults({ username: 'ab' }),
+        mode: 'all',
       })
     );
 
@@ -59,13 +58,13 @@ describe("experimental React Hook Form v8 useProtoForm conformance", () => {
     });
   });
 
-  test("maps Connect field violations, including prefixed paths, onto v8 field errors", () => {
+  test('maps Connect field violations, including prefixed paths, onto v8 field errors', () => {
     const { result } = renderHook(() => useProtoForm(AutoFormExampleSchema));
-    const error = new ConnectError("Review the highlighted fields.", Code.InvalidArgument, {}, [
+    const error = new ConnectError('Review the highlighted fields.', Code.InvalidArgument, {}, [
       {
         desc: BadRequestSchema,
         value: {
-          fieldViolations: [{ description: "value is required", field: "primary_email" }],
+          fieldViolations: [{ description: 'value is required', field: 'primary_email' }],
         },
       },
     ]);
@@ -74,21 +73,20 @@ describe("experimental React Hook Form v8 useProtoForm conformance", () => {
       result.current.setServerErrors(error);
     });
 
-    expect(result.current.getFieldState("primaryEmail").error?.message).toBe("Enter a value.");
+    expect(result.current.getFieldState('primaryEmail').error?.message).toBe('Enter a value.');
 
-    // Violations also map through any configured server path prefix.
     const { result: prefixed } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
-        serverPathPrefixes: ["spec", "instance"],
+        serverPathPrefixes: ['spec', 'instance'],
       })
     );
-    const prefixedError = new ConnectError("Review the highlighted fields.", Code.InvalidArgument, {}, [
+    const prefixedError = new ConnectError('Review the highlighted fields.', Code.InvalidArgument, {}, [
       {
         desc: BadRequestSchema,
         value: {
           fieldViolations: [
-            { description: "value is required", field: "spec.primary_email" },
-            { description: "must contain at least 1 item(s)", field: "instance.tags" },
+            { description: 'value is required', field: 'spec.primary_email' },
+            { description: 'must contain at least 1 item(s)', field: 'instance.tags' },
           ],
         },
       },
@@ -99,8 +97,8 @@ describe("experimental React Hook Form v8 useProtoForm conformance", () => {
       mapped = prefixed.current.setServerErrors(prefixedError);
     });
 
-    expect(prefixed.current.getFieldState("primaryEmail").error?.message).toBe("Enter a value.");
-    expect(prefixed.current.getFieldState("tags").error?.message).toBe("Add at least one item.");
+    expect(prefixed.current.getFieldState('primaryEmail').error?.message).toBe('Enter a value.');
+    expect(prefixed.current.getFieldState('tags').error?.message).toBe('Add at least one item.');
     expect(mapped?.handled).toBe(true);
     expect(mapped?.unmapped).toEqual([]);
   });

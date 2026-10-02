@@ -1,1 +1,1 @@
-export { protocGenProtoform } from "./plugin.js";
+export { protocGenProtoform } from './plugin.js';

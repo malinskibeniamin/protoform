@@ -1,7 +1,7 @@
-import { FieldBehavior, field_behavior } from "@buf/googleapis_googleapis.bufbuild_es/google/api/field_behavior_pb.js";
-import { resource, resource_reference } from "@buf/googleapis_googleapis.bufbuild_es/google/api/resource_pb.js";
-import { create, type DescField, type DescMessage, getExtension } from "@bufbuild/protobuf";
-import { FieldOptionsSchema, MessageOptionsSchema } from "@bufbuild/protobuf/wkt";
+import { FieldBehavior, field_behavior } from '@buf/googleapis_googleapis.bufbuild_es/google/api/field_behavior_pb.js';
+import { resource, resource_reference } from '@buf/googleapis_googleapis.bufbuild_es/google/api/resource_pb.js';
+import { create, type DescField, type DescMessage, getExtension } from '@bufbuild/protobuf';
+import { FieldOptionsSchema, MessageOptionsSchema } from '@bufbuild/protobuf/wkt';
 
 export interface ProtoResourceMetadata {
   nameField: string;
@@ -22,7 +22,7 @@ export function getProtoResourceMetadata(desc: DescMessage): ProtoResourceMetada
     return;
   }
   return {
-    nameField: metadata.nameField || "name",
+    nameField: metadata.nameField || 'name',
     patterns: [...metadata.pattern],
     plural: metadata.plural,
     singular: metadata.singular,
@@ -53,7 +53,7 @@ export function isSingletonProtoResource(desc: DescMessage): boolean {
     return false;
   }
   return metadata.patterns.every((pattern) => {
-    const lastSegment = pattern.split("/").at(-1);
-    return Boolean(lastSegment && !lastSegment.includes("{"));
+    const lastSegment = pattern.split('/').at(-1);
+    return Boolean(lastSegment && !lastSegment.includes('{'));
   });
 }

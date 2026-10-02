@@ -1,33 +1,33 @@
-"use client";
+'use client';
 
-import type { AutoFormFieldProps } from "../core-types";
+import type { AutoFormFieldProps } from '../core-types';
 import {
   denormalizeKeyValueEntries,
   getFieldUiConfig,
   normalizeKeyValueEntries,
   resolveRenderFieldType,
-} from "../helpers";
-import { getProtoFieldCustomData } from "../proto";
-import type { FieldTypeDefinition } from "../registry";
-import { KeyValueField } from "../ui-components";
-import { useFieldTestIds } from "./shared";
+} from '../helpers';
+import { getProtoFieldCustomData } from '../proto';
+import type { FieldTypeDefinition } from '../registry';
+import { KeyValueField } from '../ui-components';
+import { useFieldTestIds } from './shared';
 
 function KeyValueFieldComponent({ field, id, inputProps }: AutoFormFieldProps) {
   const testIds = useFieldTestIds(id);
   const valueField =
-    field.type === "map"
+    field.type === 'map'
       ? field.schema?.[1]
-      : field.schema?.[0]?.schema?.find((candidate) => candidate.key === "value");
+      : field.schema?.[0]?.schema?.find((candidate) => candidate.key === 'value');
   const valueRenderType = valueField ? resolveRenderFieldType(valueField) : undefined;
   const protoData = getProtoFieldCustomData(field);
 
   const configuredPlaceholder = getFieldUiConfig(valueField ?? field).placeholder;
   const placeholder =
-    configuredPlaceholder !== undefined && configuredPlaceholder !== "" ? configuredPlaceholder : "Value";
+    configuredPlaceholder !== undefined && configuredPlaceholder !== '' ? configuredPlaceholder : 'Value';
   const valueFieldProps =
-    valueRenderType === "select" || valueRenderType === "combobox" || valueRenderType === "radio"
+    valueRenderType === 'select' || valueRenderType === 'combobox' || valueRenderType === 'radio'
       ? {
-          mode: "combobox" as const,
+          mode: 'combobox' as const,
           options: (valueField?.options || []).map(([value, optionLabel]) => ({ label: optionLabel, value })),
           placeholder,
         }
@@ -38,13 +38,13 @@ function KeyValueFieldComponent({ field, id, inputProps }: AutoFormFieldProps) {
   return (
     <KeyValueField
       addButtonLabel="Add pair"
-      disabled={inputProps["disabled"]}
-      keyFieldProps={{ placeholder: "Key" }}
+      disabled={inputProps['disabled']}
+      keyFieldProps={{ placeholder: 'Key' }}
       maxItems={protoData?.maxPairs}
-      onChange={(entries) => inputProps["onValueChange"](denormalizeKeyValueEntries(entries, field))}
+      onChange={(entries) => inputProps['onValueChange'](denormalizeKeyValueEntries(entries, field))}
       showAddButton
       testId={testIds.control}
-      value={normalizeKeyValueEntries(inputProps["value"])}
+      value={normalizeKeyValueEntries(inputProps['value'])}
       valueFieldProps={valueFieldProps}
     />
   );
@@ -52,15 +52,12 @@ function KeyValueFieldComponent({ field, id, inputProps }: AutoFormFieldProps) {
 
 export { KeyValueFieldComponent };
 
-/**
- * Helper to check if a field's schema entry is a scalar type suitable for key-value use.
- */
 function isKeyValueScalarField(field: { type?: string | undefined } | undefined): boolean {
   if (!field) {
     return false;
   }
-  return ["string", "email", "url", "password", "currency", "number", "int64", "select", "combobox"].includes(
-    field.type ?? ""
+  return ['string', 'email', 'url', 'password', 'currency', 'number', 'int64', 'select', 'combobox'].includes(
+    field.type ?? ''
   );
 }
 
@@ -72,26 +69,24 @@ function isSimpleKeyValueLikeObject(
       }
     | undefined
 ): boolean {
-  if (!(field?.type === "object" && field.schema?.length === 2)) {
+  if (!(field?.type === 'object' && field.schema?.length === 2)) {
     return false;
   }
 
-  const keyField = field.schema.find((candidate) => candidate.key === "key");
-  const valueField = field.schema.find((candidate) => candidate.key === "value");
+  const keyField = field.schema.find((candidate) => candidate.key === 'key');
+  const valueField = field.schema.find((candidate) => candidate.key === 'value');
   return Boolean(keyField && valueField && isKeyValueScalarField(keyField) && isKeyValueScalarField(valueField));
 }
 
 export const keyValueFieldDefinition: FieldTypeDefinition = {
   component: KeyValueFieldComponent,
   match: (field) => {
-    // Array with key-value-like object items
-    if (field.type === "array") {
+    if (field.type === 'array') {
       const itemField = field.schema?.[0];
       return isSimpleKeyValueLikeObject(itemField);
     }
 
-    // Map with scalar key + value
-    if (field.type === "map") {
+    if (field.type === 'map') {
       const keyField = field.schema?.[0];
       const valueField = field.schema?.[1];
       return isKeyValueScalarField(keyField) && isKeyValueScalarField(valueField);
@@ -99,6 +94,6 @@ export const keyValueFieldDefinition: FieldTypeDefinition = {
 
     return false;
   },
-  name: "keyValue",
+  name: 'keyValue',
   priority: 18,
 };

@@ -1,68 +1,54 @@
-"use client";
+'use client';
 
-import { Checkbox as CheckboxPrimitive } from "@base-ui/react/checkbox";
-import { cva, type VariantProps } from "class-variance-authority";
-import { type HTMLMotionProps, motion } from "motion/react";
-import React from "react";
+import { Checkbox as CheckboxPrimitive } from '@base-ui/react/checkbox';
+import { cva, type VariantProps } from 'class-variance-authority';
+import { type HTMLMotionProps, motion } from 'motion/react';
+import React from 'react';
 
-import { cn, type SharedProps } from "@/registry/base-nova/protoform/lib/utils";
+import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
-// Path-draw animation driven by CSS:
-// - pathLength={1} normalizes the stroke-dash coordinate space to 0..1
-//   regardless of actual path length.
-// - Hidden: stroke-dashoffset 1 + opacity 0 → path is shifted off-screen.
-// - Visible (data-visible="true"): stroke-dashoffset 0 + opacity 1, with a
-//   100ms delay so the box-fill transition leads the stroke draw-in slightly.
-// - The browser's native CSS transition handles the tween, so it's immune to
-//   React re-render frequency in controlled-mode parents.
 const pathDrawClassName =
-  "[stroke-dasharray:1] [stroke-dashoffset:1] opacity-0 transition-[stroke-dashoffset,opacity] duration-200 ease-out data-[visible=true]:[stroke-dashoffset:0] data-[visible=true]:opacity-100 data-[visible=true]:delay-100";
+  '[stroke-dasharray:1] [stroke-dashoffset:1] opacity-0 transition-[stroke-dashoffset,opacity] duration-200 ease-out data-[visible=true]:[stroke-dashoffset:0] data-[visible=true]:opacity-100 data-[visible=true]:delay-100';
 
 const checkboxVariants = cva(
-  "peer relative flex size-4 shrink-0 cursor-pointer items-center justify-center rounded-sm border outline-none transition-colors after:absolute after:-inset-x-3 after:-inset-y-2 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:bg-input/30 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40",
+  'peer relative flex size-4 shrink-0 cursor-pointer items-center justify-center rounded-sm border outline-none transition-colors after:absolute after:-inset-x-3 after:-inset-y-2 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:bg-input/30 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40',
   {
     defaultVariants: {
-      variant: "primary",
+      variant: 'primary',
     },
     variants: {
       variant: {
         outline:
-          "!border-input data-[state=checked]:border-foreground data-[state=indeterminate]:border-foreground data-[state=checked]:bg-transparent data-[state=indeterminate]:bg-transparent data-[state=checked]:text-foreground data-[state=indeterminate]:text-foreground",
+          '!border-input data-[state=checked]:border-foreground data-[state=indeterminate]:border-foreground data-[state=checked]:bg-transparent data-[state=indeterminate]:bg-transparent data-[state=checked]:text-foreground data-[state=indeterminate]:text-foreground',
         primary:
-          "!border-input data-[state=checked]:border-primary data-[state=indeterminate]:border-primary data-[state=checked]:bg-primary data-[state=indeterminate]:bg-primary data-[state=checked]:text-primary-foreground data-[state=indeterminate]:text-primary-foreground",
+          '!border-input data-[state=checked]:border-primary data-[state=indeterminate]:border-primary data-[state=checked]:bg-primary data-[state=indeterminate]:bg-primary data-[state=checked]:text-primary-foreground data-[state=indeterminate]:text-primary-foreground',
         secondary:
-          "!border-input data-[state=checked]:border-secondary data-[state=indeterminate]:border-secondary data-[state=checked]:bg-secondary data-[state=indeterminate]:bg-secondary data-[state=checked]:text-primary-foreground data-[state=indeterminate]:text-primary-foreground",
+          '!border-input data-[state=checked]:border-secondary data-[state=indeterminate]:border-secondary data-[state=checked]:bg-secondary data-[state=indeterminate]:bg-secondary data-[state=checked]:text-primary-foreground data-[state=indeterminate]:text-primary-foreground',
       },
     },
   }
 );
 
-// Radix API: `checked` accepts `boolean | 'indeterminate'`.
-// Base UI API: `checked: boolean` with a separate `indeterminate?: boolean` prop.
-// Preserve the Radix signature externally and translate internally.
 type CheckboxProps = Omit<
   React.ComponentProps<typeof CheckboxPrimitive.Root>,
-  "checked" | "defaultChecked" | "onCheckedChange"
+  'checked' | 'defaultChecked' | 'onCheckedChange'
 > &
-  HTMLMotionProps<"button"> &
+  HTMLMotionProps<'button'> &
   VariantProps<typeof checkboxVariants> &
   SharedProps & {
-    checked?: boolean | "indeterminate";
-    defaultChecked?: boolean | "indeterminate";
-    onCheckedChange?: (checked: boolean | "indeterminate") => void;
+    checked?: boolean | 'indeterminate';
+    defaultChecked?: boolean | 'indeterminate';
+    onCheckedChange?: (checked: boolean | 'indeterminate') => void;
   };
 
-type MotionButtonStyle = NonNullable<HTMLMotionProps<"button">["style"]>;
+type MotionButtonStyle = NonNullable<HTMLMotionProps<'button'>['style']>;
 
 const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
   ({ className, onCheckedChange, testId, variant, checked, defaultChecked, indeterminate, ...props }, ref) => {
-    // Track state for animation purposes in uncontrolled mode
-    const [internalChecked, setInternalChecked] = React.useState<boolean | "indeterminate">(defaultChecked ?? false);
+    const [internalChecked, setInternalChecked] = React.useState<boolean | 'indeterminate'>(defaultChecked ?? false);
 
-    // Determine if component is controlled (checked prop is provided)
     const isControlled = checked !== undefined;
 
-    // Use controlled value if provided, otherwise use internal state for uncontrolled mode
     const isChecked = isControlled ? checked : internalChecked;
 
     const handleCheckedChange = (nextChecked: boolean) => {
@@ -72,21 +58,20 @@ const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
       onCheckedChange?.(nextChecked);
     };
 
-    // Translate Radix `checked='indeterminate'` to Base UI `indeterminate` + `checked=false`.
-    const isIndeterminate = indeterminate ?? isChecked === "indeterminate";
-    const baseChecked = isChecked === "indeterminate" ? false : (isChecked as boolean | undefined);
+    const isIndeterminate = indeterminate ?? isChecked === 'indeterminate';
+    const baseChecked = isChecked === 'indeterminate' ? false : (isChecked as boolean | undefined);
     const baseDefaultChecked =
-      (defaultChecked as unknown) === "indeterminate" ? false : (defaultChecked as boolean | undefined);
+      (defaultChecked as unknown) === 'indeterminate' ? false : (defaultChecked as boolean | undefined);
 
-    let dataState = "unchecked";
+    let dataState = 'unchecked';
     if (isIndeterminate) {
-      dataState = "indeterminate";
+      dataState = 'indeterminate';
     } else if (isChecked === true) {
-      dataState = "checked";
+      dataState = 'checked';
     }
     const showCheckmark = isChecked === true && !isIndeterminate;
 
-    const renderRoot = (rootProps: React.ComponentPropsWithoutRef<"button">) => {
+    const renderRoot = (rootProps: React.ComponentPropsWithoutRef<'button'>) => {
       const {
         onAnimationEnd: _onAnimationEnd,
         onAnimationStart: _onAnimationStart,
@@ -160,6 +145,6 @@ const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
   }
 );
 
-Checkbox.displayName = "Checkbox";
+Checkbox.displayName = 'Checkbox';
 
 export { Checkbox, type CheckboxProps, checkboxVariants };

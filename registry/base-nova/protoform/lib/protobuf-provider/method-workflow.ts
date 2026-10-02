@@ -1,14 +1,14 @@
-import { http } from "@buf/googleapis_googleapis.bufbuild_es/google/api/annotations_pb.js";
-import type { HttpRule } from "@buf/googleapis_googleapis.bufbuild_es/google/api/http_pb.js";
+import { http } from '@buf/googleapis_googleapis.bufbuild_es/google/api/annotations_pb.js';
+import type { HttpRule } from '@buf/googleapis_googleapis.bufbuild_es/google/api/http_pb.js';
 import {
   OperationSchema,
   operation_info,
-} from "@buf/googleapis_googleapis.bufbuild_es/google/longrunning/operations_pb.js";
-import { create, type DescMethod, getExtension, hasExtension } from "@bufbuild/protobuf";
-import { MethodOptionsSchema } from "@bufbuild/protobuf/wkt";
+} from '@buf/googleapis_googleapis.bufbuild_es/google/longrunning/operations_pb.js';
+import { create, type DescMethod, getExtension, hasExtension } from '@bufbuild/protobuf';
+import { MethodOptionsSchema } from '@bufbuild/protobuf/wkt';
 
-export type ProtoMethodCategory = "batch" | "custom" | "standard";
-export type ProtoMethodExecution = "long-running" | "streaming" | "unary";
+export type ProtoMethodCategory = 'batch' | 'custom' | 'standard';
+export type ProtoMethodExecution = 'long-running' | 'streaming' | 'unary';
 
 export interface ProtoHttpBinding {
   bodyFields: readonly string[];
@@ -35,18 +35,18 @@ const STANDARD_METHOD_PATTERN = /^(Create|Delete|Get|List|Update)[A-Z]/u;
 const PATH_FIELD_PATTERN = /\{([^}=]+)(?:=[^}]*)?\}/gu;
 
 function getMethodCategory(name: string): ProtoMethodCategory {
-  if (name.startsWith("Batch")) {
-    return "batch";
+  if (name.startsWith('Batch')) {
+    return 'batch';
   }
-  return STANDARD_METHOD_PATTERN.test(name) ? "standard" : "custom";
+  return STANDARD_METHOD_PATTERN.test(name) ? 'standard' : 'custom';
 }
 
 function getHttpPattern(rule: HttpRule): { method: string; path: string } {
   const { pattern } = rule;
   if (pattern.case === undefined) {
-    return { method: "", path: "" };
+    return { method: '', path: '' };
   }
-  if (pattern.case === "custom") {
+  if (pattern.case === 'custom') {
     return {
       method: pattern.value.kind.toUpperCase(),
       path: pattern.value.path,
@@ -67,7 +67,7 @@ function parseHttpBinding(method: DescMethod, rule: HttpRule): ProtoHttpBinding 
   const requestFields = method.input.fields.map((field) => field.name);
   let bodyFields: string[] = [];
   let queryFields: string[] = [];
-  if (rule.body === "*") {
+  if (rule.body === '*') {
     bodyFields = requestFields.filter((field) => !pathFieldSet.has(field));
   } else if (rule.body) {
     bodyFields = [rule.body];
@@ -89,13 +89,13 @@ export function getProtoMethodWorkflow(method: DescMethod): ProtoMethodWorkflow 
   const options = method.proto.options ?? create(MethodOptionsSchema);
   const httpRule = hasExtension(options, http) ? getExtension(options, http) : undefined;
   const operationInfo = hasExtension(options, operation_info) ? getExtension(options, operation_info) : undefined;
-  const streaming = method.methodKind !== "unary";
+  const streaming = method.methodKind !== 'unary';
   const longRunning = method.output.typeName === OperationSchema.typeName;
-  let execution: ProtoMethodExecution = "unary";
+  let execution: ProtoMethodExecution = 'unary';
   if (streaming) {
-    execution = "streaming";
+    execution = 'streaming';
   } else if (longRunning) {
-    execution = "long-running";
+    execution = 'long-running';
   }
   const operation =
     operationInfo?.metadataType && operationInfo.responseType

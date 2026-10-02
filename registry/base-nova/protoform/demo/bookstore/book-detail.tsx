@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import type { Book } from "@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_pb";
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import type { Book } from '@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_pb';
 
 export function BookDetail({
   book,
@@ -24,12 +24,12 @@ export function BookDetail({
   if (isPending) {
     return <p aria-live="polite">Loading book…</p>;
   }
-  if ((error !== undefined && error !== "") || !book) {
+  if ((error !== undefined && error !== '') || !book) {
     return (
       <Alert variant="destructive">
         <AlertTitle>Book not loaded</AlertTitle>
         <AlertDescription className="gap-3">
-          {error ?? "The book no longer exists."}
+          {error ?? 'The book no longer exists.'}
           <Button onClick={onRetry} type="button" variant="outline">
             Retry
           </Button>
@@ -48,7 +48,7 @@ export function BookDetail({
           {book.displayName}
         </h2>
         <p className="font-mono text-muted-foreground text-sm">{book.isbn}</p>
-        <p className="text-sm">{book.note || "No note yet."}</p>
+        <p className="text-sm">{book.note || 'No note yet.'}</p>
       </div>
       <dl className="grid gap-3 rounded-lg border p-4 text-sm sm:grid-cols-2">
         <div>

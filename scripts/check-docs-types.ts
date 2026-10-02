@@ -1,5 +1,5 @@
-import { spawnSync } from "node:child_process";
-import { stripVTControlCharacters } from "node:util";
+import { spawnSync } from 'node:child_process';
+import { stripVTControlCharacters } from 'node:util';
 
 interface DocsDiagnosticSummary {
   errors: number;
@@ -16,11 +16,11 @@ export function parseDocsDiagnosticSummary(output: string): DocsDiagnosticSummar
   for (const match of cleanOutput.matchAll(diagnosticSummaryPattern)) {
     const count = Number(match[1]);
     const severity = match[2]?.toLowerCase();
-    if (severity?.startsWith("error")) {
+    if (severity?.startsWith('error')) {
       summary.errors = count;
-    } else if (severity?.startsWith("warning")) {
+    } else if (severity?.startsWith('warning')) {
       summary.warnings = count;
-    } else if (severity?.startsWith("hint")) {
+    } else if (severity?.startsWith('hint')) {
       summary.hints = count;
     }
   }
@@ -37,8 +37,8 @@ export function parseDocsDiagnosticSummary(output: string): DocsDiagnosticSummar
 }
 
 function checkDocsTypes(): void {
-  const result = spawnSync("blume", ["check", "--strict", "--isolated"], {
-    encoding: "utf8",
+  const result = spawnSync('blume', ['check', '--strict', '--isolated'], {
+    encoding: 'utf8',
     maxBuffer: 50 * 1024 * 1024,
   });
 
@@ -55,7 +55,7 @@ function checkDocsTypes(): void {
 
   const summary = parseDocsDiagnosticSummary(`${result.stdout}\n${result.stderr}`);
   if (!summary) {
-    console.error("Documentation typecheck did not report a complete diagnostic summary.");
+    console.error('Documentation typecheck did not report a complete diagnostic summary.');
     process.exitCode = 1;
     return;
   }

@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from '@playwright/test';
 
 const aipCreateHubUrl = /\/docs\/aip-example-catalog#aip-133-standard-methods-create$/u;
 const aipGetHubUrl = /\/docs\/aip-example-catalog#aip-131-standard-methods-get$/u;
@@ -7,50 +7,50 @@ const celSafetyHubUrl = /\/docs\/cel-examples#cel-safe-evaluation$/u;
 const formikHubUrl = /\/docs\/production-examples#formik$/u;
 const protobufHubUrl = /\/docs\/protobuf-examples$/u;
 
-test("publishes focused feature and AIP catalogs with working live forms", async ({ page }) => {
-  await page.goto("/docs/feature-example-catalog");
+test('publishes focused feature and AIP catalogs with working live forms', async ({ page }) => {
+  await page.goto('/docs/feature-example-catalog');
   await expect(page).toHaveURL(protobufHubUrl);
-  const content = page.locator("#blume-content");
-  await expect(content.getByRole("heading", { name: "Protobuf examples" })).toBeVisible();
-  await expect(content.getByRole("combobox", { name: "Choose a demo" })).toBeVisible();
+  const content = page.locator('#blume-content');
+  await expect(content.getByRole('heading', { name: 'Protobuf examples' })).toBeVisible();
+  await expect(content.getByRole('combobox', { name: 'Choose a demo' })).toBeVisible();
 
-  await page.goto("/docs/aip-133-standard-methods-create");
+  await page.goto('/docs/aip-133-standard-methods-create');
   await expect(page).toHaveURL(aipCreateHubUrl);
   await expect(
-    content.getByRole("heading", {
-      name: "AIP-133 Standard methods: Create",
+    content.getByRole('heading', {
+      name: 'AIP-133 Standard methods: Create',
     })
   ).toBeVisible();
-  await expect(content.getByText("React Hook Form", { exact: true })).toBeVisible({
+  await expect(content.getByText('React Hook Form', { exact: true })).toBeVisible({
     timeout: 30_000,
   });
 
-  await page.goto("/docs/example-formik");
+  await page.goto('/docs/example-formik');
   await expect(page).toHaveURL(formikHubUrl);
-  const email = content.getByRole("textbox", { name: "Email" });
-  await email.fill("ada@example.com");
+  const email = content.getByRole('textbox', { name: 'Email' });
+  await email.fill('ada@example.com');
   await email.blur();
-  await expect(email).toHaveValue("ada@example.com");
-  const submit = content.getByRole("button", {
-    name: "Validate with Formik",
+  await expect(email).toHaveValue('ada@example.com');
+  const submit = content.getByRole('button', {
+    name: 'Validate with Formik',
   });
   await submit.focus();
   await expect(submit).toBeFocused();
-  await submit.press("Enter");
-  await expect(content.getByRole("status")).toContainText("ada@example.com", {
+  await submit.press('Enter');
+  await expect(content.getByRole('status')).toContainText('ada@example.com', {
     timeout: 30_000,
   });
 });
 
-test("keeps a representative generated form within a narrow viewport", async ({ page }) => {
+test('keeps a representative generated form within a narrow viewport', async ({ page }) => {
   await page.setViewportSize({ height: 844, width: 390 });
-  await page.goto("/docs/aip-131-standard-methods-get");
+  await page.goto('/docs/aip-131-standard-methods-get');
   await expect(page).toHaveURL(aipGetHubUrl);
-  const content = page.locator("#blume-content");
-  await expect(content.getByText("React Hook Form", { exact: true })).toBeVisible({ timeout: 30_000 });
-  await content.getByRole("textbox", { name: "Name" }).fill("publishers/acme/books/protoform-guide");
-  await content.getByRole("button", { name: "Submit" }).click();
-  await expect(content.getByRole("status")).toContainText("protoform-guide", {
+  const content = page.locator('#blume-content');
+  await expect(content.getByText('React Hook Form', { exact: true })).toBeVisible({ timeout: 30_000 });
+  await content.getByRole('textbox', { name: 'Name' }).fill('publishers/acme/books/protoform-guide');
+  await content.getByRole('button', { name: 'Submit' }).click();
+  await expect(content.getByRole('status')).toContainText('protoform-guide', {
     timeout: 30_000,
   });
 
@@ -60,14 +60,14 @@ test("keeps a representative generated form within a narrow viewport", async ({ 
   expect(overflows).toBe(false);
 });
 
-test("fills the submitted-value panel without an empty gutter", async ({ page }) => {
+test('fills the submitted-value panel without an empty gutter', async ({ page }) => {
   await page.setViewportSize({ height: 900, width: 900 });
-  await page.goto("/docs/blume-examples/registry/base-nova/protoform/demo/catalog/aip-133-standard-methods-create");
-  await page.getByRole("button", { name: "Submit" }).click();
+  await page.goto('/docs/blume-examples/registry/base-nova/protoform/demo/catalog/aip-133-standard-methods-create');
+  await page.getByRole('button', { name: 'Submit' }).click();
 
-  const status = page.getByRole("status");
+  const status = page.getByRole('status');
   const description = status.locator('[data-slot="alert-description"]');
-  const submittedValue = description.locator("pre");
+  const submittedValue = description.locator('pre');
   await expect(submittedValue).toBeVisible();
 
   const descriptionBox = await description.boundingBox();
@@ -76,67 +76,67 @@ test("fills the submitted-value panel without an empty gutter", async ({ page })
   expect(submittedValueBox?.width).toBeCloseTo(descriptionBox?.width ?? 0, 0);
 });
 
-test("keeps recursive collection controls clear of their item labels", async ({ page }) => {
+test('keeps recursive collection controls clear of their item labels', async ({ page }) => {
   await page.setViewportSize({ height: 900, width: 640 });
-  await page.goto("/docs/blume-examples/registry/base-nova/protoform/demo/catalog/protobuf-recursive-messages");
-  await page.getByRole("button", { name: "Add Children" }).click();
+  await page.goto('/docs/blume-examples/registry/base-nova/protoform/demo/catalog/protobuf-recursive-messages');
+  await page.getByRole('button', { name: 'Add Children' }).click();
 
-  const firstItem = page.getByTestId("autoform-field-children-0");
-  await expect(firstItem).toHaveAttribute("data-layout", "stacked");
+  const firstItem = page.getByTestId('autoform-field-children-0');
+  await expect(firstItem).toHaveAttribute('data-layout', 'stacked');
 
-  const labelBox = await firstItem.getByText("Children 1", { exact: true }).boundingBox();
-  const copyBox = await firstItem.getByRole("button", { name: "Copy JSON" }).boundingBox();
-  const rowBox = await page.getByTestId("autoform-field-children-row-0").boundingBox();
+  const labelBox = await firstItem.getByText('Children 1', { exact: true }).boundingBox();
+  const copyBox = await firstItem.getByRole('button', { name: 'Copy JSON' }).boundingBox();
+  const rowBox = await page.getByTestId('autoform-field-children-row-0').boundingBox();
 
   expect(labelBox).not.toBeNull();
   expect(copyBox).not.toBeNull();
   expect(rowBox).not.toBeNull();
   if (!(labelBox && copyBox && rowBox)) {
-    throw new Error("Recursive item label, row, or JSON action is not rendered");
+    throw new Error('Recursive item label, row, or JSON action is not rendered');
   }
   expect(labelBox.y + labelBox.height).toBeLessThanOrEqual(copyBox.y);
   expect(copyBox.x).toBeGreaterThanOrEqual(rowBox.x);
 });
 
-test("labels selected protobuf enum values in the maps demo", async ({ page }) => {
-  await page.goto("/docs/blume-examples/registry/base-nova/protoform/demo/catalog/protobuf-maps");
+test('labels selected protobuf enum values in the maps demo', async ({ page }) => {
+  await page.goto('/docs/blume-examples/registry/base-nova/protoform/demo/catalog/protobuf-maps');
 
-  await expect(page.getByTestId("autoform-field-statuses-selected-1")).toHaveText("Active");
-  await expect(page.getByTestId("autoform-field-statuses-selected-2")).toHaveText("Paused");
+  await expect(page.getByTestId('autoform-field-statuses-selected-1')).toHaveText('Active');
+  await expect(page.getByTestId('autoform-field-statuses-selected-2')).toHaveText('Paused');
 });
 
-test("shows the actual form implementation in the Code preview", async ({ page }) => {
-  await page.goto("/docs/example-cel-safe-evaluation");
+test('shows the actual form implementation in the Code preview', async ({ page }) => {
+  await page.goto('/docs/example-cel-safe-evaluation');
   await expect(page).toHaveURL(celSafetyHubUrl);
 
-  await page.getByRole("tab", { name: "Code" }).click();
-  const codePanel = page.getByRole("tabpanel", { name: "Code" });
+  await page.getByRole('tab', { name: 'Code' }).click();
+  const codePanel = page.getByRole('tabpanel', { name: 'Code' });
 
-  await expect(codePanel).toContainText("getDemoSchema");
-  await expect(codePanel).toContainText("AutoForm");
-  await expect(codePanel).toContainText("onSubmit");
-  await expect(codePanel).not.toContainText("RegistryCapabilityDemo");
+  await expect(codePanel).toContainText('getDemoSchema');
+  await expect(codePanel).toContainText('AutoForm');
+  await expect(codePanel).toContainText('onSubmit');
+  await expect(codePanel).not.toContainText('RegistryCapabilityDemo');
 });
 
-test("serves consolidated catalogs through static Markdown routes", async ({ request }) => {
-  const markdownResponse = await request.get("/docs/aip-example-catalog.md");
+test('serves consolidated catalogs through static Markdown routes', async ({ request }) => {
+  const markdownResponse = await request.get('/docs/aip-example-catalog.md');
   expect(markdownResponse.ok()).toBe(true);
   const markdown = await markdownResponse.text();
-  expect(markdown).toContain("AIP examples");
-  expect(markdown).toContain("stable deep link");
-  expect(markdown).not.toContain("aip-121-resource-oriented-design.tsx");
+  expect(markdown).toContain('AIP examples');
+  expect(markdown).toContain('stable deep link');
+  expect(markdown).not.toContain('aip-121-resource-oriented-design.tsx');
 
-  const rpcMarkdownResponse = await request.get("/docs/protobuf-examples.md");
+  const rpcMarkdownResponse = await request.get('/docs/protobuf-examples.md');
   expect(rpcMarkdownResponse.ok()).toBe(true);
   const rpcMarkdown = await rpcMarkdownResponse.text();
-  expect(rpcMarkdown).toContain("Protobuf examples");
-  expect(rpcMarkdown).toContain("stable deep link");
-  expect(rpcMarkdown).not.toContain("LibraryService.method.createBook");
+  expect(rpcMarkdown).toContain('Protobuf examples');
+  expect(rpcMarkdown).toContain('stable deep link');
+  expect(rpcMarkdown).not.toContain('LibraryService.method.createBook');
 });
 
 for (const path of [
-  "/docs/reference",
-  "/docs/reference/library-rpc/protoform-conformance-v1-library-service-get-book",
+  '/docs/reference',
+  '/docs/reference/library-rpc/protoform-conformance-v1-library-service-get-book',
 ]) {
   test(`only offers available reference languages at ${path}`, async ({ page }) => {
     await page.goto(path);
@@ -147,74 +147,74 @@ for (const path of [
   });
 }
 
-test("serves translated hubs and only offers available page languages", async ({ page }) => {
-  await page.goto("/docs/zh/protobuf-examples#protobuf-oneof");
-  await expect(page.locator("html")).toHaveAttribute("lang", "zh");
-  await expect(page.getByRole("heading", { name: "Protobuf 示例" })).toBeVisible();
-  await expect(page.locator("header").getByLabel("语言: 简体中文", { exact: true })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Oneof branch selection" })).toBeVisible({ timeout: 30_000 });
+test('serves translated hubs and only offers available page languages', async ({ page }) => {
+  await page.goto('/docs/zh/protobuf-examples#protobuf-oneof');
+  await expect(page.locator('html')).toHaveAttribute('lang', 'zh');
+  await expect(page.getByRole('heading', { name: 'Protobuf 示例' })).toBeVisible();
+  await expect(page.locator('header').getByLabel('语言: 简体中文', { exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Oneof branch selection' })).toBeVisible({ timeout: 30_000 });
 });
 
-test("switches translated pages from the mobile drawer without offering missing translations", async ({ page }) => {
+test('switches translated pages from the mobile drawer without offering missing translations', async ({ page }) => {
   await page.setViewportSize({ height: 844, width: 390 });
-  await page.goto("/docs/reference");
-  await page.getByRole("button", { exact: true, name: "Toggle navigation" }).click();
+  await page.goto('/docs/reference');
+  await page.getByRole('button', { exact: true, name: 'Toggle navigation' }).click();
   await expect(page.locator('[aria-label^="Language:"]')).toHaveCount(0);
 
-  await page.goto("/docs/getting-started");
-  await page.getByRole("button", { exact: true, name: "Toggle navigation" }).click();
-  const drawer = page.getByRole("complementary", { exact: true, name: "Primary" });
-  await drawer.getByLabel("Language: English", { exact: true }).click();
-  await drawer.getByRole("link", { exact: true, name: "Polski" }).click();
+  await page.goto('/docs/getting-started');
+  await page.getByRole('button', { exact: true, name: 'Toggle navigation' }).click();
+  const drawer = page.getByRole('complementary', { exact: true, name: 'Primary' });
+  await drawer.getByLabel('Language: English', { exact: true }).click();
+  await drawer.getByRole('link', { exact: true, name: 'Polski' }).click();
   await expect(page).toHaveURL(/\/docs\/pl\/getting-started$/u);
-  await expect(page.locator("html")).toHaveAttribute("lang", "pl");
-  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  await expect(page.locator('html')).toHaveAttribute('lang', 'pl');
+  await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
 });
 
-test("searches translated docs with non-Latin text", async ({ page }) => {
-  await page.goto("/docs/zh-TW/server-errors");
-  await page.getByRole("button", { exact: true, name: "搜尋" }).click();
-  await page.getByRole("combobox", { exact: true, name: "搜尋文件" }).fill("伺服器錯誤");
+test('searches translated docs with non-Latin text', async ({ page }) => {
+  await page.goto('/docs/zh-TW/server-errors');
+  await page.getByRole('button', { exact: true, name: '搜尋' }).click();
+  await page.getByRole('combobox', { exact: true, name: '搜尋文件' }).fill('伺服器錯誤');
 
-  await expect(page.getByRole("option").filter({ hasText: "伺服器錯誤" }).first()).toBeVisible();
+  await expect(page.getByRole('option').filter({ hasText: '伺服器錯誤' }).first()).toBeVisible();
 });
 
-test("navigates OpenAPI pages without reloading the document", async ({ page }) => {
-  await page.goto("/docs/reference");
-  await page.evaluate(() => Reflect.set(window, "__protoformNavigationSentinel", "preserved"));
+test('navigates OpenAPI pages without reloading the document', async ({ page }) => {
+  await page.goto('/docs/reference');
+  await page.evaluate(() => Reflect.set(window, '__protoformNavigationSentinel', 'preserved'));
 
-  await page.getByRole("link").filter({ hasText: "Create a book" }).first().click();
+  await page.getByRole('link').filter({ hasText: 'Create a book' }).first().click();
 
-  await expect(page.getByRole("heading", { name: "Create a book" })).toBeVisible();
-  await expect.poll(() => page.evaluate(() => Reflect.get(window, "__protoformNavigationSentinel"))).toBe("preserved");
+  await expect(page.getByRole('heading', { name: 'Create a book' })).toBeVisible();
+  await expect.poll(() => page.evaluate(() => Reflect.get(window, '__protoformNavigationSentinel'))).toBe('preserved');
 });
 
-test("renders the native OpenAPI reference and real RPC method shape", async ({ browserName, page }) => {
-  await page.goto("/docs/reference");
-  await expect(page.getByRole("heading", { name: "Protoform bookstore Connect API" })).toBeVisible();
-  const createBook = page.getByRole("link").filter({ hasText: "Create a book" }).first();
+test('renders the native OpenAPI reference and real RPC method shape', async ({ browserName, page }) => {
+  await page.goto('/docs/reference');
+  await expect(page.getByRole('heading', { name: 'Protoform bookstore Connect API' })).toBeVisible();
+  const createBook = page.getByRole('link').filter({ hasText: 'Create a book' }).first();
   await expect(createBook).toBeVisible();
   await createBook.click();
-  const playground = page.locator("[data-playground]");
-  const playgroundToggle = page.getByText("Try it", { exact: true });
+  const playground = page.locator('[data-playground]');
+  const playgroundToggle = page.getByText('Try it', { exact: true });
   await expect(playgroundToggle).toBeVisible();
   await playgroundToggle.click();
-  await page.getByRole("combobox", { name: "Base URL" }).selectOption("http://127.0.0.1:55012");
-  const requestBody = page.getByRole("textbox", { name: "Request body" });
+  await page.getByRole('combobox', { name: 'Base URL' }).selectOption('http://127.0.0.1:55012');
+  const requestBody = page.getByRole('textbox', { name: 'Request body' });
   const bookId = `protoform-guide-${browserName}`;
   await requestBody.fill(
-    (await requestBody.inputValue()).replace(JSON.stringify("protoform-guide"), JSON.stringify(bookId))
+    (await requestBody.inputValue()).replace(JSON.stringify('protoform-guide'), JSON.stringify(bookId))
   );
-  await page.getByRole("button", { name: "Send" }).click();
-  await expect(playground).toContainText("200 OK");
+  await page.getByRole('button', { name: 'Send' }).click();
+  await expect(playground).toContainText('200 OK');
 
-  await page.goto("/docs/example-bufbuild-descriptors");
+  await page.goto('/docs/example-bufbuild-descriptors');
   await expect(page).toHaveURL(bufbuildHubUrl);
-  await expect(page.getByText("CreateBook", { exact: true })).toBeVisible({
+  await expect(page.getByText('CreateBook', { exact: true })).toBeVisible({
     timeout: 30_000,
   });
   await expect(
-    page.getByText("protoform.conformance.v1.CreateBookRequest", {
+    page.getByText('protoform.conformance.v1.CreateBookRequest', {
       exact: true,
     })
   ).toBeVisible();

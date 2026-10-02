@@ -1,9 +1,8 @@
-"use client";
+'use client';
 
-import React from "react";
-import { useLayoutEffect } from "@/registry/base-nova/protoform/hooks/use-layout-effect";
+import React from 'react';
+import { useLayoutEffect } from '@/registry/base-nova/protoform/hooks/use-layout-effect';
 
-// Prevent bundlers from trying to optimize the import
 const useInsertionEffect = React.useInsertionEffect ?? useLayoutEffect;
 
 type ChangeHandler<T> = (state: T) => void;
@@ -16,16 +15,10 @@ interface UseControllableStateParams<T> {
   prop?: T | undefined;
 }
 
-/**
- * Taken from Radix UI
- * Controlled/uncontrolled state helper adapted for protoform components.
- */
 export function useControllableState<T>({
   prop,
   defaultProp,
-  onChange = () => {
-    // Default no-op function
-  },
+  onChange = () => undefined,
 }: UseControllableStateParams<T>): [T, SetStateFn<T>] {
   const [uncontrolledProp, setUncontrolledProp, onChangeRef] = useUncontrolledState({
     defaultProp,
@@ -51,7 +44,7 @@ export function useControllableState<T>({
 function useUncontrolledState<T>({
   defaultProp,
   onChange,
-}: Omit<UseControllableStateParams<T>, "prop">): [
+}: Omit<UseControllableStateParams<T>, 'prop'>): [
   Value: T,
   setValue: React.Dispatch<React.SetStateAction<T>>,
   OnChangeRef: React.RefObject<ChangeHandler<T> | undefined>,
@@ -75,5 +68,5 @@ function useUncontrolledState<T>({
 }
 
 function isFunction(value: unknown): value is (...args: unknown[]) => unknown {
-  return typeof value === "function";
+  return typeof value === 'function';
 }

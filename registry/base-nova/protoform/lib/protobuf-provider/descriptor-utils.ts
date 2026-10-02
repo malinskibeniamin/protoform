@@ -1,7 +1,7 @@
-import { type DescField, ScalarType } from "@bufbuild/protobuf";
-import { FeatureSet_FieldPresence } from "@bufbuild/protobuf/wkt";
+import { type DescField, ScalarType } from '@bufbuild/protobuf';
+import { FeatureSet_FieldPresence } from '@bufbuild/protobuf/wkt';
 
-const GOOGLE_PROTOBUF_PREFIX = "google.protobuf.";
+const GOOGLE_PROTOBUF_PREFIX = 'google.protobuf.';
 
 export const TIMESTAMP_TYPE = `${GOOGLE_PROTOBUF_PREFIX}Timestamp`;
 export const DURATION_TYPE = `${GOOGLE_PROTOBUF_PREFIX}Duration`;
@@ -11,11 +11,11 @@ export const VALUE_TYPE = `${GOOGLE_PROTOBUF_PREFIX}Value`;
 export const LIST_VALUE_TYPE = `${GOOGLE_PROTOBUF_PREFIX}ListValue`;
 export const ANY_TYPE = `${GOOGLE_PROTOBUF_PREFIX}Any`;
 
-export type ScalarField = Extract<DescField, { fieldKind: "scalar" }>;
-export type EnumField = Extract<DescField, { fieldKind: "enum" }>;
-export type MessageField = Extract<DescField, { fieldKind: "message" }>;
-export type ListField = Extract<DescField, { fieldKind: "list" }>;
-export type MapField = Extract<DescField, { fieldKind: "map" }>;
+export type ScalarField = Extract<DescField, { fieldKind: 'scalar' }>;
+export type EnumField = Extract<DescField, { fieldKind: 'enum' }>;
+export type MessageField = Extract<DescField, { fieldKind: 'message' }>;
+export type ListField = Extract<DescField, { fieldKind: 'list' }>;
+export type MapField = Extract<DescField, { fieldKind: 'map' }>;
 
 export function tracksPresence(field: DescField): boolean {
   return field.presence !== FeatureSet_FieldPresence.IMPLICIT;

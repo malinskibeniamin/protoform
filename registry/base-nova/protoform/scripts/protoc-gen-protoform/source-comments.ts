@@ -1,5 +1,5 @@
-import type { DescMessage } from "@bufbuild/protobuf";
-import { getComments } from "@bufbuild/protoplugin";
+import type { DescMessage } from '@bufbuild/protobuf';
+import { getComments } from '@bufbuild/protoplugin';
 
 export interface ProtoAnnotationEntry {
   key: string;
@@ -21,11 +21,11 @@ function sourceFileMessages(message: DescMessage): DescMessage[] {
       visit(nested);
     }
     for (const field of current.fields) {
-      if (field.fieldKind === "message") {
+      if (field.fieldKind === 'message') {
         visit(field.message);
-      } else if (field.fieldKind === "list" && field.listKind === "message") {
+      } else if (field.fieldKind === 'list' && field.listKind === 'message') {
         visit(field.message);
-      } else if (field.fieldKind === "map" && field.mapKind === "message") {
+      } else if (field.fieldKind === 'map' && field.mapKind === 'message') {
         visit(field.message);
       }
     }
@@ -50,7 +50,7 @@ export function getProtoAnnotationEntries(message: DescMessage): {
     fields: messages.flatMap((nested) =>
       nested.fields.flatMap((field) => {
         const comment = sourceComment(field);
-        return comment !== undefined && comment !== ""
+        return comment !== undefined && comment !== ''
           ? [
               {
                 key: `${field.parent.typeName}.${field.localName}`,
@@ -62,12 +62,12 @@ export function getProtoAnnotationEntries(message: DescMessage): {
     ),
     messages: messages.flatMap((nested) => {
       const comment = sourceComment(nested);
-      return comment !== undefined && comment !== "" ? [{ key: nested.typeName, value: comment }] : [];
+      return comment !== undefined && comment !== '' ? [{ key: nested.typeName, value: comment }] : [];
     }),
     oneofs: messages.flatMap((nested) =>
       nested.oneofs.flatMap((oneof) => {
         const comment = sourceComment(oneof);
-        return comment !== undefined && comment !== ""
+        return comment !== undefined && comment !== ''
           ? [
               {
                 key: `${oneof.parent.typeName}.${oneof.localName}`,

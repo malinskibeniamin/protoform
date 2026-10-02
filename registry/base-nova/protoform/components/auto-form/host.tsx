@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import type React from "react";
-import type { Resolver, UseFormProps, UseFormReturn } from "react-hook-form";
-import { createProtoResolver } from "@/registry/base-nova/protoform/hooks/use-proto-form";
-import { ReactHookFormEngine } from "./adapters/react-hook-form";
-import { AutoFormCore } from "./auto-form-core";
-import { isProtoMessageDescriptor, isProtoProvider } from "./proto";
-import { protoConversionOptionsFromFieldConfig } from "./schema";
-import type { AutoFormValidationMode, AutoFormProps as BaseAutoFormProps } from "./types";
-import type { ProtoformUIComponentMap } from "./ui-component-map";
+import type React from 'react';
+import type { Resolver, UseFormProps, UseFormReturn } from 'react-hook-form';
+import { createProtoResolver } from '@/registry/base-nova/protoform/hooks/use-proto-form';
+import { ReactHookFormEngine } from './adapters/react-hook-form';
+import { AutoFormCore } from './auto-form-core';
+import { isProtoMessageDescriptor, isProtoProvider } from './proto';
+import { protoConversionOptionsFromFieldConfig } from './schema';
+import type { AutoFormValidationMode, AutoFormProps as BaseAutoFormProps } from './types';
+import type { ProtoformUIComponentMap } from './ui-component-map';
 
 type FormValues = Record<string, unknown>;
 
@@ -23,14 +23,14 @@ export type AutoFormProps<
   TCustomFieldType
 > & { components: ProtoformUIComponentMap };
 
-function toHookFormMode(mode: AutoFormValidationMode): "onBlur" | "onChange" | "onSubmit" {
+function toHookFormMode(mode: AutoFormValidationMode): 'onBlur' | 'onChange' | 'onSubmit' {
   switch (mode) {
-    case "blur":
-      return "onBlur";
-    case "change":
-      return "onChange";
-    case "submit":
-      return "onSubmit";
+    case 'blur':
+      return 'onBlur';
+    case 'change':
+      return 'onChange';
+    case 'submit':
+      return 'onSubmit';
     default:
       throw new TypeError(`Unsupported validation mode: ${mode satisfies never}`);
   }
@@ -59,7 +59,7 @@ export function AutoForm({ components, formOptions, resolver, ...props }: AutoFo
       : {}),
     ...(props.revalidationMode
       ? {
-          reValidateMode: props.revalidationMode === "change" ? "onChange" : "onBlur",
+          reValidateMode: props.revalidationMode === 'change' ? 'onChange' : 'onBlur',
         }
       : {}),
   };

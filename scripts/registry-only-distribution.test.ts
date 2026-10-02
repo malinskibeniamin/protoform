@@ -1,16 +1,16 @@
-import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
-import { resolve } from "node:path";
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
+import { resolve } from 'node:path';
 
-import { describe, expect } from "@rstest/core";
+import { describe, expect } from '@rstest/core';
 
-const repositoryRoot = resolve(import.meta.dirname, "..");
+const repositoryRoot = resolve(import.meta.dirname, '..');
 const MIT_LICENSE_PATTERN = /^MIT License/u;
 const PRIVATE_REGISTRY_PATTERN = /npm\.pkg\.github\.com|read:packages/u;
 const PACKAGE_RELEASE_PATTERN = /changeset|npm publish|npm\.pkg\.github/iu;
 const PACKAGE_ARTIFACT_PATTERN = /package-artifacts|tarball|packWorkspacePackages/iu;
-const STABLE_REGISTRY_URL = "https://raw.githubusercontent.com/malinskibeniamin/protoform/v1.0.0/public/r/{name}.json";
-const PROTOFORM_LICENSE_DEPENDENCY = "@protoform/protoform-license";
-const PROTOFORM_LICENSE_TARGET = "~/LICENSES/protoform-MIT.txt";
+const STABLE_REGISTRY_URL = 'https://raw.githubusercontent.com/malinskibeniamin/protoform/v1.0.0/public/r/{name}.json';
+const PROTOFORM_LICENSE_DEPENDENCY = '@protoform/protoform-license';
+const PROTOFORM_LICENSE_TARGET = '~/LICENSES/protoform-MIT.txt';
 
 interface RegistryItem {
   files?: Array<{ path: string; target?: string; type: string }>;
@@ -26,58 +26,58 @@ function sourceFiles(path: string): string[] {
   });
 }
 
-describe("registry-only distribution", () => {
-  test("ships Protoform under MIT without private package workspaces", () => {
-    const manifest = JSON.parse(readFileSync(resolve(repositoryRoot, "package.json"), "utf8")) as {
+describe('registry-only distribution', () => {
+  test('ships Protoform under MIT without private package workspaces', () => {
+    const manifest = JSON.parse(readFileSync(resolve(repositoryRoot, 'package.json'), 'utf8')) as {
       dependencies?: Record<string, string>;
       scripts?: Record<string, string>;
       workspaces?: string[];
     };
 
-    expect(readFileSync(resolve(repositoryRoot, "LICENSE"), "utf8")).toMatch(MIT_LICENSE_PATTERN);
+    expect(readFileSync(resolve(repositoryRoot, 'LICENSE'), 'utf8')).toMatch(MIT_LICENSE_PATTERN);
     expect(manifest.workspaces).toBeUndefined();
-    expect(existsSync(resolve(repositoryRoot, "packages"))).toBe(false);
+    expect(existsSync(resolve(repositoryRoot, 'packages'))).toBe(false);
     expect(
-      Object.keys(manifest.dependencies ?? {}).filter((dependency) => dependency.startsWith("@malinskibeniamin/"))
+      Object.keys(manifest.dependencies ?? {}).filter((dependency) => dependency.startsWith('@malinskibeniamin/'))
     ).toEqual([]);
     expect(
       Object.keys(manifest.scripts ?? {}).filter(
-        (script) => script.startsWith("packages:") || script.startsWith("changeset")
+        (script) => script.startsWith('packages:') || script.startsWith('changeset')
       )
     ).toEqual([]);
   });
 
   test("distributes only Protoform's own license", () => {
-    const registry = JSON.parse(readFileSync(resolve(repositoryRoot, "registry.json"), "utf8")) as {
+    const registry = JSON.parse(readFileSync(resolve(repositoryRoot, 'registry.json'), 'utf8')) as {
       items: RegistryItem[];
     };
     const licenseTargets = registry.items
       .flatMap((item) => item.files ?? [])
-      .map((file) => file.target ?? "")
-      .filter((target) => target.includes("LICENSE") || target.includes("NOTICE"));
+      .map((file) => file.target ?? '')
+      .filter((target) => target.includes('LICENSE') || target.includes('NOTICE'));
     expect(licenseTargets).toEqual([PROTOFORM_LICENSE_TARGET]);
   });
 
-  test("copies license notices with every installable registry item", () => {
-    const registry = JSON.parse(readFileSync(resolve(repositoryRoot, "registry.json"), "utf8")) as {
+  test('copies license notices with every installable registry item', () => {
+    const registry = JSON.parse(readFileSync(resolve(repositoryRoot, 'registry.json'), 'utf8')) as {
       items: RegistryItem[];
     };
     const itemsByName = new Map(registry.items.map((item) => [item.name, item]));
-    const license = itemsByName.get("protoform-license");
+    const license = itemsByName.get('protoform-license');
 
     expect(license).toMatchObject({
       files: [
         {
-          path: "LICENSE",
+          path: 'LICENSE',
           target: PROTOFORM_LICENSE_TARGET,
-          type: "registry:file",
+          type: 'registry:file',
         },
       ],
-      type: "registry:file",
+      type: 'registry:file',
     });
 
     function installsLicense(item: RegistryItem, visited = new Set<string>()): boolean {
-      if (item.name === "protoform-license") {
+      if (item.name === 'protoform-license') {
         return true;
       }
       if (visited.has(item.name)) {
@@ -89,8 +89,8 @@ describe("registry-only distribution", () => {
         if (dependency === PROTOFORM_LICENSE_DEPENDENCY) {
           return true;
         }
-        const dependencyName = dependency.startsWith("@protoform/")
-          ? dependency.slice("@protoform/".length)
+        const dependencyName = dependency.startsWith('@protoform/')
+          ? dependency.slice('@protoform/'.length)
           : undefined;
         const dependencyItem = dependencyName ? itemsByName.get(dependencyName) : undefined;
         return dependencyItem === undefined ? false : installsLicense(dependencyItem, new Set(visited));
@@ -102,71 +102,71 @@ describe("registry-only distribution", () => {
     }
   });
 
-  test("does not ask consumers for private Protoform packages", () => {
+  test('does not ask consumers for private Protoform packages', () => {
     const consumerContent = [
-      resolve(repositoryRoot, "README.md"),
-      resolve(repositoryRoot, "registry.json"),
-      resolve(repositoryRoot, ".npmrc"),
-      ...sourceFiles(resolve(repositoryRoot, "content", "docs")),
-      ...sourceFiles(resolve(repositoryRoot, ".github", "workflows")),
+      resolve(repositoryRoot, 'README.md'),
+      resolve(repositoryRoot, 'registry.json'),
+      resolve(repositoryRoot, '.npmrc'),
+      ...sourceFiles(resolve(repositoryRoot, 'content', 'docs')),
+      ...sourceFiles(resolve(repositoryRoot, '.github', 'workflows')),
     ]
-      .map((path) => readFileSync(path, "utf8"))
-      .join("\n");
+      .map((path) => readFileSync(path, 'utf8'))
+      .join('\n');
 
-    expect(consumerContent).not.toContain("@malinskibeniamin/");
+    expect(consumerContent).not.toContain('@malinskibeniamin/');
     expect(consumerContent).not.toMatch(PRIVATE_REGISTRY_PATTERN);
-    expect(consumerContent).not.toContain("packages:");
+    expect(consumerContent).not.toContain('packages:');
   });
 
-  test("documents the public Buf registry and portable bookstore install", () => {
+  test('documents the public Buf registry and portable bookstore install', () => {
     const gettingStarted = readFileSync(
-      resolve(repositoryRoot, "content/docs/(start-here)/getting-started.mdx"),
-      "utf8"
+      resolve(repositoryRoot, 'content/docs/(start-here)/getting-started.mdx'),
+      'utf8'
     );
-    const bookstore = readFileSync(resolve(repositoryRoot, "content/docs/(start-here)/bookstore.mdx"), "utf8");
+    const bookstore = readFileSync(resolve(repositoryRoot, 'content/docs/(start-here)/bookstore.mdx'), 'utf8');
 
-    expect(gettingStarted).toContain("@buf:registry=https://buf.build/gen/npm/v1/");
-    expect(gettingStarted).toContain("No token");
-    expect(bookstore).toContain("@protoform/bookstore");
-    expect(bookstore).not.toContain("protoform.dev");
+    expect(gettingStarted).toContain('@buf:registry=https://buf.build/gen/npm/v1/');
+    expect(gettingStarted).toContain('No token');
+    expect(bookstore).toContain('@protoform/bookstore');
+    expect(bookstore).not.toContain('protoform.dev');
   });
 
-  test("uses the public registry and Git tags as the distribution boundary", () => {
-    const readme = readFileSync(resolve(repositoryRoot, "README.md"), "utf8");
-    const release = readFileSync(resolve(repositoryRoot, ".github/workflows/release.yml"), "utf8");
+  test('uses the public registry and Git tags as the distribution boundary', () => {
+    const readme = readFileSync(resolve(repositoryRoot, 'README.md'), 'utf8');
+    const release = readFileSync(resolve(repositoryRoot, '.github/workflows/release.yml'), 'utf8');
 
-    expect(readme).toContain("shadcn");
-    expect(readme).toContain("Git tags");
+    expect(readme).toContain('shadcn');
+    expect(readme).toContain('Git tags');
     expect(readme).toContain(STABLE_REGISTRY_URL);
-    expect(readme).toContain("add @protoform/protoform");
-    expect(release).toContain("tags:");
-    expect(release).toContain("public/r LICENSE LICENSES THIRD_PARTY_NOTICES.md");
+    expect(readme).toContain('add @protoform/protoform');
+    expect(release).toContain('tags:');
+    expect(release).toContain('public/r LICENSE LICENSES THIRD_PARTY_NOTICES.md');
     expect(release).not.toMatch(PACKAGE_RELEASE_PATTERN);
-    expect(existsSync(resolve(repositoryRoot, ".changeset"))).toBe(false);
+    expect(existsSync(resolve(repositoryRoot, '.changeset'))).toBe(false);
   });
 
-  test("tests consumers through registry source only", () => {
-    const smoke = readFileSync(resolve(repositoryRoot, "scripts/consumer-fixture-smoke.ts"), "utf8");
+  test('tests consumers through registry source only', () => {
+    const smoke = readFileSync(resolve(repositoryRoot, 'scripts/consumer-fixture-smoke.ts'), 'utf8');
 
-    expect(smoke).toContain("@protoform/bookstore");
+    expect(smoke).toContain('@protoform/bookstore');
     expect(smoke).not.toMatch(PACKAGE_ARTIFACT_PATTERN);
   });
 
-  test("keeps the source generator explicit and runnable", () => {
-    const registry = JSON.parse(readFileSync(resolve(repositoryRoot, "registry.json"), "utf8")) as {
+  test('keeps the source generator explicit and runnable', () => {
+    const registry = JSON.parse(readFileSync(resolve(repositoryRoot, 'registry.json'), 'utf8')) as {
       items: Array<{
         files?: Array<{ target?: string }>;
         name: string;
         registryDependencies?: string[];
       }>;
     };
-    const generator = registry.items.find((item) => item.name === "protoc-gen-protoform");
-    const protoform = registry.items.find((item) => item.name === "protoform");
+    const generator = registry.items.find((item) => item.name === 'protoc-gen-protoform');
+    const protoform = registry.items.find((item) => item.name === 'protoform');
 
     for (const item of registry.items) {
-      expect(item.registryDependencies?.every((dependency) => dependency.startsWith("@protoform/")) ?? true).toBe(true);
+      expect(item.registryDependencies?.every((dependency) => dependency.startsWith('@protoform/')) ?? true).toBe(true);
     }
-    expect(generator?.files?.every((file) => file.target?.startsWith("~/scripts/protoc-gen-protoform/"))).toBe(true);
-    expect(protoform?.registryDependencies).not.toContain("@protoform/protoc-gen-protoform");
+    expect(generator?.files?.every((file) => file.target?.startsWith('~/scripts/protoc-gen-protoform/'))).toBe(true);
+    expect(protoform?.registryDependencies).not.toContain('@protoform/protoc-gen-protoform');
   });
 });

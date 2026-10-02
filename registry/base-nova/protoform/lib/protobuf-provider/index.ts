@@ -5,18 +5,18 @@ export {
   isSingletonProtoResource,
   type ProtoResourceMetadata,
   type ProtoResourceReference,
-} from "./aip.js";
+} from './aip.js';
 export {
   getRegisteredProtoAnnotations,
   type ProtoAnnotations,
   registerProtoAnnotations,
-} from "./annotations.js";
+} from './annotations.js';
 export {
   createFieldMask,
   createUpdateMask,
   dirtyFieldsFromValues,
-} from "./field-mask.js";
-export { createProtoFormSchema } from "./form-schema.js";
+} from './field-mask.js';
+export { createProtoFormSchema } from './form-schema.js';
 export {
   type ConnectErrorContext,
   extractConnectErrorContext,
@@ -28,14 +28,14 @@ export {
   type HelpLink,
   type PreconditionViolation,
   type QuotaViolation,
-} from "./format-error.js";
-export { formatSubmittedValue } from "./format-submitted-value.js";
+} from './format-error.js';
+export { formatSubmittedValue } from './format-submitted-value.js';
 export {
   humanizeServerFieldError,
   humanizeValidationError,
   isGenericValidationMessage,
   SERVER_FIELD_ERROR_FALLBACK,
-} from "./humanize-validation-error.js";
+} from './humanize-validation-error.js';
 export {
   type ComposeCreateRequestOptions,
   type ComposeDeleteRequestOptions,
@@ -43,8 +43,8 @@ export {
   composeCreateRequest,
   composeDeleteRequest,
   composeUpdateRequest,
-} from "./mutation-request.js";
-export { protoPathToFormPath } from "./proto-error-path.js";
+} from './mutation-request.js';
+export { protoPathToFormPath } from './proto-error-path.js';
 export {
   formValuesToProto,
   formValuesToProtoInit,
@@ -70,7 +70,7 @@ export {
   protoPayloadToFormValues,
   protoToFormValues,
   validateFormValuesAgainstProtoSchema,
-} from "./provider.js";
+} from './provider.js';
 export {
   getProtoFieldUi,
   getProtoMessageUi,
@@ -78,4 +78,4 @@ export {
   type ProtoFieldUiConfig,
   type ProtoMessageUiConfig,
   type ProtoUiRule,
-} from "./ui-options.js";
+} from './ui-options.js';

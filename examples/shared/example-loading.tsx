@@ -1,4 +1,4 @@
-import { Spinner } from "@/registry/base-nova/protoform/components/spinner";
+import { Spinner } from '@/registry/base-nova/protoform/components/spinner';
 
 export function ExampleLoading({ label }: { label: string }) {
   return (

@@ -1,29 +1,27 @@
-// @rstest-environment node
+import { describe, expect } from '@rstest/core';
 
-import { describe, expect } from "@rstest/core";
+import { createProtoFormSchema } from '../registry/base-nova/protoform/lib/protobuf-provider/index.js';
+import { FloatDoubleRulesSchema, IntegerRulesSchema } from './gen/protoform/conformance/v1/conformance_pb.js';
 
-import { createProtoFormSchema } from "../registry/base-nova/protoform/lib/protobuf-provider/index.js";
-import { FloatDoubleRulesSchema, IntegerRulesSchema } from "./gen/protoform/conformance/v1/conformance_pb.js";
-
-type ValidationResult = Awaited<ReturnType<ReturnType<typeof createProtoFormSchema>["~standard"]["validate"]>>;
+type ValidationResult = Awaited<ReturnType<ReturnType<typeof createProtoFormSchema>['~standard']['validate']>>;
 
 function paths(result: ValidationResult): string[][] {
   return (result.issues ?? []).map((issue) => (issue.path ?? []).map((segment) => String(segment)));
 }
 
 async function expectValid(schema: ReturnType<typeof createProtoFormSchema>, field: string, value: unknown) {
-  const result = await schema["~standard"].validate({ [field]: value });
+  const result = await schema['~standard'].validate({ [field]: value });
   expect(result.issues, `${field} rejected ${String(value)}`).toBeUndefined();
 }
 
 async function expectInvalid(schema: ReturnType<typeof createProtoFormSchema>, field: string, value: unknown) {
-  const result = await schema["~standard"].validate({ [field]: value });
+  const result = await schema['~standard'].validate({ [field]: value });
   expect(paths(result), `${field} accepted ${String(value)}`).toContainEqual([field]);
 }
 
-describe("Protovalidate numeric rule conformance", () => {
-  test.each(["float", "double"])(
-    "enforces const, comparisons, membership, finite values, and reversed ranges for %s",
+describe('Protovalidate numeric rule conformance', () => {
+  test.each(['float', 'double'])(
+    'enforces const, comparisons, membership, finite values, and reversed ranges for %s',
     async (kind) => {
       const schema = createProtoFormSchema(FloatDoubleRulesSchema);
 
@@ -46,13 +44,13 @@ describe("Protovalidate numeric rule conformance", () => {
   );
 
   test.each([
-    ["int32", false],
-    ["sint32", false],
-    ["sfixed32", false],
-    ["int64", true],
-    ["sint64", true],
-    ["sfixed64", true],
-  ] as const)("enforces const, comparisons, membership, and reversed ranges for %s", async (kind, is64Bit) => {
+    ['int32', false],
+    ['sint32', false],
+    ['sfixed32', false],
+    ['int64', true],
+    ['sint64', true],
+    ['sfixed64', true],
+  ] as const)('enforces const, comparisons, membership, and reversed ranges for %s', async (kind, is64Bit) => {
     const schema = createProtoFormSchema(IntegerRulesSchema);
     const value = (number: number) => (is64Bit ? String(number) : number);
 
@@ -71,11 +69,11 @@ describe("Protovalidate numeric rule conformance", () => {
   });
 
   test.each([
-    ["uint32", false],
-    ["fixed32", false],
-    ["uint64", true],
-    ["fixed64", true],
-  ] as const)("enforces const, comparisons, membership, and reversed ranges for %s", async (kind, is64Bit) => {
+    ['uint32', false],
+    ['fixed32', false],
+    ['uint64', true],
+    ['fixed64', true],
+  ] as const)('enforces const, comparisons, membership, and reversed ranges for %s', async (kind, is64Bit) => {
     const schema = createProtoFormSchema(IntegerRulesSchema);
     const value = (number: number) => (is64Bit ? String(number) : number);
 

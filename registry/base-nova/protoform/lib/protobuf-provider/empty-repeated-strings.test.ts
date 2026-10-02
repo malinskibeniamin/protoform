@@ -1,21 +1,21 @@
-import { create, createFileRegistry, type DescMessage } from "@bufbuild/protobuf";
+import { create, createFileRegistry, type DescMessage } from '@bufbuild/protobuf';
 import {
   FieldDescriptorProto_Label,
   FieldDescriptorProto_Type,
   FileDescriptorProtoSchema,
-} from "@bufbuild/protobuf/wkt";
-import { describe, expect } from "@rstest/core";
+} from '@bufbuild/protobuf/wkt';
+import { describe, expect } from '@rstest/core';
 
-import { formValuesToProtoInit } from "./provider.js";
+import { formValuesToProtoInit } from './provider.js';
 
 function createConversionFixture(): DescMessage {
   const file = create(FileDescriptorProtoSchema, {
     enumType: [
       {
-        name: "State",
+        name: 'State',
         value: [
-          { name: "STATE_UNSPECIFIED", number: 0 },
-          { name: "STATE_READY", number: 1 },
+          { name: 'STATE_UNSPECIFIED', number: 0 },
+          { name: 'STATE_READY', number: 1 },
         ],
       },
     ],
@@ -23,131 +23,131 @@ function createConversionFixture(): DescMessage {
       {
         field: [
           {
-            jsonName: "labels",
+            jsonName: 'labels',
             label: FieldDescriptorProto_Label.REPEATED,
-            name: "labels",
+            name: 'labels',
             number: 1,
             type: FieldDescriptorProto_Type.STRING,
           },
         ],
-        name: "Nested",
+        name: 'Nested',
       },
       {
         field: [
           {
-            jsonName: "labels",
+            jsonName: 'labels',
             label: FieldDescriptorProto_Label.REPEATED,
-            name: "labels",
+            name: 'labels',
             number: 1,
             type: FieldDescriptorProto_Type.STRING,
           },
           {
-            jsonName: "numbers",
+            jsonName: 'numbers',
             label: FieldDescriptorProto_Label.REPEATED,
-            name: "numbers",
+            name: 'numbers',
             number: 2,
             type: FieldDescriptorProto_Type.INT32,
           },
           {
-            jsonName: "payloads",
+            jsonName: 'payloads',
             label: FieldDescriptorProto_Label.REPEATED,
-            name: "payloads",
+            name: 'payloads',
             number: 3,
             type: FieldDescriptorProto_Type.BYTES,
           },
           {
-            jsonName: "states",
+            jsonName: 'states',
             label: FieldDescriptorProto_Label.REPEATED,
-            name: "states",
+            name: 'states',
             number: 4,
             type: FieldDescriptorProto_Type.ENUM,
-            typeName: ".test.State",
+            typeName: '.test.State',
           },
           {
-            jsonName: "children",
+            jsonName: 'children',
             label: FieldDescriptorProto_Label.REPEATED,
-            name: "children",
+            name: 'children',
             number: 5,
             type: FieldDescriptorProto_Type.MESSAGE,
-            typeName: ".test.Nested",
+            typeName: '.test.Nested',
           },
           {
-            jsonName: "nested",
+            jsonName: 'nested',
             label: FieldDescriptorProto_Label.OPTIONAL,
-            name: "nested",
+            name: 'nested',
             number: 6,
             type: FieldDescriptorProto_Type.MESSAGE,
-            typeName: ".test.Nested",
+            typeName: '.test.Nested',
           },
           {
-            jsonName: "nestedChoice",
+            jsonName: 'nestedChoice',
             label: FieldDescriptorProto_Label.OPTIONAL,
-            name: "nested_choice",
+            name: 'nested_choice',
             number: 7,
             oneofIndex: 0,
             type: FieldDescriptorProto_Type.MESSAGE,
-            typeName: ".test.Nested",
+            typeName: '.test.Nested',
           },
         ],
-        name: "Root",
-        oneofDecl: [{ name: "choice" }],
+        name: 'Root',
+        oneofDecl: [{ name: 'choice' }],
       },
     ],
-    name: "conversion_fixture.proto",
-    package: "test",
-    syntax: "proto3",
+    name: 'conversion_fixture.proto',
+    package: 'test',
+    syntax: 'proto3',
   });
-  const descriptor = createFileRegistry(file, () => undefined).getMessage("test.Root");
+  const descriptor = createFileRegistry(file, () => undefined).getMessage('test.Root');
   if (!descriptor) {
-    throw new Error("Expected the conversion fixture descriptor.");
+    throw new Error('Expected the conversion fixture descriptor.');
   }
   return descriptor;
 }
 
 const ConversionFixtureSchema = createConversionFixture();
 
-describe("empty repeated string conversion", () => {
-  test("discards empty and whitespace-only strings by default without changing other list types", () => {
+describe('empty repeated string conversion', () => {
+  test('discards empty and whitespace-only strings by default without changing other list types', () => {
     const converted = formValuesToProtoInit(ConversionFixtureSchema, {
-      children: [{ labels: [""] }, { labels: ["child"] }],
-      labels: ["foo", "", "   ", "bar"],
+      children: [{ labels: [''] }, { labels: ['child'] }],
+      labels: ['foo', '', '   ', 'bar'],
       numbers: [0, 2],
-      payloads: ["", "AQ=="],
+      payloads: ['', 'AQ=='],
       states: [0, 1],
     }) as Record<string, unknown>;
 
-    expect(converted["labels"]).toEqual(["foo", "bar"]);
-    expect(converted["numbers"]).toEqual([0, 2]);
-    expect(converted["payloads"]).toEqual([new Uint8Array(), new Uint8Array([1])]);
-    expect(converted["states"]).toEqual([0, 1]);
-    expect(converted["children"]).toEqual([{ labels: [] }, { labels: ["child"] }]);
+    expect(converted['labels']).toEqual(['foo', 'bar']);
+    expect(converted['numbers']).toEqual([0, 2]);
+    expect(converted['payloads']).toEqual([new Uint8Array(), new Uint8Array([1])]);
+    expect(converted['states']).toEqual([0, 1]);
+    expect(converted['children']).toEqual([{ labels: [] }, { labels: ['child'] }]);
   });
 
-  test("preserves empty strings for configured root, nested, and oneof-message fields", () => {
+  test('preserves empty strings for configured root, nested, and oneof-message fields', () => {
     const converted = formValuesToProtoInit(
       ConversionFixtureSchema,
       {
         choice: {
-          case: "nestedChoice",
-          value: { labels: ["oneof", "", "   "] },
+          case: 'nestedChoice',
+          value: { labels: ['oneof', '', '   '] },
         },
-        labels: ["root", "", "   "],
-        nested: { labels: ["nested", "", "   "] },
+        labels: ['root', '', '   '],
+        nested: { labels: ['nested', '', '   '] },
       },
       {
         emptyRepeatedStringPolicies: {
-          "choice.nestedChoice.labels": "preserve",
-          labels: "preserve",
-          "nested.labels": "preserve",
+          'choice.nestedChoice.labels': 'preserve',
+          labels: 'preserve',
+          'nested.labels': 'preserve',
         },
       }
     ) as Record<string, unknown>;
 
-    expect(converted["labels"]).toEqual(["root", "", "   "]);
-    expect(converted["nested"]).toEqual({ labels: ["nested", "", "   "] });
-    expect(converted["choice"]).toEqual({
-      case: "nestedChoice",
-      value: { labels: ["oneof", "", "   "] },
+    expect(converted['labels']).toEqual(['root', '', '   ']);
+    expect(converted['nested']).toEqual({ labels: ['nested', '', '   '] });
+    expect(converted['choice']).toEqual({
+      case: 'nestedChoice',
+      value: { labels: ['oneof', '', '   '] },
     });
   });
 });
