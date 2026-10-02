@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { useState } from "react";
+import { useState } from 'react';
 
-import { Alert, AlertDescription } from "@/registry/base-nova/protoform/components/alert";
-import { AutoForm } from "@/registry/base-nova/protoform/components/auto-form";
+import { Alert, AlertDescription } from '@/registry/base-nova/protoform/components/alert';
+import { AutoForm } from '@/registry/base-nova/protoform/components/auto-form';
 
-import { type OneofForm, OneofFormSchema } from "../gen/protoform/examples/v1/oneof_form_pb.js";
+import { type OneofForm, OneofFormSchema } from '../gen/protoform/examples/v1/oneof_form_pb.js';
 
-export const client = "only";
+export const client = 'only';
 
 export default function OneofFormExample() {
   const [submittedContact, setSubmittedContact] = useState<string>();

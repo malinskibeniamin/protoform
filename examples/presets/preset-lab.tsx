@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { CheckIcon, CopyIcon, ExternalLinkIcon, Maximize2Icon, Minimize2Icon, MoonIcon, SunIcon } from "lucide-react";
-import { type CSSProperties, useEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
-import { AutoForm } from "@/registry/base-nova/protoform/components/auto-form";
+import { CheckIcon, CopyIcon, ExternalLinkIcon, Maximize2Icon, Minimize2Icon, MoonIcon, SunIcon } from 'lucide-react';
+import { type CSSProperties, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { AutoForm } from '@/registry/base-nova/protoform/components/auto-form';
 import type {
   SchemaProvider,
   SchemaValidationError,
-} from "@/registry/base-nova/protoform/components/auto-form/core-types";
-import { Button } from "@/registry/base-nova/protoform/components/button";
-import { cn } from "@/registry/base-nova/protoform/lib/utils";
+} from '@/registry/base-nova/protoform/components/auto-form/core-types';
+import { Button } from '@/registry/base-nova/protoform/components/button';
+import { cn } from '@/registry/base-nova/protoform/lib/utils';
 
 import {
   buildPresetCode,
@@ -21,32 +21,32 @@ import {
   type PresetRadius,
   presetDefinitions,
   presetRadii,
-} from "./preset-lab-presets";
-import { PresetWorkspaceShell } from "./preset-workspace-shell";
-import { PreviewFieldWrapper } from "./preview-field-wrapper";
-import { PreviewForm } from "./preview-form";
+} from './preset-lab-presets';
+import { PresetWorkspaceShell } from './preset-workspace-shell';
+import { PreviewFieldWrapper } from './preview-field-wrapper';
+import { PreviewForm } from './preview-form';
 
 type PreviewValues = Record<string, unknown>;
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/u;
 const isoDatePattern = /^\d{4}-\d{2}-\d{2}$/u;
-const environmentValues = new Set(["development", "staging", "production"]);
-const reviewTemplateValues = new Set(["access", "architecture", "compliance", "incident", "launch"]);
+const environmentValues = new Set(['development', 'staging', 'production']);
+const reviewTemplateValues = new Set(['access', 'architecture', 'compliance', 'incident', 'launch']);
 
 function isSupportedValue(value: unknown, supportedValues: Set<string>): value is string {
-  return typeof value === "string" && supportedValues.has(value);
+  return typeof value === 'string' && supportedValues.has(value);
 }
 
 function isValidCoverageTarget(value: unknown): value is number {
-  return typeof value === "number" && Number.isFinite(value) && value >= 0 && value <= 100;
+  return typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= 100;
 }
 
 function isValidIsoDate(value: unknown): value is string {
-  if (typeof value !== "string" || !isoDatePattern.test(value)) {
+  if (typeof value !== 'string' || !isoDatePattern.test(value)) {
     return false;
   }
 
-  const [year, month, day] = value.split("-").map(Number);
+  const [year, month, day] = value.split('-').map(Number);
   if (!(year && month && day)) {
     return false;
   }
@@ -68,105 +68,105 @@ function buildPreviewSchema(instanceId: string): SchemaProvider<PreviewValues> {
     getDefaultValues: () => ({
       [approvalKey]: true,
       [coverageKey]: 80,
-      [dueDateKey]: "2026-08-15",
-      [emailKey]: "team@protoform.dev",
-      [environmentKey]: "staging",
+      [dueDateKey]: '2026-08-15',
+      [emailKey]: 'team@protoform.dev',
+      [environmentKey]: 'staging',
       [notificationsKey]: true,
-      [notesKey]: "Focus on permissions, ownership, and recovery paths.",
-      [reviewTemplateKey]: "architecture",
+      [notesKey]: 'Focus on permissions, ownership, and recovery paths.',
+      [reviewTemplateKey]: 'architecture',
     }),
     parseSchema: () => ({
       fields: [
         {
           fieldConfig: {
-            fieldType: "email",
-            label: "Work email",
+            fieldType: 'email',
+            label: 'Work email',
           },
           key: emailKey,
           required: true,
-          type: "string",
+          type: 'string',
         },
         {
           fieldConfig: {
-            fieldType: "select",
-            label: "Review template",
+            fieldType: 'select',
+            label: 'Review template',
           },
           key: reviewTemplateKey,
           options: [
-            ["access", "Access review"],
-            ["architecture", "Architecture"],
-            ["compliance", "Compliance"],
-            ["incident", "Incident follow-up"],
-            ["launch", "Launch readiness"],
+            ['access', 'Access review'],
+            ['architecture', 'Architecture'],
+            ['compliance', 'Compliance'],
+            ['incident', 'Incident follow-up'],
+            ['launch', 'Launch readiness'],
           ],
           required: true,
-          type: "select",
+          type: 'select',
         },
         {
           fieldConfig: {
-            label: "Environment",
+            label: 'Environment',
           },
           key: environmentKey,
           options: [
-            ["development", "Dev"],
-            ["staging", "Staging"],
-            ["production", "Prod"],
+            ['development', 'Dev'],
+            ['staging', 'Staging'],
+            ['production', 'Prod'],
           ],
           required: true,
-          type: "select",
+          type: 'select',
         },
         {
           fieldConfig: {
-            fieldType: "slider",
+            fieldType: 'slider',
             inputProps: {
               max: 100,
               min: 0,
               step: 10,
             },
-            label: "Coverage target",
+            label: 'Coverage target',
           },
           key: coverageKey,
           required: true,
-          type: "number",
+          type: 'number',
         },
         {
           fieldConfig: {
-            label: "Due date",
+            label: 'Due date',
           },
           key: dueDateKey,
           required: true,
-          type: "date",
+          type: 'date',
         },
         {
           fieldConfig: {
-            fieldType: "textarea",
+            fieldType: 'textarea',
             inputProps: {
               maxLength: 240,
-              placeholder: "Add context for reviewers",
+              placeholder: 'Add context for reviewers',
             },
-            label: "Review notes",
+            label: 'Review notes',
           },
           key: notesKey,
           required: false,
-          type: "string",
+          type: 'string',
         },
         {
           fieldConfig: {
-            fieldType: "switch",
-            label: "Review notifications",
+            fieldType: 'switch',
+            label: 'Review notifications',
           },
           key: notificationsKey,
           required: false,
-          type: "boolean",
+          type: 'boolean',
         },
         {
           fieldConfig: {
-            fieldType: "checkbox",
-            label: "Require final approval",
+            fieldType: 'checkbox',
+            label: 'Require final approval',
           },
           key: approvalKey,
           required: false,
-          type: "boolean",
+          type: 'boolean',
         },
       ],
     }),
@@ -181,51 +181,51 @@ function buildPreviewSchema(instanceId: string): SchemaProvider<PreviewValues> {
       const notes = values[notesKey];
       const reviewTemplate = values[reviewTemplateKey];
 
-      if (typeof email !== "string" || !emailPattern.test(email)) {
+      if (typeof email !== 'string' || !emailPattern.test(email)) {
         errors.push({
-          message: "Enter a valid work email.",
+          message: 'Enter a valid work email.',
           path: [emailKey],
         });
       }
       if (!isSupportedValue(environment, environmentValues)) {
         errors.push({
-          message: "Choose a listed environment.",
+          message: 'Choose a listed environment.',
           path: [environmentKey],
         });
       }
       if (!isSupportedValue(reviewTemplate, reviewTemplateValues)) {
         errors.push({
-          message: "Choose a listed review template.",
+          message: 'Choose a listed review template.',
           path: [reviewTemplateKey],
         });
       }
       if (!isValidCoverageTarget(coverage)) {
         errors.push({
-          message: "Choose a coverage target from 0 to 100.",
+          message: 'Choose a coverage target from 0 to 100.',
           path: [coverageKey],
         });
       }
       if (!isValidIsoDate(dueDate)) {
         errors.push({
-          message: "Enter a valid due date in YYYY-MM-DD format.",
+          message: 'Enter a valid due date in YYYY-MM-DD format.',
           path: [dueDateKey],
         });
       }
-      if (typeof notes !== "string" || notes.length > 240) {
+      if (typeof notes !== 'string' || notes.length > 240) {
         errors.push({
-          message: "Keep review notes under 240 characters.",
+          message: 'Keep review notes under 240 characters.',
           path: [notesKey],
         });
       }
-      if (typeof notifications !== "boolean") {
+      if (typeof notifications !== 'boolean') {
         errors.push({
-          message: "Choose whether to send review notifications.",
+          message: 'Choose whether to send review notifications.',
           path: [notificationsKey],
         });
       }
-      if (typeof approval !== "boolean") {
+      if (typeof approval !== 'boolean') {
         errors.push({
-          message: "Choose whether final approval is required.",
+          message: 'Choose whether final approval is required.',
           path: [approvalKey],
         });
       }
@@ -235,7 +235,7 @@ function buildPreviewSchema(instanceId: string): SchemaProvider<PreviewValues> {
   };
 }
 
-const previewSchema = buildPreviewSchema("preset-preview");
+const previewSchema = buildPreviewSchema('preset-preview');
 
 const previewUiComponents = {
   FieldWrapper: PreviewFieldWrapper,
@@ -250,59 +250,59 @@ interface InitialSelection {
 }
 
 function readBlumeTheme(): PresetMode {
-  return document.documentElement.dataset["theme"] === "dark" ? "dark" : "light";
+  return document.documentElement.dataset['theme'] === 'dark' ? 'dark' : 'light';
 }
 
 function readInitialSelection(): InitialSelection {
-  if (typeof window === "undefined") {
+  if (typeof window === 'undefined') {
     return {
-      mode: "light",
+      mode: 'light',
       preset: defaultPreset,
       radius: defaultRadius,
     };
   }
 
   const searchParams = new URLSearchParams(window.location.search);
-  const presetCode = searchParams.get("preset");
-  const requestedMode = searchParams.get("mode");
+  const presetCode = searchParams.get('preset');
+  const requestedMode = searchParams.get('mode');
   const supportedPreset = presetCode ? findSupportedPreset(presetCode) : undefined;
   const hasInvalidPreset = Boolean(presetCode && !supportedPreset);
-  const hasInvalidMode = Boolean(requestedMode && requestedMode !== "light" && requestedMode !== "dark");
+  const hasInvalidMode = Boolean(requestedMode && requestedMode !== 'light' && requestedMode !== 'dark');
   let mode = readBlumeTheme();
-  if (requestedMode === "dark" || requestedMode === "light") {
+  if (requestedMode === 'dark' || requestedMode === 'light') {
     mode = requestedMode;
   } else if (hasInvalidMode) {
-    mode = "light";
+    mode = 'light';
   }
   const statusMessages: string[] = [];
 
   if (hasInvalidPreset) {
     statusMessages.push(
-      "This shared preset is outside the supported range. Showing the default Base UI + Nova preset."
+      'This shared preset is outside the supported range. Showing the default Base UI + Nova preset.'
     );
   }
   if (hasInvalidMode) {
-    statusMessages.push("This shared preview mode is not supported. Showing the light preview.");
+    statusMessages.push('This shared preview mode is not supported. Showing the light preview.');
   }
 
   return {
     mode,
     preset: supportedPreset?.preset ?? defaultPreset,
     radius: supportedPreset?.radius ?? defaultRadius,
-    status: statusMessages.length > 0 ? statusMessages.join(" ") : undefined,
+    status: statusMessages.length > 0 ? statusMessages.join(' ') : undefined,
   };
 }
 
-type FullscreenMode = "fallback" | "native" | "none";
+type FullscreenMode = 'fallback' | 'native' | 'none';
 
 function createWorkspaceHost(): HTMLDivElement | null {
-  if (typeof document === "undefined") {
+  if (typeof document === 'undefined') {
     return null;
   }
 
-  const host = document.createElement("div");
-  host.className = "w-full";
-  host.dataset["presetWorkspaceHost"] = "";
+  const host = document.createElement('div');
+  host.className = 'w-full';
+  host.dataset['presetWorkspaceHost'] = '';
   return host;
 }
 
@@ -332,7 +332,7 @@ function isolateWorkspace(workspace: HTMLElement): () => void {
   }
 
   const previousBodyOverflow = document.body.style.overflow;
-  document.body.style.overflow = "hidden";
+  document.body.style.overflow = 'hidden';
 
   return () => {
     document.body.style.overflow = previousBodyOverflow;
@@ -349,11 +349,11 @@ function useWorkspaceFullscreen(setStatus: (message: string) => void) {
   const [isNativeFullscreen, setIsNativeFullscreen] = useState(false);
   const [isFallbackFullscreen, setIsFallbackFullscreen] = useState(false);
   const isFullscreen = isNativeFullscreen || isFallbackFullscreen;
-  let mode: FullscreenMode = "none";
+  let mode: FullscreenMode = 'none';
   if (isNativeFullscreen) {
-    mode = "native";
+    mode = 'native';
   } else if (isFallbackFullscreen) {
-    mode = "fallback";
+    mode = 'fallback';
   }
 
   useEffect(function trackWorkspaceFullscreen() {
@@ -362,8 +362,8 @@ function useWorkspaceFullscreen(setStatus: (message: string) => void) {
     }
 
     synchronizeFullscreenState();
-    document.addEventListener("fullscreenchange", synchronizeFullscreenState);
-    return () => document.removeEventListener("fullscreenchange", synchronizeFullscreenState);
+    document.addEventListener('fullscreenchange', synchronizeFullscreenState);
+    return () => document.removeEventListener('fullscreenchange', synchronizeFullscreenState);
   }, []);
 
   useEffect(
@@ -395,15 +395,15 @@ function useWorkspaceFullscreen(setStatus: (message: string) => void) {
       const restoreWorkspaceIsolation = isolateWorkspace(workspace);
 
       function closeOnEscape(event: KeyboardEvent) {
-        if (event.key === "Escape") {
+        if (event.key === 'Escape') {
           setIsFallbackFullscreen(false);
-          setStatus("Full screen closed.");
+          setStatus('Full screen closed.');
         }
       }
 
-      document.addEventListener("keydown", closeOnEscape);
+      document.addEventListener('keydown', closeOnEscape);
       return () => {
-        document.removeEventListener("keydown", closeOnEscape);
+        document.removeEventListener('keydown', closeOnEscape);
         restoreWorkspaceIsolation();
         if (inlineHost.isConnected) {
           inlineHost.append(workspaceHost);
@@ -416,38 +416,38 @@ function useWorkspaceFullscreen(setStatus: (message: string) => void) {
   async function toggleFullscreen() {
     const workspace: HTMLElement | null = workspaceRef.current;
     if (!workspace) {
-      setStatus("Full screen is not available.");
+      setStatus('Full screen is not available.');
       return;
     }
 
     if (isFallbackFullscreen) {
       setIsFallbackFullscreen(false);
-      setStatus("Full screen closed.");
+      setStatus('Full screen closed.');
       return;
     }
 
     if (document.fullscreenElement === workspace) {
       try {
         await document.exitFullscreen();
-        setStatus("Full screen closed.");
+        setStatus('Full screen closed.');
       } catch {
-        setStatus("Could not close full screen. Press Escape to exit.");
+        setStatus('Could not close full screen. Press Escape to exit.');
       }
       return;
     }
 
     if (!workspace.requestFullscreen) {
       setIsFallbackFullscreen(true);
-      setStatus("Full screen opened. Press Escape to exit.");
+      setStatus('Full screen opened. Press Escape to exit.');
       return;
     }
 
     try {
       await workspace.requestFullscreen();
-      setStatus("Full screen opened. Press Escape to exit.");
+      setStatus('Full screen opened. Press Escape to exit.');
     } catch {
       setIsFallbackFullscreen(true);
-      setStatus("Full screen opened. Press Escape to exit.");
+      setStatus('Full screen opened. Press Escape to exit.');
     }
   }
 
@@ -480,23 +480,23 @@ export function PresetLab() {
   const presetCode = buildPresetCode(activePreset, radius);
   const command = `bunx shadcn@latest create --base base --preset ${presetCode}`;
   const createUrl = `https://ui.shadcn.com/create?base=base&preset=${presetCode}`;
-  const radiusValue = presetRadii.find((candidate) => candidate.value === radius)?.cssValue ?? "0.625rem";
-  const previewVariables = mode === "dark" ? activePreset.dark : activePreset.light;
+  const radiusValue = presetRadii.find((candidate) => candidate.value === radius)?.cssValue ?? '0.625rem';
+  const previewVariables = mode === 'dark' ? activePreset.dark : activePreset.light;
 
   useEffect(
     function synchronizePresetUrl() {
       const url = new URL(window.location.href);
-      url.searchParams.set("preset", presetCode);
-      url.searchParams.set("mode", mode);
-      window.history.replaceState({}, "", url);
+      url.searchParams.set('preset', presetCode);
+      url.searchParams.set('mode', mode);
+      window.history.replaceState({}, '', url);
     },
     [mode, presetCode]
   );
 
   useEffect(
     function synchronizeBlumeTheme() {
-      document.documentElement.dataset["theme"] = mode;
-      localStorage.setItem("blume-theme", mode);
+      document.documentElement.dataset['theme'] = mode;
+      localStorage.setItem('blume-theme', mode);
     },
     [mode]
   );
@@ -507,7 +507,7 @@ export function PresetLab() {
       setMode(readBlumeTheme());
     });
     observer.observe(root, {
-      attributeFilter: ["data-theme"],
+      attributeFilter: ['data-theme'],
     });
     return () => observer.disconnect();
   }, []);
@@ -549,14 +549,14 @@ export function PresetLab() {
                 <div className="flex min-w-0 items-center gap-2.5">
                   <div aria-hidden="true" className="flex -space-x-1">
                     {[
-                      ["primary", previewVariables["--primary"]],
-                      ["accent", previewVariables["--accent"]],
-                      ["muted", previewVariables["--muted"]],
+                      ['primary', previewVariables['--primary']],
+                      ['accent', previewVariables['--accent']],
+                      ['muted', previewVariables['--muted']],
                     ].map(([name, color]) => (
                       <span
                         className="size-5 rounded-full border-2 border-background bg-(--swatch-color)"
                         key={name}
-                        style={{ "--swatch-color": color } as CSSProperties}
+                        style={{ '--swatch-color': color } as CSSProperties}
                       />
                     ))}
                   </div>
@@ -574,43 +574,43 @@ export function PresetLab() {
                     <legend className="sr-only">Preview mode</legend>
                     <Button
                       aria-label="Light preview"
-                      aria-pressed={mode === "light"}
+                      aria-pressed={mode === 'light'}
                       onClick={() => {
-                        setMode("light");
-                        setStatus("Light preview selected.");
+                        setMode('light');
+                        setStatus('Light preview selected.');
                       }}
                       size="sm"
                       type="button"
-                      variant={mode === "light" ? "outline" : "ghost"}
+                      variant={mode === 'light' ? 'outline' : 'ghost'}
                     >
                       <SunIcon aria-hidden="true" />
                       Light
                     </Button>
                     <Button
                       aria-label="Dark preview"
-                      aria-pressed={mode === "dark"}
+                      aria-pressed={mode === 'dark'}
                       onClick={() => {
-                        setMode("dark");
-                        setStatus("Dark preview selected.");
+                        setMode('dark');
+                        setStatus('Dark preview selected.');
                       }}
                       size="sm"
                       type="button"
-                      variant={mode === "dark" ? "outline" : "ghost"}
+                      variant={mode === 'dark' ? 'outline' : 'ghost'}
                     >
                       <MoonIcon aria-hidden="true" />
                       Dark
                     </Button>
                   </fieldset>
                   <Button
-                    aria-label={isFullscreen ? "Exit full screen" : "Enter full screen"}
+                    aria-label={isFullscreen ? 'Exit full screen' : 'Enter full screen'}
                     onClick={toggleFullscreen}
                     size="sm"
-                    title={isFullscreen ? "Exit full screen" : "Enter full screen"}
+                    title={isFullscreen ? 'Exit full screen' : 'Enter full screen'}
                     type="button"
                     variant="ghost"
                   >
                     {isFullscreen ? <Minimize2Icon aria-hidden="true" /> : <Maximize2Icon aria-hidden="true" />}
-                    <span className="hidden sm:inline">{isFullscreen ? "Exit full screen" : "Full screen"}</span>
+                    <span className="hidden sm:inline">{isFullscreen ? 'Exit full screen' : 'Full screen'}</span>
                   </Button>
                 </div>
               </header>
@@ -622,7 +622,7 @@ export function PresetLab() {
                     <div className="grid min-w-0 grid-cols-3 gap-1 md:grid-cols-1">
                       {presetDefinitions.map((preset) => {
                         const active = activePreset.id === preset.id;
-                        const variables = mode === "dark" ? preset.dark : preset.light;
+                        const variables = mode === 'dark' ? preset.dark : preset.light;
 
                         return (
                           <Button
@@ -632,12 +632,12 @@ export function PresetLab() {
                             key={preset.id}
                             onClick={() => selectPreset(preset)}
                             type="button"
-                            variant={active ? "outline" : "ghost"}
+                            variant={active ? 'outline' : 'ghost'}
                           >
                             <span
                               aria-hidden="true"
                               className="size-3.5 rounded-full border border-foreground/10 bg-(--swatch-color)"
-                              style={{ "--swatch-color": variables["--primary"] } as CSSProperties}
+                              style={{ '--swatch-color': variables['--primary'] } as CSSProperties}
                             />
                             {preset.name}
                             {active ? <CheckIcon aria-hidden="true" className="ml-auto hidden md:block" /> : null}
@@ -660,7 +660,7 @@ export function PresetLab() {
                           }}
                           size="xs"
                           type="button"
-                          variant={radius === candidate.value ? "outline" : "ghost"}
+                          variant={radius === candidate.value ? 'outline' : 'ghost'}
                         >
                           {candidate.label}
                         </Button>
@@ -671,42 +671,42 @@ export function PresetLab() {
 
                 <div
                   className={cn(
-                    "min-w-0 bg-muted/25 text-foreground md:group-data-[fullscreen=true]/workspace:overflow-y-auto",
-                    mode === "dark" && "dark"
+                    'min-w-0 bg-muted/25 text-foreground md:group-data-[fullscreen=true]/workspace:overflow-y-auto',
+                    mode === 'dark' && 'dark'
                   )}
                   data-preset-id={activePreset.id}
                   data-testid="preset-preview"
                   style={
                     {
-                      "--accent": previewVariables["--accent"],
-                      "--accent-foreground": previewVariables["--accent-foreground"],
-                      "--background": previewVariables["--background"],
-                      "--border": previewVariables["--border"],
-                      "--card": previewVariables["--card"],
-                      "--card-foreground": previewVariables["--card-foreground"],
-                      "--destructive": previewVariables["--destructive"],
-                      "--foreground": previewVariables["--foreground"],
-                      "--input": previewVariables["--input"],
-                      "--muted": previewVariables["--muted"],
-                      "--muted-foreground": previewVariables["--muted-foreground"],
-                      "--popover": previewVariables["--popover"],
-                      "--popover-foreground": previewVariables["--popover-foreground"],
-                      "--primary": previewVariables["--primary"],
-                      "--primary-foreground": previewVariables["--primary-foreground"],
-                      "--ring": previewVariables["--ring"],
-                      "--secondary": previewVariables["--secondary"],
-                      "--secondary-foreground": previewVariables["--secondary-foreground"],
-                      "--radius": radiusValue,
-                      "--radius-xs": `calc(${radiusValue} - 6px)`,
-                      "--radius-sm": `calc(${radiusValue} - 4px)`,
-                      "--radius-md": `calc(${radiusValue} - 2px)`,
-                      "--radius-lg": radiusValue,
-                      "--radius-xl": `calc(${radiusValue} + 4px)`,
-                      "--radius-2xl": `calc(${radiusValue} + 8px)`,
-                      "--selected": previewVariables["--primary"],
-                      "--selected-foreground": previewVariables["--primary-foreground"],
-                      "--selection": previewVariables["--primary"],
-                      "--selection-foreground": previewVariables["--primary-foreground"],
+                      '--accent': previewVariables['--accent'],
+                      '--accent-foreground': previewVariables['--accent-foreground'],
+                      '--background': previewVariables['--background'],
+                      '--border': previewVariables['--border'],
+                      '--card': previewVariables['--card'],
+                      '--card-foreground': previewVariables['--card-foreground'],
+                      '--destructive': previewVariables['--destructive'],
+                      '--foreground': previewVariables['--foreground'],
+                      '--input': previewVariables['--input'],
+                      '--muted': previewVariables['--muted'],
+                      '--muted-foreground': previewVariables['--muted-foreground'],
+                      '--popover': previewVariables['--popover'],
+                      '--popover-foreground': previewVariables['--popover-foreground'],
+                      '--primary': previewVariables['--primary'],
+                      '--primary-foreground': previewVariables['--primary-foreground'],
+                      '--ring': previewVariables['--ring'],
+                      '--secondary': previewVariables['--secondary'],
+                      '--secondary-foreground': previewVariables['--secondary-foreground'],
+                      '--radius': radiusValue,
+                      '--radius-xs': `calc(${radiusValue} - 6px)`,
+                      '--radius-sm': `calc(${radiusValue} - 4px)`,
+                      '--radius-md': `calc(${radiusValue} - 2px)`,
+                      '--radius-lg': radiusValue,
+                      '--radius-xl': `calc(${radiusValue} + 4px)`,
+                      '--radius-2xl': `calc(${radiusValue} + 8px)`,
+                      '--selected': previewVariables['--primary'],
+                      '--selected-foreground': previewVariables['--primary-foreground'],
+                      '--selection': previewVariables['--primary'],
+                      '--selection-foreground': previewVariables['--primary-foreground'],
                     } as CSSProperties
                   }
                 >
@@ -751,8 +751,8 @@ export function PresetLab() {
                     onClick={() =>
                       copyText(
                         presetCode,
-                        "Preset code copied.",
-                        "Could not copy the preset code. Copy it from the code field instead."
+                        'Preset code copied.',
+                        'Could not copy the preset code. Copy it from the code field instead.'
                       )
                     }
                     size="sm"
@@ -766,8 +766,8 @@ export function PresetLab() {
                     onClick={() =>
                       copyText(
                         command,
-                        "Bun command copied.",
-                        "Could not copy the Bun command. Copy it from the command preview instead."
+                        'Bun command copied.',
+                        'Could not copy the Bun command. Copy it from the command preview instead.'
                       )
                     }
                     size="sm"

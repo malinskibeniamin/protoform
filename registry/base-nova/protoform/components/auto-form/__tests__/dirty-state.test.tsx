@@ -1,65 +1,65 @@
-import { describe, expect, rs } from "@rstest/core";
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { describe, expect, rs } from '@rstest/core';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
-import { AutoForm as TanStackAutoForm } from "../../auto-form-tanstack";
-import { AutoForm as ReactHookAutoForm } from "..";
-import { createMockProvider } from "./test-utils";
+import { AutoForm as TanStackAutoForm } from '../../auto-form-tanstack';
+import { AutoForm as ReactHookAutoForm } from '..';
+import { createMockProvider } from './test-utils';
 
 if (!HTMLElement.prototype.hasPointerCapture) {
-  Object.defineProperty(HTMLElement.prototype, "hasPointerCapture", { value: () => false });
+  Object.defineProperty(HTMLElement.prototype, 'hasPointerCapture', { value: () => false });
 }
 if (!HTMLElement.prototype.setPointerCapture) {
-  Object.defineProperty(HTMLElement.prototype, "setPointerCapture", { value: () => undefined });
+  Object.defineProperty(HTMLElement.prototype, 'setPointerCapture', { value: () => undefined });
 }
 if (!HTMLElement.prototype.releasePointerCapture) {
-  Object.defineProperty(HTMLElement.prototype, "releasePointerCapture", { value: () => undefined });
+  Object.defineProperty(HTMLElement.prototype, 'releasePointerCapture', { value: () => undefined });
 }
 
-const schema = createMockProvider([{ key: "name", required: true, type: "string" }], { name: "" });
+const schema = createMockProvider([{ key: 'name', required: true, type: 'string' }], { name: '' });
 
 const structuredSchema = createMockProvider(
   [
     {
-      fieldConfig: { label: "Profile" },
-      key: "profile",
+      fieldConfig: { label: 'Profile' },
+      key: 'profile',
       required: false,
-      schema: [{ key: "city", required: false, type: "string" }],
-      type: "object",
+      schema: [{ key: 'city', required: false, type: 'string' }],
+      type: 'object',
     },
     {
-      fieldConfig: { label: "Tags" },
-      key: "tags",
+      fieldConfig: { label: 'Tags' },
+      key: 'tags',
       required: false,
-      schema: [{ key: "item", required: false, type: "string" }],
-      type: "array",
+      schema: [{ key: 'item', required: false, type: 'string' }],
+      type: 'array',
     },
     {
-      fieldConfig: { label: "Labels" },
-      key: "labels",
+      fieldConfig: { label: 'Labels' },
+      key: 'labels',
       required: false,
       schema: [
-        { key: "key", required: false, type: "string" },
-        { key: "value", required: false, type: "string" },
+        { key: 'key', required: false, type: 'string' },
+        { key: 'value', required: false, type: 'string' },
       ],
-      type: "map",
+      type: 'map',
     },
     {
-      fieldConfig: { label: "Contact" },
-      key: "contact",
+      fieldConfig: { label: 'Contact' },
+      key: 'contact',
       required: false,
-      schema: [{ fieldConfig: { label: "Email" }, key: "email", required: false, type: "string" }],
-      type: "oneof",
+      schema: [{ fieldConfig: { label: 'Email' }, key: 'email', required: false, type: 'string' }],
+      type: 'oneof',
     },
   ],
-  { contact: { case: undefined, value: undefined }, labels: [], profile: { city: "" }, tags: [] }
+  { contact: { case: undefined, value: undefined }, labels: [], profile: { city: '' }, tags: [] }
 );
 
 describe.each([
-  ["React Hook Form", ReactHookAutoForm],
-  ["TanStack Form", TanStackAutoForm],
-] as const)("%s dirty-state lifecycle", (_name, FormComponent) => {
-  test("reports clean initially, emits distinct changes, marks saved values clean synchronously, and adopts reset values as the baseline", async () => {
+  ['React Hook Form', ReactHookAutoForm],
+  ['TanStack Form', TanStackAutoForm],
+] as const)('%s dirty-state lifecycle', (_name, FormComponent) => {
+  test('reports clean initially, emits distinct changes, marks saved values clean synchronously, and adopts reset values as the baseline', async () => {
     const user = userEvent.setup();
     const onDirtyChange = rs.fn();
     let cleanBeforeNavigation = false;
@@ -72,40 +72,40 @@ describe.each([
 
     await waitFor(() => expect(onDirtyChange.mock.calls.map(([dirty]) => dirty)).toEqual([false]));
 
-    await user.type(screen.getByRole("textbox", { name: /name/iu }), "Ada");
+    await user.type(screen.getByRole('textbox', { name: /name/iu }), 'Ada');
     await waitFor(() => expect(onDirtyChange.mock.calls.map(([dirty]) => dirty)).toEqual([false, true]));
 
-    await user.click(screen.getByRole("button", { name: "Submit" }));
+    await user.click(screen.getByRole('button', { name: 'Submit' }));
     await waitFor(() => expect(onSubmit).toHaveBeenCalledOnce());
     expect(cleanBeforeNavigation).toBe(true);
     expect(onDirtyChange.mock.calls.map(([dirty]) => dirty)).toEqual([false, true, false]);
 
-    await user.clear(screen.getByRole("textbox", { name: /name/iu }));
+    await user.clear(screen.getByRole('textbox', { name: /name/iu }));
     await waitFor(() => expect(onDirtyChange).toHaveBeenLastCalledWith(true));
-    await user.type(screen.getByRole("textbox", { name: /name/iu }), "Ada");
+    await user.type(screen.getByRole('textbox', { name: /name/iu }), 'Ada');
     await waitFor(() => expect(onDirtyChange).toHaveBeenLastCalledWith(false));
 
     cleanup();
     const onDirtyChangeReset = rs.fn();
     const onSubmitReset = rs.fn((_values, _nativeForm, context) => {
-      context.form.reset({ name: "Saved on the server" });
+      context.form.reset({ name: 'Saved on the server' });
     });
 
     render(<FormComponent onDirtyChange={onDirtyChangeReset} onSubmit={onSubmitReset} schema={schema} withSubmit />);
 
-    const input = screen.getByRole("textbox", { name: /name/iu });
-    await user.type(input, "Draft");
+    const input = screen.getByRole('textbox', { name: /name/iu });
+    await user.type(input, 'Draft');
     await waitFor(() => expect(onDirtyChangeReset).toHaveBeenLastCalledWith(true));
-    await user.click(screen.getByRole("button", { name: "Submit" }));
+    await user.click(screen.getByRole('button', { name: 'Submit' }));
 
-    await waitFor(() => expect(input).toHaveValue("Saved on the server"));
+    await waitFor(() => expect(input).toHaveValue('Saved on the server'));
     await waitFor(() => expect(onDirtyChangeReset).toHaveBeenLastCalledWith(false));
 
-    await user.type(input, "!");
+    await user.type(input, '!');
     await waitFor(() => expect(onDirtyChangeReset).toHaveBeenLastCalledWith(true));
   });
 
-  test("tracks nested, array, map, and oneof changes", async () => {
+  test('tracks nested, array, map, and oneof changes', async () => {
     const user = userEvent.setup();
     const onDirtyChange = rs.fn();
     const onSubmit = rs.fn((_values, _nativeForm, context) => context.form.markClean());
@@ -114,19 +114,19 @@ describe.each([
     async function expectEditThenClean(label: string, edit: () => void | Promise<void>) {
       await edit();
       await waitFor(() => expect(onDirtyChange.mock.calls.at(-1)?.[0], `${label} should become dirty`).toBe(true));
-      await user.click(screen.getByRole("button", { name: "Submit" }));
+      await user.click(screen.getByRole('button', { name: 'Submit' }));
       await waitFor(() => expect(onDirtyChange).toHaveBeenLastCalledWith(false));
     }
 
     await waitFor(() => expect(onDirtyChange).toHaveBeenLastCalledWith(false));
-    await expectEditThenClean("nested field", () => user.type(screen.getByRole("textbox", { name: "City" }), "Warsaw"));
-    await expectEditThenClean("array field", () => user.click(screen.getByRole("button", { name: "Add Tags" })));
-    await expectEditThenClean("map field", () => user.click(screen.getByRole("button", { name: "Add pair" })));
-    await expectEditThenClean("oneof field", async () => {
-      fireEvent.click(screen.getByRole("combobox", { name: "Contact" }));
-      const option = await screen.findByRole("option", { name: "Email" });
-      fireEvent.pointerEnter(option, { pointerType: "touch" });
-      fireEvent.pointerDown(option, { pointerType: "touch" });
+    await expectEditThenClean('nested field', () => user.type(screen.getByRole('textbox', { name: 'City' }), 'Warsaw'));
+    await expectEditThenClean('array field', () => user.click(screen.getByRole('button', { name: 'Add Tags' })));
+    await expectEditThenClean('map field', () => user.click(screen.getByRole('button', { name: 'Add pair' })));
+    await expectEditThenClean('oneof field', async () => {
+      fireEvent.click(screen.getByRole('combobox', { name: 'Contact' }));
+      const option = await screen.findByRole('option', { name: 'Email' });
+      fireEvent.pointerEnter(option, { pointerType: 'touch' });
+      fireEvent.pointerDown(option, { pointerType: 'touch' });
       fireEvent.click(option);
     });
 

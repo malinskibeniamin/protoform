@@ -1,4 +1,4 @@
-import type { DescMessage } from "@bufbuild/protobuf";
+import type { DescMessage } from '@bufbuild/protobuf';
 
 export interface ProtoAnnotations {
   fields?: Record<string, string>;

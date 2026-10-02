@@ -1,5 +1,5 @@
-import React from "react";
-import { DialogBody } from "@/registry/base-nova/protoform/components/dialog";
+import React from 'react';
+import { DialogBody } from '@/registry/base-nova/protoform/components/dialog';
 
 export function ExpandedDiagramPreview({ target }: { target: HTMLElement }) {
   const previewRef = React.useRef<HTMLDivElement | null>(null);
@@ -12,11 +12,11 @@ export function ExpandedDiagramPreview({ target }: { target: HTMLElement }) {
       }
 
       const clone = target.cloneNode(true) as HTMLElement;
-      clone.removeAttribute("data-diagram-enhanced");
-      for (const controls of clone.querySelectorAll("[data-diagram-controls]")) {
+      clone.removeAttribute('data-diagram-enhanced');
+      for (const controls of clone.querySelectorAll('[data-diagram-controls]')) {
         controls.remove();
       }
-      clone.setAttribute("data-diagram-expanded", "");
+      clone.setAttribute('data-diagram-expanded', '');
       clone.tabIndex = 0;
       preview.replaceChildren(clone);
 

@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import { Tooltip as TooltipPrimitive } from "@base-ui/react/tooltip";
-import { AnimatePresence, motion, type Transition } from "motion/react";
-import React from "react";
+import { Tooltip as TooltipPrimitive } from '@base-ui/react/tooltip';
+import { AnimatePresence, motion, type Transition } from 'motion/react';
+import React from 'react';
 
-import { usePortalContainer } from "@/registry/base-nova/protoform/hooks/use-portal-container";
+import { usePortalContainer } from '@/registry/base-nova/protoform/hooks/use-portal-container';
 import {
   asChildToRender,
   narrowOpenChange,
   renderWithDataState,
   useMirroredOpen,
-} from "@/registry/base-nova/protoform/lib/base-ui-compat";
-import { cn, type PortalContentProps, type SharedProps } from "@/registry/base-nova/protoform/lib/utils";
+} from '@/registry/base-nova/protoform/lib/base-ui-compat';
+import { cn, type PortalContentProps, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
 interface TooltipContextType {
   isOpen: boolean;
@@ -22,23 +22,23 @@ const TooltipContext = React.createContext<TooltipContextType | undefined>(undef
 const useTooltip = (): TooltipContextType => {
   const context = React.useContext(TooltipContext);
   if (!context) {
-    throw new Error("useTooltip must be used within a Tooltip");
+    throw new Error('useTooltip must be used within a Tooltip');
   }
   return context;
 };
 
-type Side = "top" | "bottom" | "left" | "right";
-type Align = "start" | "center" | "end";
+type Side = 'top' | 'bottom' | 'left' | 'right';
+type Align = 'start' | 'center' | 'end';
 
 const getInitialPosition = (side: Side) => {
   switch (side) {
-    case "top":
+    case 'top':
       return { y: 15 };
-    case "bottom":
+    case 'bottom':
       return { y: -15 };
-    case "left":
+    case 'left':
       return { x: 15 };
-    case "right":
+    case 'right':
       return { x: -15 };
     default:
       return {};
@@ -61,7 +61,7 @@ function TooltipProvider({ delayDuration, skipDelayDuration, ...props }: Tooltip
   );
 }
 
-type TooltipProps = Omit<React.ComponentProps<typeof TooltipPrimitive.Root>, "onOpenChange" | "children"> &
+type TooltipProps = Omit<React.ComponentProps<typeof TooltipPrimitive.Root>, 'onOpenChange' | 'children'> &
   SharedProps & {
     onOpenChange?: (open: boolean) => void;
     delayDuration?: number;
@@ -95,8 +95,8 @@ function TooltipTrigger({ testId, ...props }: TooltipTriggerProps) {
 
 type TooltipContentProps = React.ComponentProps<typeof TooltipPrimitive.Popup> &
   SharedProps &
-  Pick<PortalContentProps, "container" | "onOpenAutoFocus"> & {
-    variant?: "default" | "detail";
+  Pick<PortalContentProps, 'container' | 'onOpenAutoFocus'> & {
+    variant?: 'default' | 'detail';
     transition?: Transition;
     arrow?: boolean;
     side?: Side;
@@ -108,19 +108,19 @@ type TooltipContentProps = React.ComponentProps<typeof TooltipPrimitive.Popup> &
 function TooltipContent(contentProps: TooltipContentProps) {
   const {
     className,
-    variant = "default",
-    side = "top",
-    align = "center",
+    variant = 'default',
+    side = 'top',
+    align = 'center',
     sideOffset = 4,
     alignOffset,
-    transition = { damping: 25, stiffness: 300, type: "spring" },
+    transition = { damping: 25, stiffness: 300, type: 'spring' },
     arrow = true,
     children,
     testId,
     container,
     ...props
   } = contentProps;
-  Reflect.deleteProperty(props, "onOpenAutoFocus");
+  Reflect.deleteProperty(props, 'onOpenAutoFocus');
   const { isOpen } = useTooltip();
   const initialPosition = getInitialPosition(side);
   const portalContainer = usePortalContainer();
@@ -136,12 +136,12 @@ function TooltipContent(contentProps: TooltipContentProps) {
             side={side}
             sideOffset={sideOffset}
           >
-            <TooltipPrimitive.Popup render={renderWithDataState("div")} {...props}>
+            <TooltipPrimitive.Popup render={renderWithDataState('div')} {...props}>
               <motion.div
                 animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
                 className={cn(
-                  "relative w-fit origin-(--transform-origin) text-balance rounded-md bg-primary px-3 py-1.5 text-primary-foreground text-sm shadow-md",
-                  variant === "detail" && "bg-tooltip-detail py-2 text-tooltip-detail-foreground shadow-xl",
+                  'relative w-fit origin-(--transform-origin) text-balance rounded-md bg-primary px-3 py-1.5 text-primary-foreground text-sm shadow-md',
+                  variant === 'detail' && 'bg-tooltip-detail py-2 text-tooltip-detail-foreground shadow-xl',
                   className
                 )}
                 data-slot="tooltip-content"

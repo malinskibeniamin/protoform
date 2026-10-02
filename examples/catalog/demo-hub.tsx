@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   type ComponentType,
@@ -8,40 +8,40 @@ import {
   Suspense,
   useEffect,
   useState,
-} from "react";
+} from 'react';
 
-import { Alert, AlertDescription, AlertTitle } from "@/registry/base-nova/protoform/components/alert";
-import { Badge } from "@/registry/base-nova/protoform/components/badge";
-import { Field, FieldLabel } from "@/registry/base-nova/protoform/components/field";
+import { Alert, AlertDescription, AlertTitle } from '@/registry/base-nova/protoform/components/alert';
+import { Badge } from '@/registry/base-nova/protoform/components/badge';
+import { Field, FieldLabel } from '@/registry/base-nova/protoform/components/field';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/registry/base-nova/protoform/components/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/registry/base-nova/protoform/components/tabs";
+} from '@/registry/base-nova/protoform/components/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/registry/base-nova/protoform/components/tabs';
 
-import { ExampleLoading } from "../shared/example-loading";
-import type { DemoCatalogEntry } from "./demo-catalog";
-import { type DemoHubCategory, demosForHub, getDemoHub } from "./demo-docs";
+import { ExampleLoading } from '../shared/example-loading';
+import type { DemoCatalogEntry } from './demo-catalog';
+import { type DemoHubCategory, demosForHub, getDemoHub } from './demo-docs';
 
 interface DemoModule {
   default: ComponentType;
 }
 
 const demoModules = import.meta.glob<DemoModule>([
-  "../../registry/base-nova/protoform/demo/catalog/*.tsx",
-  "!../../registry/base-nova/protoform/demo/catalog/*.test.tsx",
+  '../../registry/base-nova/protoform/demo/catalog/*.tsx',
+  '!../../registry/base-nova/protoform/demo/catalog/*.test.tsx',
 ]);
 const demoSourceModules = import.meta.glob<string>(
   [
-    "../../registry/base-nova/protoform/demo/catalog/*.tsx",
-    "!../../registry/base-nova/protoform/demo/catalog/*.test.tsx",
+    '../../registry/base-nova/protoform/demo/catalog/*.tsx',
+    '!../../registry/base-nova/protoform/demo/catalog/*.test.tsx',
   ],
   {
-    import: "default",
-    query: "?raw",
+    import: 'default',
+    query: '?raw',
   }
 );
 const demoComponents = new Map<string, LazyExoticComponent<ComponentType>>();
@@ -74,8 +74,8 @@ function modulePathFor(demo: DemoCatalogEntry): string {
 }
 
 function initialDemoSlug(demos: readonly DemoCatalogEntry[]): string {
-  const linkedSlug = typeof window === "undefined" ? "" : window.location.hash.slice(1);
-  return demos.find((demo) => demo.slug === linkedSlug)?.slug ?? demos[0]?.slug ?? "";
+  const linkedSlug = typeof window === 'undefined' ? '' : window.location.hash.slice(1);
+  return demos.find((demo) => demo.slug === linkedSlug)?.slug ?? demos[0]?.slug ?? '';
 }
 
 export function DemoHub({ category }: { category: DemoHubCategory }) {
@@ -93,8 +93,8 @@ export function DemoHub({ category }: { category: DemoHubCategory }) {
         }
       }
 
-      window.addEventListener("hashchange", handleHashChange);
-      return () => window.removeEventListener("hashchange", handleHashChange);
+      window.addEventListener('hashchange', handleHashChange);
+      return () => window.removeEventListener('hashchange', handleHashChange);
     },
     [demos]
   );
@@ -116,7 +116,7 @@ export function DemoHub({ category }: { category: DemoHubCategory }) {
       return;
     }
     setSelectedSlug(value);
-    window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}#${value}`);
+    window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}#${value}`);
   }
 
   return (

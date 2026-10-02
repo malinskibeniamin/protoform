@@ -3,11 +3,11 @@ import {
   readinessCategories,
   readinessProfile,
   readinessRequirements,
-} from "../readiness/profile.js";
-import { formatReadinessReport } from "../readiness/report.js";
+} from '../readiness/profile.js';
+import { formatReadinessReport } from '../readiness/report.js';
 
-const asJson = process.argv.includes("--json");
-const requireProfileComplete = process.argv.includes("--require-profile-complete");
+const asJson = process.argv.includes('--json');
+const requireProfileComplete = process.argv.includes('--require-profile-complete');
 const summary = getReadinessSummary(readinessRequirements);
 
 if (asJson) {

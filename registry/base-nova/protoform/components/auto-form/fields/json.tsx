@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import type { AutoFormFieldProps } from "../core-types";
-import { getProtoFieldCustomData, getProtoJsonSchema } from "../proto";
-import type { FieldTypeDefinition } from "../registry";
-import { JSONField } from "../ui-components";
-import { useFieldTestIds } from "./shared";
+import type { AutoFormFieldProps } from '../core-types';
+import { getProtoFieldCustomData, getProtoJsonSchema } from '../proto';
+import type { FieldTypeDefinition } from '../registry';
+import { JSONField } from '../ui-components';
+import { useFieldTestIds } from './shared';
 
 function JsonFieldComponent({ field, id, inputProps }: AutoFormFieldProps) {
   const testIds = useFieldTestIds(id);
@@ -12,12 +12,12 @@ function JsonFieldComponent({ field, id, inputProps }: AutoFormFieldProps) {
   return (
     <JSONField
       maxDepth={3}
-      onBlur={inputProps["onBlur"]}
-      onChange={(value) => inputProps["onValueChange"](value)}
+      onBlur={inputProps['onBlur']}
+      onChange={(value) => inputProps['onValueChange'](value)}
       schema={getProtoJsonSchema(field)}
       showPlaceholder={false}
       testId={testIds.control}
-      value={inputProps["value"] ?? (getProtoFieldCustomData(field)?.jsonKind === "listValue" ? [] : {})}
+      value={inputProps['value'] ?? (getProtoFieldCustomData(field)?.jsonKind === 'listValue' ? [] : {})}
     />
   );
 }
@@ -26,7 +26,7 @@ export { JsonFieldComponent };
 
 export const jsonFieldDefinition: FieldTypeDefinition = {
   component: JsonFieldComponent,
-  match: (field) => field.type === "json",
-  name: "json",
+  match: (field) => field.type === 'json',
+  name: 'json',
   priority: 10,
 };

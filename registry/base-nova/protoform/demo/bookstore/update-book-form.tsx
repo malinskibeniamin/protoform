@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import { createConnectQueryKey, useMutation, useTransport } from "@connectrpc/connect-query";
-import { useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
-import { ErrorMessage } from "react-hook-form";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import { Field, FieldError, FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { BookFormBinding } from "@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_form";
-import type { Book } from "@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_pb";
-import { LibraryService } from "@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_pb";
-import { useProtoForm } from "@/registry/base-nova/protoform/hooks/use-proto-form";
+import { createConnectQueryKey, useMutation, useTransport } from '@connectrpc/connect-query';
+import { useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
+import { ErrorMessage } from 'react-hook-form';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { BookFormBinding } from '@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_form';
+import type { Book } from '@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_pb';
+import { LibraryService } from '@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_pb';
+import { useProtoForm } from '@/registry/base-nova/protoform/hooks/use-proto-form';
 
 interface UpdateBookFormProps {
   book: Book;
@@ -27,17 +27,17 @@ export function UpdateBookForm({ book, onCancel, onUpdated }: UpdateBookFormProp
   const [formError, setFormError] = useState<string | undefined>(undefined);
   const form = useProtoForm(BookFormBinding.descriptor, {
     defaultValues: book,
-    mode: "onChange",
-    serverPathPrefix: "book",
+    mode: 'onChange',
+    serverPathPrefix: 'book',
   });
 
   function handleInvalid(errors: typeof form.formState.errors) {
-    setFormError(`Review these fields: ${Object.keys(errors).join(", ")}.`);
+    setFormError(`Review these fields: ${Object.keys(errors).join(', ')}.`);
   }
 
   async function saveChanges() {
     setFormError(undefined);
-    const valid = await form.trigger(["displayName", "note"]);
+    const valid = await form.trigger(['displayName', 'note']);
     if (!valid) {
       handleInvalid(form.formState.errors);
       return;
@@ -50,7 +50,7 @@ export function UpdateBookForm({ book, onCancel, onUpdated }: UpdateBookFormProp
     form.clearServerErrorContext();
     const updateMask = form.createUpdateMask();
     if (updateMask.paths.length === 0) {
-      setFormError("Change the title or note before saving.");
+      setFormError('Change the title or note before saving.');
       return;
     }
     try {
@@ -60,14 +60,14 @@ export function UpdateBookForm({ book, onCancel, onUpdated }: UpdateBookFormProp
       });
       queryClient.setQueryData(
         createConnectQueryKey({
-          cardinality: "finite",
+          cardinality: 'finite',
           input: { name: response.name },
           schema: LibraryService.method.getBook,
           transport,
         }),
         response
       );
-      const parent = response.name.split("/books/")[0] ?? "";
+      const parent = response.name.split('/books/')[0] ?? '';
       await queryClient.invalidateQueries({
         queryKey: createConnectQueryKey({
           cardinality: undefined,
@@ -88,8 +88,8 @@ export function UpdateBookForm({ book, onCancel, onUpdated }: UpdateBookFormProp
     onBlur: handleDisplayNameBlur,
     onChange: handleDisplayNameChange,
     ref: displayNameRef,
-  } = form.register("displayName");
-  const { name: note, onBlur: handleNoteBlur, onChange: handleNoteChange, ref: noteRef } = form.register("note");
+  } = form.register('displayName');
+  const { name: note, onBlur: handleNoteBlur, onChange: handleNoteChange, ref: noteRef } = form.register('note');
   return (
     <section aria-labelledby="edit-book-title" className="space-y-6">
       <div className="space-y-2">

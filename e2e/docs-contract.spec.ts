@@ -1,20 +1,19 @@
-import { expect, test } from "@playwright/test";
-import { z } from "zod";
-import { demoCatalog } from "../examples/catalog/demo-catalog";
-import { demoHubs, demoRedirects } from "../examples/catalog/demo-docs";
+import { expect, test } from '@playwright/test';
+import { z } from 'zod';
+import { demoCatalog } from '../examples/catalog/demo-catalog';
+import { demoHubs, demoRedirects } from '../examples/catalog/demo-docs';
 
 const redirectSchema = z.array(z.object({ from: z.string(), status: z.literal(308), to: z.string() }));
 
-// These are published URLs and status codes, not the preview server's fallback redirects.
-test("publishes every permanent legacy redirect without losing its fragment", async ({ request }) => {
-  const response = await request.get("/blume-redirects.json");
+test('publishes every permanent legacy redirect without losing its fragment', async ({ request }) => {
+  const response = await request.get('/blume-redirects.json');
   expect(response.ok()).toBe(true);
   const redirects = redirectSchema.parse(await response.json());
   expect(redirects).toHaveLength(115);
   expect(new Set(redirects.map((redirect) => redirect.from)).size).toBe(redirects.length);
-  const rulesResponse = await request.get("/_redirects");
+  const rulesResponse = await request.get('/_redirects');
   expect(rulesResponse.ok()).toBe(true);
-  const rules = (await rulesResponse.text()).trim().split("\n");
+  const rules = (await rulesResponse.text()).trim().split('\n');
   for (const redirect of demoRedirects) {
     const from = `/docs${redirect.from}`;
     const to = `/docs${redirect.to}`;
@@ -26,65 +25,64 @@ test("publishes every permanent legacy redirect without losing its fragment", as
 for (const hub of demoHubs) {
   for (const redirect of demoRedirects.filter((candidate) => candidate.to.startsWith(`/${hub.slug}#`))) {
     test(`opens legacy demo ${redirect.from}`, async ({ page }) => {
-      const fragment = new URL(redirect.to, "https://protoform.pages.dev").hash.slice(1);
+      const fragment = new URL(redirect.to, 'https://protoform.pages.dev').hash.slice(1);
       const demo = demoCatalog.find((candidate) => candidate.slug === fragment);
       if (!demo) {
         throw new Error(`No demo found for legacy destination ${redirect.to}`);
       }
       await page.goto(`/docs${redirect.from}`);
-      await expect(page).toHaveURL(new RegExp(`/docs/${hub.slug}#${fragment}$`, "u"));
-      await expect(page.getByRole("heading", { exact: true, name: demo.title })).toBeVisible();
+      await expect(page).toHaveURL(new RegExp(`/docs/${hub.slug}#${fragment}$`, 'u'));
+      await expect(page.getByRole('heading', { exact: true, name: demo.title })).toBeVisible();
     });
   }
 }
 
-test("publishes actionable agent guidance without enabling a server", async ({ request }) => {
-  const response = await request.get("/llms.txt");
+test('publishes actionable agent guidance without enabling a server', async ({ request }) => {
+  const response = await request.get('/llms.txt');
   expect(response.ok()).toBe(true);
   const text = await response.text();
-  expect(text).toContain("## Agent guidance");
-  expect(text).toContain("Protobuf-ES v2");
-  expect(text).toContain("experimental");
-  expect(text).toContain("https://protoform.pages.dev/docs/getting-started");
-  expect(text).toContain("https://protoform.pages.dev/docs/registry-install");
+  expect(text).toContain('## Agent guidance');
+  expect(text).toContain('Protobuf-ES v2');
+  expect(text).toContain('experimental');
+  expect(text).toContain('https://protoform.pages.dev/docs/getting-started');
+  expect(text).toContain('https://protoform.pages.dev/docs/registry-install');
 });
 
-test("publishes a discoverable site skill with canonical documentation links", async ({ request }) => {
-  const response = await request.get("/skill.md");
+test('publishes a discoverable site skill with canonical documentation links', async ({ request }) => {
+  const response = await request.get('/skill.md');
   expect(response.ok()).toBe(true);
   const skill = await response.text();
   expect(skill).toMatch(/^---\nname: protoform\n/u);
-  expect(skill).toContain("https://protoform.pages.dev/docs/getting-started.md");
-  expect(skill).toContain("https://protoform.pages.dev/docs/registry-install.md");
-  expect(skill).toContain("https://protoform.pages.dev/llms.txt");
+  expect(skill).toContain('https://protoform.pages.dev/docs/getting-started.md');
+  expect(skill).toContain('https://protoform.pages.dev/docs/registry-install.md');
+  expect(skill).toContain('https://protoform.pages.dev/llms.txt');
 
-  const canonicalPath = "/.well-known/agent-skills/protoform/SKILL.md";
-  const indexResponse = await request.get("/.well-known/agent-skills/index.json");
+  const canonicalPath = '/.well-known/agent-skills/protoform/SKILL.md';
+  const indexResponse = await request.get('/.well-known/agent-skills/index.json');
   expect(indexResponse.ok()).toBe(true);
   const index = z
     .object({ skills: z.array(z.object({ name: z.string(), type: z.string(), url: z.string() })) })
     .parse(await indexResponse.json());
-  expect(index.skills).toContainEqual({ name: "protoform", type: "skill-md", url: canonicalPath });
+  expect(index.skills).toContainEqual({ name: 'protoform', type: 'skill-md', url: canonicalPath });
   const canonicalSkill = await request.get(canonicalPath);
   expect(canonicalSkill.ok()).toBe(true);
   expect(await canonicalSkill.text()).toBe(skill);
 
-  const guidance = await request.get("/llms.txt");
+  const guidance = await request.get('/llms.txt');
   expect(guidance.ok()).toBe(true);
   expect(await guidance.text()).toContain(`https://protoform.pages.dev${canonicalPath}`);
 });
 
-test("finds identifiers that appear inside code blocks", async ({ page }) => {
-  await page.goto("/docs/getting-started");
-  await page.getByRole("button", { exact: true, name: "Search" }).click();
-  await page.getByRole("combobox", { exact: true, name: "Search docs" }).fill("SignupRequest");
-  await expect(page.getByRole("option").filter({ hasText: "Getting started" }).first()).toBeVisible();
+test('finds identifiers that appear inside code blocks', async ({ page }) => {
+  await page.goto('/docs/getting-started');
+  await page.getByRole('button', { exact: true, name: 'Search' }).click();
+  await page.getByRole('combobox', { exact: true, name: 'Search docs' }).fill('SignupRequest');
+  await expect(page.getByRole('option').filter({ hasText: 'Getting started' }).first()).toBeVisible();
 });
 
-test("publishes complete search assets for every configured language", async ({ request }) => {
-  // Chinese locales share the unknown-language WASM; English and Polish stem separately.
+test('publishes complete search assets for every configured language', async ({ request }) => {
   await Promise.all(
-    ["pagefind.js", "wasm.en.pagefind", "wasm.pl.pagefind", "wasm.unknown.pagefind"].map(async (asset) => {
+    ['pagefind.js', 'wasm.en.pagefind', 'wasm.pl.pagefind', 'wasm.unknown.pagefind'].map(async (asset) => {
       const response = await request.get(`/pagefind/${asset}`);
       expect(response.ok()).toBe(true);
       expect((await response.body()).byteLength, asset).toBeGreaterThan(0);
@@ -92,10 +90,10 @@ test("publishes complete search assets for every configured language", async ({ 
   );
 });
 
-for (const locale of ["en", "zh", "zh-TW", "pl"]) {
+for (const locale of ['en', 'zh', 'zh-TW', 'pl']) {
   for (const hub of demoHubs) {
     test(`serves machine-readable ${hub.slug} for ${locale}`, async ({ request }) => {
-      const route = `/docs/${locale === "en" ? "" : `${locale}/`}${hub.slug}`;
+      const route = `/docs/${locale === 'en' ? '' : `${locale}/`}${hub.slug}`;
       const response = await request.get(`/api/docs/pages${route}.json`);
       expect(response.ok()).toBe(true);
       const page = z
@@ -110,17 +108,17 @@ for (const locale of ["en", "zh", "zh-TW", "pl"]) {
   }
 }
 
-for (const previousOverflow of ["", "clip"]) {
-  test(`search restores the page scroll state (${previousOverflow || "default"})`, async ({ page }) => {
-    await page.goto("/docs/getting-started");
+for (const previousOverflow of ['', 'clip']) {
+  test(`search restores the page scroll state (${previousOverflow || 'default'})`, async ({ page }) => {
+    await page.goto('/docs/getting-started');
     await page.evaluate((overflow) => {
       document.documentElement.style.overflow = overflow;
     }, previousOverflow);
-    await page.getByRole("button", { exact: true, name: "Search" }).click();
-    await expect(page.getByRole("combobox", { exact: true, name: "Search docs" })).toBeVisible();
-    await expect(page.locator("html")).toHaveCSS("overflow", "hidden");
-    await page.keyboard.press("Escape");
-    await expect(page.getByRole("combobox", { exact: true, name: "Search docs" })).toBeHidden();
-    await expect(page.locator("html")).toHaveCSS("overflow", previousOverflow || "visible");
+    await page.getByRole('button', { exact: true, name: 'Search' }).click();
+    await expect(page.getByRole('combobox', { exact: true, name: 'Search docs' })).toBeVisible();
+    await expect(page.locator('html')).toHaveCSS('overflow', 'hidden');
+    await page.keyboard.press('Escape');
+    await expect(page.getByRole('combobox', { exact: true, name: 'Search docs' })).toBeHidden();
+    await expect(page.locator('html')).toHaveCSS('overflow', previousOverflow || 'visible');
   });
 }

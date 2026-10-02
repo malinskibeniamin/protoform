@@ -1,7 +1,7 @@
-@import "tailwindcss";
-@source "../features";
-@source "../design-system";
-@source "../browser-smoke.tsx";
+@import 'tailwindcss';
+@source '../features';
+@source '../design-system';
+@source '../browser-smoke.tsx';
 
 /* Consumer-owned neutral theme: never distributed by the Protoform registry. */
 @theme inline {

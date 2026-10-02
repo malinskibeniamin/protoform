@@ -1,11 +1,11 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense } from 'react';
 
-import { ExampleLoading } from "../examples/shared/example-loading";
+import { ExampleLoading } from '../examples/shared/example-loading';
 
-export const client = "only";
+export const client = 'only';
 
 const ReadinessDashboard = lazy(async () => {
-  const module = await import("../examples/readiness/readiness-dashboard");
+  const module = await import('../examples/readiness/readiness-dashboard');
   return { default: module.ReadinessDashboard };
 });
 

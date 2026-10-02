@@ -1,10 +1,10 @@
-import { describe, expect } from "@rstest/core";
-import { render, screen } from "@testing-library/react";
+import { describe, expect } from '@rstest/core';
+import { render, screen } from '@testing-library/react';
 
-import { Popover, PopoverAnchor } from ".";
+import { Popover, PopoverAnchor } from '.';
 
-describe("PopoverAnchor", () => {
-  test("supports Base UI render composition without adding a wrapper", () => {
+describe('PopoverAnchor', () => {
+  test('supports Base UI render composition without adding a wrapper', () => {
     render(
       <Popover>
         <PopoverAnchor render={<button aria-label="Open nested command" type="button" />}>
@@ -13,6 +13,6 @@ describe("PopoverAnchor", () => {
       </Popover>
     );
 
-    expect(screen.getByRole("button", { name: "Open nested command" })).toHaveAttribute("data-slot", "popover-anchor");
+    expect(screen.getByRole('button', { name: 'Open nested command' })).toHaveAttribute('data-slot', 'popover-anchor');
   });
 });

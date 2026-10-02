@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import type React from "react";
+import type React from 'react';
 import {
   FormProvider,
   type Resolver,
@@ -11,17 +11,17 @@ import {
   useForm,
   useFormContext,
   useWatch,
-} from "react-hook-form";
+} from 'react-hook-form';
 import {
   type AutoFormArrayController,
   type AutoFormEngine,
   AutoFormEngineProvider,
   type AutoFormFieldController,
   useDirtyStateNotification,
-} from "../engine";
-import { getPathInObject } from "../field-utils";
-import { getRootErrorMessage } from "../helpers";
-import { PROTO_FORM_ROOT_ERROR_KEY } from "../proto";
+} from '../engine';
+import { getPathInObject } from '../field-utils';
+import { getRootErrorMessage } from '../helpers';
+import { PROTO_FORM_ROOT_ERROR_KEY } from '../proto';
 
 type FormValues = Record<string, unknown>;
 
@@ -35,7 +35,7 @@ function ReactHookFormFieldController({
   const form = useFormContext<FormValues>();
   const { field, fieldState } = useController<FormValues>({ name });
   const messages = [fieldState.error?.message, ...Object.values(fieldState.error?.types ?? {})].filter(
-    (message): message is string => typeof message === "string"
+    (message): message is string => typeof message === 'string'
   );
 
   return children({
@@ -66,7 +66,7 @@ function ReactHookFormArrayController({
     control: form.control,
     name: name as never,
   });
-  const values = getPathInObject(form.getValues(), name.split("."));
+  const values = getPathInObject(form.getValues(), name.split('.'));
   const items = fields.map((field, index) => ({
     key: field.id,
     value: Array.isArray(values) ? values[index] : undefined,
@@ -93,14 +93,14 @@ function applyValidationErrors<T extends FormValues>(
       continue;
     }
 
-    form.setError(error.path.join("."), { message: error.message, type: "validation" }, { shouldFocus });
+    form.setError(error.path.join('.'), { message: error.message, type: 'validation' }, { shouldFocus });
     shouldFocus = false;
   }
 
   if (rootMessages.length > 0) {
-    form.setError("root", {
-      message: rootMessages.join("\n"),
-      type: "validation",
+    form.setError('root', {
+      message: rootMessages.join('\n'),
+      type: 'validation',
     });
   }
 }
@@ -154,7 +154,7 @@ export function ReactHookFormEngine<T extends FormValues>({
     nativeForm: form,
     reset: (nextValues, options) => form.reset(nextValues, options),
     rootError,
-    setRootError: (message) => form.setError("root", { message, type: "submit" }),
+    setRootError: (message) => form.setError('root', { message, type: 'submit' }),
     setValidationErrors: (validationErrors) => applyValidationErrors(form, validationErrors),
     setValue: (path, value, options) => form.setValue(path, value, options),
     trigger: async (paths) => form.trigger(paths),

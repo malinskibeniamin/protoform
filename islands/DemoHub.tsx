@@ -1,12 +1,12 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense } from 'react';
 
-import type { DemoHubCategory } from "../examples/catalog/demo-docs";
-import { ExampleLoading } from "../examples/shared/example-loading";
+import type { DemoHubCategory } from '../examples/catalog/demo-docs';
+import { ExampleLoading } from '../examples/shared/example-loading';
 
-export const client = "only";
+export const client = 'only';
 
 const DemoHub = lazy(async () => {
-  const module = await import("../examples/catalog/demo-hub");
+  const module = await import('../examples/catalog/demo-hub');
   return { default: module.DemoHub };
 });
 

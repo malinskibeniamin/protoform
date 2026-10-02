@@ -1,29 +1,29 @@
-import { BadRequestSchema } from "@buf/googleapis_googleapis.bufbuild_es/google/rpc/error_details_pb.js";
-import { Code, ConnectError } from "@connectrpc/connect";
-import { describe, expect } from "@rstest/core";
-import { renderHook } from "@testing-library/react";
-import { act } from "react";
+import { BadRequestSchema } from '@buf/googleapis_googleapis.bufbuild_es/google/rpc/error_details_pb.js';
+import { Code, ConnectError } from '@connectrpc/connect';
+import { describe, expect } from '@rstest/core';
+import { renderHook } from '@testing-library/react';
+import { act } from 'react';
 
-import { AutoFormExampleSchema } from "../../lib/protobuf-provider/gen/auto-form-example_pb";
-import { useProtoForm } from ".";
+import { AutoFormExampleSchema } from '../../lib/protobuf-provider/gen/auto-form-example_pb';
+import { useProtoForm } from '.';
 
-describe("useProtoForm server errors", () => {
-  test("humanizes violations mapped through singular and plural server path prefixes and keeps unmapped ones unchanged", () => {
+describe('useProtoForm server errors', () => {
+  test('humanizes violations mapped through singular and plural server path prefixes and keeps unmapped ones unchanged', () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
-        serverPathPrefix: "request",
-        serverPathPrefixes: ["spec", "instance"],
+        serverPathPrefix: 'request',
+        serverPathPrefixes: ['spec', 'instance'],
       })
     );
-    const error = new ConnectError("Review the highlighted fields.", Code.InvalidArgument, {}, [
+    const error = new ConnectError('Review the highlighted fields.', Code.InvalidArgument, {}, [
       {
         desc: BadRequestSchema,
         value: {
           fieldViolations: [
-            { description: "value is required", field: "spec.primary_email" },
-            { description: "must contain at least 1 item(s)", field: "instance.tags" },
-            { description: "   ", field: "request.homepage_url" },
-            { description: "value is required", field: "other.unknown_field" },
+            { description: 'value is required', field: 'spec.primary_email' },
+            { description: 'must contain at least 1 item(s)', field: 'instance.tags' },
+            { description: '   ', field: 'request.homepage_url' },
+            { description: 'value is required', field: 'other.unknown_field' },
           ],
         },
       },
@@ -34,20 +34,20 @@ describe("useProtoForm server errors", () => {
       mapped = result.current.setServerErrors(error);
     });
 
-    expect(result.current.getFieldState("primaryEmail").error?.message).toBe("Enter a value.");
-    expect(result.current.getFieldState("tags").error?.message).toBe("Add at least one item.");
-    expect(result.current.getFieldState("homepageUrl").error?.message).toBe("Review this value and try again.");
+    expect(result.current.getFieldState('primaryEmail').error?.message).toBe('Enter a value.');
+    expect(result.current.getFieldState('tags').error?.message).toBe('Add at least one item.');
+    expect(result.current.getFieldState('homepageUrl').error?.message).toBe('Review this value and try again.');
     expect(mapped?.handled).toBe(true);
-    expect(mapped?.unmapped).toEqual([{ description: "value is required", field: "other.unknown_field" }]);
+    expect(mapped?.unmapped).toEqual([{ description: 'value is required', field: 'other.unknown_field' }]);
   });
 
   test("maps violations on repeated-field items to the item's form path", () => {
     const { result } = renderHook(() => useProtoForm(AutoFormExampleSchema));
-    const error = new ConnectError("Review the highlighted fields.", Code.InvalidArgument, {}, [
+    const error = new ConnectError('Review the highlighted fields.', Code.InvalidArgument, {}, [
       {
         desc: BadRequestSchema,
         value: {
-          fieldViolations: [{ description: "value is required", field: "previous_addresses[0].postal_code" }],
+          fieldViolations: [{ description: 'value is required', field: 'previous_addresses[0].postal_code' }],
         },
       },
     ]);
@@ -57,7 +57,7 @@ describe("useProtoForm server errors", () => {
       mapped = result.current.setServerErrors(error);
     });
 
-    expect(result.current.getFieldState("previousAddresses.0.postalCode").error?.message).toBe("Enter a value.");
+    expect(result.current.getFieldState('previousAddresses.0.postalCode').error?.message).toBe('Enter a value.');
     expect(mapped?.unmapped).toEqual([]);
   });
 });

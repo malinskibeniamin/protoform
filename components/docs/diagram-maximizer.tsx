@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import React from "react";
-import { createPortal } from "react-dom";
+import React from 'react';
+import { createPortal } from 'react-dom';
 
 import {
   Dialog,
@@ -9,33 +9,33 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/registry/base-nova/protoform/components/dialog";
-import { TooltipProvider } from "@/registry/base-nova/protoform/components/tooltip";
-import { DiagramControl } from "./diagram-control";
-import type { ActiveDiagram, DiagramPortal } from "./diagram-maximizer-types";
-import { ExpandedDiagramPreview } from "./expanded-diagram-preview";
+} from '@/registry/base-nova/protoform/components/dialog';
+import { TooltipProvider } from '@/registry/base-nova/protoform/components/tooltip';
+import { DiagramControl } from './diagram-control';
+import type { ActiveDiagram, DiagramPortal } from './diagram-maximizer-types';
+import { ExpandedDiagramPreview } from './expanded-diagram-preview';
 
-const DIAGRAM_SELECTOR = "blume-mermaid, [data-diagram], [data-architecture-diagram]";
+const DIAGRAM_SELECTOR = 'blume-mermaid, [data-diagram], [data-architecture-diagram]';
 
 let controlId = 0;
 
 function getDiagramLabel(target: HTMLElement): string {
-  const explicitLabel = target.getAttribute("aria-label")?.trim();
+  const explicitLabel = target.getAttribute('aria-label')?.trim();
   if (explicitLabel) {
     return explicitLabel;
   }
 
-  const caption = target.querySelector("figcaption")?.textContent?.trim();
+  const caption = target.querySelector('figcaption')?.textContent?.trim();
   if (caption) {
     return caption;
   }
 
-  return "diagram";
+  return 'diagram';
 }
 
 function findDiagramTargets(root: ParentNode = document): HTMLElement[] {
   return Array.from(root.querySelectorAll<HTMLElement>(DIAGRAM_SELECTOR)).filter((target) => {
-    if (target.closest("[data-diagram-dialog]")) {
+    if (target.closest('[data-diagram-dialog]')) {
       return false;
     }
 
@@ -44,12 +44,12 @@ function findDiagramTargets(root: ParentNode = document): HTMLElement[] {
 }
 
 function createControlHost(target: HTMLElement): HTMLDivElement {
-  const host = document.createElement("div");
-  host.className = "absolute top-3 right-3 z-10 w-auto";
-  host.dataset["diagramControls"] = "";
+  const host = document.createElement('div');
+  host.className = 'absolute top-3 right-3 z-10 w-auto';
+  host.dataset['diagramControls'] = '';
   controlId += 1;
-  host.dataset["diagramControlsId"] = String(controlId);
-  target.dataset["diagramEnhanced"] = "";
+  host.dataset['diagramControlsId'] = String(controlId);
+  target.dataset['diagramEnhanced'] = '';
   target.append(host);
   return host;
 }
@@ -76,7 +76,7 @@ export function DiagramMaximizer() {
       for (const [target, host] of hosts) {
         if (!nextTargets.has(target)) {
           host.remove();
-          target.removeAttribute("data-diagram-enhanced");
+          target.removeAttribute('data-diagram-enhanced');
           hosts.delete(target);
         }
       }
@@ -87,7 +87,7 @@ export function DiagramMaximizer() {
         hosts.set(target, host);
         return {
           host,
-          id: host.dataset["diagramControlsId"] ?? getDiagramLabel(target),
+          id: host.dataset['diagramControlsId'] ?? getDiagramLabel(target),
           label: getDiagramLabel(target),
           target,
         };
@@ -99,14 +99,14 @@ export function DiagramMaximizer() {
     syncDiagrams();
     const observer = new MutationObserver(syncDiagrams);
     observer.observe(document.body, { childList: true, subtree: true });
-    document.addEventListener("astro:page-load", syncDiagrams);
+    document.addEventListener('astro:page-load', syncDiagrams);
 
     return function stopDiscoveringDiagrams() {
       observer.disconnect();
-      document.removeEventListener("astro:page-load", syncDiagrams);
+      document.removeEventListener('astro:page-load', syncDiagrams);
       for (const [target, host] of hosts) {
         host.remove();
-        target.removeAttribute("data-diagram-enhanced");
+        target.removeAttribute('data-diagram-enhanced');
       }
     };
   }, []);
@@ -117,8 +117,8 @@ export function DiagramMaximizer() {
     }
 
     syncFullscreenElement();
-    document.addEventListener("fullscreenchange", syncFullscreenElement);
-    return () => document.removeEventListener("fullscreenchange", syncFullscreenElement);
+    document.addEventListener('fullscreenchange', syncFullscreenElement);
+    return () => document.removeEventListener('fullscreenchange', syncFullscreenElement);
   }, []);
 
   function closeFallback() {
@@ -185,7 +185,7 @@ export function DiagramMaximizer() {
         >
           <DialogHeader className="border-border border-b pr-14">
             <DialogTitle>
-              {activeDiagram?.label === "diagram" ? "Diagram" : (activeDiagram?.label ?? "Diagram")}
+              {activeDiagram?.label === 'diagram' ? 'Diagram' : (activeDiagram?.label ?? 'Diagram')}
             </DialogTitle>
             <DialogDescription className="sr-only">
               Full-screen diagram view. Press Escape or the close button to return to the page.

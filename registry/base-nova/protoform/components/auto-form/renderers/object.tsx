@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { useAutoFormRenderContext, useAutoFormRuntimeContext } from "../context";
-import type { ParsedField } from "../core-types";
-import { useAutoFormEngine } from "../engine";
-import { getPathInObject } from "../field-utils";
-import { getFieldErrorMessage } from "../helpers";
-import { getAutoFormFieldTestId } from "../test-ids";
-import { Text } from "../ui-components";
-import { AutoFormFieldRenderer } from ".";
-import { getRenderedLabel, useFieldPresentation } from "./shared";
+import { useAutoFormRenderContext, useAutoFormRuntimeContext } from '../context';
+import type { ParsedField } from '../core-types';
+import { useAutoFormEngine } from '../engine';
+import { getPathInObject } from '../field-utils';
+import { getFieldErrorMessage } from '../helpers';
+import { getAutoFormFieldTestId } from '../test-ids';
+import { Text } from '../ui-components';
+import { AutoFormFieldRenderer } from '.';
+import { getRenderedLabel, useFieldPresentation } from './shared';
 
 export function ObjectFieldRenderer({
   field,
@@ -21,16 +21,14 @@ export function ObjectFieldRenderer({
 }) {
   const { uiComponents } = useAutoFormRenderContext();
   const { errors } = useAutoFormEngine();
-  const fullPath = path.join(".");
+  const fullPath = path.join('.');
   const error = getFieldErrorMessage(errors, path);
   const label = getRenderedLabel(field);
   const { isVisible, renderField } = useFieldPresentation(field, path, inheritedDisabled);
   const { testIdPrefix } = useAutoFormRuntimeContext();
 
-  // Check for errors on the object itself or any descendant field.
-  // This ensures collapsible sections auto-expand when a child has an error.
   const errorAtPath = getPathInObject(errors as Record<string, unknown>, path);
-  const hasDescendantError = errorAtPath !== undefined && errorAtPath !== null && typeof errorAtPath === "object";
+  const hasDescendantError = errorAtPath !== undefined && errorAtPath !== null && typeof errorAtPath === 'object';
   const hasError = Boolean(error) || hasDescendantError;
 
   if (!isVisible) {
@@ -39,20 +37,14 @@ export function ObjectFieldRenderer({
 
   const ObjectWrapperComponent = uiComponents.ObjectWrapper;
 
-  // Render the error inline as a sibling of the section only when present.
-  // The previous version reserved a `min-h-5` slot unconditionally, which
-  // added ~20px of whitespace under every nested object and drifted the
-  // rhythm away from manually-composed Field-based forms. A naked
-  // `<section>` + optional error line lets the parent's `formSpacing.form`
-  // token drive the gap between siblings without any extra padding.
   return (
     <>
       <ObjectWrapperComponent field={renderField} hasError={hasError} label={label}>
         {(renderField.schema ?? []).map((subField) => (
           <AutoFormFieldRenderer
             field={subField}
-            inheritedDisabled={Boolean(renderField.fieldConfig?.inputProps?.["disabled"])}
-            key={`${path.join(".")}.${subField.key}`}
+            inheritedDisabled={Boolean(renderField.fieldConfig?.inputProps?.['disabled'])}
+            key={`${path.join('.')}.${subField.key}`}
             path={[...path, subField.key]}
           />
         ))}
@@ -60,7 +52,7 @@ export function ObjectFieldRenderer({
       {error ? (
         <Text
           className="whitespace-pre-wrap text-destructive"
-          data-testid={getAutoFormFieldTestId(testIdPrefix, fullPath, "error")}
+          data-testid={getAutoFormFieldTestId(testIdPrefix, fullPath, 'error')}
           variant="small"
         >
           {error}

@@ -1,32 +1,32 @@
-import { describe, expect } from "@rstest/core";
-import type { StandardSchemaV1 } from "@standard-schema/spec";
-import { object as zodObject, string as zodString } from "zod";
-import { minLength, object as zodMiniObject, string as zodMiniString } from "zod/mini";
+import { describe, expect } from '@rstest/core';
+import type { StandardSchemaV1 } from '@standard-schema/spec';
+import { object as zodObject, string as zodString } from 'zod';
+import { minLength, object as zodMiniObject, string as zodMiniString } from 'zod/mini';
 
 import {
   createFinalFormValidator,
   createFormikValidator,
   isStandardSchema,
-} from "../registry/base-nova/protoform/lib/core/index.js";
+} from '../registry/base-nova/protoform/lib/core/index.js';
 
 interface ProfileValues {
   profile: { displayName: string };
 }
 
-const values: ProfileValues = { profile: { displayName: "A" } };
+const values: ProfileValues = { profile: { displayName: 'A' } };
 
 const implementations: Array<{
   name: string;
   schema: StandardSchemaV1<ProfileValues, ProfileValues>;
 }> = [
   {
-    name: "Zod 4",
+    name: 'Zod 4',
     schema: zodObject({
       profile: zodObject({ displayName: zodString().min(2) }),
     }),
   },
   {
-    name: "Zod Mini",
+    name: 'Zod Mini',
     schema: zodMiniObject({
       profile: zodMiniObject({
         displayName: zodMiniString().check(minLength(2)),
@@ -35,16 +35,16 @@ const implementations: Array<{
   },
 ];
 
-test("supports callable schemas and forwards vendor options", async () => {
-  const libraryOptions = { locale: "en-GB" };
+test('supports callable schemas and forwards vendor options', async () => {
+  const libraryOptions = { locale: 'en-GB' };
   let receivedOptions: StandardSchemaV1.Options | undefined;
   const schema = Object.assign(() => undefined, {
-    "~standard": {
+    '~standard': {
       validate: (value: unknown, options?: StandardSchemaV1.Options): StandardSchemaV1.Result<unknown> => {
         receivedOptions = options;
         return { value };
       },
-      vendor: "callable-test",
+      vendor: 'callable-test',
       version: 1 as const,
     },
   });
@@ -54,14 +54,14 @@ test("supports callable schemas and forwards vendor options", async () => {
   expect(receivedOptions?.libraryOptions).toBe(libraryOptions);
 });
 
-describe.each(implementations)("$name Standard Schema", ({ schema }) => {
-  test("is accepted without a vendor adapter", () => {
+describe.each(implementations)('$name Standard Schema', ({ schema }) => {
+  test('is accepted without a vendor adapter', () => {
     expect(isStandardSchema(schema)).toBe(true);
   });
 
-  test("maps nested issues through every supported form-library adapter", async () => {
+  test('maps nested issues through every supported form-library adapter', async () => {
     const expected = {
-      profile: { displayName: expect.stringContaining("2") },
+      profile: { displayName: expect.stringContaining('2') },
     };
 
     expect(await createFormikValidator(schema)(values)).toEqual(expected);

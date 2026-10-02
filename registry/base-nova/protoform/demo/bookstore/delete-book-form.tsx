@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { create } from "@bufbuild/protobuf";
-import { useMutation } from "@connectrpc/connect-query";
-import { Button } from "@/components/ui/button";
-import { AutoForm } from "@/registry/base-nova/protoform/components/auto-form";
-import { DeleteBookRequestFormBinding } from "@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_form";
-import type { Book } from "@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_pb";
+import { create } from '@bufbuild/protobuf';
+import { useMutation } from '@connectrpc/connect-query';
+import { Button } from '@/components/ui/button';
+import { AutoForm } from '@/registry/base-nova/protoform/components/auto-form';
+import { DeleteBookRequestFormBinding } from '@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_form';
+import type { Book } from '@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_pb';
 import {
   DeleteBookRequestSchema,
   LibraryService,
-} from "@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_pb";
-import { DeleteSubmitButton } from "./delete-submit-button";
+} from '@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_pb';
+import { DeleteSubmitButton } from './delete-submit-button';
 
 interface DeleteBookFormProps {
   book: Book;

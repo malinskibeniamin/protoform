@@ -1,60 +1,60 @@
 ---
-import data from "blume:data";
-import Tab from "blume/components/content/Tab.astro";
-import Tabs from "blume/components/content/Tabs.astro";
-import { highlightCode } from "blume/markdown";
+import data from 'blume:data';
+import Tab from 'blume/components/content/Tab.astro';
+import Tabs from 'blume/components/content/Tabs.astro';
+import { highlightCode } from 'blume/markdown';
 
-import aipForm from "@/conformance/gen/protoform/conformance/v1/aip_form.ts?raw";
-import aipPb from "@/conformance/gen/protoform/conformance/v1/aip_pb.ts?raw";
-import aipProto from "@/conformance/proto/protoform/conformance/v1/aip.proto?raw";
-import BookstoreDemo from "@/registry/base-nova/protoform/demo/bookstore/bookstore-demo";
-import createBook from "@/registry/base-nova/protoform/demo/bookstore/create-book-form.tsx?raw";
-import deleteBook from "@/registry/base-nova/protoform/demo/bookstore/delete-book-form.tsx?raw";
-import service from "@/registry/base-nova/protoform/demo/bookstore/library-service.ts?raw";
-import updateBook from "@/registry/base-nova/protoform/demo/bookstore/update-book-form.tsx?raw";
+import aipForm from '@/conformance/gen/protoform/conformance/v1/aip_form.ts?raw';
+import aipPb from '@/conformance/gen/protoform/conformance/v1/aip_pb.ts?raw';
+import aipProto from '@/conformance/proto/protoform/conformance/v1/aip.proto?raw';
+import BookstoreDemo from '@/registry/base-nova/protoform/demo/bookstore/bookstore-demo';
+import createBook from '@/registry/base-nova/protoform/demo/bookstore/create-book-form.tsx?raw';
+import deleteBook from '@/registry/base-nova/protoform/demo/bookstore/delete-book-form.tsx?raw';
+import service from '@/registry/base-nova/protoform/demo/bookstore/library-service.ts?raw';
+import updateBook from '@/registry/base-nova/protoform/demo/bookstore/update-book-form.tsx?raw';
 
 const trailingNewlinesPattern = /\n+$/u;
 const sourceFiles = [
   {
-    language: "proto",
-    name: "aip.proto",
-    path: "proto/library/v1/aip.proto",
+    language: 'proto',
+    name: 'aip.proto',
+    path: 'proto/library/v1/aip.proto',
     source: aipProto,
   },
   {
-    language: "typescript",
-    name: "aip_pb.ts",
-    path: "gen/library/v1/aip_pb.ts",
+    language: 'typescript',
+    name: 'aip_pb.ts',
+    path: 'gen/library/v1/aip_pb.ts',
     source: aipPb,
   },
   {
-    language: "typescript",
-    name: "aip_form.ts",
-    path: "gen/library/v1/aip_form.ts",
+    language: 'typescript',
+    name: 'aip_form.ts',
+    path: 'gen/library/v1/aip_form.ts',
     source: aipForm,
   },
   {
-    language: "tsx",
-    name: "create-book-form.tsx",
-    path: "app/create-book-form.tsx",
+    language: 'tsx',
+    name: 'create-book-form.tsx',
+    path: 'app/create-book-form.tsx',
     source: createBook,
   },
   {
-    language: "tsx",
-    name: "update-book-form.tsx",
-    path: "app/update-book-form.tsx",
+    language: 'tsx',
+    name: 'update-book-form.tsx',
+    path: 'app/update-book-form.tsx',
     source: updateBook,
   },
   {
-    language: "tsx",
-    name: "delete-book-form.tsx",
-    path: "app/delete-book-form.tsx",
+    language: 'tsx',
+    name: 'delete-book-form.tsx',
+    path: 'app/delete-book-form.tsx',
     source: deleteBook,
   },
   {
-    language: "typescript",
-    name: "service.ts",
-    path: "server/service.ts",
+    language: 'typescript',
+    name: 'service.ts',
+    path: 'server/service.ts',
     source: service,
   },
 ] as const;
@@ -62,8 +62,8 @@ const sourceFiles = [
 const _files = await Promise.all(
   sourceFiles.map(async (file) => ({
     ...file,
-    highlightedSource: await highlightCode(file.source.replace(trailingNewlinesPattern, ""), file.language, {
-      className: "blume-source",
+    highlightedSource: await highlightCode(file.source.replace(trailingNewlinesPattern, ''), file.language, {
+      className: 'blume-source',
       icons: false,
       themes: data.config.codeThemes,
     }),
@@ -89,21 +89,14 @@ const _files = await Promise.all(
       <div class="prose max-w-none">
         <Tabs hash={false} sync={false}>
           {_files.map((file) => (
-              <Tab
-                class="grid h-[48rem] max-h-[48rem] grid-rows-[auto_1fr] p-0!"
-                title={file.name}
-              >
-                <div class="flex items-center justify-between gap-4 border-b bg-muted/30 px-4 py-2">
-                  <span class="truncate font-mono text-muted-foreground text-xs">
-                    {file.path}
-                  </span>
-                  <span class="shrink-0 text-muted-foreground text-xs">
-                    {file.language}
-                  </span>
-                </div>
-                <Fragment set:html={file.highlightedSource} />
-              </Tab>
-            ))}
+  <Tab class="grid h-[48rem] max-h-[48rem] grid-rows-[auto_1fr] p-0!" title={file.name}>
+    <div class="flex items-center justify-between gap-4 border-b bg-muted/30 px-4 py-2">
+      <span class="truncate font-mono text-muted-foreground text-xs">{file.path}</span>
+      <span class="shrink-0 text-muted-foreground text-xs">{file.language}</span>
+    </div>
+    <Fragment set:html={file.highlightedSource} />
+  </Tab>
+))}
         </Tabs>
       </div>
     </section>

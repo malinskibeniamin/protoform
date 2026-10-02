@@ -1,31 +1,31 @@
-import { cva, type VariantProps } from "class-variance-authority";
-import { Command as CommandPrimitive } from "cmdk";
-import { ChevronRight, SearchIcon } from "lucide-react";
-import React from "react";
+import { cva, type VariantProps } from 'class-variance-authority';
+import { Command as CommandPrimitive } from 'cmdk';
+import { ChevronRight, SearchIcon } from 'lucide-react';
+import React from 'react';
 
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Popover, PopoverAnchor, PopoverContent } from "@/components/ui/popover";
-import { Text } from "@/components/ui/typography";
-import { cn, type FixedPositionContentProps, type SharedProps } from "@/registry/base-nova/protoform/lib/utils";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Popover, PopoverAnchor, PopoverContent } from '@/components/ui/popover';
+import { Text } from '@/components/ui/typography';
+import { cn, type FixedPositionContentProps, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
-const commandVariants = cva("flex size-full flex-col overflow-hidden rounded-md bg-popover text-popover-foreground", {
+const commandVariants = cva('flex size-full flex-col overflow-hidden rounded-md bg-popover text-popover-foreground', {
   defaultVariants: {
-    size: "md",
-    variant: "elevated",
+    size: 'md',
+    variant: 'elevated',
   },
   variants: {
     size: {
-      full: "w-full",
-      lg: "min-w-[500px] max-w-2xl",
-      md: "min-w-[400px] max-w-lg md:min-w-[450px]",
-      sm: "min-w-[300px] max-w-sm",
+      full: 'w-full',
+      lg: 'min-w-[500px] max-w-2xl',
+      md: 'min-w-[400px] max-w-lg md:min-w-[450px]',
+      sm: 'min-w-[300px] max-w-sm',
     },
     variant: {
       dialog:
-        "**:data-[slot=command-input-wrapper]:h-12 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:size-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:size-5",
-      "multi-select": "!border-input border px-1 shadow-md",
-      elevated: "!border-input border shadow-md",
-      minimal: "",
+        '**:data-[slot=command-input-wrapper]:h-12 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:size-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:size-5',
+      'multi-select': '!border-input border px-1 shadow-md',
+      elevated: '!border-input border shadow-md',
+      minimal: '',
     },
   },
 });
@@ -46,8 +46,8 @@ function Command({ className, variant, size, testId, ...props }: CommandProps) {
   );
 }
 
-type CommandDialogProps = Omit<React.ComponentProps<typeof Dialog>, "children"> &
-  Pick<FixedPositionContentProps, "showOverlay" | "container" | "onOpenAutoFocus"> & {
+type CommandDialogProps = Omit<React.ComponentProps<typeof Dialog>, 'children'> &
+  Pick<FixedPositionContentProps, 'showOverlay' | 'container' | 'onOpenAutoFocus'> & {
     title?: string;
     description?: string;
     className?: string;
@@ -55,18 +55,18 @@ type CommandDialogProps = Omit<React.ComponentProps<typeof Dialog>, "children"> 
   };
 
 function CommandDialog({
-  title = "Command Palette",
-  description = "Search for a command to run...",
+  title = 'Command Palette',
+  description = 'Search for a command to run...',
   children,
   showOverlay = true,
   container,
   className,
   ...props
 }: CommandDialogProps) {
-  const onOpenAutoFocus: unknown = Reflect.get(props, "onOpenAutoFocus");
-  Reflect.deleteProperty(props, "onOpenAutoFocus");
+  const onOpenAutoFocus: unknown = Reflect.get(props, 'onOpenAutoFocus');
+  Reflect.deleteProperty(props, 'onOpenAutoFocus');
   const openAutoFocusProps =
-    typeof onOpenAutoFocus === "function" ? { onOpenAutoFocus: onOpenAutoFocus as (event: Event) => void } : undefined;
+    typeof onOpenAutoFocus === 'function' ? { onOpenAutoFocus: onOpenAutoFocus as (event: Event) => void } : undefined;
 
   return (
     <Dialog {...props}>
@@ -75,7 +75,7 @@ function CommandDialog({
         <DialogDescription>{description}</DialogDescription>
       </DialogHeader>
       <DialogContent
-        className={cn("overflow-hidden", container && "absolute", className)}
+        className={cn('overflow-hidden', container && 'absolute', className)}
         container={container}
         showOverlay={showOverlay}
         {...openAutoFocusProps}
@@ -96,7 +96,7 @@ function CommandInput({
       <SearchIcon className="size-4 shrink-0 opacity-50" />
       <CommandPrimitive.Input
         className={cn(
-          "flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-hidden selection:bg-selected selection:text-selected-foreground placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50",
+          'flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-hidden selection:bg-selected selection:text-selected-foreground placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50',
           className
         )}
         data-slot="command-input"
@@ -111,12 +111,12 @@ function CommandList({
   className,
   variant,
   ...props
-}: React.ComponentProps<typeof CommandPrimitive.List> & { variant?: "multi-select" }) {
+}: React.ComponentProps<typeof CommandPrimitive.List> & { variant?: 'multi-select' }) {
   return (
     <CommandPrimitive.List
       className={cn(
-        "max-h-[300px] scroll-py-1 overflow-y-auto overflow-x-hidden",
-        variant === "multi-select" && "px-0 py-1",
+        'max-h-[300px] scroll-py-1 overflow-y-auto overflow-x-hidden',
+        variant === 'multi-select' && 'px-0 py-1',
         className
       )}
       data-slot="command-list"
@@ -137,7 +137,7 @@ function CommandGroup({
   return (
     <CommandPrimitive.Group
       className={cn(
-        "overflow-hidden p-1 text-foreground [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group-heading]]:text-xs",
+        'overflow-hidden p-1 text-foreground [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group-heading]]:text-xs',
         className
       )}
       data-slot="command-group"
@@ -150,7 +150,7 @@ function CommandGroup({
 function CommandSeparator({ className, ...props }: React.ComponentProps<typeof CommandPrimitive.Separator>) {
   return (
     <CommandPrimitive.Separator
-      className={cn("-mx-1 h-px bg-border", className)}
+      className={cn('-mx-1 h-px bg-border', className)}
       data-slot="command-separator"
       {...props}
     />
@@ -175,11 +175,11 @@ function CommandItem({
   );
 }
 
-function CommandShortcut({ className, children, ...props }: React.ComponentProps<"span">) {
+function CommandShortcut({ className, children, ...props }: React.ComponentProps<'span'>) {
   return (
     <Text
       as="span"
-      className={cn("ml-auto text-muted-foreground text-xs tracking-widest", className)}
+      className={cn('ml-auto text-muted-foreground text-xs tracking-widest', className)}
       data-slot="command-shortcut"
       {...props}
     >
@@ -187,8 +187,6 @@ function CommandShortcut({ className, children, ...props }: React.ComponentProps
     </Text>
   );
 }
-
-// ── Command Submenu ───────────────────────────────────────────────────
 
 interface CommandSubContextType {
   onOpenChange: (open: boolean) => void;
@@ -227,7 +225,7 @@ function CommandSubTrigger({ className, children, inset, ...props }: CommandSubT
         <CommandPrimitive.Item
           className={cn(
             "relative flex cursor-pointer select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden data-[disabled=true]:pointer-events-none data-[selected=true]:bg-accent data-[disabled=true]:text-muted-foreground data-[selected=true]:text-accent-foreground data-[disabled=true]:opacity-50 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
-            inset && "pl-8",
+            inset && 'pl-8',
             className
           )}
           data-slot="command-sub-trigger"
@@ -251,7 +249,7 @@ function CommandSubContent({ className, children }: CommandSubContentProps) {
   return (
     <PopoverContent
       align="start"
-      className={cn("w-fit p-0", className)}
+      className={cn('w-fit p-0', className)}
       initialFocus={false}
       side="right"
       sideOffset={4}
@@ -261,7 +259,6 @@ function CommandSubContent({ className, children }: CommandSubContentProps) {
   );
 }
 
-// Simplified interface for backend developers
 interface SimpleCommandProps extends SharedProps {
   className?: string;
   emptyMessage?: string;
@@ -276,14 +273,14 @@ interface SimpleCommandProps extends SharedProps {
     }>;
   }>;
   placeholder?: string;
-  size?: "sm" | "md" | "lg" | "full";
+  size?: 'sm' | 'md' | 'lg' | 'full';
 }
 
 function SimpleCommand({
-  placeholder = "Type a command or search...",
-  emptyMessage = "No results found.",
+  placeholder = 'Type a command or search...',
+  emptyMessage = 'No results found.',
   groups,
-  size = "md",
+  size = 'md',
   className,
   testId,
 }: SimpleCommandProps) {

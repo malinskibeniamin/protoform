@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { createClient } from "@connectrpc/connect";
-import { Formik, type FormikErrors } from "formik";
-import React from "react";
-import { Alert, AlertDescription, AlertTitle } from "@/registry/base-nova/protoform/components/alert";
-import { Button } from "@/registry/base-nova/protoform/components/button";
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/registry/base-nova/protoform/components/field";
-import { Input } from "@/registry/base-nova/protoform/components/input";
-import { createFormikValidator } from "@/registry/base-nova/protoform/lib/core";
-import { createFormExamplesTransport } from "../browser-transport.js";
-import { FormExamplesService } from "../gen/protoform/examples/v1/forms_pb.js";
+import { createClient } from '@connectrpc/connect';
+import { Formik, type FormikErrors } from 'formik';
+import React from 'react';
+import { Alert, AlertDescription, AlertTitle } from '@/registry/base-nova/protoform/components/alert';
+import { Button } from '@/registry/base-nova/protoform/components/button';
+import { Field, FieldError, FieldGroup, FieldLabel } from '@/registry/base-nova/protoform/components/field';
+import { Input } from '@/registry/base-nova/protoform/components/input';
+import { createFormikValidator } from '@/registry/base-nova/protoform/lib/core';
+import { createFormExamplesTransport } from '../browser-transport.js';
+import { FormExamplesService } from '../gen/protoform/examples/v1/forms_pb.js';
 import {
   type BasicFormValues,
   firstServerErrorField,
@@ -18,12 +18,12 @@ import {
   mapProfileServerErrors,
   profileSchema,
   splitErrorMessages,
-} from "./profile-form.js";
+} from './profile-form.js';
 
 const validate = createFormikValidator(profileSchema);
 
 function readStatusMessages(status: unknown): string[] {
-  return Array.isArray(status) ? status.filter((message): message is string => typeof message === "string") : [];
+  return Array.isArray(status) ? status.filter((message): message is string => typeof message === 'string') : [];
 }
 
 export function FormikExample({ baseUrl }: { baseUrl?: string }) {
@@ -37,9 +37,9 @@ export function FormikExample({ baseUrl }: { baseUrl?: string }) {
       onSubmit={async (values, helpers) => {
         setProfileId(undefined);
         helpers.setStatus(undefined);
-        const result = await profileSchema["~standard"].validate(values);
+        const result = await profileSchema['~standard'].validate(values);
         if (result.issues) {
-          helpers.setStatus(["Form values changed after validation."]);
+          helpers.setStatus(['Form values changed after validation.']);
           return;
         }
         try {

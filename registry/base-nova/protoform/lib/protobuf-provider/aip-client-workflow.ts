@@ -1,9 +1,9 @@
-import type { Operation } from "@buf/googleapis_googleapis.bufbuild_es/google/longrunning/operations_pb.js";
-import { RetryInfoSchema } from "@buf/googleapis_googleapis.bufbuild_es/google/rpc/error_details_pb.js";
-import type { Status } from "@buf/googleapis_googleapis.bufbuild_es/google/rpc/status_pb.js";
-import type { DescMethod } from "@bufbuild/protobuf";
-import { MethodOptions_IdempotencyLevel } from "@bufbuild/protobuf/wkt";
-import { Code, ConnectError } from "@connectrpc/connect";
+import type { Operation } from '@buf/googleapis_googleapis.bufbuild_es/google/longrunning/operations_pb.js';
+import { RetryInfoSchema } from '@buf/googleapis_googleapis.bufbuild_es/google/rpc/error_details_pb.js';
+import type { Status } from '@buf/googleapis_googleapis.bufbuild_es/google/rpc/status_pb.js';
+import type { DescMethod } from '@bufbuild/protobuf';
+import { MethodOptions_IdempotencyLevel } from '@bufbuild/protobuf/wkt';
+import { Code, ConnectError } from '@connectrpc/connect';
 
 const ALPHA_VERSION_PATTERN = /(?:^|\.)v\d+alpha\d+(?:\.|$)/u;
 const BETA_VERSION_PATTERN = /(?:^|\.)v\d+beta\d+(?:\.|$)/u;
@@ -23,13 +23,13 @@ export class ProtoOperationError extends Error {
 
   constructor(status: Status) {
     super(status.message || `Operation failed with status ${status.code}.`);
-    this.name = "ProtoOperationError";
+    this.name = 'ProtoOperationError';
     this.status = status;
   }
 }
 
 function abortError(): DOMException {
-  return new DOMException("The operation was aborted.", "AbortError");
+  return new DOMException('The operation was aborted.', 'AbortError');
 }
 
 function defaultSleep(delayMs: number, signal: AbortSignal): Promise<void> {
@@ -43,10 +43,10 @@ function defaultSleep(delayMs: number, signal: AbortSignal): Promise<void> {
       reject(abortError());
     }
     const timeout = setTimeout(() => {
-      signal.removeEventListener("abort", handleAbort);
+      signal.removeEventListener('abort', handleAbort);
       resolve();
     }, delayMs);
-    signal.addEventListener("abort", handleAbort, { once: true });
+    signal.addEventListener('abort', handleAbort, { once: true });
   });
 }
 
@@ -57,27 +57,27 @@ function requireActive(signal: AbortSignal): void {
 }
 
 function finishOperation(operation: Operation): Operation {
-  if (operation.result.case === "error") {
+  if (operation.result.case === 'error') {
     throw new ProtoOperationError(operation.result.value);
   }
-  if (operation.result.case !== "response") {
-    throw new Error("A completed operation must contain a response or error.");
+  if (operation.result.case !== 'response') {
+    throw new Error('A completed operation must contain a response or error.');
   }
   return operation;
 }
 
 async function pollUntilDone(
   operation: Operation,
-  poll: ProtoOperationRunner["poll"],
-  sleep: NonNullable<ProtoOperationRunner["sleep"]>,
+  poll: ProtoOperationRunner['poll'],
+  sleep: NonNullable<ProtoOperationRunner['sleep']>,
   pollIntervalMs: number,
   signal: AbortSignal,
-  onProgress?: ProtoOperationRunner["onProgress"]
+  onProgress?: ProtoOperationRunner['onProgress']
 ): Promise<Operation> {
   let current = operation;
   while (!current.done) {
     if (!current.name) {
-      throw new Error("An incomplete operation must have a name for polling.");
+      throw new Error('An incomplete operation must have a name for polling.');
     }
     await sleep(pollIntervalMs, signal);
     requireActive(signal);
@@ -112,7 +112,7 @@ export async function runProtoOperation({
   }
 }
 
-export type ProtoRetryReason = "non-retryable-code" | "streaming" | "transient" | "unsafe";
+export type ProtoRetryReason = 'non-retryable-code' | 'streaming' | 'transient' | 'unsafe';
 
 export interface ProtoRetryDecision {
   delayMs?: number;
@@ -129,21 +129,21 @@ function getRetryDelayMs(error: ConnectError): number | undefined {
 }
 
 export function getProtoRetryDecision(method: DescMethod, reason: unknown): ProtoRetryDecision {
-  if (method.methodKind !== "unary") {
-    return { reason: "streaming", retry: false };
+  if (method.methodKind !== 'unary') {
+    return { reason: 'streaming', retry: false };
   }
   if (
     method.idempotency !== MethodOptions_IdempotencyLevel.NO_SIDE_EFFECTS &&
     method.idempotency !== MethodOptions_IdempotencyLevel.IDEMPOTENT
   ) {
-    return { reason: "unsafe", retry: false };
+    return { reason: 'unsafe', retry: false };
   }
   const error = ConnectError.from(reason);
   if (error.code !== Code.Unavailable) {
-    return { reason: "non-retryable-code", retry: false };
+    return { reason: 'non-retryable-code', retry: false };
   }
   const delayMs = getRetryDelayMs(error);
-  return delayMs === undefined ? { reason: "transient", retry: true } : { delayMs, reason: "transient", retry: true };
+  return delayMs === undefined ? { reason: 'transient', retry: true } : { delayMs, reason: 'transient', retry: true };
 }
 
 export interface ProtoPartialResultRecovery {
@@ -159,18 +159,18 @@ export interface ProtoPartialResult {
 }
 
 function resourceLabel(resourceName: string): string {
-  const segments = resourceName.split("/");
+  const segments = resourceName.split('/');
   return segments.at(-1) || resourceName;
 }
 
 export function getProtoPartialResult(response: { unreachable?: unknown }): ProtoPartialResult {
   const unreachable = Array.isArray(response.unreachable)
-    ? response.unreachable.filter((value): value is string => typeof value === "string" && value !== "")
+    ? response.unreachable.filter((value): value is string => typeof value === 'string' && value !== '')
     : [];
   if (unreachable.length === 0) {
     return { complete: true, recovery: [], unreachable: [] };
   }
-  const noun = unreachable.length === 1 ? "resource" : "resources";
+  const noun = unreachable.length === 1 ? 'resource' : 'resources';
   return {
     complete: false,
     recovery: unreachable.map((resourceName) => ({
@@ -185,7 +185,7 @@ export function getProtoPartialResult(response: { unreachable?: unknown }): Prot
 export interface ProtoPurgePlan {
   confirmationRequired: boolean;
   count: number;
-  mode: "execute" | "preview";
+  mode: 'execute' | 'preview';
   sample: readonly string[];
   warning: string;
 }
@@ -195,20 +195,20 @@ export function getProtoPurgePlan(
   response: { purgeCount: number; purgeSample: readonly string[] }
 ): ProtoPurgePlan {
   if (!request.filter) {
-    throw new Error("A purge plan requires a filter.");
+    throw new Error('A purge plan requires a filter.');
   }
   return {
     confirmationRequired: request.force,
     count: response.purgeCount,
-    mode: request.force ? "execute" : "preview",
+    mode: request.force ? 'execute' : 'preview',
     sample: response.purgeSample,
     warning: request.force
-      ? "This permanently deletes every resource matching the filter."
-      : "Preview only. No resources will be deleted.",
+      ? 'This permanently deletes every resource matching the filter.'
+      : 'Preview only. No resources will be deleted.',
   };
 }
 
-export type ProtoPolicyPreviewAction = "commit" | "start-preview" | "stop-preview";
+export type ProtoPolicyPreviewAction = 'commit' | 'start-preview' | 'stop-preview';
 
 export interface ProtoPolicyPreviewPlan {
   action: ProtoPolicyPreviewAction;
@@ -219,33 +219,33 @@ export interface ProtoPolicyPreviewPlan {
 
 export function getProtoPolicyPreviewPlan(action: ProtoPolicyPreviewAction): ProtoPolicyPreviewPlan {
   switch (action) {
-    case "start-preview":
+    case 'start-preview':
       return {
         action,
         confirmationRequired: false,
         enforcesPolicy: false,
-        notice: "Preview compares the experiment with live traffic without enforcing it.",
+        notice: 'Preview compares the experiment with live traffic without enforcing it.',
       };
-    case "stop-preview":
+    case 'stop-preview':
       return {
         action,
         confirmationRequired: false,
         enforcesPolicy: false,
-        notice: "Stopping preview does not change the live policy.",
+        notice: 'Stopping preview does not change the live policy.',
       };
-    case "commit":
+    case 'commit':
       return {
         action,
         confirmationRequired: true,
         enforcesPolicy: true,
-        notice: "Commit replaces the live policy and deletes the experiment.",
+        notice: 'Commit replaces the live policy and deletes the experiment.',
       };
     default:
       throw new Error(`Unsupported policy preview action: ${action satisfies never}`);
   }
 }
 
-export type ProtoStabilityLevel = "alpha" | "beta" | "deprecated" | "stable";
+export type ProtoStabilityLevel = 'alpha' | 'beta' | 'deprecated' | 'stable';
 
 export interface ProtoStability {
   guidance?: string;
@@ -261,24 +261,24 @@ export interface ProtoStabilityDescriptor {
 export function getProtoStability({ deprecated, typeName }: ProtoStabilityDescriptor): ProtoStability {
   if (deprecated) {
     return {
-      guidance: "Deprecated: migrate before the documented support period ends.",
-      level: "deprecated",
+      guidance: 'Deprecated: migrate before the documented support period ends.',
+      level: 'deprecated',
       preview: false,
     };
   }
   if (ALPHA_VERSION_PATTERN.test(typeName)) {
     return {
-      guidance: "Alpha preview: breaking changes are expected.",
-      level: "alpha",
+      guidance: 'Alpha preview: breaking changes are expected.',
+      level: 'alpha',
       preview: true,
     };
   }
   if (BETA_VERSION_PATTERN.test(typeName)) {
     return {
-      guidance: "Beta preview: changes remain possible before stability.",
-      level: "beta",
+      guidance: 'Beta preview: changes remain possible before stability.',
+      level: 'beta',
       preview: true,
     };
   }
-  return { level: "stable", preview: false };
+  return { level: 'stable', preview: false };
 }

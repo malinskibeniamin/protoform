@@ -1,37 +1,31 @@
-import type { ParsedField } from "@/registry/base-nova/protoform/lib/form-types";
+import type { ParsedField } from '@/registry/base-nova/protoform/lib/form-types';
 
-// Common protocol / tech acronyms the default title-casing would
-// otherwise emit as mixed-case ("Api Key", "Tls", "Aws Region", etc.).
-// The replacement is the canonical form the industry uses — gRPC is
-// intentionally lower-case `g`, everything else is fully upper.
-// Matched as whole words (case-insensitive) after the initial
-// camelCase/snake_case split in `beautifyLabel`.
 const ACRONYMS: Record<string, string> = {
-  api: "API",
-  aws: "AWS",
-  dsn: "DSN",
-  gcp: "GCP",
-  grpc: "gRPC",
-  http: "HTTP",
-  https: "HTTPS",
-  id: "ID",
-  json: "JSON",
-  jwt: "JWT",
-  mcp: "MCP",
-  oauth: "OAuth",
-  sasl: "SASL",
-  sdk: "SDK",
-  sns: "SNS",
-  sql: "SQL",
-  sqs: "SQS",
-  ssl: "SSL",
-  tls: "TLS",
-  tts: "TTS",
-  uri: "URI",
-  url: "URL",
-  uuid: "UUID",
-  vpc: "VPC",
-  yaml: "YAML",
+  api: 'API',
+  aws: 'AWS',
+  dsn: 'DSN',
+  gcp: 'GCP',
+  grpc: 'gRPC',
+  http: 'HTTP',
+  https: 'HTTPS',
+  id: 'ID',
+  json: 'JSON',
+  jwt: 'JWT',
+  mcp: 'MCP',
+  oauth: 'OAuth',
+  sasl: 'SASL',
+  sdk: 'SDK',
+  sns: 'SNS',
+  sql: 'SQL',
+  sqs: 'SQS',
+  ssl: 'SSL',
+  tls: 'TLS',
+  tts: 'TTS',
+  uri: 'URI',
+  url: 'URL',
+  uuid: 'UUID',
+  vpc: 'VPC',
+  yaml: 'YAML',
 };
 
 function applyAcronyms(label: string): string {
@@ -40,15 +34,15 @@ function applyAcronyms(label: string): string {
 
 function beautifyLabel(label: string): string {
   if (!label) {
-    return "";
+    return '';
   }
-  let output = label.replace(/([A-Z])/gu, " $1");
+  let output = label.replace(/([A-Z])/gu, ' $1');
   output = output.charAt(0).toUpperCase() + output.slice(1);
   if (!Number.isNaN(Number(output))) {
-    return "";
+    return '';
   }
-  if (output === "*") {
-    return "";
+  if (output === '*') {
+    return '';
   }
   return applyAcronyms(output);
 }

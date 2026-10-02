@@ -1,22 +1,22 @@
-"use client";
+'use client';
 
-import { create } from "@bufbuild/protobuf";
-import { createConnectQueryKey, useMutation, useTransport } from "@connectrpc/connect-query";
-import { useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
-import { ErrorMessage } from "react-hook-form";
+import { create } from '@bufbuild/protobuf';
+import { createConnectQueryKey, useMutation, useTransport } from '@connectrpc/connect-query';
+import { useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
+import { ErrorMessage } from 'react-hook-form';
 
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { BookFormBinding } from "@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_form";
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { BookFormBinding } from '@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_form';
 import {
   BookSchema,
   LibraryService,
-} from "@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_pb";
-import { useProtoForm } from "@/registry/base-nova/protoform/hooks/use-proto-form";
+} from '@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_pb';
+import { useProtoForm } from '@/registry/base-nova/protoform/hooks/use-proto-form';
 
 interface CreateBookFormProps {
   onCancel: () => void;
@@ -28,21 +28,21 @@ const bookIdInputPattern = String.raw`[a-z][a-z0-9\-]{2,62}[a-z0-9]`;
 const BOOK_ID_PATTERN = /^[a-z][a-z0-9-]{2,62}[a-z0-9]$/u;
 
 export function CreateBookForm({ onCancel, onCreated, parent }: CreateBookFormProps) {
-  const [step, setStep] = useState<"book" | "publishing">("book");
-  const [bookId, setBookId] = useState("");
+  const [step, setStep] = useState<'book' | 'publishing'>('book');
+  const [bookId, setBookId] = useState('');
   const queryClient = useQueryClient();
   const transport = useTransport();
   const mutation = useMutation(LibraryService.method.createBook);
   const form = useProtoForm(BookFormBinding.descriptor, {
-    defaultValues: create(BookSchema, { displayName: "", isbn: "", note: "" }),
-    mode: "onChange",
-    serverPathPrefix: "book",
+    defaultValues: create(BookSchema, { displayName: '', isbn: '', note: '' }),
+    mode: 'onChange',
+    serverPathPrefix: 'book',
   });
 
   async function continueToPublishing() {
-    const valid = await form.trigger(["displayName", "isbn"]);
+    const valid = await form.trigger(['displayName', 'isbn']);
     if (valid) {
-      setStep("publishing");
+      setStep('publishing');
     }
   }
 
@@ -79,14 +79,14 @@ export function CreateBookForm({ onCancel, onCreated, parent }: CreateBookFormPr
     onBlur: handleDisplayNameBlur,
     onChange: handleDisplayNameChange,
     ref: displayNameRef,
-  } = form.register("displayName");
-  const { name: isbn, onBlur: handleIsbnBlur, onChange: handleIsbnChange, ref: isbnRef } = form.register("isbn");
-  const { name: note, onBlur: handleNoteBlur, onChange: handleNoteChange, ref: noteRef } = form.register("note");
+  } = form.register('displayName');
+  const { name: isbn, onBlur: handleIsbnBlur, onChange: handleIsbnChange, ref: isbnRef } = form.register('isbn');
+  const { name: note, onBlur: handleNoteBlur, onChange: handleNoteChange, ref: noteRef } = form.register('note');
 
   return (
     <section aria-labelledby="create-book-title" className="space-y-6">
       <div className="space-y-2">
-        <p className="font-medium text-muted-foreground text-sm">Step {step === "book" ? "1" : "2"} of 2</p>
+        <p className="font-medium text-muted-foreground text-sm">Step {step === 'book' ? '1' : '2'} of 2</p>
         <h2 className="font-semibold text-2xl" id="create-book-title">
           Create a book
         </h2>
@@ -95,7 +95,7 @@ export function CreateBookForm({ onCancel, onCreated, parent }: CreateBookFormPr
         </p>
       </div>
 
-      {step === "book" ? (
+      {step === 'book' ? (
         <div className="space-y-5">
           <Field data-invalid={Boolean(titleError)}>
             <FieldLabel htmlFor="create-book-title-input">Title</FieldLabel>
@@ -112,7 +112,7 @@ export function CreateBookForm({ onCancel, onCreated, parent }: CreateBookFormPr
           <Field data-invalid={Boolean(isbnError)}>
             <FieldLabel htmlFor="create-book-isbn">ISBN-13</FieldLabel>
             <Input
-              aria-describedby={isbnError ? undefined : "create-book-isbn-help"}
+              aria-describedby={isbnError ? undefined : 'create-book-isbn-help'}
               aria-invalid={Boolean(isbnError)}
               id="create-book-isbn"
               inputMode="numeric"
@@ -169,7 +169,7 @@ export function CreateBookForm({ onCancel, onCreated, parent }: CreateBookFormPr
             </Alert>
           ) : null}
           <div className="flex flex-wrap justify-between gap-3">
-            <Button onClick={() => setStep("book")} type="button" variant="outline">
+            <Button onClick={() => setStep('book')} type="button" variant="outline">
               Back
             </Button>
             <Button disabled={bookIdInvalid || bookId.length === 0} isLoading={mutation.isPending} type="submit">

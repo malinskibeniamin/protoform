@@ -1,6 +1,6 @@
-import { isMessage } from "@bufbuild/protobuf";
-import { Heading, Text } from "@/registry/base-nova/protoform/components/typography";
-import { SubmitKitchenSinkFormRequestSchema } from "../gen/protoform/examples/v1/forms_pb.js";
+import { isMessage } from '@bufbuild/protobuf';
+import { Heading, Text } from '@/registry/base-nova/protoform/components/typography';
+import { SubmitKitchenSinkFormRequestSchema } from '../gen/protoform/examples/v1/forms_pb.js';
 
 export function KitchenSinkSummary({ payload }: { payload: unknown }) {
   if (!isMessage(payload, SubmitKitchenSinkFormRequestSchema)) {
@@ -27,7 +27,7 @@ export function KitchenSinkSummary({ payload }: { payload: unknown }) {
           <Text className="text-muted-foreground" variant="small">
             Rollout stages
           </Text>
-          <p className="font-medium">{payload.rolloutPercentages.join(" → ")}%</p>
+          <p className="font-medium">{payload.rolloutPercentages.join(' → ')}%</p>
         </div>
       </div>
     </div>

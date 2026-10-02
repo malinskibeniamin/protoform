@@ -1,56 +1,56 @@
-import { existsSync, readdirSync, readFileSync } from "node:fs";
-import { describe, expect } from "@rstest/core";
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { describe, expect } from '@rstest/core';
 
-import { demoCatalog } from "../examples/catalog/demo-catalog.js";
-import { demoHubCategoryFor, demoRedirects, getDemoHub } from "../examples/catalog/demo-docs.js";
-import { readinessRequirements } from "../readiness/profile.js";
+import { demoCatalog } from '../examples/catalog/demo-catalog.js';
+import { demoHubCategoryFor, demoRedirects, getDemoHub } from '../examples/catalog/demo-docs.js';
+import { readinessRequirements } from '../readiness/profile.js';
 
-const repositoryRoot = new URL("../", import.meta.url);
+const repositoryRoot = new URL('../', import.meta.url);
 
 function read(path: string): string {
-  return readFileSync(new URL(path, repositoryRoot), "utf8");
+  return readFileSync(new URL(path, repositoryRoot), 'utf8');
 }
 
-describe("live demo catalog", () => {
-  test("excludes test modules from the production demo glob", () => {
-    const source = read("examples/catalog/demo-hub.tsx");
+describe('live demo catalog', () => {
+  test('excludes test modules from the production demo glob', () => {
+    const source = read('examples/catalog/demo-hub.tsx');
 
-    expect(source).toContain('"!../../registry/base-nova/protoform/demo/catalog/*.test.tsx"');
+    expect(source).toContain("'!../../registry/base-nova/protoform/demo/catalog/*.test.tsx'");
   });
 
-  test("maps every applicable readiness requirement to a live demo", () => {
+  test('maps every applicable readiness requirement to a live demo', () => {
     const applicableIds = readinessRequirements
-      .filter((requirement) => requirement.status === "verified")
+      .filter((requirement) => requirement.status === 'verified')
       .map((requirement) => requirement.id);
     const mappedIds = new Set(demoCatalog.flatMap((demo) => demo.requirementIds));
 
     expect(applicableIds.filter((requirementId) => !mappedIds.has(requirementId))).toEqual([]);
   });
 
-  test("keeps an extensive, uniquely addressable visual feature catalog", () => {
-    const featureDemos = demoCatalog.filter((demo) => demo.category !== "aip");
+  test('keeps an extensive, uniquely addressable visual feature catalog', () => {
+    const featureDemos = demoCatalog.filter((demo) => demo.category !== 'aip');
     const slugs = featureDemos.map((demo) => demo.slug);
 
     expect(featureDemos.length).toBeGreaterThanOrEqual(50);
     expect(new Set(slugs).size).toBe(slugs.length);
     expect(slugs).toEqual(
       expect.arrayContaining([
-        "bufbuild-descriptors",
-        "cel-re2",
-        "credential-redaction",
-        "protobuf-dynamic-json-any",
-        "protobuf-well-known-types",
-        "protovalidate-all-errors",
-        "stepper",
+        'bufbuild-descriptors',
+        'cel-re2',
+        'credential-redaction',
+        'protobuf-dynamic-json-any',
+        'protobuf-well-known-types',
+        'protovalidate-all-errors',
+        'stepper',
       ])
     );
   });
 
-  test("consolidates generated demos into five focused documentation hubs", () => {
+  test('consolidates generated demos into five focused documentation hubs', () => {
     const applicableAips = readinessRequirements.filter(
-      (requirement) => requirement.category === "aip" && requirement.status === "verified"
+      (requirement) => requirement.category === 'aip' && requirement.status === 'verified'
     );
-    const aipDemos = demoCatalog.filter((demo) => demo.category === "aip");
+    const aipDemos = demoCatalog.filter((demo) => demo.category === 'aip');
 
     expect(aipDemos).toHaveLength(applicableAips.length);
     expect(new Set(aipDemos.map((demo) => demo.requirementIds[0]))).toEqual(
@@ -65,22 +65,22 @@ describe("live demo catalog", () => {
     }
 
     const hubs = [
-      ["content/docs/(aip-examples)/aip-example-catalog.mdx", '<DemoHub category="aip" />', "aip"],
+      ['content/docs/(aip-examples)/aip-example-catalog.mdx', '<DemoHub category="aip" />', 'aip'],
       [
-        "content/docs/(feature-examples)/(protobuf)/protobuf-examples.mdx",
+        'content/docs/(feature-examples)/(protobuf)/protobuf-examples.mdx',
         '<DemoHub category="protobuf" />',
-        "protobuf",
+        'protobuf',
       ],
       [
-        "content/docs/(feature-examples)/(protovalidate)/protovalidate-examples.mdx",
+        'content/docs/(feature-examples)/(protovalidate)/protovalidate-examples.mdx',
         '<DemoHub category="protovalidate" />',
-        "protovalidate",
+        'protovalidate',
       ],
-      ["content/docs/(feature-examples)/(cel)/cel-examples.mdx", '<DemoHub category="cel" />', "cel"],
+      ['content/docs/(feature-examples)/(cel)/cel-examples.mdx', '<DemoHub category="cel" />', 'cel'],
       [
-        "content/docs/(feature-examples)/(production)/production-examples.mdx",
+        'content/docs/(feature-examples)/(production)/production-examples.mdx',
         '<DemoHub category="production" />',
-        "production",
+        'production',
       ],
     ] as const;
 
@@ -91,77 +91,77 @@ describe("live demo catalog", () => {
     }
 
     const generatedMdx = [
-      ...readdirSync(new URL("content/docs/(aip-examples)", repositoryRoot), {
+      ...readdirSync(new URL('content/docs/(aip-examples)', repositoryRoot), {
         recursive: true,
       }),
-      ...readdirSync(new URL("content/docs/(feature-examples)", repositoryRoot), { recursive: true }),
-    ].filter((path) => path.toString().endsWith(".mdx"));
+      ...readdirSync(new URL('content/docs/(feature-examples)', repositoryRoot), { recursive: true }),
+    ].filter((path) => path.toString().endsWith('.mdx'));
     expect(generatedMdx).toHaveLength(5);
   });
 
-  test("keeps React Hook Form as the default while labeling interop demos", () => {
+  test('keeps React Hook Form as the default while labeling interop demos', () => {
     for (const demo of demoCatalog) {
-      expect(demo.engine === "react-hook-form" || demo.category === "interop", demo.id).toBe(true);
+      expect(demo.engine === 'react-hook-form' || demo.category === 'interop', demo.id).toBe(true);
     }
   });
 
-  test("ships registry interop demos backed by their named form libraries", () => {
+  test('ships registry interop demos backed by their named form libraries', () => {
     const interopImports = {
-      "final-form": "react-final-form",
-      formik: "formik",
-      "tanstack-form": "use-proto-form-tanstack",
+      'final-form': 'react-final-form',
+      formik: 'formik',
+      'tanstack-form': 'use-proto-form-tanstack',
     } as const;
 
-    for (const demo of demoCatalog.filter((candidate) => candidate.category === "interop")) {
+    for (const demo of demoCatalog.filter((candidate) => candidate.category === 'interop')) {
       const source = read(`registry/base-nova/protoform/demo/catalog/${demo.slug}.tsx`);
       const expectedImport = Object.entries(interopImports).find(([engine]) => engine === demo.engine)?.[1];
       if (!expectedImport) {
         throw new Error(`Expected an interop import for ${demo.engine}.`);
       }
       expect(source, demo.id).toContain(expectedImport);
-      expect(source, demo.id).not.toContain("RegistryCapabilityDemo");
-      expect(source, demo.id).toContain("export default");
+      expect(source, demo.id).not.toContain('RegistryCapabilityDemo');
+      expect(source, demo.id).toContain('export default');
     }
   });
 
-  test("publishes the actual form implementation for every catalog demo", () => {
+  test('publishes the actual form implementation for every catalog demo', () => {
     for (const demo of demoCatalog) {
       const source = read(`registry/base-nova/protoform/demo/catalog/${demo.slug}.tsx`);
 
-      expect(source, demo.id).not.toContain("RegistryCapabilityDemo");
-      if (demo.engine === "react-hook-form") {
-        expect(source, demo.id).toContain("<AutoForm");
-        expect(source, demo.id).toContain("onSubmit=");
-        expect(source, demo.id).toContain("schema={schema}");
-        expect(source, demo.id).toContain("getDemoSchema");
+      expect(source, demo.id).not.toContain('RegistryCapabilityDemo');
+      if (demo.engine === 'react-hook-form') {
+        expect(source, demo.id).toContain('<AutoForm');
+        expect(source, demo.id).toContain('onSubmit=');
+        expect(source, demo.id).toContain('schema={schema}');
+        expect(source, demo.id).toContain('getDemoSchema');
       }
     }
   });
 
-  test("keeps submitted-value formatting inside Protoform", () => {
+  test('keeps submitted-value formatting inside Protoform', () => {
     for (const demo of demoCatalog) {
       const source = read(`registry/base-nova/protoform/demo/catalog/${demo.slug}.tsx`);
 
       expect(source, demo.id).toMatch(/from ["']\.\.\/\.\.\/lib\/protobuf-provider(?:\/index)?["']/u);
-      expect(source, demo.id).toContain("formatSubmittedValue(");
-      expect(source, demo.id).not.toContain("function formatSubmittedValue");
-      expect(source, demo.id).not.toContain("JSON.stringify(");
+      expect(source, demo.id).toContain('formatSubmittedValue(');
+      expect(source, demo.id).not.toContain('function formatSubmittedValue');
+      expect(source, demo.id).not.toContain('JSON.stringify(');
     }
   });
 
-  test("keeps every registry demo renderable by the consolidated hub", () => {
+  test('keeps every registry demo renderable by the consolidated hub', () => {
     for (const demo of demoCatalog) {
       const source = read(`registry/base-nova/protoform/demo/catalog/${demo.slug}.tsx`);
-      expect(source, demo.id).toContain("export default");
+      expect(source, demo.id).toContain('export default');
       expect(source, demo.id).toMatch(/export const client = ["']only["']/u);
     }
   });
 
-  test("redirects every retired demo page to its deep-linked hub selection", () => {
+  test('redirects every retired demo page to its deep-linked hub selection', () => {
     expect(demoRedirects).toHaveLength(demoCatalog.length + 1);
 
     for (const demo of demoCatalog) {
-      const from = demo.category === "aip" ? `/${demo.slug}` : `/example-${demo.slug}`;
+      const from = demo.category === 'aip' ? `/${demo.slug}` : `/example-${demo.slug}`;
       const hub = getDemoHub(demoHubCategoryFor(demo.category));
 
       expect(demoRedirects).toContainEqual({
@@ -172,14 +172,14 @@ describe("live demo catalog", () => {
     }
 
     expect(demoRedirects).toContainEqual({
-      from: "/feature-example-catalog",
+      from: '/feature-example-catalog',
       status: 308,
-      to: "/protobuf-examples",
+      to: '/protobuf-examples',
     });
   });
 
-  test("makes every demo independently installable from the registry", () => {
-    const registry = JSON.parse(read("registry.json")) as {
+  test('makes every demo independently installable from the registry', () => {
+    const registry = JSON.parse(read('registry.json')) as {
       items: Array<{
         files?: Array<{ target?: string }>;
         name: string;
@@ -191,25 +191,25 @@ describe("live demo catalog", () => {
     for (const demo of demoCatalog) {
       const item = registryItems.get(demo.registryName);
       expect(item, demo.registryName).toBeDefined();
-      expect(item?.registryDependencies).toContain("@protoform/protoform-demo-runtime");
+      expect(item?.registryDependencies).toContain('@protoform/protoform-demo-runtime');
       expect(item?.files?.[0]?.target).toBe(`~/components/protoform-examples/${demo.slug}.tsx`);
     }
   });
 
-  test("keeps generated demo descriptors synchronized in the full generation pipeline", () => {
-    const manifest = JSON.parse(read("package.json")) as {
+  test('keeps generated demo descriptors synchronized in the full generation pipeline', () => {
+    const manifest = JSON.parse(read('package.json')) as {
       scripts: Record<string, string>;
     };
-    const registry = JSON.parse(read("registry.json")) as {
+    const registry = JSON.parse(read('registry.json')) as {
       items: Array<{
         files?: Array<{ path: string }>;
         name: string;
       }>;
     };
-    const runtimePrefix = "registry/base-nova/protoform/demo/runtime/gen/";
-    const runtime = registry.items.find((item) => item.name === "protoform-demo-runtime");
+    const runtimePrefix = 'registry/base-nova/protoform/demo/runtime/gen/';
+    const runtime = registry.items.find((item) => item.name === 'protoform-demo-runtime');
 
-    expect(manifest.scripts["proto:generate"]).toContain("bun run demos:generate && bun run registry:build");
+    expect(manifest.scripts['proto:generate']).toContain('bun run demos:generate && bun run registry:build');
     expect(runtime).toBeDefined();
     for (const file of runtime?.files ?? []) {
       if (file.path.startsWith(runtimePrefix)) {

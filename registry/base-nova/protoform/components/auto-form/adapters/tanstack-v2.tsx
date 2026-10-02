@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   type DefaultReactFormComponentMap,
@@ -10,11 +10,11 @@ import {
   useForm,
   useSelector,
   type ValidationErrorMap,
-} from "@tanstack/react-form-v2";
-import React from "react";
-import { useMemoizedArray } from "@/registry/base-nova/protoform/lib/input-utils";
-import { dirtyFieldsFromValues } from "@/registry/base-nova/protoform/lib/protobuf-provider";
-import type { SchemaValidation, SchemaValidationError } from "../core-types";
+} from '@tanstack/react-form-v2';
+import React from 'react';
+import { useMemoizedArray } from '@/registry/base-nova/protoform/lib/input-utils';
+import { dirtyFieldsFromValues } from '@/registry/base-nova/protoform/lib/protobuf-provider';
+import type { SchemaValidation, SchemaValidationError } from '../core-types';
 import {
   type AutoFormArrayController,
   type AutoFormEngine,
@@ -22,8 +22,8 @@ import {
   type AutoFormFieldController,
   errorMessages,
   useDirtyStateNotification,
-} from "../engine";
-import type { AutoFormRevalidationMode, AutoFormValidationMode } from "../types";
+} from '../engine';
+import type { AutoFormRevalidationMode, AutoFormValidationMode } from '../types';
 
 type FormValues = Record<string, unknown>;
 type V2Validators = FormValidators<FormValues>;
@@ -40,7 +40,7 @@ type DynamicArrayFieldComponent = React.ComponentType<{
 
 export type TanStackFormV2Options = Omit<
   FormOptions<FormValues, V2Validators, unknown, DefaultReactFormComponentMap>,
-  "defaultValues"
+  'defaultValues'
 >;
 
 export type TanStackV2AutoFormApi = ReactFormApi<FormValues, V2ErrorTypes, DefaultReactFormComponentMap>;
@@ -59,14 +59,14 @@ const DIGITS_PATTERN = /^\d+$/u;
 
 function toTanStackV2Path(path: string): string {
   return path
-    .split(".")
+    .split('.')
     .map((segment, index) => {
       if (DIGITS_PATTERN.test(segment)) {
         return `[${segment}]`;
       }
       return index === 0 ? segment : `.${segment}`;
     })
-    .join("");
+    .join('');
 }
 
 function sameMessages(left: string[] | undefined, right: string[]) {
@@ -77,7 +77,7 @@ function sameMessages(left: string[] | undefined, right: string[]) {
 function useTanStackV2EngineContext() {
   const context = React.useContext(TanStackV2EngineContext);
   if (!context) {
-    throw new Error("TanStack Form v2 AutoForm controls must be rendered inside the v2 engine.");
+    throw new Error('TanStack Form v2 AutoForm controls must be rendered inside the v2 engine.');
   }
   return context;
 }
@@ -215,7 +215,7 @@ function validationErrorsByPath(errors: SchemaValidationError[]): Map<string, st
     if (error.path.length === 0) {
       continue;
     }
-    const path = error.path.join(".");
+    const path = error.path.join('.');
     byPath.set(path, [...(byPath.get(path) ?? []), error.message]);
   }
   return byPath;
@@ -225,11 +225,11 @@ function setErrorAtPath(target: Record<string, unknown>, path: string[], message
   let current = target;
   for (const [index, segment] of path.entries()) {
     if (index === path.length - 1) {
-      current[segment] = { message: messages.join("\n") };
+      current[segment] = { message: messages.join('\n') };
       return;
     }
     const existing = current[segment];
-    if (existing && typeof existing === "object" && !Array.isArray(existing)) {
+    if (existing && typeof existing === 'object' && !Array.isArray(existing)) {
       current = existing as Record<string, unknown>;
       continue;
     }
@@ -253,7 +253,7 @@ function toV2ValidationError(errors: SchemaValidationError[]): ValidationErrorMa
   };
 }
 
-function shouldValidateForMode(mode: AutoFormValidationMode | AutoFormRevalidationMode, event: "blur" | "change") {
+function shouldValidateForMode(mode: AutoFormValidationMode | AutoFormRevalidationMode, event: 'blur' | 'change') {
   return mode === event;
 }
 
@@ -273,13 +273,12 @@ export function TanStackV2Engine({
   defaultValues,
   formOptions,
   onDirtyChange,
-  revalidationMode = "change",
+  revalidationMode = 'change',
   validateSchema,
-  validationMode = "submit",
+  validationMode = 'submit',
   values,
 }: TanStackV2EngineProps) {
-  // allow: form-validate [AutoForm injects schema-provider validation through validateSchema]
-  "use no memo";
+  'use no memo';
 
   const formDefaultValuesRef = React.useRef(defaultValues);
   const cleanValuesRef = React.useRef<FormValues>(defaultValues);
@@ -308,16 +307,16 @@ export function TanStackV2Engine({
     },
     triggers: [
       {
-        trigger: "change",
+        trigger: 'change',
         when: ({ formApi }) =>
           manualValidationRef.current ||
-          shouldValidateForMode(formApi.state.submissionAttempts > 0 ? revalidationMode : validationMode, "change"),
+          shouldValidateForMode(formApi.state.submissionAttempts > 0 ? revalidationMode : validationMode, 'change'),
       },
       {
-        trigger: "blur",
+        trigger: 'blur',
         when: ({ formApi }) =>
           manualValidationRef.current ||
-          shouldValidateForMode(formApi.state.submissionAttempts > 0 ? revalidationMode : validationMode, "blur"),
+          shouldValidateForMode(formApi.state.submissionAttempts > 0 ? revalidationMode : validationMode, 'blur'),
       },
     ],
   };
@@ -333,7 +332,7 @@ export function TanStackV2Engine({
   const notifyDirtyChange = useDirtyStateNotification(isDirty, onDirtyChange);
   const errors: Record<string, unknown> = {};
   for (const [path, messages] of [...fieldErrors, ...nativeFieldErrors]) {
-    setErrorAtPath(errors, path.split("."), messages);
+    setErrorAtPath(errors, path.split('.'), messages);
   }
   const validationRootErrors: string[] = [];
   for (const error of validationErrors) {
@@ -343,7 +342,7 @@ export function TanStackV2Engine({
   }
   const rootError =
     [...new Set([...errorMessages(state.errors), ...validationRootErrors, ...(submitError ? [submitError] : [])])].join(
-      "\n"
+      '\n'
     ) || undefined;
 
   React.useEffect(
@@ -383,12 +382,12 @@ export function TanStackV2Engine({
         return [];
       }
       const targets = new Set(paths);
-      return current.filter((error) => !targets.has(error.path.join(".")));
+      return current.filter((error) => !targets.has(error.path.join('.')));
     });
   };
 
   const clearFieldErrors = React.useCallback((name: string) => {
-    setValidationErrors((current) => current.filter((error) => error.path.join(".") !== name));
+    setValidationErrors((current) => current.filter((error) => error.path.join('.') !== name));
   }, []);
   const registerRef = React.useCallback((name: string, element: HTMLElement | null) => {
     if (element) {
@@ -425,7 +424,7 @@ export function TanStackV2Engine({
           }
         })
         .catch((error: unknown) => {
-          setSubmitError(error instanceof Error ? error.message : "Submission failed.");
+          setSubmitError(error instanceof Error ? error.message : 'Submission failed.');
         })
         .finally(() => setIsAutoFormSubmitting(false));
     },
@@ -456,7 +455,7 @@ export function TanStackV2Engine({
     setRootError: setSubmitError,
     setValidationErrors,
     setValue: (path, value, options) => {
-      setValidationErrors((current) => current.filter((error) => error.path.join(".") !== path));
+      setValidationErrors((current) => current.filter((error) => error.path.join('.') !== path));
       Reflect.apply(form.setFieldValue, form, [
         toTanStackV2Path(path),
         value,
@@ -470,7 +469,7 @@ export function TanStackV2Engine({
     trigger: async () => {
       manualValidationRef.current = true;
       try {
-        const results = await form.validate("change");
+        const results = await form.validate('change');
         return results.length === 0;
       } finally {
         manualValidationRef.current = false;

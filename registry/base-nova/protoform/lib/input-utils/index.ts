@@ -1,7 +1,5 @@
-import { type RefObject, useCallback, useEffect, useRef, useState } from "react";
-import { z } from "zod";
-
-// ── Types ──────────────────────────────────────────────────────────────
+import { type RefObject, useCallback, useEffect, useRef, useState } from 'react';
+import { z } from 'zod';
 
 export interface KeyValuePairsSchemaOptions {
   allowedPattern?: RegExp;
@@ -16,12 +14,6 @@ export interface KeyValueDiffResult {
   updated: Record<string, string>;
 }
 
-// ── Pure Utilities ─────────────────────────────────────────────────────
-
-/**
- * Returns the indices of items whose key (extracted via `getKey`) appears
- * more than once. Empty keys are ignored.
- */
 export function findDuplicateIndices<T>(items: T[], getKey: (item: T) => string): Set<number> {
   const seen = new Map<string, number[]>();
   const duplicates = new Set<number>();
@@ -56,41 +48,32 @@ function collectPairIssues(
   const { allowedPattern, maxKeyLength, maxValueLength } = options;
 
   if (pair.value && !pair.key.trim()) {
-    issues.push({ message: "Key is required when a value is provided", path: [index, "key"] });
+    issues.push({ message: 'Key is required when a value is provided', path: [index, 'key'] });
   }
 
   if (duplicates.has(index)) {
-    issues.push({ message: `Duplicate key: "${pair.key}"`, path: [index, "key"] });
+    issues.push({ message: `Duplicate key: "${pair.key}"`, path: [index, 'key'] });
   }
 
   if (maxKeyLength && pair.key.length > maxKeyLength) {
-    issues.push({ message: `Key exceeds maximum length of ${maxKeyLength}`, path: [index, "key"] });
+    issues.push({ message: `Key exceeds maximum length of ${maxKeyLength}`, path: [index, 'key'] });
   }
 
   if (maxValueLength && pair.value.length > maxValueLength) {
-    issues.push({ message: `Value exceeds maximum length of ${maxValueLength}`, path: [index, "value"] });
+    issues.push({ message: `Value exceeds maximum length of ${maxValueLength}`, path: [index, 'value'] });
   }
 
   if (allowedPattern && pair.key && !allowedPattern.test(pair.key)) {
-    issues.push({ message: "Key contains invalid characters", path: [index, "key"] });
+    issues.push({ message: 'Key contains invalid characters', path: [index, 'key'] });
   }
 
   if (allowedPattern && pair.value && !allowedPattern.test(pair.value)) {
-    issues.push({ message: "Value contains invalid characters", path: [index, "value"] });
+    issues.push({ message: 'Value contains invalid characters', path: [index, 'value'] });
   }
 
   return issues;
 }
 
-/**
- * Returns a Zod schema that validates an array of key-value pairs.
- * Checks for empty keys, duplicate keys, character patterns, length
- * limits, and item count.
- *
- * Use with React Hook Form + zodResolver for form-level validation.
- * Adds a root-level issue (shown by `FormMessage`) and per-field issues
- * at `[index, field]` paths for row-level error access.
- */
 export function keyValuePairsSchema(options: KeyValuePairsSchemaOptions = {}) {
   return z.array(z.object({ key: z.string(), value: z.string() })).superRefine((pairs, ctx) => {
     const issues: { message: string; path?: [number, string] }[] = [];
@@ -106,17 +89,11 @@ export function keyValuePairsSchema(options: KeyValuePairsSchemaOptions = {}) {
     }
 
     for (const issue of issues) {
-      ctx.addIssue({ code: "custom", message: issue.message, path: issue.path });
+      ctx.addIssue({ code: 'custom', message: issue.message, path: issue.path });
     }
   });
 }
 
-/**
- * Compares an initial set of key-value pairs against the current set and
- * returns which entries were created, updated, or removed.
- *
- * When duplicate keys exist, the last occurrence is used for comparison.
- */
 export function getKeyValueDiff(
   initial: { key: string; value: string }[],
   current: { key: string; value: string }[]
@@ -156,29 +133,17 @@ export function getKeyValueDiff(
   return { created, removed, updated };
 }
 
-// ── Hooks ──────────────────────────────────────────────────────────────
-
-/**
- * Manages focus in a dynamic list of input rows. Call `onAdd` after
- * appending a row to focus the first input in the new row, and
- * `onRemove` after deleting a row to focus the next logical row.
- *
- * Rows must have a `data-row` attribute for the selector to work.
- */
 export function useInputListFocus(containerRef: RefObject<HTMLElement | null>) {
-  const pendingRef = useRef<"add" | { type: "remove"; index: number } | null>(null);
+  const pendingRef = useRef<'add' | { type: 'remove'; index: number } | null>(null);
 
   const onAdd = useCallback(() => {
-    pendingRef.current = "add";
+    pendingRef.current = 'add';
   }, []);
 
   const onRemove = useCallback((deletedIndex: number) => {
-    pendingRef.current = { index: deletedIndex, type: "remove" };
+    pendingRef.current = { index: deletedIndex, type: 'remove' };
   }, []);
 
-  // Runs after every render to apply any pending focus action.
-  // The ref check is cheap and clears immediately, so subsequent
-  // renders are no-ops.
   useEffect(() => {
     const event = pendingRef.current;
     if (!(event && containerRef.current)) {
@@ -186,9 +151,9 @@ export function useInputListFocus(containerRef: RefObject<HTMLElement | null>) {
     }
     pendingRef.current = null;
 
-    const rows = containerRef.current.querySelectorAll<HTMLElement>("[data-row]");
+    const rows = containerRef.current.querySelectorAll<HTMLElement>('[data-row]');
 
-    if (event === "add") {
+    if (event === 'add') {
       const lastRow = rows.item(rows.length - 1);
       const input = lastRow?.querySelector<HTMLElement>('input, [role="combobox"]');
       input?.focus();
@@ -199,7 +164,6 @@ export function useInputListFocus(containerRef: RefObject<HTMLElement | null>) {
         const input = row?.querySelector<HTMLElement>('input, [role="combobox"]');
         input?.focus();
       } else {
-        // No rows remain — focus the add button if present
         const addButton = containerRef.current.querySelector<HTMLElement>('[data-slot="add-button"]');
         addButton?.focus();
       }
@@ -209,12 +173,8 @@ export function useInputListFocus(containerRef: RefObject<HTMLElement | null>) {
   return { onAdd, onRemove };
 }
 
-/**
- * Preserves object references for array items that have not changed
- * between renders, reducing unnecessary child re-renders.
- */
 export function useMemoizedArray<T>(items: T[], isEqual: (a: T, b: T) => boolean = Object.is): T[] {
-  "use no memo";
+  'use no memo';
 
   const prevRef = useRef(items);
   const prev = prevRef.current;
@@ -246,12 +206,6 @@ export function useMemoizedArray<T>(items: T[], isEqual: (a: T, b: T) => boolean
   return stableItems;
 }
 
-/**
- * Provides soft-delete behaviour with timed auto-confirm. Call
- * `markForRemoval` with a unique identifier and a callback that
- * performs the actual removal — the callback fires after `timeout` ms
- * unless `undoRemoval` is called first.
- */
 export function useUndoRemoval(timeout = 5000) {
   const [pending, setPending] = useState<Set<string>>(() => new Set());
   const timersRef = useRef(new Map<string, ReturnType<typeof setTimeout>>());

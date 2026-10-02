@@ -1,11 +1,11 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense } from 'react';
 
-import { ExampleLoading } from "../examples/shared/example-loading";
+import { ExampleLoading } from '../examples/shared/example-loading';
 
-export const client = "only";
+export const client = 'only';
 
 const BareBonesFormExample = lazy(async () => {
-  const module = await import("../examples/learning/bare-bones-form");
+  const module = await import('../examples/learning/bare-bones-form');
   return { default: module.BareBonesFormExample };
 });
 

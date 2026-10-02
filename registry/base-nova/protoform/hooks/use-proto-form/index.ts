@@ -1,9 +1,9 @@
-export { protoPathToFormPath } from "./proto-error-path.js";
-export type { FlattenProtoOneofs } from "./proto-paths.js";
+export { protoPathToFormPath } from './proto-error-path.js';
+export type { FlattenProtoOneofs } from './proto-paths.js';
 export {
   createProtoResolver,
   type ProtoResolverOptions,
-} from "./proto-resolver.js";
+} from './proto-resolver.js';
 export {
   type ConnectErrorContext,
   type ProtoValidationScope,
@@ -11,4 +11,4 @@ export {
   type UseProtoFormReturn,
   useProtoForm,
   useProtoFormDefaults,
-} from "./use-proto-form.js";
+} from './use-proto-form.js';

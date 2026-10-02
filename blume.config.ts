@@ -1,8 +1,8 @@
-import { defineConfig } from "blume";
-import { openapi } from "blume/reference";
-import { pagefind } from "blume/search";
+import { defineConfig } from 'blume';
+import { openapi } from 'blume/reference';
+import { pagefind } from 'blume/search';
 
-import { demoRedirects } from "./examples/catalog/demo-docs.js";
+import { demoRedirects } from './examples/catalog/demo-docs.js';
 
 export default defineConfig({
   agents: {
@@ -18,66 +18,64 @@ Treat the bookstore API reference as a runnable example, not a hosted production
 Read the relevant guide and example before generating code; cite its canonical documentation URL.`,
     },
   },
-  basePath: "/docs",
+  basePath: '/docs',
   content: {
-    root: "content/docs",
+    root: 'content/docs',
   },
   deployment: {
-    site: "https://protoform.pages.dev",
+    site: 'https://protoform.pages.dev',
   },
-  description: "Protovalidate-compatible shadcn forms for protobuf apps.",
+  description: 'Protovalidate-compatible shadcn forms for protobuf apps.',
   examples: {
-    css: "theme.css",
+    css: 'theme.css',
     source:
-      "{examples/basic/basic-form.tsx,examples/complex/complex-form.tsx,examples/kitchen-sink/kitchen-sink-form.tsx,examples/learning/cel-re2-form.tsx,examples/learning/oneof-form.tsx,examples/learning/two-step-form.tsx,examples/nested/deeply-nested-form.tsx,registry/base-nova/protoform/demo/catalog/!(*.test).tsx}",
+      '{examples/basic/basic-form.tsx,examples/complex/complex-form.tsx,examples/kitchen-sink/kitchen-sink-form.tsx,examples/learning/cel-re2-form.tsx,examples/learning/oneof-form.tsx,examples/learning/two-step-form.tsx,examples/nested/deeply-nested-form.tsx,registry/base-nova/protoform/demo/catalog/!(*.test).tsx}',
   },
   i18n: {
-    defaultLocale: "en",
+    defaultLocale: 'en',
     fallbackLocale: null,
     locales: [
-      { code: "en", label: "English" },
+      { code: 'en', label: 'English' },
       {
-        code: "zh",
-        label: "简体中文",
+        code: 'zh',
+        label: '简体中文',
         style:
-          "Simplified Chinese for Mainland China. Use concise technical prose and preserve API, CLI, package, and code identifiers in English.",
+          'Simplified Chinese for Mainland China. Use concise technical prose and preserve API, CLI, package, and code identifiers in English.',
       },
       {
-        code: "zh-TW",
-        label: "繁體中文",
+        code: 'zh-TW',
+        label: '繁體中文',
         style:
-          "Traditional Chinese for Taiwan. Use concise technical prose and preserve API, CLI, package, and code identifiers in English.",
+          'Traditional Chinese for Taiwan. Use concise technical prose and preserve API, CLI, package, and code identifiers in English.',
       },
       {
-        code: "pl",
-        label: "Polski",
+        code: 'pl',
+        label: 'Polski',
         style:
-          "Natural Polish technical documentation. Use concise prose and preserve API, CLI, package, and code identifiers in English.",
+          'Natural Polish technical documentation. Use concise prose and preserve API, CLI, package, and code identifiers in English.',
       },
     ],
   },
   integrations: [
     {
       hooks: {
-        "astro:config:setup": ({ updateConfig }) => {
-          // Blume uses js-yaml v5, while Astro also installs v4. Bundle each
-          // importer’s version instead of resolving the hoisted v4 at runtime.
+        'astro:config:setup': ({ updateConfig }) => {
           updateConfig({
             vite: {
               environments: {
-                prerender: { resolve: { noExternal: ["js-yaml"] } },
+                prerender: { resolve: { noExternal: ['js-yaml'] } },
               },
-              ssr: { noExternal: ["js-yaml"] },
+              ssr: { noExternal: ['js-yaml'] },
             },
           });
         },
       },
-      name: "protoform:bundle-blume-yaml",
+      name: 'protoform:bundle-blume-yaml',
     },
   ],
   navigation: {
     sidebar: {
-      display: "group",
+      display: 'group',
     },
   },
   react: {
@@ -86,9 +84,9 @@ Read the relevant guide and example before generating code; cite its canonical d
   redirects: [...demoRedirects],
   reference: [
     openapi({
-      codeSamples: ["curl", "js"],
-      route: "/reference",
-      spec: "./openapi.yaml",
+      codeSamples: ['curl', 'js'],
+      route: '/reference',
+      spec: './openapi.yaml',
     }),
   ],
   search: {
@@ -98,48 +96,48 @@ Read the relevant guide and example before generating code; cite its canonical d
   theme: {
     fonts: {
       body: {
-        fallback: "sans",
-        name: "Inter",
+        fallback: 'sans',
+        name: 'Inter',
         variants: [
           {
-            src: "node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2",
-            weight: "100..900",
+            src: 'node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2',
+            weight: '100..900',
           },
         ],
       },
       display: {
-        fallback: "sans",
-        name: "Inter Tight",
+        fallback: 'sans',
+        name: 'Inter Tight',
         variants: [
           {
-            src: "node_modules/@fontsource-variable/inter-tight/files/inter-tight-latin-wght-normal.woff2",
-            weight: "100..900",
+            src: 'node_modules/@fontsource-variable/inter-tight/files/inter-tight-latin-wght-normal.woff2',
+            weight: '100..900',
           },
         ],
       },
       mono: {
-        fallback: "mono",
-        name: "IBM Plex Mono",
+        fallback: 'mono',
+        name: 'IBM Plex Mono',
         variants: [
           {
-            src: "node_modules/@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-400-normal.woff2",
+            src: 'node_modules/@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-400-normal.woff2',
             weight: 400,
           },
           {
-            src: "node_modules/@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-500-normal.woff2",
+            src: 'node_modules/@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-500-normal.woff2',
             weight: 500,
           },
           {
-            src: "node_modules/@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-600-normal.woff2",
+            src: 'node_modules/@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-600-normal.woff2',
             weight: 600,
           },
           {
-            src: "node_modules/@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-700-normal.woff2",
+            src: 'node_modules/@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-700-normal.woff2',
             weight: 700,
           },
         ],
       },
     },
   },
-  title: "Protoform",
+  title: 'Protoform',
 });

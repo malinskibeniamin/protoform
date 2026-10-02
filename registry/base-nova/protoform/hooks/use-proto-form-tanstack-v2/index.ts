@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { type DescMessage, isMessage, type MessageShape, type MessageValidType } from "@bufbuild/protobuf";
-import type { FieldMask } from "@bufbuild/protobuf/wkt";
+import { type DescMessage, isMessage, type MessageShape, type MessageValidType } from '@bufbuild/protobuf';
+import type { FieldMask } from '@bufbuild/protobuf/wkt';
 import {
   type DeepKeys,
   type DefaultReactFormComponentMap,
@@ -12,17 +12,17 @@ import {
   type StandardSchemaV1,
   type ToFormErrorTypes,
   useForm,
-} from "@tanstack/react-form-v2";
+} from '@tanstack/react-form-v2';
 import {
   createUpdateMask as createDirtyUpdateMask,
   dirtyFieldsFromValues,
-} from "@/registry/base-nova/protoform/lib/protobuf-provider/field-mask";
-import { createProtoFormSchema } from "@/registry/base-nova/protoform/lib/protobuf-provider/form-schema";
+} from '@/registry/base-nova/protoform/lib/protobuf-provider/field-mask';
+import { createProtoFormSchema } from '@/registry/base-nova/protoform/lib/protobuf-provider/form-schema';
 import {
   formValuesToProto,
   type ProtoConversionOptions,
   type ProtoFormOptions,
-} from "@/registry/base-nova/protoform/lib/protobuf-provider/hook-runtime";
+} from '@/registry/base-nova/protoform/lib/protobuf-provider/hook-runtime';
 
 type FormValues = Record<string, unknown>;
 
@@ -44,10 +44,10 @@ export type UseProtoFormOptions<
   TSubmitReturn,
 > = Omit<
   FormOptions<Values, ProtoFormValidators<Values, Desc, TValidators>, TSubmitReturn, DefaultReactFormComponentMap>,
-  "validators"
+  'validators'
 > & {
-  emptyRepeatedStringPolicies?: ProtoConversionOptions["emptyRepeatedStringPolicies"];
-  formatMessage?: ProtoFormOptions["formatMessage"];
+  emptyRepeatedStringPolicies?: ProtoConversionOptions['emptyRepeatedStringPolicies'];
+  formatMessage?: ProtoFormOptions['formatMessage'];
   validators?: TValidators;
 };
 
@@ -119,14 +119,14 @@ export function useProtoForm<
     updateOptions?: FieldUpdateOptions
   ) => {
     const current = form.getFieldValue(path);
-    const isOneof = current === undefined || current === null || (typeof current === "object" && "case" in current);
+    const isOneof = current === undefined || current === null || (typeof current === 'object' && 'case' in current);
     if (!isOneof) {
       throw new Error(
         `setOneofValue("${path}"): target is not a oneof field. Expected { case, value } shape. Use setFieldValue() for regular fields.`
       );
     }
-    const previousCase = typeof current === "object" && current !== null ? Reflect.get(current, "case") : undefined;
-    if (typeof previousCase === "string" && previousCase !== oneofCase) {
+    const previousCase = typeof current === 'object' && current !== null ? Reflect.get(current, 'case') : undefined;
+    if (typeof previousCase === 'string' && previousCase !== oneofCase) {
       Reflect.apply(form.setFieldValue, form, [path, { case: undefined, value: undefined }, updateOptions]);
     }
     Reflect.apply(form.setFieldValue, form, [path, { case: oneofCase, value }, updateOptions]);

@@ -1,4 +1,4 @@
-import { FieldBehavior } from "@buf/googleapis_googleapis.bufbuild_es/google/api/field_behavior_pb.js";
+import { FieldBehavior } from '@buf/googleapis_googleapis.bufbuild_es/google/api/field_behavior_pb.js';
 import {
   create,
   type DescField,
@@ -8,8 +8,8 @@ import {
   type MessageShape,
   type MessageValidType,
   ScalarType,
-} from "@bufbuild/protobuf";
-import { FieldOptionsSchema, isWrapperDesc, MessageOptionsSchema, OneofOptionsSchema } from "@bufbuild/protobuf/wkt";
+} from '@bufbuild/protobuf';
+import { FieldOptionsSchema, isWrapperDesc, MessageOptionsSchema, OneofOptionsSchema } from '@bufbuild/protobuf/wkt';
 import type {
   FieldRenderHints,
   ParsedField,
@@ -18,16 +18,16 @@ import type {
   SchemaProvider,
   SchemaValidation,
   StandardSchemaV1,
-} from "../core/index.js";
+} from '../core/index.js';
 import {
   getProtoFieldBehaviors,
   getProtoResourceMetadata,
   getProtoResourceReference,
   type ProtoResourceMetadata,
   type ProtoResourceReference,
-} from "./aip.js";
-import type { ProtoAnnotations } from "./annotations.js";
-import { getRegisteredProtoAnnotations } from "./annotations.js";
+} from './aip.js';
+import type { ProtoAnnotations } from './annotations.js';
+import { getRegisteredProtoAnnotations } from './annotations.js';
 import {
   ANY_TYPE,
   cloneField,
@@ -43,13 +43,13 @@ import {
   TIMESTAMP_TYPE,
   tracksPresence,
   VALUE_TYPE,
-} from "./descriptor-utils.js";
-import type { FieldRules, MessageRules, OneofRules, StringRules } from "./gen/buf/validate/validate_pb.js";
+} from './descriptor-utils.js';
+import type { FieldRules, MessageRules, OneofRules, StringRules } from './gen/buf/validate/validate_pb.js';
 import {
   field as fieldExtension,
   message as messageExtension,
   oneof as oneofExtension,
-} from "./gen/buf/validate/validate_pb.js";
+} from './gen/buf/validate/validate_pb.js';
 import {
   PROTO_FORM_ROOT_ERROR_KEY as RUNTIME_PROTO_FORM_ROOT_ERROR_KEY,
   type NormalizedProtoIssue as RuntimeNormalizedProtoIssue,
@@ -66,10 +66,10 @@ import {
   protoPayloadToFormValues as runtimeProtoPayloadToFormValues,
   protoToFormValues as runtimeProtoToFormValues,
   validateFormValuesAgainstProtoSchema as runtimeValidateFormValuesAgainstProtoSchema,
-} from "./hook-runtime.js";
-import type { ProtoFieldUiConfig, ProtoMessageUiConfig } from "./ui-options.js";
-import { getProtoFieldUi, getProtoMessageUi, getProtoOneofUi } from "./ui-options.js";
-import { createDescriptorAwareStandardSchema } from "./validation-schema.js";
+} from './hook-runtime.js';
+import type { ProtoFieldUiConfig, ProtoMessageUiConfig } from './ui-options.js';
+import { getProtoFieldUi, getProtoMessageUi, getProtoOneofUi } from './ui-options.js';
+import { createDescriptorAwareStandardSchema } from './validation-schema.js';
 
 export const PROTO_FORM_ROOT_ERROR_KEY = RUNTIME_PROTO_FORM_ROOT_ERROR_KEY;
 export const formValuesToProto = runtimeFormValuesToProto;
@@ -89,44 +89,41 @@ export interface ProtoMapFormEntry extends RuntimeProtoMapFormEntry {}
 export interface ProtoValidationContext extends RuntimeProtoValidationContext {}
 
 export type ProtoFieldType =
-  | "string"
-  | "number"
-  | "boolean"
-  | "select"
-  | "object"
-  | "array"
-  | "oneof"
-  | "map"
-  | "bytes"
-  | "int64"
-  | "timestamp"
-  | "duration"
-  | "fieldMask"
-  | "json";
+  | 'string'
+  | 'number'
+  | 'boolean'
+  | 'select'
+  | 'object'
+  | 'array'
+  | 'oneof'
+  | 'map'
+  | 'bytes'
+  | 'int64'
+  | 'timestamp'
+  | 'duration'
+  | 'fieldMask'
+  | 'json';
 
 export type ProtoFieldRenderType =
   | ProtoFieldType
-  | "textarea"
-  | "password"
-  | "email"
-  | "url"
-  | "currency"
-  | "checkbox"
-  | "switch"
-  | "toggle"
-  | "radio"
-  | "combobox"
-  | "multiselect"
-  | "choicebox"
-  | "toggleGroup"
-  | "keyValue"
-  // Widget routing derived from field_ui annotations — `data_provider`
-  // promotes a string/number field to `dataProviderSelect`, and a JSON
-  // field with `dropzone: true` promotes to `dropzone-json`.
-  | "dataProviderSelect"
-  | "dropzone-json";
+  | 'textarea'
+  | 'password'
+  | 'email'
+  | 'url'
+  | 'currency'
+  | 'checkbox'
+  | 'switch'
+  | 'toggle'
+  | 'radio'
+  | 'combobox'
+  | 'multiselect'
+  | 'choicebox'
+  | 'toggleGroup'
+  | 'keyValue'
+  | 'dataProviderSelect'
+  | 'dropzone-json';
 
-type ProtoJsonKind = "struct" | "value" | "listValue" | "any";
+type ProtoJsonKind = 'struct' | 'value' | 'listValue' | 'any';
 
 type ParsedProtoField = ParsedField<ProtoFieldRenderType>;
 type ParsedProtoSchema = ParsedSchema<ProtoFieldRenderType>;
@@ -156,13 +153,13 @@ export interface ProtoFieldCustomData extends ProviderCustomData {
   resourceReference?: ProtoResourceReference | undefined;
   ruleExample?: string | undefined;
   secretScope?: string | undefined;
-  source: "proto";
+  source: 'proto';
   supportsUnset?: boolean | undefined;
   ui?: ProtoFieldUiConfig | undefined;
   valueField?: ParsedProtoField | undefined;
 }
 
-type ProtoFieldConfig = ParsedProtoField["fieldConfig"] & {
+type ProtoFieldConfig = ParsedProtoField['fieldConfig'] & {
   customData?: ProtoFieldCustomData;
 };
 
@@ -170,19 +167,19 @@ interface ProtoParserContext {
   ancestors: ReadonlySet<string>;
   annotations?: ProtoAnnotations | undefined;
   messageUi?: ProtoMessageUiConfig | undefined;
-  operation?: "create" | "update" | undefined;
+  operation?: 'create' | 'update' | undefined;
   secretScope?: string | undefined;
 }
 
 export function isProtoMessageDescriptor(value: unknown): value is DescMessage {
   return Boolean(
     value &&
-      typeof value === "object" &&
-      "kind" in value &&
-      (value as { kind?: unknown }).kind === "message" &&
-      "typeName" in value &&
-      typeof (value as { typeName?: unknown }).typeName === "string" &&
-      "members" in value &&
+      typeof value === 'object' &&
+      'kind' in value &&
+      (value as { kind?: unknown }).kind === 'message' &&
+      'typeName' in value &&
+      typeof (value as { typeName?: unknown }).typeName === 'string' &&
+      'members' in value &&
       Array.isArray((value as { members?: unknown }).members)
   );
 }
@@ -214,20 +211,19 @@ function isUnspecifiedEnumValue(enumValue: { number: number; localName: string; 
   if (enumValue.number !== 0) {
     return false;
   }
-  // Check both localName (camelCase) and name (SCREAMING_SNAKE_CASE) for unspecified/unknown suffix
   return (
     UNSPECIFIED_PATTERN.test(enumValue.localName) ||
-    (typeof enumValue.name === "string" && UNSPECIFIED_PATTERN.test(enumValue.name))
+    (typeof enumValue.name === 'string' && UNSPECIFIED_PATTERN.test(enumValue.name))
   );
 }
 
 function humanize(input: string): string {
   return input
-    .replace(CAMEL_BOUNDARY_PATTERN, "$1 $2")
-    .replace(WORD_SEPARATOR_PATTERN, " ")
-    .replace(WHITESPACE_PATTERN, " ")
+    .replace(CAMEL_BOUNDARY_PATTERN, '$1 $2')
+    .replace(WORD_SEPARATOR_PATTERN, ' ')
+    .replace(WHITESPACE_PATTERN, ' ')
     .trim()
-    .split(" ")
+    .split(' ')
     .map((word) => {
       const lower = word.toLowerCase();
       if (word === word.toUpperCase() && word.length > 1) {
@@ -235,20 +231,14 @@ function humanize(input: string): string {
       }
       return word.charAt(0).toUpperCase() + lower.slice(1);
     })
-    .join(" ");
+    .join(' ');
 }
 
 const NORMALIZE_SEPARATOR_PATTERN = /[\s_-]+/gu;
 
-// Returns the raw localName for enum values.
-// Consumers can override labels via optionLabels in fieldConfig.
-// We intentionally do NOT humanize enum values because the transformed
-// names are often confusing (e.g., "Api Key Location Header" vs "HEADER").
 function formatEnumLabel(enumLocalName: string, enumTypeName: string): string {
-  // Proto-gen-es v2 pre-strips the type prefix from localName in most cases.
-  // If the localName still starts with the type name (camelCase), strip it.
-  const typePrefixNormalized = enumTypeName.toLowerCase().replace(NORMALIZE_SEPARATOR_PATTERN, "");
-  const valueNormalized = enumLocalName.toLowerCase().replace(NORMALIZE_SEPARATOR_PATTERN, "");
+  const typePrefixNormalized = enumTypeName.toLowerCase().replace(NORMALIZE_SEPARATOR_PATTERN, '');
+  const valueNormalized = enumLocalName.toLowerCase().replace(NORMALIZE_SEPARATOR_PATTERN, '');
   if (valueNormalized.startsWith(typePrefixNormalized) && valueNormalized.length > typePrefixNormalized.length) {
     const stripped = enumLocalName.slice(typePrefixNormalized.length);
     if (stripped.length > 0) {
@@ -289,12 +279,12 @@ function bigIntToNumber(value: bigint | undefined): number | undefined {
 
 function getStringInputType(rules: StringRules | undefined): string | undefined {
   switch (rules?.wellKnown.case) {
-    case "email":
-      return "email";
-    case "uri":
-      return "url";
-    case "uuid":
-      return "text";
+    case 'email':
+      return 'email';
+    case 'uri':
+      return 'url';
+    case 'uuid':
+      return 'text';
     default:
       return;
   }
@@ -316,11 +306,6 @@ function withOneofUi(customData: ProtoFieldCustomData, oneof: DescOneof): ProtoF
 
 type ProtoInputProps = Record<string, string | number | boolean | undefined>;
 
-/**
- * Derive the schema-agnostic render hints for a field from its
- * proto-private customData. The rendering engine reads hints via
- * `getFieldHints`; customData stays provider-internal.
- */
 function hintsFromCustomData(data: ProtoFieldCustomData | undefined): FieldRenderHints | undefined {
   if (!data) {
     return undefined;
@@ -333,34 +318,33 @@ function hintsFromCustomData(data: ProtoFieldCustomData | undefined): FieldRende
     }
   };
 
-  assign("control", ui?.control);
-  assign("inputType", data.inputType);
-  assign("placeholder", ui?.placeholder);
-  assign("example", ui?.example ?? data.ruleExample);
-  assign("help", ui?.help);
-  assign("description", ui?.description);
-  assign("summaryLabel", ui?.summaryLabel);
-  assign("sensitive", ui?.sensitive);
-  assign("step", ui?.step);
-  assign("secretScope", data.secretScope);
-  assign("docsUrl", ui?.docsUrl);
-  assign("visibleWhen", ui?.visibleWhen);
-  assign("disabledWhen", ui?.disabledWhen);
-  assign("supportsUnset", data.supportsUnset);
-  assign("jsonKind", data.jsonKind);
-  assign("minItems", data.minItems);
-  assign("maxItems", data.maxItems);
-  assign("minPairs", data.minPairs);
-  assign("maxPairs", data.maxPairs);
-  assign("allowedPaths", data.allowedPaths);
-  assign("dataProvider", ui?.dataProvider);
-  assign("deprecated", data.deprecated);
-  assign("dropzone", ui?.dropzone);
+  assign('control', ui?.control);
+  assign('inputType', data.inputType);
+  assign('placeholder', ui?.placeholder);
+  assign('example', ui?.example ?? data.ruleExample);
+  assign('help', ui?.help);
+  assign('description', ui?.description);
+  assign('summaryLabel', ui?.summaryLabel);
+  assign('sensitive', ui?.sensitive);
+  assign('step', ui?.step);
+  assign('secretScope', data.secretScope);
+  assign('docsUrl', ui?.docsUrl);
+  assign('visibleWhen', ui?.visibleWhen);
+  assign('disabledWhen', ui?.disabledWhen);
+  assign('supportsUnset', data.supportsUnset);
+  assign('jsonKind', data.jsonKind);
+  assign('minItems', data.minItems);
+  assign('maxItems', data.maxItems);
+  assign('minPairs', data.minPairs);
+  assign('maxPairs', data.maxPairs);
+  assign('allowedPaths', data.allowedPaths);
+  assign('dataProvider', ui?.dataProvider);
+  assign('deprecated', data.deprecated);
+  assign('dropzone', ui?.dropzone);
 
   return Object.keys(hints).length > 0 ? hints : undefined;
 }
 
-/** Attach derived render hints to a parsed field, in place. */
 function attachRenderHints(field: ParsedProtoField): ParsedProtoField {
   const hints = hintsFromCustomData((field.fieldConfig as ProtoFieldConfig | undefined)?.customData);
   if (hints) {
@@ -414,22 +398,22 @@ function extractNumericBounds(rules: FieldRules | undefined): {
     greaterThan?: { case?: string; value?: number | bigint };
   };
 
-  const step = ["float", "double"].includes(typeCase) ? "any" : "1";
+  const step = ['float', 'double'].includes(typeCase) ? 'any' : '1';
   let min: number | undefined;
   let max: number | undefined;
 
-  if (numericRules.greaterThan?.case === "gte") {
+  if (numericRules.greaterThan?.case === 'gte') {
     min = Number(numericRules.greaterThan.value);
-  } else if (numericRules.greaterThan?.case === "gt") {
+  } else if (numericRules.greaterThan?.case === 'gt') {
     const greaterThan = Number(numericRules.greaterThan.value);
-    min = Number.isFinite(greaterThan) ? greaterThan + (step === "1" ? 1 : 0) : undefined;
+    min = Number.isFinite(greaterThan) ? greaterThan + (step === '1' ? 1 : 0) : undefined;
   }
 
-  if (numericRules.lessThan?.case === "lte") {
+  if (numericRules.lessThan?.case === 'lte') {
     max = Number(numericRules.lessThan.value);
-  } else if (numericRules.lessThan?.case === "lt") {
+  } else if (numericRules.lessThan?.case === 'lt') {
     const lessThan = Number(numericRules.lessThan.value);
-    max = Number.isFinite(lessThan) ? lessThan - (step === "1" ? 1 : 0) : undefined;
+    max = Number.isFinite(lessThan) ? lessThan - (step === '1' ? 1 : 0) : undefined;
   }
 
   if (min !== undefined && max !== undefined && min > max) {
@@ -440,7 +424,7 @@ function extractNumericBounds(rules: FieldRules | undefined): {
 }
 
 function buildStringField(field: DescField, rules: FieldRules, context: ProtoParserContext): ParsedProtoField {
-  const stringRules = rules.type.case === "string" ? rules.type.value : undefined;
+  const stringRules = rules.type.case === 'string' ? rules.type.value : undefined;
   const inputType = getStringInputType(stringRules);
 
   return {
@@ -451,7 +435,7 @@ function buildStringField(field: DescField, rules: FieldRules, context: ProtoPar
           fieldRules: rules,
           inputType,
           ruleExample: stringRules?.example[0],
-          source: "proto",
+          source: 'proto',
           supportsUnset: tracksPresence(field),
         },
         field
@@ -466,7 +450,7 @@ function buildStringField(field: DescField, rules: FieldRules, context: ProtoPar
     ),
     key: field.localName,
     required: rules.required,
-    type: "string",
+    type: 'string',
   };
 }
 
@@ -480,7 +464,7 @@ function buildNumberField(field: DescField, rules: FieldRules, context: ProtoPar
         {
           desc: field,
           fieldRules: rules,
-          source: "proto",
+          source: 'proto',
           supportsUnset: tracksPresence(field),
         },
         field
@@ -494,7 +478,7 @@ function buildNumberField(field: DescField, rules: FieldRules, context: ProtoPar
     ),
     key: field.localName,
     required: rules.required,
-    type: isInt64 ? "int64" : "number",
+    type: isInt64 ? 'int64' : 'number',
   };
 }
 
@@ -505,7 +489,7 @@ function buildBooleanField(field: DescField, rules: FieldRules, context: ProtoPa
         {
           desc: field,
           fieldRules: rules,
-          source: "proto",
+          source: 'proto',
           supportsUnset: tracksPresence(field),
         },
         field
@@ -515,7 +499,7 @@ function buildBooleanField(field: DescField, rules: FieldRules, context: ProtoPa
     ),
     key: field.localName,
     required: rules.required,
-    type: "boolean",
+    type: 'boolean',
   };
 }
 
@@ -526,7 +510,7 @@ function buildBytesField(field: DescField, rules: FieldRules, context: ProtoPars
         {
           desc: field,
           fieldRules: rules,
-          source: "proto",
+          source: 'proto',
           supportsUnset: tracksPresence(field),
         },
         field
@@ -536,7 +520,7 @@ function buildBytesField(field: DescField, rules: FieldRules, context: ProtoPars
     ),
     key: field.localName,
     required: rules.required,
-    type: "bytes",
+    type: 'bytes',
   };
 }
 
@@ -547,7 +531,7 @@ function buildEnumField(field: EnumField, rules: FieldRules, context: ProtoParse
         {
           desc: field,
           fieldRules: rules,
-          source: "proto",
+          source: 'proto',
           supportsUnset: tracksPresence(field),
         },
         field
@@ -558,7 +542,7 @@ function buildEnumField(field: EnumField, rules: FieldRules, context: ProtoParse
     key: field.localName,
     options: buildEnumOptions(field.enum.values, field.enum.name),
     required: rules.required,
-    type: "select",
+    type: 'select',
   };
 }
 
@@ -575,7 +559,7 @@ function buildJsonField(
           desc: field,
           fieldRules: rules,
           jsonKind,
-          source: "proto",
+          source: 'proto',
           supportsUnset: tracksPresence(field),
         },
         field
@@ -585,7 +569,7 @@ function buildJsonField(
     ),
     key: field.localName,
     required: rules.required,
-    type: "json",
+    type: 'json',
   };
 }
 
@@ -601,7 +585,7 @@ function buildRecursiveField(
         desc: field,
         fieldRules: rules,
         recursive: true,
-        source: "proto",
+        source: 'proto',
         supportsUnset: tracksPresence(field),
       },
       {},
@@ -609,7 +593,7 @@ function buildRecursiveField(
     ),
     key,
     required: Boolean(rules?.required),
-    type: "json",
+    type: 'json',
   };
 }
 
@@ -642,7 +626,7 @@ function buildMessageField(field: MessageField, rules: FieldRules, context: Prot
             {
               desc: field,
               fieldRules: rules,
-              source: "proto",
+              source: 'proto',
               supportsUnset: tracksPresence(field),
             },
             field
@@ -652,7 +636,7 @@ function buildMessageField(field: MessageField, rules: FieldRules, context: Prot
         ),
         key: field.localName,
         required: rules.required,
-        type: "timestamp",
+        type: 'timestamp',
       };
     case DURATION_TYPE:
       return {
@@ -661,7 +645,7 @@ function buildMessageField(field: MessageField, rules: FieldRules, context: Prot
             {
               desc: field,
               fieldRules: rules,
-              source: "proto",
+              source: 'proto',
               supportsUnset: tracksPresence(field),
             },
             field
@@ -671,17 +655,17 @@ function buildMessageField(field: MessageField, rules: FieldRules, context: Prot
         ),
         key: field.localName,
         required: rules.required,
-        type: "duration",
+        type: 'duration',
       };
     case FIELD_MASK_TYPE:
       return {
         fieldConfig: buildFieldConfig(
           withFieldUi(
             {
-              allowedPaths: rules.type.case === "fieldMask" ? rules.type.value.in : undefined,
+              allowedPaths: rules.type.case === 'fieldMask' ? rules.type.value.in : undefined,
               desc: field,
               fieldRules: rules,
-              source: "proto",
+              source: 'proto',
               supportsUnset: tracksPresence(field),
             },
             field
@@ -691,16 +675,16 @@ function buildMessageField(field: MessageField, rules: FieldRules, context: Prot
         ),
         key: field.localName,
         required: rules.required,
-        type: "fieldMask",
+        type: 'fieldMask',
       };
     case STRUCT_TYPE:
-      return buildJsonField(field, rules, "struct", context);
+      return buildJsonField(field, rules, 'struct', context);
     case VALUE_TYPE:
-      return buildJsonField(field, rules, "value", context);
+      return buildJsonField(field, rules, 'value', context);
     case LIST_VALUE_TYPE:
-      return buildJsonField(field, rules, "listValue", context);
+      return buildJsonField(field, rules, 'listValue', context);
     case ANY_TYPE:
-      return buildJsonField(field, rules, "any", context);
+      return buildJsonField(field, rules, 'any', context);
     default:
       return {
         fieldConfig: buildFieldConfig(
@@ -709,7 +693,7 @@ function buildMessageField(field: MessageField, rules: FieldRules, context: Prot
               desc: field,
               fieldRules: rules,
               messageRules: getMessageRules(field.message),
-              source: "proto",
+              source: 'proto',
               supportsUnset: tracksPresence(field),
             },
             field
@@ -726,17 +710,17 @@ function buildMessageField(field: MessageField, rules: FieldRules, context: Prot
           context.ancestors,
           context.operation
         ).fields,
-        type: "object",
+        type: 'object',
       };
   }
 }
 
 function buildListItemField(field: ListField, context: ProtoParserContext, itemRules?: FieldRules): ParsedProtoField {
   const syntheticField = cloneField(field, {
-    localName: "value",
+    localName: 'value',
   });
 
-  if (field.listKind === "scalar") {
+  if (field.listKind === 'scalar') {
     if (field.scalar === ScalarType.STRING) {
       return buildStringField(syntheticField, itemRules ?? getFieldRules(field), context);
     }
@@ -749,22 +733,22 @@ function buildListItemField(field: ListField, context: ProtoParserContext, itemR
     return buildNumberField(syntheticField, itemRules ?? getFieldRules(field), context);
   }
 
-  if (field.listKind === "enum") {
+  if (field.listKind === 'enum') {
     return {
       fieldConfig: buildFieldConfig({
         desc: field,
         fieldRules: itemRules,
-        source: "proto",
+        source: 'proto',
       }),
-      key: "value",
+      key: 'value',
       options: buildEnumOptions(field.enum.values, field.enum.name),
       required: false,
-      type: "select",
+      type: 'select',
     };
   }
 
   if (context.ancestors.has(field.message.typeName)) {
-    return buildRecursiveField(field, itemRules, context, "value");
+    return buildRecursiveField(field, itemRules, context, 'value');
   }
 
   return {
@@ -772,12 +756,12 @@ function buildListItemField(field: ListField, context: ProtoParserContext, itemR
       {
         desc: field,
         fieldRules: itemRules,
-        source: "proto",
+        source: 'proto',
       },
       {},
       getMessageDescription(field.message, context)
     ),
-    key: "value",
+    key: 'value',
     required: false,
     schema: parseProtoSchemaInternal(
       field.message,
@@ -786,12 +770,12 @@ function buildListItemField(field: ListField, context: ProtoParserContext, itemR
       context.ancestors,
       context.operation
     ).fields,
-    type: "object",
+    type: 'object',
   };
 }
 
 function buildArrayField(field: ListField, rules: FieldRules, context: ProtoParserContext): ParsedProtoField {
-  const repeatedRules = rules.type.case === "repeated" ? rules.type.value : undefined;
+  const repeatedRules = rules.type.case === 'repeated' ? rules.type.value : undefined;
   return {
     fieldConfig: buildFieldConfig(
       withFieldUi(
@@ -800,7 +784,7 @@ function buildArrayField(field: ListField, rules: FieldRules, context: ProtoPars
           fieldRules: rules,
           maxItems: bigIntToNumber(repeatedRules?.maxItems),
           minItems: bigIntToNumber(repeatedRules?.minItems),
-          source: "proto",
+          source: 'proto',
         },
         field
       ),
@@ -810,7 +794,7 @@ function buildArrayField(field: ListField, rules: FieldRules, context: ProtoPars
     key: field.localName,
     required: Boolean(rules.required || repeatedRules?.minItems),
     schema: [buildListItemField(field, context, repeatedRules?.items)],
-    type: "array",
+    type: 'array',
   };
 }
 
@@ -820,8 +804,8 @@ function buildMapKeyField(
   context: ProtoParserContext
 ): ParsedProtoField {
   const syntheticField = cloneField(field, {
-    fieldKind: "scalar",
-    localName: "key",
+    fieldKind: 'scalar',
+    localName: 'key',
     oneof: undefined,
     scalar: field.mapKey,
   });
@@ -841,10 +825,10 @@ function buildMapValueField(
   context: ProtoParserContext
 ): ParsedProtoField {
   const syntheticField = cloneField(field, {
-    localName: "value",
+    localName: 'value',
   });
 
-  if (field.mapKind === "scalar") {
+  if (field.mapKind === 'scalar') {
     if (field.scalar === ScalarType.STRING) {
       return buildStringField(syntheticField, rules ?? getFieldRules(field), context);
     }
@@ -857,17 +841,17 @@ function buildMapValueField(
     return buildNumberField(syntheticField, rules ?? getFieldRules(field), context);
   }
 
-  if (field.mapKind === "enum") {
+  if (field.mapKind === 'enum') {
     return {
       fieldConfig: buildFieldConfig({
         desc: field,
         fieldRules: rules,
-        source: "proto",
+        source: 'proto',
       }),
-      key: "value",
+      key: 'value',
       options: buildEnumOptions(field.enum.values, field.enum.name),
       required: false,
-      type: "select",
+      type: 'select',
     };
   }
 
@@ -875,7 +859,7 @@ function buildMapValueField(
 }
 
 function buildMapField(field: MapField, rules: FieldRules, context: ProtoParserContext): ParsedProtoField {
-  const mapRules = rules.type.case === "map" ? rules.type.value : undefined;
+  const mapRules = rules.type.case === 'map' ? rules.type.value : undefined;
   const keyField = buildMapKeyField(field, mapRules?.keys, context);
   const valueField = buildMapValueField(field, mapRules?.values, context);
 
@@ -888,7 +872,7 @@ function buildMapField(field: MapField, rules: FieldRules, context: ProtoParserC
           keyField,
           maxPairs: bigIntToNumber(mapRules?.maxPairs),
           minPairs: bigIntToNumber(mapRules?.minPairs),
-          source: "proto",
+          source: 'proto',
           valueField,
         },
         field
@@ -899,7 +883,7 @@ function buildMapField(field: MapField, rules: FieldRules, context: ProtoParserC
     key: field.localName,
     required: Boolean(rules.required || mapRules?.minPairs),
     schema: [keyField, valueField],
-    type: "map",
+    type: 'map',
   };
 }
 
@@ -911,7 +895,7 @@ function buildOneofField(oneof: DescOneof, context: ProtoParserContext): ParsedP
         {
           oneof,
           oneofRules,
-          source: "proto",
+          source: 'proto',
         },
         oneof
       ),
@@ -921,7 +905,7 @@ function buildOneofField(oneof: DescOneof, context: ProtoParserContext): ParsedP
     key: oneof.localName,
     required: oneofRules.required,
     schema: oneof.fields.map((field) => buildProtoField(field, context)),
-    type: "oneof",
+    type: 'oneof',
   });
 }
 
@@ -930,7 +914,7 @@ function buildProtoField(field: DescField, context: ProtoParserContext): ParsedP
 
   let result: ParsedProtoField;
   switch (field.fieldKind) {
-    case "scalar": {
+    case 'scalar': {
       if (field.scalar === ScalarType.STRING) {
         result = buildStringField(field, rules, context);
         break;
@@ -946,16 +930,16 @@ function buildProtoField(field: DescField, context: ProtoParserContext): ParsedP
       result = buildNumberField(field, rules, context);
       break;
     }
-    case "enum":
+    case 'enum':
       result = buildEnumField(field, rules, context);
       break;
-    case "message":
+    case 'message':
       result = buildMessageField(field, rules, context);
       break;
-    case "list":
+    case 'list':
       result = buildArrayField(field, rules, context);
       break;
-    case "map":
+    case 'map':
       result = buildMapField(field, rules, context);
       break;
     default:
@@ -976,23 +960,23 @@ function buildProtoField(field: DescField, context: ProtoParserContext): ParsedP
         customData.deprecated = true;
       }
       customData.hidden =
-        fieldBehaviors.includes(FieldBehavior.OUTPUT_ONLY) || (isIdentifier && context.operation === "create");
+        fieldBehaviors.includes(FieldBehavior.OUTPUT_ONLY) || (isIdentifier && context.operation === 'create');
       customData.identifier = isIdentifier;
       customData.immutable =
-        (isImmutable && context.operation !== "create") || (isIdentifier && context.operation === "update");
+        (isImmutable && context.operation !== 'create') || (isIdentifier && context.operation === 'update');
       customData.inputOnly = fieldBehaviors.includes(FieldBehavior.INPUT_ONLY);
       customData.resourceReference = getProtoResourceReference(field);
       const messageDesc =
-        field.fieldKind === "message" ||
-        (field.fieldKind === "list" && field.listKind === "message") ||
-        (field.fieldKind === "map" && field.mapKind === "message")
+        field.fieldKind === 'message' ||
+        (field.fieldKind === 'list' && field.listKind === 'message') ||
+        (field.fieldKind === 'map' && field.mapKind === 'message')
           ? field.message
           : undefined;
       customData.resource = messageDesc ? getProtoResourceMetadata(messageDesc) : undefined;
       result.required = Boolean(
         result.required ||
           fieldBehaviors.includes(FieldBehavior.REQUIRED) ||
-          (isIdentifier && context.operation === "update")
+          (isIdentifier && context.operation === 'update')
       );
     }
   }
@@ -1009,7 +993,7 @@ function parseProtoSchemaInternal(
   annotations: ProtoAnnotations | undefined,
   parentSecretScope: string | undefined,
   ancestors: ReadonlySet<string>,
-  operation?: "create" | "update"
+  operation?: 'create' | 'update'
 ): ParsedProtoSchema {
   const messageUi = getProtoMessageUi(desc);
   const context: ProtoParserContext = {
@@ -1021,7 +1005,7 @@ function parseProtoSchemaInternal(
   };
   return {
     fields: desc.members.map((member) =>
-      member.kind === "oneof" ? buildOneofField(member, context) : buildProtoField(member, context)
+      member.kind === 'oneof' ? buildOneofField(member, context) : buildProtoField(member, context)
     ),
   };
 }
@@ -1037,15 +1021,15 @@ export function parseProtoSchema(
 const CREATE_REQUEST_PATTERN = /^Create.+Request$/u;
 const UPDATE_REQUEST_PATTERN = /^Update.+Request$/u;
 
-function inferProtoOperation(desc: DescMessage): "create" | "update" | undefined {
-  const messageName = desc.typeName.split(".").at(-1) ?? "";
+function inferProtoOperation(desc: DescMessage): 'create' | 'update' | undefined {
+  const messageName = desc.typeName.split('.').at(-1) ?? '';
   if (CREATE_REQUEST_PATTERN.test(messageName)) {
-    return "create";
+    return 'create';
   }
   if (UPDATE_REQUEST_PATTERN.test(messageName)) {
-    return "update";
+    return 'update';
   }
-  return;
+  return undefined;
 }
 
 function mapResultToSchemaValidation<Desc extends DescMessage>(
@@ -1104,9 +1088,7 @@ export class ProtoProvider<Desc extends DescMessage = DescMessage> implements Sc
         errors: [
           {
             message:
-              // Provider-based AutoForm consumers expect a synchronous result. Async protovalidate
-              // flows should go through createProtoResolver(), which RHF can await.
-              "ProtoProvider does not support async validation rules. Use createProtoResolver() for async protovalidate flows.",
+              'ProtoProvider does not support async validation rules. Use createProtoResolver() for async protovalidate flows.',
             path: [],
           },
         ],
