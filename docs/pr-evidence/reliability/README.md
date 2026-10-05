@@ -1,8 +1,14 @@
 # Reliability evidence
 
-Comparison: `origin/main` at `2c27f091950cb77d315e0ffc1b5a59e5fe306e14` against this PR.
+Original capture comparison: `origin/main` at `2c27f091950cb77d315e0ffc1b5a59e5fe306e14` against this PR.
 Fixtures contain synthetic data only. Screenshots and the flow recording use identical source,
 neutral theme, Chromium, and viewport for each base/candidate pair.
+
+Rebased onto `a179fc14356cc98dce69402ae62c406107b0bf5b` on October 6, 2026.
+The captured controls only inherited formatting, comment removal, and equivalent return normalization.
+The registry was rebuilt and freshly installed, and all eight installed-consumer browser/visual tests
+passed normally without snapshot updates. The original captures remain unchanged; they were not recaptured.
+Direct recovery, pagination, reload, and v7/v8 native edit/reset journeys also passed with no page errors.
 
 | Surface / state | Evidence | Automated coverage |
 | --- | --- | --- |
@@ -30,6 +36,7 @@ collection source matching, and no rounding into the next second.
 
 Local consumer installation used port 48742 instead of 48741 because another workspace owned
 48741. Only the server/origin port literals changed; assertions were unchanged.
+The post-rebase fresh installation used the normal port 48741 with no script overrides.
 
 The full quality gate is **not green**: React Doctor flags the existing selection-clear effect
 (`no-pass-live-state-to-parent`); its latest full scan completed maintainability analysis. No suppression
