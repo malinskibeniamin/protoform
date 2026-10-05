@@ -1,1 +1,1 @@
-import "./rstest.shared.setup";
+import './rstest.shared.setup';

@@ -1,5 +1,5 @@
-@import "tailwindcss" reference;
-@import "tw-animate-css";
+@import 'tailwindcss' reference;
+@import 'tw-animate-css';
 
 /* Blume owns the docs shell; map its palette onto shadcn's semantic contract
    so registry components keep their native appearance in every theme. */
@@ -29,7 +29,7 @@
   --selection-foreground: var(--blume-background);
 }
 
-:root[data-theme="dark"] {
+:root[data-theme='dark'] {
   --protoform-destructive: oklch(0.704 0.191 22.216);
 }
 
@@ -72,7 +72,7 @@
 }
 
 /* Data-heavy pages opt into more room without widening every prose page. */
-#blume-content:has([data-docs-layout="wide"]) > :where(nav, details, article) {
+#blume-content:has([data-docs-layout='wide']) > :where(nav, details, article) {
   inline-size: 100%;
   max-inline-size: 60rem;
 }
@@ -86,9 +86,7 @@
   }
 
   #blume-content article > [data-bookstore-workspace],
-  #blume-content
-    article
-    > div:has(iframe[data-blume-example-frame], > astro-island) {
+  #blume-content article > div:has(iframe[data-blume-example-frame], > astro-island) {
     position: relative;
     inline-size: var(--protoform-demo-width);
     margin-inline: calc((100% - var(--protoform-demo-width)) / 2);
@@ -133,8 +131,7 @@ blume-mermaid > div > svg {
   background: var(--blume-background);
 }
 
-:where(blume-mermaid, [data-diagram], [data-architecture-diagram]):fullscreen
-  :where(svg, img, canvas),
+:where(blume-mermaid, [data-diagram], [data-architecture-diagram]):fullscreen :where(svg, img, canvas),
 [data-diagram-preview] :where(svg, img, canvas) {
   inline-size: 100% !important;
   max-inline-size: none !important;
@@ -156,7 +153,7 @@ blume-mermaid > div > svg {
 }
 
 /* Shiki's default light-theme orange is below WCAG AA on the docs surface. */
-code span[style*="--shiki-light:#E36209"] {
+code span[style*='--shiki-light:#E36209'] {
   --shiki-light: rgb(150 59 0) !important;
 }
 
@@ -192,10 +189,10 @@ pre.blume-source .line::before {
 }
 
 /* Keep the accurate CEL label without showing the expression grammar's icon. */
-.prose > pre[data-title="CEL"][data-icon] > .blume-lang-icon {
+.prose > pre[data-title='CEL'][data-icon] > .blume-lang-icon {
   display: none;
 }
 
-.prose > pre[data-title="CEL"][data-icon]::before {
+.prose > pre[data-title='CEL'][data-icon]::before {
   padding-inline-start: 1rem;
 }

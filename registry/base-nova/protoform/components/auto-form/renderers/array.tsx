@@ -1,20 +1,20 @@
-"use client";
+'use client';
 
-import { TrashIcon } from "lucide-react";
-import React from "react";
-import { formatProtoformMessage } from "@/registry/base-nova/protoform/lib/core/messages";
-import { useAutoFormRenderContext, useAutoFormRuntimeContext } from "../context";
-import type { ParsedField } from "../core-types";
-import { type AutoFormArrayController, useAutoFormEngine } from "../engine";
-import { formSpacing } from "../form-spacing";
-import { createEmptyFieldValue, getFieldErrorMessage } from "../helpers";
-import { FormDepthProvider, useFormDepth } from "../layout-context";
-import { getAutoFormCollectionRemoveTestId, getAutoFormCollectionRowTestId, getAutoFormFieldTestId } from "../test-ids";
-import { Button } from "../ui-components";
-import { AutoFormFieldRenderer } from ".";
-import { cloneFieldForCompactRow, getRenderedLabel, isComplexCollectionField, useFieldPresentation } from "./shared";
+import { TrashIcon } from 'lucide-react';
+import React from 'react';
+import { formatProtoformMessage } from '@/registry/base-nova/protoform/lib/core/messages';
+import { useAutoFormRenderContext, useAutoFormRuntimeContext } from '../context';
+import type { ParsedField } from '../core-types';
+import { type AutoFormArrayController, useAutoFormEngine } from '../engine';
+import { formSpacing } from '../form-spacing';
+import { createEmptyFieldValue, getFieldErrorMessage } from '../helpers';
+import { FormDepthProvider, useFormDepth } from '../layout-context';
+import { getAutoFormCollectionRemoveTestId, getAutoFormCollectionRowTestId, getAutoFormFieldTestId } from '../test-ids';
+import { Button } from '../ui-components';
+import { AutoFormFieldRenderer } from '.';
+import { cloneFieldForCompactRow, getRenderedLabel, isComplexCollectionField, useFieldPresentation } from './shared';
 
-const COMPACT_ROW_GRID = "grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3";
+const COMPACT_ROW_GRID = 'grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3';
 
 function RequiredArraySeeder({
   controller,
@@ -40,9 +40,9 @@ function RequiredArraySeeder({
 
 function getCollectionItemLabel(collectionLabel: string, index: number): string {
   let singularLabel = collectionLabel;
-  if (collectionLabel.endsWith("ies")) {
+  if (collectionLabel.endsWith('ies')) {
     singularLabel = `${collectionLabel.slice(0, -3)}y`;
-  } else if (collectionLabel.endsWith("s")) {
+  } else if (collectionLabel.endsWith('s')) {
     singularLabel = collectionLabel.slice(0, -1);
   }
 
@@ -61,7 +61,7 @@ export function ArrayFieldRenderer({
   const { uiComponents } = useAutoFormRenderContext();
   const { ArrayController, errors } = useAutoFormEngine();
   const { formatMessage, testIdPrefix } = useAutoFormRuntimeContext();
-  const fullPath = path.join(".");
+  const fullPath = path.join('.');
   const itemField = field.schema?.[0];
   const error = getFieldErrorMessage(errors, path);
   const label = getRenderedLabel(field);
@@ -84,8 +84,8 @@ export function ArrayFieldRenderer({
   const compactItemField = itemField ? cloneFieldForCompactRow(itemField) : undefined;
   const useCompactRows = itemField ? !isComplexCollectionField(itemField) : false;
   const depth = useFormDepth();
-  const addItemLabel = formatProtoformMessage(formatMessage, "auto_form.add_item", { label }, `Add ${label}`);
-  const removeItemLabel = formatProtoformMessage(formatMessage, "auto_form.remove_item", {}, "Remove item");
+  const addItemLabel = formatProtoformMessage(formatMessage, 'auto_form.add_item', { label }, `Add ${label}`);
+  const removeItemLabel = formatProtoformMessage(formatMessage, 'auto_form.remove_item', {}, 'Remove item');
 
   if (!isVisible) {
     return null;
@@ -99,7 +99,7 @@ export function ArrayFieldRenderer({
             <RequiredArraySeeder controller={controller} disabled={isDisabled} field={field} itemField={itemField} />
             <ArrayWrapperComponent
               addButtonLabel={addItemLabel}
-              addButtonTestId={getAutoFormFieldTestId(testIdPrefix, fullPath, "add")}
+              addButtonTestId={getAutoFormFieldTestId(testIdPrefix, fullPath, 'add')}
               field={renderField}
               label={label}
               onAddItem={() => {
@@ -107,7 +107,7 @@ export function ArrayFieldRenderer({
                   controller.append(createEmptyFieldValue(itemField));
                 }
               }}
-              testId={getAutoFormFieldTestId(testIdPrefix, fullPath, "items")}
+              testId={getAutoFormFieldTestId(testIdPrefix, fullPath, 'items')}
             >
               {controller.items.map((item, index) => {
                 const rowTestId = getAutoFormCollectionRowTestId(testIdPrefix, fullPath, index);

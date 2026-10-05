@@ -1,21 +1,21 @@
-import { describe, expect, rs } from "@rstest/core";
-import { render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { AutoForm } from "..";
-import { createMockProvider } from "./test-utils";
+import { describe, expect, rs } from '@rstest/core';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { AutoForm } from '..';
+import { createMockProvider } from './test-utils';
 
-describe("AutoForm – onFieldChange callback", () => {
-  test("calls onFieldChange when a field value changes", async () => {
+describe('AutoForm – onFieldChange callback', () => {
+  test('calls onFieldChange when a field value changes', async () => {
     const user = userEvent.setup();
     const onFieldChange = rs.fn();
     const schema = createMockProvider([
-      { key: "name", required: true, type: "string" },
-      { key: "email", required: true, type: "string" },
+      { key: 'name', required: true, type: 'string' },
+      { key: 'email', required: true, type: 'string' },
     ]);
 
     render(
       <AutoForm
-        defaultValues={{ email: "", name: "test" }}
+        defaultValues={{ email: '', name: 'test' }}
         onFieldChange={onFieldChange}
         schema={schema}
         testId="fieldchange"
@@ -23,21 +23,20 @@ describe("AutoForm – onFieldChange callback", () => {
       />
     );
 
-    const nameInput = screen.getByDisplayValue("test");
+    const nameInput = screen.getByDisplayValue('test');
     await user.clear(nameInput);
-    await user.type(nameInput, "hello");
+    await user.type(nameInput, 'hello');
 
     await waitFor(() => {
-      expect(onFieldChange).toHaveBeenCalledWith("name", expect.anything(), expect.anything());
+      expect(onFieldChange).toHaveBeenCalledWith('name', expect.anything(), expect.anything());
     });
 
-    // Verify the latest call includes the new value
-    const nameCalls = onFieldChange.mock.calls.filter((args: unknown[]) => args[0] === "name");
+    const nameCalls = onFieldChange.mock.calls.filter((args: unknown[]) => args[0] === 'name');
     expect(nameCalls.length).toBeGreaterThan(0);
     const lastCall = nameCalls.at(-1);
     if (!lastCall) {
-      throw new Error("Expected a name field change callback.");
+      throw new Error('Expected a name field change callback.');
     }
-    expect(lastCall[1]).toBe("hello");
+    expect(lastCall[1]).toBe('hello');
   });
 });

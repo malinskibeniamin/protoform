@@ -1,10 +1,10 @@
-import { create, fromBinary, toBinary } from "@bufbuild/protobuf";
-import { FieldOptionsSchema } from "@bufbuild/protobuf/wkt";
-import { describe, expect } from "@rstest/core";
+import { create, fromBinary, toBinary } from '@bufbuild/protobuf';
+import { FieldOptionsSchema } from '@bufbuild/protobuf/wkt';
+import { describe, expect } from '@rstest/core';
 
-import "./auto-form-example-annotations";
+import './auto-form-example-annotations';
 
-import { createProtoResolver } from "../../hooks/use-proto-form";
+import { createProtoResolver } from '../../hooks/use-proto-form';
 import {
   formValuesToProto,
   getProtoFieldCustomData,
@@ -12,12 +12,12 @@ import {
   ProtoProvider,
   parseProtoSchema,
   protoToFormValues,
-} from ".";
+} from '.';
 import {
   type AutoFormExample,
   AutoFormExampleSchema,
   AutoFormUiMetadataExampleSchema,
-} from "./gen/auto-form-example_pb";
+} from './gen/auto-form-example_pb';
 
 const MESSAGE_LEVEL_ERROR = /minimum threshold must be less than or equal to maximum threshold/iu;
 const DATETIME_LOCAL_VALUE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/u;
@@ -34,82 +34,80 @@ function buildValidProtoFormValues() {
   return {
     accessTier: 3,
     age: 34,
-    avatarBytes: "AQIDBA==",
-    bio: "A protobuf-backed form with Buf reflection and Protovalidate.",
-    createdAt: "2026-03-17T09:00",
-    employeeNumber: "4001",
-    homepageUrl: "https://protoform.com",
-    labels: [{ key: "team", value: "frontend" }],
+    avatarBytes: 'AQIDBA==',
+    bio: 'A protobuf-backed form with Buf reflection and Protovalidate.',
+    createdAt: '2026-03-17T09:00',
+    employeeNumber: '4001',
+    homepageUrl: 'https://protoform.com',
+    labels: [{ key: 'team', value: 'frontend' }],
     maximumThreshold: 10,
     minimumThreshold: 5,
     officeLocations: [
       {
-        key: "hq",
+        key: 'hq',
         value: {
-          city: "San Francisco",
+          city: 'San Francisco',
           country: 1,
-          lineOne: "500 Harbor Way",
-          postalCode: "94107",
-          state: "CA",
+          lineOne: '500 Harbor Way',
+          postalCode: '94107',
+          state: 'CA',
         },
       },
     ],
     preferredContact: {
-      case: "preferredEmail",
-      value: "forms@protoform.com",
+      case: 'preferredEmail',
+      value: 'forms@protoform.com',
     },
-    primaryEmail: "forms@protoform.com",
-    reminderInterval: "300s",
-    resourceId: "123e4567-e89b-12d3-a456-426614174000",
+    primaryEmail: 'forms@protoform.com',
+    reminderInterval: '300s',
+    resourceId: '123e4567-e89b-12d3-a456-426614174000',
     shippingAddress: {
-      city: "San Francisco",
+      city: 'San Francisco',
       country: 1,
-      lineOne: "500 Harbor Way",
-      postalCode: "94107",
-      state: "CA",
+      lineOne: '500 Harbor Way',
+      postalCode: '94107',
+      state: 'CA',
     },
-    storageQuotaBytes: "4096",
-    tags: ["forms"],
-    username: "protoform_admin",
-    writablePaths: ["profile"],
+    storageQuotaBytes: '4096',
+    tags: ['forms'],
+    username: 'protoform_admin',
+    writablePaths: ['profile'],
   };
 }
 
-describe("protobuf-provider", () => {
-  test("parses enums, oneofs, descriptions, and deprecation into autoform-friendly fields", () => {
+describe('protobuf-provider', () => {
+  test('parses enums, oneofs, descriptions, and deprecation into autoform-friendly fields', () => {
     const parsedSchema = parseProtoSchema(AutoFormExampleSchema);
-    const accessTierField = parsedSchema.fields.find((field) => field.key === "accessTier");
-    const preferredContactField = parsedSchema.fields.find((field) => field.key === "preferredContact");
+    const accessTierField = parsedSchema.fields.find((field) => field.key === 'accessTier');
+    const preferredContactField = parsedSchema.fields.find((field) => field.key === 'preferredContact');
 
-    expect(accessTierField?.type).toBe("select");
-    expect(accessTierField?.options?.some(([value]) => value === "0")).toBe(false);
-    expect(accessTierField?.options?.some(([value]) => value === "1")).toBe(true);
+    expect(accessTierField?.type).toBe('select');
+    expect(accessTierField?.options?.some(([value]) => value === '0')).toBe(false);
+    expect(accessTierField?.options?.some(([value]) => value === '1')).toBe(true);
 
-    expect(preferredContactField?.type).toBe("oneof");
+    expect(preferredContactField?.type).toBe('oneof');
     expect(preferredContactField?.schema?.map((field) => field.key)).toEqual([
-      "preferredEmail",
-      "preferredPhone",
-      "doNotContact",
+      'preferredEmail',
+      'preferredPhone',
+      'doNotContact',
     ]);
 
-    // Option labels are humanized without the "AccessTier" type prefix.
     const labels = accessTierField?.options?.map(([, label]) => label) ?? [];
-    expect(labels).toEqual(expect.arrayContaining(["Viewer", "Editor", "Admin"]));
+    expect(labels).toEqual(expect.arrayContaining(['Viewer', 'Editor', 'Admin']));
     for (const label of labels) {
-      expect(label.startsWith("Access Tier")).toBe(false);
+      expect(label.startsWith('Access Tier')).toBe(false);
     }
 
-    // Field descriptions hydrate from registered proto annotations.
-    const usernameField = parsedSchema.fields.find((field) => field.key === "username");
-    const preferredPhoneField = preferredContactField?.schema?.find((field) => field.key === "preferredPhone");
+    const usernameField = parsedSchema.fields.find((field) => field.key === 'username');
+    const preferredPhoneField = preferredContactField?.schema?.find((field) => field.key === 'preferredPhone');
 
-    expect(usernameField?.fieldConfig?.description).toBe("Public handle shown in mentions and admin lists.");
+    expect(usernameField?.fieldConfig?.description).toBe('Public handle shown in mentions and admin lists.');
     expect(preferredContactField?.fieldConfig?.description).toBe(
-      "Exactly one preferred contact route can be selected at a time."
+      'Exactly one preferred contact route can be selected at a time.'
     );
-    expect(preferredPhoneField?.fieldConfig?.description).toBe("Route urgent notices to an E.164 phone number.");
+    expect(preferredPhoneField?.fieldConfig?.description).toBe('Route urgent notices to an E.164 phone number.');
 
-    const username = AutoFormExampleSchema.fields.find((field) => field.localName === "username");
+    const username = AutoFormExampleSchema.fields.find((field) => field.localName === 'username');
     expect(username).toBeDefined();
     if (!username) {
       return;
@@ -119,91 +117,91 @@ describe("protobuf-provider", () => {
 
     try {
       const parsed = parseProtoSchema(AutoFormExampleSchema);
-      const field = parsed.fields.find((candidate) => candidate.key === "username");
+      const field = parsed.fields.find((candidate) => candidate.key === 'username');
       expect(field?.hints?.deprecated).toBe(true);
-      expect(getProtoFieldCustomData(requireDefined(field, "username field"))?.deprecated).toBe(true);
+      expect(getProtoFieldCustomData(requireDefined(field, 'username field'))?.deprecated).toBe(true);
     } finally {
       username.proto.options = originalOptions;
     }
   });
 
-  test("converts protobuf messages into form values, supplies defaults, and round-trips optional, wrapper, and JSON-backed fields", () => {
+  test('converts protobuf messages into form values, supplies defaults, and round-trips optional, wrapper, and JSON-backed fields', () => {
     const message = create(AutoFormExampleSchema, {
       accessTier: 3,
       avatarBytes: new Uint8Array([1, 2, 3, 4]),
-      bio: "A protobuf-backed form with Buf reflection and Protovalidate.",
+      bio: 'A protobuf-backed form with Buf reflection and Protovalidate.',
       createdAt: {
         nanos: 0,
         seconds: 1710666000n,
       },
       employeeNumber: 4001n,
-      homepageUrl: "https://protoform.com",
+      homepageUrl: 'https://protoform.com',
       labels: {
-        team: "frontend",
+        team: 'frontend',
       },
       maximumThreshold: 10,
       minimumThreshold: 5,
       officeLocations: {
         hq: {
-          city: "San Francisco",
+          city: 'San Francisco',
           country: 1,
-          lineOne: "500 Harbor Way",
-          postalCode: "94107",
-          state: "CA",
+          lineOne: '500 Harbor Way',
+          postalCode: '94107',
+          state: 'CA',
         },
       },
       preferredContact: {
-        case: "preferredEmail",
-        value: "forms@protoform.com",
+        case: 'preferredEmail',
+        value: 'forms@protoform.com',
       },
-      primaryEmail: "forms@protoform.com",
+      primaryEmail: 'forms@protoform.com',
       reminderInterval: {
         nanos: 0,
         seconds: 300n,
       },
-      resourceId: "123e4567-e89b-12d3-a456-426614174000",
+      resourceId: '123e4567-e89b-12d3-a456-426614174000',
       shippingAddress: {
-        city: "San Francisco",
+        city: 'San Francisco',
         country: 1,
-        lineOne: "500 Harbor Way",
-        postalCode: "94107",
-        state: "CA",
+        lineOne: '500 Harbor Way',
+        postalCode: '94107',
+        state: 'CA',
       },
       storageQuotaBytes: 4096n,
-      username: "protoform_admin",
+      username: 'protoform_admin',
       writablePaths: {
-        paths: ["profile"],
+        paths: ['profile'],
       },
     });
 
     const formValues = protoToFormValues(AutoFormExampleSchema, message);
 
-    expect(formValues["employeeNumber"]).toBe("4001");
-    expect(formValues["storageQuotaBytes"]).toBe("4096");
-    expect(formValues["avatarBytes"]).toBe("AQIDBA==");
-    expect(formValues["labels"]).toEqual([{ key: "team", value: "frontend" }]);
-    expect(formValues["officeLocations"]).toEqual([
+    expect(formValues['employeeNumber']).toBe('4001');
+    expect(formValues['storageQuotaBytes']).toBe('4096');
+    expect(formValues['avatarBytes']).toBe('AQIDBA==');
+    expect(formValues['labels']).toEqual([{ key: 'team', value: 'frontend' }]);
+    expect(formValues['officeLocations']).toEqual([
       {
-        key: "hq",
+        key: 'hq',
         value: expect.objectContaining({
-          city: "San Francisco",
-          lineOne: "500 Harbor Way",
+          city: 'San Francisco',
+          lineOne: '500 Harbor Way',
         }),
       },
     ]);
-    expect(formValues["preferredContact"]).toEqual({
-      case: "preferredEmail",
-      value: "forms@protoform.com",
+    expect(formValues['preferredContact']).toEqual({
+      case: 'preferredEmail',
+      value: 'forms@protoform.com',
     });
-    expect(formValues["createdAt"]).toMatch(DATETIME_LOCAL_VALUE);
-    expect(formValues["reminderInterval"]).toBe("300s");
-    expect(formValues["writablePaths"]).toEqual(["profile"]);
+    expect(formValues['createdAt']).toMatch(DATETIME_LOCAL_VALUE);
+    expect(formValues['reminderInterval']).toBe('300s');
+    expect(formValues['writablePaths']).toEqual(['profile']);
 
     const provider = new ProtoProvider(AutoFormExampleSchema);
     const defaultValues = provider.getDefaultValues();
-    expect(defaultValues["tags"]).toEqual([]);
-    expect(defaultValues["labels"]).toEqual([]);
-    expect(defaultValues["preferredContact"]).toEqual({
+    expect(defaultValues['tags']).toEqual([]);
+    expect(defaultValues['labels']).toEqual([]);
+    expect(defaultValues['preferredContact']).toEqual({
       case: undefined,
       value: undefined,
     });
@@ -212,29 +210,29 @@ describe("protobuf-provider", () => {
       ...buildValidProtoFormValues(),
       betaTester: true,
       bonusPoints: 42,
-      dashboardBlocks: ["overview", "alerts"],
-      featuredValue: "feature-rollout",
-      middleName: "UI",
-      nickname: "Harbor",
+      dashboardBlocks: ['overview', 'alerts'],
+      featuredValue: 'feature-rollout',
+      middleName: 'UI',
+      nickname: 'Harbor',
       preferences: {
-        density: "comfortable",
-        theme: "dark",
+        density: 'comfortable',
+        theme: 'dark',
       },
     });
 
     expect(validationResult.success).toBe(true);
 
     if (!validationResult.success) {
-      throw new Error("Expected optional and JSON-backed protobuf fields to validate.");
+      throw new Error('Expected optional and JSON-backed protobuf fields to validate.');
     }
 
     const data = validationResult.data as Record<string, unknown>;
-    expect(data["$typeName"]).toBe("protoform.v1.AutoFormExample");
-    expect(data["employeeNumber"]).toBe(4001n);
-    expect(data["labels"]).toEqual({ team: "frontend" });
-    expect(data["preferredContact"]).toEqual({
-      case: "preferredEmail",
-      value: "forms@protoform.com",
+    expect(data['$typeName']).toBe('protoform.v1.AutoFormExample');
+    expect(data['employeeNumber']).toBe(4001n);
+    expect(data['labels']).toEqual({ team: 'frontend' });
+    expect(data['preferredContact']).toEqual({
+      case: 'preferredEmail',
+      value: 'forms@protoform.com',
     });
 
     const roundTrippedValues = protoToFormValues(
@@ -246,19 +244,19 @@ describe("protobuf-provider", () => {
       expect.objectContaining({
         betaTester: true,
         bonusPoints: 42,
-        dashboardBlocks: ["overview", "alerts"],
-        featuredValue: "feature-rollout",
-        middleName: "UI",
-        nickname: "Harbor",
+        dashboardBlocks: ['overview', 'alerts'],
+        featuredValue: 'feature-rollout',
+        middleName: 'UI',
+        nickname: 'Harbor',
         preferences: {
-          density: "comfortable",
-          theme: "dark",
+          density: 'comfortable',
+          theme: 'dark',
         },
       })
     );
   });
 
-  test("maps nested field and root validation errors and preserves the edit source message through the resolver", async () => {
+  test('maps nested field and root validation errors and preserves the edit source message through the resolver', async () => {
     const resolver = createProtoResolver(AutoFormExampleSchema);
     const result = await resolver(
       {
@@ -267,27 +265,27 @@ describe("protobuf-provider", () => {
         minimumThreshold: 12,
         officeLocations: [
           {
-            key: "hq",
+            key: 'hq',
             value: {
-              city: "",
+              city: '',
               country: 1,
-              lineOne: "500 Harbor Way",
-              postalCode: "94107",
-              state: "CA",
+              lineOne: '500 Harbor Way',
+              postalCode: '94107',
+              state: 'CA',
             },
           },
         ],
       },
       undefined,
       {
-        criteriaMode: "firstError",
+        criteriaMode: 'firstError',
         fields: {},
         names: [],
         shouldUseNativeValidation: false,
       } as never
     );
 
-    const officeLocationsErrors = result.errors["officeLocations"] as
+    const officeLocationsErrors = result.errors['officeLocations'] as
       | Array<{ value?: { city?: { message?: string } } }>
       | undefined;
     const rootError = result.errors.root as { message?: string } | undefined;
@@ -306,8 +304,8 @@ describe("protobuf-provider", () => {
     );
     const resolverForEdit = createProtoResolver(AutoFormExampleSchema, {}, source);
 
-    const resultForEdit = await resolverForEdit({ ...values, username: "edited_admin" }, undefined, {
-      criteriaMode: "firstError",
+    const resultForEdit = await resolverForEdit({ ...values, username: 'edited_admin' }, undefined, {
+      criteriaMode: 'firstError',
       fields: {},
       names: [],
       shouldUseNativeValidation: false,
@@ -315,49 +313,48 @@ describe("protobuf-provider", () => {
 
     expect(resultForEdit.values).toMatchObject({
       $unknown: source.$unknown,
-      username: "edited_admin",
+      username: 'edited_admin',
     });
   });
 
-  test("normalizes proto field and oneof UI metadata for focused UI demos", () => {
+  test('normalizes proto field and oneof UI metadata for focused UI demos', () => {
     const parsedSchema = parseProtoSchema(AutoFormUiMetadataExampleSchema);
-    const providerField = parsedSchema.fields.find((field) => field.key === "provider");
-    const regionField = parsedSchema.fields.find((field) => field.key === "region");
-    const escalationReasonField = parsedSchema.fields.find((field) => field.key === "escalationReason");
-    const supportContactField = parsedSchema.fields.find((field) => field.key === "supportContact");
+    const providerField = parsedSchema.fields.find((field) => field.key === 'provider');
+    const regionField = parsedSchema.fields.find((field) => field.key === 'region');
+    const escalationReasonField = parsedSchema.fields.find((field) => field.key === 'escalationReason');
+    const supportContactField = parsedSchema.fields.find((field) => field.key === 'supportContact');
 
-    expect(getProtoFieldCustomData(requireDefined(providerField, "provider field"))?.ui).toEqual(
+    expect(getProtoFieldCustomData(requireDefined(providerField, 'provider field'))?.ui).toEqual(
       expect.objectContaining({
-        control: "radio",
-        help: "Radio buttons make small enums easier to scan in generated forms.",
+        control: 'radio',
+        help: 'Radio buttons make small enums easier to scan in generated forms.',
       })
     );
 
-    expect(getProtoFieldCustomData(requireDefined(regionField, "region field"))?.ui?.disabledWhen).toEqual([
-      expect.objectContaining({ expression: "form.provider == 0" }),
+    expect(getProtoFieldCustomData(requireDefined(regionField, 'region field'))?.ui?.disabledWhen).toEqual([
+      expect.objectContaining({ expression: 'form.provider == 0' }),
     ]);
 
-    expect(getProtoFieldCustomData(requireDefined(escalationReasonField, "escalation reason field"))?.ui).toEqual(
+    expect(getProtoFieldCustomData(requireDefined(escalationReasonField, 'escalation reason field'))?.ui).toEqual(
       expect.objectContaining({
-        control: "textarea",
+        control: 'textarea',
         sensitive: true,
-        visibleWhen: [expect.objectContaining({ expression: "form.supportTier == 3" })],
+        visibleWhen: [expect.objectContaining({ expression: 'form.supportTier == 3' })],
       })
     );
 
-    expect(getProtoFieldCustomData(requireDefined(supportContactField, "support contact field"))?.ui).toEqual(
+    expect(getProtoFieldCustomData(requireDefined(supportContactField, 'support contact field'))?.ui).toEqual(
       expect.objectContaining({
-        help: "This oneof is also driven by UI metadata, so it only appears after a support tier is chosen.",
-        visibleWhen: [expect.objectContaining({ expression: "form.enableSupportMode && form.supportTier != 0" })],
+        help: 'This oneof is also driven by UI metadata, so it only appears after a support tier is chosen.',
+        visibleWhen: [expect.objectContaining({ expression: 'form.enableSupportMode && form.supportTier != 0' })],
       })
     );
 
-    // CONTROL_TYPE_PASSWORD derives sensitive when it is not explicitly annotated.
-    const apiTokenField = parsedSchema.fields.find((field) => field.key === "apiToken");
+    const apiTokenField = parsedSchema.fields.find((field) => field.key === 'apiToken');
 
-    expect(getProtoFieldCustomData(requireDefined(apiTokenField, "API token field"))?.ui).toEqual(
+    expect(getProtoFieldCustomData(requireDefined(apiTokenField, 'API token field'))?.ui).toEqual(
       expect.objectContaining({
-        control: "password",
+        control: 'password',
         sensitive: true,
       })
     );

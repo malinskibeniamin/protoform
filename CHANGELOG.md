@@ -24,6 +24,7 @@ source snapshots.
 - AutoForm core, its runtime provider, object sections, and string inputs compile under React Compiler without `"use no memo"`.
 - The bookstore demo shows field errors with React Hook Form's built-in `ErrorMessage` bound to `control`, so it no longer installs `@hookform/error-message`.
 - The experimental React Hook Form v8 items install `8.0.0-beta.4`.
+- Installed source uses single quotes, ES5 trailing commas, and 120-column lines, and carries no comments or license headers.
 
 ### Fixed
 

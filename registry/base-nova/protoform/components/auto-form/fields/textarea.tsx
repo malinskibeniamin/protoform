@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import type { AutoFormFieldProps } from "../core-types";
-import { getFieldUiConfig, LONG_TEXT_FIELD_PATTERN } from "../helpers";
-import type { FieldTypeDefinition } from "../registry";
-import { Textarea } from "../ui-components";
-import { useFieldTestIds } from "./shared";
+import type { AutoFormFieldProps } from '../core-types';
+import { getFieldUiConfig, LONG_TEXT_FIELD_PATTERN } from '../helpers';
+import type { FieldTypeDefinition } from '../registry';
+import { Textarea } from '../ui-components';
+import { useFieldTestIds } from './shared';
 
 function TextareaFieldComponent({ error, field, id, inputProps }: AutoFormFieldProps) {
   const testIds = useFieldTestIds(id);
@@ -12,15 +12,15 @@ function TextareaFieldComponent({ error, field, id, inputProps }: AutoFormFieldP
   return (
     <Textarea
       aria-invalid={Boolean(error)}
-      className={error !== undefined && error !== "" ? "border-destructive" : ""}
-      disabled={inputProps["disabled"]}
+      className={error !== undefined && error !== '' ? 'border-destructive' : ''}
+      disabled={inputProps['disabled']}
       id={id}
-      onBlur={inputProps["onBlur"]}
-      onChange={(event) => inputProps["onValueChange"](event.target.value)}
+      onBlur={inputProps['onBlur']}
+      onChange={(event) => inputProps['onValueChange'](event.target.value)}
       placeholder={getFieldUiConfig(field).placeholder}
       resize="vertical"
       testId={testIds.control}
-      value={(inputProps["value"] as string | undefined) ?? ""}
+      value={(inputProps['value'] as string | undefined) ?? ''}
     />
   );
 }
@@ -30,8 +30,8 @@ export { TextareaFieldComponent };
 export const textareaFieldDefinition: FieldTypeDefinition = {
   component: TextareaFieldComponent,
   match: (field, context) =>
-    field.type === "string" &&
-    (context.inputType === "textarea" || context.maxLength > 120 || LONG_TEXT_FIELD_PATTERN.test(context.identity)),
-  name: "textarea",
+    field.type === 'string' &&
+    (context.inputType === 'textarea' || context.maxLength > 120 || LONG_TEXT_FIELD_PATTERN.test(context.identity)),
+  name: 'textarea',
   priority: 15,
 };

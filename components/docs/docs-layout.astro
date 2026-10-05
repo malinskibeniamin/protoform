@@ -1,17 +1,15 @@
 ---
-import type { ComponentProps } from "astro/types";
-import RootLayout from "blume/components/layout/RootLayout.astro";
+import type { ComponentProps } from 'astro/types';
+import RootLayout from 'blume/components/layout/RootLayout.astro';
 
 interface Props extends ComponentProps<typeof RootLayout> {}
 
 const sidebar = Astro.props.navigation.sidebar.map((item) => {
-  if (item.kind !== "group" || item.display !== "group") {
+  if (item.kind !== 'group' || item.display !== 'group') {
     return item;
   }
   const { route, ...group } = item;
-  // Blume 2.1 nests linked group titles inside an interactive summary.
-  // Keep the disclosure keyboard-accessible when its index is already a child.
-  return group.children.some((child) => child.kind === "page" && child.route === route) ? group : item;
+  return group.children.some((child) => child.kind === 'page' && child.route === route) ? group : item;
 });
 ---
 

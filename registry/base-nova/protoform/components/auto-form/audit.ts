@@ -1,6 +1,6 @@
-import { type InspectAutoFormConfigurationInput, inspectAutoFormConfiguration } from "./configuration";
+import { type InspectAutoFormConfigurationInput, inspectAutoFormConfiguration } from './configuration';
 
-export type AutoFormAuditFormat = "json" | "sarif";
+export type AutoFormAuditFormat = 'json' | 'sarif';
 
 export interface AutoFormAuditTarget extends InspectAutoFormConfigurationInput<Record<string, unknown>, string> {
   name: string;
@@ -8,10 +8,10 @@ export interface AutoFormAuditTarget extends InspectAutoFormConfigurationInput<R
 }
 
 export interface AutoFormAuditDiagnostic {
-  code: ReturnType<typeof inspectAutoFormConfiguration>[number]["code"];
+  code: ReturnType<typeof inspectAutoFormConfiguration>[number]['code'];
   message: string;
   path: string;
-  severity: ReturnType<typeof inspectAutoFormConfiguration>[number]["severity"];
+  severity: ReturnType<typeof inspectAutoFormConfiguration>[number]['severity'];
   source?: string;
   target: string;
 }
@@ -41,7 +41,7 @@ export function auditAutoFormConfigurations(targets: readonly AutoFormAuditTarge
 function formatSarifReport(report: AutoFormAuditReport): string {
   const codes = [...new Set(report.diagnostics.map((diagnostic) => diagnostic.code))].sort();
   const sarif = {
-    $schema: "https://json.schemastore.org/sarif-2.1.0.json",
+    $schema: 'https://json.schemastore.org/sarif-2.1.0.json',
     runs: [
       {
         results: report.diagnostics.map((diagnostic) => ({
@@ -57,23 +57,23 @@ function formatSarifReport(report: AutoFormAuditReport): string {
                 ],
               }
             : {}),
-          message: { text: diagnostic.target.concat(": ", diagnostic.message, " (", diagnostic.path, ")") },
+          message: { text: diagnostic.target.concat(': ', diagnostic.message, ' (', diagnostic.path, ')') },
           ruleId: diagnostic.code,
         })),
         tool: {
           driver: {
-            name: "protoform",
+            name: 'protoform',
             rules: codes.map((code) => ({ id: code })),
           },
         },
       },
     ],
-    version: "2.1.0",
+    version: '2.1.0',
   };
 
   return JSON.stringify(sarif, null, 2);
 }
 
 export function formatAutoFormAuditReport(report: AutoFormAuditReport, format: AutoFormAuditFormat): string {
-  return format === "sarif" ? formatSarifReport(report) : JSON.stringify(report, null, 2);
+  return format === 'sarif' ? formatSarifReport(report) : JSON.stringify(report, null, 2);
 }

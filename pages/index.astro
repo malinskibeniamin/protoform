@@ -1,11 +1,11 @@
 ---
-import data from "blume:data";
-import PageLayout from "blume/components/layout/PageLayout.astro";
+import data from 'blume:data';
+import PageLayout from 'blume/components/layout/PageLayout.astro';
 
 export const prerender = true;
 
 const description =
-  "Build accessible React Hook Form experiences directly from Protobuf descriptors, Protovalidate constraints, CEL rules, and Google AIP conventions.";
+  'Build accessible React Hook Form experiences directly from Protobuf descriptors, Protovalidate constraints, CEL rules, and Google AIP conventions.';
 ---
 
 <PageLayout
@@ -17,7 +17,7 @@ const description =
   logo={data.config.logo}
   navigation={data.navigation}
   ogEnabled={data.config.og.enabled}
-  page={{ description, route: "/", title: "Protoform — protobuf-driven forms" }}
+  page={{ description, route: '/', title: 'Protoform — protobuf-driven forms' }}
   searchEnabled={data.config.search.enabled}
   site={{ description, title: data.config.title }}
   siteUrl={data.config.site}

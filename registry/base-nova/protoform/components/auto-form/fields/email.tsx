@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { MailIcon } from "lucide-react";
-import type { AutoFormFieldProps } from "../core-types";
-import { EMAIL_FIELD_PATTERN, getFieldUiConfig } from "../helpers";
-import type { FieldTypeDefinition } from "../registry";
-import { StringLikeInput, useFieldTestIds } from "./shared";
+import { MailIcon } from 'lucide-react';
+import type { AutoFormFieldProps } from '../core-types';
+import { EMAIL_FIELD_PATTERN, getFieldUiConfig } from '../helpers';
+import type { FieldTypeDefinition } from '../registry';
+import { StringLikeInput, useFieldTestIds } from './shared';
 
 function EmailFieldComponent(props: AutoFormFieldProps) {
   const testIds = useFieldTestIds(props.id);
@@ -27,7 +27,7 @@ export { EmailFieldComponent };
 export const emailFieldDefinition: FieldTypeDefinition = {
   component: EmailFieldComponent,
   match: (field, context) =>
-    field.type === "string" && (context.inputType === "email" || EMAIL_FIELD_PATTERN.test(context.identity)),
-  name: "email",
+    field.type === 'string' && (context.inputType === 'email' || EMAIL_FIELD_PATTERN.test(context.identity)),
+  name: 'email',
   priority: 20,
 };

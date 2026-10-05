@@ -1,24 +1,24 @@
-import type { Message } from "@bufbuild/protobuf";
-import type { ProtoConversionOptions } from "@/registry/base-nova/protoform/lib/protobuf-provider";
-import type { ParsedField, SchemaProvider } from "./core-types";
-import { sortFieldsByOrder } from "./field-utils";
-import { isProtoMessageDescriptor, isProtoProvider, ProtoProvider } from "./proto";
-import type { AutoFormSchemaInput, FieldConfigMap, FieldTypes, RenderFieldConfig, ResolvedSchema } from "./types";
+import type { Message } from '@bufbuild/protobuf';
+import type { ProtoConversionOptions } from '@/registry/base-nova/protoform/lib/protobuf-provider';
+import type { ParsedField, SchemaProvider } from './core-types';
+import { sortFieldsByOrder } from './field-utils';
+import { isProtoMessageDescriptor, isProtoProvider, ProtoProvider } from './proto';
+import type { AutoFormSchemaInput, FieldConfigMap, FieldTypes, RenderFieldConfig, ResolvedSchema } from './types';
 
 function isSchemaProvider(value: unknown): value is SchemaProvider<Record<string, unknown>> {
   return (
     value !== null &&
-    typeof value === "object" &&
-    "parseSchema" in value &&
-    typeof (value as SchemaProvider<Record<string, unknown>>).parseSchema === "function" &&
-    "validateSchema" in value &&
-    typeof (value as SchemaProvider<Record<string, unknown>>).validateSchema === "function" &&
-    "getDefaultValues" in value &&
-    typeof (value as SchemaProvider<Record<string, unknown>>).getDefaultValues === "function"
+    typeof value === 'object' &&
+    'parseSchema' in value &&
+    typeof (value as SchemaProvider<Record<string, unknown>>).parseSchema === 'function' &&
+    'validateSchema' in value &&
+    typeof (value as SchemaProvider<Record<string, unknown>>).validateSchema === 'function' &&
+    'getDefaultValues' in value &&
+    typeof (value as SchemaProvider<Record<string, unknown>>).getDefaultValues === 'function'
   );
 }
 
-export { normalizeProtoInitialValues } from "./proto";
+export { normalizeProtoInitialValues } from './proto';
 
 export function resolveSchema<T extends Record<string, unknown>>(
   schemaInput: AutoFormSchemaInput<T>,
@@ -58,7 +58,7 @@ export function resolveSchema<T extends Record<string, unknown>>(
     };
   }
 
-  throw new Error("Unsupported AutoForm schema input. Pass a SchemaProvider or a Buf message descriptor.");
+  throw new Error('Unsupported AutoForm schema input. Pass a SchemaProvider or a Buf message descriptor.');
 }
 
 export function protoConversionOptionsFromFieldConfig<TCustom extends string>(
@@ -83,7 +83,7 @@ export function mergeFieldOverrides<TCustom extends string = never>(
 
   return sortFieldsByOrder(
     fields.map((field) => {
-      const fieldPath = [...path, field.key].join(".");
+      const fieldPath = [...path, field.key].join('.');
       const override = overrides?.[fieldPath];
       const existingConfig = field.fieldConfig as RenderFieldConfig<TCustom> | undefined;
       const mergedFieldConfig: RenderFieldConfig<TCustom> | undefined = override

@@ -1,13 +1,11 @@
-"use client";
+'use client';
 
-// Copyright 2026 Redpanda Data, Inc.
+import { Toast as ToastPrimitive } from '@base-ui/react/toast';
+import { CircleCheckIcon, InfoIcon, Loader2Icon, OctagonXIcon, TriangleAlertIcon, XIcon } from 'lucide-react';
+import type React from 'react';
 
-import { Toast as ToastPrimitive } from "@base-ui/react/toast";
-import { CircleCheckIcon, InfoIcon, Loader2Icon, OctagonXIcon, TriangleAlertIcon, XIcon } from "lucide-react";
-import type React from "react";
-
-import { Button } from "@/components/ui/button";
-import { cn } from "@/registry/base-nova/protoform/lib/utils";
+import { Button } from '@/components/ui/button';
+import { cn } from '@/registry/base-nova/protoform/lib/utils';
 
 const toast = ToastPrimitive.createToastManager();
 
@@ -23,7 +21,7 @@ function ToastViewport({ className, ...props }: ToastPrimitive.Viewport.Props) {
   return (
     <ToastPrimitive.Viewport
       className={cn(
-        "pointer-events-none fixed inset-x-4 bottom-4 z-50 mx-auto w-auto max-w-sm outline-none sm:right-4 sm:left-auto sm:mx-0 sm:w-full",
+        'pointer-events-none fixed inset-x-4 bottom-4 z-50 mx-auto w-auto max-w-sm outline-none sm:right-4 sm:left-auto sm:mx-0 sm:w-full',
         className
       )}
       data-slot="toast-viewport"
@@ -36,21 +34,21 @@ function Toast({ className, ...props }: ToastPrimitive.Root.Props) {
   return (
     <ToastPrimitive.Root
       className={cn(
-        "group/toast pointer-events-auto absolute right-0 bottom-0 z-[calc(1000-var(--toast-index))] w-full origin-bottom select-none rounded-lg border bg-popover text-popover-foreground outline-none will-change-transform focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50",
-        "[--gap:0.75rem] [--height:var(--toast-frontmost-height,var(--toast-height))] [--offset-y:calc(var(--toast-offset-y)*-1+calc(var(--toast-index)*var(--gap)*-1)+var(--toast-swipe-movement-y))] [--peek:0.75rem] [--scale:calc(max(0,1-(var(--toast-index)*0.1)))] [--shrink:calc(1-var(--scale))]",
-        "h-(--height) transition duration-250 ease-out [transform:translateX(var(--toast-swipe-movement-x))_translateY(calc(var(--toast-swipe-movement-y)-(var(--toast-index)*var(--peek))-(var(--shrink)*var(--height))))_scale(var(--scale))]",
+        'group/toast pointer-events-auto absolute right-0 bottom-0 z-[calc(1000-var(--toast-index))] w-full origin-bottom select-none rounded-lg border bg-popover text-popover-foreground outline-none will-change-transform focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50',
+        '[--gap:0.75rem] [--height:var(--toast-frontmost-height,var(--toast-height))] [--offset-y:calc(var(--toast-offset-y)*-1+calc(var(--toast-index)*var(--gap)*-1)+var(--toast-swipe-movement-y))] [--peek:0.75rem] [--scale:calc(max(0,1-(var(--toast-index)*0.1)))] [--shrink:calc(1-var(--scale))]',
+        'h-(--height) transition duration-250 ease-out [transform:translateX(var(--toast-swipe-movement-x))_translateY(calc(var(--toast-swipe-movement-y)-(var(--toast-index)*var(--peek))-(var(--shrink)*var(--height))))_scale(var(--scale))]',
         "after:absolute after:top-full after:left-0 after:h-[calc(var(--gap)+1px)] after:w-full after:content-['']",
-        "data-expanded:h-(--toast-height) data-expanded:[transform:translateX(var(--toast-swipe-movement-x))_translateY(var(--offset-y))]",
-        "data-limited:opacity-0 data-starting-style:[transform:translateY(150%)]",
-        "[&[data-ending-style]:not([data-limited]):not([data-swipe-direction])]:[transform:translateY(150%)]",
-        "data-ending-style:data-[swipe-direction=down]:[transform:translateY(calc(var(--toast-swipe-movement-y)+150%))]",
-        "data-ending-style:data-[swipe-direction=left]:[transform:translateX(calc(var(--toast-swipe-movement-x)-150%))_translateY(var(--offset-y))]",
-        "data-ending-style:data-[swipe-direction=right]:[transform:translateX(calc(var(--toast-swipe-movement-x)+150%))_translateY(var(--offset-y))]",
-        "data-ending-style:data-[swipe-direction=up]:[transform:translateY(calc(var(--toast-swipe-movement-y)-150%))]",
-        "data-expanded:data-ending-style:data-[swipe-direction=down]:[transform:translateY(calc(var(--toast-swipe-movement-y)+150%))]",
-        "data-expanded:data-ending-style:data-[swipe-direction=left]:[transform:translateX(calc(var(--toast-swipe-movement-x)-150%))_translateY(var(--offset-y))]",
-        "data-expanded:data-ending-style:data-[swipe-direction=right]:[transform:translateX(calc(var(--toast-swipe-movement-x)+150%))_translateY(var(--offset-y))]",
-        "data-expanded:data-ending-style:data-[swipe-direction=up]:[transform:translateY(calc(var(--toast-swipe-movement-y)-150%))]",
+        'data-expanded:h-(--toast-height) data-expanded:[transform:translateX(var(--toast-swipe-movement-x))_translateY(var(--offset-y))]',
+        'data-limited:opacity-0 data-starting-style:[transform:translateY(150%)]',
+        '[&[data-ending-style]:not([data-limited]):not([data-swipe-direction])]:[transform:translateY(150%)]',
+        'data-ending-style:data-[swipe-direction=down]:[transform:translateY(calc(var(--toast-swipe-movement-y)+150%))]',
+        'data-ending-style:data-[swipe-direction=left]:[transform:translateX(calc(var(--toast-swipe-movement-x)-150%))_translateY(var(--offset-y))]',
+        'data-ending-style:data-[swipe-direction=right]:[transform:translateX(calc(var(--toast-swipe-movement-x)+150%))_translateY(var(--offset-y))]',
+        'data-ending-style:data-[swipe-direction=up]:[transform:translateY(calc(var(--toast-swipe-movement-y)-150%))]',
+        'data-expanded:data-ending-style:data-[swipe-direction=down]:[transform:translateY(calc(var(--toast-swipe-movement-y)+150%))]',
+        'data-expanded:data-ending-style:data-[swipe-direction=left]:[transform:translateX(calc(var(--toast-swipe-movement-x)-150%))_translateY(var(--offset-y))]',
+        'data-expanded:data-ending-style:data-[swipe-direction=right]:[transform:translateX(calc(var(--toast-swipe-movement-x)+150%))_translateY(var(--offset-y))]',
+        'data-expanded:data-ending-style:data-[swipe-direction=up]:[transform:translateY(calc(var(--toast-swipe-movement-y)-150%))]',
         className
       )}
       data-slot="toast"
@@ -63,7 +61,7 @@ function ToastContent({ className, ...props }: ToastPrimitive.Content.Props) {
   return (
     <ToastPrimitive.Content
       className={cn(
-        "flex h-full items-center gap-3 overflow-hidden p-4 transition-opacity duration-250 ease-out data-behind:opacity-0 data-expanded:opacity-100",
+        'flex h-full items-center gap-3 overflow-hidden p-4 transition-opacity duration-250 ease-out data-behind:opacity-0 data-expanded:opacity-100',
         className
       )}
       data-slot="toast-content"
@@ -73,13 +71,13 @@ function ToastContent({ className, ...props }: ToastPrimitive.Content.Props) {
 }
 
 function ToastTitle({ className, ...props }: ToastPrimitive.Title.Props) {
-  return <ToastPrimitive.Title className={cn("font-medium text-sm", className)} data-slot="toast-title" {...props} />;
+  return <ToastPrimitive.Title className={cn('font-medium text-sm', className)} data-slot="toast-title" {...props} />;
 }
 
 function ToastDescription({ className, ...props }: ToastPrimitive.Description.Props) {
   return (
     <ToastPrimitive.Description
-      className={cn("text-muted-foreground text-sm", className)}
+      className={cn('text-muted-foreground text-sm', className)}
       data-slot="toast-description"
       {...props}
     />
@@ -89,7 +87,7 @@ function ToastDescription({ className, ...props }: ToastPrimitive.Description.Pr
 function ToastAction({ className, render, ...props }: ToastPrimitive.Action.Props) {
   return (
     <ToastPrimitive.Action
-      className={cn("shrink-0", className)}
+      className={cn('shrink-0', className)}
       data-slot="toast-action"
       render={render ?? <Button size="sm" type="button" variant="outline" />}
       {...props}
@@ -118,19 +116,19 @@ function ToastIcon({ type }: { type: string | undefined }) {
   let icon: React.ReactNode = null;
 
   switch (type) {
-    case "success":
+    case 'success':
       icon = <CircleCheckIcon aria-hidden="true" />;
       break;
-    case "info":
+    case 'info':
       icon = <InfoIcon aria-hidden="true" />;
       break;
-    case "warning":
+    case 'warning':
       icon = <TriangleAlertIcon aria-hidden="true" />;
       break;
-    case "error":
+    case 'error':
       icon = <OctagonXIcon aria-hidden="true" className="text-destructive" />;
       break;
-    case "loading":
+    case 'loading':
       icon = <Loader2Icon aria-hidden="true" className="motion-safe:animate-spin" />;
       break;
     default:

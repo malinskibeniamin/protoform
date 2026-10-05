@@ -1,11 +1,11 @@
-import React from "react";
-import type { ProtoformMessageFormatter } from "@/registry/base-nova/protoform/lib/core/messages";
+import React from 'react';
+import type { ProtoformMessageFormatter } from '@/registry/base-nova/protoform/lib/core/messages';
 
-import type { AutoFormFieldComponents, AutoFormUIComponents, ParsedField } from "./core-types";
-import type { DataProviderRegistry } from "./data-providers";
-import { getPathInObject } from "./field-utils";
-import type { FieldTypeRegistry } from "./registry";
-import type { AutoFormUiRule, DeprecatedFieldPolicy } from "./types";
+import type { AutoFormFieldComponents, AutoFormUIComponents, ParsedField } from './core-types';
+import type { DataProviderRegistry } from './data-providers';
+import { getPathInObject } from './field-utils';
+import type { FieldTypeRegistry } from './registry';
+import type { AutoFormUiRule, DeprecatedFieldPolicy } from './types';
 
 export interface AutoFormContextValue {
   dataProviders?: DataProviderRegistry | undefined;
@@ -25,7 +25,7 @@ export const AutoFormContext = React.createContext<AutoFormContextValue | null>(
 export function useAutoForm(): AutoFormContextValue {
   const context = React.useContext(AutoFormContext);
   if (context === null) {
-    throw new Error("useAutoForm must be used inside an AutoForm component.");
+    throw new Error('useAutoForm must be used inside an AutoForm component.');
   }
   return context;
 }
@@ -42,21 +42,16 @@ export function useAutoFormField(path: string[]) {
   };
 }
 
-// ---------------------------------------------------------------------------
-// Legacy aliases – kept during migration, will be removed once all consumers
-// switch to useAutoForm().
-// ---------------------------------------------------------------------------
-
-export type InternalAutoFormRenderContextValue = Pick<AutoFormContextValue, "uiComponents" | "formComponents">;
+export type InternalAutoFormRenderContextValue = Pick<AutoFormContextValue, 'uiComponents' | 'formComponents'>;
 export type InternalAutoFormRuntimeContextValue = Pick<
   AutoFormContextValue,
-  | "deprecatedFields"
-  | "formValues"
-  | "evaluateRules"
-  | "fieldRegistry"
-  | "formatMessage"
-  | "getFieldUiConfig"
-  | "testIdPrefix"
+  | 'deprecatedFields'
+  | 'formValues'
+  | 'evaluateRules'
+  | 'fieldRegistry'
+  | 'formatMessage'
+  | 'getFieldUiConfig'
+  | 'testIdPrefix'
 >;
 
 export const AutoFormRenderContext = AutoFormContext;

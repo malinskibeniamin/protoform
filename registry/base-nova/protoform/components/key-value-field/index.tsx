@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import { Plus, X } from "lucide-react";
-import { type ReactNode, useMemo, useRef } from "react";
+import { Plus, X } from 'lucide-react';
+import { type ReactNode, useMemo, useRef } from 'react';
 
-import { Button } from "@/components/ui/button";
-import { Combobox, type ComboboxProps } from "@/components/ui/combobox";
-import { Input, type InputProps } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { findDuplicateIndices, useInputListFocus } from "@/registry/base-nova/protoform/lib/input-utils";
-import type { SharedProps } from "@/registry/base-nova/protoform/lib/utils";
+import { Button } from '@/components/ui/button';
+import { Combobox, type ComboboxProps } from '@/components/ui/combobox';
+import { Input, type InputProps } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { findDuplicateIndices, useInputListFocus } from '@/registry/base-nova/protoform/lib/input-utils';
+import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
-const DEFAULT_KEY_FIELD_PROPS = { placeholder: "Key" };
+const DEFAULT_KEY_FIELD_PROPS = { placeholder: 'Key' };
 
-const DEFAULT_VALUE_FIELD_PROPS = { placeholder: "Value" };
+const DEFAULT_VALUE_FIELD_PROPS = { placeholder: 'Value' };
 
 export interface KeyValuePair {
   key: string;
@@ -21,8 +21,8 @@ export interface KeyValuePair {
 
 const EMPTY_KEY_VALUE_PAIRS: KeyValuePair[] = [];
 
-type InputFieldConfig = { mode?: "input" } & Omit<InputProps, "value" | "onChange" | "disabled" | "aria-invalid">;
-type ComboboxFieldConfig = { mode: "combobox" } & Omit<ComboboxProps, "value" | "onChange" | "disabled">;
+type InputFieldConfig = { mode?: 'input' } & Omit<InputProps, 'value' | 'onChange' | 'disabled' | 'aria-invalid'>;
+type ComboboxFieldConfig = { mode: 'combobox' } & Omit<ComboboxProps, 'value' | 'onChange' | 'disabled'>;
 export type KeyValueFieldConfig = InputFieldConfig | ComboboxFieldConfig;
 
 export interface KeyValueFieldError {
@@ -59,7 +59,7 @@ function FieldRenderer({
   isInvalid: boolean;
   testId?: string | undefined;
 }) {
-  if (config.mode === "combobox") {
+  if (config.mode === 'combobox') {
     const { mode: _m, ...comboboxProps } = config;
     return <Combobox {...comboboxProps} disabled={disabled} onChange={onChange} testId={testId} value={value} />;
   }
@@ -78,17 +78,17 @@ function FieldRenderer({
 }
 
 function ErrorRow({ keyError, valueError }: { keyError?: string | undefined; valueError?: string | undefined }) {
-  if (!((keyError !== undefined && keyError !== "") || (valueError !== undefined && valueError !== ""))) {
+  if (!((keyError !== undefined && keyError !== '') || (valueError !== undefined && valueError !== ''))) {
     return null;
   }
   return (
     <>
-      {keyError !== undefined && keyError !== "" ? (
+      {keyError !== undefined && keyError !== '' ? (
         <p className="-mt-1 text-destructive text-sm">{keyError}</p>
       ) : (
         <span />
       )}
-      {valueError !== undefined && valueError !== "" ? (
+      {valueError !== undefined && valueError !== '' ? (
         <p className="-mt-1 text-destructive text-sm">{valueError}</p>
       ) : (
         <span />
@@ -129,7 +129,7 @@ function KeyValueRow({
   onDelete: (index: number) => void;
   onAdd?: (() => void) | undefined;
 }) {
-  const hasTestId = testId !== undefined && testId !== "";
+  const hasTestId = testId !== undefined && testId !== '';
   const isKeyInvalid = Boolean(error?.key) || Boolean(pair.value && !pair.key) || isDuplicate;
   const isValueInvalid = Boolean(error?.value) || Boolean(pair.key && !pair.value);
 
@@ -162,7 +162,7 @@ function KeyValueRow({
       >
         <X size={16} />
       </Button>
-      <ErrorRow keyError={isDuplicate ? "Duplicate key" : error?.key} valueError={error?.value} />
+      <ErrorRow keyError={isDuplicate ? 'Duplicate key' : error?.key} valueError={error?.value} />
       {onAdd && isLast ? (
         <Button
           className="col-span-2"
@@ -188,7 +188,7 @@ export function KeyValueField({
   errors,
   label,
   description,
-  addButtonLabel = "Add",
+  addButtonLabel = 'Add',
   keyFieldProps = DEFAULT_KEY_FIELD_PROPS,
   valueFieldProps = DEFAULT_VALUE_FIELD_PROPS,
   showAddButton = true,
@@ -204,7 +204,7 @@ export function KeyValueField({
   const isAtLimit = maxItems !== undefined && value.length >= maxItems;
 
   const handleAdd = () => {
-    onChange?.([...value, { key: "", value: "" }]);
+    onChange?.([...value, { key: '', value: '' }]);
     onAdd();
   };
 
@@ -265,7 +265,7 @@ export function KeyValueField({
       {value.length === 0 && showAddButton === true && !isAtLimit ? (
         <Button
           data-slot="add-button"
-          data-testid={testId !== undefined && testId !== "" ? `${testId}-add` : undefined}
+          data-testid={testId !== undefined && testId !== '' ? `${testId}-add` : undefined}
           disabled={disabled}
           onClick={handleAdd}
           size="sm"

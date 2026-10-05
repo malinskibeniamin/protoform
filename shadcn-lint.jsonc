@@ -5,8 +5,36 @@
   "categories": {
     "correctness": "off"
   },
-  "jsPlugins": ["@shadcn/lint"],
+  "jsPlugins": ["@shadcn/lint", "./scripts/oxlint-no-comments.mjs"],
   "rules": {
+    "protoform/no-comments": "error",
+    "typescript/ban-ts-comment": [
+      "error",
+      {
+        "ts-ignore": true,
+        "ts-expect-error": true,
+        "ts-nocheck": true
+      }
+    ],
+    "unicorn/no-abusive-eslint-disable": "error",
+    "no-warning-comments": [
+      "error",
+      {
+        "terms": [
+          "biome-ignore",
+          "eslint-disable",
+          "oxlint-disable",
+          "react-doctor-disable",
+          "prettier-ignore",
+          "copyright",
+          "spdx-license-identifier",
+          "spdx-filecopyrighttext",
+          "licensed under"
+        ],
+        "location": "start",
+        "decoration": ["*"]
+      }
+    ],
     "shadcn/no-restyle": [
       "error",
       {
@@ -16,12 +44,7 @@
         "contracts": [
           {
             "pattern": "^(Text|Heading)$",
-            "allow": [
-              "layout",
-              "typography",
-              "text-muted-foreground",
-              "text-destructive"
-            ]
+            "allow": ["layout", "typography", "text-muted-foreground", "text-destructive"]
           },
           {
             "pattern": "^(Field|FieldLabel|FieldContent|AlertDescription|DialogBody|DialogHeader)$",
@@ -88,13 +111,23 @@
   // No definition-site exemptions: these components are authored or customized.
   // Any future exemption requires verified unmodified upstream shadcn source
   // and an exact file path, never a component-directory wildcard.
+  "overrides": [
+    {
+      "files": [
+        "registry/base-nova/protoform/demo/catalog/*.tsx",
+        "content/docs/pl/**/meta.ts",
+        "content/docs/zh/**/meta.ts",
+        "content/docs/zh-TW/**/meta.ts"
+      ],
+      "rules": {
+        "protoform/no-comments": "off"
+      }
+    }
+  ],
   "settings": {
     "shadcn": {
       "ui": "@/components/ui",
-      "componentImports": [
-        "^@/components/ui/",
-        "^@/registry/base-nova/protoform/components/"
-      ]
+      "componentImports": ["^@/components/ui/", "^@/registry/base-nova/protoform/components/"]
     }
   }
 }

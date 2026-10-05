@@ -1,33 +1,33 @@
-"use client";
+'use client';
 
-import { createRouterTransport, type Transport } from "@connectrpc/connect";
-import { TransportProvider } from "@connectrpc/connect-query";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useState } from "react";
+import { createRouterTransport, type Transport } from '@connectrpc/connect';
+import { TransportProvider } from '@connectrpc/connect-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useState } from 'react';
 
-import { LibraryService } from "@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_pb";
+import { LibraryService } from '@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_pb';
 
-import { BookstoreWorkspace } from "./bookstore-workspace";
-import { createLibraryService } from "./library-service";
+import { BookstoreWorkspace } from './bookstore-workspace';
+import { createLibraryService } from './library-service';
 
-export const client = "only";
+export const client = 'only';
 
 interface BookstoreDemoProps {
   transport?: Transport;
   visitorId?: string;
 }
 
-const VISITOR_KEY = "protoform-bookstore-visitor";
+const VISITOR_KEY = 'protoform-bookstore-visitor';
 
 function newVisitorId(): string {
   return `demo-${globalThis.crypto.randomUUID().toLowerCase()}`;
 }
 
 function initialVisitorId(provided?: string): string {
-  if (provided !== undefined && provided !== "") {
+  if (provided !== undefined && provided !== '') {
     return provided;
   }
-  if (typeof sessionStorage === "undefined") {
+  if (typeof sessionStorage === 'undefined') {
     return newVisitorId();
   }
   const stored = sessionStorage.getItem(VISITOR_KEY);
@@ -48,7 +48,7 @@ export function BookstoreDemo({ transport: providedTransport, visitorId: provide
 
   function resetLibrary() {
     const next = newVisitorId();
-    if (typeof sessionStorage !== "undefined") {
+    if (typeof sessionStorage !== 'undefined') {
       sessionStorage.setItem(VISITOR_KEY, next);
     }
     queryClient.clear();

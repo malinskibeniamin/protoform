@@ -13,8 +13,8 @@ import {
   ScalarType,
   toJson,
   toJsonString,
-} from "@bufbuild/protobuf";
-import { base64Decode, base64Encode } from "@bufbuild/protobuf/wire";
+} from '@bufbuild/protobuf';
+import { base64Decode, base64Encode } from '@bufbuild/protobuf/wire';
 import {
   DurationSchema,
   type FieldMask,
@@ -25,10 +25,10 @@ import {
   timestampDate,
   timestampFromDate,
   ValueSchema,
-} from "@bufbuild/protobuf/wkt";
-import type { ValidatorOptions } from "@bufbuild/protovalidate";
-import type { EmptyRepeatedStringPolicy, FormValues, StandardSchemaV1 } from "../core/index.js";
-import type { ProtoformMessageFormatter } from "../core/messages.js";
+} from '@bufbuild/protobuf/wkt';
+import type { ValidatorOptions } from '@bufbuild/protovalidate';
+import type { EmptyRepeatedStringPolicy, FormValues, StandardSchemaV1 } from '../core/index.js';
+import type { ProtoformMessageFormatter } from '../core/messages.js';
 import {
   ANY_TYPE,
   cloneField,
@@ -44,8 +44,8 @@ import {
   TIMESTAMP_TYPE,
   tracksPresence,
   VALUE_TYPE,
-} from "./descriptor-utils.js";
-import { protoPathToFormPath } from "./proto-error-path.js";
+} from './descriptor-utils.js';
+import { protoPathToFormPath } from './proto-error-path.js';
 
 const PROTO_JSON_FALLBACK_TYPES = [
   TIMESTAMP_TYPE,
@@ -57,7 +57,7 @@ const PROTO_JSON_FALLBACK_TYPES = [
   ANY_TYPE,
 ];
 
-export const PROTO_FORM_ROOT_ERROR_KEY = "__protoFormRoot__";
+export const PROTO_FORM_ROOT_ERROR_KEY = '__protoFormRoot__';
 
 type SchemaIssue = StandardSchemaV1.Issue;
 type AnyObject = Record<string, unknown>;
@@ -73,10 +73,6 @@ export interface ProtoMapFormEntry {
 }
 
 export interface ProtoConversionOptions {
-  /**
-   * Per-field policies keyed by descriptor path. Empty and whitespace-only
-   * repeated strings are discarded unless the field is set to `preserve`.
-   */
   emptyRepeatedStringPolicies?: Readonly<Record<string, EmptyRepeatedStringPolicy>> | undefined;
 }
 
@@ -85,7 +81,7 @@ export interface ProtoFormOptions extends ValidatorOptions, ProtoConversionOptio
 }
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
-  return value !== null && typeof value === "object" && !Array.isArray(value);
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
 
 function toDateTimeLocalValue(timestamp: MessageShape<typeof TimestampSchema> | undefined): string | undefined {
@@ -99,10 +95,10 @@ function toDateTimeLocalValue(timestamp: MessageShape<typeof TimestampSchema> | 
   }
 
   const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
 
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 }
@@ -112,13 +108,13 @@ function objectHasValues(value: Record<string, unknown>): boolean {
     if (entry === undefined || entry === null) {
       return false;
     }
-    if (typeof entry === "string") {
+    if (typeof entry === 'string') {
       return entry.trim().length > 0;
     }
     if (Array.isArray(entry)) {
       return entry.length > 0;
     }
-    if (typeof entry === "object") {
+    if (typeof entry === 'object') {
       return isPlainObject(entry) ? objectHasValues(entry) : true;
     }
     return true;
@@ -126,10 +122,10 @@ function objectHasValues(value: Record<string, unknown>): boolean {
 }
 
 function isJsonValue(value: unknown): value is JsonValue {
-  if (value === null || typeof value === "string" || typeof value === "boolean") {
+  if (value === null || typeof value === 'string' || typeof value === 'boolean') {
     return true;
   }
-  if (typeof value === "number") {
+  if (typeof value === 'number') {
     return Number.isFinite(value);
   }
   if (Array.isArray(value)) {
@@ -141,25 +137,25 @@ function isJsonValue(value: unknown): value is JsonValue {
 function fieldToFormValue(field: DescField, value: unknown): unknown {
   const hasValue = Boolean(value);
   switch (field.fieldKind) {
-    case "scalar": {
+    case 'scalar': {
       if (field.scalar === ScalarType.BYTES) {
         return value instanceof Uint8Array ? base64Encode(value) : undefined;
       }
       if (is64BitScalar(field.scalar)) {
-        return typeof value === "bigint" ? value.toString() : (value ?? undefined);
+        return typeof value === 'bigint' ? value.toString() : (value ?? undefined);
       }
       return value;
     }
-    case "enum":
+    case 'enum':
       return value;
-    case "message": {
+    case 'message': {
       if (isWrapperDesc(field.message)) {
         const wrappedScalar = field.message.fields[0]?.scalar;
         if (wrappedScalar === ScalarType.BYTES) {
           return value instanceof Uint8Array ? base64Encode(value) : undefined;
         }
         if (is64BitScalar(wrappedScalar)) {
-          return typeof value === "bigint" ? value.toString() : (value ?? undefined);
+          return typeof value === 'bigint' ? value.toString() : (value ?? undefined);
         }
         return value;
       }
@@ -169,7 +165,7 @@ function fieldToFormValue(field: DescField, value: unknown): unknown {
           return toDateTimeLocalValue(value as MessageShape<typeof TimestampSchema> | undefined);
         case DURATION_TYPE:
           return hasValue
-            ? toJsonString(DurationSchema, value as MessageShape<typeof DurationSchema>).replace(/"/gu, "")
+            ? toJsonString(DurationSchema, value as MessageShape<typeof DurationSchema>).replace(/"/gu, '')
             : undefined;
         case FIELD_MASK_TYPE:
           return isPlainObject(value) && Array.isArray((value as { paths?: unknown[] }).paths)
@@ -194,22 +190,22 @@ function fieldToFormValue(field: DescField, value: unknown): unknown {
           return isPlainObject(value)
             ? {
                 typeUrl:
-                  typeof (value as { typeUrl?: unknown }).typeUrl === "string"
+                  typeof (value as { typeUrl?: unknown }).typeUrl === 'string'
                     ? (value as { typeUrl: string }).typeUrl
-                    : "",
+                    : '',
                 valueBase64:
                   (value as { value?: unknown }).value instanceof Uint8Array
                     ? base64Encode((value as { value: Uint8Array }).value)
-                    : "",
+                    : '',
               }
             : undefined;
         default:
           return hasValue ? messageToFormValues(field.message, value as AnyObject) : undefined;
       }
     }
-    case "list":
+    case 'list':
       return Array.isArray(value) ? value.map((item) => listItemToFormValue(field, item)) : [];
-    case "map": {
+    case 'map': {
       if (!isPlainObject(value)) {
         return [];
       }
@@ -228,19 +224,19 @@ function fieldToFormValue(field: DescField, value: unknown): unknown {
 
 function listItemToFormValue(field: ListField, value: unknown): unknown {
   const hasValue = Boolean(value);
-  if (field.listKind === "message" && hasValue) {
+  if (field.listKind === 'message' && hasValue) {
     if (isWrapperDesc(field.message)) {
       return value;
     }
     return messageToFormValues(field.message, value as AnyObject);
   }
 
-  if (field.listKind === "scalar" && field.scalar === ScalarType.BYTES) {
+  if (field.listKind === 'scalar' && field.scalar === ScalarType.BYTES) {
     return value instanceof Uint8Array ? base64Encode(value) : undefined;
   }
 
-  if (field.listKind === "scalar" && is64BitScalar(field.scalar)) {
-    return typeof value === "bigint" ? value.toString() : value;
+  if (field.listKind === 'scalar' && is64BitScalar(field.scalar)) {
+    return typeof value === 'bigint' ? value.toString() : value;
   }
 
   return value;
@@ -248,19 +244,19 @@ function listItemToFormValue(field: ListField, value: unknown): unknown {
 
 function mapValueToFormValue(field: MapField, value: unknown): unknown {
   const hasValue = Boolean(value);
-  if (field.mapKind === "message" && hasValue) {
+  if (field.mapKind === 'message' && hasValue) {
     if (isWrapperDesc(field.message)) {
       return value;
     }
     return messageToFormValues(field.message, value as AnyObject);
   }
 
-  if (field.mapKind === "scalar" && field.scalar === ScalarType.BYTES) {
+  if (field.mapKind === 'scalar' && field.scalar === ScalarType.BYTES) {
     return value instanceof Uint8Array ? base64Encode(value) : undefined;
   }
 
-  if (field.mapKind === "scalar" && is64BitScalar(field.scalar)) {
-    return typeof value === "bigint" ? value.toString() : value;
+  if (field.mapKind === 'scalar' && is64BitScalar(field.scalar)) {
+    return typeof value === 'bigint' ? value.toString() : value;
   }
 
   return value;
@@ -268,7 +264,7 @@ function mapValueToFormValue(field: MapField, value: unknown): unknown {
 
 function mapKeyToFormValue(field: MapField, key: string): string | number | boolean {
   if (field.mapKey === ScalarType.BOOL) {
-    return key === "true";
+    return key === 'true';
   }
   if (is64BitScalar(field.mapKey) || field.mapKey === ScalarType.STRING) {
     return key;
@@ -280,9 +276,9 @@ function messageToFormValues(desc: DescMessage, value: AnyObject): Record<string
   const result: Record<string, unknown> = {};
 
   for (const member of desc.members) {
-    if (member.kind === "oneof") {
+    if (member.kind === 'oneof') {
       const oneofValue = value[member.localName] as { case?: string; value?: unknown } | undefined;
-      if (!(oneofValue?.case !== undefined && oneofValue?.case !== "")) {
+      if (!(oneofValue?.case !== undefined && oneofValue?.case !== '')) {
         result[member.localName] = { case: undefined, value: undefined };
         continue;
       }
@@ -310,26 +306,26 @@ export function protoToFormValues<Desc extends DescMessage>(
 }
 
 function normalizeBooleanValue(value: unknown): boolean | undefined {
-  if (value === undefined || value === null || value === "") {
+  if (value === undefined || value === null || value === '') {
     return;
   }
-  if (typeof value === "boolean") {
+  if (typeof value === 'boolean') {
     return value;
   }
-  if (value === "true") {
+  if (value === 'true') {
     return true;
   }
-  if (value === "false") {
+  if (value === 'false') {
     return false;
   }
   return Boolean(value);
 }
 
 function normalizeNumberValue(value: unknown): number | undefined {
-  if (value === undefined || value === null || value === "") {
+  if (value === undefined || value === null || value === '') {
     return;
   }
-  if (typeof value === "number") {
+  if (typeof value === 'number') {
     return Number.isNaN(value) ? undefined : value;
   }
   const parsed = Number(value);
@@ -337,13 +333,13 @@ function normalizeNumberValue(value: unknown): number | undefined {
 }
 
 function normalizeFloatingPointValue(value: unknown): number | undefined {
-  if (value === undefined || value === null || value === "") {
+  if (value === undefined || value === null || value === '') {
     return;
   }
-  if (typeof value === "number") {
+  if (typeof value === 'number') {
     return value;
   }
-  if (value === "NaN") {
+  if (value === 'NaN') {
     return Number.NaN;
   }
   const parsed = Number(value);
@@ -351,28 +347,28 @@ function normalizeFloatingPointValue(value: unknown): number | undefined {
 }
 
 function normalizeBigIntValue(value: unknown): bigint | undefined {
-  if (value === undefined || value === null || value === "") {
+  if (value === undefined || value === null || value === '') {
     return;
   }
-  if (typeof value === "bigint") {
+  if (typeof value === 'bigint') {
     return value;
   }
-  if (typeof value === "number" && Number.isSafeInteger(value)) {
+  if (typeof value === 'number' && Number.isSafeInteger(value)) {
     return BigInt(value);
   }
-  if (typeof value === "string") {
+  if (typeof value === 'string') {
     try {
       return BigInt(value);
     } catch {
-      return;
+      return undefined;
     }
   }
-  return;
+  return undefined;
 }
 
 function normalizeScalarValue(field: DescField, value: unknown): unknown {
   if (field.scalar === ScalarType.STRING) {
-    if (typeof value === "string") {
+    if (typeof value === 'string') {
       return value;
     }
 
@@ -386,7 +382,7 @@ function normalizeScalarValue(field: DescField, value: unknown): unknown {
     return normalizeBooleanValue(value);
   }
   if (field.scalar === ScalarType.BYTES) {
-    if (typeof value === "string") {
+    if (typeof value === 'string') {
       return base64Decode(value);
     }
 
@@ -410,7 +406,7 @@ function normalizeMessageFieldValue(
   if (isWrapperDesc(field.message)) {
     const wrappedScalar = field.message.fields[0]?.scalar;
     const wrappedField = cloneField(field, {
-      fieldKind: "scalar",
+      fieldKind: 'scalar',
       scalar: wrappedScalar,
     });
     return normalizeScalarValue(wrappedField, value);
@@ -418,15 +414,15 @@ function normalizeMessageFieldValue(
 
   switch (field.message.typeName) {
     case TIMESTAMP_TYPE:
-      return typeof value === "string" && value !== "" ? timestampFromDate(new Date(value)) : undefined;
+      return typeof value === 'string' && value !== '' ? timestampFromDate(new Date(value)) : undefined;
     case DURATION_TYPE:
-      return typeof value === "string" && value !== ""
+      return typeof value === 'string' && value !== ''
         ? fromJsonString(DurationSchema, JSON.stringify(value))
         : undefined;
     case FIELD_MASK_TYPE:
       return Array.isArray(value) && value.length > 0
         ? {
-            paths: value.filter((entry): entry is string => typeof entry === "string"),
+            paths: value.filter((entry): entry is string => typeof entry === 'string'),
           }
         : undefined;
     case STRUCT_TYPE:
@@ -439,15 +435,15 @@ function normalizeMessageFieldValue(
       const anyValue = isPlainObject(value) ? (value as ProtoAnyFormValue) : undefined;
       if (
         !(
-          (anyValue?.typeUrl !== undefined && anyValue?.typeUrl !== "") ||
-          (anyValue?.valueBase64 !== undefined && anyValue?.valueBase64 !== "")
+          (anyValue?.typeUrl !== undefined && anyValue?.typeUrl !== '') ||
+          (anyValue?.valueBase64 !== undefined && anyValue?.valueBase64 !== '')
         )
       ) {
         return;
       }
       return {
-        typeUrl: anyValue?.typeUrl ?? "",
-        value: base64Decode(anyValue?.valueBase64 ?? ""),
+        typeUrl: anyValue?.typeUrl ?? '',
+        value: base64Decode(anyValue?.valueBase64 ?? ''),
       };
     }
     default: {
@@ -466,17 +462,17 @@ function listItemToProtoValue(
   options: ProtoConversionOptions,
   path: readonly string[]
 ): unknown {
-  if (field.listKind === "scalar") {
+  if (field.listKind === 'scalar') {
     return normalizeScalarValue(
       cloneField(field, {
-        fieldKind: "scalar",
+        fieldKind: 'scalar',
         oneof: undefined,
       }),
       value
     );
   }
-  if (field.listKind === "enum") {
-    return value === undefined || value === "" ? undefined : Number(value);
+  if (field.listKind === 'enum') {
+    return value === undefined || value === '' ? undefined : Number(value);
   }
   if (isWrapperDesc(field.message)) {
     return value;
@@ -490,17 +486,17 @@ function mapValueToProtoValue(
   options: ProtoConversionOptions,
   path: readonly string[]
 ): unknown {
-  if (field.mapKind === "scalar") {
+  if (field.mapKind === 'scalar') {
     return normalizeScalarValue(
       cloneField(field, {
-        fieldKind: "scalar",
+        fieldKind: 'scalar',
         oneof: undefined,
       }),
       value
     );
   }
-  if (field.mapKind === "enum") {
-    return value === undefined || value === "" ? undefined : Number(value);
+  if (field.mapKind === 'enum') {
+    return value === undefined || value === '' ? undefined : Number(value);
   }
   if (isWrapperDesc(field.message)) {
     return value;
@@ -517,11 +513,11 @@ function repeatedListEntries(
   if (!Array.isArray(value)) {
     return [];
   }
-  const policy = options.emptyRepeatedStringPolicies?.[path.join(".")];
-  if (field.listKind !== "scalar" || field.scalar !== ScalarType.STRING || policy === "preserve") {
+  const policy = options.emptyRepeatedStringPolicies?.[path.join('.')];
+  if (field.listKind !== 'scalar' || field.scalar !== ScalarType.STRING || policy === 'preserve') {
     return value;
   }
-  return value.filter((entry) => typeof entry !== "string" || entry.trim().length > 0);
+  return value.filter((entry) => typeof entry !== 'string' || entry.trim().length > 0);
 }
 
 function fieldToProtoValue(
@@ -531,17 +527,17 @@ function fieldToProtoValue(
   path: readonly string[]
 ): unknown {
   switch (field.fieldKind) {
-    case "scalar":
+    case 'scalar':
       return normalizeScalarValue(field, value);
-    case "enum":
-      return value === undefined || value === "" ? undefined : Number(value);
-    case "message":
+    case 'enum':
+      return value === undefined || value === '' ? undefined : Number(value);
+    case 'message':
       return normalizeMessageFieldValue(field, value, options, path);
-    case "list":
+    case 'list':
       return repeatedListEntries(field, value, options, path).map((entry) =>
         listItemToProtoValue(field, entry, options, path)
       );
-    case "map": {
+    case 'map': {
       const entries = isPlainObject(value)
         ? Object.entries(value).map(([key, mapValue]) => ({ key, value: mapValue }))
         : value;
@@ -552,11 +548,11 @@ function fieldToProtoValue(
                 if (!isPlainObject(entry)) {
                   return null;
                 }
-                const mapKey = entry["key"];
-                if (mapKey === undefined || mapKey === null || mapKey === "") {
+                const mapKey = entry['key'];
+                if (mapKey === undefined || mapKey === null || mapKey === '') {
                   return null;
                 }
-                return [String(mapKey), mapValueToProtoValue(field, entry["value"], options, path)] as const;
+                return [String(mapKey), mapValueToProtoValue(field, entry['value'], options, path)] as const;
               })
               .filter((entry): entry is readonly [string, unknown] => entry !== null)
           )
@@ -576,9 +572,9 @@ function messageToProtoInit(
   const result: Record<string, unknown> = {};
 
   for (const member of desc.members) {
-    if (member.kind === "oneof") {
+    if (member.kind === 'oneof') {
       const oneofValue = value[member.localName] as { case?: string; value?: unknown } | undefined;
-      if (!(oneofValue?.case !== undefined && oneofValue?.case !== "")) {
+      if (!(oneofValue?.case !== undefined && oneofValue?.case !== '')) {
         continue;
       }
 
@@ -680,18 +676,18 @@ function preserveRepeatedMessageUnknownFields(desc: DescMessage, target: unknown
 
 function preserveFieldUnknownFields(field: DescField, target: unknown, source: unknown): void {
   switch (field.fieldKind) {
-    case "message":
+    case 'message':
       if (isPlainObject(target) && isPlainObject(source)) {
         preserveMessageUnknownFields(field.message, target, source);
       }
       return;
-    case "list":
-      if (field.listKind === "message" && Array.isArray(target) && Array.isArray(source)) {
+    case 'list':
+      if (field.listKind === 'message' && Array.isArray(target) && Array.isArray(source)) {
         preserveRepeatedMessageUnknownFields(field.message, target, source);
       }
       return;
-    case "map":
-      if (field.mapKind === "message" && isPlainObject(target) && isPlainObject(source)) {
+    case 'map':
+      if (field.mapKind === 'message' && isPlainObject(target) && isPlainObject(source)) {
         for (const [key, targetValue] of Object.entries(target)) {
           const sourceValue = source[key];
           if (isPlainObject(targetValue) && isPlainObject(sourceValue)) {
@@ -700,8 +696,8 @@ function preserveFieldUnknownFields(field: DescField, target: unknown, source: u
         }
       }
       return;
-    case "enum":
-    case "scalar":
+    case 'enum':
+    case 'scalar':
       return;
     default:
       throw new TypeError(`Unsupported field: ${String(field satisfies never)}`);
@@ -709,25 +705,25 @@ function preserveFieldUnknownFields(field: DescField, target: unknown, source: u
 }
 
 function preserveMessageUnknownFields(desc: DescMessage, target: AnyObject, source: AnyObject): void {
-  const hasUnknownFields = Boolean(source["$unknown"]);
+  const hasUnknownFields = Boolean(source['$unknown']);
   if (hasUnknownFields) {
-    target["$unknown"] = structuredClone(source["$unknown"]);
+    target['$unknown'] = structuredClone(source['$unknown']);
   }
 
   for (const member of desc.members) {
-    if (member.kind === "oneof") {
+    if (member.kind === 'oneof') {
       const targetOneof = target[member.localName];
       const sourceOneof = source[member.localName];
       if (!(isPlainObject(targetOneof) && isPlainObject(sourceOneof))) {
         continue;
       }
-      const targetCase = targetOneof["case"];
-      if (typeof targetCase !== "string" || targetCase !== sourceOneof["case"]) {
+      const targetCase = targetOneof['case'];
+      if (typeof targetCase !== 'string' || targetCase !== sourceOneof['case']) {
         continue;
       }
       const activeField = member.fields.find((field) => field.localName === targetCase);
       if (activeField) {
-        preserveFieldUnknownFields(activeField, targetOneof["value"], sourceOneof["value"]);
+        preserveFieldUnknownFields(activeField, targetOneof['value'], sourceOneof['value']);
       }
       continue;
     }
@@ -736,11 +732,6 @@ function preserveMessageUnknownFields(desc: DescMessage, target: AnyObject, sour
   }
 }
 
-/**
- * Returns a validated protobuf message with unknown wire fields restored from
- * the corresponding surviving nodes in its edit source. The target is cloned
- * when a source is present.
- */
 export function preserveProtoMessageSource<Desc extends DescMessage>(
   desc: Desc,
   target: MessageShape<Desc>,
@@ -754,11 +745,6 @@ export function preserveProtoMessageSource<Desc extends DescMessage>(
   return message;
 }
 
-/**
- * Builds an edited message from form values while retaining unknown wire
- * fields from the parsed source message. Unknown fields are not part of the
- * form model, so reconstructing a message from values alone would drop them.
- */
 export function formValuesToProto<Desc extends DescMessage>(
   desc: Desc,
   values: Record<string, unknown>,
@@ -780,13 +766,6 @@ export function protoFormValuesToPayload<Desc extends DescMessage>(
   try {
     const init = formValuesToProtoInit(desc, values, options);
     const message = create(desc, init);
-    // `alwaysEmitImplicit: true` forces every scalar / message field to
-    // appear in the serialized JSON even when the form hasn't been
-    // touched. Without it, an untouched form renders as `{}` in the
-    // summary panel — so users have to start typing just to see the
-    // request shape. Emitting defaults gives them the full schema
-    // skeleton up front and reduces the interactions needed to
-    // visualise what will actually be sent.
     return toJson(desc, message, { alwaysEmitImplicit: true }) as unknown;
   } catch {
     try {
@@ -805,7 +784,7 @@ export function protoPayloadToFormValues<Desc extends DescMessage>(
     const message = fromJson(desc, (payload ?? {}) as JsonValue);
     return protoToFormValues(desc, message);
   } catch {
-    return;
+    return undefined;
   }
 }
 
@@ -823,14 +802,14 @@ function normalizeIssuePath(
 
   for (let index = 0; index < issue.path.length; index += 1) {
     const segment: StandardSchemaV1.PathSegment | PropertyKey | undefined = issue.path[index];
-    const key = segment !== null && typeof segment === "object" && "key" in segment ? segment.key : segment;
+    const key = segment !== null && typeof segment === 'object' && 'key' in segment ? segment.key : segment;
 
-    if (typeof key === "number") {
+    if (typeof key === 'number') {
       normalizedPath.push(key);
       continue;
     }
 
-    if (!currentDesc || typeof key !== "string") {
+    if (!currentDesc || typeof key !== 'string') {
       normalizedPath.push(String(key));
       continue;
     }
@@ -852,28 +831,26 @@ function normalizeIssuePath(
 
     normalizedPath.push(matchedField.localName);
 
-    if (matchedField.fieldKind === "map") {
+    if (matchedField.fieldKind === 'map') {
       const nextSegment = issue.path[index + 1];
       const mapKey =
-        typeof nextSegment === "object" && nextSegment && "key" in nextSegment ? nextSegment.key : nextSegment;
+        typeof nextSegment === 'object' && nextSegment && 'key' in nextSegment ? nextSegment.key : nextSegment;
       const mapEntries = Array.isArray(values[matchedField.localName])
         ? (values[matchedField.localName] as ProtoMapFormEntry[])
         : [];
-      const mapIndex = typeof mapKey === "string" ? mapEntries.findIndex((entry) => entry.key === mapKey) : -1;
+      const mapIndex = typeof mapKey === 'string' ? mapEntries.findIndex((entry) => entry.key === mapKey) : -1;
 
-      if (mapIndex !== -1 && issue.path.length > index + 2 && matchedField.mapKind === "message") {
-        normalizedPath.push(mapIndex, "value");
+      if (mapIndex !== -1 && issue.path.length > index + 2 && matchedField.mapKind === 'message') {
+        normalizedPath.push(mapIndex, 'value');
         currentDesc = matchedField.message;
         index += 1;
         continue;
       }
 
-      // If the protovalidate key no longer matches a rendered map entry, keep the error on the
-      // map field itself instead of targeting a stale array index in RHF state.
       return normalizedPath;
     }
 
-    if (matchedField.fieldKind === "message") {
+    if (matchedField.fieldKind === 'message') {
       if (isWrapperDesc(matchedField.message) || PROTO_JSON_FALLBACK_TYPES.includes(matchedField.message.typeName)) {
         return normalizedPath;
       }
@@ -881,17 +858,14 @@ function normalizeIssuePath(
       continue;
     }
 
-    if (matchedField.fieldKind === "list" && matchedField.listKind === "message") {
+    if (matchedField.fieldKind === 'list' && matchedField.listKind === 'message') {
       if (isWrapperDesc(matchedField.message) || PROTO_JSON_FALLBACK_TYPES.includes(matchedField.message.typeName)) {
         return normalizedPath;
       }
-      // Guard against stale array indices: if the next segment is a numeric index,
-      // verify the array still has that many entries. If not, anchor the error on
-      // the list field itself (same fallback strategy as map fields).
       const nextSegment = issue.path[index + 1];
       const nextKey =
-        typeof nextSegment === "object" && nextSegment && "key" in nextSegment ? nextSegment.key : nextSegment;
-      if (typeof nextKey === "number") {
+        typeof nextSegment === 'object' && nextSegment && 'key' in nextSegment ? nextSegment.key : nextSegment;
+      if (typeof nextKey === 'number') {
         const listEntries = values[matchedField.localName];
         if (!Array.isArray(listEntries) || nextKey >= listEntries.length) {
           return normalizedPath;
@@ -907,7 +881,6 @@ function normalizeIssuePath(
   return normalizedPath;
 }
 
-/** A Standard Schema issue whose path is already normalized to form paths. */
 export interface NormalizedProtoIssue {
   message: string;
   path: (string | number)[];
@@ -918,10 +891,6 @@ export type NormalizedProtoValidationResult<Output> =
   | { readonly issues: readonly NormalizedProtoIssue[] };
 
 export interface ProtoValidationContext {
-  /**
-   * Restrict pathful issues to fields overlapping this mask. Message-level
-   * issues remain visible because they cannot be attributed safely.
-   */
   validationMask?: FieldMask | undefined;
 }
 
@@ -937,7 +906,7 @@ const SIGNED_64_MAX = 9_223_372_036_854_775_807n;
 const UNSIGNED_64_MAX = 18_446_744_073_709_551_615n;
 
 function getScalarConversionIssue(field: ScalarField, value: unknown): string | undefined {
-  if (value === undefined || value === null || value === "") {
+  if (value === undefined || value === null || value === '') {
     return;
   }
   if (SIGNED_32_SCALARS.includes(field.scalar)) {
@@ -948,7 +917,7 @@ function getScalarConversionIssue(field: ScalarField, value: unknown): string | 
       numericValue < SIGNED_32_MIN ||
       numericValue > SIGNED_32_MAX
     ) {
-      return "Enter a signed 32-bit integer.";
+      return 'Enter a signed 32-bit integer.';
     }
   }
   if (UNSIGNED_32_SCALARS.includes(field.scalar)) {
@@ -959,57 +928,57 @@ function getScalarConversionIssue(field: ScalarField, value: unknown): string | 
       numericValue < 0 ||
       numericValue > UNSIGNED_32_MAX
     ) {
-      return "Enter an unsigned 32-bit integer.";
+      return 'Enter an unsigned 32-bit integer.';
     }
   }
   if (SIGNED_64_SCALARS.includes(field.scalar)) {
     const bigintValue = normalizeBigIntValue(value);
     if (bigintValue === undefined || bigintValue < SIGNED_64_MIN || bigintValue > SIGNED_64_MAX) {
-      return "Enter a signed 64-bit integer.";
+      return 'Enter a signed 64-bit integer.';
     }
   }
-  if (UNSIGNED_64_SCALARS.includes(field.scalar)) {
-    const bigintValue = normalizeBigIntValue(value);
-    if (bigintValue === undefined || bigintValue < 0n || bigintValue > UNSIGNED_64_MAX) {
-      return "Enter an unsigned 64-bit integer.";
-    }
+  if (!UNSIGNED_64_SCALARS.includes(field.scalar)) {
+    return;
   }
-  return;
+  const bigintValue = normalizeBigIntValue(value);
+  return bigintValue === undefined || bigintValue < 0n || bigintValue > UNSIGNED_64_MAX
+    ? 'Enter an unsigned 64-bit integer.'
+    : undefined;
 }
 
 function getMessageConversionIssue(field: MessageField, value: unknown): string | undefined {
-  if (value === undefined || value === null || value === "") {
+  if (value === undefined || value === null || value === '') {
     return;
   }
   if (field.message.typeName === TIMESTAMP_TYPE) {
-    return typeof value === "string" && !Number.isNaN(new Date(value).getTime())
+    return typeof value === 'string' && !Number.isNaN(new Date(value).getTime())
       ? undefined
-      : "Enter a valid date and time.";
+      : 'Enter a valid date and time.';
   }
   if (field.message.typeName === DURATION_TYPE) {
-    if (typeof value !== "string") {
-      return "Enter a valid duration.";
+    if (typeof value !== 'string') {
+      return 'Enter a valid duration.';
     }
     try {
       fromJsonString(DurationSchema, JSON.stringify(value));
       return;
     } catch {
-      return "Enter a valid duration.";
+      return 'Enter a valid duration.';
     }
   }
   if (field.message.typeName !== ANY_TYPE || !isPlainObject(value)) {
     return;
   }
   const { valueBase64 } = value as ProtoAnyFormValue;
-  if (valueBase64 === undefined || valueBase64 === "") {
+  if (valueBase64 === undefined || valueBase64 === '') {
     return;
   }
   try {
     base64Decode(valueBase64);
-    return;
   } catch {
-    return "Enter valid base64 data.";
+    return 'Enter valid base64 data.';
   }
+  return undefined;
 }
 
 function getMapConversionIssue(value: unknown): string | undefined {
@@ -1020,26 +989,26 @@ function getMapConversionIssue(value: unknown): string | undefined {
     if (!isPlainObject(entry)) {
       return [];
     }
-    const key = entry["key"];
-    return key === undefined || key === null || key === "" ? [] : [String(key)];
+    const key = entry['key'];
+    return key === undefined || key === null || key === '' ? [] : [String(key)];
   });
-  return new Set(keys).size === keys.length ? undefined : "Map keys must be unique.";
+  return new Set(keys).size === keys.length ? undefined : 'Map keys must be unique.';
 }
 
 function getFormConversionIssues(desc: DescMessage, values: Record<string, unknown>): NormalizedProtoIssue[] {
   return desc.members.flatMap((member) => {
-    if (member.kind === "oneof") {
+    if (member.kind === 'oneof') {
       return [];
     }
     let message: string | undefined;
-    if (member.fieldKind === "scalar") {
+    if (member.fieldKind === 'scalar') {
       message = getScalarConversionIssue(member, values[member.localName]);
-    } else if (member.fieldKind === "message") {
+    } else if (member.fieldKind === 'message') {
       message = getMessageConversionIssue(member, values[member.localName]);
-    } else if (member.fieldKind === "map") {
+    } else if (member.fieldKind === 'map') {
       message = getMapConversionIssue(values[member.localName]);
     }
-    return message !== undefined && message !== "" ? [{ message, path: [member.localName] }] : [];
+    return message !== undefined && message !== '' ? [{ message, path: [member.localName] }] : [];
   });
 }
 
@@ -1049,7 +1018,7 @@ function toFailureResult(error: unknown): {
   return {
     issues: [
       {
-        message: error instanceof Error ? error.message : "Failed to validate protobuf form values.",
+        message: error instanceof Error ? error.message : 'Failed to validate protobuf form values.',
         path: [],
       },
     ],
@@ -1088,20 +1057,20 @@ function filterValidationIssues(
   issues: readonly NormalizedProtoIssue[],
   validationMask?: FieldMask
 ): readonly NormalizedProtoIssue[] {
-  if (!validationMask || validationMask.paths.includes("*")) {
+  if (!validationMask || validationMask.paths.includes('*')) {
     return issues;
   }
 
   const formPaths = validationMask.paths.flatMap((path) => {
     const formPath = protoPathToFormPath(desc, path);
-    return formPath !== null && formPath !== "" ? [formPath] : [];
+    return formPath !== null && formPath !== '' ? [formPath] : [];
   });
 
   return issues.filter((issue) => {
     if (issue.path.length === 0) {
       return true;
     }
-    const issuePath = issue.path.join(".");
+    const issuePath = issue.path.join('.');
     return formPaths.some(
       (formPath) =>
         issuePath === formPath || issuePath.startsWith(`${formPath}.`) || formPath.startsWith(`${issuePath}.`)
@@ -1109,14 +1078,6 @@ function filterValidationIssues(
   });
 }
 
-/**
- * Shared validation pipeline: form values → proto init → `create()` →
- * protovalidate Standard Schema → issues re-pathed to FORM paths
- * (camelCase keys, oneofs flattened, map keys resolved to entry indices).
- *
- * Both `createProtoFormSchema` and `ProtoProvider.validateSchema` (and the
- * registry's react-hook-form resolver) flow through this single function.
- */
 export function validateFormValuesAgainstProtoSchema<Desc extends DescMessage>(
   desc: Desc,
   values: Record<string, unknown>,
@@ -1137,7 +1098,7 @@ export function validateFormValuesAgainstProtoSchema<Desc extends DescMessage>(
       return { issues: conversionIssues };
     }
     const message = formValuesToProto(desc, values, source, options);
-    const validationResult = schema["~standard"].validate(message);
+    const validationResult = schema['~standard'].validate(message);
 
     if (validationResult instanceof Promise) {
       return validationResult

@@ -1,7 +1,4 @@
-// Proto bridge — re-exports from protobuf-provider and local conversion utilities.
-// All proto-related imports within auto-form go through this single entry point.
-
-export type { ProtoFieldRenderType, ProtoUiRule } from "@/registry/base-nova/protoform/lib/protobuf-provider";
+export type { ProtoFieldRenderType, ProtoUiRule } from '@/registry/base-nova/protoform/lib/protobuf-provider';
 export {
   getProtoFieldCustomData,
   getProtoMessageUiConfig,
@@ -9,7 +6,7 @@ export {
   isProtoProvider,
   PROTO_FORM_ROOT_ERROR_KEY,
   ProtoProvider,
-} from "@/registry/base-nova/protoform/lib/protobuf-provider";
+} from '@/registry/base-nova/protoform/lib/protobuf-provider';
 export {
   getProtoJsonSchema,
   isProtoMapEntries,
@@ -18,4 +15,4 @@ export {
   protoPayloadToFormValues,
   protoToFormValues,
   resolveProtoSourceMessage,
-} from "./conversion";
+} from './conversion';

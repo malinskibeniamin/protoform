@@ -1,23 +1,23 @@
-import { describe, expect } from "@rstest/core";
-import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { describe, expect } from '@rstest/core';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
-import { Input } from ".";
+import { Input } from '.';
 
-describe("Input icon controls", () => {
-  test("names the password visibility control and updates its state", async () => {
+describe('Input icon controls', () => {
+  test('names the password visibility control and updates its state', async () => {
     const user = userEvent.setup();
     render(<Input aria-label="API token" type="password" />);
 
-    const toggle = screen.getByRole("button", { name: "Show password" });
+    const toggle = screen.getByRole('button', { name: 'Show password' });
     await user.click(toggle);
-    expect(screen.getByRole("button", { name: "Hide password" })).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Hide password' })).toBeVisible();
   });
 
-  test("names number step controls", () => {
+  test('names number step controls', () => {
     render(<Input aria-label="Retries" showStepControls type="number" />);
 
-    expect(screen.getByRole("button", { name: "Increase value" })).toBeVisible();
-    expect(screen.getByRole("button", { name: "Decrease value" })).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Increase value' })).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Decrease value' })).toBeVisible();
   });
 });

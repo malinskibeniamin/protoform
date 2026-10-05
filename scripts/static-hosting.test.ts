@@ -1,71 +1,71 @@
-import { existsSync, readFileSync } from "node:fs";
-import { describe, expect } from "@rstest/core";
+import { existsSync, readFileSync } from 'node:fs';
+import { describe, expect } from '@rstest/core';
 
-const repositoryDirectory = new URL("../", import.meta.url);
-const bunVersion = "1.4.2";
+const repositoryDirectory = new URL('../', import.meta.url);
+const bunVersion = '1.4.2';
 
-describe("static docs and registry hosting", () => {
-  test("builds one Cloudflare Pages artifact containing docs and registry JSON", () => {
-    const manifest = JSON.parse(readFileSync(new URL("package.json", repositoryDirectory), "utf8")) as {
+describe('static docs and registry hosting', () => {
+  test('builds one Cloudflare Pages artifact containing docs and registry JSON', () => {
+    const manifest = JSON.parse(readFileSync(new URL('package.json', repositoryDirectory), 'utf8')) as {
       scripts?: Record<string, string>;
     };
-    const config = readFileSync(new URL("blume.config.ts", repositoryDirectory), "utf8");
+    const config = readFileSync(new URL('blume.config.ts', repositoryDirectory), 'utf8');
     const deploymentGuide = readFileSync(
-      new URL("content/docs/(production)/deployment.mdx", repositoryDirectory),
-      "utf8"
+      new URL('content/docs/(production)/deployment.mdx', repositoryDirectory),
+      'utf8'
     );
-    const landingPage = readFileSync(new URL("pages/index.astro", repositoryDirectory), "utf8");
+    const landingPage = readFileSync(new URL('pages/index.astro', repositoryDirectory), 'utf8');
 
-    expect(manifest.scripts?.["build"]).toBe(
-      "bun run registry:build && blume build --strict && bun run scripts/finalize-docs-build.ts"
+    expect(manifest.scripts?.['build']).toBe(
+      'bun run registry:build && blume build --strict && bun run scripts/finalize-docs-build.ts'
     );
-    expect(manifest.scripts?.["docs:blume:e2e"]).toContain("bun run docs:blume:build && blume preview");
-    expect(config).toContain('site: "https://protoform.pages.dev"');
-    expect(config).not.toContain('adapter: "');
-    expect(config).not.toContain('output: "server"');
-    expect(config).not.toContain("mcp:");
-    expect(landingPage).toContain("siteUrl={data.config.site}");
-    expect(landingPage).not.toContain("noindex={true}");
-    expect(existsSync(new URL("public/r/protoform.json", repositoryDirectory))).toBe(true);
-    expect(deploymentGuide).toContain("https://protoform.pages.dev/docs");
-    expect(deploymentGuide).toContain("https://protoform.pages.dev/r/{name}.json");
-    expect(deploymentGuide).toContain("BUN_VERSION");
+    expect(manifest.scripts?.['docs:blume:e2e']).toContain('bun run docs:blume:build && blume preview');
+    expect(config).toContain("site: 'https://protoform.pages.dev'");
+    expect(config).not.toContain("adapter: '");
+    expect(config).not.toContain("output: 'server'");
+    expect(config).not.toContain('mcp:');
+    expect(landingPage).toContain('siteUrl={data.config.site}');
+    expect(landingPage).not.toContain('noindex={true}');
+    expect(existsSync(new URL('public/r/protoform.json', repositoryDirectory))).toBe(true);
+    expect(deploymentGuide).toContain('https://protoform.pages.dev/docs');
+    expect(deploymentGuide).toContain('https://protoform.pages.dev/r/{name}.json');
+    expect(deploymentGuide).toContain('BUN_VERSION');
     expect(deploymentGuide).toContain(bunVersion);
-    expect(deploymentGuide).toContain("Build command");
-    expect(deploymentGuide).toContain("`bun run build`");
-    expect(deploymentGuide).toContain("Build output directory");
-    expect(deploymentGuide).toContain("`dist`");
+    expect(deploymentGuide).toContain('Build command');
+    expect(deploymentGuide).toContain('`bun run build`');
+    expect(deploymentGuide).toContain('Build output directory');
+    expect(deploymentGuide).toContain('`dist`');
   });
 
-  test("fetches git history for page update dates in the docs CI job", () => {
-    const workflow = readFileSync(new URL(".github/workflows/ci.yml", repositoryDirectory), "utf8");
-    const [, docsJob] = workflow.split("\n  docs:\n");
+  test('fetches git history for page update dates in the docs CI job', () => {
+    const workflow = readFileSync(new URL('.github/workflows/ci.yml', repositoryDirectory), 'utf8');
+    const [, docsJob] = workflow.split('\n  docs:\n');
 
     expect(docsJob).toMatch(/- uses: actions\/checkout@[^\n]+\n\s+with:\n\s+fetch-depth: 0/u);
   });
 
-  test("pins the Bun toolchain consistently", () => {
-    const manifest = JSON.parse(readFileSync(new URL("package.json", repositoryDirectory), "utf8")) as {
+  test('pins the Bun toolchain consistently', () => {
+    const manifest = JSON.parse(readFileSync(new URL('package.json', repositoryDirectory), 'utf8')) as {
       devDependencies?: Record<string, string>;
       packageManager?: string;
     };
-    const contributingGuide = readFileSync(new URL("CONTRIBUTING.md", repositoryDirectory), "utf8");
+    const contributingGuide = readFileSync(new URL('CONTRIBUTING.md', repositoryDirectory), 'utf8');
     const pinnedFiles = [
-      ".github/workflows/ci.yml",
-      ".github/workflows/quality.yml",
-      ".github/workflows/release.yml",
-      "content/docs/(production)/deployment.mdx",
-      "content/docs/pl/(production)/deployment.mdx",
-      "content/docs/zh/(production)/deployment.mdx",
-      "content/docs/zh-TW/(production)/deployment.mdx",
+      '.github/workflows/ci.yml',
+      '.github/workflows/quality.yml',
+      '.github/workflows/release.yml',
+      'content/docs/(production)/deployment.mdx',
+      'content/docs/pl/(production)/deployment.mdx',
+      'content/docs/zh/(production)/deployment.mdx',
+      'content/docs/zh-TW/(production)/deployment.mdx',
     ];
 
     expect(manifest.packageManager).toBe(`bun@${bunVersion}`);
-    expect(manifest.devDependencies?.["@types/bun"]).toBe("^1.4.2");
+    expect(manifest.devDependencies?.['@types/bun']).toBe('^1.4.2');
     expect(contributingGuide).toContain(`Bun ${bunVersion}`);
 
     for (const path of pinnedFiles) {
-      expect(readFileSync(new URL(path, repositoryDirectory), "utf8")).toContain(bunVersion);
+      expect(readFileSync(new URL(path, repositoryDirectory), 'utf8')).toContain(bunVersion);
     }
   });
 });

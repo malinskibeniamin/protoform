@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { type DescMessage, isMessage, type MessageShape } from "@bufbuild/protobuf";
-import type { FieldMask } from "@bufbuild/protobuf/wkt";
-import { ConnectError } from "@connectrpc/connect";
+import { type DescMessage, isMessage, type MessageShape } from '@bufbuild/protobuf';
+import type { FieldMask } from '@bufbuild/protobuf/wkt';
+import { ConnectError } from '@connectrpc/connect';
 import {
   type FormAsyncValidateOrFn,
   type FormOptions,
@@ -10,32 +10,32 @@ import {
   type ReactFormExtendedApi,
   type UpdateMetaOptions,
   useForm,
-} from "@tanstack/react-form";
-import { useState } from "react";
-import { createUpdateMask as createDirtyUpdateMask } from "@/registry/base-nova/protoform/lib/protobuf-provider/field-mask";
-import { createProtoFormSchema } from "@/registry/base-nova/protoform/lib/protobuf-provider/form-schema";
+} from '@tanstack/react-form';
+import { useState } from 'react';
+import { createUpdateMask as createDirtyUpdateMask } from '@/registry/base-nova/protoform/lib/protobuf-provider/field-mask';
+import { createProtoFormSchema } from '@/registry/base-nova/protoform/lib/protobuf-provider/form-schema';
 import {
   type ConnectErrorContext,
   extractConnectErrorContext,
   extractFieldViolations,
-} from "@/registry/base-nova/protoform/lib/protobuf-provider/format-error";
+} from '@/registry/base-nova/protoform/lib/protobuf-provider/format-error';
 import {
   formValuesToProto,
   type ProtoConversionOptions,
   type ProtoFormOptions,
-} from "@/registry/base-nova/protoform/lib/protobuf-provider/hook-runtime";
-import { humanizeServerFieldError } from "@/registry/base-nova/protoform/lib/protobuf-provider/humanize-validation-error";
-import { protoPathToFormPath } from "@/registry/base-nova/protoform/lib/protobuf-provider/proto-error-path";
+} from '@/registry/base-nova/protoform/lib/protobuf-provider/hook-runtime';
+import { humanizeServerFieldError } from '@/registry/base-nova/protoform/lib/protobuf-provider/humanize-validation-error';
+import { protoPathToFormPath } from '@/registry/base-nova/protoform/lib/protobuf-provider/proto-error-path';
 
 type FormValues = Record<string, unknown>;
 
 function getErrorMessage(error: unknown): string | undefined {
-  if (typeof error === "string") {
+  if (typeof error === 'string') {
     return error;
   }
-  if (error !== null && typeof error === "object") {
-    const message = Reflect.get(error, "message");
-    return typeof message === "string" ? message : undefined;
+  if (error !== null && typeof error === 'object') {
+    const message = Reflect.get(error, 'message');
+    return typeof message === 'string' ? message : undefined;
   }
   return undefined;
 }
@@ -87,11 +87,11 @@ function composeSubmitAsyncValidator<Values extends FormValues>(
   return async ({ value, formApi }) => {
     if (nativeValidator) {
       const nativeError = await formApi.runValidator({
-        type: "validateAsync",
+        type: 'validateAsync',
         validate: nativeValidator,
         value: {
           formApi,
-          validationSource: "form",
+          validationSource: 'form',
           value,
         },
       });
@@ -101,11 +101,11 @@ function composeSubmitAsyncValidator<Values extends FormValues>(
     }
 
     return await formApi.runValidator({
-      type: "validateAsync",
+      type: 'validateAsync',
       validate: protoValidator,
       value: {
         formApi,
-        validationSource: "form",
+        validationSource: 'form',
         value,
       },
     });
@@ -113,7 +113,7 @@ function composeSubmitAsyncValidator<Values extends FormValues>(
 }
 
 function setDirtyPath(target: Record<string, unknown>, path: string) {
-  const segments = path.replaceAll("[", ".").replaceAll("]", "").split(".").filter(Boolean);
+  const segments = path.replaceAll('[', '.').replaceAll(']', '').split('.').filter(Boolean);
   let current = target;
   for (const [index, segment] of segments.entries()) {
     if (index === segments.length - 1) {
@@ -121,7 +121,7 @@ function setDirtyPath(target: Record<string, unknown>, path: string) {
       return;
     }
     const existing = current[segment];
-    if (typeof existing === "object" && existing !== null && !Array.isArray(existing)) {
+    if (typeof existing === 'object' && existing !== null && !Array.isArray(existing)) {
       current = existing as Record<string, unknown>;
     } else {
       const next: Record<string, unknown> = {};
@@ -135,10 +135,10 @@ function dirtyFieldsFromMeta(fieldMeta: Record<string, unknown>): Record<string,
   const dirtyFields: Record<string, unknown> = {};
   for (const [path, meta] of Object.entries(fieldMeta)) {
     if (
-      typeof meta === "object" &&
+      typeof meta === 'object' &&
       meta !== null &&
-      Reflect.get(meta, "isDirty") === true &&
-      Reflect.get(meta, "isDefaultValue") !== true
+      Reflect.get(meta, 'isDirty') === true &&
+      Reflect.get(meta, 'isDefaultValue') !== true
     ) {
       setDirtyPath(dirtyFields, path);
     }
@@ -176,8 +176,8 @@ export function useProtoForm<
     TOnServer,
     TSubmitMeta
   > & {
-    emptyRepeatedStringPolicies?: ProtoConversionOptions["emptyRepeatedStringPolicies"];
-    formatMessage?: ProtoFormOptions["formatMessage"];
+    emptyRepeatedStringPolicies?: ProtoConversionOptions['emptyRepeatedStringPolicies'];
+    formatMessage?: ProtoFormOptions['formatMessage'];
     serverPathPrefix?: string;
     serverPathPrefixes?: readonly string[];
   }
@@ -207,7 +207,7 @@ export function useProtoForm<
     formatMessage,
   };
   const pathPrefixes =
-    serverPathPrefix !== undefined && serverPathPrefix !== ""
+    serverPathPrefix !== undefined && serverPathPrefix !== ''
       ? [serverPathPrefix, ...serverPathPrefixes]
       : serverPathPrefixes;
   const protoSchema = createProtoFormSchema<Values, Desc>(schema, conversionOptions);
@@ -257,7 +257,7 @@ export function useProtoForm<
     for (const violation of extractFieldViolations(error)) {
       const serverPath = stripPrefix(violation.field, pathPrefixes);
       const formPath = protoPathToFormPath(schema, serverPath);
-      if (!(formPath !== null && formPath !== "")) {
+      if (!(formPath !== null && formPath !== '')) {
         unmapped.push(violation);
         continue;
       }
@@ -280,7 +280,7 @@ export function useProtoForm<
           },
           errorSourceMap: {
             ...meta.errorSourceMap,
-            onServer: "form",
+            onServer: 'form',
           },
           isTouched: true,
         };
@@ -291,14 +291,14 @@ export function useProtoForm<
   };
   const setOneofValue = (path: string, oneofCase: string, value: unknown, updateOptions?: UpdateMetaOptions) => {
     const current = form.getFieldValue(path);
-    const isOneof = current === undefined || current === null || (typeof current === "object" && "case" in current);
+    const isOneof = current === undefined || current === null || (typeof current === 'object' && 'case' in current);
     if (!isOneof) {
       throw new Error(
         `setOneofValue("${path}"): target is not a oneof field. Expected { case, value } shape. Use setFieldValue() for regular fields.`
       );
     }
     const previous = current as { case?: string } | undefined;
-    if (previous?.case !== undefined && previous?.case !== "" && previous.case !== oneofCase) {
+    if (previous?.case !== undefined && previous?.case !== '' && previous.case !== oneofCase) {
       setDynamicFieldValue(path, { case: undefined, value: undefined });
     }
     setDynamicFieldValue(path, { case: oneofCase, value }, { dontUpdateMeta: false, ...updateOptions });
@@ -313,17 +313,17 @@ export function useProtoForm<
       }
       const messages = fieldError.errors.flatMap((error) => {
         const message = getErrorMessage(error);
-        return message !== undefined && message !== "" ? [message] : [];
+        return message !== undefined && message !== '' ? [message] : [];
       });
       if (messages.length === 0) {
         continue;
       }
       found = true;
-      const relativePath = fieldPath === path ? [] : fieldPath.slice(path.length + 1).split(".");
+      const relativePath = fieldPath === path ? [] : fieldPath.slice(path.length + 1).split('.');
       if (relativePath.length === 0) {
-        return { message: messages.join("\n") } as T;
+        return { message: messages.join('\n') } as T;
       }
-      setNestedMessage(nested, relativePath, messages.join("\n"));
+      setNestedMessage(nested, relativePath, messages.join('\n'));
     }
     return found ? (nested as T) : undefined;
   };
@@ -354,7 +354,7 @@ function setNestedMessage(target: Record<string, unknown>, path: string[], messa
       return;
     }
     const existing = current[segment];
-    if (existing && typeof existing === "object" && !Array.isArray(existing)) {
+    if (existing && typeof existing === 'object' && !Array.isArray(existing)) {
       current = existing as Record<string, unknown>;
     } else {
       const nested: Record<string, unknown> = {};

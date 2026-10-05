@@ -1,11 +1,11 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense } from 'react';
 
-import { ExampleLoading } from "../examples/shared/example-loading";
+import { ExampleLoading } from '../examples/shared/example-loading';
 
-export const client = "only";
+export const client = 'only';
 
 const CelRe2FormExample = lazy(async () => {
-  const module = await import("../examples/learning/cel-re2-form");
+  const module = await import('../examples/learning/cel-re2-form');
   return { default: module.default };
 });
 

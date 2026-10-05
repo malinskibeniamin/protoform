@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { useMutation } from "@connectrpc/connect-query";
-import { useState } from "react";
-import type { UseFormReturn } from "react-hook-form";
-import { Alert, AlertDescription, AlertTitle } from "@/registry/base-nova/protoform/components/alert";
-import { AutoForm } from "@/registry/base-nova/protoform/components/auto-form";
-import { applyServerFieldErrors } from "../apply-server-errors.js";
+import { useMutation } from '@connectrpc/connect-query';
+import { useState } from 'react';
+import type { UseFormReturn } from 'react-hook-form';
+import { Alert, AlertDescription, AlertTitle } from '@/registry/base-nova/protoform/components/alert';
+import { AutoForm } from '@/registry/base-nova/protoform/components/auto-form';
+import { applyServerFieldErrors } from '../apply-server-errors.js';
 import {
   FormExamplesService,
   type SubmitBasicFormRequest,
   SubmitBasicFormRequestSchema,
-} from "../gen/protoform/examples/v1/forms_pb.js";
+} from '../gen/protoform/examples/v1/forms_pb.js';
 
 export function ServerErrorFormMutation() {
   const [profileId, setProfileId] = useState<string>();

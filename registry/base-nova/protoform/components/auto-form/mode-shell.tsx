@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { MotionConfig } from "motion/react";
-import type React from "react";
-import { formSpacing } from "./form-spacing";
-import { buildAutoFormTestId } from "./test-ids";
-import type { AutoFormMode, AutoFormSummaryContext } from "./types";
+import { MotionConfig } from 'motion/react';
+import type React from 'react';
+import { formSpacing } from './form-spacing';
+import { buildAutoFormTestId } from './test-ids';
+import type { AutoFormMode, AutoFormSummaryContext } from './types';
 import {
   Alert,
   AlertDescription,
@@ -18,14 +18,14 @@ import {
   TabsTrigger,
   Text,
   Textarea,
-} from "./ui-components";
-import { safeStringify } from "./utils/serialization";
+} from './ui-components';
+import { safeStringify } from './utils/serialization';
 
 function getModeLabel(mode: AutoFormMode) {
-  if (mode === "json") {
-    return "JSON";
+  if (mode === 'json') {
+    return 'JSON';
   }
-  return mode === "simple" ? "Simple" : "Advanced";
+  return mode === 'simple' ? 'Simple' : 'Advanced';
 }
 
 function JsonBlock({ description, jsonText, title }: { title: string; description: string; jsonText: string }) {
@@ -102,7 +102,7 @@ function JsonEditorPanel({
           </AlertDescription>
         </Alert>
       ) : null}
-      {editorError !== undefined && editorError !== "" ? (
+      {editorError !== undefined && editorError !== '' ? (
         <Alert variant="destructive">
           <AlertTitle>Invalid JSON</AlertTitle>
           <AlertDescription>{editorError}</AlertDescription>
@@ -112,7 +112,7 @@ function JsonEditorPanel({
         className="min-h-[420px] font-mono text-xs leading-5"
         onChange={(event) => onJsonTextChange(event.target.value)}
         resize="vertical"
-        testId={buildAutoFormTestId(testIdPrefix, "json-editor")}
+        testId={buildAutoFormTestId(testIdPrefix, 'json-editor')}
         value={jsonText}
       />
     </div>
@@ -136,18 +136,10 @@ function FormPanel<TNativeForm>({
 
   return (
     <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,24rem),1fr))] gap-6 lg:items-start lg:gap-10">
-      {/*
-        The form column's top-level rhythm is driven by `formSpacing.form`
-        so every root sibling (fields, sections, Submit) is separated by
-        the same token the `<Form>` primitive applies internally. Keeping
-        the two entry points on the same token means Submit always sits
-        one `form` step below the last section regardless of whether the
-        preceding child is a leaf field or a nested group.
-      */}
       <div className={`min-w-0 lg:pr-2 ${formSpacing.form}`}>{children}</div>
       <aside
         className="min-w-0 lg:sticky lg:top-6 lg:self-start"
-        data-testid={buildAutoFormTestId(testIdPrefix, "summary")}
+        data-testid={buildAutoFormTestId(testIdPrefix, 'summary')}
       >
         {renderSummary ? (
           renderSummary(payload, context)
@@ -192,12 +184,12 @@ export function AutoFormModeShell<TNativeForm>({
   payload: unknown;
   renderSummary?: ((payload: unknown, context: AutoFormSummaryContext<TNativeForm>) => React.ReactNode) | undefined;
   summaryContext: AutoFormSummaryContext<TNativeForm>;
-  renderFormMode: (mode: Exclude<AutoFormMode, "json">) => React.ReactNode;
+  renderFormMode: (mode: Exclude<AutoFormMode, 'json'>) => React.ReactNode;
   showSummary: boolean;
   testIdPrefix: string;
 }) {
   function renderModeBody(targetMode: AutoFormMode) {
-    if (targetMode === "json") {
+    if (targetMode === 'json') {
       return (
         <JsonEditorPanel
           bestEffort={bestEffort}
@@ -240,7 +232,7 @@ export function AutoFormModeShell<TNativeForm>({
             onModeChange(value as AutoFormMode);
           }
         }}
-        testId={buildAutoFormTestId(testIdPrefix, "tabs")}
+        testId={buildAutoFormTestId(testIdPrefix, 'tabs')}
         value={mode}
       >
         <TabsList className="w-full justify-start" variant="underline">

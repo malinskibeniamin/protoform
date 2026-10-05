@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import type React from "react";
-import { cn } from "@/registry/base-nova/protoform/lib/utils";
-import { formSpacing } from "./form-spacing";
-import { FormDepthProvider, headingLevelForDepth, useFormDepth } from "./layout-context";
-import { Button, FieldLabel, Heading, Text } from "./ui-components";
+import type React from 'react';
+import { cn } from '@/registry/base-nova/protoform/lib/utils';
+import { formSpacing } from './form-spacing';
+import { FormDepthProvider, headingLevelForDepth, useFormDepth } from './layout-context';
+import { Button, FieldLabel, Heading, Text } from './ui-components';
 
-export interface FormLayoutProps extends Omit<React.ComponentProps<"form">, "children"> {
+export interface FormLayoutProps extends Omit<React.ComponentProps<'form'>, 'children'> {
   children?: React.ReactNode;
   ref?: React.Ref<HTMLFormElement>;
   testId?: string;
@@ -24,7 +24,6 @@ export interface FormSectionProps {
   children?: React.ReactNode;
   className?: string;
   description?: React.ReactNode;
-  /** Override divider visibility. Defaults to true when a title is present. */
   divider?: boolean;
   required?: boolean;
   testId?: string;
@@ -119,7 +118,7 @@ export interface FormSubmitProps extends React.ComponentProps<typeof Button> {
   ref?: React.Ref<HTMLButtonElement>;
 }
 
-export function FormSubmit({ children = "Submit", type = "submit", ref, ...props }: FormSubmitProps) {
+export function FormSubmit({ children = 'Submit', type = 'submit', ref, ...props }: FormSubmitProps) {
   return (
     <Button ref={ref} type={type} {...props}>
       {children}

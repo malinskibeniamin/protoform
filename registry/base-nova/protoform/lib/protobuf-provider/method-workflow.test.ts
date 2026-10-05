@@ -1,38 +1,38 @@
-import { http } from "@buf/googleapis_googleapis.bufbuild_es/google/api/annotations_pb.js";
-import { HttpRuleSchema } from "@buf/googleapis_googleapis.bufbuild_es/google/api/http_pb.js";
+import { http } from '@buf/googleapis_googleapis.bufbuild_es/google/api/annotations_pb.js';
+import { HttpRuleSchema } from '@buf/googleapis_googleapis.bufbuild_es/google/api/http_pb.js';
 import {
   OperationInfoSchema,
   OperationSchema,
   operation_info,
-} from "@buf/googleapis_googleapis.bufbuild_es/google/longrunning/operations_pb.js";
-import { create, type DescMessage, type DescMethod, setExtension } from "@bufbuild/protobuf";
-import { MethodDescriptorProtoSchema, MethodOptionsSchema } from "@bufbuild/protobuf/wkt";
-import { describe, expect } from "@rstest/core";
+} from '@buf/googleapis_googleapis.bufbuild_es/google/longrunning/operations_pb.js';
+import { create, type DescMessage, type DescMethod, setExtension } from '@bufbuild/protobuf';
+import { MethodDescriptorProtoSchema, MethodOptionsSchema } from '@bufbuild/protobuf/wkt';
+import { describe, expect } from '@rstest/core';
 
 import {
   BookSchema,
   CreateBookRequestSchema,
   DeleteBookRequestSchema,
   GetBookRequestSchema,
-} from "../../../../../conformance/gen/protoform/conformance/v1/aip_pb.js";
-import { FormExamplesService } from "../../../../../examples/gen/protoform/examples/v1/forms_pb.js";
-import { getProtoMethodWorkflow } from "./method-workflow.js";
+} from '../../../../../conformance/gen/protoform/conformance/v1/aip_pb.js';
+import { FormExamplesService } from '../../../../../examples/gen/protoform/examples/v1/forms_pb.js';
+import { getProtoMethodWorkflow } from './method-workflow.js';
 
 interface MethodFixture {
   body?: string;
   input: DescMessage;
-  methodKind?: DescMethod["methodKind"];
+  methodKind?: DescMethod['methodKind'];
   name: string;
   operation?: { metadataType: string; responseType: string };
   output?: DescMessage;
   path?: string;
-  verb?: "delete" | "get" | "patch" | "post";
+  verb?: 'delete' | 'get' | 'patch' | 'post';
 }
 
 function createMethodFixture({
   body,
   input,
-  methodKind = "unary",
+  methodKind = 'unary',
   name,
   operation,
   output = BookSchema,
@@ -40,12 +40,12 @@ function createMethodFixture({
   verb,
 }: MethodFixture): DescMethod {
   const options = create(MethodOptionsSchema);
-  if (verb && path !== undefined && path !== "") {
+  if (verb && path !== undefined && path !== '') {
     setExtension(
       options,
       http,
       create(HttpRuleSchema, {
-        body: body ?? "",
+        body: body ?? '',
         pattern: { case: verb, value: path },
       })
     );
@@ -66,104 +66,104 @@ function createMethodFixture({
       name,
       options,
       outputType: output.typeName,
-      serverStreaming: methodKind === "server_streaming",
+      serverStreaming: methodKind === 'server_streaming',
     }),
   };
 }
 
-describe("getProtoMethodWorkflow", () => {
-  test("classifies standard unary methods with their path, query, and body fields and marks streaming RPCs as non-form", () => {
+describe('getProtoMethodWorkflow', () => {
+  test('classifies standard unary methods with their path, query, and body fields and marks streaming RPCs as non-form', () => {
     const get = getProtoMethodWorkflow(
       createMethodFixture({
         input: GetBookRequestSchema,
-        name: "GetBook",
-        path: "/v1/{name=publishers/*/books/*}",
-        verb: "get",
+        name: 'GetBook',
+        path: '/v1/{name=publishers/*/books/*}',
+        verb: 'get',
       })
     );
     const createBook = getProtoMethodWorkflow(
       createMethodFixture({
-        body: "book",
+        body: 'book',
         input: CreateBookRequestSchema,
-        name: "CreateBook",
-        path: "/v1/{parent=publishers/*}/books",
-        verb: "post",
+        name: 'CreateBook',
+        path: '/v1/{parent=publishers/*}/books',
+        verb: 'post',
       })
     );
     const batchGet = getProtoMethodWorkflow(
       createMethodFixture({
         input: GetBookRequestSchema,
-        name: "BatchGetBooks",
+        name: 'BatchGetBooks',
       })
     );
 
     expect(get).toMatchObject({
-      category: "standard",
-      execution: "unary",
+      category: 'standard',
+      execution: 'unary',
       httpBindings: [
         {
           bodyFields: [],
-          method: "GET",
-          path: "/v1/{name=publishers/*/books/*}",
-          pathFields: ["name"],
+          method: 'GET',
+          path: '/v1/{name=publishers/*/books/*}',
+          pathFields: ['name'],
           queryFields: [],
         },
       ],
     });
     expect(createBook.httpBindings).toEqual([
       {
-        bodyFields: ["book"],
-        method: "POST",
-        path: "/v1/{parent=publishers/*}/books",
-        pathFields: ["parent"],
-        queryFields: ["book_id", "request_id", "validate_only"],
+        bodyFields: ['book'],
+        method: 'POST',
+        path: '/v1/{parent=publishers/*}/books',
+        pathFields: ['parent'],
+        queryFields: ['book_id', 'request_id', 'validate_only'],
       },
     ]);
-    expect(batchGet.category).toBe("batch");
+    expect(batchGet.category).toBe('batch');
     expect(get.method.input).toBe(GetBookRequestSchema);
 
     const workflow = getProtoMethodWorkflow(
       createMethodFixture({
         input: GetBookRequestSchema,
-        methodKind: "server_streaming",
-        name: "WatchBooks",
+        methodKind: 'server_streaming',
+        name: 'WatchBooks',
       })
     );
 
     expect(workflow).toMatchObject({
-      category: "custom",
-      execution: "streaming",
+      category: 'custom',
+      execution: 'streaming',
       httpBindings: [],
     });
   });
 
-  test("classifies custom long-running workflows and exposes operation types", () => {
+  test('classifies custom long-running workflows and exposes operation types', () => {
     const workflow = getProtoMethodWorkflow(
       createMethodFixture({
-        body: "*",
+        body: '*',
         input: DeleteBookRequestSchema,
-        name: "ArchiveBook",
+        name: 'ArchiveBook',
         operation: {
-          metadataType: "ArchiveBookMetadata",
-          responseType: "ArchiveBookResponse",
+          metadataType: 'ArchiveBookMetadata',
+          responseType: 'ArchiveBookResponse',
         },
         output: OperationSchema,
-        path: "/v1/{name=publishers/*/books/*}:archive",
-        verb: "post",
+        path: '/v1/{name=publishers/*/books/*}:archive',
+        verb: 'post',
       })
     );
 
     expect(workflow).toMatchObject({
-      category: "custom",
-      execution: "long-running",
+      category: 'custom',
+      execution: 'long-running',
       operation: {
-        metadataType: "ArchiveBookMetadata",
-        responseType: "ArchiveBookResponse",
+        metadataType: 'ArchiveBookMetadata',
+        responseType: 'ArchiveBookResponse',
       },
     });
     expect(workflow.httpBindings[0]).toMatchObject({
-      bodyFields: ["etag", "request_id", "validate_only", "force", "allow_missing"],
-      pathFields: ["name"],
+      bodyFields: ['etag', 'request_id', 'validate_only', 'force', 'allow_missing'],
+      pathFields: ['name'],
       queryFields: [],
     });
   });

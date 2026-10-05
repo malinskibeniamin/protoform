@@ -1,16 +1,16 @@
 import {
   FieldBehavior,
   field_behavior as fieldBehaviorExtension,
-} from "@buf/googleapis_googleapis.bufbuild_es/google/api/field_behavior_pb.js";
-import { create, type DescField, type DescMessage, type DescOneof, getExtension } from "@bufbuild/protobuf";
-import { type FieldMask, FieldMaskSchema, FieldOptionsSchema } from "@bufbuild/protobuf/wkt";
+} from '@buf/googleapis_googleapis.bufbuild_es/google/api/field_behavior_pb.js';
+import { create, type DescField, type DescMessage, type DescOneof, getExtension } from '@bufbuild/protobuf';
+import { type FieldMask, FieldMaskSchema, FieldOptionsSchema } from '@bufbuild/protobuf/wkt';
 
 type FormRecord = Record<string, unknown>;
 
 const NON_UPDATABLE_BEHAVIORS = new Set([FieldBehavior.IDENTIFIER, FieldBehavior.IMMUTABLE, FieldBehavior.OUTPUT_ONLY]);
 
 function isRecord(value: unknown): value is FormRecord {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
 function valuesEqual(left: unknown, right: unknown): boolean {
@@ -42,7 +42,6 @@ function valuesEqual(left: unknown, right: unknown): boolean {
   );
 }
 
-/** Build the dirty-field tree expected by createUpdateMask from two value snapshots. */
 export function dirtyFieldsFromValues(current: unknown, initial: unknown): FormRecord {
   if (valuesEqual(current, initial)) {
     return {};
@@ -94,13 +93,13 @@ function findField(schema: DescMessage, segment: string): DescField | undefined 
 }
 
 function normalizeFieldPath(schema: DescMessage, path: string): string {
-  if (path === "*") {
+  if (path === '*') {
     return path;
   }
 
-  const segments = path.split(".").filter(Boolean);
+  const segments = path.split('.').filter(Boolean);
   if (segments.length === 0) {
-    throw new Error("Field mask paths cannot be empty.");
+    throw new Error('Field mask paths cannot be empty.');
   }
 
   const normalized: string[] = [];
@@ -115,29 +114,29 @@ function normalizeFieldPath(schema: DescMessage, path: string): string {
     if (index === segments.length - 1) {
       break;
     }
-    if (field.fieldKind === "list" || field.fieldKind === "map") {
+    if (field.fieldKind === 'list' || field.fieldKind === 'map') {
       break;
     }
-    if (field.fieldKind !== "message") {
+    if (field.fieldKind !== 'message') {
       throw new Error(`Field mask path cannot traverse scalar field: ${path}`);
     }
     currentSchema = field.message;
   }
-  return normalized.join(".");
+  return normalized.join('.');
 }
 
 function fieldOrder(schema: DescMessage, path: string): number[] {
-  if (path === "*") {
+  if (path === '*') {
     return [-1];
   }
 
   const order: number[] = [];
   let currentSchema = schema;
-  for (const segment of path.split(".")) {
+  for (const segment of path.split('.')) {
     const index = currentSchema.fields.findIndex((candidate) => candidate.name === segment);
     order.push(index);
     const field = currentSchema.fields[index];
-    if (field?.fieldKind !== "message") {
+    if (field?.fieldKind !== 'message') {
       break;
     }
     currentSchema = field.message;
@@ -158,11 +157,10 @@ function compareFieldOrder(schema: DescMessage, left: string, right: string): nu
   return left.localeCompare(right);
 }
 
-/** Build a validated, canonical FieldMask from TypeScript or protobuf paths. */
 export function createFieldMask(schema: DescMessage, paths: readonly string[]): FieldMask {
   const normalizedPaths = [...new Set(paths.map((path) => normalizeFieldPath(schema, path)))];
-  if (normalizedPaths.includes("*")) {
-    return create(FieldMaskSchema, { paths: ["*"] });
+  if (normalizedPaths.includes('*')) {
+    return create(FieldMaskSchema, { paths: ['*'] });
   }
   const minimizedPaths = normalizedPaths.filter(
     (path) => !normalizedPaths.some((candidate) => candidate !== path && path.startsWith(`${candidate}.`))
@@ -183,10 +181,10 @@ function collectFieldPaths(
   }
 
   const path = fieldPath(prefix, field);
-  if (dirtyValue === true || field.fieldKind === "list" || field.fieldKind === "map") {
+  if (dirtyValue === true || field.fieldKind === 'list' || field.fieldKind === 'map') {
     return [path];
   }
-  if (field.fieldKind !== "message" || !isRecord(dirtyValue)) {
+  if (field.fieldKind !== 'message' || !isRecord(dirtyValue)) {
     return [path];
   }
 
@@ -212,12 +210,12 @@ function collectOneofPaths(
   }
 
   const selectedOneof =
-    isRecord(currentValue) && typeof currentValue["case"] === "string" ? currentValue : initialValue;
+    isRecord(currentValue) && typeof currentValue['case'] === 'string' ? currentValue : initialValue;
   if (!isRecord(selectedOneof)) {
     return [];
   }
-  const selectedCase = selectedOneof["case"];
-  if (typeof selectedCase !== "string") {
+  const selectedCase = selectedOneof['case'];
+  if (typeof selectedCase !== 'string') {
     return [];
   }
   const selectedField = oneof.fields.find((field) => field.localName === selectedCase);
@@ -226,11 +224,11 @@ function collectOneofPaths(
   }
 
   const nestedDirtyValue =
-    isRecord(dirtyValue) && dirtyValue["case"] !== true && hasDirtyValue(dirtyValue["value"])
-      ? dirtyValue["value"]
+    isRecord(dirtyValue) && dirtyValue['case'] !== true && hasDirtyValue(dirtyValue['value'])
+      ? dirtyValue['value']
       : true;
-  const initialOneofValue = isRecord(initialValue) ? initialValue["value"] : undefined;
-  return collectFieldPaths(selectedField, nestedDirtyValue, selectedOneof["value"], initialOneofValue, prefix);
+  const initialOneofValue = isRecord(initialValue) ? initialValue['value'] : undefined;
+  return collectFieldPaths(selectedField, nestedDirtyValue, selectedOneof['value'], initialOneofValue, prefix);
 }
 
 function collectMessagePaths(
@@ -238,10 +236,10 @@ function collectMessagePaths(
   dirtyFields: FormRecord,
   currentValues: FormRecord,
   initialValues: FormRecord,
-  prefix = ""
+  prefix = ''
 ): string[] {
   return schema.members.flatMap((member) => {
-    if (member.kind === "oneof") {
+    if (member.kind === 'oneof') {
       return collectOneofPaths(
         member,
         dirtyFields[member.localName],
@@ -260,7 +258,6 @@ function collectMessagePaths(
   });
 }
 
-/** Build an update mask from react-hook-form's dirty field tree. */
 export function createUpdateMask(
   schema: DescMessage,
   dirtyFields: unknown,

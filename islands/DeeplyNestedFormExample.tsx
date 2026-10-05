@@ -1,11 +1,11 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense } from 'react';
 
-import { ExampleLoading } from "../examples/shared/example-loading";
+import { ExampleLoading } from '../examples/shared/example-loading';
 
-export const client = "only";
+export const client = 'only';
 
 const DeeplyNestedFormExample = lazy(async () => {
-  const module = await import("../examples/nested/deeply-nested-form");
+  const module = await import('../examples/nested/deeply-nested-form');
   return { default: module.default };
 });
 

@@ -1,7 +1,6 @@
-import type { ComboboxOption } from ".";
+import type { ComboboxOption } from '.';
 
-/** Prefix for the creatable item's cmdk value to distinguish from real options. */
-export const CREATE_ITEM_PREFIX = "__create__";
+export const CREATE_ITEM_PREFIX = '__create__';
 
 export interface GroupedOptions {
   readonly heading: string;
@@ -9,13 +8,11 @@ export interface GroupedOptions {
   readonly testId?: string | undefined;
 }
 
-/** Resolve a controlled value to its display label. */
 export const resolveLabel = (options: readonly ComboboxOption[], value: string): string => {
   const opt = options.find((o) => o.value === value);
   return opt?.label ?? value;
 };
 
-/** Filter options by a case-insensitive query against label and value. */
 export const filterOptions = (
   options: readonly ComboboxOption[],
   query: string,
@@ -24,7 +21,6 @@ export const filterOptions = (
   if (!query) {
     return [...options];
   }
-  // If input matches the selected option's label exactly, show all options
   if (query === selectedLabel && selectedLabel) {
     return [...options];
   }
@@ -34,7 +30,6 @@ export const filterOptions = (
   );
 };
 
-/** Group options by their `group` field, preserving insertion order. Returns undefined if no groups exist. */
 export const groupOptions = (options: readonly ComboboxOption[]): GroupedOptions[] | undefined => {
   if (!options.some((option) => option.group)) {
     return;
@@ -42,7 +37,7 @@ export const groupOptions = (options: readonly ComboboxOption[]): GroupedOptions
 
   const groups = new Map<string, GroupedOptions>();
   for (const option of options) {
-    const groupKey = option.group || "";
+    const groupKey = option.group || '';
     const existing = groups.get(groupKey);
     if (existing) {
       groups.set(groupKey, { ...existing, options: [...existing.options, option] });
@@ -57,7 +52,6 @@ export const groupOptions = (options: readonly ComboboxOption[]): GroupedOptions
   return Array.from(groups.values());
 };
 
-/** Build the flat list of navigable cmdk values for keyboard navigation. */
 export const getNavigableValues = (
   filteredOptions: readonly ComboboxOption[],
   canCreate: boolean,
@@ -67,14 +61,13 @@ export const getNavigableValues = (
   return canCreate ? [...base, `${CREATE_ITEM_PREFIX}${inputValue}`] : base;
 };
 
-/** Compute the next highlight value with circular wrapping. */
 export const computeNextHighlight = (
   navigableValues: readonly string[],
   currentHighlight: string,
   direction: 1 | -1
 ): string => {
   if (navigableValues.length === 0) {
-    return "";
+    return '';
   }
   const currentIndex = navigableValues.findIndex((v) => v.toLowerCase() === currentHighlight.toLowerCase());
   let nextIndex: number;
@@ -92,14 +85,13 @@ export const computeNextHighlight = (
   return navigableValues[nextIndex] ?? currentHighlight;
 };
 
-/** Find the first matching option for a query string (used for auto-highlight on type). */
 export const findFirstMatch = (options: readonly ComboboxOption[], query: string): string => {
   if (!query) {
-    return "";
+    return '';
   }
   const lowerQuery = query.toLowerCase();
   const match = options.find(
     (opt) => opt.label.toLowerCase().includes(lowerQuery) || opt.value.toLowerCase().includes(lowerQuery)
   );
-  return match?.label ?? match?.value ?? "";
+  return match?.label ?? match?.value ?? '';
 };

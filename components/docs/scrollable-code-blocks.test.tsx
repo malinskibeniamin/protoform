@@ -1,6 +1,6 @@
-import { describe, expect } from "@rstest/core";
+import { describe, expect } from '@rstest/core';
 
-import { syncScrollableCodeBlocks } from "./scrollable-code-blocks";
+import { syncScrollableCodeBlocks } from './scrollable-code-blocks';
 
 function setDimensions(
   element: HTMLElement,
@@ -16,12 +16,12 @@ function setDimensions(
   }
 }
 
-describe("syncScrollableCodeBlocks", () => {
-  test("adds keyboard access only while a code block overflows", () => {
-    const root = document.createElement("div");
-    root.className = "prose";
-    root.innerHTML = "<pre><code>long line</code></pre>";
-    const code = root.querySelector("code");
+describe('syncScrollableCodeBlocks', () => {
+  test('adds keyboard access only while a code block overflows', () => {
+    const root = document.createElement('div');
+    root.className = 'prose';
+    root.innerHTML = '<pre><code>long line</code></pre>';
+    const code = root.querySelector('code');
     expect(code).not.toBeNull();
     if (!code) {
       return;
@@ -34,7 +34,7 @@ describe("syncScrollableCodeBlocks", () => {
       scrollWidth: 160,
     });
     syncScrollableCodeBlocks(root);
-    expect(code).toHaveAttribute("tabindex", "0");
+    expect(code).toHaveAttribute('tabindex', '0');
 
     setDimensions(code, {
       clientHeight: 20,
@@ -43,14 +43,14 @@ describe("syncScrollableCodeBlocks", () => {
       scrollWidth: 160,
     });
     syncScrollableCodeBlocks(root);
-    expect(code).not.toHaveAttribute("tabindex");
+    expect(code).not.toHaveAttribute('tabindex');
   });
 
-  test("preserves an author-provided tab stop", () => {
-    const root = document.createElement("div");
-    root.className = "prose";
+  test('preserves an author-provided tab stop', () => {
+    const root = document.createElement('div');
+    root.className = 'prose';
     root.innerHTML = '<pre><code tabindex="0">short line</code></pre>';
-    const code = root.querySelector("code");
+    const code = root.querySelector('code');
     expect(code).not.toBeNull();
     if (!code) {
       return;
@@ -63,6 +63,6 @@ describe("syncScrollableCodeBlocks", () => {
       scrollWidth: 160,
     });
     syncScrollableCodeBlocks(root);
-    expect(code).toHaveAttribute("tabindex", "0");
+    expect(code).toHaveAttribute('tabindex', '0');
   });
 });
