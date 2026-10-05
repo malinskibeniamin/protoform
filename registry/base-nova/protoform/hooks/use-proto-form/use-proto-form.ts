@@ -20,16 +20,19 @@ import {
   formValuesToProto,
   type ProtoConversionOptions,
   type ProtoFormOptions,
+  protoToFormValues,
 } from '@/registry/base-nova/protoform/lib/protobuf-provider/hook-runtime.js';
 import { humanizeServerFieldError } from '@/registry/base-nova/protoform/lib/protobuf-provider/humanize-validation-error.js';
 
 import { protoPathToFormPath } from './proto-error-path.js';
-import type { FlattenProtoOneofs } from './proto-paths.js';
+import type { ProtoFormValues } from './proto-paths.js';
 import { createProtoResolver } from './proto-resolver.js';
 
 export type { ConnectErrorContext } from '@/registry/base-nova/protoform/lib/protobuf-provider/format-error.js';
 
-type FormShape<Desc extends DescMessage> = FlattenProtoOneofs<MessageShape<Desc>>;
+type FormShape<Desc extends DescMessage> = {
+  [Key in keyof Omit<MessageShape<Desc>, '$typeName' | '$unknown'>]: ProtoFormValues<MessageShape<Desc>[Key]>;
+};
 
 type NestedErrors<T> = {
   [K in keyof T]?: T[K] extends object ? NestedErrors<T[K]> & { message?: string } : { message?: string };
@@ -41,7 +44,12 @@ interface ModifiedFieldTree {
 
 export type ProtoValidationScope = 'all' | 'modified-fields';
 
-export interface UseProtoFormOptions<Desc extends DescMessage> extends Omit<UseFormProps<FormShape<Desc>>, 'resolver'> {
+export interface UseProtoFormOptions<Desc extends DescMessage>
+  extends Omit<UseFormProps<FormShape<Desc>>, 'resolver' | 'defaultValues'> {
+  defaultValues?:
+    | UseFormProps<FormShape<Desc>>['defaultValues']
+    | MessageShape<Desc>
+    | (() => Promise<MessageShape<Desc>>);
   emptyRepeatedStringPolicies?: ProtoConversionOptions['emptyRepeatedStringPolicies'];
   formatMessage?: ProtoFormOptions['formatMessage'];
   serverPathPrefix?: string;
@@ -49,7 +57,11 @@ export interface UseProtoFormOptions<Desc extends DescMessage> extends Omit<UseF
   validationScope?: ProtoValidationScope;
 }
 
-export type UseProtoFormReturn<Desc extends DescMessage> = UseFormReturn<FormShape<Desc>> & {
+export type UseProtoFormReturn<Desc extends DescMessage> = Omit<UseFormReturn<FormShape<Desc>>, 'reset'> & {
+  reset: (
+    values?: Parameters<UseFormReturn<FormShape<Desc>>['reset']>[0] | MessageShape<Desc>,
+    options?: Parameters<UseFormReturn<FormShape<Desc>>['reset']>[1]
+  ) => void;
   createMessage: (values?: FormShape<Desc>) => MessageShape<Desc>;
   createUpdateMask: () => FieldMask;
   setOneofValue: (path: string, oneofCase: string, value: unknown, options?: SetValueConfig) => void;
@@ -86,19 +98,32 @@ export function useProtoForm<Desc extends DescMessage>(
     serverPathPrefix !== undefined && serverPathPrefix !== ''
       ? [serverPathPrefix, ...serverPathPrefixes]
       : serverPathPrefixes;
-  const sourceMessage = isMessage(rest.defaultValues, schema) ? rest.defaultValues : undefined;
+  const sourceMessage = useRef(isMessage(rest.defaultValues, schema) ? rest.defaultValues : undefined);
+  const normalizeValues = (values: unknown) =>
+    isMessage(values, schema) ? (protoToFormValues(schema, values) as FormShape<Desc>) : (values as FormShape<Desc>);
+  const suppliedDefaults = rest.defaultValues;
+  const normalizedDefaults = suppliedDefaults === undefined ? undefined : normalizeValues(suppliedDefaults);
+  const defaultValues =
+    typeof suppliedDefaults === 'function'
+      ? async () => {
+          const values = await suppliedDefaults();
+          if (isMessage(values, schema)) {
+            sourceMessage.current = values;
+          }
+          return normalizeValues(values);
+        }
+      : normalizedDefaults;
   const modifiedFieldsRef = useRef<ModifiedFieldTree>({});
   const suppressModifiedTrackingRef = useRef(false);
   const formRef = useRef<UseFormReturn<FormShape<Desc>> | undefined>(undefined);
 
   const form = useForm({
     ...rest,
+    defaultValues,
     mode,
-    resolver: createProtoResolver(
-      schema,
-      conversionOptions,
-      sourceMessage,
-      validationScope === 'modified-fields'
+    resolver: createProtoResolver(schema, conversionOptions, undefined, {
+      getSourceMessage: () => sourceMessage.current,
+      ...(validationScope === 'modified-fields'
         ? {
             getValidationMask: (values) =>
               createDirtyUpdateMask(
@@ -108,8 +133,8 @@ export function useProtoForm<Desc extends DescMessage>(
                 formRef.current?.formState.defaultValues ?? rest.defaultValues
               ),
           }
-        : undefined
-    ),
+        : {}),
+    }),
   } as unknown as UseFormProps<FormShape<Desc>>) as UseFormReturn<FormShape<Desc>>;
   useEffect(
     function syncFormRef() {
@@ -149,11 +174,15 @@ export function useProtoForm<Desc extends DescMessage>(
     }
     form.setValues(resolvedValues, setValueOptions);
   };
-  const reset: typeof form.reset = (values, keepStateOptions) => {
+  const reset: UseProtoFormReturn<Desc>['reset'] = (values, keepStateOptions) => {
     modifiedFieldsRef.current = {};
     suppressModifiedTrackingRef.current = true;
     try {
-      form.reset(values, keepStateOptions);
+      const next = typeof values === 'function' ? values(form.getValues()) : values;
+      if (isMessage(next, schema)) {
+        sourceMessage.current = next;
+      }
+      form.reset(next === undefined ? undefined : normalizeValues(next), keepStateOptions);
     } finally {
       suppressModifiedTrackingRef.current = false;
     }
@@ -169,7 +198,7 @@ export function useProtoForm<Desc extends DescMessage>(
   };
   const createMessage = (values?: FormShape<Desc>): MessageShape<Desc> => {
     const raw = values ?? form.getValues();
-    return formValuesToProto(schema, raw as Record<string, unknown>, sourceMessage, conversionOptions);
+    return formValuesToProto(schema, raw, sourceMessage.current, conversionOptions);
   };
 
   const createUpdateMask = (): FieldMask =>
@@ -228,6 +257,7 @@ export function useProtoForm<Desc extends DescMessage>(
     }
     const unmapped: { field: string; description: string }[] = [];
     let handled = false;
+    const fieldMessages = new Map<string, string[]>();
     for (const violation of extractFieldViolations(error)) {
       const bare = stripPrefix(violation.field, pathPrefixes);
       const formPath = protoPathToFormPath(schema, bare);
@@ -235,11 +265,18 @@ export function useProtoForm<Desc extends DescMessage>(
         unmapped.push(violation);
         continue;
       }
+      fieldMessages.set(formPath, [
+        ...(fieldMessages.get(formPath) ?? []),
+        humanizeServerFieldError(violation.description),
+      ]);
+    }
+    for (const [path, messages] of fieldMessages) {
       form.setError(
-        formPath as FieldPath<FormShape<Desc>>,
+        path as FieldPath<FormShape<Desc>>,
         {
-          message: humanizeServerFieldError(violation.description),
+          message: messages[0] ?? '',
           type: 'server',
+          types: Object.fromEntries(messages.map((message, index) => [String(index), message])),
         },
         handled ? undefined : { shouldFocus: true }
       );
@@ -267,8 +304,8 @@ export function useProtoForm<Desc extends DescMessage>(
 export function useProtoFormDefaults<Desc extends DescMessage>(
   schema: Desc,
   init?: MessageInitShape<Desc>
-): FormShape<Desc> {
-  return create(schema, init ?? ({} as MessageInitShape<Desc>)) as unknown as FormShape<Desc>;
+): MessageShape<Desc> {
+  return create(schema, init ?? ({} as MessageInitShape<Desc>));
 }
 
 function stripPrefix(field: string, prefixes: readonly string[]): string {

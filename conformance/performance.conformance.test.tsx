@@ -36,9 +36,9 @@ function renderControls<FieldType extends string>(fields: ParsedField<FieldType>
   );
 }
 
-describe('large-form performance budget', () => {
+describe('descriptor conversion and synthetic SSR microbenchmarks', () => {
   test.each(matrix)(
-    'keeps render, validation, field change, and step transition within budgets for a $fields-field descriptor',
+    'keeps synthetic SSR, conversion, validation, and step filtering within microbench budgets for a $fields-field descriptor',
     async (budget) => {
       const descriptor = createPerformanceDescriptor(budget.fields);
       const values = Object.fromEntries(

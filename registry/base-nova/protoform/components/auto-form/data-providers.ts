@@ -1,4 +1,5 @@
 import React from 'react';
+import { safeStringify } from './utils/serialization';
 
 export interface DataProviderOption {
   description?: string;
@@ -108,15 +109,19 @@ export function getStaleSelections(
 export function useDataProviderSignal(requestKey: string): AbortSignal {
   const [state, setState] = React.useState(() => ({ controller: new AbortController(), key: requestKey }));
 
+  const replaceProviderSignal = React.useEffectEvent((key: string) => {
+    if (state.key === key && !state.controller.signal.aborted) {
+      return;
+    }
+    state.controller.abort();
+    setState({ controller: new AbortController(), key });
+  });
+
   React.useEffect(
-    function replaceProviderSignal() {
-      if (state.key === requestKey) {
-        return;
-      }
-      state.controller.abort();
-      setState({ controller: new AbortController(), key: requestKey });
+    function replaceProviderSignalEffect() {
+      replaceProviderSignal(requestKey);
     },
-    [requestKey, state]
+    [requestKey]
   );
 
   React.useEffect(
@@ -127,4 +132,90 @@ export function useDataProviderSignal(requestKey: string): AbortSignal {
   );
 
   return state.controller.signal;
+}
+
+export function useProviderOptions({
+  result,
+  query,
+  cursor,
+  requestKey,
+  selectedValues,
+  staleSelection,
+}: {
+  result: DataProviderResult;
+  query: string;
+  cursor: string | undefined;
+  requestKey: string;
+  selectedValues: string[];
+  staleSelection: ResolvedDataProvider['staleSelection'];
+}) {
+  const [loadedOptions, setLoadedOptions] = React.useState<DataProviderOption[]>([]);
+  const { options, isLoading, error: providerError } = result;
+  const hasProviderError = Boolean(providerError);
+  const hasCursor = cursor !== undefined && cursor !== '';
+  const hasNextPage = result.nextCursor !== undefined && result.nextCursor !== '';
+  const optionsKey = safeStringify(
+    options.map(({ description, group, label, value }) => ({ description, group, label, value }))
+  );
+  const providerPageKey = requestKey.concat(':', optionsKey);
+  const collectedPageKey = React.useRef<string | undefined>(undefined);
+  const availableOptions =
+    isLoading === true || hasProviderError
+      ? loadedOptions
+      : mergeProviderOptions(hasCursor ? loadedOptions : [], options);
+  const staleSelections =
+    isLoading === true || hasProviderError || hasNextPage || query !== ''
+      ? []
+      : getStaleSelections(availableOptions, selectedValues);
+  const missingSelections = getStaleSelections(availableOptions, selectedValues);
+  const staleSelectionSet = new Set(staleSelections);
+  const placeholders =
+    staleSelection === 'clear' ? missingSelections.filter((value) => !staleSelectionSet.has(value)) : missingSelections;
+  const renderedOptions: DataProviderOption[] = [
+    ...placeholders.map((value) => ({ label: value, value })),
+    ...availableOptions,
+  ];
+
+  React.useEffect(
+    function collectProviderPageEffect() {
+      if (isLoading === true || hasProviderError || collectedPageKey.current === providerPageKey) {
+        return;
+      }
+      collectedPageKey.current = providerPageKey;
+      setLoadedOptions((currentOptions) => mergeProviderOptions(hasCursor ? currentOptions : [], options));
+    },
+    [hasCursor, isLoading, options, hasProviderError, providerPageKey]
+  );
+
+  return { renderedOptions, staleSelections };
+}
+
+function mergeProviderOptions(
+  currentOptions: DataProviderOption[],
+  pageOptions: readonly DataProviderOption[]
+): DataProviderOption[] {
+  const merged = new Map(currentOptions.map((option) => [option.value, option]));
+  for (const option of pageOptions) {
+    merged.set(option.value, option);
+  }
+  const nextOptions = [...merged.values()];
+  if (
+    nextOptions.length === currentOptions.length &&
+    nextOptions.every((option, index) => {
+      const current = currentOptions[index];
+      if (!current) {
+        return false;
+      }
+      return (
+        current.description === option.description &&
+        current.group === option.group &&
+        current.icon === option.icon &&
+        current.label === option.label &&
+        current.value === option.value
+      );
+    })
+  ) {
+    return currentOptions;
+  }
+  return nextOptions;
 }

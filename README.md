@@ -21,12 +21,11 @@ map or provider is required. Add `protoform-react` later for selected generated 
 replacing your manual forms.
 
 The `@protoform` names here identify registry items, not Protoform npm packages. Configure the
-registry URL shown under [Stable release](#stable-release) before installing.
+registry URL shown under [Preview snapshot](#preview-snapshot) before installing.
 
-## Bring your own registry and theme (unreleased)
+## Bring your own registry and theme
 
-The changes in this branch are not in the immutable `v1.0.0` snapshot below. Use a registry
-built from this branch to try them.
+Use the preview snapshot below, or build a local registry from the revision you want to test.
 
 `protoform` and `protoform-react` install protobuf-driven form behavior, not a design system.
 They do not install UI primitives, change `components.json`, or inject CSS/theme tokens.
@@ -117,15 +116,15 @@ The bookstore walkthrough connects five real RPCs to one generated contract:
 The docs include a native source workspace for the actual `.proto`, `*_pb.ts`, `*_form.ts`, React,
 and service files. It does not depend on an external playground.
 
-## Stable release
+## Preview snapshot
 
-Protoform 1.0 is the stable source-distribution contract. Install the immutable `v1.0.0` registry
-snapshot directly from GitHub:
+The repository is public, but no stable release tag has been published. Install this immutable
+preview commit directly from GitHub; it is not a released 1.0 contract:
 
 ```json
 {
   "registries": {
-    "@protoform": "https://raw.githubusercontent.com/malinskibeniamin/protoform/v1.0.0/public/r/{name}.json"
+    "@protoform": "https://raw.githubusercontent.com/malinskibeniamin/protoform/9666e83796b9104b7af4f5e1385f1b7e7c793285/public/r/{name}.json"
   }
 }
 ```
@@ -148,17 +147,17 @@ Useful items:
 | `use-proto-form-tanstack` | Native TanStack Form integration |
 | `protoform-react` | React Hook Form AutoForm using a consumer-owned shadcn component map |
 | `protoform-shadcn` | Explicit legacy/demo UI source |
-| `protoform-shadcn-host` | Unreleased editable adapter for existing Radix-style controls |
+| `protoform-shadcn-host` | Editable adapter for existing Radix-style controls |
 | `auto-form-tanstack` | TanStack Form AutoForm |
 | `protoc-gen-protoform` | Source-copy Buf plugin |
 | `bookstore` | Complete five-RPC example |
 
-Until the repository and tag are public, maintainers can build the same registry locally with
+To test newer changes, build the registry locally with
 `bun install --frozen-lockfile && bun run registry:build`.
 
 ## Compatibility
 
-The 1.x line supports:
+The preview targets:
 
 - React 19.2 or later within major version 19;
 - Protobuf-ES 2.13 or later within major version 2;
@@ -178,12 +177,13 @@ Protoform follows shadcn's source-distribution model:
 - Git tags are immutable release snapshots;
 - consumers choose when to run `shadcn add` again and review the source diff.
 
-To pin a release, point the namespace at that tag:
+Until a release exists, pin a reviewed commit. After a tag is published, its name can replace the
+commit in this URL:
 
 ```json
 {
   "registries": {
-    "@protoform": "https://raw.githubusercontent.com/malinskibeniamin/protoform/v1.0.0/public/r/{name}.json"
+    "@protoform": "https://raw.githubusercontent.com/malinskibeniamin/protoform/9666e83796b9104b7af4f5e1385f1b7e7c793285/public/r/{name}.json"
   }
 }
 ```

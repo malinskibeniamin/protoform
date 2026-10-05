@@ -8,7 +8,8 @@ const MIT_LICENSE_PATTERN = /^MIT License/u;
 const PRIVATE_REGISTRY_PATTERN = /npm\.pkg\.github\.com|read:packages/u;
 const PACKAGE_RELEASE_PATTERN = /changeset|npm publish|npm\.pkg\.github/iu;
 const PACKAGE_ARTIFACT_PATTERN = /package-artifacts|tarball|packWorkspacePackages/iu;
-const STABLE_REGISTRY_URL = 'https://raw.githubusercontent.com/malinskibeniamin/protoform/v1.0.0/public/r/{name}.json';
+const PREVIEW_REGISTRY_PATTERN =
+  /https:\/\/raw\.githubusercontent\.com\/malinskibeniamin\/protoform\/[a-f0-9]{40}\/public\/r\/\{name\}\.json/u;
 const PROTOFORM_LICENSE_DEPENDENCY = '@protoform/protoform-license';
 const PROTOFORM_LICENSE_TARGET = '~/LICENSES/protoform-MIT.txt';
 
@@ -137,7 +138,9 @@ describe('registry-only distribution', () => {
 
     expect(readme).toContain('shadcn');
     expect(readme).toContain('Git tags');
-    expect(readme).toContain(STABLE_REGISTRY_URL);
+    expect(readme).toMatch(PREVIEW_REGISTRY_PATTERN);
+    expect(readme).toContain('no stable release tag has been published');
+    expect(readme).not.toContain('protoform/v1.0.0/public/r');
     expect(readme).toContain('add @protoform/protoform');
     expect(release).toContain('tags:');
     expect(release).toContain('public/r LICENSE LICENSES THIRD_PARTY_NOTICES.md');

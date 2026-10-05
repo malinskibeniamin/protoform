@@ -8,10 +8,10 @@ import {
   type DataProviderOption,
   type DataProviderRequest,
   type DataProviderResult,
-  getStaleSelections,
   type ResolvedDataProvider,
   resolveDataProvider,
   useDataProviderSignal,
+  useProviderOptions,
 } from '../data-providers';
 import { getPathInObject } from '../field-utils';
 import type { FieldTypeDefinition } from '../registry';
@@ -136,54 +136,6 @@ function SelectFieldComponent({ error, field, id, inputProps, label, path }: Aut
   );
 }
 
-function useProviderOptions({
-  result,
-  cursor,
-  requestKey,
-  selectedValues,
-  staleSelection,
-}: {
-  result: DataProviderResult;
-  cursor: string | undefined;
-  requestKey: string;
-  selectedValues: string[];
-  staleSelection: ResolvedDataProvider['staleSelection'];
-}) {
-  const [loadedOptions, setLoadedOptions] = React.useState<DataProviderOption[]>([]);
-  const { options, isLoading, error: providerError } = result;
-  const hasProviderError = Boolean(providerError);
-  const optionsKey = safeStringify(
-    options.map(({ description, group, label, value }) => ({ description, group, label, value }))
-  );
-  const providerPageKey = requestKey.concat(':', optionsKey);
-  const collectedPageKey = React.useRef<string | undefined>(undefined);
-  const availableOptions =
-    isLoading === true || hasProviderError
-      ? loadedOptions
-      : mergeProviderOptions(cursor !== undefined && cursor !== '' ? loadedOptions : [], options);
-  const staleSelections =
-    isLoading === true || hasProviderError ? [] : getStaleSelections(availableOptions, selectedValues);
-  const renderedOptions: DataProviderOption[] =
-    staleSelection === 'clear'
-      ? availableOptions
-      : [...staleSelections.map((value) => ({ label: value, value })), ...availableOptions];
-
-  React.useEffect(
-    function collectProviderPageEffect() {
-      if (isLoading === true || hasProviderError || collectedPageKey.current === providerPageKey) {
-        return;
-      }
-      collectedPageKey.current = providerPageKey;
-      setLoadedOptions((currentOptions) =>
-        mergeProviderOptions(cursor !== undefined && cursor !== '' ? currentOptions : [], options)
-      );
-    },
-    [cursor, isLoading, options, hasProviderError, providerPageKey]
-  );
-
-  return { renderedOptions, staleSelections };
-}
-
 function SelectFieldFromProvider({
   currentValue,
   dependencyValues,
@@ -227,6 +179,7 @@ function SelectFieldFromProvider({
           onQueryChange={setQuery}
           provider={provider}
           providerResult={providerResult}
+          query={query}
           requestKey={requestKey}
           selectedValues={selectedValues}
           testIds={testIds}
@@ -247,6 +200,7 @@ function SelectFieldFromProviderResult({
   onQueryChange,
   provider,
   providerResult,
+  query,
   requestKey,
   selectedValues,
   testIds,
@@ -261,6 +215,7 @@ function SelectFieldFromProviderResult({
   onQueryChange: (query: string) => void;
   provider: ResolvedDataProvider;
   providerResult: DataProviderResult;
+  query: string;
   requestKey: string;
   selectedValues: string[];
   testIds: ReturnType<typeof useFieldTestIds>;
@@ -271,6 +226,7 @@ function SelectFieldFromProviderResult({
   const { renderedOptions, staleSelections } = useProviderOptions({
     cursor,
     requestKey,
+    query,
     result: providerResult,
     selectedValues,
     staleSelection: provider.staleSelection,
@@ -372,36 +328,6 @@ function isDataProviderOption(value: unknown): value is DataProviderOption {
     typeof Reflect.get(value, 'label') === 'string' &&
     typeof Reflect.get(value, 'value') === 'string'
   );
-}
-
-function mergeProviderOptions(
-  currentOptions: DataProviderOption[],
-  pageOptions: readonly DataProviderOption[]
-): DataProviderOption[] {
-  const merged = new Map(currentOptions.map((option) => [option.value, option]));
-  for (const option of pageOptions) {
-    merged.set(option.value, option);
-  }
-  const nextOptions = [...merged.values()];
-  if (
-    nextOptions.length === currentOptions.length &&
-    nextOptions.every((option, index) => {
-      const current = currentOptions[index];
-      if (!current) {
-        return false;
-      }
-      return (
-        current.description === option.description &&
-        current.group === option.group &&
-        current.icon === option.icon &&
-        current.label === option.label &&
-        current.value === option.value
-      );
-    })
-  ) {
-    return currentOptions;
-  }
-  return nextOptions;
 }
 
 function ProviderOptionLabel({ option }: { option: DataProviderOption }) {

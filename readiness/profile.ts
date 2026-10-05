@@ -1509,9 +1509,9 @@ const productionRequirements: readonly ReadinessRequirement[] = [
   verified(
     'production',
     'production.performance',
-    'Large-form performance budget',
-    'conformance/performance.conformance.test.tsx',
-    'keeps render, validation, field change, and step transition within budgets for a $fields-field descriptor',
+    'Real AutoForm browser performance budget',
+    'registry/base-nova/protoform/components/auto-form/__browser__/performance.browser.test.tsx',
+    'renders, types, validates, and steps through a real $fields-field AutoForm',
     recommended
   ),
   verified(

@@ -105,6 +105,20 @@ function augmentError(
   return error;
 }
 
+function FieldErrorContent({ error }: { error: FieldWrapperProps['error'] }) {
+  const messages = typeof error === 'string' ? [...new Set(error.split('\n'))] : [];
+  if (messages.length <= 1) {
+    return error;
+  }
+  return (
+    <ul className="ml-4 list-disc">
+      {messages.map((message) => (
+        <li key={message}>{message}</li>
+      ))}
+    </ul>
+  );
+}
+
 function FieldFeedback({
   field,
   error,
@@ -129,7 +143,9 @@ function FieldFeedback({
   if (error) {
     return (
       <div id={errorId}>
-        <FieldError testId={getAutoFormFieldTestId(testIdPrefix, id, 'error')}>{error}</FieldError>
+        <FieldError testId={getAutoFormFieldTestId(testIdPrefix, id, 'error')}>
+          <FieldErrorContent error={error} />
+        </FieldError>
       </div>
     );
   }

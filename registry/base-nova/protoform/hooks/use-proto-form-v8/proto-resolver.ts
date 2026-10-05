@@ -12,6 +12,13 @@ import {
 } from '@/registry/base-nova/protoform/lib/protobuf-provider/humanize-validation-error.js';
 import { createDescriptorAwareStandardSchema } from '@/registry/base-nova/protoform/lib/protobuf-provider/validation-schema.js';
 
+type ProtoResolver<Desc extends DescMessage> = (
+  values: FormValues,
+  context: unknown,
+  options: ResolverOptions<FormValues>,
+  currentSource?: MessageShape<Desc>
+) => ReturnType<Resolver<FormValues, unknown, MessageValidType<Desc>>>;
+
 function validateFieldNatively(ref: HTMLInputElement, path: string, errors: Record<string, FieldError>) {
   if (!('reportValidity' in ref)) {
     return;
@@ -66,11 +73,17 @@ export function createProtoResolver<Desc extends DescMessage>(
   desc: Desc,
   options: ProtoFormOptions = {},
   source?: MessageShape<Desc>
-): Resolver<FormValues, unknown, MessageValidType<Desc>> {
+): ProtoResolver<Desc> {
   const standardSchema = createDescriptorAwareStandardSchema(desc, options);
 
-  return async (values, _context, resolverOptions) => {
-    const validationResult = await validateFormValuesAgainstProtoSchema(desc, values, standardSchema, options, source);
+  return async (values, _context, resolverOptions, currentSource = source) => {
+    const validationResult = await validateFormValuesAgainstProtoSchema(
+      desc,
+      values,
+      standardSchema,
+      options,
+      currentSource
+    );
 
     if (!validationResult.issues) {
       if (resolverOptions.shouldUseNativeValidation) {

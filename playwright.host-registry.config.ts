@@ -8,12 +8,20 @@ export default defineConfig({
   ],
   snapshotPathTemplate: '{testDir}/__screenshots__/{testFilePath}/{projectName}/{arg}{ext}',
   testDir: './scripts',
-  testMatch: 'host-consumer.browser.spec.ts',
+  testMatch: ['host-consumer.browser.spec.ts', 'reliability-consumer.browser.spec.ts'],
   use: { baseURL: 'http://127.0.0.1:55117', browserName: 'chromium' },
-  webServer: {
-    command: 'bunx --no-install vite --host 127.0.0.1 --port 55117',
-    cwd: '.tmp/host-consumer-fixture',
-    reuseExistingServer: false,
-    url: 'http://127.0.0.1:55117',
-  },
+  webServer: [
+    {
+      command: 'bunx --no-install vite --host 127.0.0.1 --port 55117',
+      cwd: '.tmp/host-consumer-fixture',
+      reuseExistingServer: false,
+      url: 'http://127.0.0.1:55117',
+    },
+    {
+      command: 'bunx --no-install vite --host 127.0.0.1 --port 55120',
+      cwd: '.tmp/consumer-fixture',
+      reuseExistingServer: false,
+      url: 'http://127.0.0.1:55120',
+    },
+  ],
 });

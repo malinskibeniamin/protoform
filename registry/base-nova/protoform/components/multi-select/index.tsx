@@ -585,13 +585,15 @@ function renderMultiSelectOptions(list: MultiSelectOption[]) {
   });
 }
 
-type SimpleMultiSelectProps = PortalRootProps &
+type SimpleMultiSelectProps = React.AriaAttributes &
+  PortalRootProps &
   SharedProps &
   Pick<PortalContentProps, 'container' | 'onOpenAutoFocus'> & {
     id?: string;
     options: MultiSelectOption[] | string[];
     value?: string[];
     onValueChange?: (value: string[]) => void;
+    onSearch?: ((query: string) => void) | undefined;
     placeholder?: string;
     className?: string;
     disabled?: boolean;
@@ -612,10 +614,14 @@ const widthClasses = {
 };
 
 function SimpleMultiSelect({
+  'aria-invalid': ariaInvalid,
+  'aria-describedby': ariaDescribedBy,
+  'aria-label': ariaLabel,
   id,
   options,
   value,
   onValueChange,
+  onSearch,
   placeholder = 'Select items...',
   className,
   disabled,
@@ -647,12 +653,16 @@ function SimpleMultiSelect({
       disabled={disabled}
       maxCount={maxCount}
       onOpenChange={onOpenChange}
+      onSearch={onSearch ? (keyword) => onSearch(keyword ?? '') : undefined}
       onValueChange={onValueChange}
       open={open}
       testId={testId}
       value={value}
     >
       <MultiSelectTrigger
+        aria-describedby={ariaDescribedBy}
+        aria-invalid={ariaInvalid}
+        aria-label={ariaLabel ?? 'Multi-select trigger'}
         className={className}
         id={id}
         testId={testId !== undefined && testId !== '' ? `${testId}-control` : undefined}

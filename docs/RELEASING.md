@@ -1,8 +1,8 @@
 # Releasing Protoform
 
-Protoform releases immutable registry source and a matching GitHub archive. The repository remains
-private until every item in the [open-source release checklist](OPEN_SOURCE_RELEASE_CHECKLIST.md) is
-complete.
+Protoform publishes immutable registry source and a matching GitHub archive. The repository is
+public; the first stable release is still untagged. Complete the
+[open-source release checklist](OPEN_SOURCE_RELEASE_CHECKLIST.md) before publishing.
 
 ## Prepare `1.0.0`
 
@@ -12,7 +12,7 @@ complete.
 
    ```bash
    bun install --frozen-lockfile
-   bun audit
+   bun run security:audit
    ```
 
 4. Regenerate and verify all distributable source:
@@ -24,8 +24,8 @@ complete.
    ```
 
 5. Run the history and working-tree secret scans from the open-source checklist.
-6. Merge the reviewed preparation pull request. Do not create a tag while the repository is private
-   if the public launch is not approved.
+6. Merge the reviewed preparation pull request. Creating a release tag requires separate release-owner
+   approval; a public repository or a merged preparation PR is not that approval.
 
 ## Publish `v1.0.0`
 
@@ -45,7 +45,7 @@ Only the release owner performs these steps after the public-launch checklist is
    generation is reproducible, publishes the registry archive and checksum, and creates a build
    provenance attestation.
 5. In a clean temporary repository, install `@protoform/protoform`, `@protoform/bookstore`, and
-   `@protoform/protoc-gen-protoform` from the tagged raw GitHub URL in the README.
+   `@protoform/protoc-gen-protoform` from the published tag’s raw GitHub URL. Update the README preview URLs only after verifying that tag.
 6. Verify the GitHub release archive checksum and confirm the copied license notices are present.
 
 ## Failure handling

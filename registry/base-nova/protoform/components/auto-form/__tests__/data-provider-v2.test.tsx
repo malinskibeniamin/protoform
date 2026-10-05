@@ -7,6 +7,26 @@ import type { DataProviderProps, DataProviderRequest } from '../data-providers';
 import { AutoForm } from '../index';
 import { createMockProvider } from './test-utils';
 
+const strictModeSignals: AbortSignal[] = [];
+function useReplayRegions({ signal }: DataProviderRequest) {
+  React.useEffect(
+    function loadRegions() {
+      if (signal) {
+        strictModeSignals.push(signal);
+      }
+    },
+    [signal]
+  );
+  return { options: [{ label: 'Europe', value: 'eu' }] };
+}
+const pagedRequests: DataProviderRequest[] = [];
+function pagedMethodsProvider(request: DataProviderRequest) {
+  pagedRequests.push(request);
+  return request.cursor !== undefined && request.cursor !== ''
+    ? { options: [{ label: 'POST', value: 'post' }] }
+    : { options: [{ label: 'GET', value: 'get' }], nextCursor: 'page-2' };
+}
+
 const componentProviderRequests: DataProviderRequest[] = [];
 
 function RegionsProvider({ children, request }: DataProviderProps) {
@@ -37,6 +57,22 @@ function EmptyRegionsProvider({ children }: DataProviderProps) {
 }
 
 describe('AutoForm data providers v2', () => {
+  test('provides a live signal after StrictMode effect replay and cancels it on unmount', async () => {
+    strictModeSignals.length = 0;
+    const schema = createMockProvider([
+      { key: 'region', type: 'string', required: false, fieldConfig: { customData: { dataProvider: 'regions' } } },
+    ]);
+    const view = render(
+      <React.StrictMode>
+        <AutoForm dataProviders={{ regions: useReplayRegions }} schema={schema} />
+      </React.StrictMode>
+    );
+    await waitFor(() => expect(strictModeSignals.at(-1)?.aborted).toBe(false));
+    const liveSignal = strictModeSignals.at(-1);
+    view.unmount();
+    expect(liveSignal?.aborted).toBe(true);
+  });
+
   test('supplies search, cursor, dependencies, selected values, cancellation, and stale-selection policy', async () => {
     const user = userEvent.setup();
     const requests: DataProviderRequest[] = [];
@@ -88,7 +124,7 @@ describe('AutoForm data providers v2', () => {
       selectedValues: ['retired-region'],
     });
     const initialSignal = requests.at(-1)?.signal;
-    expect(screen.getByRole('alert')).toHaveTextContent('Selection unavailable');
+    expect(screen.queryByRole('alert')).toBeNull();
 
     await user.clear(screen.getByRole('textbox', { name: /Project/u }));
     await user.paste('project-b');
@@ -350,4 +386,45 @@ describe('AutoForm data providers v2', () => {
     expect(screen.getByRole('link', { name: 'Create a region' })).toBeVisible();
     expect(screen.queryByText('No items found')).toBeNull();
   });
+});
+
+test('multi-select paginates and preserves selections absent from an incomplete or searched page', async () => {
+  const user = userEvent.setup();
+  pagedRequests.length = 0;
+  const onSubmit = rs.fn();
+  render(
+    <AutoForm
+      dataProviders={{ methods: { useProvider: pagedMethodsProvider, staleSelection: 'clear' } }}
+      onSubmit={onSubmit}
+      schema={createMockProvider(
+        [
+          {
+            key: 'methods',
+            type: 'array',
+            required: false,
+            schema: [
+              {
+                key: 'value',
+                type: 'string',
+                required: false,
+                fieldConfig: { customData: { dataProvider: 'methods' } },
+              },
+            ],
+          },
+        ],
+        { methods: ['post'] }
+      )}
+      withSubmit
+    />
+  );
+  await user.click(screen.getByRole('button', { name: 'Submit' }));
+  await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
+  expect(onSubmit.mock.calls[0]?.[0]).toMatchObject({ methods: ['post'] });
+  await user.click(screen.getByRole('button', { name: 'Load more' }));
+  expect(pagedRequests.at(-1)?.cursor).toBe('page-2');
+  await user.click(screen.getByRole('button', { name: 'Multi-select trigger' }));
+  expect(screen.getByRole('option', { name: 'GET' })).toBeVisible();
+  expect(screen.getByRole('option', { name: 'POST' })).toBeVisible();
+  await user.type(screen.getByPlaceholderText('Search…'), 'post');
+  expect(pagedRequests.at(-1)).toMatchObject({ query: 'post', cursor: undefined, selectedValues: ['post'] });
 });

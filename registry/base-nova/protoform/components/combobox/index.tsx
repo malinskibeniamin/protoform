@@ -51,7 +51,8 @@ export interface ComboboxOption {
 }
 
 export interface ComboboxProps
-  extends SharedProps,
+  extends React.AriaAttributes,
+    SharedProps,
     Pick<PortalRootProps, 'defaultOpen'>,
     Pick<PortalContentProps, 'container'> {
   autocomplete?: boolean | undefined;
@@ -147,6 +148,9 @@ export const Combobox = memo(
     inputTestId,
     id,
     onInputValueChange,
+    'aria-invalid': ariaInvalid,
+    'aria-describedby': ariaDescribedBy,
+    'aria-label': ariaLabel,
     loading = false,
     emptyState,
     renderOption,
@@ -396,7 +400,10 @@ export const Combobox = memo(
             aria-activedescendant={open ? activeDescendantId : undefined}
             aria-autocomplete="list"
             aria-controls={listId}
+            aria-describedby={ariaDescribedBy}
             aria-expanded={open}
+            aria-invalid={ariaInvalid}
+            aria-label={ariaLabel}
             autoComplete="off"
             autoCorrect="off"
             className="relative w-full"
