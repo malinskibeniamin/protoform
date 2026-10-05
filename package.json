@@ -113,7 +113,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",
-    "@biomejs/biome": "2.5.13",
+    "@biomejs/biome": "2.5.15",
     "@bufbuild/buf": "^1.73.0",
     "@bufbuild/protoc-gen-es": "^2.16.0",
     "@bufbuild/protoplugin": "^2.16.0",
@@ -130,7 +130,7 @@
     "@testing-library/react": "^16.3.3",
     "@testing-library/user-event": "^14.6.7",
     "@types/bun": "^1.4.2",
-    "@types/node": "^26.6.3",
+    "@types/node": "^26.6.4",
     "@types/prismjs": "^1.26.6",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
