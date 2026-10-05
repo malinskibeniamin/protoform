@@ -1,0 +1,1914 @@
+Verified candidate: c00436a0f9191c86a2bc94d3b7c2d540df70fba3
+Comparison base: 83d9804
+Screenshots reconstructed at dfa4e9e (same captured registry components as 83d9804).
+Chromium E2E: 225 passed, one stale-backend duplicate-book 409.
+Same RPC case passed with fresh real backend on 55193 via Custom base URL.
+Focused screenshot assertions: 2 passed (four pixel assertions, existing reviewed baselines).
+Consumer smoke predates final Boolean predicate readability repair; types and full unit/integration tests passed afterward.
+Full ci:gate and Firefox/WebKit not run in this delivery.
+
+===== all-rules-rebased-lint.log =====
+$ biome check . --write && bun run lint:shadcn
+Checked 594 files in 1343ms. No fixes applied.
+$ oxlint --config shadcn-lint.jsonc --deny-warnings
+
+===== all-rules-current-typecheck.log =====
+$ bun run typecheck:coverage && bun run typecheck:source && bun run typecheck:tests && bun run docs:blume:check
+$ bun run scripts/check-typescript-coverage.ts
+Every authored TypeScript file is covered (580 files).
+$ tsc --noEmit
+$ tsc --project tsconfig.tests.json --noEmit
+$ bun run scripts/check-docs-types.ts
+[blume] ◐ Type-checking 170 page(s)
+Result (434 files): 
+- 0 errors
+- 0 warnings
+- 0 hints
+
+[blume] ✔ No type errors.
+
+===== all-rules-current-unit.log =====
+$ node scripts/run-tests.mjs unit --reporters verbose
+
+ ✓ scripts/readiness-profile.test.ts (12) 36ms
+  ✓ readiness scoring > counts only applicable requirements in the percentage (2ms)
+  ✓ readiness scoring > publishes a unique, sourced production profile (1ms)
+  ✓ readiness scoring > completes the capability profile without self-certifying release (1ms)
+  ✓ readiness scoring > rejects a profile gate with a recommended gap (0ms)
+  ✓ readiness scoring > backs every verified and optional capability with a discoverable test (26ms)
+  ✓ readiness scoring > counts the kitchen-sink CEL contract as verified evidence (1ms)
+  ✓ readiness scoring > tracks the complete form-relevant CEL baseline without unsupported rows (0ms)
+  ✓ readiness scoring > tracks every General AIP with an explicit readiness status (2ms)
+  ✓ readiness scoring > reports the maintained v1 bridge separately from out-of-target proto2 features (1ms)
+  ✓ readiness scoring > pins the upstream ranges that define the profile denominator (1ms)
+  ✓ readiness scoring > does not turn profile completeness into a release claim (0ms)
+  ✓ readiness scoring > formats a report with the score and next tests (0ms)
+ ✓ registry/base-nova/protoform/lib/protobuf-provider/field-mask.test.ts (4) 6ms
+  ✓ createFieldMask > normalizes and minimizes explicit read-mask paths and collapses a wildcard (2ms)
+  ✓ createUpdateMask > includes only dirty, client-owned protobuf fields and collapses collections (1ms)
+  ✓ createUpdateMask > masks the cleared initial oneof branch and nested dirty leaves in the active branch (0ms)
+  ✓ dirtyFieldsFromValues > builds a nested dirty tree, collapses changed collections, and ignores equal values (0ms)
+ ✓ scripts/bundle-budget.test.ts (1) 296ms
+  ✓ bundle budgets > enforces registry runtime and example budgets (294ms)
+ ✓ registry/base-nova/protoform/lib/protobuf-provider/render-hints.test.ts (3) 16ms
+  ✓ maps field and oneof annotations onto hints without empty hint objects (10ms)
+  ✓ enum aliases produce one selectable option per numeric value (1ms)
+  ✓ reversed numeric ranges do not become invalid native input bounds (4ms)
+ ✓ scripts/removed-control.test.ts (2) 311ms
+  ✓ removed controls > ignores transient shadcn lint fixtures inside registry (3ms)
+  ✓ removed controls > does not publish the removed control in source or registry artifacts (307ms)
+ ✓ examples/server/service.test.ts (5) 60ms
+  ✓ form example service > accepts the basic form and returns a stable profile id (2ms)
+  ✓ form example service > returns structured field details for business validation failures (42ms)
+  ✓ library demo service > runs isolated create, get, list, update, and delete workflows (5ms)
+  ✓ library demo service > isolates visitor libraries and rejects stale or immutable updates (1ms)
+  ✓ library demo service > uses current AIP lifecycle error codes for soft deletion (0ms)
+ ✓ registry/base-nova/protoform/lib/protobuf-provider/aip-client-workflow.test.ts (6) 59ms
+  ✓ runProtoOperation > polls named AIP-151 operations until success or a terminal google.rpc.Status failure (3ms)
+  ✓ runProtoOperation > cancels the remote operation when the caller aborts (1ms)
+  ✓ getProtoRetryDecision > retries only idempotent unary UNAVAILABLE calls and respects RetryInfo (40ms)
+  ✓ getProtoPartialResult > turns AIP-217 unreachable resources into a warning and targeted recovery actions (1ms)
+  ✓ destructive and preview workflow plans > requires an AIP-165 purge preview and distinguishes AIP-236 non-enforcing preview from live commit (1ms)
+  ✓ getProtoStability > presents AIP-181 alpha, beta, stable, and deprecated guidance from generated descriptors (7ms)
+ ✓ scripts/demo-catalog.test.ts (12) 232ms
+  ✓ live demo catalog > excludes test modules from the production demo glob (1ms)
+  ✓ live demo catalog > maps every applicable readiness requirement to a live demo (0ms)
+  ✓ live demo catalog > keeps an extensive, uniquely addressable visual feature catalog (1ms)
+  ✓ live demo catalog > consolidates generated demos into five focused documentation hubs (5ms)
+  ✓ live demo catalog > keeps React Hook Form as the default while labeling interop demos (1ms)
+  ✓ live demo catalog > ships registry interop demos backed by their named form libraries (1ms)
+  ✓ live demo catalog > publishes the actual form implementation for every catalog demo (24ms)
+  ✓ live demo catalog > keeps submitted-value formatting inside Protoform (8ms)
+  ✓ live demo catalog > keeps every registry demo renderable by the consolidated hub (7ms)
+  ✓ live demo catalog > redirects every retired demo page to its deep-linked hub selection (6ms)
+  ✓ live demo catalog > makes every demo independently installable from the registry (2ms)
+  ✓ live demo catalog > keeps generated demo descriptors synchronized in the full generation pipeline (175ms)
+ ✓ scripts/registry-only-distribution.test.ts (8) 99ms
+  ✓ registry-only distribution > ships Protoform under MIT without private package workspaces (2ms)
+  ✓ registry-only distribution > distributes only Protoform's own license (1ms)
+  ✓ registry-only distribution > copies license notices with every installable registry item (4ms)
+  ✓ registry-only distribution > does not ask consumers for private Protoform packages (57ms)
+  ✓ registry-only distribution > documents the public Buf registry and portable bookstore install (1ms)
+  ✓ registry-only distribution > uses the public registry and Git tags as the distribution boundary (0ms)
+  ✓ registry-only distribution > tests consumers through registry source only (22ms)
+  ✓ registry-only distribution > keeps the source generator explicit and runnable (6ms)
+ ✓ scripts/check-no-suppressions.test.ts (8) 9ms
+  ✓ inline suppression policy > rejects biome-ignore (6ms)
+  ✓ inline suppression policy > rejects eslint-disable (1ms)
+  ✓ inline suppression policy > rejects oxlint-disable (0ms)
+  ✓ inline suppression policy > rejects prettier-ignore (0ms)
+  ✓ inline suppression policy > rejects @ts-expect-error (1ms)
+  ✓ inline suppression policy > rejects @ts-ignore (0ms)
+  ✓ inline suppression policy > rejects @ts-nocheck (0ms)
+  ✓ inline suppression policy > accepts ordinary comments (0ms)
+ ✓ registry/base-nova/protoform/lib/protobuf-provider/form-schema.test.ts (2) 504ms
+  ✓ valid form values produce a typed message value through a Standard Schema with a consumer-specific input type (336ms)
+  ✓ invalid form values produce issues with form-shaped camelCase paths or a root issue (166ms)
+ ✓ examples/learning/learning-contracts.test.ts (2) 3ms
+  ✓ keeps the bare-bones contract to one string field (3ms)
+  ✓ assigns one simple field to each step (0ms)
+ ✓ scripts/bookstore-docs.test.ts (2) 4ms
+  ✓ bookstore flagship documentation > ships a native live demo and source workspace (2ms)
+  ✓ bookstore flagship documentation > shows real generated artifacts rather than a simulated IDE (0ms)
+ ✓ registry/base-nova/protoform/lib/protobuf-provider/index.test.ts (4) 613ms
+  ✓ protobuf-provider > parses enums, oneofs, descriptions, and deprecation into autoform-friendly fields (34ms)
+  ✓ protobuf-provider > converts protobuf messages into form values, supplies defaults, and round-trips optional, wrapper, and JSON-backed fields (350ms)
+  ✓ protobuf-provider > maps nested field and root validation errors and preserves the edit source message through the resolver (224ms)
+  ✓ protobuf-provider > normalizes proto field and oneof UI metadata for focused UI demos (3ms)
+ ✓ examples/server/server.test.ts (4) 352ms
+  ✓ form example Connect server > serves health checks and reflects browser origins (146ms)
+  ✓ form example Connect server > runs the generated route and validation interceptor in process (52ms)
+  ✓ form example Connect server > serves generated clients and rejects invalid protobuf requests (52ms)
+  ✓ form example Connect server > serves the LibraryService CRUD API and enforces the ISBN-13 CEL rule (101ms)
+ ✓ scripts/demo-field-policy.test.ts (2) 329ms
+  ✓ demo Field policy > wraps every visible shadcn control in Field (228ms)
+  ✓ demo Field policy > wraps every visible shadcn control in docs examples in Field (101ms)
+ ✓ examples/kitchen-sink/kitchen-sink-cel.test.ts (7) 746ms
+  ✓ kitchen-sink CEL contract > accepts a request that satisfies every cross-collection policy (320ms)
+  ✓ kitchen-sink CEL contract > rejects a direct service dependency cycle (101ms)
+  ✓ kitchen-sink CEL contract > rejects an incomplete production approval (98ms)
+  ✓ kitchen-sink CEL contract > rejects an over-budget service allocation (23ms)
+  ✓ kitchen-sink CEL contract > rejects a backwards change window (92ms)
+  ✓ kitchen-sink CEL contract > rejects a missing live-deployment notification (63ms)
+  ✓ kitchen-sink CEL contract > rejects an invalid progressive rollout sequence (47ms)
+ ✓ registry/base-nova/protoform/lib/protobuf-provider/humanize-validation-error.test.ts (2) 4ms
+  ✓ humanizeServerFieldError > turns server descriptions into actionable copy (3ms)
+  ✓ localized validation messages > passes a stable code, parameters, and fallback to the host formatter (1ms)
+ ✓ registry/native-adapters.test.ts (19) 363ms
+  ✓ build-time UI adapter registry > auto-form-core requires the native-rule Protovalidate release (1ms)
+  ✓ build-time UI adapter registry > hook-runtime requires the native-rule Protovalidate release (0ms)
+  ✓ build-time UI adapter registry > protobuf-provider requires the native-rule Protovalidate release (0ms)
+  ✓ build-time UI adapter registry > protoform-examples requires the native-rule Protovalidate release (0ms)
+  ✓ build-time UI adapter registry > protoform-shadcn requires the native-rule Protovalidate release (1ms)
+  ✓ build-time UI adapter registry > default installation leaves host primitives and theme untouched (23ms)
+  ✓ build-time UI adapter registry > splits core, React, and optional shadcn capabilities (4ms)
+  ✓ build-time UI adapter registry > keeps hook installs on the focused runtime instead of the complete provider (6ms)
+  ✓ build-time UI adapter registry > keeps generated fixtures in the examples item (0ms)
+  ✓ build-time UI adapter registry > keeps primitive implementations out of the shared AutoForm renderer (1ms)
+  ✓ build-time UI adapter registry > uses the consumer's utils alias instead of shipping its own class helpers (10ms)
+  ✓ build-time UI adapter registry > keeps the host installation free of consumer UI imports (308ms)
+  ✓ build-time UI adapter registry > keeps the complete core capability free of UI source (1ms)
+  ✓ native form adapter registry entries > ships the legacy shadcn map only with explicit legacy adapters (0ms)
+  ✓ native form adapter registry entries > keeps the shared AutoForm core independent from form engines (0ms)
+  ✓ native form adapter registry entries > ships React Hook Form as the default AutoForm adapter (0ms)
+  ✓ native form adapter registry entries > ships TanStack Form without pulling React Hook Form (0ms)
+  ✓ native form adapter registry entries > ships TanStack Form v2 as separate experimental registry items (0ms)
+  ✓ native form adapter registry entries > ships React Hook Form v8 as separate experimental registry items (0ms)
+ ✓ scripts/browser-matrix.test.ts (1) 2ms
+  ✓ browser production matrix > runs the end-to-end form suite in Chromium, Firefox, and WebKit (2ms)
+ ✓ registry/style-contract.test.ts (6) 7ms
+  ✓ Protoform registry style > targets the Base UI Nova style (1ms)
+  ✓ Protoform registry style > publishes runtime source and the documented proto contract (1ms)
+  ✓ Protoform registry style > points shadcn at the actual non-RSC stylesheet (1ms)
+  ✓ Protoform registry style > creates smoke-test consumers with the same Base Nova style (0ms)
+  ✓ Protoform registry style > never publishes the internal unset sentinel (1ms)
+  ✓ Protoform registry style > uses semantic card colors in light and dark hosts (0ms)
+ ✓ registry/base-nova/protoform/lib/core/standard-schema.test.ts (1) 2ms
+  ✓ accepts spec-conforming Standard Schema v1 objects and rejects everything else (2ms)
+ ✓ scripts/static-hosting.test.ts (3) 5ms
+  ✓ static docs and registry hosting > builds one Cloudflare Pages artifact containing docs and registry JSON (2ms)
+  ✓ static docs and registry hosting > fetches git history for page update dates in the docs CI job (1ms)
+  ✓ static docs and registry hosting > pins the Bun toolchain consistently (1ms)
+ ✓ registry/base-nova/protoform/components/auto-form/ui-rules.test.ts (1) 30ms
+  ✓ AutoForm UI CEL profile > exposes only form and current-field values and fails closed for malformed, unknown, erroring, and non-boolean rules (28ms)
+ ✓ scripts/frontend-quality-policy.test.ts (7) 1.50s
+  ✓ frontend quality policy > uses the native compiler with every practical strictness flag (1ms)
+  ✓ frontend quality policy > typechecks every authored test with the strict project settings (1ms)
+  ✓ frontend quality policy > typechecks every tracked authored TypeScript file (1.50s)
+  ✓ frontend quality policy > fails documentation typechecks on every diagnostic severity (1ms)
+  ✓ frontend quality policy > checks authored installable registry source (0ms)
+  ✓ frontend quality policy > fails on warnings, formatting drift, and inline suppressions (1ms)
+  ✓ frontend quality policy > runs a full warning-blocking React Doctor gate (0ms)
+ ✓ registry/base-nova/protoform/lib/protobuf-provider/source-preservation.test.ts (2) 29ms
+  ✓ source-message preservation > preserves unknown fields on every surviving message node (21ms)
+  ✓ source-message preservation > does not resurrect unknown fields from removed messages or changed oneofs (7ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/schema.test.ts (3) 72ms
+  ✓ resolveSchema > maps per-field repeated-string policies to descriptor paths (4ms)
+  ✓ resolveSchema > throws for unsupported input types (1ms)
+  ✓ resolveSchema > resolves a SchemaProvider and a proto descriptor (66ms)
+ ✓ registry/base-nova/protoform/lib/protobuf-provider/empty-repeated-strings.test.ts (2) 47ms
+  ✓ empty repeated string conversion > discards empty and whitespace-only strings by default without changing other list types (29ms)
+  ✓ empty repeated string conversion > preserves empty strings for configured root, nested, and oneof-message fields (0ms)
+ ✓ scripts/buf-policy.test.ts (4) 1.55s
+  ✓ Buf policy > passes Buf STANDARD including the complete Protovalidate lint rule (705ms)
+  ✓ Buf policy > keeps intentional Protovalidate lint failures in an isolated module (322ms)
+  ✓ Buf policy > runs the complete lint policy in CI (0ms)
+  ✓ Buf policy > enforces target-branch compatibility and rejects an isolated fixture (521ms)
+ ✓ registry/base-nova/protoform/lib/protobuf-provider/mutation-request.test.ts (2) 5ms
+  ✓ descriptor-driven mutation request composers > composes create, update, and delete controls without performing an RPC (3ms)
+  ✓ descriptor-driven mutation request composers > rejects a descriptor whose standard method shape is ambiguous (1ms)
+ ✓ scripts/test-environment-policy.test.ts (1) 7ms
+  ✓ simulated DOM test environment > uses Rstest 0.12.3 with happy-dom and no Vitest wiring (4ms)
+ ✓ registry/base-nova/protoform/lib/core/form-library-adapters.test.ts (4) 4ms
+  ✓ form-library Standard Schema adapters > maps Standard Schema issues for Formik (1ms)
+  ✓ form-library Standard Schema adapters > maps Standard Schema issues for Final Form (1ms)
+  ✓ form-library Standard Schema adapters > returns no errors for valid values and forwards library options (0ms)
+  ✓ form-library Standard Schema adapters > does not allow issue paths to mutate object prototypes (0ms)
+ ✓ scripts/verify-release-tag.test.ts (1) 2ms
+  ✓ release tag verification > requires the immutable tag to match the package version (2ms)
+ ✓ scripts/openapi-bookstore.test.ts (6) 4ms
+  ✓ bookstore OpenAPI surface > documents ListBooks (1ms)
+  ✓ bookstore OpenAPI surface > documents GetBook (0ms)
+  ✓ bookstore OpenAPI surface > documents CreateBook (0ms)
+  ✓ bookstore OpenAPI surface > documents UpdateBook (0ms)
+  ✓ bookstore OpenAPI surface > documents DeleteBook (0ms)
+  ✓ bookstore OpenAPI surface > documents ISBN-13, update masks, and etags (0ms)
+ ✓ registry/base-nova/protoform/hooks/use-proto-form/proto-error-path.test.ts (3) 3ms
+  ✓ protoPathToFormPath > maps scalar and nested message paths to camelCase and returns null for empty or unknown paths (2ms)
+  ✓ protoPathToFormPath > flattens oneof branches into {oneof.localName}.value and the group into {oneof.localName} (0ms)
+  ✓ protoPathToFormPath > maps repeated-field indexes in bracket and dot notation (0ms)
+ ✓ registry/base-nova/protoform/lib/protobuf-provider/method-workflow.test.ts (2) 6ms
+  ✓ getProtoMethodWorkflow > classifies standard unary methods with their path, query, and body fields and marks streaming RPCs as non-form (5ms)
+  ✓ getProtoMethodWorkflow > classifies custom long-running workflows and exposes operation types (0ms)
+ ✓ registry/base-nova/protoform/components/auto-form/utils/serialization.test.ts (1) 5ms
+  ✓ safeStringify > indents output, serializes bigint and Date values, and returns a placeholder for circular references (5ms)
+ ✓ registry/base-nova/protoform/lib/protobuf-provider/format-submitted-value.test.ts (1) 3ms
+  ✓ formatSubmittedValue > formats protobuf JavaScript values as readable JSON (2ms)
+ ✓ registry/base-nova/protoform/scripts/protoc-gen-protoform/plugin.test.ts (2) 14ms
+  ✓ emits only a _form.ts file matching the golden fixture (13ms)
+  ✓ declares support for proto3 optional fields (1ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/core-types.test.ts (3) 3ms
+  ✓ sortFieldsByOrder > sorts by ascending order, treats missing order as 0, recurses into nested fields, and handles undefined input (2ms)
+  ✓ getLabel > prefers fieldConfig.label, then description, then the beautified key, and returns empty string for numeric keys (1ms)
+  ✓ getPathInObject > traverses nested paths and returns undefined through missing, null, or undefined segments (0ms)
+ ✓ scripts/check-docs-types.test.ts (4) 5ms
+  ✓ documentation typecheck diagnostics > parses a clean summary (2ms)
+  ✓ documentation typecheck diagnostics > parses a warning summary (0ms)
+  ✓ documentation typecheck diagnostics > parses a hint summary (0ms)
+  ✓ documentation typecheck diagnostics > rejects output without a complete summary (0ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/shadcn-controls.test.ts (1) 2ms
+  ✓ shadcn AutoForm coverage manifest > keeps proto control annotations unique and explicit (1ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/registry.test.ts (1) 2ms
+  ✓ FieldTypeRegistry > lists and resolves definitions by priority and clones independently (2ms)
+ ✓ registry/base-nova/protoform/lib/protobuf-provider/ui-options.test.ts (1) 1ms
+  ✓ control type value 18 remains available (1ms)
+ ✓ scripts/api-linter.test.ts (1) 2ms
+  ✓ Google API Linter gate > pins the linter and verifies the AIP service contract in CI and release gates (1ms)
+ ✓ scripts/strict-tooling.test.ts (6) 406ms
+  ✓ strict React tooling > pins the latest analysis toolchain and exposes strict entrypoints (2ms)
+  ✓ strict React tooling > explicitly configures every stable and nursery Biome rule (63ms)
+  ✓ strict React tooling > explicitly promotes every applicable React Doctor rule and design surface (339ms)
+  ✓ strict React tooling > limits React Doctor exemptions to generated output and installable components (0ms)
+  ✓ strict React tooling > enables fail-fast React Compiler coverage for docs and every React test suite (0ms)
+  ✓ strict React tooling > keeps TypeScript stricter than the requested baseline (1ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/audit.test.ts (1) 4ms
+  ✓ AutoForm audit reports > emits deterministic JSON and SARIF from named audit targets (4ms)
+ ✓ scripts/protoform.test.ts (2) 3ms
+  ✓ protoform CLI > parses audit targets and the requested output format (2ms)
+  ✓ protoform CLI > rejects unsupported commands and formats (1ms)
+ ✓ scripts/shadcn-lint.test.ts (4) 2.38s
+  ✓ shadcn lint does not broaden the SVG property-list allowance to arbitrary transitions (779ms)
+  ✓ shadcn lint rejects all six design-system violations at usage sites (781ms)
+  ✓ shadcn lint accepts semantic tokens, static layout, and dynamic CSS variables (400ms)
+  ✓ shadcn lint rejects all six violations in authored component definitions (424ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/configuration.test.ts (4) 14ms
+  ✓ inspectAutoFormConfiguration > returns deterministic diagnostics for every nested configuration defect (11ms)
+  ✓ inspectAutoFormConfiguration > accepts registered renderers, providers, and supported nested configuration (1ms)
+  ✓ inspectAutoFormConfiguration > reports incompatible built-in controls (0ms)
+  ✓ inspectAutoFormConfiguration > reports broken step configuration, unknown step references, and unsupported schema shapes instead of throwing (1ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/slider-matcher.test.ts (1) 3ms
+  ✓ sliderFieldDefinition.match > matches only number fields annotated through customData.control or the proto ui path (1ms)
+
+ Test Files 51 passed
+      Tests 187 passed
+   Duration 2.99s (build 167ms, tests 2.82s)
+
+
+===== all-rules-current-integration.log =====
+$ node scripts/run-tests.mjs integration --reporters verbose "--pool.maxWorkers=1"
+
+ ✓ examples/shared/example-island.test.tsx (16) 5.33s
+  ✓ shows the Loading bare-bones example status until its chunk loads (525ms)
+  ✓ shows the Loading two-step example status until its chunk loads (307ms)
+  ✓ shows the Loading CEL and RE2 example status until its chunk loads (306ms)
+  ✓ shows the Loading oneof example status until its chunk loads (312ms)
+  ✓ shows the Loading server-error example status until its chunk loads (317ms)
+  ✓ shows the Loading AIP resource example status until its chunk loads (311ms)
+  ✓ shows the Loading complex example status until its chunk loads (309ms)
+  ✓ shows the Loading kitchen sink example status until its chunk loads (324ms)
+  ✓ shows the Loading deeply nested example status until its chunk loads (409ms)
+  ✓ shows the Loading TanStack Form example status until its chunk loads (329ms)
+  ✓ shows the Loading Formik example status until its chunk loads (306ms)
+  ✓ shows the Loading Final Form example status until its chunk loads (310ms)
+  ✓ shows the Loading TanStack Form interop demo status until its chunk loads (304ms)
+  ✓ shows the Loading Formik interop demo status until its chunk loads (302ms)
+  ✓ shows the Loading Final Form interop demo status until its chunk loads (303ms)
+  ✓ shows the Loading readiness dashboard status until its chunk loads (327ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/proto-forms.test.tsx (5) 3.78s
+  ✓ AutoForm – protobuf forms > renders registered descriptions and submits protobuf-shaped output (782ms)
+  ✓ AutoForm – protobuf forms > hydrates and preserves the edit source message through the React Hook Form adapter (920ms)
+  ✓ AutoForm – protobuf forms > shows protobuf field-level and message-level validation feedback (493ms)
+  ✓ AutoForm – protobuf forms > switches protobuf oneof cases and submits the latest selection (976ms)
+  ✓ AutoForm – protobuf forms > updates protobuf collection values when rows are added and removed (597ms)
+ ✓ examples/basic/basic-form.test.tsx (4) 1.45s
+  ✓ server-error form example > shows protobuf help in an accessible field tooltip (310ms)
+  ✓ server-error form example > submits through an in-browser service when no server URL is provided (325ms)
+  ✓ server-error form example > submits a generated protobuf message to the local Connect server (281ms)
+  ✓ server-error form example > maps structured server details back to the generated field (530ms)
+ ✓ examples/catalog/capability-demo.test.tsx (37) 1.22s
+  ✓ CapabilityDemo > renders a focused React Hook Form AIP demo and submits its protobuf value (64ms)
+  ✓ CapabilityDemo > renders an explicit not-found state for an unknown demo (1ms)
+  ✓ CapabilityDemo > redacts sensitive values from submitted previews (125ms)
+  ✓ CapabilityDemo > normalizes well-known type defaults for form controls (53ms)
+  ✓ CapabilityDemo > stacks bounded recursive array items inside their collection (47ms)
+  ✓ CapabilityDemo > renders repeated enum defaults with their protobuf labels (75ms)
+  ✓ CapabilityDemo > renders the book contract (37ms)
+  ✓ CapabilityDemo > renders the validation contract (111ms)
+  ✓ CapabilityDemo > renders the create-book contract (34ms)
+  ✓ CapabilityDemo > renders the get-book contract (5ms)
+  ✓ CapabilityDemo > renders the list-books contract (22ms)
+  ✓ CapabilityDemo > renders the update-book contract (25ms)
+  ✓ CapabilityDemo > renders the delete-book contract (11ms)
+  ✓ CapabilityDemo > renders the provision-capacity contract (27ms)
+  ✓ CapabilityDemo > renders the time-range contract (17ms)
+  ✓ CapabilityDemo > renders the any contract (10ms)
+  ✓ CapabilityDemo > renders the presence contract (28ms)
+  ✓ CapabilityDemo > renders the run-job contract (4ms)
+  ✓ CapabilityDemo > renders the export-books contract (20ms)
+  ✓ CapabilityDemo > renders the update-settings contract (7ms)
+  ✓ CapabilityDemo > renders the undelete-book contract (5ms)
+  ✓ CapabilityDemo > renders the purge-books contract (13ms)
+  ✓ CapabilityDemo > renders the well-known contract (44ms)
+  ✓ CapabilityDemo > renders the batch-get contract (16ms)
+  ✓ CapabilityDemo > renders the batch-create contract (34ms)
+  ✓ CapabilityDemo > renders the batch-update contract (34ms)
+  ✓ CapabilityDemo > renders the batch-delete contract (15ms)
+  ✓ CapabilityDemo > renders the commit-policy contract (14ms)
+  ✓ CapabilityDemo > renders the numeric contract (15ms)
+  ✓ CapabilityDemo > renders the collections contract (62ms)
+  ✓ CapabilityDemo > renders the import-books contract (23ms)
+  ✓ CapabilityDemo > renders the dynamic-json contract (38ms)
+  ✓ CapabilityDemo > renders the recursive contract (25ms)
+  ✓ CapabilityDemo > renders the editions contract (9ms)
+  ✓ CapabilityDemo > renders the integers contract (100ms)
+  ✓ CapabilityDemo > renders the string-network contract (32ms)
+  ✓ CapabilityDemo > renders the cel contract (15ms)
+ ✓ registry/base-nova/protoform/components/auto-form-tanstack/__tests__/conformance.test.tsx (7) 1.12s
+  ✓ TanStack AutoForm conformance > keeps the native form API while rendering and submitting provider output (103ms)
+  ✓ TanStack AutoForm conformance > uses native TanStack state for repeated fields and clears the previous oneof branch (356ms)
+  ✓ TanStack AutoForm conformance > validates with the shared change and blur lifecycles (49ms)
+  ✓ TanStack AutoForm conformance > ignores stale asynchronous lifecycle results (20ms)
+  ✓ TanStack AutoForm conformance > retains native TanStack submit validators and revalidates failed submissions on the shared lifecycle (48ms)
+  ✓ TanStack AutoForm conformance > renders every provider failure and runs native TanStack submission only after validation passes (52ms)
+  ✓ TanStack AutoForm conformance > builds update masks from native TanStack dirty metadata and preserves the edit source message (494ms)
+ ✓ examples/readiness/readiness-dashboard.test.tsx (5) 1.81s
+  ✓ ReadinessDashboard > paginates the capability ledger 25 checks at a time (204ms)
+  ✓ ReadinessDashboard > resets pagination when search or status filters change (502ms)
+  ✓ ReadinessDashboard > keeps verified optional and out-of-target checks distinct (209ms)
+  ✓ ReadinessDashboard > shows the score and filters the capability ledger by status (532ms)
+  ✓ ReadinessDashboard > explains verified checks from the status map (357ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/root-header.test.tsx (2) 631ms
+  ✓ AutoForm root header > renders schema metadata by default (370ms)
+  ✓ AutoForm root header > uses a host renderer with the resolved root metadata and skips it when hidden (261ms)
+ ✓ registry/base-nova/protoform/components/auto-form-tanstack-v2/__tests__/conformance.test.tsx (8) 869ms
+  ✓ experimental TanStack Form v2 AutoForm conformance > keeps the v2-native API and submits transformed provider output (72ms)
+  ✓ experimental TanStack Form v2 AutoForm conformance > uses v2 field state for repeated fields and clears the previous oneof branch (336ms)
+  ✓ experimental TanStack Form v2 AutoForm conformance > renders a provider root error and a rejected async validation once (67ms)
+  ✓ experimental TanStack Form v2 AutoForm conformance > clears provider errors on controlled resets and builds update masks from the v2 default-value baseline (237ms)
+  ✓ experimental TanStack Form v2 AutoForm conformance > runs provider validation on change or blur when requested (49ms)
+  ✓ experimental TanStack Form v2 AutoForm conformance > ignores stale asynchronous v2 validation results (26ms)
+  ✓ experimental TanStack Form v2 AutoForm conformance > keeps native v2 validators and onSubmit validation errors alongside provider validation (33ms)
+  ✓ experimental TanStack Form v2 AutoForm conformance > renders every provider failure and runs native v2 submission only after validation passes (49ms)
+
+warn | registry/base-nova/protoform/components/auto-form/__tests__/test-ids.test.tsx > AutoForm – test IDs > emits stable ids for collections and modes, and path-based ids under the default prefix for protobuf descriptors
+You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/test-ids.test.tsx (2) 709ms
+  ✓ AutoForm – test IDs > emits stable field, help, and option test ids for zod forms (279ms)
+  ✓ AutoForm – test IDs > emits stable ids for collections and modes, and path-based ids under the default prefix for protobuf descriptors (430ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/dirty-state.test.tsx (4) 688ms
+  ✓ React Hook Form dirty-state lifecycle > reports clean initially, emits distinct changes, marks saved values clean synchronously, and adopts reset values as the baseline (151ms)
+  ✓ React Hook Form dirty-state lifecycle > tracks nested, array, map, and oneof changes (251ms)
+  ✓ TanStack Form dirty-state lifecycle > reports clean initially, emits distinct changes, marks saved values clean synchronously, and adopts reset values as the baseline (103ms)
+  ✓ TanStack Form dirty-state lifecycle > tracks nested, array, map, and oneof changes (182ms)
+ ✓ examples/presets/preset-lab.test.tsx (8) 533ms
+  ✓ PresetLab > applies preview mode changes to the Blume docs theme (97ms)
+  ✓ PresetLab > tracks Blume docs theme changes without a reload (51ms)
+  ✓ PresetLab > starts from the current Blume docs theme when mode is not shared (30ms)
+  ✓ PresetLab > keeps every preset close while rendering one focused live form (169ms)
+  ✓ PresetLab > enters and exits full screen without replacing the live workspace (70ms)
+  ✓ PresetLab > falls back to an accessible full-viewport mode when the browser API rejects (55ms)
+  ✓ PresetLab > reports invalid shared presets and clipboard failures (35ms)
+  ✓ PresetLab > preserves a supported preset when only the shared mode is invalid (26ms)
+ ✓ examples/form-libraries/form-libraries.test.tsx (4) 497ms
+  ✓ Formik example > validates with Formik and submits a typed protobuf message (156ms)
+  ✓ Formik example > maps structured server errors into Formik (99ms)
+  ✓ Final Form example > validates with Final Form and submits a typed protobuf message (128ms)
+  ✓ Final Form example > maps structured server errors into Final Form (113ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/field-rendering.test.tsx (2) 635ms
+  ✓ AutoForm – field rendering > selects built-in renderers and anchors root rows and the submit action (96ms)
+  ✓ AutoForm – field rendering > drops redundant fallback helper copy (539ms)
+ ✓ examples/learning/oneof-form.test.tsx (2) 708ms
+  ✓ shows oneof placeholders and labels instead of internal values (163ms)
+  ✓ clears the previous oneof branch before submitting the new one (544ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/data-provider-v2.test.tsx (10) 654ms
+  ✓ AutoForm data providers v2 > supplies search, cursor, dependencies, selected values, cancellation, and stale-selection policy (235ms)
+  ✓ AutoForm data providers v2 > keeps a selected value present in the first page and clears optional numeric values without coercing them to zero (64ms)
+  ✓ AutoForm data providers v2 > aborts a repeated-field provider when a dependency changes (41ms)
+  ✓ AutoForm data providers v2 > renders options from a component provider (68ms)
+  ✓ AutoForm data providers v2 > replaces a select provider with one that calls different hooks (105ms)
+  ✓ AutoForm data providers v2 > renders a multi-select provider registered after the first render (39ms)
+  ✓ AutoForm data providers v2 > keeps multi-select values and reports the failure when the provider errors (32ms)
+  ✓ AutoForm data providers v2 > renders the provider's empty state when it returns no options (31ms)
+  ✓ AutoForm data providers v2 > puts the control test id on the provider select's input (8ms)
+  ✓ AutoForm data providers v2 > renders the provider's empty state in a multi-select with no options (29ms)
+ ✓ examples/tanstack/tanstack-form.test.tsx (3) 398ms
+  ✓ TanStack Form example > maps the protobuf Standard Schema issues to fields on submit (93ms)
+  ✓ TanStack Form example > submits the Standard Schema output as a typed protobuf message (167ms)
+  ✓ TanStack Form example > maps structured server details to the owning TanStack field (138ms)
+ ✓ registry/base-nova/protoform/demo/bookstore/bookstore-demo.test.tsx (2) 703ms
+  ✓ bookstore flagship demo > lists, gets, and creates a book through a CEL-validated RHF stepper (556ms)
+  ✓ bookstore flagship demo > updates with an etag and field mask, then deletes with AutoForm (147ms)
+ ✓ examples/nested/deeply-nested-form.test.tsx (1) 392ms
+  ✓ DeeplyNestedFormExample > renders a six-level protobuf contract from one AutoForm (392ms)
+ ✓ examples/complex/complex-form.test.tsx (2) 432ms
+  ✓ complex form example > redacts credentials from the final review summary (217ms)
+  ✓ complex form example > routes a structured submit error back to the step that owns the field (215ms)
+ ✓ examples/catalog/demo-hub.test.tsx (2) 470ms
+  ✓ DemoHub > opens a directly linked demo and keeps selection in the URL (441ms)
+  ✓ DemoHub > keeps the selected demo source available without a wrapper page (29ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/stepper.test.tsx (6) 548ms
+  ✓ AutoForm stepper > renders an adaptive horizontal row by default and a vertical rail through the stepper config (46ms)
+  ✓ AutoForm stepper > renders one step at a time with semantic progress, linear navigation, and a final-step summary (50ms)
+  ✓ AutoForm stepper > blocks Continue on resolver root errors and keeps the earlier step when Back cancels pending validation (58ms)
+  ✓ AutoForm stepper > submits only from the final step and prevents duplicate submissions (49ms)
+  ✓ AutoForm stepper > returns to the owning step when submission reports a field error (49ms)
+  ✓ AutoForm stepper > completes validation recovery and every step using only the keyboard (295ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/cel-rules.test.tsx (1) 291ms
+  ✓ AutoForm – CEL rules > supports proto UI CEL for field visibility and disabled state (291ms)
+ ✓ registry/base-nova/protoform/hooks/use-proto-form/partial-edit-validation.test.tsx (4) 322ms
+  ✓ useProtoForm partial-edit validation > validates and masks a field modified then restored to its blank baseline until reset (152ms)
+  ✓ useProtoForm partial-edit validation > keeps message-level issues when no field has been modified (29ms)
+  ✓ useProtoForm partial-edit validation > matches nested modified fields to protobuf mask paths (30ms)
+  ✓ useProtoForm partial-edit validation > tracks modification intent from registered input events (110ms)
+ ✓ registry/base-nova/protoform/components/nova-style.test.tsx (1) 44ms
+  ✓ Base Nova form controls > use Nova density and geometry by default (43ms)
+ ✓ examples/learning/aip-resource-form.test.tsx (1) 292ms
+  ✓ shows the AIP-safe update mask produced by editable changes (291ms)
+ ✓ examples/kitchen-sink/kitchen-sink-form.test.tsx (1) 263ms
+  ✓ KitchenSinkFormExample > presents the large contract as a linear source-owned shadcn flow (263ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/deprecated-fields.test.tsx (4) 251ms
+  ✓ React Hook Form deprecated field policy > shows deprecated fields by default and disables them and an active deprecated oneof branch on request (66ms)
+  ✓ React Hook Form deprecated field policy > hides deprecated fields and choices while preserving their submitted values (99ms)
+  ✓ TanStack Form deprecated field policy > shows deprecated fields by default and disables them and an active deprecated oneof branch on request (24ms)
+  ✓ TanStack Form deprecated field policy > hides deprecated fields and choices while preserving their submitted values (61ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/oneof-wrapper.test.tsx (3) 193ms
+  ✓ OneofWrapper > replaces the variant picker while Protoform owns selection and variant rendering (79ms)
+  ✓ OneofWrapper > clears the selection through onSelect (40ms)
+  ✓ OneofWrapper > moves focus to the default variant select when the oneof reports an error (74ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/diagnostic-callback.test.tsx (1) 168ms
+  ✓ AutoForm diagnostic callback > delivers configuration diagnostics and schema resolution causes without a logging dependency (168ms)
+ ✓ registry/base-nova/protoform/demo/catalog/interop.test.tsx (3) 279ms
+  ✓ TanStack Form registry demo > validates and submits a typed protobuf value (132ms)
+  ✓ Formik registry demo > validates and submits a typed protobuf value (71ms)
+  ✓ Final Form registry demo > validates and submits a typed protobuf value (76ms)
+
+warn | registry/base-nova/protoform/components/auto-form/__tests__/modes-and-payload.test.tsx > AutoForm – modes and payload > supports payloadBuilder and custom summary rendering
+You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/modes-and-payload.test.tsx (2) 251ms
+  ✓ AutoForm – modes and payload > supports payloadBuilder and custom summary rendering (90ms)
+  ✓ AutoForm – modes and payload > supports editable JSON mode via payloadParser and updates the summary after switching back to advanced (160ms)
+ ✓ registry/base-nova/protoform/hooks/use-proto-form-tanstack-v2/index.test.tsx (2) 192ms
+  ✓ experimental TanStack Form v2 useProtoForm > keeps the v2-native form surface and adds protobuf message, mask, and oneof helpers (18ms)
+  ✓ experimental TanStack Form v2 useProtoForm > runs protobuf validation through the v2 validator pipeline alongside native validators and exposes the validated message (174ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/resilience.test.tsx (3) 256ms
+  ✓ AutoForm – onSubmit error handling > shows a root error when onSubmit throws or rejects (129ms)
+  ✓ AutoForm – onSubmit error handling > ignores submits from outside the form while a submission is in flight (35ms)
+  ✓ AutoForm – onSubmit error handling > aborts superseded and unmounted submit contexts and active provider validation (92ms)
+ ✓ registry/base-nova/protoform/components/auto-form-react-hook-form-v8/__tests__/conformance.test.tsx (3) 253ms
+  ✓ experimental React Hook Form v8 AutoForm conformance > keeps the v8-native API and submits transformed provider output (98ms)
+  ✓ experimental React Hook Form v8 AutoForm conformance > uses v8 field keys to append and remove primitive repeated fields (120ms)
+  ✓ experimental React Hook Form v8 AutoForm conformance > renders every provider field failure, focuses the first v8 field, and renders a root error once (35ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/accessible-errors.test.tsx (2) 229ms
+  ✓ AutoForm accessible errors > links email consumer inputs to validation errors (150ms)
+  ✓ AutoForm accessible errors > links textarea consumer inputs to validation errors (79ms)
+ ✓ components/docs/diagram-maximizer.test.tsx (4) 179ms
+  ✓ DiagramMaximizer > gives an unlabeled Mermaid fallback a readable dialog title (81ms)
+  ✓ DiagramMaximizer > opens an accessible full-viewport fallback and restores focus (58ms)
+  ✓ DiagramMaximizer > enhances generic architecture containers without duplicating nested Mermaid controls (5ms)
+  ✓ DiagramMaximizer > uses the browser Fullscreen API when available and exits from the same control (35ms)
+
+warn | registry/base-nova/protoform/components/auto-form/__tests__/classification.test.tsx > AutoForm – simple/advanced field classification > simple mode shows required fields, honors customData.advanced, and advanced mode reveals the rest
+You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/classification.test.tsx (2) 90ms
+  ✓ AutoForm – simple/advanced field classification > simple mode shows required fields, honors customData.advanced, and advanced mode reveals the rest (78ms)
+  ✓ AutoForm – simple/advanced field classification > custom classifyField prop controls which fields appear in simple mode (12ms)
+ ✓ registry/base-nova/protoform/hooks/use-proto-form-tanstack/index.test.tsx (3) 91ms
+  ✓ TanStack useProtoForm > preserves the native form API and adds protobuf message, mask, and oneof helpers (14ms)
+  ✓ TanStack useProtoForm > validates the generated protobuf contract and composes caller validators before submission (73ms)
+  ✓ TanStack useProtoForm > maps Connect field violations, including prefixed and nested paths, onto native TanStack field errors (4ms)
+ ✓ examples/learning/two-step-form.test.tsx (1) 215ms
+  ✓ reveals one simple field per step (215ms)
+ ✓ examples/learning/cel-re2-form.test.tsx (1) 159ms
+  ✓ explains and accepts a focused RE2-backed CEL rule (159ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/compact-rows.test.tsx (3) 105ms
+  ✓ AutoForm – compact array row rendering > compact array rows suppress item labels and remove the selected item (44ms)
+  ✓ AutoForm – compact array row rendering > array items in compact mode still show validation errors on submit (31ms)
+  ✓ AutoForm – compact array row rendering > hides customData.hidden fields, disables customData.immutable fields, and collapses customData.collapsible objects (30ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/field-wrapper.test.tsx (6) 89ms
+  ✓ ObjectWrapper > toggles a collapsible section through the Protoform button (51ms)
+  ✓ ObjectWrapper > opens a collapsible section with errors and keeps it open once they clear (10ms)
+  ✓ ObjectWrapper > uses nested heading levels and label rails, spacing tokens, and dividers only under visible labels (4ms)
+  ✓ FieldWrapper > preserves caller descriptions and isolates error links between fields (11ms)
+  ✓ FieldWrapper > renders field help as a named shadcn button in a responsive label rail (9ms)
+  ✓ ArrayWrapper > renders with the field-spacing token and an add button, and contains complex items in native cards (4ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/update-mask.test.tsx (1) 161ms
+  ✓ AutoForm update masks > passes only touched protobuf fields to onSubmit (161ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/messages.test.tsx (2) 98ms
+  ✓ AutoForm runtime messages > formats Protoform-owned submit, collection ARIA, multiselect, and provider empty-state copy through stable message codes (90ms)
+  ✓ AutoForm runtime messages > formats step navigation and progress copy (8ms)
+ ✓ registry/base-nova/protoform/demo/catalog/tanstack-form.test.tsx (2) 158ms
+  ✓ TanStack Form registry demo > shows a detailed submission failure and clears it after a successful retry (110ms)
+  ✓ TanStack Form registry demo > shows an empty-message submission failure and clears it after a successful retry (48ms)
+ ✓ registry/base-nova/protoform/components/json-field/index.test.tsx (2) 70ms
+  ✓ JSONField accessibility > labels the fallback editor for deeply nested JSON and opens an unconstrained array in JSON mode (39ms)
+  ✓ JSONField accessibility > shows a success toast after copying JSON (30ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/on-field-change.test.tsx (1) 105ms
+  ✓ AutoForm – onFieldChange callback > calls onFieldChange when a field value changes (105ms)
+ ✓ registry/base-nova/protoform/hooks/use-proto-form-v8/conformance.test.tsx (3) 100ms
+  ✓ experimental React Hook Form v8 useProtoForm conformance > exposes the v8-native form API, creates protobuf messages, and builds update masks (15ms)
+  ✓ experimental React Hook Form v8 useProtoForm conformance > validates protobuf fields without the v7-only resolver package (81ms)
+  ✓ experimental React Hook Form v8 useProtoForm conformance > maps Connect field violations, including prefixed paths, onto v8 field errors (4ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/ui-components.test.tsx (2) 66ms
+  ✓ ProtoformUIProvider > shows a missing host control without requiring Alert and recovers when supplied (51ms)
+  ✓ ProtoformUIProvider > renders consumer controls, translates test IDs, and names a missing control (15ms)
+ ✓ examples/learning/bare-bones-form.test.tsx (1) 68ms
+  ✓ submits the simplest generated form without a server (68ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/error-augmentation.test.tsx (1) 51ms
+  ✓ AutoForm – regex error augmentation > appends the configured example only to regex validation errors (51ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/field-registry-prop.test.tsx (3) 43ms
+  ✓ AutoForm – fieldRegistry prop wiring > uses a custom fieldRegistry to resolve field components (30ms)
+  ✓ AutoForm – fieldRegistry prop wiring > renders custom field types inside nested messages (6ms)
+  ✓ AutoForm – fieldRegistry prop wiring > shows a configuration error when a renderer has no component (7ms)
+ ✓ registry/base-nova/protoform/demo/bookstore/rhf-field-error.test.tsx (1) 19ms
+  ✓ renders and clears mapped server errors from the form control without a FormProvider (19ms)
+ ✓ registry/base-nova/protoform/components/toast/index.test.tsx (1) 66ms
+  ✓ Toaster > renders and dismisses a toast added through the shared manager (65ms)
+ ✓ registry/base-nova/protoform/components/input/index.test.tsx (2) 33ms
+  ✓ Input icon controls > names the password visibility control and updates its state (30ms)
+  ✓ Input icon controls > names number step controls (3ms)
+ ✓ registry/base-nova/protoform/components/tabs/index.test.tsx (1) 23ms
+  ✓ TabsList equal layout > applies the requested column count and updates it (23ms)
+ ✓ registry/base-nova/protoform/components/auto-form/fields/slider.test.tsx (1) 29ms
+  ✓ SliderFieldComponent > labels the range input independently from its number input (29ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/form-components-defaults.test.tsx (1) 29ms
+  ✓ formComponents defaults > a generic wrapper can add default field components and still accept caller overrides (29ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/layout.test.tsx (4) 22ms
+  ✓ FormLayout > renders a form element with the form-spacing token and forwards native form props (11ms)
+  ✓ FormSection > renders nested heading levels and the header description, required marker, and optional divider only when needed (6ms)
+  ✓ FormField > renders label, control, and help text, replaces help with the error, and renders no trailing text without either (4ms)
+  ✓ FormSubmit > renders a submit-typed button that defaults to "Submit" (1ms)
+ ✓ registry/base-nova/protoform/components/input-group/index.test.tsx (1) 26ms
+  ✓ InputGroupAddon > focuses the input without adding a decorative keyboard stop (26ms)
+ ✓ registry/base-nova/protoform/components/popover/index.test.tsx (1) 16ms
+  ✓ PopoverAnchor > supports Base UI render composition without adding a wrapper (15ms)
+ ✓ registry/base-nova/protoform/hooks/use-proto-form/map-fields.test.tsx (1) 12ms
+  ✓ useProtoForm map fields > keeps protobuf-native map values when creating an update (12ms)
+ ✓ registry/base-nova/protoform/hooks/use-proto-form/server-errors.test.tsx (2) 14ms
+  ✓ useProtoForm server errors > humanizes violations mapped through singular and plural server path prefixes and keeps unmapped ones unchanged (12ms)
+  ✓ useProtoForm server errors > maps violations on repeated-field items to the item's form path (2ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/use-auto-form.test.tsx (1) 8ms
+  ✓ useAutoForm > throws a clear error when used outside AutoForm (8ms)
+ ✓ components/docs/scrollable-code-blocks.test.tsx (2) 1ms
+  ✓ syncScrollableCodeBlocks > adds keyboard access only while a code block overflows (1ms)
+  ✓ syncScrollableCodeBlocks > preserves an author-provided tab stop (0ms)
+
+ Test Files 65 passed
+      Tests 220 passed
+   Duration 39.9s (build 585ms, tests 39.3s)
+
+
+===== all-rules-current-conformance.log =====
+$ node scripts/run-tests.mjs conformance --reporters verbose
+
+ ✓ conformance/standard-schema.conformance.test.ts (5) 4ms
+  ✓ supports callable schemas and forwards vendor options (1ms)
+  ✓ Zod 4 Standard Schema > is accepted without a vendor adapter (0ms)
+  ✓ Zod 4 Standard Schema > maps nested issues through every supported form-library adapter (1ms)
+  ✓ Zod Mini Standard Schema > is accepted without a vendor adapter (0ms)
+  ✓ Zod Mini Standard Schema > maps nested issues through every supported form-library adapter (0ms)
+ ✓ conformance/protobuf-editions.conformance.test.ts (2) 137ms
+  ✓ Protobuf Editions conformance > supports Edition 2024 visibility and option-only imports (127ms)
+  ✓ Protobuf Editions conformance > accepts Editions descriptors and honors field presence controls (4ms)
+ ✓ conformance/protobuf-matrix.conformance.test.ts (15) 284ms
+  ✓ Protobuf text and streaming conformance > round-trips form messages through the protobuf text format (5ms)
+  ✓ Protobuf text and streaming conformance > merges protobuf text into an existing message (1ms)
+  ✓ Protobuf text and streaming conformance > bounds size-delimited decoding with readMaxBytes (8ms)
+  ✓ Protobuf scalar conformance > preserves unknown fields when editing a parsed message (14ms)
+  ✓ Protobuf scalar conformance > round-trips explicit and implicit boolean values (24ms)
+  ✓ Protobuf scalar conformance > enforces signed 32-bit boundaries across int32, sint32, and sfixed32 (6ms)
+  ✓ Protobuf scalar conformance > enforces unsigned 32-bit boundaries across uint32 and fixed32 (14ms)
+  ✓ Protobuf scalar conformance > enforces signed and unsigned boundaries for other 64-bit integer families (1ms)
+  ✓ Protobuf scalar conformance > round-trips float and double decimals, negative zero, NaN, and infinities (1ms)
+  ✓ Protobuf collection conformance > round-trips the repeated scalar, bytes, enum, 64-bit, float, and double matrix (69ms)
+  ✓ Protobuf collection conformance > round-trips repeated messages and preserves indexed validation paths after removal (23ms)
+  ✓ Protobuf collection conformance > round-trips every legal boolean and integer map key type (51ms)
+  ✓ Protobuf presence and well-known-type conformance > distinguishes explicit presence while documenting implicit scalar loss (16ms)
+  ✓ Protobuf presence and well-known-type conformance > round-trips every remaining scalar wrapper with unset and default values (9ms)
+  ✓ Protobuf presence and well-known-type conformance > round-trips Any bytes, rejects malformed base64, and supports registered unpacking (37ms)
+ ✓ conformance/cel-runtime.conformance.test.ts (3) 17ms
+  ✓ CEL guarded runtime conformance > propagates partial unknown attributes separately from evaluation errors (8ms)
+  ✓ CEL guarded runtime conformance > merges unknown sets and preserves logical short circuit (3ms)
+  ✓ CEL guarded runtime conformance > enforces a configurable execution budget and fails safely (4ms)
+ ✓ conformance/cel.conformance.test.ts (11) 37ms
+  ✓ CEL validation conformance > resolves transitive imported and nested enum symbols through Standard Schema (14ms)
+  ✓ CEL validation conformance > resolves transitive imported and nested enum symbols through ProtoProvider (12ms)
+  ✓ CEL validation conformance > does not expose CEL runtime failures through ProtoProvider (1ms)
+  ✓ CEL validation conformance > preserves a field boolean CEL rule id, message, and form path (4ms)
+  ✓ CEL validation conformance > preserves a dynamic field CEL error string and stable form path (1ms)
+  ✓ CEL validation conformance > preserves nested and repeated message CEL paths including every index (1ms)
+  ✓ CEL validation conformance > returns every message and field CEL violation without dropping any (2ms)
+  ✓ CEL validation conformance > returns a safe root issue for a CEL compile error (0ms)
+  ✓ CEL validation conformance > does not expose a CEL runtime failure for wrong result type as a form validation issue (1ms)
+  ✓ CEL validation conformance > does not expose a CEL runtime failure for unknown field as a form validation issue (0ms)
+  ✓ CEL validation conformance > does not expose a CEL runtime failure for evaluation error as a form validation issue (1ms)
+ ✓ conformance/aip-workflows.conformance.test.ts (5) 211ms
+  ✓ AIP workflow form conformance > models AIP-152 Job configuration and Run request forms (3ms)
+  ✓ AIP workflow form conformance > models AIP-153 import and export source choices plus partial failures (73ms)
+  ✓ AIP workflow form conformance > enforces AIP-159 cross-collection and AIP-217 partial-result controls (6ms)
+  ✓ AIP workflow form conformance > models the AIP-165 purge preview and destructive confirmation (24ms)
+  ✓ AIP workflow form conformance > models AIP-236 policy experiments and distinguishes preview from commit (91ms)
+ ✓ conformance/protovalidate-matrix.conformance.test.ts (7) 247ms
+  ✓ Protovalidate scalar rule conformance > enforces bool const for true, false, and the implicit default (81ms)
+  ✓ Protovalidate scalar rule conformance > enforces string const, code-point and byte lengths, pattern, affixes, contains, and membership (22ms)
+  ✓ Protovalidate scalar rule conformance > validates UUID and trimmed UUID forms without rewriting accepted case (13ms)
+  ✓ Protovalidate scalar rule conformance > enforces enum const, defined-only, allow and deny lists, aliases, and unknown values (108ms)
+  ✓ Protovalidate collection and Any rule conformance > enforces repeated min, max, and uniqueness while allowing duplicate messages (8ms)
+  ✓ Protovalidate collection and Any rule conformance > enforces map min and max pairs and rejects duplicate rendered keys (5ms)
+  ✓ Protovalidate collection and Any rule conformance > enforces Any type URL allow and deny lists and rejects malformed form values (2ms)
+ ✓ conformance/aip-field-patterns.conformance.test.ts (3) 329ms
+  ✓ AIP field pattern conformance > models AIP-141 quantities with signed numeric fields and units in field names (220ms)
+  ✓ AIP field pattern conformance > models AIP-143 standardized codes as validated strings rather than enums (105ms)
+  ✓ AIP field pattern conformance > validates AIP-145 inclusive-start, exclusive-end ranges and open bounds (3ms)
+ ✓ conformance/performance.conformance.test.tsx (3) 127ms
+  ✓ large-form performance budget > keeps render, validation, field change, and step transition within budgets for a 50-field descriptor (26ms)
+  ✓ large-form performance budget > keeps render, validation, field change, and step transition within budgets for a 200-field descriptor (14ms)
+  ✓ large-form performance budget > keeps render, validation, field change, and step transition within budgets for a 500-field descriptor (85ms)
+ ✓ conformance/protovalidate-formats.conformance.test.ts (35) 496ms
+  ✓ Protovalidate format rule conformance > validates the hostname string format (26ms)
+  ✓ Protovalidate format rule conformance > validates the ip string format (13ms)
+  ✓ Protovalidate format rule conformance > validates the ipv4 string format (8ms)
+  ✓ Protovalidate format rule conformance > validates the ipv6 string format (7ms)
+  ✓ Protovalidate format rule conformance > validates the uriReference string format (110ms)
+  ✓ Protovalidate format rule conformance > validates the address string format (17ms)
+  ✓ Protovalidate format rule conformance > validates the ipWithPrefixLength string format (4ms)
+  ✓ Protovalidate format rule conformance > validates the ipv4WithPrefixLength string format (3ms)
+  ✓ Protovalidate format rule conformance > validates the ipv6WithPrefixLength string format (15ms)
+  ✓ Protovalidate format rule conformance > validates the ipPrefix string format (3ms)
+  ✓ Protovalidate format rule conformance > validates the ipv4Prefix string format (5ms)
+  ✓ Protovalidate format rule conformance > validates the ipv6Prefix string format (4ms)
+  ✓ Protovalidate format rule conformance > validates the hostAndPort string format (3ms)
+  ✓ Protovalidate format rule conformance > validates the ulid string format (4ms)
+  ✓ Protovalidate format rule conformance > validates the protobufFqn string format (2ms)
+  ✓ Protovalidate format rule conformance > validates the protobufDotFqn string format (2ms)
+  ✓ Protovalidate format rule conformance > validates the exact bytes rule (109ms)
+  ✓ Protovalidate format rule conformance > validates the exactLength bytes rule (2ms)
+  ✓ Protovalidate format rule conformance > validates the boundedLength bytes rule (11ms)
+  ✓ Protovalidate format rule conformance > validates the patterned bytes rule (2ms)
+  ✓ Protovalidate format rule conformance > validates the prefixed bytes rule (2ms)
+  ✓ Protovalidate format rule conformance > validates the suffixed bytes rule (1ms)
+  ✓ Protovalidate format rule conformance > validates the containing bytes rule (3ms)
+  ✓ Protovalidate format rule conformance > validates the allowed bytes rule (2ms)
+  ✓ Protovalidate format rule conformance > validates the denied bytes rule (1ms)
+  ✓ Protovalidate format rule conformance > validates the ip bytes rule (1ms)
+  ✓ Protovalidate format rule conformance > validates the ipv4 bytes rule (1ms)
+  ✓ Protovalidate format rule conformance > validates the ipv6 bytes rule (1ms)
+  ✓ Protovalidate format rule conformance > validates the uuid bytes rule (2ms)
+  ✓ Protovalidate well-known-type rule conformance > enforces duration const, comparisons, ranges, membership, normalization, and malformed input (45ms)
+  ✓ Protovalidate well-known-type rule conformance > enforces FieldMask const, allow, deny, and subpath semantics (19ms)
+  ✓ Protovalidate well-known-type rule conformance > enforces timestamp const, comparisons, reversed and now-relative ranges, timezone normalization, and malformed input (10ms)
+  ✓ Protovalidate control-plane rule conformance > applies IGNORE_ALWAYS and IGNORE_IF_ZERO_VALUE across scalar, message, repeated, and map fields (25ms)
+  ✓ Protovalidate control-plane rule conformance > executes custom predefined rules with a stable rule id and form path (24ms)
+  ✓ Protovalidate control-plane rule conformance > keeps standard rule examples non-validating and surfaces the first example as form guidance (4ms)
+ ✓ examples/tanstack/tanstack-form.test.tsx (3) 896ms
+  ✓ TanStack Form example > maps the protobuf Standard Schema issues to fields on submit (305ms)
+  ✓ TanStack Form example > submits the Standard Schema output as a typed protobuf message (320ms)
+  ✓ TanStack Form example > maps structured server details to the owning TanStack field (270ms)
+ ✓ conformance/untrusted-input.conformance.test.tsx (2) 329ms
+  ✓ untrusted input hardening > rejects malformed descriptors, conversion values, and server paths without throwing (187ms)
+  ✓ untrusted input hardening > renders user-controlled error text as text rather than executable HTML (131ms)
+ ✓ conformance/protoform.conformance.test.ts (26) 1.15s
+  ✓ required Protoform conformance > exposes descriptor validation through Standard Schema v1 (2ms)
+  ✓ required Protoform conformance > maps username into the stable field model (5ms)
+  ✓ required Protoform conformance > maps primaryEmail into the stable field model (2ms)
+  ✓ required Protoform conformance > maps employeeNumber into the stable field model (2ms)
+  ✓ required Protoform conformance > maps accessTier into the stable field model (2ms)
+  ✓ required Protoform conformance > maps shippingAddress into the stable field model (35ms)
+  ✓ required Protoform conformance > maps tags into the stable field model (5ms)
+  ✓ required Protoform conformance > maps labels into the stable field model (4ms)
+  ✓ required Protoform conformance > maps preferredContact into the stable field model (3ms)
+  ✓ required Protoform conformance > maps createdAt into the stable field model (3ms)
+  ✓ required Protoform conformance > maps reminderInterval into the stable field model (2ms)
+  ✓ required Protoform conformance > maps preferences into the stable field model (73ms)
+  ✓ required Protoform conformance > turns valid form values into a typed protobuf message (212ms)
+  ✓ required Protoform conformance > returns form-shaped paths for required scalar failures (131ms)
+  ✓ required Protoform conformance > returns form-shaped paths for nested message failures (91ms)
+  ✓ required Protoform conformance > returns form-shaped paths for repeated item failures (137ms)
+  ✓ required Protoform conformance > returns form-shaped paths for nested map value failures (58ms)
+  ✓ required Protoform conformance > returns form-shaped paths for required oneof failures (83ms)
+  ✓ required Protoform conformance > returns form-shaped paths for active oneof branch failures (71ms)
+  ✓ required Protoform conformance > returns a root issue for a non-object input instead of throwing (0ms)
+  ✓ recommended Protoform conformance > reports format rule with stable paths (30ms)
+  ✓ recommended Protoform conformance > reports message CEL rule with stable paths (65ms)
+  ✓ recommended Protoform conformance > reports all map key and value failures with stable paths (68ms)
+  ✓ recommended Protoform conformance > reports malformed conversion input with stable paths (0ms)
+  ✓ recommended Protoform conformance > round-trips optional, wrapper, JSON, map, bytes, and oneof values (54ms)
+  ✓ recommended Protoform conformance > keeps every oneof branch discoverable in descriptor order (2ms)
+ ✓ conformance/cel-language.conformance.test.ts (9) 48ms
+  ✓ CEL language conformance > supports CEL syntax, literals, scalar types, operators, and conversions (6ms)
+  ✓ CEL language conformance > supports lists, maps, and every standard comprehension macro (26ms)
+  ✓ CEL language conformance > supports string and bytes operations (3ms)
+  ✓ CEL language conformance > uses RE2 semantics for string matching (1ms)
+  ✓ CEL language conformance > supports timestamp and duration construction, comparison, and arithmetic (4ms)
+  ✓ CEL language conformance > propagates errors while preserving logical short circuit behavior (3ms)
+  ✓ CEL language conformance > parses once and reuses a planned expression across evaluations (1ms)
+  ✓ CEL language conformance > meets the CEL minimum expression nesting and repetition limits (0ms)
+  ✓ CEL language conformance > returns safe errors instead of throwing for invalid runtime inputs (1ms)
+ ✓ conformance/cel-entrypoints.conformance.test.tsx (5) 440ms
+  ✓ descriptor-aware CEL entrypoints > resolves transitive imported and nested enum symbols through useProtoForm (129ms)
+  ✓ descriptor-aware CEL entrypoints > does not expose CEL runtime failures through useProtoForm (3ms)
+  ✓ descriptor-aware CEL entrypoints > submits descriptor-aware valid values through AutoForm (180ms)
+  ✓ descriptor-aware CEL entrypoints > renders the declared CEL message at its form path through AutoForm (90ms)
+  ✓ descriptor-aware CEL entrypoints > does not render CEL runtime failures through AutoForm (34ms)
+ ✓ conformance/protovalidate-numeric.conformance.test.ts (12) 748ms
+  ✓ Protovalidate numeric rule conformance > enforces const, comparisons, membership, finite values, and reversed ranges for float (112ms)
+  ✓ Protovalidate numeric rule conformance > enforces const, comparisons, membership, finite values, and reversed ranges for double (14ms)
+  ✓ Protovalidate numeric rule conformance > enforces const, comparisons, membership, and reversed ranges for int32 (116ms)
+  ✓ Protovalidate numeric rule conformance > enforces const, comparisons, membership, and reversed ranges for sint32 (75ms)
+  ✓ Protovalidate numeric rule conformance > enforces const, comparisons, membership, and reversed ranges for sfixed32 (83ms)
+  ✓ Protovalidate numeric rule conformance > enforces const, comparisons, membership, and reversed ranges for int64 (41ms)
+  ✓ Protovalidate numeric rule conformance > enforces const, comparisons, membership, and reversed ranges for sint64 (34ms)
+  ✓ Protovalidate numeric rule conformance > enforces const, comparisons, membership, and reversed ranges for sfixed64 (81ms)
+  ✓ Protovalidate numeric rule conformance > enforces const, comparisons, membership, and reversed ranges for uint32 (44ms)
+  ✓ Protovalidate numeric rule conformance > enforces const, comparisons, membership, and reversed ranges for fixed32 (23ms)
+  ✓ Protovalidate numeric rule conformance > enforces const, comparisons, membership, and reversed ranges for uint64 (29ms)
+  ✓ Protovalidate numeric rule conformance > enforces const, comparisons, membership, and reversed ranges for fixed64 (80ms)
+ ✓ conformance/email-adapters.conformance.test.tsx (1) 513ms
+  ✓ rejects malformed email through every supported form adapter (512ms)
+ ✓ conformance/cel-protobuf.conformance.test.ts (2) 23ms
+  ✓ CEL protobuf conformance > evaluates protobuf messages, enums, presence, collections, bytes, and temporal values (19ms)
+  ✓ CEL protobuf conformance > reports every protobuf CEL capability failure by stable rule id (2ms)
+ ✓ conformance/aip.conformance.test.ts (18) 29ms
+  ✓ Google AIP form conformance > publishes current standard and soft-delete HTTP contracts (2ms)
+  ✓ Google AIP form conformance > parses AIP-121/123 resource type, pattern, singular, and plural metadata (1ms)
+  ✓ Google AIP form conformance > keeps AIP-122 full resource names distinct from display names and create IDs (6ms)
+  ✓ Google AIP form conformance > preserves AIP-124 parent and resource associations on request fields (0ms)
+  ✓ Google AIP form conformance > keeps AIP-185 API versions in the protobuf package (1ms)
+  ✓ Google AIP form conformance > treats AIP-148 canonical identity, display, and lifecycle fields correctly (1ms)
+  ✓ Google AIP form conformance > models AIP-214 expiration choices and keeps the AIP-216 state server-owned (1ms)
+  ✓ Google AIP form conformance > models AIP-164 soft delete lifecycle fields and undelete identity (1ms)
+  ✓ Google AIP form conformance > models AIP-162 revisions as nested, server-produced snapshot resources (0ms)
+  ✓ Google AIP form conformance > applies AIP-203 REQUIRED, OPTIONAL, IDENTIFIER, OUTPUT_ONLY, IMMUTABLE, and INPUT_ONLY in create and update forms (2ms)
+  ✓ Google AIP form conformance > models AIP-133 Create with parent, body, resource ID, and no body name input (0ms)
+  ✓ Google AIP form conformance > models AIP-155 request IDs and AIP-163 validation previews as optional mutation controls (1ms)
+  ✓ Google AIP form conformance > models AIP-131 Get as a field-1 full resource name with a matching reference (1ms)
+  ✓ Google AIP form conformance > models AIP-132/158/160 List request and response fields without interpreting opaque values (0ms)
+  ✓ Google AIP form conformance > models AIP-231/233/234/235 batch request and response envelopes (7ms)
+  ✓ Google AIP form conformance > models AIP-135/154 Delete with full name and optional etag (0ms)
+  ✓ Google AIP form conformance > keeps AIP-134 update masks optional (0ms)
+  ✓ Google AIP form conformance > recognizes AIP-156 singleton resources and their Get/Update-only shapes (1ms)
+ ✓ conformance/recursive-messages.conformance.test.ts (2) 5ms
+  ✓ recursive protobuf descriptor conformance > bounds self-referential message and repeated-message expansion with a JSON leaf (4ms)
+  ✓ recursive protobuf descriptor conformance > bounds mutually recursive descriptors after one discoverable object level (0ms)
+ ✓ examples/form-libraries/form-libraries.test.tsx (4) 1.25s
+  ✓ Formik example > validates with Formik and submits a typed protobuf message (645ms)
+  ✓ Formik example > maps structured server errors into Formik (228ms)
+  ✓ Final Form example > validates with Final Form and submits a typed protobuf message (240ms)
+  ✓ Final Form example > maps structured server errors into Final Form (129ms)
+ ✓ conformance/aip-errors.conformance.test.ts (2) 5ms
+  ✓ AIP-193 error lifecycle conformance > labels every canonical non-OK gRPC status code (2ms)
+  ✓ AIP-193 error lifecycle conformance > extracts field violations plus localized, retry, request, precondition, quota, and machine details (2ms)
+
+ Test Files 22 passed
+      Tests 175 passed
+   Duration 2.35s (build 3ms, tests 2.34s)
+
+
+===== all-rules-current-browser.log =====
+$ node scripts/run-tests.mjs browser --reporters verbose
+
+start   build started...
+ready   built in 0.60s
+
+info | registry/base-nova/protoform/components/auto-form/__browser__/auto-form.browser.test.tsx
+Download the React DevTools for a better development experience: https://react.dev/link/react-devtools
+
+ ✓ registry/base-nova/protoform/components/auto-form/__browser__/auto-form.browser.test.tsx (3) 239ms
+  ✓ renders a simple shadcn-native auto form in a browser (63ms)
+  ✓ renders labels for controlled enum selections on first paint (24ms)
+  ✓ renders every built-in field type through the configured UI alias (151ms)
+
+ Test Files 1 passed
+      Tests 3 passed
+   Duration 1.29s (build 654ms, tests 641ms)
+
+
+===== all-rules-doctor-repair.log =====
+$ bun run doctor
+$ react-doctor . --yes --scope full --blocking warning --no-respect-inline-disables --no-score --no-supply-chain
+  
+Agent guidance
+  - Treat React Doctor diagnostics as starting hypotheses. Read the relevant code before confirming or suppressing each finding.
+  - For each group, decide true positive, false positive, or needs-human-review, then assign high/medium/low confidence.
+  - Do not suppress a finding without evidence from the file in question. Confidence requires code context.
+  - Understand the root cause before editing. Fix the underlying code instead of changing react-doctor config or suppressing rules unless explicitly asked.
+  - Investigate deeply where relevant: race conditions, security-sensitive flows, state propagation, multi-file refactors, and downstream dependency chains.
+  - Ignore pure style preferences, theoretical issues without real impact, missing features, and unrelated pre-existing code.
+  - Start with high-confidence fixes that preserve behavior. Leave low-confidence or product-dependent changes as notes.
+  - Run `npx react-doctor@latest --verbose --scope changed` before and after changes, plus relevant tests after each focused batch.
+  - When available, spawn subagents or isolated worktrees for independent rule families, then review and merge only the best safe fixes.
+  - Split unrelated, broad, or behavior-changing work into separate PRs/branches instead of one large cleanup.
+  - When one rule spans dozens of files (a migration-scale change), fix a representative sample first, confirm the recipe holds, and get the code owner's sign-off before changing the rest. Don't mass-fix a broad pattern in one unreviewed pass.
+  - For confirmed issues that cannot be fixed now, create GitHub issues with the rule, file/line, confidence, impact, and proposed fix.
+  - If a fix needs an API, UX, or architecture decision, stop and ask before editing.
+
+✔ Scanned 586 files in 107.1s
+
+React Doctor — protoform
+Score disabled by --no-score. Want something custom to your company? Contact us at https://react.doctor/enterprise.
+
+✔ No issues found!
+  Full diagnostics written to /var/folders/qg/64j291p97zq2210tylf3j2l40000gn/T/react-doctor-8ff35127-6481-40e7-94d2-0f4c348abbf7
+
+  ────────────────────────────────────────────────────────────
+
+  Docs: https://react.doctor/docs
+  Learn more about fixing issues, setting up CI/CD, and
+  configuring rules with a config file
+
+  GitHub: https://github.com/millionco/react-doctor
+  Report issues and star the repository!
+
+
+===== all-rules-extra-checks.log =====
+$ bun run scripts/smoke-registry.ts
+Registry smoke passed: protoform-license, bookstore, protoform-foundation, hook-runtime, protoform-core, protobuf-provider, protoc-gen-protoform, protobuf-v1-bridge, use-proto-form, use-proto-form-v8, use-proto-form-tanstack, use-proto-form-tanstack-v2, auto-form-core, protoform-react, protoform-shadcn, protoform-shadcn-host, auto-form-react-hook-form-v8, auto-form-tanstack, auto-form-tanstack-v2, protoform, protoform-examples, protoform-demo-runtime, aip-121-resource-oriented-design, aip-122-resource-names, aip-123-resource-types, aip-124-resource-association, aip-126-enumerations, aip-127-http-and-grpc-transcoding, aip-128-declarative-friendly-interfaces, aip-129-server-modified-values-and-defaults, aip-130-methods, aip-131-standard-methods-get, aip-132-standard-methods-list, aip-133-standard-methods-create, aip-134-standard-methods-update, aip-135-standard-methods-delete, aip-136-custom-methods, aip-140-field-names, aip-141-quantities, aip-142-time-and-duration, aip-143-standardized-codes, aip-144-repeated-fields, aip-145-ranges, aip-146-generic-fields, aip-147-sensitive-fields, aip-148-standard-fields, aip-149-unset-field-values, aip-151-long-running-operations, aip-152-jobs, aip-153-import-and-export, aip-154-resource-freshness-validation, aip-155-request-identification, aip-156-singleton-resources, aip-157-partial-responses, aip-158-pagination, aip-159-reading-across-collections, aip-160-filtering, aip-161-field-masks, aip-162-resource-revisions, aip-163-change-validation, aip-164-soft-delete, aip-165-criteria-based-delete, aip-180-backwards-compatibility, aip-181-stability-levels, aip-182-external-software-dependencies, aip-185-api-versioning, aip-190-naming-conventions, aip-191-file-and-directory-structure, aip-192-documentation, aip-193-errors, aip-194-automatic-retry-configuration, aip-202-fields, aip-203-field-behavior-documentation, aip-210-unicode, aip-213-common-components, aip-214-resource-expiration, aip-216-states, aip-217-unreachable-resources, aip-231-batch-methods-get, aip-233-batch-methods-create, aip-234-batch-methods-update, aip-235-batch-methods-delete, aip-236-policy-preview, protobuf-scalars-demo, protobuf-presence-demo, protobuf-nested-collections-demo, protobuf-maps-demo, protobuf-oneof-demo, protobuf-well-known-types-demo, protobuf-dynamic-json-any-demo, protobuf-json-options-demo, protobuf-recursive-messages-demo, bufbuild-descriptors-demo, protobuf-unknown-fields-demo, protobuf-editions-demo, protovalidate-required-demo, protovalidate-numeric-rules-demo, protovalidate-bool-enum-demo, protovalidate-string-rules-demo, protovalidate-string-formats-demo, protovalidate-bytes-any-demo, protovalidate-repeated-demo, protovalidate-maps-demo, protovalidate-well-known-types-demo, protovalidate-ignore-demo, protovalidate-all-errors-demo, protovalidate-predefined-demo, cel-language-basics-demo, cel-collections-demo, cel-protobuf-values-demo, cel-re2-demo, cel-bytes-demo, cel-time-demo, cel-execution-demo, cel-safe-evaluation-demo, cel-protovalidate-demo, cel-ui-rules-demo, cel-complex-expressions-demo, cel-error-paths-demo, standard-schema-demo, react-hook-form-demo, tanstack-form-demo, formik-demo, final-form-demo, auto-form-demo, stepper-demo, server-errors-demo, credential-redaction-demo, accessible-forms-demo, responsive-cross-browser-demo, ssr-hydration-demo, connectrpc-transport-demo, async-cancellation-demo, dependency-matrix-demo, performance-bundle-demo, untrusted-input-demo
+
+===== all-rules-consumer-final.log =====
+$ bun run scripts/consumer-fixture-smoke.ts
+bun install v1.4.2 (744846f84)
+Resolving dependencies
+Resolved, downloaded and extracted [26]
+Saved lockfile
+
++ @types/node@26.6.4
++ @types/react@19.3.0
++ @types/react-dom@19.3.0
++ @vitejs/plugin-react@6.1.2
++ react@19.3.0
++ react-dom@19.3.0
++ typescript@7.0.2
++ vite@8.3.2
+
+27 packages installed [373.00ms]
+bun add v1.4.2 (744846f84)
+Resolving dependencies
+Resolved, downloaded and extracted [19]
+Saved lockfile
+
+installed clsx@2.1.1
+installed tailwind-merge@3.7.0
+installed tailwindcss@4.3.3
+installed @tailwindcss/vite@4.3.3
+
+19 packages installed [1229.00ms]
+- Checking registry.
+✔ Checking registry.
+- Installing dependencies.
+- Installing dependencies.
+✔ Installing dependencies.
+- Updating files.
+✔ Created 20 files:
+  - design-system/ui/alert.tsx
+  - design-system/ui/button.tsx
+  - design-system/ui/checkbox.tsx
+  - design-system/ui/collapsible.tsx
+  - design-system/ui/input.tsx
+  - design-system/ui/popover.tsx
+  - design-system/ui/radio-group.tsx
+  - design-system/ui/select.tsx
+  - design-system/ui/slider.tsx
+  - design-system/ui/switch.tsx
+  - design-system/ui/tabs.tsx
+  - design-system/ui/textarea.tsx
+  - design-system/ui/toggle.tsx
+  - design-system/ui/tooltip.tsx
+  - design-system/ui/label.tsx
+  - design-system/ui/separator.tsx
+  - design-system/ui/calendar.tsx
+  - design-system/ui/input-group.tsx
+  - design-system/ui/toggle-group.tsx
+  - design-system/ui/field.tsx
+- Checking registry.
+✔ Checking registry.
+- Installing dependencies.
+- Installing dependencies.
+✔ Installing dependencies.
+- Updating files.
+✔ Created 100 files:
+  - LICENSES/protoform-MIT.txt
+  - domain/runtime/core/field-model.ts
+  - domain/runtime/core/form-library-adapters.ts
+  - domain/runtime/core/index.ts
+  - domain/runtime/core/messages.ts
+  - domain/runtime/core/standard-schema.ts
+  - domain/runtime/protobuf-provider/descriptor-utils.ts
+  - domain/runtime/protobuf-provider/field-mask.ts
+  - domain/runtime/protobuf-provider/form-schema.ts
+  - domain/runtime/protobuf-provider/format-error.ts
+  - domain/runtime/protobuf-provider/hook-runtime.ts
+  - domain/runtime/protobuf-provider/humanize-validation-error.ts
+  - domain/runtime/protobuf-provider/proto-error-path.ts
+  - domain/runtime/protobuf-provider/validation-schema.ts
+  - domain/runtime/protobuf-provider/aip-client-workflow.ts
+  - domain/runtime/protobuf-provider/aip.ts
+  - domain/runtime/protobuf-provider/annotations.ts
+  - domain/runtime/protobuf-provider/format-submitted-value.ts
+  - domain/runtime/protobuf-provider/gen/auto_form_ui_pb.ts
+  - domain/runtime/protobuf-provider/gen/buf/validate/validate_pb.ts
+  - domain/runtime/protobuf-provider/gen/protoform/v1/auto_form_ui_pb.ts
+  - domain/runtime/protobuf-provider/index.ts
+  - domain/runtime/protobuf-provider/method-workflow.ts
+  - domain/runtime/protobuf-provider/mutation-request.ts
+  - domain/runtime/protobuf-provider/provider.ts
+  - domain/runtime/protobuf-provider/ui-options.ts
+  - features/hooks/use-proto-form/index.ts
+  - features/hooks/use-proto-form/proto-error-path.ts
+  - features/hooks/use-proto-form/proto-paths.ts
+  - features/hooks/use-proto-form/proto-resolver.ts
+  - features/hooks/use-proto-form/use-proto-form.ts
+  - features/forms/auto-form/configuration.ts
+  - features/forms/auto-form/audit.ts
+  - features/forms/auto-form/context.tsx
+  - features/forms/auto-form/core-types.ts
+  - features/forms/auto-form/data-providers.ts
+  - features/forms/auto-form/field-utils.ts
+  - features/forms/auto-form/field-wrapper.tsx
+  - features/forms/auto-form/fields/boolean.tsx
+  - features/forms/auto-form/fields/bytes.tsx
+  - features/forms/auto-form/fields/choicebox.tsx
+  - features/forms/auto-form/fields/combobox.tsx
+  - features/forms/auto-form/fields/currency.tsx
+  - features/forms/auto-form/fields/date.tsx
+  - features/forms/auto-form/fields/duration.tsx
+  - features/forms/auto-form/fields/email.tsx
+  - features/forms/auto-form/fields/fallback.tsx
+  - features/forms/auto-form/fields/field-mask-control.tsx
+  - features/forms/auto-form/fields/index.ts
+  - features/forms/auto-form/fields/int64.tsx
+  - features/forms/auto-form/fields/json.tsx
+  - features/forms/auto-form/fields/key-value.tsx
+  - features/forms/auto-form/fields/multiselect.tsx
+  - features/forms/auto-form/fields/number.tsx
+  - features/forms/auto-form/fields/password.tsx
+  - features/forms/auto-form/fields/radio.tsx
+  - features/forms/auto-form/fields/select.tsx
+  - features/forms/auto-form/fields/shared.tsx
+  - features/forms/auto-form/fields/slider.tsx
+  - features/forms/auto-form/fields/string.tsx
+  - features/forms/auto-form/fields/textarea.tsx
+  - features/forms/auto-form/fields/toggle-group.tsx
+  - features/forms/auto-form/fields/url.tsx
+  - features/forms/auto-form/form-spacing.ts
+  - features/forms/auto-form/helpers.ts
+  - features/forms/auto-form/auto-form-core.tsx
+  - features/forms/auto-form/engine.tsx
+  - features/forms/auto-form/layout-context.tsx
+  - features/forms/auto-form/layout.tsx
+  - features/forms/auto-form/mode-shell.tsx
+  - features/forms/auto-form/proto/conversion.ts
+  - features/forms/auto-form/proto/index.ts
+  - features/forms/auto-form/proto/schema.ts
+  - features/forms/auto-form/registry.ts
+  - features/forms/auto-form/renderers/array.tsx
+  - features/forms/auto-form/renderers/controlled.tsx
+  - features/forms/auto-form/renderers/index.tsx
+  - features/forms/auto-form/renderers/map.tsx
+  - features/forms/auto-form/renderers/object.tsx
+  - features/forms/auto-form/renderers/oneof.tsx
+  - features/forms/auto-form/renderers/shared.ts
+  - features/forms/auto-form/runtime-provider.tsx
+  - features/forms/auto-form/schema.ts
+  - features/forms/auto-form/slot.tsx
+  - features/forms/auto-form/stepper.tsx
+  - features/forms/auto-form/step-configuration.ts
+  - features/forms/auto-form/test-ids.ts
+  - features/forms/auto-form/types.ts
+  - features/forms/auto-form/ui-component-map.ts
+  - features/forms/auto-form/ui-components.tsx
+  - features/forms/auto-form/cel-runtime.ts
+  - features/forms/auto-form/ui-rules.ts
+  - features/forms/auto-form/utils/modes.ts
+  - features/forms/auto-form/utils/serialization.ts
+  - domain/runtime/form-types/index.ts
+  - features/forms/auto-form/shadcn-controls.ts
+  - features/forms/auto-form/ui-props.ts
+  - features/forms/auto-form/adapters/react-hook-form.tsx
+  - features/forms/auto-form/host.tsx
+  - features/forms/auto-form/shadcn-host.tsx
+$ tsc --noEmit
+$ tsc --noEmit
+Host registry fixture passed with new-york, custom aliases, and 20 unchanged primitive files: <workspace>/.tmp/host-consumer-fixture
+bun install v1.4.2 (744846f84)
+Saved lockfile
+
++ @types/node@26.6.4
++ @types/react@19.3.0
++ @types/react-dom@19.3.0
++ @vitejs/plugin-react@6.1.2
++ react@19.3.0
++ react-dom@19.3.0
++ typescript@7.0.2
++ vite@8.3.2
+
+27 packages installed [238.00ms]
+- Checking registry.
+✔ Checking registry.
+- Installing dependencies.
+- Installing dependencies.
+✔ Installing dependencies.
+- Updating files.
+✔ Created 19 files:
+  - LICENSES/protoform-MIT.txt
+  - lib/core/field-model.ts
+  - lib/core/form-library-adapters.ts
+  - lib/core/index.ts
+  - lib/core/messages.ts
+  - lib/core/standard-schema.ts
+  - lib/protobuf-provider/descriptor-utils.ts
+  - lib/protobuf-provider/field-mask.ts
+  - lib/protobuf-provider/form-schema.ts
+  - lib/protobuf-provider/format-error.ts
+  - lib/protobuf-provider/hook-runtime.ts
+  - lib/protobuf-provider/humanize-validation-error.ts
+  - lib/protobuf-provider/proto-error-path.ts
+  - lib/protobuf-provider/validation-schema.ts
+  - hooks/use-proto-form/index.ts
+  - hooks/use-proto-form/proto-error-path.ts
+  - hooks/use-proto-form/proto-paths.ts
+  - hooks/use-proto-form/proto-resolver.ts
+  - hooks/use-proto-form/use-proto-form.ts
+$ tsc --noEmit
+Core-only consumer fixture passed: <workspace>/.tmp/core-consumer-fixture
+bun install v1.4.2 (744846f84)
+Resolving dependencies
+Resolved, downloaded and extracted [4]
+Saved lockfile
+
++ @types/node@26.6.4
++ @types/react@19.3.0
++ @types/react-dom@19.3.0
++ @vitejs/plugin-react@6.1.2
++ react@19.3.0
++ react-dom@19.3.0
++ typescript@7.0.2
++ vite@8.3.2
+
+27 packages installed [388.00ms]
+- Checking registry.
+✔ Checking registry.
+- Installing dependencies.
+- Installing dependencies.
+✔ Installing dependencies.
+- Updating files.
+✔ Created 169 files:
+  - LICENSES/protoform-MIT.txt
+  - lib/core/field-model.ts
+  - lib/core/form-library-adapters.ts
+  - lib/core/index.ts
+  - lib/core/messages.ts
+  - lib/core/standard-schema.ts
+  - lib/protobuf-provider/descriptor-utils.ts
+  - lib/protobuf-provider/field-mask.ts
+  - lib/protobuf-provider/form-schema.ts
+  - lib/protobuf-provider/format-error.ts
+  - lib/protobuf-provider/hook-runtime.ts
+  - lib/protobuf-provider/humanize-validation-error.ts
+  - lib/protobuf-provider/proto-error-path.ts
+  - lib/protobuf-provider/validation-schema.ts
+  - lib/protobuf-provider/aip-client-workflow.ts
+  - lib/protobuf-provider/aip.ts
+  - lib/protobuf-provider/annotations.ts
+  - lib/protobuf-provider/format-submitted-value.ts
+  - lib/protobuf-provider/gen/auto_form_ui_pb.ts
+  - lib/protobuf-provider/gen/buf/validate/validate_pb.ts
+  - lib/protobuf-provider/gen/protoform/v1/auto_form_ui_pb.ts
+  - lib/protobuf-provider/index.ts
+  - lib/protobuf-provider/method-workflow.ts
+  - lib/protobuf-provider/mutation-request.ts
+  - lib/protobuf-provider/provider.ts
+  - lib/protobuf-provider/ui-options.ts
+  - hooks/use-proto-form/index.ts
+  - hooks/use-proto-form/proto-error-path.ts
+  - hooks/use-proto-form/proto-paths.ts
+  - hooks/use-proto-form/proto-resolver.ts
+  - hooks/use-proto-form/use-proto-form.ts
+  - components/auto-form/configuration.ts
+  - components/auto-form/audit.ts
+  - components/auto-form/context.tsx
+  - components/auto-form/core-types.ts
+  - components/auto-form/data-providers.ts
+  - components/auto-form/field-utils.ts
+  - components/auto-form/field-wrapper.tsx
+  - components/auto-form/fields/boolean.tsx
+  - components/auto-form/fields/bytes.tsx
+  - components/auto-form/fields/choicebox.tsx
+  - components/auto-form/fields/combobox.tsx
+  - components/auto-form/fields/currency.tsx
+  - components/auto-form/fields/date.tsx
+  - components/auto-form/fields/duration.tsx
+  - components/auto-form/fields/email.tsx
+  - components/auto-form/fields/fallback.tsx
+  - components/auto-form/fields/field-mask-control.tsx
+  - components/auto-form/fields/index.ts
+  - components/auto-form/fields/int64.tsx
+  - components/auto-form/fields/json.tsx
+  - components/auto-form/fields/key-value.tsx
+  - components/auto-form/fields/multiselect.tsx
+  - components/auto-form/fields/number.tsx
+  - components/auto-form/fields/password.tsx
+  - components/auto-form/fields/radio.tsx
+  - components/auto-form/fields/select.tsx
+  - components/auto-form/fields/shared.tsx
+  - components/auto-form/fields/slider.tsx
+  - components/auto-form/fields/string.tsx
+  - components/auto-form/fields/textarea.tsx
+  - components/auto-form/fields/toggle-group.tsx
+  - components/auto-form/fields/url.tsx
+  - components/auto-form/form-spacing.ts
+  - components/auto-form/helpers.ts
+  - components/auto-form/auto-form-core.tsx
+  - components/auto-form/engine.tsx
+  - components/auto-form/layout-context.tsx
+  - components/auto-form/layout.tsx
+  - components/auto-form/mode-shell.tsx
+  - components/auto-form/proto/conversion.ts
+  - components/auto-form/proto/index.ts
+  - components/auto-form/proto/schema.ts
+  - components/auto-form/registry.ts
+  - components/auto-form/renderers/array.tsx
+  - components/auto-form/renderers/controlled.tsx
+  - components/auto-form/renderers/index.tsx
+  - components/auto-form/renderers/map.tsx
+  - components/auto-form/renderers/object.tsx
+  - components/auto-form/renderers/oneof.tsx
+  - components/auto-form/renderers/shared.ts
+  - components/auto-form/runtime-provider.tsx
+  - components/auto-form/schema.ts
+  - components/auto-form/slot.tsx
+  - components/auto-form/stepper.tsx
+  - components/auto-form/step-configuration.ts
+  - components/auto-form/test-ids.ts
+  - components/auto-form/types.ts
+  - components/auto-form/ui-component-map.ts
+  - components/auto-form/ui-components.tsx
+  - components/auto-form/cel-runtime.ts
+  - components/auto-form/ui-rules.ts
+  - components/auto-form/utils/modes.ts
+  - components/auto-form/utils/serialization.ts
+  - lib/form-types/index.ts
+  - components/auto-form/shadcn-controls.ts
+  - components/auto-form/ui-props.ts
+  - components/auto-form/adapters/react-hook-form.tsx
+  - components/auto-form/host.tsx
+  - components/ui/alert/index.tsx
+  - components/ui/badge/index.tsx
+  - components/ui/button/index.tsx
+  - components/ui/calendar/index.tsx
+  - components/ui/card/index.tsx
+  - components/ui/checkbox/index.tsx
+  - components/ui/choicebox/index.tsx
+  - components/ui/collapsible/index.tsx
+  - components/ui/combobox/combobox-utils.ts
+  - components/ui/combobox/index.tsx
+  - components/ui/combobox/use-combobox-reducer.ts
+  - components/ui/command/index.tsx
+  - components/ui/copy-button/index.tsx
+  - components/ui/dialog/index.tsx
+  - components/ui/field/index.tsx
+  - components/ui/group/index.tsx
+  - components/ui/input/index.tsx
+  - components/ui/input-group/index.tsx
+  - components/ui/json-field/index.tsx
+  - components/ui/key-value-field/index.tsx
+  - components/ui/label/index.tsx
+  - components/ui/multi-select/index.tsx
+  - components/ui/popover/index.tsx
+  - components/ui/radio-group/index.tsx
+  - components/ui/select/index.tsx
+  - components/ui/separator/index.tsx
+  - components/ui/slider/index.tsx
+  - components/ui/spinner/index.tsx
+  - components/ui/switch/index.tsx
+  - components/ui/tabs/index.tsx
+  - components/ui/tags/index.tsx
+  - components/ui/textarea/index.tsx
+  - components/ui/toggle/index.tsx
+  - components/ui/toggle-group/index.tsx
+  - components/ui/toast/index.tsx
+  - components/ui/tooltip/index.tsx
+  - components/ui/typography/index.tsx
+  - hooks/use-controllable-state/index.ts
+  - hooks/use-layout-effect/index.ts
+  - hooks/use-portal-container/index.ts
+  - lib/base-ui-compat/index.tsx
+  - components/auto-form/index.tsx
+  - components/auto-form/shadcn-ui-components.ts
+  - lib/utils/index.tsx
+  - lib/input-utils/index.ts
+  - components/protoform-examples/runtime/demo-schemas.ts
+  - components/protoform-examples/runtime/gen/buf/validate/validate_pb.ts
+  - components/protoform-examples/runtime/gen/google/api/annotations_pb.ts
+  - components/protoform-examples/runtime/gen/google/api/client_pb.ts
+  - components/protoform-examples/runtime/gen/google/api/field_behavior_pb.ts
+  - components/protoform-examples/runtime/gen/google/api/field_info_pb.ts
+  - components/protoform-examples/runtime/gen/google/api/http_pb.ts
+  - components/protoform-examples/runtime/gen/google/api/launch_stage_pb.ts
+  - components/protoform-examples/runtime/gen/google/api/resource_pb.ts
+  - components/protoform-examples/runtime/gen/google/rpc/status_pb.ts
+  - components/protoform-examples/runtime/gen/protoform/conformance/v1/aip_form.ts
+  - components/protoform-examples/runtime/gen/protoform/conformance/v1/aip_pb.ts
+  - components/protoform-examples/runtime/gen/protoform/conformance/v1/conformance_pb.ts
+  - components/protoform-examples/runtime/gen/protoform/conformance/v1/editions_2024_pb.ts
+  - components/protoform-examples/runtime/gen/protoform/conformance/v1/editions_pb.ts
+  - components/protoform-examples/runtime/gen/protoform/conformance/v1/predefined_pb.ts
+  - components/protoform-bookstore/bookstore-demo.tsx
+  - components/protoform-bookstore/bookstore-workspace.tsx
+  - components/protoform-bookstore/book-detail.tsx
+  - components/protoform-bookstore/create-book-form.tsx
+  - components/protoform-bookstore/update-book-form.tsx
+  - components/protoform-bookstore/delete-book-form.tsx
+  - components/protoform-bookstore/delete-submit-button.tsx
+  - components/protoform-bookstore/library-service.ts
+  - proto/protoform/conformance/v1/aip.proto
+- Updating app/globals.css
+✔ Updating app/globals.css
+- Checking registry.
+✔ Checking registry.
+- Installing dependencies.
+- Installing dependencies.
+✔ Installing dependencies.
+- Updating files.
+✔ Created 7 files:
+ℹ Skipped 93 files: (files might be identical, use --overwrite to overwrite)
+  - hooks/use-proto-form-v8/index.ts
+  - hooks/use-proto-form-v8/proto-error-path.ts
+  - hooks/use-proto-form-v8/proto-paths.ts
+  - hooks/use-proto-form-v8/proto-resolver.ts
+  - hooks/use-proto-form-v8/use-proto-form.ts
+  - components/auto-form-react-hook-form-v8/index.tsx
+  - components/auto-form/adapters/react-hook-form-v8.tsx
+  - LICENSES/protoform-MIT.txt
+  - lib/core/field-model.ts
+  - lib/core/form-library-adapters.ts
+  - lib/core/index.ts
+  - lib/core/messages.ts
+  - lib/core/standard-schema.ts
+  - lib/protobuf-provider/descriptor-utils.ts
+  - lib/protobuf-provider/field-mask.ts
+  - lib/protobuf-provider/form-schema.ts
+  - lib/protobuf-provider/format-error.ts
+  - lib/protobuf-provider/hook-runtime.ts
+  - lib/protobuf-provider/humanize-validation-error.ts
+  - lib/protobuf-provider/proto-error-path.ts
+  - lib/protobuf-provider/validation-schema.ts
+  - lib/protobuf-provider/aip-client-workflow.ts
+  - lib/protobuf-provider/aip.ts
+  - lib/protobuf-provider/annotations.ts
+  - lib/protobuf-provider/format-submitted-value.ts
+  - lib/protobuf-provider/gen/auto_form_ui_pb.ts
+  - lib/protobuf-provider/gen/buf/validate/validate_pb.ts
+  - lib/protobuf-provider/gen/protoform/v1/auto_form_ui_pb.ts
+  - lib/protobuf-provider/index.ts
+  - lib/protobuf-provider/method-workflow.ts
+  - lib/protobuf-provider/mutation-request.ts
+  - lib/protobuf-provider/provider.ts
+  - lib/protobuf-provider/ui-options.ts
+  - components/auto-form/configuration.ts
+  - components/auto-form/audit.ts
+  - components/auto-form/context.tsx
+  - components/auto-form/core-types.ts
+  - components/auto-form/data-providers.ts
+  - components/auto-form/field-utils.ts
+  - components/auto-form/field-wrapper.tsx
+  - components/auto-form/fields/boolean.tsx
+  - components/auto-form/fields/bytes.tsx
+  - components/auto-form/fields/choicebox.tsx
+  - components/auto-form/fields/combobox.tsx
+  - components/auto-form/fields/currency.tsx
+  - components/auto-form/fields/date.tsx
+  - components/auto-form/fields/duration.tsx
+  - components/auto-form/fields/email.tsx
+  - components/auto-form/fields/fallback.tsx
+  - components/auto-form/fields/field-mask-control.tsx
+  - components/auto-form/fields/index.ts
+  - components/auto-form/fields/int64.tsx
+  - components/auto-form/fields/json.tsx
+  - components/auto-form/fields/key-value.tsx
+  - components/auto-form/fields/multiselect.tsx
+  - components/auto-form/fields/number.tsx
+  - components/auto-form/fields/password.tsx
+  - components/auto-form/fields/radio.tsx
+  - components/auto-form/fields/select.tsx
+  - components/auto-form/fields/shared.tsx
+  - components/auto-form/fields/slider.tsx
+  - components/auto-form/fields/string.tsx
+  - components/auto-form/fields/textarea.tsx
+  - components/auto-form/fields/toggle-group.tsx
+  - components/auto-form/fields/url.tsx
+  - components/auto-form/form-spacing.ts
+  - components/auto-form/helpers.ts
+  - components/auto-form/auto-form-core.tsx
+  - components/auto-form/engine.tsx
+  - components/auto-form/layout-context.tsx
+  - components/auto-form/layout.tsx
+  - components/auto-form/mode-shell.tsx
+  - components/auto-form/proto/conversion.ts
+  - components/auto-form/proto/index.ts
+  - components/auto-form/proto/schema.ts
+  - components/auto-form/registry.ts
+  - components/auto-form/renderers/array.tsx
+  - components/auto-form/renderers/controlled.tsx
+  - components/auto-form/renderers/index.tsx
+  - components/auto-form/renderers/map.tsx
+  - components/auto-form/renderers/object.tsx
+  - components/auto-form/renderers/oneof.tsx
+  - components/auto-form/renderers/shared.ts
+  - components/auto-form/runtime-provider.tsx
+  - components/auto-form/schema.ts
+  - components/auto-form/slot.tsx
+  - components/auto-form/stepper.tsx
+  - components/auto-form/step-configuration.ts
+  - components/auto-form/test-ids.ts
+  - components/auto-form/types.ts
+  - components/auto-form/ui-component-map.ts
+  - components/auto-form/ui-components.tsx
+  - components/auto-form/cel-runtime.ts
+  - components/auto-form/ui-rules.ts
+  - components/auto-form/utils/modes.ts
+  - components/auto-form/utils/serialization.ts
+  - lib/form-types/index.ts
+  - components/auto-form/shadcn-controls.ts
+  - components/auto-form/ui-props.ts
+  - components/auto-form/shadcn-ui-components.ts
+- Checking registry.
+✔ Checking registry.
+- Installing dependencies.
+- Installing dependencies.
+✔ Installing dependencies.
+- Updating files.
+✔ Created 3 files:
+ℹ Skipped 93 files: (files might be identical, use --overwrite to overwrite)
+  - hooks/use-proto-form-tanstack/index.ts
+  - components/auto-form-tanstack/index.tsx
+  - components/auto-form/adapters/tanstack.tsx
+  - LICENSES/protoform-MIT.txt
+  - lib/core/field-model.ts
+  - lib/core/form-library-adapters.ts
+  - lib/core/index.ts
+  - lib/core/messages.ts
+  - lib/core/standard-schema.ts
+  - lib/protobuf-provider/descriptor-utils.ts
+  - lib/protobuf-provider/field-mask.ts
+  - lib/protobuf-provider/form-schema.ts
+  - lib/protobuf-provider/format-error.ts
+  - lib/protobuf-provider/hook-runtime.ts
+  - lib/protobuf-provider/humanize-validation-error.ts
+  - lib/protobuf-provider/proto-error-path.ts
+  - lib/protobuf-provider/validation-schema.ts
+  - lib/protobuf-provider/aip-client-workflow.ts
+  - lib/protobuf-provider/aip.ts
+  - lib/protobuf-provider/annotations.ts
+  - lib/protobuf-provider/format-submitted-value.ts
+  - lib/protobuf-provider/gen/auto_form_ui_pb.ts
+  - lib/protobuf-provider/gen/buf/validate/validate_pb.ts
+  - lib/protobuf-provider/gen/protoform/v1/auto_form_ui_pb.ts
+  - lib/protobuf-provider/index.ts
+  - lib/protobuf-provider/method-workflow.ts
+  - lib/protobuf-provider/mutation-request.ts
+  - lib/protobuf-provider/provider.ts
+  - lib/protobuf-provider/ui-options.ts
+  - components/auto-form/configuration.ts
+  - components/auto-form/audit.ts
+  - components/auto-form/context.tsx
+  - components/auto-form/core-types.ts
+  - components/auto-form/data-providers.ts
+  - components/auto-form/field-utils.ts
+  - components/auto-form/field-wrapper.tsx
+  - components/auto-form/fields/boolean.tsx
+  - components/auto-form/fields/bytes.tsx
+  - components/auto-form/fields/choicebox.tsx
+  - components/auto-form/fields/combobox.tsx
+  - components/auto-form/fields/currency.tsx
+  - components/auto-form/fields/date.tsx
+  - components/auto-form/fields/duration.tsx
+  - components/auto-form/fields/email.tsx
+  - components/auto-form/fields/fallback.tsx
+  - components/auto-form/fields/field-mask-control.tsx
+  - components/auto-form/fields/index.ts
+  - components/auto-form/fields/int64.tsx
+  - components/auto-form/fields/json.tsx
+  - components/auto-form/fields/key-value.tsx
+  - components/auto-form/fields/multiselect.tsx
+  - components/auto-form/fields/number.tsx
+  - components/auto-form/fields/password.tsx
+  - components/auto-form/fields/radio.tsx
+  - components/auto-form/fields/select.tsx
+  - components/auto-form/fields/shared.tsx
+  - components/auto-form/fields/slider.tsx
+  - components/auto-form/fields/string.tsx
+  - components/auto-form/fields/textarea.tsx
+  - components/auto-form/fields/toggle-group.tsx
+  - components/auto-form/fields/url.tsx
+  - components/auto-form/form-spacing.ts
+  - components/auto-form/helpers.ts
+  - components/auto-form/auto-form-core.tsx
+  - components/auto-form/engine.tsx
+  - components/auto-form/layout-context.tsx
+  - components/auto-form/layout.tsx
+  - components/auto-form/mode-shell.tsx
+  - components/auto-form/proto/conversion.ts
+  - components/auto-form/proto/index.ts
+  - components/auto-form/proto/schema.ts
+  - components/auto-form/registry.ts
+  - components/auto-form/renderers/array.tsx
+  - components/auto-form/renderers/controlled.tsx
+  - components/auto-form/renderers/index.tsx
+  - components/auto-form/renderers/map.tsx
+  - components/auto-form/renderers/object.tsx
+  - components/auto-form/renderers/oneof.tsx
+  - components/auto-form/renderers/shared.ts
+  - components/auto-form/runtime-provider.tsx
+  - components/auto-form/schema.ts
+  - components/auto-form/slot.tsx
+  - components/auto-form/stepper.tsx
+  - components/auto-form/step-configuration.ts
+  - components/auto-form/test-ids.ts
+  - components/auto-form/types.ts
+  - components/auto-form/ui-component-map.ts
+  - components/auto-form/ui-components.tsx
+  - components/auto-form/cel-runtime.ts
+  - components/auto-form/ui-rules.ts
+  - components/auto-form/utils/modes.ts
+  - components/auto-form/utils/serialization.ts
+  - lib/form-types/index.ts
+  - components/auto-form/shadcn-controls.ts
+  - components/auto-form/ui-props.ts
+  - components/auto-form/shadcn-ui-components.ts
+- Checking registry.
+✔ Checking registry.
+- Installing dependencies.
+- Installing dependencies.
+✔ Installing dependencies.
+- Updating files.
+✔ Created 3 files:
+  - hooks/use-proto-form-tanstack-v2/index.ts
+  - components/auto-form-tanstack-v2/index.tsx
+  - components/auto-form/adapters/tanstack-v2.tsx
+ℹ Skipped 94 files: (files might be identical, use --overwrite to overwrite)
+  - LICENSES/protoform-MIT.txt
+  - lib/core/field-model.ts
+  - lib/core/form-library-adapters.ts
+  - lib/core/index.ts
+  - lib/core/messages.ts
+  - lib/core/standard-schema.ts
+  - lib/protobuf-provider/descriptor-utils.ts
+  - lib/protobuf-provider/field-mask.ts
+  - lib/protobuf-provider/form-schema.ts
+  - lib/protobuf-provider/format-error.ts
+  - lib/protobuf-provider/hook-runtime.ts
+  - lib/protobuf-provider/humanize-validation-error.ts
+  - lib/protobuf-provider/proto-error-path.ts
+  - lib/protobuf-provider/validation-schema.ts
+  - lib/protobuf-provider/aip-client-workflow.ts
+  - lib/protobuf-provider/aip.ts
+  - lib/protobuf-provider/annotations.ts
+  - lib/protobuf-provider/format-submitted-value.ts
+  - lib/protobuf-provider/gen/auto_form_ui_pb.ts
+  - lib/protobuf-provider/gen/buf/validate/validate_pb.ts
+  - lib/protobuf-provider/gen/protoform/v1/auto_form_ui_pb.ts
+  - lib/protobuf-provider/index.ts
+  - lib/protobuf-provider/method-workflow.ts
+  - lib/protobuf-provider/mutation-request.ts
+  - lib/protobuf-provider/provider.ts
+  - lib/protobuf-provider/ui-options.ts
+  - components/auto-form/configuration.ts
+  - components/auto-form/audit.ts
+  - components/auto-form/context.tsx
+  - components/auto-form/core-types.ts
+  - components/auto-form/data-providers.ts
+  - components/auto-form/field-utils.ts
+  - components/auto-form/field-wrapper.tsx
+  - components/auto-form/fields/boolean.tsx
+  - components/auto-form/fields/bytes.tsx
+  - components/auto-form/fields/choicebox.tsx
+  - components/auto-form/fields/combobox.tsx
+  - components/auto-form/fields/currency.tsx
+  - components/auto-form/fields/date.tsx
+  - components/auto-form/fields/duration.tsx
+  - components/auto-form/fields/email.tsx
+  - components/auto-form/fields/fallback.tsx
+  - components/auto-form/fields/field-mask-control.tsx
+  - components/auto-form/fields/index.ts
+  - components/auto-form/fields/int64.tsx
+  - components/auto-form/fields/json.tsx
+  - components/auto-form/fields/key-value.tsx
+  - components/auto-form/fields/multiselect.tsx
+  - components/auto-form/fields/number.tsx
+  - components/auto-form/fields/password.tsx
+  - components/auto-form/fields/radio.tsx
+  - components/auto-form/fields/select.tsx
+  - components/auto-form/fields/shared.tsx
+  - components/auto-form/fields/slider.tsx
+  - components/auto-form/fields/string.tsx
+  - components/auto-form/fields/textarea.tsx
+  - components/auto-form/fields/toggle-group.tsx
+  - components/auto-form/fields/url.tsx
+  - components/auto-form/form-spacing.ts
+  - components/auto-form/helpers.ts
+  - components/auto-form/auto-form-core.tsx
+  - components/auto-form/engine.tsx
+  - components/auto-form/layout-context.tsx
+  - components/auto-form/layout.tsx
+  - components/auto-form/mode-shell.tsx
+  - components/auto-form/proto/conversion.ts
+  - components/auto-form/proto/index.ts
+  - components/auto-form/proto/schema.ts
+  - components/auto-form/registry.ts
+  - components/auto-form/renderers/array.tsx
+  - components/auto-form/renderers/controlled.tsx
+  - components/auto-form/renderers/index.tsx
+  - components/auto-form/renderers/map.tsx
+  - components/auto-form/renderers/object.tsx
+  - components/auto-form/renderers/oneof.tsx
+  - components/auto-form/renderers/shared.ts
+  - components/auto-form/runtime-provider.tsx
+  - components/auto-form/schema.ts
+  - components/auto-form/slot.tsx
+  - components/auto-form/stepper.tsx
+  - components/auto-form/step-configuration.ts
+  - components/auto-form/test-ids.ts
+  - components/auto-form/types.ts
+  - components/auto-form/ui-component-map.ts
+  - components/auto-form/ui-components.tsx
+  - components/auto-form/cel-runtime.ts
+  - components/auto-form/ui-rules.ts
+  - components/auto-form/utils/modes.ts
+  - components/auto-form/utils/serialization.ts
+  - lib/form-types/index.ts
+  - components/auto-form/shadcn-controls.ts
+  - components/auto-form/ui-props.ts
+  - components/auto-form/shadcn-ui-components.ts
+  - lib/input-utils/index.ts
+$ tsc --noEmit
+Registry-only consumer fixture passed: <workspace>/.tmp/consumer-fixture
+
+===== all-rules-current-e2e.log =====
+[WebServer] $ blume build --strict && bun run scripts/finalize-docs-build.ts
+[WebServer] (node:43320) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] [BABEL] Note: The code generator has deoptimised the styling of <workspace>/node_modules/react-dom/cjs/react-dom-client.production.js as it exceeds the max of 500KB.
+[WebServer] [BABEL] Note: The code generator has deoptimised the styling of <workspace>/node_modules/elkjs/lib/elk.bundled.js as it exceeds the max of 500KB.
+[WebServer] (node:66720) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 226 tests using 2 workers
+
+(node:67205) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:67203) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓    2 [chromium] › e2e/accessibility.spec.ts:21:3 › preserves readiness tooltip appearance in light theme (804ms)
+  ✓    1 [chromium] › e2e/accessibility.spec.ts:35:3 › keeps help tooltip text visible in light theme (816ms)
+  ✓    3 [chromium] › e2e/accessibility.spec.ts:21:3 › preserves readiness tooltip appearance in dark theme (712ms)
+  ✓    4 [chromium] › e2e/accessibility.spec.ts:35:3 › keeps help tooltip text visible in dark theme (871ms)
+  ✓    5 [chromium] › e2e/accessibility.spec.ts:75:1 › keeps localized demo hubs readable in dark theme (1.8s)
+  ✓    7 [chromium] › e2e/accessibility.spec.ts:142:1 › keeps readiness status colors and progress widths visible (525ms)
+  ✓    8 [chromium] › e2e/demo-catalog.spec.ts:10:1 › publishes focused feature and AIP catalogs with working live forms (2.2s)
+  ✓    9 [chromium] › e2e/demo-catalog.spec.ts:45:1 › keeps a representative generated form within a narrow viewport (1.3s)
+  ✓   10 [chromium] › e2e/demo-catalog.spec.ts:63:1 › fills the submitted-value panel without an empty gutter (353ms)
+  ✓   11 [chromium] › e2e/demo-catalog.spec.ts:79:1 › keeps recursive collection controls clear of their item labels (368ms)
+  ✓   12 [chromium] › e2e/demo-catalog.spec.ts:101:1 › labels selected protobuf enum values in the maps demo (304ms)
+  ✓   13 [chromium] › e2e/demo-catalog.spec.ts:108:1 › shows the actual form implementation in the Code preview (988ms)
+  ✓   14 [chromium] › e2e/demo-catalog.spec.ts:121:1 › serves consolidated catalogs through static Markdown routes (18ms)
+  ✓   15 [chromium] › e2e/demo-catalog.spec.ts:141:3 › only offers available reference languages at /docs/reference (171ms)
+  ✓   16 [chromium] › e2e/demo-catalog.spec.ts:141:3 › only offers available reference languages at /docs/reference/library-rpc/protoform-conformance-v1-library-service-get-book (165ms)
+  ✓   17 [chromium] › e2e/demo-catalog.spec.ts:150:1 › serves translated hubs and only offers available page languages (531ms)
+  ✓   18 [chromium] › e2e/demo-catalog.spec.ts:158:1 › switches translated pages from the mobile drawer without offering missing translations (650ms)
+  ✓   19 [chromium] › e2e/demo-catalog.spec.ts:174:1 › searches translated docs with non-Latin text (488ms)
+  ✓   20 [chromium] › e2e/demo-catalog.spec.ts:182:1 › navigates OpenAPI pages without reloading the document (309ms)
+  ✓    6 [chromium] › e2e/accessibility.spec.ts:87:1 › has no serious accessibility violations across representative form states (11.3s)
+  ✓   22 [chromium] › e2e/docs-contract.spec.ts:9:1 › publishes every permanent legacy redirect without losing its fragment (56ms)
+  ✓   23 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-121-resource-oriented-design (903ms)
+  ✓   24 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-122-resource-names (878ms)
+  ✓   25 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-123-resource-types (904ms)
+  ✓   26 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-124-resource-association (922ms)
+  ✓   27 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-126-enumerations (926ms)
+  ✓   28 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-127-http-and-grpc-transcoding (912ms)
+  ✓   29 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-128-declarative-friendly-interfaces (876ms)
+  ✓   30 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-129-server-modified-values-and-defaults (961ms)
+  ✓   31 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-130-methods (940ms)
+  ✓   32 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-131-standard-methods-get (965ms)
+  ✘   21 [chromium] › e2e/demo-catalog.spec.ts:192:1 › renders the native OpenAPI reference and real RPC method shape (11.2s)
+  ✓   33 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-132-standard-methods-list (992ms)
+(node:79087) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   34 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-134-standard-methods-update (926ms)
+  ✓   35 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-133-standard-methods-create (494ms)
+  ✓   37 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-136-custom-methods (532ms)
+  ✓   36 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-135-standard-methods-delete (939ms)
+  ✓   39 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-141-quantities (893ms)
+  ✓   38 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-140-field-names (936ms)
+  ✓   40 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-142-time-and-duration (930ms)
+  ✓   41 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-143-standardized-codes (959ms)
+  ✓   42 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-144-repeated-fields (913ms)
+  ✓   43 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-145-ranges (934ms)
+  ✓   44 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-146-generic-fields (911ms)
+  ✓   45 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-147-sensitive-fields (921ms)
+  ✓   46 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-148-standard-fields (938ms)
+  ✓   47 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-149-unset-field-values (953ms)
+  ✓   48 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-151-long-running-operations (917ms)
+  ✓   49 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-152-jobs (968ms)
+  ✓   50 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-153-import-and-export (953ms)
+  ✓   51 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-154-resource-freshness-validation (982ms)
+  ✓   52 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-155-request-identification (909ms)
+  ✓   53 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-156-singleton-resources (940ms)
+  ✓   54 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-157-partial-responses (939ms)
+  ✓   55 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-158-pagination (946ms)
+  ✓   56 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-159-reading-across-collections (912ms)
+  ✓   57 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-160-filtering (962ms)
+  ✓   58 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-161-field-masks (916ms)
+  ✓   59 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-162-resource-revisions (926ms)
+  ✓   60 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-163-change-validation (952ms)
+  ✓   61 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-164-soft-delete (941ms)
+  ✓   62 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-165-criteria-based-delete (927ms)
+  ✓   63 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-180-backwards-compatibility (963ms)
+  ✓   64 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-181-stability-levels (948ms)
+  ✓   65 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-182-external-software-dependencies (938ms)
+  ✓   66 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-185-api-versioning (931ms)
+  ✓   67 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-190-naming-conventions (922ms)
+  ✓   68 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-191-file-and-directory-structure (961ms)
+  ✓   69 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-192-documentation (954ms)
+  ✓   70 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-193-errors (922ms)
+  ✓   71 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-194-automatic-retry-configuration (942ms)
+  ✓   72 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-202-fields (906ms)
+  ✓   73 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-203-field-behavior-documentation (906ms)
+  ✓   74 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-210-unicode (901ms)
+  ✓   75 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-213-common-components (943ms)
+  ✓   76 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-214-resource-expiration (966ms)
+  ✓   77 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-216-states (913ms)
+  ✓   78 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-217-unreachable-resources (932ms)
+  ✓   79 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-231-batch-methods-get (938ms)
+  ✓   80 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-233-batch-methods-create (898ms)
+  ✓   81 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-234-batch-methods-update (912ms)
+  ✓   82 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-235-batch-methods-delete (901ms)
+  ✓   83 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /aip-236-policy-preview (905ms)
+  ✓   84 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-protobuf-scalars (898ms)
+  ✓   85 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-protobuf-presence (936ms)
+  ✓   86 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-protobuf-nested-collections (904ms)
+  ✓   87 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-protobuf-maps (946ms)
+  ✓   88 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-protobuf-oneof (953ms)
+  ✓   89 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-protobuf-well-known-types (905ms)
+  ✓   90 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-protobuf-dynamic-json-any (915ms)
+  ✓   91 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-protobuf-json-options (894ms)
+  ✓   92 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-protobuf-recursive-messages (915ms)
+  ✓   93 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-bufbuild-descriptors (896ms)
+  ✓   95 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-protobuf-editions (446ms)
+  ✓   94 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-protobuf-unknown-fields (906ms)
+  ✓   96 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-protovalidate-required (891ms)
+  ✓   97 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-protovalidate-numeric-rules (914ms)
+  ✓   98 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-protovalidate-bool-enum (886ms)
+  ✓   99 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-protovalidate-string-rules (922ms)
+  ✓  100 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-protovalidate-string-formats (906ms)
+  ✓  101 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-protovalidate-bytes-any (892ms)
+  ✓  102 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-protovalidate-repeated (891ms)
+  ✓  103 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-protovalidate-maps (887ms)
+  ✓  104 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-protovalidate-well-known-types (889ms)
+  ✓  105 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-protovalidate-ignore (902ms)
+  ✓  106 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-protovalidate-all-errors (908ms)
+  ✓  107 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-protovalidate-predefined (902ms)
+  ✓  108 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-cel-language-basics (888ms)
+  ✓  109 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-cel-collections (889ms)
+  ✓  110 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-cel-protobuf-values (883ms)
+  ✓  111 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-cel-re2 (876ms)
+  ✓  112 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-cel-bytes (887ms)
+  ✓  113 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-cel-time (894ms)
+  ✓  114 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-cel-execution (883ms)
+  ✓  115 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-cel-safe-evaluation (877ms)
+  ✓  116 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-cel-protovalidate (871ms)
+  ✓  117 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-cel-ui-rules (884ms)
+  ✓  118 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-cel-complex-expressions (873ms)
+  ✓  119 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-cel-error-paths (874ms)
+  ✓  120 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-standard-schema (882ms)
+  ✓  121 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-react-hook-form (876ms)
+  ✓  122 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-tanstack-form (875ms)
+  ✓  123 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-formik (878ms)
+  ✓  124 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-final-form (864ms)
+  ✓  125 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-auto-form (879ms)
+  ✓  126 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-stepper (877ms)
+  ✓  127 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-server-errors (879ms)
+  ✓  128 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-credential-redaction (878ms)
+  ✓  129 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-accessible-forms (870ms)
+  ✓  130 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-responsive-cross-browser (876ms)
+  ✓  131 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-ssr-hydration (879ms)
+  ✓  132 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-connectrpc-transport (887ms)
+  ✓  133 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-async-cancellation (884ms)
+  ✓  134 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-dependency-matrix (880ms)
+  ✓  135 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-performance-bundle (916ms)
+  ✓  137 [chromium] › e2e/docs-contract.spec.ts:41:1 › publishes actionable agent guidance without enabling a server (7ms)
+  ✓  138 [chromium] › e2e/docs-contract.spec.ts:52:1 › publishes a discoverable site skill with canonical documentation links (11ms)
+  ✓  139 [chromium] › e2e/docs-contract.spec.ts:77:1 › finds identifiers that appear inside code blocks (301ms)
+  ✓  140 [chromium] › e2e/docs-contract.spec.ts:84:1 › publishes complete search assets for every configured language (7ms)
+  ✓  141 [chromium] › e2e/docs-contract.spec.ts:97:5 › serves machine-readable aip-example-catalog for en (5ms)
+  ✓  142 [chromium] › e2e/docs-contract.spec.ts:97:5 › serves machine-readable protobuf-examples for en (4ms)
+  ✓  143 [chromium] › e2e/docs-contract.spec.ts:97:5 › serves machine-readable protovalidate-examples for en (10ms)
+  ✓  144 [chromium] › e2e/docs-contract.spec.ts:97:5 › serves machine-readable cel-examples for en (4ms)
+  ✓  145 [chromium] › e2e/docs-contract.spec.ts:97:5 › serves machine-readable production-examples for en (4ms)
+  ✓  146 [chromium] › e2e/docs-contract.spec.ts:97:5 › serves machine-readable aip-example-catalog for zh (5ms)
+  ✓  147 [chromium] › e2e/docs-contract.spec.ts:97:5 › serves machine-readable protobuf-examples for zh (5ms)
+  ✓  148 [chromium] › e2e/docs-contract.spec.ts:97:5 › serves machine-readable protovalidate-examples for zh (4ms)
+  ✓  149 [chromium] › e2e/docs-contract.spec.ts:97:5 › serves machine-readable cel-examples for zh (5ms)
+  ✓  150 [chromium] › e2e/docs-contract.spec.ts:97:5 › serves machine-readable production-examples for zh (4ms)
+  ✓  151 [chromium] › e2e/docs-contract.spec.ts:97:5 › serves machine-readable aip-example-catalog for zh-TW (5ms)
+  ✓  152 [chromium] › e2e/docs-contract.spec.ts:97:5 › serves machine-readable protobuf-examples for zh-TW (5ms)
+  ✓  153 [chromium] › e2e/docs-contract.spec.ts:97:5 › serves machine-readable protovalidate-examples for zh-TW (4ms)
+  ✓  154 [chromium] › e2e/docs-contract.spec.ts:97:5 › serves machine-readable cel-examples for zh-TW (5ms)
+  ✓  155 [chromium] › e2e/docs-contract.spec.ts:97:5 › serves machine-readable production-examples for zh-TW (6ms)
+  ✓  156 [chromium] › e2e/docs-contract.spec.ts:97:5 › serves machine-readable aip-example-catalog for pl (5ms)
+  ✓  157 [chromium] › e2e/docs-contract.spec.ts:97:5 › serves machine-readable protobuf-examples for pl (5ms)
+  ✓  158 [chromium] › e2e/docs-contract.spec.ts:97:5 › serves machine-readable protovalidate-examples for pl (6ms)
+  ✓  159 [chromium] › e2e/docs-contract.spec.ts:97:5 › serves machine-readable cel-examples for pl (4ms)
+  ✓  160 [chromium] › e2e/docs-contract.spec.ts:97:5 › serves machine-readable production-examples for pl (4ms)
+  ✓  136 [chromium] › e2e/docs-contract.spec.ts:28:5 › opens legacy demo /example-untrusted-input (890ms)
+  ✓  161 [chromium] › e2e/docs-contract.spec.ts:114:3 › search restores the page scroll state (default) (208ms)
+  ✓  162 [chromium] › e2e/docs-contract.spec.ts:114:3 › search restores the page scroll state (clip) (247ms)
+  ✓  163 [chromium] › e2e/docs-optional-features.spec.ts:4:1 › links to each page's actual GitHub source and shows its update date (315ms)
+  ✓  164 [chromium] › e2e/docs-optional-features.spec.ts:24:1 › exports the current page as PDF and a readable EPUB without a server (372ms)
+  ✓  166 [chromium] › e2e/docs-optional-features.spec.ts:105:1 › hides narration when the browser has no voice for the page language (110ms)
+  ✓  167 [chromium] › e2e/docs-optional-features.spec.ts:124:3 › browser-language routing › routes first visits but remembers an explicit language choice @cross-browser (325ms)
+  ✓  168 [chromium] › e2e/docs-optional-features.spec.ts:137:3 › browser-language routing › does not reroute a deep link with no translated API reference (90ms)
+  ✓  165 [chromium] › e2e/docs-optional-features.spec.ts:48:1 › reads prose with browser voices and supports pause, skip, and stop @cross-browser (1.3s)
+  ✓  170 [chromium] › e2e/docs-screenshots.spec.ts:276:3 › keeps docs navigation usable: desktop-light (223ms)
+  ✓  169 [chromium] › e2e/docs-optional-features.spec.ts:145:1 › generates all 18 API sample languages and updates samples from the request form @cross-browser (862ms)
+  ✓  171 [chromium] › e2e/docs-screenshots.spec.ts:276:3 › keeps docs navigation usable: desktop-dark (239ms)
+  ✓  173 [chromium] › e2e/docs-screenshots.spec.ts:276:3 › keeps docs navigation usable: mobile-light (233ms)
+  ✓  172 [chromium] › e2e/docs-screenshots.spec.ts:701:3 › hydrates and renders docs screenshot: protobuf-v2-migration (449ms)
+  ✓  174 [chromium] › e2e/docs-screenshots.spec.ts:276:3 › keeps docs navigation usable: polish-light (238ms)
+  ✓  175 [chromium] › e2e/docs-screenshots.spec.ts:701:3 › hydrates and renders docs screenshot: bare-bones-form (1.1s)
+  ✓  177 [chromium] › e2e/docs-screenshots.spec.ts:701:3 › hydrates and renders docs screenshot: two-step-form (614ms)
+  ✓  176 [chromium] › e2e/docs-screenshots.spec.ts:293:1 › organizes the docs sidebar by reader task (1.7s)
+  ✓  179 [chromium] › e2e/docs-screenshots.spec.ts:344:1 › syntax-highlights protobuf field declarations (129ms)
+  ✓  180 [chromium] › e2e/docs-screenshots.spec.ts:356:1 › syntax-highlights standalone CEL expressions (128ms)
+  ✓  178 [chromium] › e2e/docs-screenshots.spec.ts:701:3 › hydrates and renders docs screenshot: complex-example (637ms)
+  ✓  182 [chromium] › e2e/docs-screenshots.spec.ts:701:3 › hydrates and renders docs screenshot: kitchen-sink (625ms)
+  ✓  181 [chromium] › e2e/docs-screenshots.spec.ts:369:1 › opens diagrams in an accessible full-viewport viewer (991ms)
+  ✓  184 [chromium] › e2e/docs-screenshots.spec.ts:404:1 › complex example exposes its loading state (490ms)
+  ✓  183 [chromium] › e2e/docs-screenshots.spec.ts:701:3 › hydrates and renders docs screenshot: deeply-nested (767ms)
+  ✓  185 [chromium] › e2e/docs-screenshots.spec.ts:438:1 › keeps the complex stepper usable at a narrow viewport (511ms)
+  ✓  187 [chromium] › e2e/docs-screenshots.spec.ts:456:1 › adapts five-step progress without wrapping (518ms)
+  ✓  186 [chromium] › e2e/docs-screenshots.spec.ts:701:3 › hydrates and renders docs screenshot: cel-re2-form (1.0s)
+  ✓  188 [chromium] › e2e/docs-screenshots.spec.ts:500:1 › positions vertical progress above or beside its panel (917ms)
+  ✓  190 [chromium] › e2e/docs-screenshots.spec.ts:524:3 › keeps /docs/bare-bones-form inside a mobile viewport (95ms)
+  ✓  191 [chromium] › e2e/docs-screenshots.spec.ts:524:3 › keeps /docs/two-step-form inside a mobile viewport (105ms)
+  ✓  192 [chromium] › e2e/docs-screenshots.spec.ts:524:3 › keeps /docs/cel-re2-form inside a mobile viewport (98ms)
+  ✓  189 [chromium] › e2e/docs-screenshots.spec.ts:701:3 › hydrates and renders docs screenshot: oneof-form (1.1s)
+  ✓  193 [chromium] › e2e/docs-screenshots.spec.ts:524:3 › keeps /docs/oneof-form inside a mobile viewport (103ms)
+  ✓  195 [chromium] › e2e/docs-screenshots.spec.ts:524:3 › keeps /docs/server-error-form inside a mobile viewport (190ms)
+  ✓  196 [chromium] › e2e/docs-screenshots.spec.ts:524:3 › keeps /docs/aip-resource-form inside a mobile viewport (108ms)
+  ✓  197 [chromium] › e2e/docs-screenshots.spec.ts:535:1 › keeps the Standard Schema guide inside a mobile viewport (239ms)
+  ✓  198 [chromium] › e2e/docs-screenshots.spec.ts:552:1 › uses a wider content column for the readiness dashboard (414ms)
+  ✓  199 [chromium] › e2e/docs-screenshots.spec.ts:561:1 › keeps the bookstore demo readable inside the docs column (289ms)
+  ✓  194 [chromium] › e2e/docs-screenshots.spec.ts:701:3 › hydrates and renders docs screenshot: server-error-form (2.1s)
+  ✓  200 [chromium] › e2e/docs-screenshots.spec.ts:581:1 › syntax-highlights every bookstore source language (1.2s)
+  ✓  202 [chromium] › e2e/docs-screenshots.spec.ts:614:3 › gives each bookstore workspace more room than the prose column (216ms)
+  ✓  203 [chromium] › e2e/docs-screenshots.spec.ts:614:3 › gives each direct island more room than the prose column (133ms)
+  ✓  204 [chromium] › e2e/docs-screenshots.spec.ts:631:1 › shows line numbers in component code previews (212ms)
+  ✓  205 [chromium] › e2e/docs-screenshots.spec.ts:658:1 › shows the Profile v3 evidence roadmap (110ms)
+  ✓  206 [chromium] › e2e/docs-screenshots.spec.ts:667:1 › keeps readiness areas readable with enlarged text (752ms)
+  ✓  201 [chromium] › e2e/docs-screenshots.spec.ts:701:3 › hydrates and renders docs screenshot: aip-resource-form (1.9s)
+  ✓  207 [chromium] › e2e/docs-screenshots.spec.ts:701:3 › hydrates and renders docs screenshot: docs-home (277ms)
+  ✓  208 [chromium] › e2e/docs-screenshots.spec.ts:701:3 › hydrates and renders docs screenshot: react-hook-form (238ms)
+  ✓  209 [chromium] › e2e/docs-screenshots.spec.ts:701:3 › hydrates and renders docs screenshot: getting-started (258ms)
+  ✓  210 [chromium] › e2e/docs-screenshots.spec.ts:701:3 › hydrates and renders docs screenshot: tanstack-form (829ms)
+  ✓  211 [chromium] › e2e/docs-screenshots.spec.ts:701:3 › hydrates and renders docs screenshot: formik (581ms)
+  ✓  212 [chromium] › e2e/docs-screenshots.spec.ts:701:3 › hydrates and renders docs screenshot: final-form (544ms)
+  ✓  213 [chromium] › e2e/docs-screenshots.spec.ts:701:3 › hydrates and renders docs screenshot: api-recipes (296ms)
+  ✓  214 [chromium] › e2e/docs-screenshots.spec.ts:701:3 › hydrates and renders docs screenshot: standard-schema (327ms)
+  ✓  215 [chromium] › e2e/docs-screenshots.spec.ts:701:3 › hydrates and renders docs screenshot: protovalidate (183ms)
+  ✓  216 [chromium] › e2e/docs-screenshots.spec.ts:701:3 › hydrates and renders docs screenshot: testing-forms (193ms)
+  ✓  217 [chromium] › e2e/docs-screenshots.spec.ts:701:3 › hydrates and renders docs screenshot: conformance (271ms)
+  ✓  218 [chromium] › e2e/docs-screenshots.spec.ts:701:3 › hydrates and renders docs screenshot: production-readiness (895ms)
+  ✓  219 [chromium] › e2e/docs-screenshots.spec.ts:701:3 › hydrates and renders docs screenshot: auto-form (346ms)
+  ✓  220 [chromium] › e2e/docs-screenshots.spec.ts:701:3 › hydrates and renders docs screenshot: steppers (277ms)
+  ✓  221 [chromium] › e2e/docs-screenshots.spec.ts:701:3 › hydrates and renders docs screenshot: cel-expressions (292ms)
+  ✓  222 [chromium] › e2e/docs-screenshots.spec.ts:701:3 › hydrates and renders docs screenshot: server-errors (398ms)
+  ✓  223 [chromium] › e2e/docs-screenshots.spec.ts:701:3 › hydrates and renders docs screenshot: registry-install (207ms)
+  ✓  224 [chromium] › e2e/docs-screenshots.spec.ts:701:3 › hydrates and renders docs screenshot: aip-protobuf (447ms)
+  ✓  225 [chromium] › e2e/docs-screenshots.spec.ts:701:3 › hydrates and renders docs screenshot: yup-migration (445ms)
+  ✓  226 [chromium] › e2e/docs-screenshots.spec.ts:701:3 › hydrates and renders docs screenshot: port-audit (183ms)
+
+
+  1) [chromium] › e2e/demo-catalog.spec.ts:192:1 › renders the native OpenAPI reference and real RPC method shape 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: locator('[data-playground]')
+    Timeout: 10000ms
+    - Expected substring  -  1
+    + Received string     + 15
+
+    - 200 OK
+    + Try itServerBase URL/apihttp://127.0.0.1:55012Custom base URLOverrides the selected server when set.Bodyapplication/jsonRequest body{
+    +   "parent": "publishers/demo-library",
+    +   "book": {
+    +     "displayName": "The Protoform Guide",
+    +     "isbn": "9783161484100",
+    +     "inputToken": "string",
+    +     "note": "string"
+    +   },
+    +   "bookId": "protoform-guide",
+    +   "requestId": "d385ab22-0f51-4b97-9ecd-b8ff3fd4fcb6",
+    +   "validateOnly": false
+    + }Send409 Conflict · 11 mscontent-length113content-typeapplication/json{
+    +   "code": "already_exists",
+    +   "message": "Book publishers/demo-library/books/protoform-guide-chromium already exists."
+    + }
+
+    Call log:
+      - Expect "toContainText" locator('[data-playground]') with timeout 10000ms
+      - waiting for locator('[data-playground]')
+        - locator resolved to <details open="" data-playground="" class="not-prose rounded-blume border border-border bg-background">…</details>
+        - unexpected value "Try itServerBase URL/apihttp://127.0.0.1:55012Custom base URLOverrides the selected server when set.Bodyapplication/jsonRequest body{
+      "parent": "publishers/demo-library",
+      "book": {
+        "displayName": "The Protoform Guide",
+        "isbn": "9783161484100",
+        "inputToken": "string",
+        "note": "string"
+      },
+      "bookId": "protoform-guide",
+      "requestId": "d385ab22-0f51-4b97-9ecd-b8ff3fd4fcb6",
+      "validateOnly": false
+    }SendSending…"
+        23 × locator resolved to <details open="" data-playground="" class="not-prose rounded-blume border border-border bg-background">…</details>
+           - unexpected value "Try itServerBase URL/apihttp://127.0.0.1:55012Custom base URLOverrides the selected server when set.Bodyapplication/jsonRequest body{
+      "parent": "publishers/demo-library",
+      "book": {
+        "displayName": "The Protoform Guide",
+        "isbn": "9783161484100",
+        "inputToken": "string",
+        "note": "string"
+      },
+      "bookId": "protoform-guide",
+      "requestId": "d385ab22-0f51-4b97-9ecd-b8ff3fd4fcb6",
+      "validateOnly": false
+    }Send409 Conflict · 11 mscontent-length113content-typeapplication/json{
+      "code": "already_exists",
+      "message": "Book publishers/demo-library/books/protoform-guide-chromium already exists."
+    }"
+
+
+      207 |   );
+      208 |   await page.getByRole("button", { name: "Send" }).click();
+    > 209 |   await expect(playground).toContainText("200 OK");
+          |                            ^
+      210 |
+      211 |   await page.goto("/docs/example-bufbuild-descriptors");
+      212 |   await expect(page).toHaveURL(bufbuildHubUrl);
+        at <workspace>/e2e/demo-catalog.spec.ts:209:28
+
+    Error Context: test-results/demo-catalog-renders-the-n-00b49-e-and-real-RPC-method-shape-chromium/error-context.md
+
+  1 failed
+    [chromium] › e2e/demo-catalog.spec.ts:192:1 › renders the native OpenAPI reference and real RPC method shape 
+  225 passed (2.3m)
+
+===== all-rules-isolated-rpc.log =====
+
+Running 1 test using 1 worker
+
+(node:45259) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [chromium] › .context/biome-upgrade.rpc.spec.ts:3:1 › renders the native OpenAPI reference and real RPC method shape (2.1s)
+
+  1 passed (2.8s)
+
+===== all-rules-focused-pixels.log =====
+
+Running 2 tests using 1 worker
+
+(node:39735) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 .context/biome-upgrade.visual.spec.ts:2:1 › submission failure and successful retry preserve the reviewed appearance (597ms)
+  ✓  2 .context/biome-upgrade.visual.spec.ts:22:1 › equal tabs preserve their reviewed appearance after changing columns and selection (943ms)
+
+  2 passed (2.1s)
+
+===== all-rules-tabs-dogfood.log =====
+PASS: equal grid sizing, dynamic column changes, native style override, keyboard tabs, desktop/mobile/RTL, no overflow or browser errors.
+
+===== all-rules-tanstack-dogfood.log =====
+PASS: blank/invalid validation; keyboard submit; empty-error alert; retry; mobile submit; reload reset; no overflow; no browser errors.
+

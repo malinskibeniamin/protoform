@@ -1,0 +1,30 @@
+import { expect, test } from '@playwright/test';
+test('submission failure and successful retry preserve the reviewed appearance', async ({page})=>{
+ await page.goto('/docs/blume-examples/registry/base-nova/protoform/demo/catalog/tanstack-form');
+ const email=page.getByRole('textbox',{name:'Email'});
+ await email.fill('failure@example.com');
+ await email.blur();
+ await page.evaluate(()=>{const original=JSON.stringify;Object.defineProperty(JSON,'stringify',{configurable:true,writable:true,value:function(value,...args){if(args[1]===2&&typeof args[0]==='function'&&value!==null&&typeof value==='object'&&Reflect.get(value,'email')==='failure@example.com'){JSON.stringify=original;throw new Error();}return Reflect.apply(original,JSON,[value,...args]);}});});
+ await page.getByRole('button',{name:'Validate with TanStack Form'}).click();
+ await expect(page.getByRole('alert')).toContainText('Submission failed. Try again.');
+ await expect(page).toHaveScreenshot('tanstack-error-after.png');
+ await page.getByRole('button',{name:'Validate with TanStack Form'}).click();
+ await expect(page.getByRole('status')).toContainText('failure@example.com');
+ await expect(page).toHaveScreenshot('tanstack-retry-after.png');
+ await page.setViewportSize({width:390,height:844});
+ await page.reload();
+ await expect(email).toHaveValue('');
+ await email.fill('mobile@example.com');
+ await page.getByRole('button',{name:'Validate with TanStack Form'}).click();
+ await expect(page.getByRole('status')).toContainText('mobile@example.com');
+ await expect(page).toHaveScreenshot('tanstack-mobile-after.png');
+});
+test('equal tabs preserve their reviewed appearance after changing columns and selection', async ({page})=>{
+ await page.goto('http://127.0.0.1:55190/tabs');
+ await page.getByRole('button',{name:'Three columns'}).click();
+ await page.getByRole('tab',{name:'Second',exact:true}).click();
+ const list=page.getByRole('tablist',{name:'Sections'});
+ await expect.poll(()=>list.evaluate(element=>{const highlight=element.querySelector('[data-slot=tabs-list-highlight]');const selected=element.querySelector('[aria-selected=true]');return highlight && selected ? Math.max(Math.abs(highlight.getBoundingClientRect().width-selected.getBoundingClientRect().width),Math.abs(highlight.getBoundingClientRect().left-selected.getBoundingClientRect().left)) : Infinity;})).toBeLessThan(1);
+ await expect.poll(()=>page.getByRole('tabpanel',{name:'Second'}).evaluate(element=>getComputedStyle(element).filter)).toBe('blur(0px)');
+ await expect(page).toHaveScreenshot('tabs-after.png');
+});
