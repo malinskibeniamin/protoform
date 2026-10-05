@@ -37,6 +37,13 @@ describe("static docs and registry hosting", () => {
     expect(deploymentGuide).toContain("`dist`");
   });
 
+  test("fetches git history for page update dates in the docs CI job", () => {
+    const workflow = readFileSync(new URL(".github/workflows/ci.yml", repositoryDirectory), "utf8");
+    const [, docsJob] = workflow.split("\n  docs:\n");
+
+    expect(docsJob).toMatch(/- uses: actions\/checkout@[^\n]+\n\s+with:\n\s+fetch-depth: 0/u);
+  });
+
   test("pins the Bun toolchain consistently", () => {
     const manifest = JSON.parse(readFileSync(new URL("package.json", repositoryDirectory), "utf8")) as {
       devDependencies?: Record<string, string>;

@@ -31,9 +31,17 @@ Read the relevant guide and example before generating code; cite its canonical d
     source:
       "{examples/basic/basic-form.tsx,examples/complex/complex-form.tsx,examples/kitchen-sink/kitchen-sink-form.tsx,examples/learning/cel-re2-form.tsx,examples/learning/oneof-form.tsx,examples/learning/two-step-form.tsx,examples/nested/deeply-nested-form.tsx,registry/base-nova/protoform/demo/catalog/!(*.test).tsx}",
   },
+  export: true,
+
+  github: {
+    branch: "main",
+    owner: "malinskibeniamin",
+    repo: "protoform",
+  },
   i18n: {
     defaultLocale: "en",
     fallbackLocale: null,
+    routeByBrowserLanguage: true,
     locales: [
       { code: "en", label: "English" },
       {
@@ -75,6 +83,8 @@ Read the relevant guide and example before generating code; cite its canonical d
       name: "protoform:bundle-blume-yaml",
     },
   ],
+  lastModified: "git",
+  narration: true,
   navigation: {
     sidebar: {
       display: "group",
@@ -86,7 +96,26 @@ Read the relevant guide and example before generating code; cite its canonical d
   redirects: [...demoRedirects],
   reference: [
     openapi({
-      codeSamples: ["curl", "js"],
+      codeSamples: [
+        "curl",
+        "typescript",
+        "js",
+        "node",
+        "python",
+        "go",
+        "rust",
+        "java",
+        "php",
+        "ruby",
+        "powershell",
+        "swift",
+        "csharp",
+        "dotnet",
+        "c",
+        "cpp",
+        "kotlin",
+        "dart",
+      ],
       route: "/reference",
       spec: "./openapi.yaml",
     }),
