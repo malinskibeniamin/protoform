@@ -102,7 +102,7 @@ function JsonEditorPanel({
           </AlertDescription>
         </Alert>
       ) : null}
-      {editorError ? (
+      {editorError !== undefined && editorError !== "" ? (
         <Alert variant="destructive">
           <AlertTitle>Invalid JSON</AlertTitle>
           <AlertDescription>{editorError}</AlertDescription>

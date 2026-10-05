@@ -13,7 +13,7 @@ type SliderProps = Omit<React.ComponentProps<typeof SliderPrimitive.Root>, "valu
   };
 
 function getThumbLabel(label: string | undefined, count: number, index: number): string | undefined {
-  if (!label) {
+  if (!(label !== undefined && label !== "")) {
     return undefined;
   }
   return count === 1 ? label : `${label} ${index + 1}`;

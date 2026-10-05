@@ -137,7 +137,7 @@ function DialogContent(contentProps: DialogContentProps) {
         {...props}
       >
         {children}
-        {showCloseButton ? (
+        {showCloseButton === true ? (
           <DialogPrimitive.Close
             render={
               <Button aria-label="Close" className="absolute top-2 right-2" size="icon-sm" variant="ghost">
@@ -178,7 +178,7 @@ function DialogHeader({ className, align, spacing, ...props }: DialogHeaderProps
   );
 }
 
-const dialogFooterVariants = cva("flex shrink-0 p-4 [[data-slot=dialog-body]+&]:border-t", {
+const dialogFooterVariants = cva("flex shrink-0 p-4 [&:is([data-slot=dialog-body]+*)]:border-t", {
   defaultVariants: {
     direction: "responsive",
     gap: "md",

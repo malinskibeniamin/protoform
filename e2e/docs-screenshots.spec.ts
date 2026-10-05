@@ -707,7 +707,7 @@ for (const pageInfo of pages) {
     });
     await page.goto(pageInfo.path);
     await expect(page.locator("h1", { hasText: pageInfo.heading }).first()).toBeVisible();
-    if (pageInfo.diagram) {
+    if (pageInfo.diagram === true) {
       await expect(page.locator("blume-mermaid svg").first()).toBeVisible();
       await expect(page.locator("pre", { hasText: "flowchart TD" })).toHaveCount(0);
     }

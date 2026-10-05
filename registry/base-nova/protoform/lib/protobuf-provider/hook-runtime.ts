@@ -85,7 +85,7 @@ export interface ProtoFormOptions extends ValidatorOptions, ProtoConversionOptio
 }
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
-  return Boolean(value && typeof value === "object" && !Array.isArray(value));
+  return value !== null && typeof value === "object" && !Array.isArray(value);
 }
 
 function toDateTimeLocalValue(timestamp: MessageShape<typeof TimestampSchema> | undefined): string | undefined {
@@ -139,6 +139,7 @@ function isJsonValue(value: unknown): value is JsonValue {
 }
 
 function fieldToFormValue(field: DescField, value: unknown): unknown {
+  const hasValue = Boolean(value);
   switch (field.fieldKind) {
     case "scalar": {
       if (field.scalar === ScalarType.BYTES) {
@@ -167,7 +168,7 @@ function fieldToFormValue(field: DescField, value: unknown): unknown {
         case TIMESTAMP_TYPE:
           return toDateTimeLocalValue(value as MessageShape<typeof TimestampSchema> | undefined);
         case DURATION_TYPE:
-          return value
+          return hasValue
             ? toJsonString(DurationSchema, value as MessageShape<typeof DurationSchema>).replace(/"/gu, "")
             : undefined;
         case FIELD_MASK_TYPE:
@@ -190,7 +191,7 @@ function fieldToFormValue(field: DescField, value: unknown): unknown {
           }
           return Array.isArray(value) && isJsonValue(value) ? structuredClone(value) : undefined;
         case ANY_TYPE:
-          return value && isPlainObject(value)
+          return isPlainObject(value)
             ? {
                 typeUrl:
                   typeof (value as { typeUrl?: unknown }).typeUrl === "string"
@@ -203,7 +204,7 @@ function fieldToFormValue(field: DescField, value: unknown): unknown {
               }
             : undefined;
         default:
-          return value ? messageToFormValues(field.message, value as AnyObject) : undefined;
+          return hasValue ? messageToFormValues(field.message, value as AnyObject) : undefined;
       }
     }
     case "list":
@@ -226,7 +227,8 @@ function fieldToFormValue(field: DescField, value: unknown): unknown {
 }
 
 function listItemToFormValue(field: ListField, value: unknown): unknown {
-  if (field.listKind === "message" && value) {
+  const hasValue = Boolean(value);
+  if (field.listKind === "message" && hasValue) {
     if (isWrapperDesc(field.message)) {
       return value;
     }
@@ -245,7 +247,8 @@ function listItemToFormValue(field: ListField, value: unknown): unknown {
 }
 
 function mapValueToFormValue(field: MapField, value: unknown): unknown {
-  if (field.mapKind === "message" && value) {
+  const hasValue = Boolean(value);
+  if (field.mapKind === "message" && hasValue) {
     if (isWrapperDesc(field.message)) {
       return value;
     }
@@ -279,7 +282,7 @@ function messageToFormValues(desc: DescMessage, value: AnyObject): Record<string
   for (const member of desc.members) {
     if (member.kind === "oneof") {
       const oneofValue = value[member.localName] as { case?: string; value?: unknown } | undefined;
-      if (!oneofValue?.case) {
+      if (!(oneofValue?.case !== undefined && oneofValue?.case !== "")) {
         result[member.localName] = { case: undefined, value: undefined };
         continue;
       }
@@ -415,9 +418,11 @@ function normalizeMessageFieldValue(
 
   switch (field.message.typeName) {
     case TIMESTAMP_TYPE:
-      return typeof value === "string" && value ? timestampFromDate(new Date(value)) : undefined;
+      return typeof value === "string" && value !== "" ? timestampFromDate(new Date(value)) : undefined;
     case DURATION_TYPE:
-      return typeof value === "string" && value ? fromJsonString(DurationSchema, JSON.stringify(value)) : undefined;
+      return typeof value === "string" && value !== ""
+        ? fromJsonString(DurationSchema, JSON.stringify(value))
+        : undefined;
     case FIELD_MASK_TYPE:
       return Array.isArray(value) && value.length > 0
         ? {
@@ -432,7 +437,12 @@ function normalizeMessageFieldValue(
       return value === undefined ? undefined : fromJson(ListValueSchema, value as JsonValue);
     case ANY_TYPE: {
       const anyValue = isPlainObject(value) ? (value as ProtoAnyFormValue) : undefined;
-      if (!(anyValue?.typeUrl || anyValue?.valueBase64)) {
+      if (
+        !(
+          (anyValue?.typeUrl !== undefined && anyValue?.typeUrl !== "") ||
+          (anyValue?.valueBase64 !== undefined && anyValue?.valueBase64 !== "")
+        )
+      ) {
         return;
       }
       return {
@@ -568,7 +578,7 @@ function messageToProtoInit(
   for (const member of desc.members) {
     if (member.kind === "oneof") {
       const oneofValue = value[member.localName] as { case?: string; value?: unknown } | undefined;
-      if (!oneofValue?.case) {
+      if (!(oneofValue?.case !== undefined && oneofValue?.case !== "")) {
         continue;
       }
 
@@ -699,7 +709,8 @@ function preserveFieldUnknownFields(field: DescField, target: unknown, source: u
 }
 
 function preserveMessageUnknownFields(desc: DescMessage, target: AnyObject, source: AnyObject): void {
-  if (source["$unknown"]) {
+  const hasUnknownFields = Boolean(source["$unknown"]);
+  if (hasUnknownFields) {
     target["$unknown"] = structuredClone(source["$unknown"]);
   }
 
@@ -812,7 +823,7 @@ function normalizeIssuePath(
 
   for (let index = 0; index < issue.path.length; index += 1) {
     const segment: StandardSchemaV1.PathSegment | PropertyKey | undefined = issue.path[index];
-    const key = typeof segment === "object" && segment && "key" in segment ? segment.key : segment;
+    const key = segment !== null && typeof segment === "object" && "key" in segment ? segment.key : segment;
 
     if (typeof key === "number") {
       normalizedPath.push(key);
@@ -1028,7 +1039,7 @@ function getFormConversionIssues(desc: DescMessage, values: Record<string, unkno
     } else if (member.fieldKind === "map") {
       message = getMapConversionIssue(values[member.localName]);
     }
-    return message ? [{ message, path: [member.localName] }] : [];
+    return message !== undefined && message !== "" ? [{ message, path: [member.localName] }] : [];
   });
 }
 
@@ -1083,7 +1094,7 @@ function filterValidationIssues(
 
   const formPaths = validationMask.paths.flatMap((path) => {
     const formPath = protoPathToFormPath(desc, path);
-    return formPath ? [formPath] : [];
+    return formPath !== null && formPath !== "" ? [formPath] : [];
   });
 
   return issues.filter((issue) => {

@@ -73,7 +73,7 @@ export function AutoFormEngineProvider({ children, engine }: { children: React.R
 
 export function useAutoFormEngine(): AutoFormEngine {
   const engine = React.useContext(AutoFormEngineContext);
-  if (!engine) {
+  if (!(engine !== null && Boolean(engine))) {
     throw new Error("AutoForm engine controls must be used inside an AutoForm engine provider.");
   }
   return engine;
@@ -86,7 +86,7 @@ export function errorMessage(value: unknown): string | undefined {
   if (value instanceof Error) {
     return value.message;
   }
-  if (value && typeof value === "object") {
+  if (value !== null && typeof value === "object") {
     const message = Reflect.get(value, "message");
     if (typeof message === "string") {
       return message;

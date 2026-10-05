@@ -129,7 +129,7 @@ function errorMessage(error: unknown): string | undefined {
   if (typeof error === 'string') {
     return error;
   }
-  if (error && typeof error === 'object') {
+  if (error !== null && typeof error === 'object') {
     const message = Reflect.get(error, 'message');
     return typeof message === 'string' ? message : undefined;
   }
@@ -138,6 +138,7 @@ function errorMessage(error: unknown): string | undefined {
 
 export function TanstackFormDemo() {
   const [submittedValue, setSubmittedValue] = useState<string>();
+  const [submissionError, setSubmissionError] = useState<string>();
   const form = useProtoForm(EmailContractSchema, {
     defaultValues: { email: '' },
     onSubmit: ({ value }) => {
@@ -153,7 +154,12 @@ export function TanstackFormDemo() {
         onSubmit={(event) => {
           event.preventDefault();
           event.stopPropagation();
-          form.handleSubmit();
+          setSubmittedValue(undefined);
+          setSubmissionError(undefined);
+          form.handleSubmit().catch((error: unknown) => {
+            const message = errorMessage(error);
+            setSubmissionError(message !== undefined && message !== '' ? message : 'Submission failed. Try again.');
+          });
         }}
       >
         <form.Field name="email">
@@ -180,6 +186,12 @@ export function TanstackFormDemo() {
         </form.Field>
         <Button type="submit">Validate with TanStack Form</Button>
       </form>
+      {submissionError ? (
+        <Alert role="alert" variant="destructive">
+          <AlertTitle>Submission failed</AlertTitle>
+          <AlertDescription>{submissionError}</AlertDescription>
+        </Alert>
+      ) : null}
       {submittedValue ? (
         <Alert role="status" variant="success">
           <AlertTitle>Submitted protobuf value</AlertTitle>

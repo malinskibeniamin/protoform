@@ -124,7 +124,7 @@ function attributePath(expr: CelExpr): string | undefined {
     case "selectExpr": {
       const { operand } = expr.exprKind.value;
       const parent = operand ? attributePath(operand) : undefined;
-      return parent ? `${parent}.${expr.exprKind.value.field}` : undefined;
+      return parent !== undefined && parent !== "" ? `${parent}.${expr.exprKind.value.field}` : undefined;
     }
     case "callExpr": {
       const call = expr.exprKind.value;
@@ -133,7 +133,9 @@ function attributePath(expr: CelExpr): string | undefined {
       }
       const parent = call.args[0] ? attributePath(call.args[0]) : undefined;
       const segment = call.args[1] ? constantPathSegment(call.args[1]) : undefined;
-      return parent && segment ? `${parent}${segment}` : undefined;
+      return parent !== undefined && parent !== "" && segment !== undefined && segment !== ""
+        ? `${parent}${segment}`
+        : undefined;
     }
     case "comprehensionExpr":
     case "constExpr":
@@ -164,7 +166,7 @@ function replaceUnknownAttributes(
   unknownBindings: Map<string, string>
 ): void {
   const path = attributePath(expr);
-  if (path && unknownAttributes.has(path)) {
+  if (path !== undefined && path !== "" && unknownAttributes.has(path)) {
     let name = [...unknownBindings].find(([, value]) => value === path)?.[0];
     if (!name) {
       name = `_protoform_unknown_${unknownBindings.size}`;

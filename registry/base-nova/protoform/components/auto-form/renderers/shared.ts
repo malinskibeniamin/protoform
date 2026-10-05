@@ -66,6 +66,8 @@ export function cloneFieldForCompactRow(field: ParsedField): ParsedField {
 
   const existingCustomData = (field.fieldConfig?.customData ?? {}) as Record<string, unknown>;
   const existingUi = (existingCustomData["ui"] ?? {}) as Record<string, unknown>;
+  const placeholder = field.fieldConfig?.inputProps?.["placeholder"] as string | undefined;
+  const fallbackPlaceholder = field.type === "select" || field.type === "boolean" ? undefined : label;
 
   return {
     ...field,
@@ -83,9 +85,7 @@ export function cloneFieldForCompactRow(field: ParsedField): ParsedField {
       description: "",
       inputProps: {
         ...(field.fieldConfig?.inputProps ?? {}),
-        placeholder:
-          (field.fieldConfig?.inputProps?.["placeholder"] as string | undefined) ||
-          (field.type === "select" || field.type === "boolean" ? undefined : label),
+        placeholder: placeholder !== undefined && placeholder !== "" ? placeholder : fallbackPlaceholder,
       },
       label: "",
     },

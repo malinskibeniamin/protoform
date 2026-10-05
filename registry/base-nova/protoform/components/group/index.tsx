@@ -37,7 +37,7 @@ const Group = ({
 
   const content = childrenArray.map((child, index) => {
     const getPosition = (): GroupPosition | undefined => {
-      if (!attached || childCount === 1) {
+      if (attached !== true || childCount === 1) {
         return;
       }
       if (index === 0) {
@@ -51,7 +51,7 @@ const Group = ({
 
     const position = getPosition();
     const element = child as React.ReactElement;
-    const key = element.key || `group-item-${index}`;
+    const key = element.key === null || element.key === "" ? `group-item-${index}` : element.key;
 
     return (
       <GroupItemContext attached={attached} key={key} position={position}>
@@ -61,7 +61,10 @@ const Group = ({
   });
 
   return (
-    <div className={cn("flex w-full items-stretch", !attached && "items-end gap-1.5", className)} data-testid={testId}>
+    <div
+      className={cn("flex w-full items-stretch", attached !== true && "items-end gap-1.5", className)}
+      data-testid={testId}
+    >
       {content}
     </div>
   );

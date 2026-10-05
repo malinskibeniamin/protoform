@@ -22,7 +22,7 @@ const PopoverContext = React.createContext<PopoverContextType | undefined>(undef
 
 const usePopover = (): PopoverContextType => {
   const context = React.useContext(PopoverContext);
-  if (!context) {
+  if (context === undefined) {
     throw new Error("usePopover must be used within a Popover");
   }
   return context;
@@ -182,7 +182,7 @@ function PopoverAnchor({ asChild, children, render }: PopoverAnchorProps) {
 
   const setRef = React.useCallback(
     (node: Element | null) => {
-      if (ctx) {
+      if (ctx !== undefined) {
         ctx.anchorRef.current = node;
         ctx.setHasAnchor(Boolean(node));
       }
@@ -191,7 +191,7 @@ function PopoverAnchor({ asChild, children, render }: PopoverAnchorProps) {
   );
 
   const renderedChild = render && children !== undefined ? React.cloneElement(render, undefined, children) : render;
-  const child = renderedChild ?? (asChild && React.isValidElement(children) ? children : undefined);
+  const child = renderedChild ?? (asChild === true && React.isValidElement(children) ? children : undefined);
 
   if (child) {
     return (

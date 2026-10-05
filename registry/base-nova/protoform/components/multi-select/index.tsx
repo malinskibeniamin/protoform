@@ -56,7 +56,7 @@ const MultiSelectContext = React.createContext<MultiSelectContextValue | undefin
 function useMultiSelect() {
   const context = React.useContext(MultiSelectContext);
 
-  if (!context) {
+  if (context === undefined) {
     throw new Error("useMultiSelect must be used within MultiSelectProvider");
   }
 
@@ -158,7 +158,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
       onSearch,
       onSelect: handleSelect,
       open,
-      value: value || [],
+      value: value ?? [],
     }),
     [value, open, onSearch, filter, disabled, maxCount, handleSelect, handleDeselect, itemCache]
   );
@@ -240,7 +240,8 @@ const MultiSelectValue = React.forwardRef<React.ComponentRef<"div">, MultiSelect
   ({ className, placeholder, maxDisplay, maxItemLength, options, testId, ...props }, forwardRef) => {
     const { value, itemCache, onDeselect } = useMultiSelect();
 
-    const renderRemain = maxDisplay && value.length > maxDisplay ? value.length - maxDisplay : 0;
+    const renderRemain =
+      maxDisplay !== undefined && maxDisplay !== 0 && value.length > maxDisplay ? value.length - maxDisplay : 0;
     const renderItems = renderRemain ? value.slice(0, maxDisplay) : value;
 
     if (value.length === 0) {
@@ -261,12 +262,19 @@ const MultiSelectValue = React.forwardRef<React.ComponentRef<"div">, MultiSelect
 
             // For React nodes, don't truncate - show full content
             const child =
-              maxItemLength && typeof content === "string" && content.length > maxItemLength
+              maxItemLength !== undefined &&
+              maxItemLength !== 0 &&
+              typeof content === "string" &&
+              content.length > maxItemLength
                 ? `${content.slice(0, maxItemLength)}...`
                 : content;
 
             // Determine if we should show a tooltip - only for truncated strings
-            const shouldShowTooltip = maxItemLength && typeof content === "string" && content.length > maxItemLength;
+            const shouldShowTooltip =
+              maxItemLength !== undefined &&
+              maxItemLength !== 0 &&
+              typeof content === "string" &&
+              content.length > maxItemLength;
 
             const el = (
               <TagsValue
@@ -278,7 +286,10 @@ const MultiSelectValue = React.forwardRef<React.ComponentRef<"div">, MultiSelect
 
                   onDeselect(itemValue, item);
                 }}
-                testId={item?.selectedTestId ?? (testId ? `${testId}-selected-${itemValue}` : undefined)}
+                testId={
+                  item?.selectedTestId ??
+                  (testId !== undefined && testId !== "" ? `${testId}-selected-${itemValue}` : undefined)
+                }
               >
                 {child}
               </TagsValue>
@@ -650,7 +661,12 @@ function SimpleMultiSelect({
       testId={testId}
       value={value}
     >
-      <MultiSelectTrigger className={className} id={id} testId={testId ? `${testId}-control` : undefined} width={width}>
+      <MultiSelectTrigger
+        className={className}
+        id={id}
+        testId={testId !== undefined && testId !== "" ? `${testId}-control` : undefined}
+        width={width}
+      >
         <MultiSelectValue
           maxDisplay={maxDisplay}
           options={normalizedOptions}
@@ -658,9 +674,15 @@ function SimpleMultiSelect({
           testId={testId}
         />
       </MultiSelectTrigger>
-      <MultiSelectContent container={container} testId={testId ? `${testId}-content` : undefined}>
-        {searchable ? (
-          <MultiSelectSearch placeholder="Search…" testId={testId ? `${testId}-search` : undefined} />
+      <MultiSelectContent
+        container={container}
+        testId={testId !== undefined && testId !== "" ? `${testId}-content` : undefined}
+      >
+        {searchable === true ? (
+          <MultiSelectSearch
+            placeholder="Search…"
+            testId={testId !== undefined && testId !== "" ? `${testId}-search` : undefined}
+          />
         ) : null}
         <MultiSelectList>{renderMultiSelectOptions(normalizedOptions)}</MultiSelectList>
         <MultiSelectEmpty>{emptyState}</MultiSelectEmpty>

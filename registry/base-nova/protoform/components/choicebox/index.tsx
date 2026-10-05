@@ -8,6 +8,8 @@ import { RadioGroup } from "@/components/ui/radio-group";
 import { renderWithDataState } from "@/registry/base-nova/protoform/lib/base-ui-compat";
 import { cn, type SharedProps } from "@/registry/base-nova/protoform/lib/utils";
 
+const DEFAULT_TRANSITION = { damping: 16, stiffness: 200, type: "spring" } satisfies Transition;
+
 export type ChoiceboxProps = ComponentProps<typeof RadioGroup> & SharedProps;
 
 export const Choicebox = ({ className, testId, ...props }: ChoiceboxProps) => (
@@ -77,7 +79,7 @@ export type ChoiceboxItemIndicatorProps = ComponentProps<typeof RadioGroupPrimit
 
 export const ChoiceboxItemIndicator = ({
   className,
-  transition = { damping: 16, stiffness: 200, type: "spring" },
+  transition = DEFAULT_TRANSITION,
   ...props
 }: ChoiceboxItemIndicatorProps) => (
   <RadioGroupPrimitive.Indicator

@@ -99,7 +99,7 @@ function augmentError(
     return error;
   }
   const uiConfig = getFieldUiConfig(field);
-  if (uiConfig.example) {
+  if (uiConfig.example !== undefined && uiConfig.example !== "") {
     return `${error}\nExample: ${uiConfig.example}`;
   }
   return error;
@@ -124,6 +124,8 @@ function FieldFeedback({
 }) {
   const helpText = isCompact ? undefined : getFieldDescriptionText(field);
   const docsUrl = isCompact ? undefined : getFieldDocsUrl(field);
+  const hasHelpText = Boolean(helpText);
+  const hasDocsUrl = Boolean(docsUrl);
   if (error) {
     // Keep the consumer FieldError's own ID intact for controls using its Field context.
     return (
@@ -132,13 +134,13 @@ function FieldFeedback({
       </div>
     );
   }
-  if ((helpText || docsUrl) && !isCompact) {
+  if ((hasHelpText || hasDocsUrl) && !isCompact) {
     return (
       <FieldDescription testId={getAutoFormFieldTestId(testIdPrefix, id, "description")}>
-        {helpText ? <span>{helpText}</span> : null}
-        {docsUrl ? (
+        {hasHelpText ? <span>{helpText}</span> : null}
+        {hasDocsUrl ? (
           <>
-            {helpText ? " " : null}
+            {hasHelpText ? " " : null}
             <a
               className="inline-flex items-center gap-1 text-primary underline-offset-2 hover:underline"
               data-testid={getAutoFormFieldTestId(testIdPrefix, id, "docs-link")}
@@ -276,7 +278,7 @@ function ObjectSectionHeading({
           </Text>
         ) : null}
       </div>
-      {helpText ? (
+      {helpText !== undefined && helpText !== "" ? (
         <Text className="text-muted-foreground" variant="small">
           {helpText}
         </Text>
@@ -307,7 +309,7 @@ function CollapsibleObjectSection({
   const [isOpen, setIsOpen] = React.useState(false);
 
   // Auto-expand when section has validation errors
-  if (hasError && !isOpen) {
+  if (hasError === true && isOpen !== true) {
     setIsOpen(true);
   }
 
@@ -319,7 +321,7 @@ function CollapsibleObjectSection({
             <div className={formSpacing.sectionHeader}>
               <ObjectSectionHeading field={field} headingLevel={headingLevel} label={label} />
             </div>
-            <ChevronDown className="size-4 shrink-0 text-muted-foreground transition-transform duration-200 [[data-state=open]_&]:rotate-180" />
+            <ChevronDown className="size-4 shrink-0 text-muted-foreground transition-transform duration-200 [&:is([data-state=open]_*)]:rotate-180" />
           </Button>
         </CollapsibleTrigger>
         <CollapsibleContent>

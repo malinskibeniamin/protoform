@@ -40,7 +40,7 @@ function createMethodFixture({
   verb,
 }: MethodFixture): DescMethod {
   const options = create(MethodOptionsSchema);
-  if (verb && path) {
+  if (verb && path !== undefined && path !== "") {
     setExtension(
       options,
       http,

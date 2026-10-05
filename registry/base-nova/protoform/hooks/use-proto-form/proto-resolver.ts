@@ -79,7 +79,7 @@ export function createProtoResolver<Desc extends DescMessage>(
     }
 
     const [rootMessage] = rootMessages;
-    if (rootMessage) {
+    if (rootMessage !== undefined && rootMessage !== "") {
       // Object.assign keeps the intersection type: react-hook-form's
       // FieldErrors "root" slot for index-signature form types cannot be
       // satisfied by an annotated object literal.

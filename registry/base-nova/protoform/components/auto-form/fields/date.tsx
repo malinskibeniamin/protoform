@@ -36,6 +36,8 @@ function DateFieldComponent({ error, field, id, inputProps, label }: AutoFormFie
   const value = normalizeDateValue(inputProps["value"]);
   const selectedDate = parseCalendarDate(value);
 
+  const { placeholder } = getFieldUiConfig(field);
+
   return (
     <Popover>
       <InputGroup testId={controlTestId}>
@@ -45,7 +47,7 @@ function DateFieldComponent({ error, field, id, inputProps, label }: AutoFormFie
           id={id}
           onBlur={inputProps["onBlur"]}
           onChange={(event) => inputProps["onValueChange"](event.target.value)}
-          placeholder={getFieldUiConfig(field).placeholder || "YYYY-MM-DD"}
+          placeholder={placeholder !== undefined && placeholder !== "" ? placeholder : "YYYY-MM-DD"}
           testId={`${controlTestId}-input`}
           value={value}
         />

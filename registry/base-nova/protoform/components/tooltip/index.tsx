@@ -21,7 +21,7 @@ const TooltipContext = React.createContext<TooltipContextType | undefined>(undef
 
 const useTooltip = (): TooltipContextType => {
   const context = React.useContext(TooltipContext);
-  if (!context) {
+  if (context === undefined) {
     throw new Error("useTooltip must be used within a Tooltip");
   }
   return context;
@@ -153,7 +153,7 @@ function TooltipContent(contentProps: TooltipContentProps) {
               >
                 {children}
 
-                {arrow ? (
+                {arrow === true ? (
                   <TooltipPrimitive.Arrow
                     className="z-50 size-2.5 rotate-45 rounded-xs bg-primary fill-primary data-[side=bottom]:top-0 data-[side=left]:right-0 data-[side=top]:bottom-0 data-[side=right]:left-0 data-[side=left]:translate-x-1/2 data-[side=right]:-translate-x-1/2 data-[side=bottom]:-translate-y-1/2 data-[side=top]:translate-y-1/2"
                     data-slot="tooltip-content-arrow"

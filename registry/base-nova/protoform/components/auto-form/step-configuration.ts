@@ -16,7 +16,7 @@ export function getStepConfigurationError(steps: AutoFormStep[], defaultStep?: s
     ids.add(step.id);
   }
 
-  if (defaultStep && !ids.has(defaultStep)) {
+  if (defaultStep !== undefined && defaultStep !== "" && !ids.has(defaultStep)) {
     return 'AutoForm default step "'.concat(defaultStep, '" does not exist.');
   }
 

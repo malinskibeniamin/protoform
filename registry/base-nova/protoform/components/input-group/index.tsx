@@ -26,7 +26,7 @@ function InputGroup({ className, testId, ...props }: React.ComponentProps<"div">
         "h-9 min-w-0 has-[>textarea]:h-auto",
 
         // Conditional alignment
-        hasBlockAlign ? "h-auto flex-col items-stretch" : "items-center",
+        hasBlockAlign === true ? "h-auto flex-col items-stretch" : "items-center",
 
         // Variants based on alignment.
         "has-[>[data-align=inline-start]]:[&>input]:pl-2",
@@ -35,10 +35,10 @@ function InputGroup({ className, testId, ...props }: React.ComponentProps<"div">
         "has-[>[data-align=block-end]]:[&>input]:pt-3",
 
         // Focus state.
-        "has-[[data-slot=input-group-control]:focus-visible]:border-ring has-[[data-slot=input-group-control]:focus-visible]:ring-3 has-[[data-slot=input-group-control]:focus-visible]:ring-ring/50",
+        "has-[:is([data-slot=input-group-control]):focus-visible]:border-ring has-[:is([data-slot=input-group-control]):focus-visible]:ring-3 has-[:is([data-slot=input-group-control]):focus-visible]:ring-ring/50",
 
         // Error state.
-        "has-[[data-slot][aria-invalid=true]]:border-destructive has-[[data-slot][aria-invalid=true]]:ring-destructive/20 dark:has-[[data-slot][aria-invalid=true]]:ring-destructive/40",
+        "has-[:is([data-slot][aria-invalid=true])]:border-destructive has-[:is([data-slot][aria-invalid=true])]:ring-destructive/20 dark:has-[:is([data-slot][aria-invalid=true])]:ring-destructive/40",
 
         className
       )}

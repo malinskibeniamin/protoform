@@ -259,6 +259,7 @@
         "useYield": "error"
       },
       "nursery": {
+        "noAstroConflictingSetDirectives": "error",
         "noAstroSetHtmlDirective": "error",
         // Bun is the repository toolchain.
         "noBunModules": "off",
@@ -298,13 +299,17 @@
         "noInlineStyles": "off",
         "noInvalidPropertyInitValue": "error",
         "noJsRestrictedProperties": "error",
+        "noJsonUnsafeValues": "error",
         "noJsxLeakedDollar": "error",
         "noJsxNamespace": "error",
         "noLoopFunc": "error",
+        "noMeaninglessVoidOperator": "error",
+        "noMisplacedListElements": "error",
         "noMisleadingReturnType": "error",
         "noMisusedPromises": "error",
         "noNegationInEqualityCheck": "error",
         "noNonScalableViewport": "error",
+        "noObsoleteTags": "error",
         "noPlaywrightElementHandle": "error",
         "noPlaywrightEval": "error",
         "noPlaywrightForceOption": "error",
@@ -318,11 +323,17 @@
         "noReactNativeDeepImports": "off",
         "noReactNativeLiteralColors": "off",
         "noReactNativeRawText": "off",
+        "noReactObjectTypeAsDefaultProp": "error",
         "noReactStringRefs": "error",
         "noRestrictedDependencies": "error",
+        "noReturnInFinally": "error",
+        "noSelfImport": "error",
+        "noSvelteAtDebugTags": "error",
+        "noSvelteExportLet": "error",
         "noSvelteLegacyConst": "off",
         "noSvelteUnnecessaryStateWrap": "off",
         "noTailwindArbitraryValue": "off",
+        "noTailwindRawColors": "error",
         "noTopLevelLiterals": "error",
         "noUndeclaredClasses": "off",
         "noUnnecessaryTemplateExpression": "error",
@@ -335,6 +346,7 @@
         "noUselessTypeConversion": "error",
         "noVueImportCompilerMacros": "off",
         "noVueRefAsOperand": "off",
+        "noVueUndeclaredDirectives": "error",
         "noVueVOnNumberValues": "off",
         "useArraySome": "error",
         "useAstroClientOnlyDirectiveValue": "off",
@@ -342,6 +354,14 @@
         // Protoform intentionally supports fullscreen and user-select behavior beyond the
         // rule's configured Baseline target.
         "useBaseline": "off",
+        "useConsistentFunctionStyle": {
+          "level": "error",
+          "options": {
+            "style": "declaration",
+            "allowArrowFunctions": true
+          }
+        },
+        "useConsistentObjectKeys": "error",
         "useConsistentTestIt": {
           "level": "error",
           "options": {
@@ -362,6 +382,7 @@
         "useIframeSandbox": "error",
         "useImportsFirst": "error",
         "useIncludes": "error",
+        "useLogicalProperties": "error",
         "useMathMinMax": "error",
         // Positional groups are required by compact protocol and validation expressions where
         // introducing names would add no safer access path.
@@ -369,6 +390,7 @@
         "useNamedLayer": "error",
         "useNullishCoalescing": "off",
         "usePlaywrightValidDescribeCallback": "off",
+        "usePromiseRejectErrors": "error",
         "useQwikLoaderLocation": "off",
         "useReactAsyncServerFunction": "error",
         "useReactCompiler": "error",
@@ -386,13 +408,16 @@
             "functions": ["clsx", "cva", "tw", "twMerge", "cn", "twJoin", "tv"]
           }
         },
+        "useStrictBooleanExpressions": "error",
         "useStringStartsEndsWith": "error",
+        "useSvelteKitRuneImports": "error",
         "useSvelteRequireEachKey": "off",
         "useTailwindShorthandClasses": "off",
         "useTestHooksInOrder": "error",
         "useTestHooksOnTop": "error",
         "useThisInClassMethods": "error",
         "useUnicodeRegex": "error",
+        "useValidTestTitle": "error",
         "useVarsOnTop": "error",
         "useVueConsistentDefinePropsDeclaration": "off",
         "useVueNextTickPromise": "off",
@@ -688,6 +713,18 @@
   },
   "overrides": [
     {
+      // The highlighter escapes checked-in source files and returns trusted build-time markup,
+      // never user-supplied HTML. The directive is required to render syntax-highlighted code.
+      "includes": ["components/docs/bookstore-workspace.astro"],
+      "linter": {
+        "rules": {
+          "nursery": {
+            "noAstroSetHtmlDirective": "off"
+          }
+        }
+      }
+    },
+    {
       // Generated catalog modules expose Blume's static `client` marker before imports.
       "includes": ["registry/base-nova/protoform/demo/catalog/**"],
       "linter": {
@@ -702,6 +739,11 @@
       // React 19's `act` always returns a thenable at runtime, but its void overload hides that
       // contract from Biome's type-aware rule for async callbacks.
       "includes": [
+        "conformance/cel-entrypoints.conformance.test.tsx",
+        "conformance/email-adapters.conformance.test.tsx",
+        "registry/base-nova/protoform/components/auto-form-tanstack-v2/__tests__/conformance.test.tsx",
+        "registry/base-nova/protoform/components/auto-form-tanstack/__tests__/conformance.test.tsx",
+        "registry/base-nova/protoform/components/auto-form/__tests__/stepper.test.tsx",
         "registry/base-nova/protoform/hooks/use-proto-form-tanstack-v2/index.test.tsx",
         "registry/base-nova/protoform/hooks/use-proto-form-tanstack/index.test.tsx",
         "registry/base-nova/protoform/hooks/use-proto-form-v8/conformance.test.tsx",
@@ -712,6 +754,20 @@
         "rules": {
           "nursery": {
             "useAwaitThenable": "off"
+          }
+        }
+      }
+    },
+    {
+      // Standard Schema path keys are PropertyKey primitives, not objects. Biome loses
+      // the imported union's primitive types at the recursive path-conversion boundary.
+      "includes": [
+        "registry/base-nova/protoform/lib/protobuf-provider/hook-runtime.ts"
+      ],
+      "linter": {
+        "rules": {
+          "nursery": {
+            "noBaseToString": "off"
           }
         }
       }

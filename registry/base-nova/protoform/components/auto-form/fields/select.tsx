@@ -97,7 +97,7 @@ function SelectFieldComponent({ error, field, id, inputProps, label, path }: Aut
     >
       <SelectTrigger
         aria-label={fieldLabel}
-        className={error ? "border-destructive" : ""}
+        className={error !== undefined && error !== "" ? "border-destructive" : ""}
         disabled={inputProps["disabled"]}
         id={id}
         testId={testIds.control}
@@ -151,14 +151,18 @@ function useProviderOptions({
 }) {
   const [loadedOptions, setLoadedOptions] = React.useState<DataProviderOption[]>([]);
   const { options, isLoading, error: providerError } = result;
+  const hasProviderError = Boolean(providerError);
   const optionsKey = safeStringify(
     options.map(({ description, group, label, value }) => ({ description, group, label, value }))
   );
   const providerPageKey = requestKey.concat(":", optionsKey);
   const collectedPageKey = React.useRef<string | undefined>(undefined);
   const availableOptions =
-    isLoading || providerError ? loadedOptions : mergeProviderOptions(cursor ? loadedOptions : [], options);
-  const staleSelections = isLoading || providerError ? [] : getStaleSelections(availableOptions, selectedValues);
+    isLoading === true || hasProviderError
+      ? loadedOptions
+      : mergeProviderOptions(cursor !== undefined && cursor !== "" ? loadedOptions : [], options);
+  const staleSelections =
+    isLoading === true || hasProviderError ? [] : getStaleSelections(availableOptions, selectedValues);
   const renderedOptions: DataProviderOption[] =
     staleSelection === "clear"
       ? availableOptions
@@ -166,13 +170,15 @@ function useProviderOptions({
 
   React.useEffect(
     function collectProviderPageEffect() {
-      if (isLoading || providerError || collectedPageKey.current === providerPageKey) {
+      if (isLoading === true || hasProviderError || collectedPageKey.current === providerPageKey) {
         return;
       }
       collectedPageKey.current = providerPageKey;
-      setLoadedOptions((currentOptions) => mergeProviderOptions(cursor ? currentOptions : [], options));
+      setLoadedOptions((currentOptions) =>
+        mergeProviderOptions(cursor !== undefined && cursor !== "" ? currentOptions : [], options)
+      );
     },
-    [cursor, isLoading, options, providerError, providerPageKey]
+    [cursor, isLoading, options, hasProviderError, providerPageKey]
   );
 
   return { renderedOptions, staleSelections };
@@ -261,6 +267,7 @@ function SelectFieldFromProviderResult({
 }) {
   const { formatMessage } = useAutoForm();
   const { emptyState, isLoading, error: providerError, nextCursor } = providerResult;
+  const hasProviderError = Boolean(providerError);
   const { renderedOptions, staleSelections } = useProviderOptions({
     cursor,
     requestKey,
@@ -282,7 +289,7 @@ function SelectFieldFromProviderResult({
     [staleSelectionKey]
   );
 
-  if (providerError) {
+  if (hasProviderError) {
     return (
       <Combobox
         disabled
@@ -329,9 +336,9 @@ function SelectFieldFromProviderResult({
         options={comboboxOptions}
         placeholder={formatProtoformMessage(
           formatMessage,
-          isLoading ? "auto_form.select.loading" : "auto_form.select.placeholder",
+          isLoading === true ? "auto_form.select.loading" : "auto_form.select.placeholder",
           {},
-          isLoading ? "Loading…" : "Select an option"
+          isLoading === true ? "Loading…" : "Select an option"
         )}
         renderOption={(option) => {
           const { data } = option;
@@ -349,7 +356,7 @@ function SelectFieldFromProviderResult({
           )}
         </p>
       ) : null}
-      {nextCursor ? (
+      {nextCursor !== undefined && nextCursor !== "" ? (
         <Button onClick={() => onCursorChange(nextCursor)} type="button" variant="outline">
           {formatProtoformMessage(formatMessage, "auto_form.load_more", {}, "Load more")}
         </Button>
@@ -359,11 +366,11 @@ function SelectFieldFromProviderResult({
 }
 
 function isDataProviderOption(value: unknown): value is DataProviderOption {
-  return Boolean(
-    value &&
-      typeof value === "object" &&
-      typeof Reflect.get(value, "label") === "string" &&
-      typeof Reflect.get(value, "value") === "string"
+  return (
+    value !== null &&
+    typeof value === "object" &&
+    typeof Reflect.get(value, "label") === "string" &&
+    typeof Reflect.get(value, "value") === "string"
   );
 }
 
@@ -407,7 +414,7 @@ function ProviderOptionLabel({ option }: { option: DataProviderOption }) {
     <span>{option.label}</span>
   );
 
-  if (!option.description) {
+  if (!(option.description !== undefined && option.description !== "")) {
     return labelWithIcon;
   }
   return (

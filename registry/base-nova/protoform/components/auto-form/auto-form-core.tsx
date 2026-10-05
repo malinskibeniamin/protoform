@@ -65,6 +65,8 @@ import {
 } from "./ui-components";
 import { normalizeModes, resolveInitialMode } from "./utils/modes";
 
+const DEFAULT_FORM_PROPS = {};
+
 const noopOnSubmit = async () => undefined;
 
 const ShadcnUIComponents = {
@@ -190,7 +192,7 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
   formComponents,
   withSubmit = false,
   onFormInit,
-  formProps = {},
+  formProps = DEFAULT_FORM_PROPS,
   fieldConfig: fieldConfigOverrides,
   modes,
   defaultMode,
@@ -493,7 +495,7 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
   }
 
   async function handleStepContinue(stepFields: ReturnType<typeof mergeFieldOverrides>) {
-    if (!stepper || isAdvancing) {
+    if (!stepper || isAdvancing === true) {
       return;
     }
     setIsAdvancing(true);
@@ -566,17 +568,21 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
       ? (Reflect.get(formProps, "onBlurCapture") as React.FocusEventHandler<HTMLFormElement>)
       : undefined;
 
+  const hasRootTitle = Boolean(rootHeaderMetadata.title);
+  const hasRootDescription = Boolean(rootHeaderMetadata.description);
+  const hasRootError = Boolean(engine.rootError);
+
   let rootHeaderContent: React.ReactNode = null;
   if (rootHeader !== "hidden") {
     if (renderRootHeader) {
       rootHeaderContent = renderRootHeader(rootHeaderMetadata);
-    } else if (protoMessageUi?.title || protoMessageUi?.description) {
+    } else if (hasRootTitle || hasRootDescription) {
       rootHeaderContent = (
         <header className="space-y-1 border-border/60 border-b pb-4" data-testid={`${testIdPrefix}-root-header`}>
-          {protoMessageUi.title ? <Heading level={2}>{protoMessageUi.title}</Heading> : null}
-          {protoMessageUi.description ? (
+          {hasRootTitle ? <Heading level={2}>{rootHeaderMetadata.title}</Heading> : null}
+          {hasRootDescription ? (
             <Text className="text-muted-foreground" variant="small">
-              {protoMessageUi.description}
+              {rootHeaderMetadata.description}
             </Text>
           ) : null}
         </header>
@@ -613,7 +619,7 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
             onSubmit={engine.handleSubmit(handleSubmit)}
             testId={testIdPrefix}
           >
-            {engine.rootError ? (
+            {hasRootError ? (
               <Alert variant="destructive">
                 <AlertTitle>
                   {formatProtoformMessage(formatMessage, "auto_form.validation_failed", {}, "Form validation failed")}

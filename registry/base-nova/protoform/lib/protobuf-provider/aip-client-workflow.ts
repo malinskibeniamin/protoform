@@ -105,7 +105,7 @@ export async function runProtoOperation({
     const completed = await pollUntilDone(operation, poll, sleep, pollIntervalMs, signal, onProgress);
     return finishOperation(completed);
   } catch (error) {
-    if (signal.aborted && operationName && cancel) {
+    if (signal.aborted && operationName !== undefined && operationName !== "" && cancel) {
       await cancel(operationName);
     }
     throw error;

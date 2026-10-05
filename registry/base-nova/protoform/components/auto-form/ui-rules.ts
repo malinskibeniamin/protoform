@@ -6,7 +6,7 @@ const compiledRuleCache = new Map<string, ReturnType<typeof compileCelExpression
 
 function getCompiledRule(expression: string) {
   const cached = compiledRuleCache.get(expression);
-  if (cached) {
+  if (cached !== undefined) {
     return cached;
   }
 

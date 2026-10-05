@@ -50,7 +50,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, size, variant, testId, animated = false, ...props }, ref) => {
     const cardClassName = cn(cardVariants({ size, variant }), className);
 
-    if (animated) {
+    if (animated === true) {
       return (
         <motion.div
           className={cardClassName}

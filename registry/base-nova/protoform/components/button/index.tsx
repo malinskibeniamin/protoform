@@ -188,7 +188,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref
   ) => {
-    const Comp = as ?? (asChild ? Slot : "button");
+    const Comp = as ?? (asChild === true ? Slot : "button");
     const { attached, position } = useGroup();
 
     let positionClasses = "rounded-lg";
@@ -206,7 +206,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     // to satisfy React.Children.only(). In asChild mode, users must include
     // icons inside children instead of using the icon prop.
     const renderContent = () => {
-      if (asChild) {
+      if (asChild === true) {
         return children;
       }
 
@@ -220,7 +220,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         children
       );
 
-      if (isLoading) {
+      if (isLoading === true) {
         return (
           <>
             <span className="invisible contents">{content}</span>
@@ -236,15 +236,15 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     return (
       <Comp
-        aria-busy={isLoading || undefined}
+        aria-busy={isLoading === true ? true : undefined}
         className={cn(
           buttonVariants({ className, size, variant }),
           positionClasses,
           icon && "gap-2",
-          isLoading && "relative",
+          isLoading === true && "relative",
           className
         )}
-        data-loading={isLoading || undefined}
+        data-loading={isLoading === true ? true : undefined}
         data-slot="button"
         data-testid={testId}
         disabled={isDisabled}

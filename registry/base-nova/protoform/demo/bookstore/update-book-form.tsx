@@ -123,7 +123,7 @@ export function UpdateBookForm({ book, onCancel, onUpdated }: UpdateBookFormProp
             ref={noteRef}
           />
         </Field>
-        {formError || mutation.error ? (
+        {(formError !== undefined && formError !== "") || mutation.error ? (
           <Alert variant="destructive">
             <AlertTitle>Changes not saved</AlertTitle>
             <AlertDescription>{formError ?? mutation.error?.message}</AlertDescription>

@@ -98,13 +98,13 @@ function Badge({
     variant?: BadgeVariant;
     size?: BadgeSize;
   }) {
-  const Comp = asChild ? Slot : "span";
+  const Comp = asChild === true ? Slot : "span";
 
   // When asChild is used with Slot, we can only pass ONE child element
   // to satisfy React.Children.only(). In asChild mode, users must include
   // icons inside children instead of using the icon prop.
   const renderContent = () => {
-    if (asChild) {
+    if (asChild === true) {
       return children;
     }
 

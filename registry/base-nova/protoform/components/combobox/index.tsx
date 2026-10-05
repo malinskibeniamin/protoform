@@ -116,7 +116,7 @@ export interface ComboboxProps
 const DEFAULT_START = <Search className="opacity-50" size={15} />;
 
 function ComboboxEmptyState({ loading, emptyState }: Pick<ComboboxProps, "loading" | "emptyState">) {
-  if (loading) {
+  if (loading === true) {
     return (
       <div aria-busy="true" className="flex items-center gap-2 px-3 py-4 text-muted-foreground text-sm" role="status">
         <Spinner className="size-4" />
@@ -210,7 +210,7 @@ export const Combobox = memo(
       () => getNavigableValues(filteredOptions, canCreate, inputValue),
       [filteredOptions, canCreate, inputValue]
     );
-    const showClearButton = clearable && controlledValue && !disabled;
+    const showClearButton = clearable === true && controlledValue !== "" && disabled !== true;
 
     // ── Effects (genuine side effects only) ───────────────────────────
 
@@ -221,7 +221,7 @@ export const Combobox = memo(
 
     // Focus input when popover opens
     useEffect(() => {
-      if (!(inputRef.current && open && !preventAutoFocusOnOpen)) {
+      if (!(inputRef.current && open && preventAutoFocusOnOpen !== true)) {
         return;
       }
       const timer = setTimeout(() => {
@@ -261,7 +261,7 @@ export const Combobox = memo(
 
     const selectOption = useCallback(
       (option: ComboboxOption) => {
-        if (option.disabled) {
+        if (option.disabled === true) {
           return;
         }
         if (controlledValue === option.value) {
@@ -293,7 +293,7 @@ export const Combobox = memo(
 
     const handlePopoverOpenChange = useCallback(
       (newOpen: boolean) => {
-        if (disabled) {
+        if (disabled === true) {
           return;
         }
         dispatch(newOpen ? { type: "OPEN" } : { type: "CLOSE" });
@@ -317,12 +317,12 @@ export const Combobox = memo(
     }, [open]);
 
     const handleComboboxInputBlur = useCallback(() => {
-      if (inputValue.trim() === "" && controlledValue && userHasTyped) {
+      if (inputValue.trim() === "" && controlledValue !== "" && userHasTyped) {
         onChange("");
         dispatch({ type: "BLUR_CLEAR" });
       } else if (inputValue !== controlledLabel) {
         const matchesOption = options.some((opt) => opt.value === inputValue || opt.label === inputValue);
-        if (!creatable || (!matchesOption && inputValue.trim() === "")) {
+        if (creatable !== true || (!matchesOption && inputValue.trim() === "")) {
           dispatch({ controlledLabel, type: "BLUR_REVERT" });
         }
       }
@@ -361,10 +361,10 @@ export const Combobox = memo(
           const option = filteredOptions.find((o) => o.label.toLowerCase() === highlightedValue.toLowerCase());
           if (option) {
             selectOption(option);
-          } else if (inputValue.trim() === "" && controlledValue) {
+          } else if (inputValue.trim() === "" && controlledValue !== "") {
             onChange("");
             dispatch({ type: "ENTER_CLEAR" });
-          } else if (creatable && canCreate) {
+          } else if (creatable === true && canCreate) {
             handleCreatableSubmit();
           } else {
             dispatch({ controlledLabel, type: "ENTER_REVERT" });
@@ -391,7 +391,7 @@ export const Combobox = memo(
         if (open) {
           event.preventDefault();
           dispatch({ type: "CLOSE" });
-        } else if (controlledValue) {
+        } else if (controlledValue !== "") {
           event.preventDefault();
           event.stopPropagation();
           onChange("");
@@ -486,7 +486,7 @@ export const Combobox = memo(
         <PopoverContent
           className="w-(--anchor-width) p-0"
           container={container}
-          initialFocus={preventAutoFocusOnOpen ? false : undefined}
+          initialFocus={preventAutoFocusOnOpen === true ? false : undefined}
           onMouseDown={preventDefault}
         >
           <Command
@@ -514,7 +514,7 @@ export const Combobox = memo(
                   </CommandItem>
                 </CommandGroup>
               ) : null}
-              {creatable && !canCreate ? (
+              {creatable === true && !canCreate ? (
                 <CommandGroup>
                   <CommandItem disabled forceMount value="__create_prompt__">
                     <Plus className="size-4 shrink-0 opacity-50" />

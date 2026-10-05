@@ -57,7 +57,7 @@ export function ObjectFieldRenderer({
           />
         ))}
       </ObjectWrapperComponent>
-      {error ? (
+      {error !== undefined && error !== "" ? (
         <Text
           className="whitespace-pre-wrap text-destructive"
           data-testid={getAutoFormFieldTestId(testIdPrefix, fullPath, "error")}

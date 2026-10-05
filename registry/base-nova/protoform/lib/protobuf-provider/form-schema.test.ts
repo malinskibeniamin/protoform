@@ -82,16 +82,12 @@ test("invalid form values produce issues with form-shaped camelCase paths or a r
   expect(result.issues.length).toBeGreaterThan(0);
 
   const paths = result.issues.map((issue) =>
-    (issue.path ?? [])
-      .map((segment) => (typeof segment === "object" && segment !== null && "key" in segment ? segment.key : segment))
-      .join(".")
+    (issue.path ?? []).map((segment) => (typeof segment === "object" ? segment.key : segment))
   );
 
   // Proto field `primary_email` must surface under its form (camelCase) path.
-  expect(paths).toContain("primaryEmail");
-  for (const path of paths) {
-    expect(path).not.toContain("_");
-  }
+  expect(paths).toContainEqual(["primaryEmail"]);
+  expect(paths.flat()).not.toContainEqual(expect.stringContaining("_"));
 
   // Non-object input fails with a root issue instead of throwing.
   const rootResult = await schema["~standard"].validate("not an object");

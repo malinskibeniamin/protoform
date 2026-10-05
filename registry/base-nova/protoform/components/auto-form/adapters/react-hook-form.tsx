@@ -130,8 +130,11 @@ export function ReactHookFormEngine<T extends FormValues>({
   });
   const watchedValues = (useWatch({ control: form.control }) as FormValues | undefined) ?? {};
   const errors = form.formState.errors as Record<string, unknown>;
+  const rootMessage = getRootErrorMessage(form.formState.errors.root);
   const rootError =
-    getRootErrorMessage(form.formState.errors.root) || getRootErrorMessage(errors[PROTO_FORM_ROOT_ERROR_KEY]);
+    rootMessage !== undefined && rootMessage !== ""
+      ? rootMessage
+      : getRootErrorMessage(errors[PROTO_FORM_ROOT_ERROR_KEY]);
   const notifyDirtyChange = useDirtyStateNotification(form.formState.isDirty, onDirtyChange);
 
   const engine: AutoFormEngine = {

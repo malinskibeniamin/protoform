@@ -175,15 +175,15 @@ interface ProtoParserContext {
 }
 
 export function isProtoMessageDescriptor(value: unknown): value is DescMessage {
-  return Boolean(
-    value &&
-      typeof value === "object" &&
-      "kind" in value &&
-      (value as { kind?: unknown }).kind === "message" &&
-      "typeName" in value &&
-      typeof (value as { typeName?: unknown }).typeName === "string" &&
-      "members" in value &&
-      Array.isArray((value as { members?: unknown }).members)
+  return (
+    value !== null &&
+    typeof value === "object" &&
+    "kind" in value &&
+    (value as { kind?: unknown }).kind === "message" &&
+    "typeName" in value &&
+    typeof (value as { typeName?: unknown }).typeName === "string" &&
+    "members" in value &&
+    Array.isArray((value as { members?: unknown }).members)
   );
 }
 
@@ -381,7 +381,9 @@ function buildFieldConfig(
     description,
     fieldType,
     inputProps: {
-      ...(customData.ui?.placeholder ? { placeholder: customData.ui.placeholder } : {}),
+      ...(customData.ui?.placeholder !== undefined && customData.ui?.placeholder !== ""
+        ? { placeholder: customData.ui.placeholder }
+        : {}),
       ...inputProps,
     },
   };
@@ -959,13 +961,13 @@ function buildProtoField(field: DescField, context: ProtoParserContext): ParsedP
       result = buildMapField(field, rules, context);
       break;
     default:
-      throw new Error(`Unsupported protobuf field kind: ${String((field as DescField).fieldKind)}`);
+      throw new Error(`Unsupported protobuf field kind: ${(field as DescField).fieldKind}`);
   }
 
   if (result.fieldConfig) {
     const { customData } = result.fieldConfig as ProtoFieldConfig;
     if (customData) {
-      if (context.secretScope) {
+      if (context.secretScope !== undefined && context.secretScope !== "") {
         customData.secretScope = context.secretScope;
       }
       const fieldBehaviors = getProtoFieldBehaviors(field);

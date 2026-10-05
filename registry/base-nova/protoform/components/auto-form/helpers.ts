@@ -15,7 +15,7 @@ export const CURRENCY_FIELD_PATTERN = /(amount|price|cost|balance|budget|revenue
 export const LONG_TEXT_FIELD_PATTERN = /(bio|description|details|notes?|summary|message|comment)/iu;
 
 export function isRecord(value: unknown): value is Record<string, unknown> {
-  return Boolean(value && typeof value === "object" && !Array.isArray(value));
+  return value !== null && typeof value === "object" && !Array.isArray(value);
 }
 
 function toUiRules(value: unknown): AutoFormUiRule[] | undefined {
@@ -126,12 +126,10 @@ function deriveAnnotatedControl(
     return;
   }
 
-  const dataProvider =
-    (typeof direct?.dataProvider === "string" && direct.dataProvider) ||
-    (typeof nested?.dataProvider === "string" && nested.dataProvider) ||
-    (typeof protoUi?.dataProvider === "string" && protoUi.dataProvider) ||
-    undefined;
-  if (dataProvider) {
+  const hasDataProvider = [direct, nested, protoUi].some(
+    (ui) => typeof ui?.dataProvider === "string" && ui.dataProvider !== ""
+  );
+  if (hasDataProvider) {
     return "dataProviderSelect" as FieldTypes;
   }
 
@@ -180,22 +178,24 @@ export function getFieldUiConfig<TFieldType extends string = string>(
       }
     : undefined;
 
-  const nested = nestedUi
-    ? {
-        control: typeof nestedUi["control"] === "string" ? (nestedUi["control"] as FieldTypes<TFieldType>) : undefined,
-        description: typeof nestedUi["description"] === "string" ? nestedUi["description"] : undefined,
-        disabledWhen: toUiRules(nestedUi["disabledWhen"]),
-        example: typeof nestedUi["example"] === "string" ? nestedUi["example"] : undefined,
-        help: typeof nestedUi["help"] === "string" ? nestedUi["help"] : undefined,
-        optionGroups: toOptionGroups(nestedUi["optionGroups"]),
-        optionLabels: isRecord(nestedUi["optionLabels"])
-          ? (nestedUi["optionLabels"] as Record<string, string>)
-          : undefined,
-        placeholder: typeof nestedUi["placeholder"] === "string" ? nestedUi["placeholder"] : undefined,
-        summaryLabel: typeof nestedUi["summaryLabel"] === "string" ? nestedUi["summaryLabel"] : undefined,
-        visibleWhen: toUiRules(nestedUi["visibleWhen"]),
-      }
-    : undefined;
+  const nested =
+    nestedUi === undefined
+      ? undefined
+      : {
+          control:
+            typeof nestedUi["control"] === "string" ? (nestedUi["control"] as FieldTypes<TFieldType>) : undefined,
+          description: typeof nestedUi["description"] === "string" ? nestedUi["description"] : undefined,
+          disabledWhen: toUiRules(nestedUi["disabledWhen"]),
+          example: typeof nestedUi["example"] === "string" ? nestedUi["example"] : undefined,
+          help: typeof nestedUi["help"] === "string" ? nestedUi["help"] : undefined,
+          optionGroups: toOptionGroups(nestedUi["optionGroups"]),
+          optionLabels: isRecord(nestedUi["optionLabels"])
+            ? (nestedUi["optionLabels"] as Record<string, string>)
+            : undefined,
+          placeholder: typeof nestedUi["placeholder"] === "string" ? nestedUi["placeholder"] : undefined,
+          summaryLabel: typeof nestedUi["summaryLabel"] === "string" ? nestedUi["summaryLabel"] : undefined,
+          visibleWhen: toUiRules(nestedUi["visibleWhen"]),
+        };
 
   // Proto-level widget annotations (data_provider, dropzone) override the
   // plain control. A string field annotated with `data_provider` should
@@ -212,33 +212,36 @@ export function getFieldUiConfig<TFieldType extends string = string>(
     ...(nested ?? {}),
     ...(direct ?? {}),
     control:
-      (typeof field.fieldConfig?.fieldType === "string"
-        ? (field.fieldConfig.fieldType as FieldTypes<TFieldType>)
-        : undefined) ||
-      annotatedControl ||
-      direct?.control ||
-      nested?.control ||
-      (protoUi?.control as FieldTypes<TFieldType> | undefined),
-    description: direct?.description || nested?.description || protoUi?.description,
-    disabledWhen: direct?.disabledWhen || nested?.disabledWhen || toUiRules(protoUi?.disabledWhen),
-    example: direct?.example || nested?.example || protoUi?.example,
-    help: direct?.help || nested?.help || protoUi?.help,
+      [
+        typeof field.fieldConfig?.fieldType === "string"
+          ? (field.fieldConfig.fieldType as FieldTypes<TFieldType>)
+          : undefined,
+        annotatedControl,
+        direct?.control,
+        nested?.control,
+      ].find(Boolean) ?? (protoUi?.control as FieldTypes<TFieldType> | undefined),
+    description: [direct?.description, nested?.description].find(Boolean) ?? protoUi?.description,
+    disabledWhen: [direct?.disabledWhen, nested?.disabledWhen].find(Boolean) ?? toUiRules(protoUi?.disabledWhen),
+    example: [direct?.example, nested?.example].find(Boolean) ?? protoUi?.example,
+    help: [direct?.help, nested?.help].find(Boolean) ?? protoUi?.help,
     optionGroups: direct?.optionGroups || nested?.optionGroups,
     optionLabels: direct?.optionLabels || nested?.optionLabels,
     placeholder:
-      (typeof field.fieldConfig?.inputProps?.["placeholder"] === "string"
-        ? (field.fieldConfig.inputProps["placeholder"] as string)
-        : undefined) ||
-      direct?.placeholder ||
-      nested?.placeholder ||
-      protoUi?.placeholder,
-    summaryLabel: direct?.summaryLabel || nested?.summaryLabel || protoUi?.summaryLabel,
-    visibleWhen: direct?.visibleWhen || nested?.visibleWhen || toUiRules(protoUi?.visibleWhen),
+      [
+        typeof field.fieldConfig?.inputProps?.["placeholder"] === "string"
+          ? (field.fieldConfig.inputProps["placeholder"] as string)
+          : undefined,
+        direct?.placeholder,
+        nested?.placeholder,
+      ].find(Boolean) ?? protoUi?.placeholder,
+    summaryLabel: [direct?.summaryLabel, nested?.summaryLabel].find(Boolean) ?? protoUi?.summaryLabel,
+    visibleWhen: [direct?.visibleWhen, nested?.visibleWhen].find(Boolean) ?? toUiRules(protoUi?.visibleWhen),
   };
 }
 
 export function getRootErrorMessage(rootError: unknown): string | undefined {
-  if (!rootError) {
+  const hasRootError = Boolean(rootError);
+  if (!hasRootError) {
     return;
   }
 
@@ -263,7 +266,8 @@ export function getRootErrorMessage(rootError: unknown): string | undefined {
 
 export function getFieldErrorMessage(errors: unknown, path: string[]): string | undefined {
   const nestedError = getPathInObject(errors as Record<string, unknown>, path);
-  const message = nestedError && typeof nestedError === "object" ? Reflect.get(nestedError, "message") : undefined;
+  const message =
+    nestedError !== null && typeof nestedError === "object" ? Reflect.get(nestedError, "message") : undefined;
   return typeof message === "string" ? message : undefined;
 }
 
@@ -284,11 +288,13 @@ export function createEmptyFieldValue(field: ParsedField | undefined): unknown {
     case "number":
       return;
     case "boolean":
-      return protoData?.supportsUnset && !field.required ? undefined : false;
+      return protoData?.supportsUnset === true && !field.required ? undefined : false;
     case "select":
       if (field.required && field.options && field.options.length > 0) {
         const firstOptionValue = field.options[0]?.[0];
-        return firstOptionValue ? Number(firstOptionValue) || firstOptionValue : undefined;
+        return firstOptionValue !== undefined && firstOptionValue !== ""
+          ? Number(firstOptionValue) || firstOptionValue
+          : undefined;
       }
       return undefined;
     case "fieldMask":
@@ -342,7 +348,7 @@ export function resolveRenderFieldType<TFieldType extends string = string>(
   field: ParsedField<TFieldType>
 ): FieldTypes<TFieldType> {
   const uiConfig = getFieldUiConfig(field);
-  if (uiConfig.control) {
+  if (uiConfig.control !== undefined && uiConfig.control !== "") {
     return uiConfig.control;
   }
 
@@ -353,7 +359,7 @@ export function resolveRenderFieldType<TFieldType extends string = string>(
 
   if (field.type === "boolean") {
     const protoData = getFieldHints(field);
-    if (protoData?.supportsUnset && !field.required) {
+    if (protoData?.supportsUnset === true && !field.required) {
       return "boolean";
     }
     if (CONSENT_FIELD_PATTERN.test(identity)) {
@@ -453,8 +459,9 @@ function buildRangeHint(field: ParsedField): string | undefined {
 
 function buildFallbackHelp(field: ParsedField): string {
   const renderType = resolveRenderFieldType(field);
+  const hasPattern = Boolean(field.fieldConfig?.inputProps?.["pattern"]);
   const hints = [
-    field.fieldConfig?.inputProps?.["pattern"] ? "Follow the expected format for this value." : undefined,
+    hasPattern ? "Follow the expected format for this value." : undefined,
     renderType === "multiselect" ? "Choose one or more options." : undefined,
     renderType === "radio" || renderType === "select" || renderType === "combobox"
       ? "Choose one of the available options."
@@ -479,9 +486,10 @@ export function getFieldHelpText(field: ParsedField): string {
   const descriptionText = getFieldDescriptionText(field);
 
   // Build the tooltip from help + example
-  const parts = [uiConfig.help, uiConfig.example ? `Example: ${uiConfig.example}` : undefined].filter(
-    (value): value is string => Boolean(value)
-  );
+  const parts = [
+    uiConfig.help,
+    uiConfig.example !== undefined && uiConfig.example !== "" ? `Example: ${uiConfig.example}` : undefined,
+  ].filter((value): value is string => Boolean(value));
 
   const tooltip = [...new Set(parts)].join(" ");
 
@@ -506,10 +514,10 @@ export function getFieldDocsUrl(field: ParsedField): string | undefined {
     return;
   }
   const bag = customData as { docsUrl?: unknown; ui?: { docsUrl?: unknown } };
-  if (typeof bag.docsUrl === "string" && bag.docsUrl) {
+  if (typeof bag.docsUrl === "string" && bag.docsUrl !== "") {
     return bag.docsUrl;
   }
-  if (bag.ui && typeof bag.ui === "object" && typeof bag.ui.docsUrl === "string" && bag.ui.docsUrl) {
+  if (bag.ui && typeof bag.ui === "object" && typeof bag.ui.docsUrl === "string" && bag.ui.docsUrl !== "") {
     return bag.ui.docsUrl;
   }
   return;
@@ -524,20 +532,20 @@ export function getFieldDescriptionText(field: ParsedField): string | undefined 
   const uiConfig = getFieldUiConfig(field);
 
   // 1. Prefer explicit proto `description` annotation
-  if (uiConfig.description) {
+  if (uiConfig.description !== undefined && uiConfig.description !== "") {
     return uiConfig.description;
   }
 
   // 2. Fall back to fieldConfig.description (set programmatically)
   const configDescription =
     typeof field.fieldConfig?.description === "string" ? field.fieldConfig.description : undefined;
-  if (configDescription) {
+  if (configDescription !== undefined && configDescription !== "") {
     return configDescription;
   }
 
   // 3. Fall back to example. `help` remains exclusive to the tooltip so
   // the question-mark affordance does not disappear when no description is set.
-  if (uiConfig.example) {
+  if (uiConfig.example !== undefined && uiConfig.example !== "") {
     return `Example: ${uiConfig.example}`;
   }
 
@@ -697,7 +705,7 @@ export function stringifySummaryValue(value: unknown): string {
     return "—";
   }
   if (typeof value === "boolean") {
-    return value ? "Yes" : "No";
+    return value === true ? "Yes" : "No";
   }
   if (typeof value === "string" || typeof value === "number" || typeof value === "bigint") {
     return String(value);

@@ -50,7 +50,7 @@ export function getProtoAnnotationEntries(message: DescMessage): {
     fields: messages.flatMap((nested) =>
       nested.fields.flatMap((field) => {
         const comment = sourceComment(field);
-        return comment
+        return comment !== undefined && comment !== ""
           ? [
               {
                 key: `${field.parent.typeName}.${field.localName}`,
@@ -62,12 +62,12 @@ export function getProtoAnnotationEntries(message: DescMessage): {
     ),
     messages: messages.flatMap((nested) => {
       const comment = sourceComment(nested);
-      return comment ? [{ key: nested.typeName, value: comment }] : [];
+      return comment !== undefined && comment !== "" ? [{ key: nested.typeName, value: comment }] : [];
     }),
     oneofs: messages.flatMap((nested) =>
       nested.oneofs.flatMap((oneof) => {
         const comment = sourceComment(oneof);
-        return comment
+        return comment !== undefined && comment !== ""
           ? [
               {
                 key: `${oneof.parent.typeName}.${oneof.localName}`,

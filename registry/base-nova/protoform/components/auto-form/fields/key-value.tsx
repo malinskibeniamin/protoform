@@ -21,15 +21,18 @@ function KeyValueFieldComponent({ field, id, inputProps }: AutoFormFieldProps) {
   const valueRenderType = valueField ? resolveRenderFieldType(valueField) : undefined;
   const protoData = getProtoFieldCustomData(field);
 
+  const configuredPlaceholder = getFieldUiConfig(valueField ?? field).placeholder;
+  const placeholder =
+    configuredPlaceholder !== undefined && configuredPlaceholder !== "" ? configuredPlaceholder : "Value";
   const valueFieldProps =
     valueRenderType === "select" || valueRenderType === "combobox" || valueRenderType === "radio"
       ? {
           mode: "combobox" as const,
           options: (valueField?.options || []).map(([value, optionLabel]) => ({ label: optionLabel, value })),
-          placeholder: getFieldUiConfig(valueField ?? field).placeholder || "Value",
+          placeholder,
         }
       : {
-          placeholder: getFieldUiConfig(valueField ?? field).placeholder || "Value",
+          placeholder,
         };
 
   return (

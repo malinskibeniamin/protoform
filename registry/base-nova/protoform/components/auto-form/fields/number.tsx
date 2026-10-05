@@ -15,7 +15,7 @@ function NumberFieldComponent({ error, field, id, inputProps }: AutoFormFieldPro
   return (
     <Input
       aria-invalid={Boolean(error)}
-      className={error ? "border-destructive" : ""}
+      className={error !== undefined && error !== "" ? "border-destructive" : ""}
       disabled={inputProps["disabled"]}
       id={id}
       inputMode="decimal"

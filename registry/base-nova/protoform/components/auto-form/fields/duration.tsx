@@ -9,15 +9,17 @@ import { useFieldTestIds } from "./shared";
 function DurationFieldComponent({ error, field, id, inputProps }: AutoFormFieldProps) {
   const testIds = useFieldTestIds(id);
 
+  const { placeholder } = getFieldUiConfig(field);
+
   return (
     <Input
       aria-invalid={Boolean(error)}
-      className={error ? "border-destructive font-mono" : "font-mono"}
+      className={error !== undefined && error !== "" ? "border-destructive font-mono" : "font-mono"}
       disabled={inputProps["disabled"]}
       id={id}
       onBlur={inputProps["onBlur"]}
       onChange={(event) => inputProps["onValueChange"](event.target.value)}
-      placeholder={getFieldUiConfig(field).placeholder || "300s"}
+      placeholder={placeholder !== undefined && placeholder !== "" ? placeholder : "300s"}
       testId={testIds.control}
       value={(inputProps["value"] as string | undefined) ?? ""}
     />

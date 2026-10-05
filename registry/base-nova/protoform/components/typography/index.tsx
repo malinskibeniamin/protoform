@@ -176,8 +176,9 @@ interface ListProps extends React.HTMLAttributes<HTMLUListElement | HTMLOListEle
 }
 
 export function List({ ordered = false, className, children, testId, ...props }: ListProps) {
-  const ListTag = ordered ? "ol" : "ul";
-  const listClass = ordered ? "mt-1 mb-3 ml-6 list-decimal [&>li]:mt-1" : "mt-1 mb-3 ml-6 list-disc [&>li]:mt-0.5";
+  const ListTag = ordered === true ? "ol" : "ul";
+  const listClass =
+    ordered === true ? "mt-1 mb-3 ml-6 list-decimal [&>li]:mt-1" : "mt-1 mb-3 ml-6 list-disc [&>li]:mt-0.5";
 
   return (
     <ListTag className={cn(listClass, className)} data-testid={testId} {...props}>

@@ -46,7 +46,7 @@ interface AsChildInput {
  */
 export function asChildToRender<P extends AsChildInput>(props: P): Omit<P, "asChild"> {
   const { asChild, children, ...rest } = props;
-  if (asChild && React.isValidElement(children)) {
+  if (asChild === true && React.isValidElement(children)) {
     // Drop `children` — Base UI uses `render` to mount the child element instead.
     // `rest` already omits it from the spread above.
     return { ...rest, render: children } as unknown as Omit<P, "asChild">;
@@ -61,16 +61,16 @@ export function asChildToRender<P extends AsChildInput>(props: P): Omit<P, "asCh
 function compatStateAttrs(state: CompatState | undefined): Record<string, string> {
   const attrs: Record<string, string> = {};
   if (state && typeof state.open === "boolean") {
-    attrs["data-state"] = state.open ? "open" : "closed";
+    attrs["data-state"] = state.open === true ? "open" : "closed";
   }
   if (state && state.checked !== undefined) {
     if (state.checked === "indeterminate") {
       attrs["data-state"] = "indeterminate";
     } else if (typeof state.checked === "boolean") {
-      attrs["data-state"] = state.checked ? "checked" : "unchecked";
+      attrs["data-state"] = state.checked === true ? "checked" : "unchecked";
     }
   }
-  if (state?.disabled) {
+  if (state?.disabled === true) {
     attrs["data-disabled"] = "";
   }
   return attrs;
@@ -99,7 +99,7 @@ function compatStateAttrs(state: CompatState | undefined): Record<string, string
  */
 export function asChildTrigger<P extends AsChildInput>(props: P): Omit<P, "asChild"> & { nativeButton?: boolean } {
   const base = asChildToRender(props);
-  if (!props.asChild) {
+  if (props.asChild !== true) {
     return base;
   }
   const child = props.children;
@@ -123,7 +123,7 @@ function rendersNonButton(element: React.ReactElement): boolean {
     return element.type !== "button";
   }
   const props = (element.props ?? {}) as { asChild?: boolean; children?: React.ReactNode };
-  if (!props.asChild) {
+  if (props.asChild !== true) {
     // Function/forwardRef component without asChild: assume it renders a <button>.
     return false;
   }
@@ -255,8 +255,8 @@ export function renderDescription({
   fallbackClassName = "text-muted-foreground text-sm",
   dataSlot,
 }: DescriptionRenderProps): React.ReactElement {
-  if (asChild && React.isValidElement<{ "data-slot"?: string }>(children)) {
-    if (!dataSlot) {
+  if (asChild === true && React.isValidElement<{ "data-slot"?: string }>(children)) {
+    if (!(dataSlot !== undefined && dataSlot !== "")) {
       return children;
     }
     if (children.props["data-slot"]) {
@@ -344,7 +344,7 @@ export function resolveKeepMounted(
   forceMount: boolean | undefined,
   keepMounted: boolean | undefined
 ): boolean | undefined {
-  if (forceMount) {
+  if (forceMount === true) {
     warnDeprecatedProp(
       component,
       "forceMount",
@@ -392,7 +392,7 @@ function readString(source: object, key: string): string | undefined {
 
 function readStyle(source: object): React.CSSProperties | undefined {
   const value = Reflect.get(source, "style");
-  return value && typeof value === "object" ? (value as React.CSSProperties) : undefined;
+  return value !== null && typeof value === "object" ? (value as React.CSSProperties) : undefined;
 }
 
 function composeRefs<T>(...refs: Array<React.Ref<T> | undefined>): React.RefCallback<T> {
@@ -424,8 +424,9 @@ function mergeSlotProps(slotProps: object, childProps: object): Record<string, u
 
   const slotClass = readString(slotProps, "className");
   const childClass = readString(childProps, "className");
-  if (slotClass || childClass) {
-    merged["className"] = [slotClass, childClass].filter(Boolean).join(" ");
+  const mergedClass = [slotClass, childClass].filter(Boolean).join(" ");
+  if (mergedClass !== "") {
+    merged["className"] = mergedClass;
   }
 
   const slotStyle = readStyle(slotProps);

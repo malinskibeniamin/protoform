@@ -112,7 +112,7 @@ export function DemoHub({ category }: { category: DemoHubCategory }) {
   const DemoSource = demoSourceComponents.get(modulePathFor(selectedDemo));
 
   function handleDemoChange(value: string | null) {
-    if (!(value && demos.some((demo) => demo.slug === value))) {
+    if (!(value !== null && value !== "" && demos.some((demo) => demo.slug === value))) {
       return;
     }
     setSelectedSlug(value);

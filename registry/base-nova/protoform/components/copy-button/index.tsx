@@ -62,7 +62,7 @@ function CopyButton({
   const [localIsCopied, setLocalIsCopied] = React.useState(false);
   const [copyError, setCopyError] = React.useState<string>();
   const copied = isCopied ?? localIsCopied;
-  const Icon = copied ? CheckIcon : CopyIcon;
+  const Icon = copied === true ? CheckIcon : CopyIcon;
 
   const handleIsCopied = (isCopiedState: boolean) => {
     if (isCopied === undefined) {
@@ -72,10 +72,10 @@ function CopyButton({
   };
 
   const handleCopy = (event: React.MouseEvent<HTMLButtonElement>) => {
-    if (copied) {
+    if (copied === true) {
       return;
     }
-    if (content) {
+    if (content !== undefined && content !== "") {
       setCopyError(undefined);
       navigator.clipboard
         .writeText(content)
@@ -108,7 +108,7 @@ function CopyButton({
             data-slot="copy-button-icon"
             exit={{ opacity: 0, scale: 0.95 }}
             initial={{ opacity: 0, scale: 0.95 }}
-            key={copied ? "check" : "copy"}
+            key={copied === true ? "check" : "copy"}
             transition={{ duration: 0.15 }}
           >
             <Icon />

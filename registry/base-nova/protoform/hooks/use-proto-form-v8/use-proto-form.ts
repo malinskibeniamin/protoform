@@ -140,7 +140,10 @@ export function useProtoForm<Desc extends DescMessage>(
     emptyRepeatedStringPolicies,
     formatMessage,
   };
-  const pathPrefixes = serverPathPrefix ? [serverPathPrefix, ...serverPathPrefixes] : serverPathPrefixes;
+  const pathPrefixes =
+    serverPathPrefix !== undefined && serverPathPrefix !== ""
+      ? [serverPathPrefix, ...serverPathPrefixes]
+      : serverPathPrefixes;
   const sourceMessage = isMessage(rest.defaultValues, schema) ? rest.defaultValues : undefined;
 
   const form = useForm({
@@ -167,7 +170,7 @@ export function useProtoForm<Desc extends DescMessage>(
       );
     }
     const prev = current as { case?: string; value?: unknown } | undefined;
-    if (prev?.case && prev.case !== oneofCase) {
+    if (prev?.case !== undefined && prev?.case !== "" && prev.case !== oneofCase) {
       form.setValue(path as Path<FormShape<Desc>>, { case: "", value: {} } as never);
     }
     // `shouldDirty: true` default: switching a branch is a meaningful edit.
@@ -209,7 +212,7 @@ export function useProtoForm<Desc extends DescMessage>(
     for (const violation of extractFieldViolations(error)) {
       const bare = stripPrefix(violation.field, pathPrefixes);
       const formPath = protoPathToFormPath(schema, bare);
-      if (!formPath) {
+      if (!(formPath !== null && formPath !== "")) {
         unmapped.push(violation);
         continue;
       }

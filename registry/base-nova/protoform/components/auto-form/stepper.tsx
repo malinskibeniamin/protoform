@@ -36,12 +36,14 @@ function getStepStatusLabel(
 
 function fieldStep(field: ParsedField, firstStepId: string, stepIds: Set<string>): string {
   const configuredStep = field.hints?.step;
-  return configuredStep && stepIds.has(configuredStep) ? configuredStep : firstStepId;
+  return configuredStep !== undefined && configuredStep !== "" && stepIds.has(configuredStep)
+    ? configuredStep
+    : firstStepId;
 }
 
 export function fieldsForStep(fields: ParsedField[], steps: AutoFormStep[], stepId: string): ParsedField[] {
   const firstStepId = steps[0]?.id;
-  if (!firstStepId) {
+  if (!(firstStepId !== undefined && firstStepId !== "")) {
     return fields;
   }
   const stepIds = new Set(steps.map((step) => step.id));
@@ -49,13 +51,14 @@ export function fieldsForStep(fields: ParsedField[], steps: AutoFormStep[], step
 }
 
 export function initialStepIndex(steps: AutoFormStep[], defaultStep: string | undefined): number {
-  const index = defaultStep ? steps.findIndex((step) => step.id === defaultStep) : 0;
+  const index =
+    defaultStep !== undefined && defaultStep !== "" ? steps.findIndex((step) => step.id === defaultStep) : 0;
   return Math.max(index, 0);
 }
 
 export function validateSteps(steps: AutoFormStep[], defaultStep?: string): void {
   const error = getStepConfigurationError(steps, defaultStep);
-  if (error) {
+  if (error !== undefined && error !== "") {
     throw new Error(error);
   }
 }

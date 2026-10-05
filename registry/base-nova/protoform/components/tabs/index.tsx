@@ -14,6 +14,17 @@ import React from "react";
 
 import { cn, type SharedProps } from "@/registry/base-nova/protoform/lib/utils";
 
+const DEFAULT_TRANSITION = {
+  damping: 25,
+  stiffness: 200,
+  type: "spring",
+} satisfies Transition;
+
+const DEFAULT_PANEL_TRANSITION = {
+  duration: 0.5,
+  ease: "easeInOut",
+} satisfies Transition;
+
 interface HighlightBounds {
   height: number;
   left: number;
@@ -41,9 +52,9 @@ type TabsRenderFn = Extract<NonNullable<TabsRenderProp>, (...args: never[]) => R
 function dataStateFromBaseUi(state: { active?: boolean; hidden?: boolean }): Record<string, unknown> {
   const attrs: Record<string, unknown> = {};
   if (typeof state.active === "boolean") {
-    attrs["data-state"] = state.active ? "active" : "inactive";
+    attrs["data-state"] = state.active === true ? "active" : "inactive";
   } else if (typeof state.hidden === "boolean") {
-    attrs["data-state"] = state.hidden ? "inactive" : "active";
+    attrs["data-state"] = state.hidden === true ? "inactive" : "active";
   }
   return attrs;
 }
@@ -174,11 +185,8 @@ const TabsList = React.forwardRef<HTMLDivElement, TabsListProps>(
       gap,
       columns,
       testId,
-      transition = {
-        damping: 25,
-        stiffness: 200,
-        type: "spring",
-      },
+      style,
+      transition = DEFAULT_TRANSITION,
       ...props
     },
     ref
@@ -259,18 +267,26 @@ const TabsList = React.forwardRef<HTMLDivElement, TabsListProps>(
     }, [transition, isHorizontal]);
 
     const showHighlight = bounds !== null;
+    const listStyle: React.CSSProperties & { "--tabs-columns": number | undefined } = {
+      "--tabs-columns": columns,
+      ...style,
+    };
 
     return (
       <TabsPrimitive.List
         className={cn(
           "relative",
           tabsListVariants({ gap, layout, variant }),
-          layout === "equal" && columns && `grid-cols-${columns}`,
+          layout === "equal" &&
+            columns !== undefined &&
+            columns !== 0 &&
+            "grid-cols-[repeat(var(--tabs-columns),minmax(0,1fr))]",
           className
         )}
         data-slot="tabs-list"
         data-testid={testId}
         ref={localRef}
+        style={listStyle}
         {...props}
       >
         <AnimatePresence initial={false}>
@@ -359,10 +375,7 @@ type TabsContentProps = React.ComponentProps<typeof TabsPrimitive.Panel> &
 function TabsContent({
   className,
   children,
-  transition = {
-    duration: 0.5,
-    ease: "easeInOut",
-  },
+  transition = DEFAULT_PANEL_TRANSITION,
   testId,
   ...props
 }: TabsContentProps) {
@@ -377,7 +390,7 @@ function TabsContent({
           className={cn("flex-1 space-y-6 outline-none", className)}
           data-slot="tabs-content"
           data-testid={testId}
-          {...(shouldReduceMotion
+          {...(shouldReduceMotion === true
             ? {
                 initial: false,
                 layout: false,
@@ -404,12 +417,7 @@ type TabsContentsProps = HTMLMotionProps<"div"> & {
   transition?: Transition;
 };
 
-function TabsContents({
-  children,
-  className,
-  transition = { damping: 25, stiffness: 200, type: "spring" },
-  ...props
-}: TabsContentsProps) {
+function TabsContents({ children, className, transition = DEFAULT_TRANSITION, ...props }: TabsContentsProps) {
   return (
     <motion.div
       className={cn("h-auto overflow-visible", className)}

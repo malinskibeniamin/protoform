@@ -6,6 +6,8 @@ import React from "react";
 
 import { cn, type SharedProps } from "@/registry/base-nova/protoform/lib/utils";
 
+const DEFAULT_TRANSITION = { duration: 0.15 } satisfies Transition;
+
 // Radix RadioGroup supported an `orientation` prop; Base UI's RadioGroup does not
 // declare one. Preserve the public API by accepting it and forwarding as
 // `aria-orientation` + data attribute.
@@ -92,7 +94,7 @@ type MotionButtonStyle = NonNullable<HTMLMotionProps<"button">["style"]>;
 function RadioGroupItem({
   children,
   className,
-  transition = { duration: 0.15 },
+  transition = DEFAULT_TRANSITION,
   testId,
   variant = "default",
   ...props
@@ -125,7 +127,7 @@ function RadioGroupItem({
               className
             )}
             data-slot="radio-group-item"
-            data-state={state.checked ? "checked" : "unchecked"}
+            data-state={state.checked === true ? "checked" : "unchecked"}
             data-testid={testId}
             {...(variant === "default" ? { whileHover: { scale: 1.05 }, whileTap: { scale: 0.95 } } : {})}
           >
@@ -134,7 +136,7 @@ function RadioGroupItem({
               <span
                 aria-hidden="true"
                 className="!border-input flex aspect-square size-5 shrink-0 items-center justify-center rounded-full border text-selected"
-                data-state={state.checked ? "checked" : "unchecked"}
+                data-state={state.checked === true ? "checked" : "unchecked"}
               >
                 <RadioGroupIndicator data-slot="radio-group-item-indicator" transition={transition} />
               </span>

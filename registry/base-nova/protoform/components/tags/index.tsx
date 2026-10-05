@@ -39,7 +39,7 @@ const TagsContext = createContext<TagsContextType>({
 
 const useTagsContext = () => {
   const context = useContext(TagsContext);
-  if (!context) {
+  if (context === null) {
     throw new Error("useTagsContext must be used within a TagsProvider");
   }
   return context;

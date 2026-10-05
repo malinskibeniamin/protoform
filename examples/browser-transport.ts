@@ -5,7 +5,7 @@ import { FormExamplesService } from "./gen/protoform/examples/v1/forms_pb.js";
 import { formExamplesService } from "./server/service.js";
 
 export function createFormExamplesTransport(baseUrl?: string): Transport {
-  if (baseUrl) {
+  if (baseUrl !== undefined && baseUrl !== "") {
     return createConnectTransport({ baseUrl });
   }
 

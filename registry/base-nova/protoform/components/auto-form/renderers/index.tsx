@@ -16,7 +16,7 @@ import { isFieldHidden } from "./shared";
 
 function resolveFieldType(field: ParsedField, registry: FieldTypeRegistry<string>): string {
   const explicitControl = getFieldUiConfig(field).control;
-  if (explicitControl) {
+  if (explicitControl !== undefined && explicitControl !== "") {
     return explicitControl;
   }
 
@@ -105,7 +105,7 @@ export function AutoFormFields({ fields, children }: { fields: ParsedField[]; ch
   const beforeSlots = React.useMemo(() => {
     const map = new Map<string, React.ReactNode[]>();
     for (const slot of slots) {
-      if (slot.before) {
+      if (slot.before !== undefined && slot.before !== "") {
         const existing = map.get(slot.before) ?? [];
         existing.push(slot.content);
         map.set(slot.before, existing);
@@ -117,7 +117,7 @@ export function AutoFormFields({ fields, children }: { fields: ParsedField[]; ch
   const afterSlots = React.useMemo(() => {
     const map = new Map<string, React.ReactNode[]>();
     for (const slot of slots) {
-      if (slot.after) {
+      if (slot.after !== undefined && slot.after !== "") {
         const existing = map.get(slot.after) ?? [];
         existing.push(slot.content);
         map.set(slot.after, existing);
@@ -129,7 +129,7 @@ export function AutoFormFields({ fields, children }: { fields: ParsedField[]; ch
   // Slots without before/after render at the top
   const topSlots: React.ReactNode[] = [];
   for (const slot of slots) {
-    if (!(slot.before || slot.after)) {
+    if (!((slot.before !== undefined && slot.before !== "") || (slot.after !== undefined && slot.after !== ""))) {
       topSlots.push(slot.content);
     }
   }

@@ -12,7 +12,7 @@ function Int64FieldComponent({ error, field, id, inputProps }: AutoFormFieldProp
   return (
     <Input
       aria-invalid={Boolean(error)}
-      className={error ? "border-destructive font-mono" : "font-mono"}
+      className={error !== undefined && error !== "" ? "border-destructive font-mono" : "font-mono"}
       disabled={inputProps["disabled"]}
       id={id}
       inputMode="numeric"

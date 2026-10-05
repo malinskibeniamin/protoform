@@ -42,7 +42,7 @@ function toNestErrors(
   flatErrors: Record<string, FieldError>,
   options: ResolverOptions<FormValues>
 ): FieldErrors<FormValues> {
-  if (options.shouldUseNativeValidation) {
+  if (options.shouldUseNativeValidation === true) {
     validateFieldsNatively(flatErrors, options);
   }
   const nestedErrors: FieldErrors<FormValues> = {};
@@ -119,7 +119,7 @@ export function createProtoResolver<Desc extends DescMessage>(
     }
 
     const [rootMessage] = rootMessages;
-    if (rootMessage) {
+    if (rootMessage !== undefined && rootMessage !== "") {
       // Object.assign keeps the intersection type: react-hook-form's
       // FieldErrors "root" slot for index-signature form types cannot be
       // satisfied by an annotated object literal.

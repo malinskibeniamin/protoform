@@ -131,7 +131,7 @@ function FieldLabel({
   return (
     <Label className={className} data-slot="field-label" variant="field" {...props}>
       {children}
-      {required ? (
+      {required === true ? (
         <span aria-hidden="true" className="text-destructive">
           *
         </span>
@@ -159,8 +159,8 @@ function FieldDescription({ className, testId, ...props }: React.ComponentProps<
   return (
     <div
       className={cn(
-        "font-normal text-muted-foreground text-sm leading-normal group-has-[[data-orientation=horizontal]]/field:text-balance",
-        "nth-last-2:-mt-1 last:mt-0 [[data-variant=legend]+&]:-mt-1.5",
+        "font-normal text-muted-foreground text-sm leading-normal group-has-data-[orientation=horizontal]/field:text-balance",
+        "nth-last-2:-mt-1 last:mt-0 [&:is([data-variant=legend]+*)]:-mt-1.5",
         "[&>a:hover]:text-primary [&>a]:underline [&>a]:underline-offset-4",
         className
       )}

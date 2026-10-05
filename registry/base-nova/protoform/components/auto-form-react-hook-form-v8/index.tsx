@@ -131,11 +131,11 @@ export function AutoForm({
           mode: toHookFormMode(props.validationMode),
         }
       : {}),
-    ...(props.revalidationMode
-      ? {
+    ...(props.revalidationMode === undefined
+      ? {}
+      : {
           reValidateMode: props.revalidationMode === "change" ? "onChange" : "onBlur",
-        }
-      : {}),
+        }),
   };
 
   return (

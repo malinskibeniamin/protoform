@@ -11,7 +11,7 @@ export function DeleteSubmitButton({
 }) {
   return (
     <Button disabled={disabled} testId={testId} type="submit" variant="destructive">
-      {disabled ? "Deleting…" : "Delete book"}
+      {disabled === true ? "Deleting…" : "Delete book"}
     </Button>
   );
 }

@@ -62,7 +62,7 @@ function SliderFieldComponent({ error, field, id, inputProps, label: fieldLabel 
       />
       <Input
         aria-invalid={Boolean(error)}
-        className={`w-24 ${error ? "border-destructive" : ""}`}
+        className={`w-24 ${error !== undefined && error !== "" ? "border-destructive" : ""}`}
         disabled={inputProps["disabled"]}
         id={id}
         inputMode="decimal"

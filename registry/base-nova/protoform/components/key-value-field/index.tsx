@@ -10,6 +10,10 @@ import { Label } from "@/components/ui/label";
 import { findDuplicateIndices, useInputListFocus } from "@/registry/base-nova/protoform/lib/input-utils";
 import type { SharedProps } from "@/registry/base-nova/protoform/lib/utils";
 
+const DEFAULT_KEY_FIELD_PROPS = { placeholder: "Key" };
+
+const DEFAULT_VALUE_FIELD_PROPS = { placeholder: "Value" };
+
 export interface KeyValuePair {
   key: string;
   value: string;
@@ -74,13 +78,21 @@ function FieldRenderer({
 }
 
 function ErrorRow({ keyError, valueError }: { keyError?: string | undefined; valueError?: string | undefined }) {
-  if (!(keyError || valueError)) {
+  if (!((keyError !== undefined && keyError !== "") || (valueError !== undefined && valueError !== ""))) {
     return null;
   }
   return (
     <>
-      {keyError ? <p className="-mt-1 text-destructive text-sm">{keyError}</p> : <span />}
-      {valueError ? <p className="-mt-1 text-destructive text-sm">{valueError}</p> : <span />}
+      {keyError !== undefined && keyError !== "" ? (
+        <p className="-mt-1 text-destructive text-sm">{keyError}</p>
+      ) : (
+        <span />
+      )}
+      {valueError !== undefined && valueError !== "" ? (
+        <p className="-mt-1 text-destructive text-sm">{valueError}</p>
+      ) : (
+        <span />
+      )}
       <span />
     </>
   );
@@ -117,6 +129,7 @@ function KeyValueRow({
   onDelete: (index: number) => void;
   onAdd?: (() => void) | undefined;
 }) {
+  const hasTestId = testId !== undefined && testId !== "";
   const isKeyInvalid = Boolean(error?.key) || Boolean(pair.value && !pair.key) || isDuplicate;
   const isValueInvalid = Boolean(error?.value) || Boolean(pair.key && !pair.value);
 
@@ -127,7 +140,7 @@ function KeyValueRow({
         disabled={disabled}
         isInvalid={isKeyInvalid}
         onChange={(val) => onKeyChange(index, val)}
-        testId={testId ? `${testId}-key-${index}` : undefined}
+        testId={hasTestId ? `${testId}-key-${index}` : undefined}
         value={pair.key}
       />
       <FieldRenderer
@@ -135,12 +148,12 @@ function KeyValueRow({
         disabled={disabled}
         isInvalid={isValueInvalid}
         onChange={(val) => onValueChange(index, val)}
-        testId={testId ? `${testId}-value-${index}` : undefined}
+        testId={hasTestId ? `${testId}-value-${index}` : undefined}
         value={pair.value}
       />
       <Button
         aria-label="Delete key-value pair"
-        data-testid={testId ? `${testId}-delete-${index}` : undefined}
+        data-testid={hasTestId ? `${testId}-delete-${index}` : undefined}
         disabled={disabled}
         onClick={() => onDelete(index)}
         size="icon-sm"
@@ -154,7 +167,7 @@ function KeyValueRow({
         <Button
           className="col-span-2"
           data-slot="add-button"
-          data-testid={testId ? `${testId}-add` : undefined}
+          data-testid={hasTestId ? `${testId}-add` : undefined}
           disabled={disabled}
           onClick={onAdd}
           size="sm"
@@ -176,8 +189,8 @@ export function KeyValueField({
   label,
   description,
   addButtonLabel = "Add",
-  keyFieldProps = { placeholder: "Key" },
-  valueFieldProps = { placeholder: "Value" },
+  keyFieldProps = DEFAULT_KEY_FIELD_PROPS,
+  valueFieldProps = DEFAULT_VALUE_FIELD_PROPS,
   showAddButton = true,
   disabled,
   maxItems,
@@ -240,7 +253,7 @@ export function KeyValueField({
           isLast={index === value.length - 1}
           key={index}
           keyFieldProps={keyFieldProps}
-          onAdd={showAddButton && !isAtLimit ? handleAdd : undefined}
+          onAdd={showAddButton === true && !isAtLimit ? handleAdd : undefined}
           onDelete={handleDelete}
           onKeyChange={handleKeyChange}
           onValueChange={handleValueChange}
@@ -249,10 +262,10 @@ export function KeyValueField({
           valueFieldProps={valueFieldProps}
         />
       ))}
-      {value.length === 0 && showAddButton && !isAtLimit ? (
+      {value.length === 0 && showAddButton === true && !isAtLimit ? (
         <Button
           data-slot="add-button"
-          data-testid={testId ? `${testId}-add` : undefined}
+          data-testid={testId !== undefined && testId !== "" ? `${testId}-add` : undefined}
           disabled={disabled}
           onClick={handleAdd}
           size="sm"
