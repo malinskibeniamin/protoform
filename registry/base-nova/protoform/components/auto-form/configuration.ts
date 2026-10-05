@@ -86,7 +86,7 @@ function collectFields(
 
 function resolvedRenderer(field: ParsedField, registry: FieldTypeRegistry<string>): string {
   const configured = getFieldUiConfig(field).control;
-  if (configured) {
+  if (configured !== undefined && configured !== "") {
     return configured;
   }
   return registry.resolve(field, buildFieldMatchContext(field))?.name ?? resolveRenderFieldType(field);
@@ -175,16 +175,17 @@ export function inspectAutoFormConfiguration<
   stepper,
 }: InspectAutoFormConfigurationInput<T, TCustomFieldType>): AutoFormConfigurationDiagnostic[] {
   const stepConfigurationError = stepper ? getStepConfigurationError(stepper.steps, stepper.defaultStep) : undefined;
-  const stepDiagnostic: AutoFormConfigurationDiagnostic[] = stepConfigurationError
-    ? [
-        {
-          code: "invalid-step-configuration",
-          message: stepConfigurationError,
-          path: "$",
-          severity: "error",
-        },
-      ]
-    : [];
+  const stepDiagnostic: AutoFormConfigurationDiagnostic[] =
+    stepConfigurationError !== undefined && stepConfigurationError !== ""
+      ? [
+          {
+            code: "invalid-step-configuration",
+            message: stepConfigurationError,
+            path: "$",
+            severity: "error",
+          },
+        ]
+      : [];
 
   let resolvedSchema: ReturnType<typeof resolveSchema>;
   try {
@@ -220,10 +221,16 @@ export function inspectAutoFormConfiguration<
 
   for (const { field, path } of flattenedFields) {
     diagnostics.push(...fieldDiagnostics(field, path, activeRegistry, dataProviders));
-    if (field.hints?.step && stepper && !stepper.steps.some((step) => step.id === field.hints?.step)) {
+    const fieldStep = field.hints?.step;
+    if (
+      fieldStep !== undefined &&
+      fieldStep !== "" &&
+      stepper &&
+      !stepper.steps.some((step) => step.id === fieldStep)
+    ) {
       diagnostics.push({
         code: "invalid-step-configuration",
-        message: 'Field references unknown step "'.concat(field.hints.step, '".'),
+        message: 'Field references unknown step "'.concat(fieldStep, '".'),
         path,
         severity: "error",
       });

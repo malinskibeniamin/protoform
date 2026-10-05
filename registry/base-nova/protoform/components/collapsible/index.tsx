@@ -7,6 +7,8 @@ import React from "react";
 import { asChildToRender, asChildTrigger, narrowOpenChange } from "@/registry/base-nova/protoform/lib/base-ui-compat";
 import { cn, type SharedProps } from "@/registry/base-nova/protoform/lib/utils";
 
+const DEFAULT_TRANSITION = { damping: 22, stiffness: 150, type: "spring" } satisfies Transition;
+
 interface CollapsibleContextType {
   isOpen: boolean;
 }
@@ -15,7 +17,7 @@ const CollapsibleContext = React.createContext<CollapsibleContextType | undefine
 
 const useCollapsible = (): CollapsibleContextType => {
   const context = React.useContext(CollapsibleContext);
-  if (!context) {
+  if (context === undefined) {
     throw new Error("useCollapsible must be used within a Collapsible");
   }
   return context;
@@ -76,7 +78,7 @@ type CollapsibleContentProps = React.ComponentProps<typeof CollapsiblePrimitive.
 function CollapsibleContent({
   className,
   children,
-  transition = { damping: 22, stiffness: 150, type: "spring" },
+  transition = DEFAULT_TRANSITION,
   ...props
 }: CollapsibleContentProps) {
   const { isOpen } = useCollapsible();

@@ -227,7 +227,7 @@ function CommandSubTrigger({ className, children, inset, ...props }: CommandSubT
         <CommandPrimitive.Item
           className={cn(
             "relative flex cursor-pointer select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden data-[disabled=true]:pointer-events-none data-[selected=true]:bg-accent data-[disabled=true]:text-muted-foreground data-[selected=true]:text-accent-foreground data-[disabled=true]:opacity-50 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
-            inset && "pl-8",
+            inset === true && "pl-8",
             className
           )}
           data-slot="command-sub-trigger"

@@ -12,11 +12,13 @@ function FieldMaskFieldComponent({ error, field, id, inputProps }: AutoFormField
   const allowedPaths = getProtoFieldCustomData(field)?.allowedPaths;
   const textValue = Array.isArray(inputProps["value"]) ? inputProps["value"].join("\n") : "";
 
+  const { placeholder } = getFieldUiConfig(field);
+
   return (
     <div className="space-y-2">
       <Textarea
         aria-invalid={Boolean(error)}
-        className={error ? "border-destructive font-mono" : "font-mono"}
+        className={error !== undefined && error !== "" ? "border-destructive font-mono" : "font-mono"}
         disabled={inputProps["disabled"]}
         id={id}
         onBlur={inputProps["onBlur"]}
@@ -27,7 +29,7 @@ function FieldMaskFieldComponent({ error, field, id, inputProps }: AutoFormField
             .filter(Boolean);
           inputProps["onValueChange"](paths);
         }}
-        placeholder={getFieldUiConfig(field).placeholder || "profile\nnotifications.email"}
+        placeholder={placeholder !== undefined && placeholder !== "" ? placeholder : "profile\nnotifications.email"}
         resize="vertical"
         testId={testIds.control}
         value={textValue}

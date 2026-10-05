@@ -14,7 +14,7 @@ function fieldErrorMessage(error: unknown): string | undefined {
   if (typeof error === "string") {
     return error;
   }
-  if (error && typeof error === "object") {
+  if (error !== null && typeof error === "object") {
     const message = Reflect.get(error, "message");
     return typeof message === "string" ? message : undefined;
   }
@@ -39,7 +39,7 @@ export function TanStackFormExample({ baseUrl }: { baseUrl?: string }) {
       } catch (error) {
         const result = form.setServerErrors(error);
         const messages = result.unmapped.map((violation) => `${violation.field}: ${violation.description}`);
-        if (!result.handled && result.context.message) {
+        if (!result.handled && result.context.message !== undefined && result.context.message !== "") {
           messages.unshift(result.context.message);
         }
         if (!result.handled && messages.length === 0) {

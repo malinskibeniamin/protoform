@@ -43,7 +43,7 @@ function BooleanFieldComponent({ error, field, id, inputProps, label }: AutoForm
       <SelectTrigger
         aria-invalid={Boolean(error)}
         aria-label={fieldLabel}
-        className={error ? "border-destructive" : ""}
+        className={error !== undefined && error !== "" ? "border-destructive" : ""}
         disabled={inputProps["disabled"]}
         id={id}
         testId={testIds.control}
@@ -115,6 +115,7 @@ function SwitchFieldComponent({ error, field, id, inputProps, label }: AutoFormF
 
 function ToggleFieldComponent({ error, field, id, inputProps, label }: AutoFormFieldProps) {
   const testIds = useFieldTestIds(id);
+  const isOn = Boolean(inputProps["value"]);
 
   return (
     <div className="flex min-h-9 items-center gap-3" data-testid={testIds.control}>
@@ -134,7 +135,7 @@ function ToggleFieldComponent({ error, field, id, inputProps, label }: AutoFormF
         size="sm"
         variant="outline"
       >
-        {inputProps["value"] ? "On" : "Off"}
+        {isOn ? "On" : "Off"}
       </Toggle>
     </div>
   );

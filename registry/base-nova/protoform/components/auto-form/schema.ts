@@ -6,15 +6,15 @@ import { isProtoMessageDescriptor, isProtoProvider, ProtoProvider } from "./prot
 import type { AutoFormSchemaInput, FieldConfigMap, FieldTypes, RenderFieldConfig, ResolvedSchema } from "./types";
 
 function isSchemaProvider(value: unknown): value is SchemaProvider<Record<string, unknown>> {
-  return Boolean(
-    value &&
-      typeof value === "object" &&
-      "parseSchema" in value &&
-      typeof (value as SchemaProvider<Record<string, unknown>>).parseSchema === "function" &&
-      "validateSchema" in value &&
-      typeof (value as SchemaProvider<Record<string, unknown>>).validateSchema === "function" &&
-      "getDefaultValues" in value &&
-      typeof (value as SchemaProvider<Record<string, unknown>>).getDefaultValues === "function"
+  return (
+    value !== null &&
+    typeof value === "object" &&
+    "parseSchema" in value &&
+    typeof (value as SchemaProvider<Record<string, unknown>>).parseSchema === "function" &&
+    "validateSchema" in value &&
+    typeof (value as SchemaProvider<Record<string, unknown>>).validateSchema === "function" &&
+    "getDefaultValues" in value &&
+    typeof (value as SchemaProvider<Record<string, unknown>>).getDefaultValues === "function"
   );
 }
 

@@ -207,7 +207,7 @@ export function extractConnectErrorContext(error: unknown): ConnectErrorContext 
     ...new Set(
       error.details.flatMap((detail) => {
         const typeName = connectDetailTypeName(detail);
-        return typeName && !MAPPED_DETAIL_TYPES.has(typeName) ? [typeName] : [];
+        return typeName !== undefined && typeName !== "" && !MAPPED_DETAIL_TYPES.has(typeName) ? [typeName] : [];
       })
     ),
   ];
@@ -247,7 +247,7 @@ export function extractConnectErrorContext(error: unknown): ConnectErrorContext 
       if (metaKeys.length > 0) {
         context.metadata = { ...info.metadata };
         const metaReq = info.metadata["request_id"] ?? info.metadata["requestId"];
-        if (metaReq && !context.requestId) {
+        if (metaReq && !(context.requestId !== undefined && context.requestId !== "")) {
           context.requestId = metaReq;
         }
       }

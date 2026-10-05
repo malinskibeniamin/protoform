@@ -46,7 +46,7 @@ export function FormSection({ title, description, divider, required, testId, cla
               <Heading className="font-medium" level={level}>
                 {title}
               </Heading>
-              {required ? (
+              {required === true ? (
                 <Text as="span" className="text-destructive" variant="small">
                   *
                 </Text>
@@ -101,7 +101,7 @@ export function FormField({ label, helpText, error, required, htmlFor, testId, c
           <Text as="span" variant="labelStrongSmall">
             {label}
           </Text>
-          {required ? (
+          {required === true ? (
             <Text as="span" className="text-destructive" variant="small">
               *
             </Text>

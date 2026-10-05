@@ -232,7 +232,7 @@ export function StringLikeInput({
   return (
     <Input
       aria-invalid={Boolean(error)}
-      className={error ? "border-destructive" : ""}
+      className={error !== undefined && error !== "" ? "border-destructive" : ""}
       disabled={controlProps.disabled}
       id={id}
       name={controlProps.name}

@@ -27,13 +27,15 @@ function ComboboxFieldComponent({ field, id, inputProps }: AutoFormFieldProps) {
           value: option.value,
         }));
 
+  const { placeholder } = getFieldUiConfig(field);
+
   return (
     <Combobox
       disabled={inputProps["disabled"]}
       inputTestId={testIds.control}
       onChange={(value) => inputProps["onValueChange"](numericOptions ? Number(value) : value)}
       options={options}
-      placeholder={getFieldUiConfig(field).placeholder || "Search options"}
+      placeholder={placeholder !== undefined && placeholder !== "" ? placeholder : "Search options"}
       value={inputProps["value"] === undefined || inputProps["value"] === null ? "" : String(inputProps["value"])}
     />
   );

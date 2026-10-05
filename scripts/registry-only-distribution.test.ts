@@ -93,7 +93,7 @@ describe("registry-only distribution", () => {
           ? dependency.slice("@protoform/".length)
           : undefined;
         const dependencyItem = dependencyName ? itemsByName.get(dependencyName) : undefined;
-        return dependencyItem ? installsLicense(dependencyItem, new Set(visited)) : false;
+        return dependencyItem === undefined ? false : installsLicense(dependencyItem, new Set(visited));
       });
     }
 

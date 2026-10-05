@@ -34,7 +34,7 @@ export function isProtoMapEntries(value: unknown): value is ProtoMapFormEntry[] 
 }
 
 function isProtoMessageShape(value: unknown): boolean {
-  return Boolean(value && typeof value === "object" && "$typeName" in (value as Record<string, unknown>));
+  return value !== null && typeof value === "object" && "$typeName" in (value as Record<string, unknown>);
 }
 
 export function resolveProtoSourceMessage<Desc extends DescMessage>(

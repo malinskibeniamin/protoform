@@ -89,21 +89,14 @@ const _files = await Promise.all(
       <div class="prose max-w-none">
         <Tabs hash={false} sync={false}>
           {_files.map((file) => (
-              <Tab
-                class="grid h-[48rem] max-h-[48rem] grid-rows-[auto_1fr] p-0!"
-                title={file.name}
-              >
-                <div class="flex items-center justify-between gap-4 border-b bg-muted/30 px-4 py-2">
-                  <span class="truncate font-mono text-muted-foreground text-xs">
-                    {file.path}
-                  </span>
-                  <span class="shrink-0 text-muted-foreground text-xs">
-                    {file.language}
-                  </span>
-                </div>
-                <Fragment set:html={file.highlightedSource} />
-              </Tab>
-            ))}
+            <Tab class="grid h-[48rem] max-h-[48rem] grid-rows-[auto_1fr] p-0!" title={file.name}>
+              <div class="flex items-center justify-between gap-4 border-b bg-muted/30 px-4 py-2">
+                <span class="truncate font-mono text-muted-foreground text-xs">{file.path}</span>
+                <span class="shrink-0 text-muted-foreground text-xs">{file.language}</span>
+              </div>
+              <Fragment set:html={file.highlightedSource} />
+            </Tab>
+          ))}
         </Tabs>
       </div>
     </section>

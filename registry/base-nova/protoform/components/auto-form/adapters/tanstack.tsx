@@ -68,7 +68,7 @@ const TanStackEngineContext = React.createContext<TanStackEngineContextValue | n
 
 function useTanStackEngineContext() {
   const context = React.useContext(TanStackEngineContext);
-  if (!context) {
+  if (context === null) {
     throw new Error("TanStack AutoForm controls must be rendered inside the TanStack engine.");
   }
   return context;
@@ -221,7 +221,7 @@ function formValuesEqual(left: unknown, right: unknown): boolean {
   if (Object.is(left, right)) {
     return true;
   }
-  if (!(left && right) || typeof left !== "object" || typeof right !== "object") {
+  if (left === null || right === null || typeof left !== "object" || typeof right !== "object") {
     return false;
   }
   if (left instanceof Date && right instanceof Date) {

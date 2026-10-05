@@ -9,13 +9,15 @@ import { StringLikeInput, useFieldTestIds } from "./shared";
 function UrlFieldComponent(props: AutoFormFieldProps) {
   const testIds = useFieldTestIds(props.id);
 
+  const { placeholder } = getFieldUiConfig(props.field);
+
   return (
     <StringLikeInput
       error={props.error}
       icon={<Link2Icon className="size-4" />}
       id={props.id}
       inputProps={props.inputProps}
-      placeholder={getFieldUiConfig(props.field).placeholder || "https://"}
+      placeholder={placeholder !== undefined && placeholder !== "" ? placeholder : "https://"}
       testId={testIds.control}
       type="url"
     />

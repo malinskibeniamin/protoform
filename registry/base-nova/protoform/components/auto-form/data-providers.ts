@@ -114,7 +114,7 @@ export function resolveDataProvider(
   registry: DataProviderRegistry | undefined,
   id: string | undefined
 ): ResolvedDataProvider | undefined {
-  if (!(registry && id)) {
+  if (!(registry && id !== undefined && id !== "")) {
     return;
   }
   const registration = registry[id];

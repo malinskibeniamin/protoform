@@ -6,7 +6,7 @@ export function expectedReleaseTag(version: string): string {
 }
 
 export function verifyReleaseTag(tag: string | undefined, version: string): void {
-  if (!tag) {
+  if (!(tag !== undefined && tag !== "")) {
     throw new Error("GITHUB_REF_NAME is required for a release.");
   }
   if (tag !== expectedReleaseTag(version)) {

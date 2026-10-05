@@ -17,9 +17,7 @@ const sidebar = Astro.props.navigation.sidebar.map((item) => {
 
 <RootLayout
   {...Astro.props}
-  localeSwitch={Astro.props.localeSwitch?.filter(
-    (locale) => locale.current || !locale.untranslated
-  )}
+  localeSwitch={Astro.props.localeSwitch?.filter((locale) => locale.current || !locale.untranslated)}
   navigation={{ ...Astro.props.navigation, sidebar }}
 >
   <slot />

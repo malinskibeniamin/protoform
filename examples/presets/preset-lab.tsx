@@ -348,11 +348,11 @@ function useWorkspaceFullscreen(setStatus: (message: string) => void) {
   const [workspaceHost] = useState(createWorkspaceHost);
   const [isNativeFullscreen, setIsNativeFullscreen] = useState(false);
   const [isFallbackFullscreen, setIsFallbackFullscreen] = useState(false);
-  const isFullscreen = isNativeFullscreen || isFallbackFullscreen;
+  const isFullscreen = isNativeFullscreen === true || isFallbackFullscreen === true;
   let mode: FullscreenMode = "none";
-  if (isNativeFullscreen) {
+  if (isNativeFullscreen === true) {
     mode = "native";
-  } else if (isFallbackFullscreen) {
+  } else if (isFallbackFullscreen === true) {
     mode = "fallback";
   }
 
@@ -369,7 +369,7 @@ function useWorkspaceFullscreen(setStatus: (message: string) => void) {
   useEffect(
     function mountWorkspaceHost() {
       const inlineHost: HTMLDivElement | null = inlineHostRef.current;
-      if (!(inlineHost && workspaceHost)) {
+      if (!(inlineHost && workspaceHost !== null)) {
         return;
       }
 
@@ -381,13 +381,13 @@ function useWorkspaceFullscreen(setStatus: (message: string) => void) {
 
   useEffect(
     function isolateFallbackFullscreen() {
-      if (!isFallbackFullscreen) {
+      if (isFallbackFullscreen !== true) {
         return;
       }
 
       const workspace: HTMLElement | null = workspaceRef.current;
       const inlineHost: HTMLDivElement | null = inlineHostRef.current;
-      if (!(workspace && inlineHost && workspaceHost)) {
+      if (!(workspace && inlineHost && workspaceHost !== null)) {
         return;
       }
 
@@ -420,7 +420,7 @@ function useWorkspaceFullscreen(setStatus: (message: string) => void) {
       return;
     }
 
-    if (isFallbackFullscreen) {
+    if (isFallbackFullscreen === true) {
       setIsFallbackFullscreen(false);
       setStatus("Full screen closed.");
       return;
@@ -533,8 +533,9 @@ export function PresetLab() {
   return (
     <div className="not-prose" data-testid="preset-lab">
       <div ref={inlineHostRef} />
-      {workspaceHost
-        ? createPortal(
+      {workspaceHost === null
+        ? null
+        : createPortal(
             <PresetWorkspaceShell
               fullscreenMode={fullscreenMode}
               isFallbackFullscreen={isFallbackFullscreen}
@@ -787,8 +788,7 @@ export function PresetLab() {
               </footer>
             </PresetWorkspaceShell>,
             workspaceHost
-          )
-        : null}
+          )}
     </div>
   );
 }

@@ -42,7 +42,7 @@ function Separator({
   testId,
   ...props
 }: SeparatorProps) {
-  const a11yProps = decorative ? { "aria-hidden": true, role: "none" as const } : {};
+  const a11yProps = decorative === true ? { "aria-hidden": true, role: "none" as const } : {};
   return (
     <SeparatorPrimitive
       className={cn(separatorVariants({ variant }), className)}

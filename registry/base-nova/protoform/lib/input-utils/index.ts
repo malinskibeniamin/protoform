@@ -63,11 +63,11 @@ function collectPairIssues(
     issues.push({ message: `Duplicate key: "${pair.key}"`, path: [index, "key"] });
   }
 
-  if (maxKeyLength && pair.key.length > maxKeyLength) {
+  if (maxKeyLength !== undefined && maxKeyLength !== 0 && pair.key.length > maxKeyLength) {
     issues.push({ message: `Key exceeds maximum length of ${maxKeyLength}`, path: [index, "key"] });
   }
 
-  if (maxValueLength && pair.value.length > maxValueLength) {
+  if (maxValueLength !== undefined && maxValueLength !== 0 && pair.value.length > maxValueLength) {
     issues.push({ message: `Value exceeds maximum length of ${maxValueLength}`, path: [index, "value"] });
   }
 
@@ -181,7 +181,7 @@ export function useInputListFocus(containerRef: RefObject<HTMLElement | null>) {
   // renders are no-ops.
   useEffect(() => {
     const event = pendingRef.current;
-    if (!(event && containerRef.current)) {
+    if (event === null || containerRef.current === null) {
       return;
     }
     pendingRef.current = null;
@@ -261,7 +261,7 @@ export function useUndoRemoval(timeout = 5000) {
       setPending((prev) => new Set([...prev, id]));
 
       const existing = timersRef.current.get(id);
-      if (existing) {
+      if (existing !== undefined) {
         clearTimeout(existing);
       }
 
@@ -282,7 +282,7 @@ export function useUndoRemoval(timeout = 5000) {
 
   const undoRemoval = useCallback((id: string) => {
     const timer = timersRef.current.get(id);
-    if (timer) {
+    if (timer !== undefined) {
       clearTimeout(timer);
       timersRef.current.delete(id);
     }

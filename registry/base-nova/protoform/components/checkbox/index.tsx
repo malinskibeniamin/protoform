@@ -81,7 +81,7 @@ const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
     let dataState = "unchecked";
     if (isIndeterminate) {
       dataState = "indeterminate";
-    } else if (isChecked) {
+    } else if (isChecked === true) {
       dataState = "checked";
     }
     const showCheckmark = isChecked === true && !isIndeterminate;

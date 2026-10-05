@@ -310,12 +310,12 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           {isPasswordInput ? (
             <PasswordVisibilityControl
               disabled={controlsDisabled}
-              onToggle={() => setShowPassword(!showPassword)}
+              onToggle={() => setShowPassword(showPassword !== true)}
               showPassword={showPassword}
               size={size}
             />
           ) : null}
-          {shouldShowControls ? (
+          {shouldShowControls === true ? (
             <NumberInputControls decrement={decrement} disabled={controlsDisabled} increment={increment} size={size} />
           ) : null}
         </div>
@@ -344,7 +344,7 @@ const InputContext = createContext<{
 
 const useInputContext = () => {
   const context = React.useContext(InputContext);
-  if (!context) {
+  if (context === null) {
     throw new Error("useInputContext must be used within an InputContextProvider");
   }
   return context;

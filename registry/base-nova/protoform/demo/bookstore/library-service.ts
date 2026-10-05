@@ -66,7 +66,8 @@ function validateBookId(bookId: string): void {
 }
 
 function isUpdatableBookPath(path: string): path is UpdatableBookPath {
-  return UPDATABLE_BOOK_PATHS.some((candidate) => candidate === path);
+  const paths: readonly string[] = UPDATABLE_BOOK_PATHS;
+  return paths.includes(path);
 }
 
 function populatedUpdatableBookPaths(book: Book): UpdatableBookPath[] {

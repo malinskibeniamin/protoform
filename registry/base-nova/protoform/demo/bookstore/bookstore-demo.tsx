@@ -24,7 +24,7 @@ function newVisitorId(): string {
 }
 
 function initialVisitorId(provided?: string): string {
-  if (provided) {
+  if (provided !== undefined && provided !== "") {
     return provided;
   }
   if (typeof sessionStorage === "undefined") {

@@ -82,7 +82,7 @@ const isTypeSupported = (type: JSONSchemaType["type"], supportedTypes: ReadonlyS
 };
 
 const isSimpleObject = (schema: JSONSchemaType): boolean => {
-  if (schema.type && isTypeSupported(schema.type, SIMPLE_JSON_TYPES)) {
+  if (schema.type !== undefined && isTypeSupported(schema.type, SIMPLE_JSON_TYPES)) {
     return true;
   }
   if (schema.type === "object") {
@@ -155,7 +155,7 @@ const generateExampleData = (schema: JSONSchemaType): JSONValue => {
 };
 
 const hasEmptyValues = (value: JSONValue, schema: JSONSchemaType): boolean => {
-  if (!value) {
+  if (!(value !== undefined && value !== null && Boolean(value))) {
     return true;
   }
 
@@ -217,6 +217,7 @@ const JSONField = ({
 }: JSONFieldProps) => {
   "use no memo";
 
+  const hasValue = Boolean(value);
   const [isJSONMode, setIsJSONMode] = useState(false);
   const [jsonError, setJSONError] = useState<string>();
   const customFieldsByName = React.useMemo(
@@ -229,10 +230,12 @@ const JSONField = ({
   const [rawJSONValue, setRawJSONValue] = useState<string>(() => {
     // Use example data when starting with empty values and showPlaceholder is true
     let initialValue: JSONValue;
-    if (showPlaceholder && hasEmptyValues(value, schema)) {
+    if (showPlaceholder === true && hasEmptyValues(value, schema)) {
       initialValue = generateExampleData(schema);
+    } else if (hasValue) {
+      initialValue = value;
     } else {
-      initialValue = value || (schema.type === "array" ? [] : {});
+      initialValue = schema.type === "array" ? [] : {};
     }
     return JSON.stringify(initialValue, null, 2);
   });
@@ -245,7 +248,7 @@ const JSONField = ({
   const debouncedUpdateParent = useCallback(
     (jsonString: string) => {
       // Clear any existing timeout
-      if (timeoutRef.current) {
+      if (timeoutRef.current !== null) {
         clearTimeout(timeoutRef.current);
       }
 
@@ -268,18 +271,20 @@ const JSONField = ({
     function synchronizeAutoSelections() {
       // Use example data when the value is empty and showPlaceholder is true
       let displayValue: JSONValue;
-      if (showPlaceholder && hasEmptyValues(value, schema)) {
+      if (showPlaceholder === true && hasEmptyValues(value, schema)) {
         displayValue = generateExampleData(schema);
+      } else if (hasValue) {
+        displayValue = value;
       } else {
-        displayValue = value || (schema.type === "array" ? [] : {});
+        displayValue = schema.type === "array" ? [] : {};
       }
       setRawJSONValue(JSON.stringify(displayValue, null, 2));
     },
-    [value, schema, showPlaceholder]
+    [value, schema, showPlaceholder, hasValue]
   );
 
   const handleSwitchToFormMode = () => {
-    if (isJSONMode) {
+    if (isJSONMode === true) {
       // When switching to Form mode, ensure we have valid JSON
       try {
         const parsed = JSON.parse(rawJSONValue);
@@ -293,10 +298,12 @@ const JSONField = ({
     } else {
       // When switching to JSON mode, generate example data if showPlaceholder is true and current value is empty
       let displayValue: JSONValue;
-      if (showPlaceholder && hasEmptyValues(value, schema)) {
+      if (showPlaceholder === true && hasEmptyValues(value, schema)) {
         displayValue = generateExampleData(schema);
+      } else if (hasValue) {
+        displayValue = value;
       } else {
-        displayValue = value || (schema.type === "array" ? [] : {});
+        displayValue = schema.type === "array" ? [] : {};
       }
       setRawJSONValue(JSON.stringify(displayValue, null, 2));
       setIsJSONMode(true);
@@ -347,7 +354,7 @@ const JSONField = ({
     }
 
     // Check if this property is required in the parent schema
-    const isRequired = parentSchema?.required?.includes(propertyName || "") ?? false;
+    const isRequired = parentSchema?.required?.includes(propertyName ?? "") ?? false;
 
     let fieldType = propSchema.type;
     if (Array.isArray(fieldType)) {
@@ -363,7 +370,10 @@ const JSONField = ({
           // Auto-select if there's only one option and no current value
           // Use the default value instead of triggering state updates during render
           const effectiveValue = (() => {
-            if (customFieldConfig.options.length === 1 && !currentValue) {
+            if (
+              customFieldConfig.options.length === 1 &&
+              !(currentValue !== undefined && currentValue !== null && Boolean(currentValue))
+            ) {
               return customFieldConfig.options[0]?.value ?? "";
             }
             return currentValue as string;
@@ -612,7 +622,7 @@ const JSONField = ({
           const requiredItemFields = new Set(propSchema.items.required ?? []);
           return (
             <div className="space-y-4">
-              {propSchema.description ? (
+              {propSchema.description !== undefined && propSchema.description !== "" ? (
                 <Text className="text-muted-foreground" variant="small">
                   {propSchema.description}
                 </Text>
@@ -622,10 +632,11 @@ const JSONField = ({
                 {arrayValue.map((item, index) => {
                   // Create a contextual name for the array item
                   const itemTypeName =
-                    propSchema.items?.title ||
-                    propSchema.items?.description ||
-                    propertyName?.replace(TRAILING_S_REGEX, "") ||
-                    "Item"; // Remove trailing 's' from property name
+                    [
+                      propSchema.items?.title,
+                      propSchema.items?.description,
+                      propertyName?.replace(TRAILING_S_REGEX, ""),
+                    ].find(Boolean) ?? "Item"; // Remove trailing 's' from property name
                   const itemDisplayName = itemTypeName.charAt(0).toUpperCase() + itemTypeName.slice(1);
 
                   return (
@@ -693,10 +704,11 @@ const JSONField = ({
                   variant="dashed"
                 >
                   + Add{" "}
-                  {propSchema.items?.title ||
-                    propSchema.items?.description ||
-                    propertyName?.replace(TRAILING_S_REGEX, "") ||
-                    "Item"}
+                  {[
+                    propSchema.items?.title,
+                    propSchema.items?.description,
+                    propertyName?.replace(TRAILING_S_REGEX, ""),
+                  ].find(Boolean) ?? "Item"}
                 </Button>
               </div>
             </div>
@@ -746,7 +758,7 @@ const JSONField = ({
     (schema.type === "array" && !schema.items);
 
   useEffect(() => {
-    if (shouldUseJSONMode && !isJSONMode) {
+    if (shouldUseJSONMode && isJSONMode !== true) {
       setIsJSONMode(true);
     }
   }, [shouldUseJSONMode, isJSONMode]);
@@ -770,7 +782,7 @@ const JSONField = ({
     };
 
     // Only initialize if we have a value and are not in JSON mode
-    if (value !== undefined && !isJSONMode) {
+    if (value !== undefined && isJSONMode !== true) {
       initializeArrayDefaults(schema, value);
     }
   }, [schema, value, onChange, isJSONMode]);
@@ -783,7 +795,11 @@ const JSONField = ({
           const subValue = getJSONProperty(currentValue, key);
           const customFieldConfig = customFieldsByName.get(key);
 
-          if (customFieldConfig && customFieldConfig.options.length === 1 && !subValue) {
+          if (
+            customFieldConfig !== undefined &&
+            customFieldConfig.options.length === 1 &&
+            !(subValue !== undefined && subValue !== null && Boolean(subValue))
+          ) {
             const autoSelectedValue = customFieldConfig.options[0]?.value ?? "";
             handleFieldChangeEffect([...path, key], autoSelectedValue);
           }
@@ -793,7 +809,7 @@ const JSONField = ({
       }
     };
 
-    if (value !== undefined && !isJSONMode && customFieldsByName.size > 0) {
+    if (value !== undefined && isJSONMode !== true && customFieldsByName.size > 0) {
       syncAutoSelections(schema, value);
     }
   }, [schema, value, customFieldsByName, isJSONMode]);
@@ -801,7 +817,7 @@ const JSONField = ({
   return (
     <div className={cn("space-y-4", className)} data-testid={testId} onBlur={onBlur} ref={ref} {...rest}>
       <div className="flex flex-wrap justify-end gap-2">
-        {isJSONMode ? (
+        {isJSONMode === true ? (
           <>
             <CopyButton
               content={JSON.stringify(value, null, 2)}
@@ -826,7 +842,7 @@ const JSONField = ({
         ) : null}
 
         <Button onClick={handleSwitchToFormMode} size="sm" type="button" variant="outline">
-          {isJSONMode ? (
+          {isJSONMode === true ? (
             <>
               <FileEdit className="size-4" />
               Switch to Form
@@ -840,7 +856,7 @@ const JSONField = ({
         </Button>
       </div>
 
-      {isJSONMode ? (
+      {isJSONMode === true ? (
         <JSONEditor
           error={jsonError}
           label="JSON value"
@@ -884,14 +900,19 @@ const JSONEditor = ({ value, onChange, error: externalError, label }: JSONEditor
     onChange(newContent);
   };
 
-  const displayError = internalError || externalError;
+  const displayError = internalError !== undefined && internalError !== "" ? internalError : externalError;
 
   return (
     <div className="relative">
       <label className="sr-only" htmlFor={editorId}>
         {label}
       </label>
-      <div className={cn("rounded-md border", displayError ? "border-destructive" : "border-border")}>
+      <div
+        className={cn(
+          "rounded-md border",
+          displayError !== undefined && displayError !== "" ? "border-destructive" : "border-border"
+        )}
+      >
         <Editor
           className="min-h-25 w-full bg-transparent font-mono text-sm"
           highlight={highlightJson}
@@ -901,7 +922,7 @@ const JSONEditor = ({ value, onChange, error: externalError, label }: JSONEditor
           value={editorContent}
         />
       </div>
-      {displayError ? (
+      {displayError !== undefined && displayError !== "" ? (
         <Text className="mt-1 text-destructive" variant="small">
           {displayError}
         </Text>

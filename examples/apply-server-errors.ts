@@ -22,7 +22,7 @@ export function applyServerFieldErrors<T extends Record<string, unknown>>(
   let focused = false;
   for (const violation of violations) {
     const path = protoPathToFormPath(schema, violation.field);
-    if (!path) {
+    if (!(path !== null && path !== "")) {
       unmapped.push(`${violation.field}: ${violation.description || "Invalid value."}`);
       continue;
     }

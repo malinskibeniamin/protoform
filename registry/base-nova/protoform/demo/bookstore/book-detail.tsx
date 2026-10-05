@@ -24,7 +24,7 @@ export function BookDetail({
   if (isPending) {
     return <p aria-live="polite">Loading book…</p>;
   }
-  if (error || !book) {
+  if ((error !== undefined && error !== "") || !book) {
     return (
       <Alert variant="destructive">
         <AlertTitle>Book not loaded</AlertTitle>

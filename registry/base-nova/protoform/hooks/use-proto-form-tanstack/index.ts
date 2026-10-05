@@ -33,7 +33,7 @@ function getErrorMessage(error: unknown): string | undefined {
   if (typeof error === "string") {
     return error;
   }
-  if (error && typeof error === "object") {
+  if (error !== null && typeof error === "object") {
     const message = Reflect.get(error, "message");
     return typeof message === "string" ? message : undefined;
   }
@@ -206,7 +206,10 @@ export function useProtoForm<
     emptyRepeatedStringPolicies,
     formatMessage,
   };
-  const pathPrefixes = serverPathPrefix ? [serverPathPrefix, ...serverPathPrefixes] : serverPathPrefixes;
+  const pathPrefixes =
+    serverPathPrefix !== undefined && serverPathPrefix !== ""
+      ? [serverPathPrefix, ...serverPathPrefixes]
+      : serverPathPrefixes;
   const protoSchema = createProtoFormSchema<Values, Desc>(schema, conversionOptions);
   const onSubmitAsyncValidator = composeSubmitAsyncValidator(nativeOptions.validators?.onSubmitAsync, protoSchema);
   const composedOptions = {
@@ -254,7 +257,7 @@ export function useProtoForm<
     for (const violation of extractFieldViolations(error)) {
       const serverPath = stripPrefix(violation.field, pathPrefixes);
       const formPath = protoPathToFormPath(schema, serverPath);
-      if (!formPath) {
+      if (!(formPath !== null && formPath !== "")) {
         unmapped.push(violation);
         continue;
       }
@@ -295,7 +298,7 @@ export function useProtoForm<
       );
     }
     const previous = current as { case?: string } | undefined;
-    if (previous?.case && previous.case !== oneofCase) {
+    if (previous?.case !== undefined && previous?.case !== "" && previous.case !== oneofCase) {
       setDynamicFieldValue(path, { case: undefined, value: undefined });
     }
     setDynamicFieldValue(path, { case: oneofCase, value }, { dontUpdateMeta: false, ...updateOptions });
@@ -310,7 +313,7 @@ export function useProtoForm<
       }
       const messages = fieldError.errors.flatMap((error) => {
         const message = getErrorMessage(error);
-        return message ? [message] : [];
+        return message !== undefined && message !== "" ? [message] : [];
       });
       if (messages.length === 0) {
         continue;

@@ -9,6 +9,8 @@ import React from "react";
 import type { GroupContextValue, GroupPosition } from "@/components/ui/group";
 import { cn, type SharedProps } from "@/registry/base-nova/protoform/lib/utils";
 
+const DEFAULT_TRANSITION = { bounce: 0, damping: 25, stiffness: 200, type: "spring" } satisfies Transition;
+
 type Orientation = "horizontal" | "vertical";
 
 interface HighlightBounds {
@@ -78,7 +80,7 @@ const ToggleGroupContext = React.createContext<ToggleGroupContextProps | undefin
 
 const useToggleGroup = (): ToggleGroupContextProps => {
   const context = React.useContext(ToggleGroupContext);
-  if (!context) {
+  if (context === undefined) {
     throw new Error("useToggleGroup must be used within a ToggleGroup");
   }
   return context;
@@ -142,7 +144,7 @@ function ToggleGroup({
   variant,
   size,
   children,
-  transition = { bounce: 0, damping: 25, stiffness: 200, type: "spring" },
+  transition = DEFAULT_TRANSITION,
   activeClassName,
   testId,
   attached = true,
@@ -162,6 +164,7 @@ function ToggleGroup({
     typeof defaultValue === "string" ? defaultValue : undefined
   );
   const activeValue = isMultiple ? undefined : ((value as string | undefined) ?? internalActive);
+  const hasActiveValue = Boolean(activeValue);
 
   const handleValueChange = React.useCallback(
     (groupValue: unknown[]) => {
@@ -196,13 +199,13 @@ function ToggleGroup({
   // childCount is a dep so we re-measure when items are inserted/removed:
   // reflow can shift the active item without resizing it.
   React.useLayoutEffect(() => {
-    if (isMultiple || !activeValue) {
+    if (isMultiple || !hasActiveValue) {
       setBounds(null);
       return;
     }
 
     const measure = () => {
-      const el = itemsRef.current.get(activeValue);
+      const el = itemsRef.current.get(activeValue ?? "");
       if (!el) {
         setBounds(null);
         return;
@@ -228,12 +231,12 @@ function ToggleGroup({
     if (groupRef.current) {
       ro.observe(groupRef.current);
     }
-    const activeEl = itemsRef.current.get(activeValue);
+    const activeEl = itemsRef.current.get(activeValue ?? "");
     if (activeEl) {
       ro.observe(activeEl);
     }
     return () => ro.disconnect();
-  }, [activeValue, isMultiple]);
+  }, [activeValue, hasActiveValue, isMultiple]);
 
   // Lock the perpendicular axis so layout shifts in surrounding content
   // don't drag the highlight off-axis.
@@ -243,7 +246,7 @@ function ToggleGroup({
   }, [transition, isHorizontal]);
 
   const getPosition = (index: number): GroupPosition | undefined => {
-    if (!attached || childCount === 1) {
+    if (attached !== true || childCount === 1) {
       return;
     }
     if (index === 0) {
@@ -255,7 +258,7 @@ function ToggleGroup({
     return "middle";
   };
 
-  const activeIndex = activeValue
+  const activeIndex = hasActiveValue
     ? childrenArray.findIndex(
         (child) => React.isValidElement(child) && (child.props as { value?: unknown }).value === activeValue
       )
@@ -271,12 +274,12 @@ function ToggleGroup({
       className={cn(
         "relative flex items-center justify-center",
         !isHorizontal && "flex-col",
-        !isHorizontal && attached && "items-stretch",
+        !isHorizontal && attached === true && "items-stretch",
         variant === "outline" && "!border-primary-foreground rounded-md border p-0.5",
-        !attached && "gap-1",
+        attached !== true && "gap-1",
         className
       )}
-      data-attached={attached || undefined}
+      data-attached={attached === true ? true : undefined}
       data-slot="toggle-group"
       data-testid={testId}
       data-variant={variant}
@@ -308,7 +311,7 @@ function ToggleGroup({
         return (
           <ToggleGroupItemContext
             attached={attached}
-            key={element.key || `toggle-group-item-${index}`}
+            key={element.key === null || element.key === "" ? `toggle-group-item-${index}` : element.key}
             orientation={orientation}
             position={getPosition(index)}
             registerItem={registerItem}
@@ -391,7 +394,7 @@ const ToggleGroupItem = React.forwardRef<HTMLButtonElement, ToggleGroupItemProps
               {...motionButtonProps}
               aria-checked={isSingle ? Boolean(state.pressed) : undefined}
               data-slot="toggle-group-item"
-              data-state={state.pressed ? "on" : "off"}
+              data-state={state.pressed === true ? "on" : "off"}
               data-testid={testId}
               disabled={disabled ?? state.disabled}
               initial={{ scale: 1 }}
@@ -412,7 +415,7 @@ const ToggleGroupItem = React.forwardRef<HTMLButtonElement, ToggleGroupItemProps
                   className,
                   spanProps?.className
                 )}
-                data-state={state.pressed ? "on" : "off"}
+                data-state={state.pressed === true ? "on" : "off"}
               >
                 {children}
               </span>

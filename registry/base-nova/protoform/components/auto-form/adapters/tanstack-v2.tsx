@@ -76,7 +76,7 @@ function sameMessages(left: string[] | undefined, right: string[]) {
 
 function useTanStackV2EngineContext() {
   const context = React.useContext(TanStackV2EngineContext);
-  if (!context) {
+  if (context === null) {
     throw new Error("TanStack Form v2 AutoForm controls must be rendered inside the v2 engine.");
   }
   return context;

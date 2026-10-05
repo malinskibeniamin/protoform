@@ -44,7 +44,7 @@ function parseJsonc(value: string, label: string): unknown {
 describe("strict React tooling", () => {
   test("pins the latest analysis toolchain and exposes strict entrypoints", () => {
     expect(packageJson.devDependencies).toMatchObject({
-      "@biomejs/biome": "2.5.13",
+      "@biomejs/biome": "2.5.15",
       "@shadcn/lint": "0.2.0",
       oxlint: "1.86.0",
       "@rsbuild/plugin-react": "2.1.1",
@@ -90,9 +90,11 @@ describe("strict React tooling", () => {
       const schemaProperties = getJsonObject(schemaGroup["properties"], `Biome's ${schemaGroupName} rule properties`);
       const expectedRuleNames = Object.keys(schemaProperties)
         .filter((ruleName) => ruleName !== "preset" && ruleName !== "recommended")
-        .toSorted();
+        .toSorted((left, right) => left.localeCompare(right));
 
-      expect(Object.keys(configuredRules).toSorted()).toEqual(expectedRuleNames);
+      expect(Object.keys(configuredRules).toSorted((left, right) => left.localeCompare(right))).toEqual(
+        expectedRuleNames
+      );
       expect(configuredRules["preset"]).toBeUndefined();
       expect(configuredRules["recommended"]).toBeUndefined();
       for (const [ruleName, ruleConfig] of Object.entries(configuredRules)) {
@@ -113,7 +115,7 @@ describe("strict React tooling", () => {
             : getJsonObject(ruleConfig, `Biome rule configuration in group ${groupIndex}`)["level"]
         )
     );
-    expect(configuredSeverities.filter((severity) => severity === "error")).toHaveLength(481);
+    expect(configuredSeverities.filter((severity) => severity === "error")).toHaveLength(500);
     expect(configuredSeverities.filter((severity) => severity === "off")).toHaveLength(57);
 
     expect(configuredRuleGroups).toMatchObject({
@@ -149,14 +151,19 @@ describe("strict React tooling", () => {
         noUndeclaredDependencies: "error",
       },
       nursery: {
+        noAstroConflictingSetDirectives: "error",
         noBaseToString: "error",
         noComponentHookFactories: "error",
         noFloatingPromises: "error",
         noIdenticalTestTitle: "error",
+        noJsonUnsafeValues: "error",
         noJsxLeakedDollar: "error",
         noJsxNamespace: "error",
+        noMeaninglessVoidOperator: "error",
+        noMisplacedListElements: "error",
         noMisleadingReturnType: "error",
         noMisusedPromises: "error",
+        noObsoleteTags: "error",
         noPlaywrightElementHandle: "error",
         noPlaywrightEval: "error",
         noPlaywrightForceOption: "error",
@@ -167,11 +174,23 @@ describe("strict React tooling", () => {
         noPlaywrightWaitForNavigation: "error",
         noPlaywrightWaitForSelector: "error",
         noPlaywrightWaitForTimeout: "error",
+        noReactObjectTypeAsDefaultProp: "error",
         noReactStringRefs: "error",
+        noReturnInFinally: "error",
+        noSelfImport: "error",
+        noSvelteAtDebugTags: "error",
+        noSvelteExportLet: "error",
+        noTailwindRawColors: "error",
         noUnsafePlusOperands: "error",
         noUntrustedLicenses: "error",
         noUselessTypeConversion: "error",
+        noVueUndeclaredDirectives: "error",
         useAwaitThenable: "error",
+        useConsistentFunctionStyle: {
+          level: "error",
+          options: { style: "declaration", allowArrowFunctions: true },
+        },
+        useConsistentObjectKeys: "error",
         useConsistentTestIt: {
           level: "error",
           options: { function: "test", withinDescribe: "test" },
@@ -179,13 +198,18 @@ describe("strict React tooling", () => {
         useDisposables: "error",
         useExhaustiveSwitchCases: "error",
         useIncludes: "error",
+        useLogicalProperties: "error",
+        usePromiseRejectErrors: "error",
         useReactAsyncServerFunction: "error",
         useReactCompiler: "error",
         useRegexpExec: "error",
         useStringStartsEndsWith: "error",
+        useStrictBooleanExpressions: "error",
+        useSvelteKitRuneImports: "error",
         useTestHooksInOrder: "error",
         useTestHooksOnTop: "error",
         useUnicodeRegex: "error",
+        useValidTestTitle: "error",
       },
       performance: {
         noReExportAll: "error",
@@ -267,7 +291,9 @@ describe("strict React tooling", () => {
 
     expect(doctorConfigObject["categories"]).toBeUndefined();
     expect(doctorConfigObject["buckets"]).toBeUndefined();
-    expect(Object.keys(configuredRules).toSorted()).toEqual(availableRuleNames.toSorted());
+    expect(Object.keys(configuredRules).toSorted((left, right) => left.localeCompare(right))).toEqual(
+      availableRuleNames.toSorted((left, right) => left.localeCompare(right))
+    );
     expect(doctorConfig.surfaces).toMatchObject({
       ciFailure: { includeTags: ["design"] },
       cli: { includeTags: ["design"] },

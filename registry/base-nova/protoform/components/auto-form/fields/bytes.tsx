@@ -9,15 +9,17 @@ import { useFieldTestIds } from "./shared";
 function BytesFieldComponent({ error, field, id, inputProps }: AutoFormFieldProps) {
   const testIds = useFieldTestIds(id);
 
+  const { placeholder } = getFieldUiConfig(field);
+
   return (
     <Textarea
       aria-invalid={Boolean(error)}
-      className={error ? "border-destructive font-mono" : "font-mono"}
+      className={error !== undefined && error !== "" ? "border-destructive font-mono" : "font-mono"}
       disabled={inputProps["disabled"]}
       id={id}
       onBlur={inputProps["onBlur"]}
       onChange={(event) => inputProps["onValueChange"](event.target.value)}
-      placeholder={getFieldUiConfig(field).placeholder || "Base64 payload"}
+      placeholder={placeholder !== undefined && placeholder !== "" ? placeholder : "Base64 payload"}
       resize="vertical"
       testId={testIds.control}
       value={(inputProps["value"] as string | undefined) ?? ""}

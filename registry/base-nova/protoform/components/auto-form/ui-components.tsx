@@ -20,7 +20,7 @@ export function ProtoformUIProvider({
 
 export function useProtoformUIComponents(): ProtoformUIComponentMap {
   const components = React.use(ProtoformUIContext);
-  if (!components) {
+  if (components === undefined) {
     throw new Error("ProtoformUIProvider is required to render Protoform controls.");
   }
   return components;
@@ -44,7 +44,7 @@ function createUIComponent<TName extends keyof ProtoformUIProps>(
     return React.createElement(Component, {
       ...componentProps,
       ...(testId === undefined ? {} : { "data-testid": testId }),
-      ...(describesFieldError && errorId
+      ...(describesFieldError && errorId !== undefined && errorId !== ""
         ? { "aria-describedby": [ariaProps["aria-describedby"], errorId].filter(Boolean).join(" ") }
         : {}),
     });

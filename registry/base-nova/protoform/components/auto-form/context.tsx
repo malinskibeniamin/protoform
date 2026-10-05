@@ -24,7 +24,7 @@ export const AutoFormContext = React.createContext<AutoFormContextValue | null>(
 
 export function useAutoForm(): AutoFormContextValue {
   const context = React.useContext(AutoFormContext);
-  if (!context) {
+  if (context === null) {
     throw new Error("useAutoForm must be used inside an AutoForm component.");
   }
   return context;

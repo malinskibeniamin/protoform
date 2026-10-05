@@ -44,6 +44,8 @@ function MultiSelectFieldComponent({ field, id, inputProps }: AutoFormFieldProps
           value,
         }));
 
+  const { placeholder } = getFieldUiConfig(field);
+
   return (
     <SimpleMultiSelect
       {...(inputProps["disabled"] === undefined ? {} : { disabled: inputProps["disabled"] })}
@@ -53,8 +55,9 @@ function MultiSelectFieldComponent({ field, id, inputProps }: AutoFormFieldProps
       }
       options={options}
       placeholder={
-        getFieldUiConfig(field).placeholder ||
-        formatProtoformMessage(formatMessage, "auto_form.multiselect.placeholder", {}, "Select one or more options")
+        placeholder !== undefined && placeholder !== ""
+          ? placeholder
+          : formatProtoformMessage(formatMessage, "auto_form.multiselect.placeholder", {}, "Select one or more options")
       }
       testId={testIds.field}
       value={Array.isArray(inputProps["value"]) ? inputProps["value"].map((value: unknown) => String(value)) : []}
@@ -154,14 +157,17 @@ function DataProviderMultiSelectResult({
 }) {
   const { formatMessage } = useAutoForm();
   const { emptyState, options: providerOptions, isLoading, error: providerError } = result;
+  const hasProviderError = Boolean(providerError);
+  const { placeholder } = getFieldUiConfig(field);
   // A failed load says nothing about which selections still exist, so keep them as they are.
-  const staleSelections = isLoading || providerError ? [] : getStaleSelections(providerOptions, currentValue);
+  const staleSelections =
+    isLoading === true || hasProviderError ? [] : getStaleSelections(providerOptions, currentValue);
   const staleSelectionSet = new Set(staleSelections);
   let renderedProviderOptions: DataProviderOption[] = [
     ...staleSelections.map((value) => ({ label: value, value })),
     ...providerOptions,
   ];
-  if (providerError) {
+  if (hasProviderError) {
     renderedProviderOptions = currentValue.map((value) => ({ label: value, value }));
   } else if (provider?.staleSelection === "clear") {
     renderedProviderOptions = providerOptions;
@@ -207,25 +213,25 @@ function DataProviderMultiSelectResult({
   return (
     <div className="space-y-2">
       <SimpleMultiSelect
-        disabled={Boolean(inputProps["disabled"] || isLoading || providerError)}
+        disabled={Boolean(inputProps["disabled"] || isLoading === true || providerError)}
         emptyState={emptyState}
         id={id}
         onValueChange={(values) => inputProps["onValueChange"](values)}
         options={options}
         placeholder={
-          getFieldUiConfig(field).placeholder ||
+          [placeholder].find(Boolean) ??
           formatProtoformMessage(
             formatMessage,
-            isLoading ? "auto_form.select.loading" : "auto_form.multiselect.placeholder",
+            isLoading === true ? "auto_form.select.loading" : "auto_form.multiselect.placeholder",
             {},
-            isLoading ? "Loading…" : "Select one or more options"
+            isLoading === true ? "Loading…" : "Select one or more options"
           )
         }
         testId={testIds.field}
         value={currentValue}
         width="full"
       />
-      {providerError ? (
+      {hasProviderError ? (
         <p className="text-destructive text-sm" role="alert">
           {formatProtoformMessage(formatMessage, "auto_form.select.load_error", {}, "Failed to load options")}
         </p>

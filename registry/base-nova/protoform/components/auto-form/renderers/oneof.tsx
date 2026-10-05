@@ -81,7 +81,7 @@ export function OneofFieldRenderer({
   const oneofDisabled = isDisabled || selectedDeprecatedDisabled;
 
   React.useEffect(() => {
-    if (!oneofValue.case) {
+    if (!(oneofValue.case !== undefined && oneofValue.case !== "")) {
       return;
     }
 
@@ -167,7 +167,7 @@ export function OneofWrapper({
   let selectedValueLabel: string | undefined;
   if (selected) {
     selectedValueLabel = getLabel(selected);
-  } else if (selectedKey) {
+  } else if (selectedKey !== undefined && selectedKey !== "") {
     selectedValueLabel = "Unavailable selection";
   } else if (!field.required) {
     selectedValueLabel = "Not set";

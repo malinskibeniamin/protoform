@@ -12,7 +12,7 @@ function TextareaFieldComponent({ error, field, id, inputProps }: AutoFormFieldP
   return (
     <Textarea
       aria-invalid={Boolean(error)}
-      className={error ? "border-destructive" : ""}
+      className={error !== undefined && error !== "" ? "border-destructive" : ""}
       disabled={inputProps["disabled"]}
       id={id}
       onBlur={inputProps["onBlur"]}

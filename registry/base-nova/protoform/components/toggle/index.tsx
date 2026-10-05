@@ -36,9 +36,9 @@ function renderToggleButton(
   state: { pressed?: boolean; disabled?: boolean }
 ) {
   const attrs: Record<string, unknown> = {
-    "data-state": state.pressed ? "on" : "off",
+    "data-state": state.pressed === true ? "on" : "off",
   };
-  if (state.disabled) {
+  if (state.disabled === true) {
     attrs["data-disabled"] = "";
   }
   return React.createElement("button", { ...props, ...attrs, type: props.type ?? "button" });
