@@ -197,22 +197,20 @@ function DataProviderMultiSelectResult({
     staleSelection: provider?.staleSelection ?? 'preserve',
   });
   const staleSelectionSet = new Set(staleSelections);
-
-  const applyUnavailableSelectionClear = React.useEffectEvent(() => {
-    inputProps['onValueChange'](currentValue.filter((value) => !staleSelectionSet.has(value)));
+  const retainedSelections = currentValue.filter((value) => !staleSelectionSet.has(value));
+  const applyUnavailableSelectionClear = React.useEffectEvent((values: string[]) => {
+    inputProps['onValueChange'](values);
   });
-  const unavailableSelectionKey =
-    provider?.staleSelection === 'clear' && staleSelections.length > 0
-      ? safeStringify({ currentValue, staleSelections })
-      : undefined;
+
+  const shouldClearUnavailableSelections = provider?.staleSelection === 'clear' && staleSelections.length > 0;
 
   React.useEffect(
     function clearUnavailableSelections() {
-      if (unavailableSelectionKey !== undefined) {
-        applyUnavailableSelectionClear();
+      if (shouldClearUnavailableSelections) {
+        applyUnavailableSelectionClear(retainedSelections);
       }
     },
-    [unavailableSelectionKey]
+    [shouldClearUnavailableSelections, retainedSelections]
   );
 
   const options = renderedProviderOptions.map((option) => ({

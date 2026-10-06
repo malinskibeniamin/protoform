@@ -388,7 +388,7 @@ describe('AutoForm data providers v2', () => {
   });
 });
 
-test('multi-select paginates and preserves selections absent from an incomplete or searched page', async () => {
+test('multi-select preserves incomplete selections and clears only missing values after the last page', async () => {
   const user = userEvent.setup();
   pagedRequests.length = 0;
   const onSubmit = rs.fn();
@@ -412,19 +412,23 @@ test('multi-select paginates and preserves selections absent from an incomplete 
             ],
           },
         ],
-        { methods: ['post'] }
+        { methods: ['get', 'post', 'retired'] }
       )}
       withSubmit
     />
   );
   await user.click(screen.getByRole('button', { name: 'Submit' }));
   await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
-  expect(onSubmit.mock.calls[0]?.[0]).toMatchObject({ methods: ['post'] });
+  expect(onSubmit.mock.calls[0]?.[0]).toMatchObject({ methods: ['get', 'post', 'retired'] });
   await user.click(screen.getByRole('button', { name: 'Load more' }));
   expect(pagedRequests.at(-1)?.cursor).toBe('page-2');
+  await waitFor(() => expect(pagedRequests.at(-1)?.selectedValues).toEqual(['get', 'post']));
+  await user.click(screen.getByRole('button', { name: 'Submit' }));
+  await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(2));
+  expect(onSubmit.mock.calls[1]?.[0]).toMatchObject({ methods: ['get', 'post'] });
   await user.click(screen.getByRole('button', { name: 'Multi-select trigger' }));
   expect(screen.getByRole('option', { name: 'GET' })).toBeVisible();
   expect(screen.getByRole('option', { name: 'POST' })).toBeVisible();
   await user.type(screen.getByPlaceholderText('Search…'), 'post');
-  expect(pagedRequests.at(-1)).toMatchObject({ query: 'post', cursor: undefined, selectedValues: ['post'] });
+  expect(pagedRequests.at(-1)).toMatchObject({ query: 'post', cursor: undefined, selectedValues: ['get', 'post'] });
 });

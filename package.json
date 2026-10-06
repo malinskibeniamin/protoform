@@ -77,9 +77,13 @@
     "typecheck:tests": "tsc --project tsconfig.tests.json --noEmit"
   },
   "overrides": {
+    "@tailwindcss/typography": {
+      "postcss-selector-parser": "7.1.6"
+    },
     "@vercel/routing-utils": {
       "path-to-regexp": "6.3.0"
     },
+    "katex": "0.18.7",
     "lodash-es": "4.18.1",
     "router": {
       "path-to-regexp": "8.4.0"
