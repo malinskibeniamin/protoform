@@ -25,6 +25,13 @@ export const auditExceptions: AuditException[] = [
     expires: '2026-11-04',
     reason: 'Maintainer-approved temporary exception for transitive registry/lint tooling; no published upstream fix.',
   },
+  {
+    package: 'sprintf-js',
+    url: 'https://github.com/advisories/GHSA-hp3w-g68c-fv3c',
+    expires: '2026-11-04',
+    reason:
+      'Maintainer-approved temporary exception for transitive Blume frontmatter tooling; no published upstream fix.',
+  },
 ];
 
 export function classifyAudit(response: unknown, exceptions: readonly AuditException[], now: Date) {

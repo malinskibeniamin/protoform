@@ -27,12 +27,21 @@ agreement is offered.
 or malformed results. Exceptions, if approved, must name an exact package and advisory, include a
 reason, and expire in `scripts/security-audit-policy.ts`.
 
-The remaining `braces@3.0.3` advisory [GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm)
+The `braces@3.0.3` advisory [GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm)
 has no published patched version at the time of this audit. It is reachable through build tooling’s
 `micromatch` / `fast-glob` chain. The maintainer approved an exception for this exact package and
 advisory until **2026-11-04 (UTC)**. The script prints the exception on every audit and automatically
-blocks it again at expiry. No other advisory is waived. Recheck the upstream release before the
-deadline and remove this exception when a patched version is available.
+blocks it again at expiry.
+
+The `sprintf-js` advisory [GHSA-hp3w-g68c-fv3c](https://github.com/advisories/GHSA-hp3w-g68c-fv3c)
+also has no published fix at the time of this audit. Blume’s frontmatter tooling includes it through
+`gray-matter` → `js-yaml` 3 → `argparse` 1 → `sprintf-js`. The maintainer separately approved an
+exception for this exact package and advisory until **2026-11-04T00:00:00Z**. The script prints this
+exception on every audit and blocks it at and after that deadline. This accepts the unresolved
+denial-of-service risk temporarily; it does not patch the dependency.
+
+No other advisory is waived. Recheck both upstream releases before the deadline and remove each
+exception when a patched version or compatible dependency-chain replacement is available.
 
 Bun cannot audit the Buf-generated package registry because that registry does not support the
 audit endpoint. The script preserves that warning; a passing audit is not proof that every registry

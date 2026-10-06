@@ -6,14 +6,41 @@ const advisory = {
   severity: 'high',
   title: 'Nested-pattern denial of service',
 };
-test('temporarily permits the approved braces advisory, but blocks it at the review deadline', () => {
-  expect(classifyAudit({ braces: [advisory] }, auditExceptions, new Date('2026-10-05'))).toMatchObject({
+const sprintfAdvisory = {
+  url: 'https://github.com/advisories/GHSA-hp3w-g68c-fv3c',
+  severity: 'moderate',
+  title: 'sprintf-js vulnerable to denial of service through unbounded precision specifiers',
+};
+test.each([
+  { package: 'braces', advisory },
+  { package: 'sprintf-js', advisory: sprintfAdvisory },
+])('temporarily permits the approved $package advisory, but blocks it at and after expiry', (finding) => {
+  const response = { [finding.package]: [finding.advisory] };
+  const expectedFinding = { ...finding.advisory, package: finding.package };
+  expect(classifyAudit(response, auditExceptions, new Date('2026-11-03T23:59:59.999Z'))).toEqual({
     blocking: [],
-    excepted: [{ package: 'braces', url: advisory.url }],
+    excepted: [expectedFinding],
   });
-  expect(classifyAudit({ braces: [advisory] }, auditExceptions, new Date('2026-11-04'))).toMatchObject({
-    blocking: [{ package: 'braces' }],
-    excepted: [],
+  for (const deadline of ['2026-11-04T00:00:00.000Z', '2026-11-05T00:00:00.000Z']) {
+    expect(classifyAudit(response, auditExceptions, new Date(deadline))).toEqual({
+      blocking: [expectedFinding],
+      excepted: [],
+    });
+  }
+});
+test('does not extend approved exceptions to another package or advisory', () => {
+  expect(
+    classifyAudit(
+      { 'sprintf-js': [sprintfAdvisory, advisory], braces: [sprintfAdvisory] },
+      auditExceptions,
+      new Date('2026-10-06')
+    )
+  ).toEqual({
+    blocking: [
+      { ...advisory, package: 'sprintf-js' },
+      { ...sprintfAdvisory, package: 'braces' },
+    ],
+    excepted: [{ ...sprintfAdvisory, package: 'sprintf-js' }],
   });
 });
 test('fails unexcepted advisories and rejects malformed audit responses', () => {
