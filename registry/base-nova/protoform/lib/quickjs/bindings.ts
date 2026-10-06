@@ -9,10 +9,11 @@ export function createQuickJsFormRequest(options: {
   values: FormValues;
 }): ReviewedQuickJsRequest {
   const fields = options.schema.fields.map((field) => field.key);
+  const knownFields = new Set(fields);
   const values: FormValues = {};
   const selected = new Set<string>();
   for (const key of options.valueFields) {
-    if (!fields.includes(key) || selected.has(key)) {
+    if (!knownFields.has(key) || selected.has(key)) {
       throw new Error('Unknown or duplicate QuickJS input field');
     }
     selected.add(key);
