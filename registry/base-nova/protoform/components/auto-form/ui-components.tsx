@@ -44,7 +44,10 @@ function createUIComponent<TName extends keyof ProtoformUIProps>(
       ...componentProps,
       ...(testId === undefined ? {} : { 'data-testid': testId }),
       ...(describesFieldError && errorId !== undefined && errorId !== ''
-        ? { 'aria-describedby': [ariaProps['aria-describedby'], errorId].filter(Boolean).join(' ') }
+        ? {
+            'aria-invalid': true,
+            'aria-describedby': [ariaProps['aria-describedby'], errorId].filter(Boolean).join(' '),
+          }
         : {}),
     });
   }
@@ -67,7 +70,7 @@ export const ChoiceboxItemTitle = createUIComponent('ChoiceboxItemTitle');
 export const Collapsible = createUIComponent('Collapsible');
 export const CollapsibleContent = createUIComponent('CollapsibleContent');
 export const CollapsibleTrigger = createUIComponent('CollapsibleTrigger');
-export const Combobox = createUIComponent('Combobox');
+export const Combobox = createUIComponent('Combobox', true);
 export const CopyButton = createUIComponent('CopyButton');
 export const Field = createUIComponent('Field');
 export const FieldContent = createUIComponent('FieldContent');
@@ -93,9 +96,9 @@ export const SelectContent = createUIComponent('SelectContent');
 export const SelectGroup = createUIComponent('SelectGroup');
 export const SelectItem = createUIComponent('SelectItem');
 export const SelectLabel = createUIComponent('SelectLabel');
-export const SelectTrigger = createUIComponent('SelectTrigger');
+export const SelectTrigger = createUIComponent('SelectTrigger', true);
 export const SelectValue = createUIComponent('SelectValue');
-export const SimpleMultiSelect = createUIComponent('SimpleMultiSelect');
+export const SimpleMultiSelect = createUIComponent('SimpleMultiSelect', true);
 export const Slider = createUIComponent('Slider');
 export const Switch = createUIComponent('Switch');
 export const Tabs = createUIComponent('Tabs');

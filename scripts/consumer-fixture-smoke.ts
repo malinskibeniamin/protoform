@@ -441,6 +441,34 @@ try {
     await $`bunx --no-install shadcn add @protoform/auto-form-tanstack --cwd ${fixture} --yes --overwrite`;
     await $`bunx --no-install shadcn add @protoform/auto-form-tanstack-v2 --cwd ${fixture} --yes --overwrite`;
     await assertInstalled();
+    await $`bun add --cwd ${fixture} tailwindcss@4.3.3 @tailwindcss/vite@4.3.3`;
+    const browserSource = await readFile(join(root, 'scripts/fixtures/reliability-browser.tsx'), 'utf8');
+    await writeFile(
+      join(fixture, 'reliability-browser.tsx'),
+      browserSource.replaceAll('@/registry/base-nova/protoform/', './')
+    );
+    const nativeSource = await readFile(join(root, 'scripts/fixtures/native-defaults-browser.tsx'), 'utf8');
+    await writeFile(
+      join(fixture, 'native-defaults-browser.tsx'),
+      nativeSource.replaceAll('@/registry/base-nova/protoform/', './')
+    );
+    await writeFile(
+      join(fixture, 'native.html'),
+      '<html lang="en"><head><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Native timestamp defaults</title><link rel="stylesheet" href="/app/globals.css" /></head><body><div id="root"></div><script type="module" src="/native-defaults-browser.tsx"></script></body></html>'
+    );
+    const theme = await readFile(join(root, 'scripts/fixtures/host-theme.css'), 'utf8');
+    await writeFile(
+      join(fixture, 'app/globals.css'),
+      `${theme}\n@source "../components";\n@source "../reliability-browser.tsx";\n@source "../native-defaults-browser.tsx";\n`
+    );
+    await writeFile(
+      join(fixture, 'index.html'),
+      '<html lang="en"><head><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Form reliability</title><link rel="stylesheet" href="/app/globals.css" /></head><body><div id="root"></div><script type="module" src="/reliability-browser.tsx"></script></body></html>'
+    );
+    await writeFile(
+      join(fixture, 'vite.config.mjs'),
+      `import react from '@vitejs/plugin-react'; import tailwindcss from '@tailwindcss/vite'; export default { plugins: [react(), tailwindcss()], resolve: { alias: { '@': ${JSON.stringify(fixture)} } } };`
+    );
     await $`bun run --cwd ${fixture} typecheck`;
     console.log(`Registry-only consumer fixture passed: ${fixture}`);
   }

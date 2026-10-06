@@ -110,6 +110,7 @@ export interface ProtoformUIProps {
   SelectTrigger: Trigger;
   SelectValue: Container & { placeholder?: React.ReactNode };
   SimpleMultiSelect: Shared & {
+    onSearch?: ((query: string) => void) | undefined;
     disabled?: boolean;
     emptyState?: React.ReactNode;
     id?: string;

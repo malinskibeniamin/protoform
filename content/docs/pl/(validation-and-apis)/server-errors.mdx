@@ -118,9 +118,10 @@ pierwszym zmapowanym polu i dodaje każde zmapowane naruszenie z typem błędu R
 opisy Protovalidate używają tych samych praktycznych komunikatów co walidacja po stronie klienta, natomiast pusty
 opis jest zastępowany przez `Review this value and try again.`
 
-Nieznane pola pozostają w `unmapped`. Ścieżki powtarzanych pól i map z indeksami w nawiasach, takie jak
-`contacts[0].email`, również obecnie nie są mapowane, ponieważ mechanizm mapowania rozpoznaje segmenty pól deskryptora,
-a nie indeksy kolekcji. Wyświetlaj te naruszenia w podsumowaniu zamiast je pomijać.
+Ścieżki powtarzanych wiadomości, takie jak `contacts[0].email` i `contacts.0.email`, są mapowane na indeksowane
+pola formularza. Nieznane pola oraz nieobsługiwane ścieżki kluczy map pozostają w `unmapped`; wyświetlaj te
+naruszenia w podsumowaniu zamiast je pomijać. Wiele naruszeń tego samego pola pozostaje dostępnych w `types`
+błędu React Hook Form, zamiast się wzajemnie nadpisywać.
 
 ## Ustrukturyzowany kontekst błędu
 

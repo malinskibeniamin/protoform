@@ -100,7 +100,7 @@ const form = useProtoForm(CreateInstanceSpecSchema, {
 
 Protoform 会移除第一个完全匹配的前缀，遍历 protobuf 描述符，将 protobuf `snake_case` 名称转换为 TypeScript `camelCase`，并将 oneof 分支扁平化到 `{oneofLocalName}.value` 下。它会聚焦第一个已映射字段，并使用 React Hook Form 错误类型 `server` 添加每个已映射违规项。通用 Protovalidate 描述使用与客户端验证相同的可操作文案，空描述则回退为 `Review this value and try again.`
 
-未知字段会保留在 `unmapped` 中。`contacts[0].email` 等使用方括号索引的重复字段和 map 路径目前也无法映射，因为映射器解析的是描述符字段段，而不是集合索引。请在摘要中显示这些违规项，不要将其丢弃。
+重复消息路径（如 `contacts[0].email` 和 `contacts.0.email`）会映射到带索引的表单字段。未知字段和不支持的 map key 路径保留在 `unmapped` 中；请在摘要中显示这些违规项，不要丢弃。同一字段的多项违规保留在 React Hook Form 错误的 `types` 中，不会互相覆盖。
 
 ## 结构化错误上下文
 

@@ -61,3 +61,25 @@ describe('useProtoForm server errors', () => {
     expect(mapped?.unmapped).toEqual([]);
   });
 });
+
+test('retains multiple backend violations for the same field', () => {
+  const { result } = renderHook(() => useProtoForm(AutoFormExampleSchema));
+  act(() =>
+    result.current.setServerErrors(
+      new ConnectError('Invalid', Code.InvalidArgument, {}, [
+        {
+          desc: BadRequestSchema,
+          value: {
+            fieldViolations: [
+              { field: 'primary_email', description: 'Enter an email' },
+              { field: 'primary_email', description: 'Use a company email' },
+            ],
+          },
+        },
+      ])
+    )
+  );
+  const { error } = result.current.getFieldState('primaryEmail');
+  expect(error?.message).toBe('Enter an email');
+  expect(Object.values(error?.types ?? {})).toEqual(['Enter an email', 'Use a company email']);
+});

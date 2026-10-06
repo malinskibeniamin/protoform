@@ -87,13 +87,26 @@ function applyValidationErrors<T extends FormValues>(
   const rootMessages: string[] = [];
   let shouldFocus = true;
 
+  const fieldMessages = new Map<string, string[]>();
   for (const error of errors) {
     if (error.path.length === 0) {
       rootMessages.push(error.message);
       continue;
     }
 
-    form.setError(error.path.join('.'), { message: error.message, type: 'validation' }, { shouldFocus });
+    const path = error.path.join('.');
+    fieldMessages.set(path, [...(fieldMessages.get(path) ?? []), error.message]);
+  }
+  for (const [path, messages] of fieldMessages) {
+    form.setError(
+      path,
+      {
+        message: messages[0] ?? '',
+        type: 'validation',
+        types: Object.fromEntries(messages.map((message, index) => [String(index), message])),
+      },
+      { shouldFocus }
+    );
     shouldFocus = false;
   }
 

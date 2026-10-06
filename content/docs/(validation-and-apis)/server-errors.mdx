@@ -116,9 +116,10 @@ first mapped field and adds every mapped violation with React Hook Form error ty
 Protovalidate descriptions use the same actionable copy as client validation, while an empty
 description falls back to `Review this value and try again.`
 
-Unknown fields stay in `unmapped`. Bracket-indexed repeated and map paths such as
-`contacts[0].email` are also currently unmapped because the mapper resolves descriptor field segments,
-not collection indices. Show these violations in the summary instead of dropping them.
+Repeated-message paths such as `contacts[0].email` and `contacts.0.email` map to the indexed
+form field. Unknown fields and unsupported map-key paths stay in `unmapped`; show these violations
+in the summary instead of dropping them. Multiple violations for one field remain available in
+React Hook Form’s error `types` rather than overwriting each other.
 
 ## Structured error context
 

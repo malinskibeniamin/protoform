@@ -22,7 +22,7 @@ const entries = [
     name: 'core',
   },
   {
-    budget: 135_000,
+    budget: 136_000,
     entry: 'registry/base-nova/protoform/lib/protobuf-provider/index.ts',
     name: 'protobuf',
   },

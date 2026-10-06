@@ -100,7 +100,7 @@ const form = useProtoForm(CreateInstanceSpecSchema, {
 
 Protoform 會移除第一個完全相符的前綴、巡覽 protobuf descriptor、將 protobuf `snake_case` 名稱轉換為 TypeScript `camelCase`，並將 oneof 分支扁平化至 `{oneofLocalName}.value`。它會聚焦第一個已對應的欄位，並使用 React Hook Form 錯誤類型 `server` 加入所有已對應的違規項目。通用 Protovalidate 說明會使用與用戶端驗證相同且可採取行動的文案，而空白說明則會改用 `Review this value and try again.`。
 
-未知欄位會保留在 `unmapped` 中。使用方括號索引的 repeated 和 map 路徑（例如 `contacts[0].email`）目前也無法對應，因為對應器解析的是 descriptor 欄位區段，而非集合索引。請在摘要中顯示這些違規項目，不要將其捨棄。
+Repeated message 路徑（例如 `contacts[0].email` 和 `contacts.0.email`）會對應至帶索引的表單欄位。未知欄位與不支援的 map key 路徑會保留在 `unmapped` 中；請在摘要中顯示這些違規項目，不要捨棄。同一欄位的多項違規會保留在 React Hook Form 的錯誤 `types` 中，不會互相覆寫。
 
 ## 結構化錯誤內容
 

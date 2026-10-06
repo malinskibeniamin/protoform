@@ -4,11 +4,11 @@
 - **Configuration diagnostic**: A deterministic, schema-agnostic pre-render finding that identifies an AutoForm configuration defect by code and schema path.
 - **Runtime message**: Protoform-owned user-facing text identified by a stable code, interpolation parameters, and an English fallback. Hosts may translate it without replacing schema-authored or server-authored text.
 - **Provider request**: The field context supplied to a data provider, including search text, pagination cursor, selected values, declared dependency values, and a cancellation signal. The provider resolves options but does not own form state.
-- **Stale selection**: A value retained in form state that is absent from the provider's current option set. Provider registration declares whether Protoform preserves, clears, or reports it.
+- **Stale selection**: A value retained in form state that is absent from a complete, successful, unfiltered provider result. An incomplete page, search result, pending request, or failed request cannot prove staleness. Provider registration declares whether Protoform preserves, clears, or reports it.
 - **Mutation request composer**: A pure descriptor-driven operation that wraps resource form output and standard mutation controls in a typed protobuf request. It never performs the RPC.
 - **Audit target**: A named AutoForm schema and its declared configuration, renderers, and providers that can be inspected without rendering the form.
 - **Form values**: Adapter-neutral values used by form engines. They intentionally omit protobuf runtime metadata and unknown wire fields.
-- **Edit baseline**: The accepted field state at the start of an edit session or after a reset.
+- **Edit baseline**: The accepted field state at the start of an edit session or after a reset. Native protobuf defaults are normalized into form values; resetting to another native message also replaces the edit source used to preserve unknown wire fields.
 - **Modification intent**: A field the user intentionally changed after the edit baseline. The intent remains even when the current value equals the baseline again.
 - **Partial-edit validation**: Validation that reports field issues only for modification intent while retaining message-level issues that cannot be attributed safely.
 - **UI component map**: The host-owned controls used by Protoform renderers. Only controls exercised by a form need registration; implementations and their theme remain consumer-owned.

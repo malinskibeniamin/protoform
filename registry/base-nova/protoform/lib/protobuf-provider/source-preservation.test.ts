@@ -3,9 +3,12 @@ import {
   FieldDescriptorProto_Label,
   FieldDescriptorProto_Type,
   FileDescriptorProtoSchema,
+  TimestampSchema,
+  timestampFromDate,
 } from '@bufbuild/protobuf/wkt';
 import { describe, expect } from '@rstest/core';
 
+import { preserveProtoMessageSource } from './hook-runtime.js';
 import { formValuesToProto, protoToFormValues } from './provider.js';
 
 function createPreservationFixture(): {
@@ -13,6 +16,7 @@ function createPreservationFixture(): {
   root: DescMessage;
 } {
   const file = create(FileDescriptorProtoSchema, {
+    dependency: ['google/protobuf/timestamp.proto'],
     messageType: [
       {
         field: [
@@ -22,6 +26,12 @@ function createPreservationFixture(): {
             name: 'label',
             number: 1,
             type: FieldDescriptorProto_Type.STRING,
+          },
+          {
+            name: 'created_at',
+            number: 2,
+            type: FieldDescriptorProto_Type.MESSAGE,
+            typeName: '.google.protobuf.Timestamp',
           },
         ],
         name: 'Nested',
@@ -99,7 +109,7 @@ function createPreservationFixture(): {
     package: 'test',
     syntax: 'proto3',
   });
-  const registry = createFileRegistry(file, () => undefined);
+  const registry = createFileRegistry(file, () => TimestampSchema.file);
   const nested = registry.getMessage('test.Nested');
   const root = registry.getMessage('test.Root');
   if (!(nested && root)) {
@@ -166,6 +176,56 @@ function sourceMessage() {
 }
 
 describe('source-message preservation', () => {
+  test('does not round native timestamp defaults into the next second', () => {
+    const timestamp = timestampFromDate(new Date('2026-10-03T12:00:37Z'));
+    timestamp.nanos = 999_999_999;
+    const source = create(RootSchema, { nested: { createdAt: timestamp } });
+    const values = protoToFormValues(RootSchema, source);
+    expect(requireRecord(values['nested'], 'nested form value')['createdAt']).toMatch(/T\d{2}:00:37\.999$/u);
+    expect(formValuesToProto(RootSchema, values, source)).toEqual(source);
+  });
+  test('preserves untouched timestamp precision through nested, reordered, map and oneof edits', () => {
+    const timestamp = timestampFromDate(new Date('2026-10-03T12:00:37.123Z'));
+    timestamp.nanos = 123_456_789;
+    const child = (label: string) => create(NestedSchema, { label, createdAt: timestamp });
+    const source = create(RootSchema, {
+      nested: child('nested'),
+      children: [child('first'), child('second')],
+      nestedByKey: { first: child('map') },
+      choice: { case: 'nestedChoice', value: child('choice') },
+    });
+    const sourceBytes = toBinary(RootSchema, source);
+    const values = protoToFormValues(RootSchema, source);
+    const nested = requireRecord(values['nested'], 'nested form value');
+    expect(nested['createdAt']).toMatch(/T\d{2}:00:37\.123$/u);
+    const children = requireArray(values['children'], 'children form values');
+    values['children'] = [requireElement(children, 1, 'second child')];
+    const edited = requireRecord(formValuesToProto(RootSchema, values, source), 'edited message');
+    const editedNodes = [
+      edited['nested'],
+      requireElement(requireArray(edited['children'], 'edited children'), 0, 'surviving child'),
+      requireRecord(edited['nestedByKey'], 'edited map')['first'],
+      requireRecord(edited['choice'], 'edited choice')['value'],
+    ];
+    for (const node of editedNodes) {
+      expect(requireRecord(node, 'edited node')['createdAt']).toEqual(timestamp);
+    }
+    expect(toBinary(RootSchema, source)).toEqual(sourceBytes);
+
+    nested['createdAt'] = String(nested['createdAt']).replace('.123', '.123987654');
+    const explicitEdit = requireRecord(formValuesToProto(RootSchema, values, source), 'explicit edit');
+    expect(
+      requireRecord(requireRecord(explicitEdit['nested'], 'edited nested')['createdAt'], 'timestamp')['nanos']
+    ).toBe(123_987_654);
+    const target = create(RootSchema, { nested: { createdAt: { seconds: timestamp.seconds, nanos: 123_000_000 } } });
+    const preserved = preserveProtoMessageSource(RootSchema, target, source);
+    expect(
+      requireRecord(
+        requireRecord(requireRecord(preserved, 'preserved message')['nested'], 'preserved nested')['createdAt'],
+        'timestamp'
+      )['nanos']
+    ).toBe(123_000_000);
+  });
   test('preserves unknown fields on every surviving message node', () => {
     const source = sourceMessage();
     const sourceRecord = requireRecord(source, 'source message');

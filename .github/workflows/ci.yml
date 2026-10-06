@@ -46,6 +46,7 @@ jobs:
           else
             echo "::notice::Skipping compatibility check because the previous main is unavailable or not an ancestor."
           fi
+      - run: bunx playwright install --with-deps chromium
       - run: bun run ci:gate
 
   docs:

@@ -7,15 +7,15 @@ import type { AutoFormFieldProps } from '../core-types';
 import {
   type DataProviderOption,
   type DataProviderResult,
-  getStaleSelections,
   type ResolvedDataProvider,
   resolveDataProvider,
   useDataProviderSignal,
+  useProviderOptions,
 } from '../data-providers';
 import { getPathInObject } from '../field-utils';
 import { getFieldUiConfig, NUMERIC_OPTION_PATTERN } from '../helpers';
 import type { FieldTypeDefinition } from '../registry';
-import { SimpleMultiSelect } from '../ui-components';
+import { Button, SimpleMultiSelect } from '../ui-components';
 import { safeStringify } from '../utils/serialization';
 import { getGroupedOptions, readDataProviderId, renderOptionLabel, useFieldTestIds } from './shared';
 
@@ -96,7 +96,6 @@ function DataProviderMultiSelectComponent({ field, id, inputProps, path }: AutoF
   const dependencyValues = Object.fromEntries(
     (provider?.dependencies ?? []).map((dependency) => [dependency, getPathInObject(formValues, dependency.split('.'))])
   );
-  const signal = useDataProviderSignal(safeStringify({ dependencyValues, fieldPath, selectedValues: currentValue }));
 
   if (!provider) {
     return (
@@ -111,20 +110,48 @@ function DataProviderMultiSelectComponent({ field, id, inputProps, path }: AutoF
     );
   }
 
+  return (
+    <PagedMultiSelect
+      key={safeStringify(dependencyValues)}
+      {...{ provider, dependencyValues, currentValue, field, fieldPath, id, inputProps, testIds }}
+    />
+  );
+}
+
+function PagedMultiSelect({
+  provider,
+  dependencyValues,
+  currentValue,
+  field,
+  fieldPath,
+  id,
+  inputProps,
+  testIds,
+}: {
+  provider: ResolvedDataProvider;
+  dependencyValues: Record<string, unknown>;
+  currentValue: string[];
+  field: AutoFormFieldProps['field'];
+  fieldPath: string;
+  id: string;
+  inputProps: AutoFormFieldProps['inputProps'];
+  testIds: ReturnType<typeof useFieldTestIds>;
+}) {
+  const [query, setQuery] = React.useState('');
+  const [cursor, setCursor] = React.useState<string | undefined>();
+  const requestKey = safeStringify({ dependencyValues, fieldPath, query, cursor, selectedValues: currentValue });
+  const signal = useDataProviderSignal(requestKey);
   const Provider = provider.component;
   return (
-    <Provider
-      request={{ cursor: undefined, dependencyValues, fieldPath, query: '', selectedValues: currentValue, signal }}
-    >
+    <Provider request={{ cursor, dependencyValues, fieldPath, query, selectedValues: currentValue, signal }}>
       {(result) => (
         <DataProviderMultiSelectResult
-          currentValue={currentValue}
-          field={field}
-          id={id}
-          inputProps={inputProps}
-          provider={provider}
-          result={result}
-          testIds={testIds}
+          {...{ currentValue, field, id, inputProps, provider, result, testIds, cursor, query, requestKey }}
+          onCursorChange={setCursor}
+          onQueryChange={(value) => {
+            setQuery(value);
+            setCursor(undefined);
+          }}
         />
       )}
     </Provider>
@@ -132,6 +159,11 @@ function DataProviderMultiSelectComponent({ field, id, inputProps, path }: AutoF
 }
 
 function DataProviderMultiSelectResult({
+  cursor,
+  query = '',
+  requestKey = '',
+  onCursorChange,
+  onQueryChange,
   currentValue,
   field,
   id,
@@ -144,61 +176,49 @@ function DataProviderMultiSelectResult({
   field: AutoFormFieldProps['field'];
   id: string;
   inputProps: AutoFormFieldProps['inputProps'];
+  cursor?: string | undefined;
+  query?: string;
+  requestKey?: string;
+  onCursorChange?: (cursor: string) => void;
+  onQueryChange?: (query: string) => void;
   provider?: ResolvedDataProvider | undefined;
   result: DataProviderResult;
   testIds: ReturnType<typeof useFieldTestIds>;
 }) {
   const { formatMessage } = useAutoForm();
-  const { emptyState, options: providerOptions, isLoading, error: providerError } = result;
-  const hasProviderError = Boolean(providerError);
+  const { emptyState, isLoading, error: providerError } = result;
   const { placeholder } = getFieldUiConfig(field);
-  const staleSelections =
-    isLoading === true || hasProviderError ? [] : getStaleSelections(providerOptions, currentValue);
-  const staleSelectionSet = new Set(staleSelections);
-  let renderedProviderOptions: DataProviderOption[] = [
-    ...staleSelections.map((value) => ({ label: value, value })),
-    ...providerOptions,
-  ];
-  if (hasProviderError) {
-    renderedProviderOptions = currentValue.map((value) => ({ label: value, value }));
-  } else if (provider?.staleSelection === 'clear') {
-    renderedProviderOptions = providerOptions;
-  }
-
-  const applyUnavailableSelectionClear = React.useEffectEvent(() => {
-    inputProps['onValueChange'](currentValue.filter((value) => !staleSelectionSet.has(value)));
+  const { renderedOptions: renderedProviderOptions, staleSelections } = useProviderOptions({
+    cursor,
+    query,
+    requestKey,
+    result,
+    selectedValues: currentValue,
+    staleSelection: provider?.staleSelection ?? 'preserve',
   });
-  const unavailableSelectionKey =
-    provider?.staleSelection === 'clear' && staleSelections.length > 0
-      ? safeStringify({ currentValue, staleSelections })
-      : undefined;
+  const staleSelectionSet = new Set(staleSelections);
+  const retainedSelections = currentValue.filter((value) => !staleSelectionSet.has(value));
+  const applyUnavailableSelectionClear = React.useEffectEvent((values: string[]) => {
+    inputProps['onValueChange'](values);
+  });
+
+  const shouldClearUnavailableSelections = provider?.staleSelection === 'clear' && staleSelections.length > 0;
 
   React.useEffect(
     function clearUnavailableSelections() {
-      if (unavailableSelectionKey !== undefined) {
-        applyUnavailableSelectionClear();
+      if (shouldClearUnavailableSelections) {
+        applyUnavailableSelectionClear(retainedSelections);
       }
     },
-    [unavailableSelectionKey]
+    [shouldClearUnavailableSelections, retainedSelections]
   );
 
-  const options = renderedProviderOptions.map((option) => {
-    const labelNode = (
-      <span className="flex items-center gap-2" key={option.value}>
-        {option.icon ? (
-          <span className="flex size-4 shrink-0 items-center justify-center [&>svg]:size-full">{option.icon}</span>
-        ) : null}
-        <span>{option.label}</span>
-        {option.description ? <span className="text-muted-foreground text-xs">— {option.description}</span> : null}
-      </span>
-    );
-    return {
-      label: labelNode,
-      selectedTestId: testIds.selected(option.value),
-      testId: testIds.option(option.value),
-      value: option.value,
-    };
-  });
+  const options = renderedProviderOptions.map((option) => ({
+    label: <ProviderOptionLabel option={option} />,
+    selectedTestId: testIds.selected(option.value),
+    testId: testIds.option(option.value),
+    value: option.value,
+  }));
 
   return (
     <div className="space-y-2">
@@ -206,6 +226,7 @@ function DataProviderMultiSelectResult({
         disabled={Boolean(inputProps['disabled'] || isLoading === true || providerError)}
         emptyState={emptyState}
         id={id}
+        onSearch={onQueryChange}
         onValueChange={(values) => inputProps['onValueChange'](values)}
         options={options}
         placeholder={
@@ -221,12 +242,48 @@ function DataProviderMultiSelectResult({
         value={currentValue}
         width="full"
       />
+      <ProviderResultStatus
+        onCursorChange={onCursorChange}
+        result={result}
+        staleSelection={provider?.staleSelection}
+        staleSelections={staleSelections}
+      />
+    </div>
+  );
+}
+
+function ProviderResultStatus({
+  onCursorChange,
+  result,
+  staleSelection,
+  staleSelections,
+}: {
+  onCursorChange: ((cursor: string) => void) | undefined;
+  result: DataProviderResult;
+  staleSelection: ResolvedDataProvider['staleSelection'] | undefined;
+  staleSelections: string[];
+}) {
+  const { formatMessage } = useAutoForm();
+  const { isLoading, error: providerError, nextCursor } = result;
+  const hasProviderError = Boolean(providerError);
+  return (
+    <>
+      {nextCursor !== undefined && nextCursor !== '' && onCursorChange ? (
+        <Button
+          disabled={Boolean(isLoading === true || providerError)}
+          onClick={() => onCursorChange(nextCursor)}
+          type="button"
+          variant="outline"
+        >
+          {formatProtoformMessage(formatMessage, 'auto_form.load_more', {}, 'Load more')}
+        </Button>
+      ) : null}
       {hasProviderError ? (
         <p className="text-destructive text-sm" role="alert">
           {formatProtoformMessage(formatMessage, 'auto_form.select.load_error', {}, 'Failed to load options')}
         </p>
       ) : null}
-      {provider?.staleSelection === 'error' && staleSelections.length > 0 ? (
+      {staleSelection === 'error' && staleSelections.length > 0 ? (
         <p className="text-destructive text-sm" role="alert">
           {formatProtoformMessage(
             formatMessage,
@@ -236,7 +293,21 @@ function DataProviderMultiSelectResult({
           )}
         </p>
       ) : null}
-    </div>
+    </>
+  );
+}
+
+function ProviderOptionLabel({ option }: { option: DataProviderOption }) {
+  return (
+    <span className="flex items-center gap-2">
+      {option.icon ? (
+        <span className="flex size-4 shrink-0 items-center justify-center [&>svg]:size-full">{option.icon}</span>
+      ) : null}
+      <span>{option.label}</span>
+      {option.description !== undefined && option.description !== '' ? (
+        <span className="text-muted-foreground text-xs">— {option.description}</span>
+      ) : null}
+    </span>
   );
 }
 

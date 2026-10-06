@@ -7,6 +7,9 @@ source snapshots.
 
 ### Added
 
+- Fail-closed dependency audit and installed-consumer browser checks in CI and release gates.
+- Real AutoForm browser budgets for 50, 200, and 500 controls, including typing, submit validation, and step transitions.
+
 - Stable shadcn source registry for protobuf descriptor-driven React forms.
 - Protobuf-ES v2, Protovalidate, CEL, Standard Schema, and Google AIP integration.
 - React Hook Form and TanStack Form hooks and AutoForm adapters.
@@ -27,6 +30,15 @@ source snapshots.
 - Installed source uses single quotes, ES5 trailing commas, and 120-column lines, and carries no comments or license headers.
 
 ### Fixed
+
+- Nested, repeated, map-value, and active-oneof conversion validation rejects duplicate map keys and overflowing integers before coercion.
+- React Hook Form v7/v8 native defaults and async defaults normalize well-known types; reset adopts the new message’s unknown fields.
+- Timestamp defaults retain seconds and nanoseconds on untouched round trips.
+- Providers receive a fresh cancellation signal after StrictMode effect replay.
+- Provider-backed multi-selects accumulate pages and forward search; partial or filtered results no longer clear unconfirmed selections.
+- React Hook Form preserves same-field validation messages; select and multi-select controls announce linked errors.
+- Quality and release workflows explicitly install Go and every browser they exercise.
+- Installation documentation links to an existing preview commit, not an unpublished release tag.
 
 - Replacing a data provider, or registering one after the first render, no longer breaks React hook order.
 - A failing multi-select provider no longer clears or flags saved selections; it disables the control and reports the failure.

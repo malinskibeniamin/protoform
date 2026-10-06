@@ -12,7 +12,7 @@
     "build": "bun run registry:build && blume build --strict && bun run scripts/finalize-docs-build.ts",
     "check": "biome check . --error-on-warnings && bun run lint:exceptions && bun run lint:shadcn",
     "check:boundaries": "bun run scripts/check-core-boundaries.ts",
-    "ci:gate": "bun run registry:build && bun run registry:smoke && bun run registry:consumer-smoke && bun run check:boundaries && bun run test:conformance && bun run aip:lint && bun run readiness:gate && bun run test:unit && bun run test:integration && bun run docs:blume:translate:check && bun run build && bun run docs:blume:audit && bun run typecheck && bun run lint:no-suppressions && bun run lint && bun run doctor:strict",
+    "ci:gate": "bun run security:audit && bun run registry:build && bun run registry:smoke && bun run registry:consumer-smoke && bun run registry:host-browser && bun run check:boundaries && bun run test:conformance && bun run aip:lint && bun run readiness:gate && bun run test:unit && bun run test:integration && bun run test:browser && bun run docs:blume:translate:check && bun run build && bun run docs:blume:audit && bun run typecheck && bun run lint:no-suppressions && bun run lint && bun run doctor:strict",
     "demos:generate": "bun run scripts/generate-demo-catalog.ts",
     "dev": "blume dev --port 55011",
     "docs:blume:audit": "blume audit --fail-on info --skip url_style",
@@ -44,15 +44,17 @@
     "proto:breaking": "bun run scripts/check-proto-breaking.ts",
     "proto:generate": "buf dep update && buf generate --template buf.gen.example.yaml && buf generate --template buf.gen.examples.yaml && buf generate --template buf.gen.conformance.yaml && buf generate --template buf.gen.form.yaml && buf generate --template buf.gen.bookstore-form.yaml && bun run demos:generate && bun run registry:build",
     "protoform:audit": "bun run scripts/protoform.ts audit",
-    "quality:gate": "bun run registry:build && bun run registry:smoke && bun run registry:consumer-smoke && bun run check:boundaries && bun run test:conformance && bun run aip:lint && bun run readiness:gate && bun run test:unit && bun run test:integration && bun run test:browser && bun run test:e2e && bun run docs:blume:translate:check && bun run build && bun run docs:blume:audit && bun run typecheck && bun run lint:no-suppressions && bun run lint && bun run doctor:strict",
+    "quality:gate": "bun run security:audit && bun run registry:build && bun run registry:smoke && bun run registry:consumer-smoke && bun run registry:host-browser && bun run check:boundaries && bun run test:conformance && bun run aip:lint && bun run readiness:gate && bun run test:unit && bun run test:integration && bun run test:browser && bun run test:e2e && bun run docs:blume:translate:check && bun run build && bun run docs:blume:audit && bun run typecheck && bun run lint:no-suppressions && bun run lint && bun run doctor:strict",
     "readiness:gate": "bun run scripts/readiness-report.ts --require-profile-complete",
     "readiness:report": "bun run scripts/readiness-report.ts",
     "registry:build": "shadcn build",
     "registry:consumer-smoke": "bun run scripts/consumer-fixture-smoke.ts",
+    "registry:host-browser": "playwright test --config=playwright.host-registry.config.ts",
     "registry:smoke": "bun run scripts/smoke-registry.ts",
     "release:gate": "bun run quality:gate",
     "release:verify-tag": "bun run scripts/verify-release-tag.ts",
     "scan:react": "react-scan http://localhost:55011",
+    "security:audit": "bun run scripts/security-audit.ts",
     "start": "blume preview --host 0.0.0.0 --port 8080",
     "test": "bun run test:unit && bun run test:integration",
     "test:browser": "node scripts/run-tests.mjs browser --reporters verbose",
@@ -73,6 +75,19 @@
     "typecheck:coverage": "bun run scripts/check-typescript-coverage.ts",
     "typecheck:source": "tsc --noEmit",
     "typecheck:tests": "tsc --project tsconfig.tests.json --noEmit"
+  },
+  "overrides": {
+    "@tailwindcss/typography": {
+      "postcss-selector-parser": "7.1.6"
+    },
+    "@vercel/routing-utils": {
+      "path-to-regexp": "6.3.0"
+    },
+    "katex": "0.18.7",
+    "lodash-es": "4.18.1",
+    "router": {
+      "path-to-regexp": "8.4.0"
+    }
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",
