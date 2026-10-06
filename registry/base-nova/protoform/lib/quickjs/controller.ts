@@ -8,6 +8,7 @@ import {
 
 /** Select from a host-owned reviewed catalog. Metadata is not a security approval mechanism. */
 export interface ReviewedQuickJsRequest {
+  fieldInfo?: QuickJsRequest["fieldInfo"];
   fields: string[];
   rule: { id: string; version: string; source: string };
   values: QuickJsRequest["values"];
@@ -32,7 +33,7 @@ function prepare(request: ReviewedQuickJsRequest) {
   }
   const snapshot = parseQuickJsRequest({ ...request, source: request.rule.source });
   snapshot.fields.sort((a, b) => a.localeCompare(b));
-  const identity = JSON.stringify([id, version, snapshot.source, snapshot.fields]);
+  const identity = JSON.stringify([id, version, snapshot.source, snapshot.fields, snapshot.fieldInfo ?? {}]);
   const key = JSON.stringify([identity, Object.entries(snapshot.values).sort(([a], [b]) => a.localeCompare(b))]);
   return { identity, key, snapshot };
 }
@@ -141,7 +142,7 @@ export function createQuickJsController(options: ControllerOptions = {}) {
     if (prepare(request).key !== accepted.key) {
       throw new Error("Form inputs or rules changed before submission");
     }
-    const values = { ...accepted.snapshot.values };
+    const values = structuredClone(accepted.snapshot.values);
     const current = revision;
     submitting = true;
     try {

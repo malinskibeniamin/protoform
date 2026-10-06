@@ -442,10 +442,11 @@ try {
     await writeFile(
       join(coreFixture, "quickjs-smoke.ts"),
       [
+        'import { createQuickJsFormRequest } from "./lib/quickjs/bindings";',
         'import { createQuickJsController } from "./lib/quickjs/controller";',
         'import { quickJsFieldConfig } from "./lib/quickjs/presentation";',
         "const controller = createQuickJsController();",
-        'const request = { rule: { id: "consumer-smoke", version: "1", source: "() => ({fields:{company:{visible:false}}})" }, values: {}, fields: ["company"] };',
+        'const request = createQuickJsFormRequest({ rule: { id: "consumer-smoke", version: "1", source: "(form, fields) => ({fields:{company:{visible:form.tags.length > 0 && fields.company.required}}})" }, schema: { fields: [{ key: "company", required: false, type: "string" }, { key: "tags", required: false, type: "array" }] }, values: { tags: ["consumer"] }, valueFields: ["tags"] });',
         "await controller.update(request);",
         "await controller.submit(request, () => { document.body.textContent = JSON.stringify(quickJsFieldConfig(controller.getSnapshot().presentation)); });",
         "controller.dispose();",

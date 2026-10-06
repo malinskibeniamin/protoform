@@ -127,3 +127,59 @@ test("controller preserves drafts through repeated worker failures and gates exa
     submitted: [{ company: "Human draft", kind: "business" }],
   });
 });
+
+test("form bindings cross the real worker with nested values, metadata, and failure recovery", async ({ page }) => {
+  const result = await page.evaluate(async () => {
+    const bindingPath = "/registry/base-nova/protoform/lib/quickjs/bindings.ts";
+    const { createQuickJsFormRequest }: typeof import("../registry/base-nova/protoform/lib/quickjs/bindings") =
+      await import(bindingPath);
+    const controllerPath = "/registry/base-nova/protoform/lib/quickjs/controller.ts";
+    const { createQuickJsController }: typeof import("../registry/base-nova/protoform/lib/quickjs/controller") =
+      await import(controllerPath);
+    const request = createQuickJsFormRequest({
+      schema: {
+        fields: [
+          { key: "company", type: "string", required: false },
+          { key: "contact", type: "oneof", required: true },
+          { key: "identifiers", type: "array", required: false },
+          { key: "secret", type: "string", required: false },
+        ],
+      },
+      rule: {
+        id: "bound-form",
+        version: "1",
+        source: `(form, fields) => ({fields:{company:{visible:
+          fields.company.type === "string" && form.contact.case === "email" &&
+          form.identifiers[0] === "9007199254740993" && !("secret" in form)
+        }}})`,
+      },
+      valueFields: ["contact", "identifiers"],
+      values: {
+        contact: { case: "email", value: "forms@example.com" },
+        identifiers: ["9007199254740993"],
+        secret: "host-only",
+      },
+    });
+    const controller = createQuickJsController();
+    try {
+      await controller.update(request);
+      const first = controller.getSnapshot().presentation;
+      await controller.update({
+        ...request,
+        rule: { ...request.rule, source: 'form => {form.identifiers.push("changed"); return {fields:{}}}' },
+      });
+      const failure = controller.getSnapshot().status;
+      await controller.update(request);
+      const submitted = await controller.submit(request, (values) => values);
+      return { first, failure, submitted, status: controller.getSnapshot().status };
+    } finally {
+      controller.dispose();
+    }
+  });
+  expect(result).toEqual({
+    first: { company: { visible: true } },
+    failure: "error",
+    status: "ready",
+    submitted: { contact: { case: "email", value: "forms@example.com" }, identifiers: ["9007199254740993"] },
+  });
+});

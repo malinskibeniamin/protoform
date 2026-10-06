@@ -10,7 +10,7 @@ import {
 
 /** Worker implementation. Use the worker client from a browser UI, not this function. */
 export async function evaluateQuickJs(request: unknown): Promise<QuickJsPresentation> {
-  const { source, values, fields } = parseQuickJsRequest(request);
+  const { source, values, fields, fieldInfo } = parseQuickJsRequest(request);
   const input = JSON.stringify(values);
   if (source.length > QUICKJS_TEXT_LIMIT || input.length > QUICKJS_TEXT_LIMIT) {
     throw new Error("Input too large");
@@ -27,9 +27,17 @@ export async function evaluateQuickJs(request: unknown): Promise<QuickJsPresenta
     const result = context.evalCode(
       `"use strict"; (() => {
       const stringify = JSON.stringify.bind(JSON);
-      const form = Object.freeze(JSON.parse(${JSON.stringify(input)}));
+      const freeze = value => {
+        if (value !== null && typeof value === "object") {
+          for (const child of Object.values(value)) freeze(child);
+          Object.freeze(value);
+        }
+        return value;
+      };
+      const form = freeze(JSON.parse(${JSON.stringify(input)}));
+      const fields = freeze(JSON.parse(${JSON.stringify(JSON.stringify(fieldInfo ?? {}))}));
       const evaluate = (${source}\n);
-      return stringify(evaluate(form));
+      return stringify(evaluate(form, fields));
     })()`,
       "form-rule.js"
     );

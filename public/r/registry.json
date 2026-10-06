@@ -3150,6 +3150,11 @@
       "dependencies": ["quickjs-emscripten@0.32.0"],
       "files": [
         {
+          "path": "registry/base-nova/protoform/lib/quickjs/bindings.ts",
+          "type": "registry:lib",
+          "target": "@lib/quickjs/bindings.ts"
+        },
+        {
           "path": "registry/base-nova/protoform/lib/quickjs/client.ts",
           "type": "registry:lib",
           "target": "@lib/quickjs/client.ts"
