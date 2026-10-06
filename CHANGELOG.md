@@ -18,6 +18,7 @@ source snapshots.
 - Source-copy `protoc-gen-protoform` generator.
 - Conformance, accessibility, browser, performance, security, and consumer-installation evidence.
 - Complete bookstore RPC example, static documentation site, and source registry.
+- Optional QuickJS form bindings with schema-derived presentation targets, explicit value exposure, nested read-only snapshots, and safe field metadata. Existing scalar rules remain compatible; form-shaped protobuf conversion stays provider-owned.
 
 ### Changed
 
