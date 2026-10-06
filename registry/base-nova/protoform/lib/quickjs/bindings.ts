@@ -1,12 +1,10 @@
-import type { FormValues, ParsedSchema } from "../core/field-model";
-import { parseQuickJsRequest } from "./contract";
-import type { ReviewedQuickJsRequest } from "./controller";
+import type { FormValues, ParsedSchema } from '../core/field-model';
+import { parseQuickJsRequest } from './contract';
+import type { ReviewedQuickJsRequest } from './controller';
 
-/** Bind form-shaped values, never protobuf messages or provider-private metadata. */
 export function createQuickJsFormRequest(options: {
-  rule: ReviewedQuickJsRequest["rule"];
+  rule: ReviewedQuickJsRequest['rule'];
   schema: ParsedSchema;
-  /** Explicit host-owned input exposure; omit sensitive fields. */
   valueFields: readonly string[];
   values: FormValues;
 }): ReviewedQuickJsRequest {
@@ -15,15 +13,15 @@ export function createQuickJsFormRequest(options: {
   const selected = new Set<string>();
   for (const key of options.valueFields) {
     if (!fields.includes(key) || selected.has(key)) {
-      throw new Error("Unknown or duplicate QuickJS input field");
+      throw new Error('Unknown or duplicate QuickJS input field');
     }
     selected.add(key);
     const descriptor = Object.getOwnPropertyDescriptor(options.values, key);
     if (!descriptor) {
       continue;
     }
-    if (!("value" in descriptor)) {
-      throw new Error("Expected form value data properties");
+    if (!('value' in descriptor)) {
+      throw new Error('Expected form value data properties');
     }
     if (descriptor.value !== undefined) {
       values[key] = descriptor.value;

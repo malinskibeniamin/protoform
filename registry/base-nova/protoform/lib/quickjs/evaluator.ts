@@ -1,4 +1,4 @@
-import { getQuickJS } from "quickjs-emscripten";
+import { getQuickJS } from 'quickjs-emscripten';
 
 import {
   isRecord,
@@ -6,14 +6,13 @@ import {
   parseQuickJsRequest,
   QUICKJS_TEXT_LIMIT,
   type QuickJsPresentation,
-} from "./contract";
+} from './contract';
 
-/** Worker implementation. Use the worker client from a browser UI, not this function. */
 export async function evaluateQuickJs(request: unknown): Promise<QuickJsPresentation> {
   const { source, values, fields, fieldInfo } = parseQuickJsRequest(request);
   const input = JSON.stringify(values);
   if (source.length > QUICKJS_TEXT_LIMIT || input.length > QUICKJS_TEXT_LIMIT) {
-    throw new Error("Input too large");
+    throw new Error('Input too large');
   }
   const QuickJS = await getQuickJS();
   const runtime = QuickJS.newRuntime();
@@ -23,7 +22,6 @@ export async function evaluateQuickJs(request: unknown): Promise<QuickJsPresenta
   runtime.setInterruptHandler(() => performance.now() >= deadline);
   const context = runtime.newContext();
   try {
-    // No host functions or module loader. Capture serialization before running untrusted code.
     const result = context.evalCode(
       `"use strict"; (() => {
       const stringify = JSON.stringify.bind(JSON);
@@ -39,29 +37,29 @@ export async function evaluateQuickJs(request: unknown): Promise<QuickJsPresenta
       const evaluate = (${source}\n);
       return stringify(evaluate(form, fields));
     })()`,
-      "form-rule.js"
+      'form-rule.js'
     );
     if (result.error) {
       result.error.dispose();
-      throw new Error("Script failed, exceeded resources, or is incomplete");
+      throw new Error('Script failed, exceeded resources, or is incomplete');
     }
     let text: string;
     try {
-      if (context.typeof(result.value) !== "string") {
-        throw new Error("Expected JSON output");
+      if (context.typeof(result.value) !== 'string') {
+        throw new Error('Expected JSON output');
       }
       text = context.getString(result.value);
     } finally {
       result.value.dispose();
     }
     if (text.length > QUICKJS_TEXT_LIMIT) {
-      throw new Error("Output too large");
+      throw new Error('Output too large');
     }
     const output: unknown = JSON.parse(text);
-    if (!isRecord(output) || Object.keys(output).length !== 1 || !isRecord(output["fields"])) {
-      throw new Error("Expected only a fields object");
+    if (!isRecord(output) || Object.keys(output).length !== 1 || !isRecord(output['fields'])) {
+      throw new Error('Expected only a fields object');
     }
-    return parseQuickJsPresentation(output["fields"], fields);
+    return parseQuickJsPresentation(output['fields'], fields);
   } finally {
     context.dispose();
     runtime.dispose();

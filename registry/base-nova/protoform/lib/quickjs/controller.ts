@@ -1,35 +1,33 @@
-import { evaluateQuickJsInWorker, type QuickJsOptions } from "./client";
+import { evaluateQuickJsInWorker, type QuickJsOptions } from './client';
 import {
   parseQuickJsPresentation,
   parseQuickJsRequest,
   type QuickJsPresentation,
   type QuickJsRequest,
-} from "./contract";
+} from './contract';
 
-/** Select from a host-owned reviewed catalog. Metadata is not a security approval mechanism. */
 export interface ReviewedQuickJsRequest {
-  fieldInfo?: QuickJsRequest["fieldInfo"];
+  fieldInfo?: QuickJsRequest['fieldInfo'];
   fields: string[];
   rule: { id: string; version: string; source: string };
-  values: QuickJsRequest["values"];
+  values: QuickJsRequest['values'];
 }
 
 export interface QuickJsControllerState {
   error: string | null;
   presentation: QuickJsPresentation;
-  status: "idle" | "pending" | "ready" | "error" | "disposed";
+  status: 'idle' | 'pending' | 'ready' | 'error' | 'disposed';
   submitting: boolean;
 }
 
-interface ControllerOptions extends Omit<QuickJsOptions, "signal"> {
-  /** Trusted evaluator override for tests or alternative worker transports. */
+interface ControllerOptions extends Omit<QuickJsOptions, 'signal'> {
   evaluate?: typeof evaluateQuickJsInWorker;
 }
 
 function prepare(request: ReviewedQuickJsRequest) {
   const { id, version } = request.rule;
   if (!(id.trim() && version.trim()) || id.length > 128 || version.length > 128) {
-    throw new Error("Expected a reviewed rule ID and version");
+    throw new Error('Expected a reviewed rule ID and version');
   }
   const snapshot = parseQuickJsRequest({ ...request, source: request.rule.source });
   snapshot.fields.sort((a, b) => a.localeCompare(b));
@@ -38,14 +36,13 @@ function prepare(request: ReviewedQuickJsRequest) {
   return { identity, key, snapshot };
 }
 
-/** Framework-independent store; update synchronously from every input/rule/schema change. */
 export function createQuickJsController(options: ControllerOptions = {}) {
   const { evaluate = evaluateQuickJsInWorker, ...workerOptions } = options;
   const listeners = new Set<() => void>();
   let state: QuickJsControllerState = Object.freeze({
     error: null,
     presentation: Object.freeze({}),
-    status: "idle",
+    status: 'idle',
     submitting: false,
   });
   let revision = 0;
@@ -55,7 +52,7 @@ export function createQuickJsController(options: ControllerOptions = {}) {
   let submitting = false;
 
   function stateIsLive() {
-    return state.status !== "disposed";
+    return state.status !== 'disposed';
   }
 
   function publish(next: QuickJsControllerState) {
@@ -66,14 +63,14 @@ export function createQuickJsController(options: ControllerOptions = {}) {
   }
 
   function invalidate() {
-    if (state.status === "disposed") {
+    if (state.status === 'disposed') {
       return;
     }
     revision += 1;
     active?.abort();
     active = undefined;
     accepted = undefined;
-    publish({ ...state, error: null, status: "idle" });
+    publish({ ...state, error: null, status: 'idle' });
   }
 
   function resetPresentation(prepared: ReturnType<typeof prepare>) {
@@ -84,8 +81,8 @@ export function createQuickJsController(options: ControllerOptions = {}) {
   }
 
   async function update(request: ReviewedQuickJsRequest): Promise<void> {
-    if (state.status === "disposed") {
-      throw new Error("QuickJS controller disposed");
+    if (state.status === 'disposed') {
+      throw new Error('QuickJS controller disposed');
     }
     revision += 1;
     const current = revision;
@@ -93,8 +90,7 @@ export function createQuickJsController(options: ControllerOptions = {}) {
     accepted = undefined;
     const abort = new AbortController();
     active = abort;
-    // Invalidate readiness before parsing or calling any asynchronous code.
-    publish({ ...state, error: null, status: "pending" });
+    publish({ ...state, error: null, status: 'pending' });
     if (current !== revision) {
       return;
     }
@@ -116,7 +112,7 @@ export function createQuickJsController(options: ControllerOptions = {}) {
     } catch {
       if (current === revision) {
         active = undefined;
-        publish({ ...state, error: "Could not evaluate form rules. Retry before submitting.", status: "error" });
+        publish({ ...state, error: 'Could not evaluate form rules. Retry before submitting.', status: 'error' });
       }
       return;
     }
@@ -128,19 +124,18 @@ export function createQuickJsController(options: ControllerOptions = {}) {
     }
     accepted = prepared;
     active = undefined;
-    publish({ ...state, error: null, presentation: Object.freeze(presentation), status: "ready" });
+    publish({ ...state, error: null, presentation: Object.freeze(presentation), status: 'ready' });
   }
 
-  /** Call after schema validation, passing the exact current snapshot. Never pass unprojected secrets. */
   async function submit<T>(
     request: ReviewedQuickJsRequest,
-    action: (values: QuickJsRequest["values"]) => T | Promise<T>
+    action: (values: QuickJsRequest['values']) => T | Promise<T>
   ): Promise<T> {
-    if (state.status !== "ready" || !accepted || submitting) {
-      throw new Error("Form rules are not ready for submission");
+    if (state.status !== 'ready' || !accepted || submitting) {
+      throw new Error('Form rules are not ready for submission');
     }
     if (prepare(request).key !== accepted.key) {
-      throw new Error("Form inputs or rules changed before submission");
+      throw new Error('Form inputs or rules changed before submission');
     }
     const values = structuredClone(accepted.snapshot.values);
     const current = revision;
@@ -148,7 +143,7 @@ export function createQuickJsController(options: ControllerOptions = {}) {
     try {
       publish({ ...state, submitting: true });
       if (current !== revision) {
-        throw new Error("Form inputs or rules changed before submission");
+        throw new Error('Form inputs or rules changed before submission');
       }
       return await action(values);
     } finally {
@@ -160,14 +155,14 @@ export function createQuickJsController(options: ControllerOptions = {}) {
   }
 
   function dispose() {
-    if (state.status === "disposed") {
+    if (state.status === 'disposed') {
       return;
     }
     revision += 1;
     active?.abort();
     active = undefined;
     accepted = undefined;
-    publish({ ...state, error: null, status: "disposed", submitting: false });
+    publish({ ...state, error: null, status: 'disposed', submitting: false });
     listeners.clear();
   }
 
@@ -177,7 +172,7 @@ export function createQuickJsController(options: ControllerOptions = {}) {
     invalidate,
     submit,
     subscribe(listener: () => void) {
-      if (state.status === "disposed") {
+      if (state.status === 'disposed') {
         return () => undefined;
       }
       listeners.add(listener);

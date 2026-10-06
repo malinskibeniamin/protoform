@@ -17,8 +17,8 @@ export default defineConfig({
       use: { ...devices['Desktop Safari'] },
     },
   ],
-  testDir: "./e2e",
-  testIgnore: "quickjs.spec.ts",
+  testDir: './e2e',
+  testIgnore: 'quickjs.spec.ts',
   timeout: 60_000,
   use: {
     baseURL: 'http://127.0.0.1:55013',

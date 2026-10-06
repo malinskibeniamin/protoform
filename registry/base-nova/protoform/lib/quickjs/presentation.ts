@@ -1,7 +1,6 @@
-import type { FieldConfig } from "../core/field-model";
-import type { QuickJsPresentation } from "./contract";
+import type { FieldConfig } from '../core/field-model';
+import type { QuickJsPresentation } from './contract';
 
-/** Always compose against the original base config, not the previous dynamic result. */
 export function quickJsFieldConfig<FieldTypes = never>(
   presentation: QuickJsPresentation,
   base: Record<string, FieldConfig<FieldTypes, Record<string, unknown>>> = {}
