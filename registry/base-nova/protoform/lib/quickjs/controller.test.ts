@@ -1,6 +1,6 @@
 import { expect, test } from "@rstest/core";
 import type { QuickJsOptions } from "./client";
-import type { QuickJsPresentation } from "./contract";
+import { isRecord, type QuickJsPresentation } from "./contract";
 import { createQuickJsController, type ReviewedQuickJsRequest } from "./controller";
 
 const request: ReviewedQuickJsRequest = {
@@ -224,4 +224,51 @@ test("A to B to A does not reuse the first A while the final revision is pending
     status: "ready",
   });
   controller.dispose();
+});
+
+test("nested snapshots compare by content and action copies cannot change accepted values", async () => {
+  const controller = createQuickJsController({ evaluate: () => Promise.resolve({}) });
+  const nested = { ...request, values: { kind: "business", company: { name: "Acme", active: true } } };
+  try {
+    await controller.update(nested);
+    const reordered = { ...nested, values: { company: { active: true, name: "Acme" }, kind: "business" } };
+    await controller.submit(reordered, (values) => {
+      const company = values["company"];
+      if (!isRecord(company)) {
+        throw new Error("Expected company object");
+      }
+      company["name"] = "action-local";
+    });
+    await controller.submit(nested, (values) => {
+      expect(values).toEqual({ kind: "business", company: { name: "Acme", active: true } });
+    });
+    nested.values.company.name = "changed";
+    await expect(controller.submit(nested, () => undefined)).rejects.toThrow("changed");
+  } finally {
+    controller.dispose();
+  }
+});
+
+test("metadata changes invalidate submission and clear old presentation before evaluation finishes", async () => {
+  const latest = deferred<QuickJsPresentation>();
+  let calls = 0;
+  const controller = createQuickJsController({
+    evaluate: () => {
+      calls += 1;
+      return calls === 1 ? Promise.resolve({ company: { visible: false } }) : latest.promise;
+    },
+  });
+  const original = { ...request, fieldInfo: { company: { type: "string", required: false } } };
+  const changed = { ...request, fieldInfo: { company: { type: "string", required: true } } };
+  try {
+    await controller.update(original);
+    await expect(controller.submit(changed, () => undefined)).rejects.toThrow("changed");
+    const updating = controller.update(changed);
+    expect(controller.getSnapshot()).toMatchObject({ status: "pending", presentation: {} });
+    latest.resolve({ company: { disabled: true } });
+    await updating;
+    await controller.submit(changed, () => undefined);
+  } finally {
+    controller.dispose();
+  }
 });
