@@ -1,16 +1,16 @@
-import { expect, test } from "@rstest/core";
-import type { QuickJsOptions } from "./client";
-import { isRecord, type QuickJsPresentation } from "./contract";
-import { createQuickJsController, type ReviewedQuickJsRequest } from "./controller";
+import { expect, test } from '@rstest/core';
+import type { QuickJsOptions } from './client';
+import { isRecord, type QuickJsPresentation } from './contract';
+import { createQuickJsController, type ReviewedQuickJsRequest } from './controller';
 
 const request: ReviewedQuickJsRequest = {
-  fields: ["kind", "company"],
+  fields: ['kind', 'company'],
   rule: {
-    id: "account-fields",
+    id: 'account-fields',
     source: "form => ({fields:{company:{visible:form.kind === 'business'}}})",
-    version: "1",
+    version: '1',
   },
-  values: { company: "Acme", kind: "business" },
+  values: { company: 'Acme', kind: 'business' },
 };
 
 function deferred<T>() {
@@ -23,7 +23,7 @@ function deferred<T>() {
   return { promise, reject, resolve };
 }
 
-test("only the latest revision can enable submission, even when cancellation is ignored", async () => {
+test('only the latest revision can enable submission, even when cancellation is ignored', async () => {
   const first = deferred<QuickJsPresentation>();
   const second = deferred<QuickJsPresentation>();
   const signals: Array<AbortSignal | undefined> = [];
@@ -34,7 +34,7 @@ test("only the latest revision can enable submission, even when cancellation is 
     },
   });
   const old = controller.update(request);
-  const latestRequest = { ...request, values: { ...request.values, kind: "personal" } };
+  const latestRequest = { ...request, values: { ...request.values, kind: 'personal' } };
   const latest = controller.update(latestRequest);
   expect(signals[0]?.aborted).toBe(true);
   let calls = 0;
@@ -42,7 +42,7 @@ test("only the latest revision can enable submission, even when cancellation is 
     controller.submit(latestRequest, () => {
       calls += 1;
     })
-  ).rejects.toThrow("not ready");
+  ).rejects.toThrow('not ready');
   second.resolve({ company: { visible: false } });
   await latest;
   first.resolve({ company: { visible: true } });
@@ -52,7 +52,7 @@ test("only the latest revision can enable submission, even when cancellation is 
     controller.submit(request, () => {
       calls += 1;
     })
-  ).rejects.toThrow("changed");
+  ).rejects.toThrow('changed');
   await controller.submit(latestRequest, (values) => {
     calls += 1;
     expect(values).toEqual(latestRequest.values);
@@ -61,11 +61,11 @@ test("only the latest revision can enable submission, even when cancellation is 
   controller.dispose();
 });
 
-test("submission is blocked if a synchronous subscriber changes values during notification", async () => {
+test('submission is blocked if a synchronous subscriber changes values during notification', async () => {
   const controller = createQuickJsController({ evaluate: () => Promise.resolve({}) });
   await controller.update(request);
   controller.subscribe(() => {
-    if (controller.getSnapshot().submitting && controller.getSnapshot().status === "ready") {
+    if (controller.getSnapshot().submitting && controller.getSnapshot().status === 'ready') {
       controller.invalidate();
     }
   });
@@ -74,37 +74,37 @@ test("submission is blocked if a synchronous subscriber changes values during no
     controller.submit(request, () => {
       called = true;
     })
-  ).rejects.toThrow("changed");
+  ).rejects.toThrow('changed');
   expect(called).toBe(false);
   controller.dispose();
 });
 
-test("failures retain accepted presentation, block submission, and recover only after retry", async () => {
+test('failures retain accepted presentation, block submission, and recover only after retry', async () => {
   const outcomes = [
     () => Promise.resolve({ company: { visible: false } }),
-    () => Promise.reject(new Error("private source and values")),
+    () => Promise.reject(new Error('private source and values')),
     () => Promise.resolve({ company: { visible: false } }),
   ];
   const controller = createQuickJsController({
     evaluate: () => {
       const next = outcomes.shift();
       if (!next) {
-        throw new Error("Unexpected evaluation");
+        throw new Error('Unexpected evaluation');
       }
       return next();
     },
   });
   await controller.update(request);
   await controller.update(request);
-  expect(controller.getSnapshot()).toMatchObject({ presentation: { company: { visible: false } }, status: "error" });
-  expect(controller.getSnapshot().error).not.toContain("private");
-  await expect(controller.submit(request, () => undefined)).rejects.toThrow("not ready");
+  expect(controller.getSnapshot()).toMatchObject({ presentation: { company: { visible: false } }, status: 'error' });
+  expect(controller.getSnapshot().error).not.toContain('private');
+  await expect(controller.submit(request, () => undefined)).rejects.toThrow('not ready');
   await controller.update(request);
-  expect(controller.getSnapshot().status).toBe("ready");
+  expect(controller.getSnapshot().status).toBe('ready');
   controller.dispose();
 });
 
-test("invalidation blocks streaming gaps; disposal aborts work and ignores late failures", async () => {
+test('invalidation blocks streaming gaps; disposal aborts work and ignores late failures', async () => {
   const pending = deferred<QuickJsPresentation>();
   let signal: AbortSignal | undefined;
   const controller = createQuickJsController({
@@ -120,62 +120,62 @@ test("invalidation blocks streaming gaps; disposal aborts work and ignores late 
   const running = controller.update(request);
   controller.invalidate();
   expect(signal?.aborted).toBe(true);
-  await expect(controller.submit(request, () => undefined)).rejects.toThrow("not ready");
+  await expect(controller.submit(request, () => undefined)).rejects.toThrow('not ready');
   controller.dispose();
   const before = notifications;
-  pending.reject(new Error("obsolete"));
+  pending.reject(new Error('obsolete'));
   await running;
   expect(notifications).toBe(before);
-  expect(controller.getSnapshot().status).toBe("disposed");
-  await expect(controller.update(request)).rejects.toThrow("disposed");
+  expect(controller.getSnapshot().status).toBe('disposed');
+  await expect(controller.update(request)).rejects.toThrow('disposed');
   unsubscribe();
 });
 
-test("concurrent submissions are rejected and action failure does not leave a permanent lock", async () => {
+test('concurrent submissions are rejected and action failure does not leave a permanent lock', async () => {
   const action = deferred<void>();
   const controller = createQuickJsController({ evaluate: () => Promise.resolve({}) });
   await controller.update(request);
   const first = controller.submit(request, () => action.promise);
   await controller.update(request);
-  await expect(controller.submit(request, () => undefined)).rejects.toThrow("not ready");
-  action.reject(new Error("tool unavailable"));
-  await expect(first).rejects.toThrow("tool unavailable");
+  await expect(controller.submit(request, () => undefined)).rejects.toThrow('not ready');
+  action.reject(new Error('tool unavailable'));
+  await expect(first).rejects.toThrow('tool unavailable');
   expect(controller.getSnapshot().submitting).toBe(false);
   await controller.submit(request, () => undefined);
   controller.dispose();
 });
 
-test("schema and rule revisions clear obsolete policies; malformed input fails closed", async () => {
+test('schema and rule revisions clear obsolete policies; malformed input fails closed', async () => {
   const controller = createQuickJsController({ evaluate: () => Promise.resolve({ company: { visible: false } }) });
   await controller.update(request);
-  const changed = { ...request, fields: ["kind"], rule: { ...request.rule, version: "2" } };
-  await controller.update({ ...changed, values: { kind: "business" } });
-  expect(controller.getSnapshot()).toMatchObject({ presentation: {}, status: "error" });
-  await expect(controller.submit(request, () => undefined)).rejects.toThrow("not ready");
-  await controller.update({ ...request, rule: { ...request.rule, version: "" } });
-  expect(controller.getSnapshot().status).toBe("error");
+  const changed = { ...request, fields: ['kind'], rule: { ...request.rule, version: '2' } };
+  await controller.update({ ...changed, values: { kind: 'business' } });
+  expect(controller.getSnapshot()).toMatchObject({ presentation: {}, status: 'error' });
+  await expect(controller.submit(request, () => undefined)).rejects.toThrow('not ready');
+  await controller.update({ ...request, rule: { ...request.rule, version: '' } });
+  expect(controller.getSnapshot().status).toBe('error');
   controller.dispose();
 });
 
-test("external mutation cannot alter the accepted snapshot or presentation", async () => {
+test('external mutation cannot alter the accepted snapshot or presentation', async () => {
   const controller = createQuickJsController({ evaluate: () => Promise.resolve({ company: { visible: false } }) });
   const mutable = structuredClone(request);
   await controller.update(mutable);
-  mutable.values["company"] = "Changed";
+  mutable.values['company'] = 'Changed';
   expect(Object.isFrozen(controller.getSnapshot())).toBe(true);
-  expect(Object.isFrozen(controller.getSnapshot().presentation["company"])).toBe(true);
-  await expect(controller.submit(mutable, () => undefined)).rejects.toThrow("changed");
+  expect(Object.isFrozen(controller.getSnapshot().presentation['company'])).toBe(true);
+  await expect(controller.submit(mutable, () => undefined)).rejects.toThrow('changed');
   await controller.submit(request, (values) => {
-    expect(values["company"]).toBe("Acme");
-    values["company"] = "local";
+    expect(values['company']).toBe('Acme');
+    values['company'] = 'local';
   });
   await controller.submit(request, (values) => {
-    expect(values["company"]).toBe("Acme");
+    expect(values['company']).toBe('Acme');
   });
   controller.dispose();
 });
 
-test("disposal from a subscription cannot start another worker", async () => {
+test('disposal from a subscription cannot start another worker', async () => {
   let evaluations = 0;
   const controller = createQuickJsController({
     evaluate: () => {
@@ -184,16 +184,16 @@ test("disposal from a subscription cannot start another worker", async () => {
     },
   });
   controller.subscribe(() => {
-    if (controller.getSnapshot().status === "pending") {
+    if (controller.getSnapshot().status === 'pending') {
       controller.dispose();
     }
   });
   await controller.update(request);
   expect(evaluations).toBe(0);
-  expect(controller.getSnapshot().status).toBe("disposed");
+  expect(controller.getSnapshot().status).toBe('disposed');
 });
 
-test("A to B to A does not reuse the first A while the final revision is pending", async () => {
+test('A to B to A does not reuse the first A while the final revision is pending', async () => {
   const first = deferred<QuickJsPresentation>();
   const middle = deferred<QuickJsPresentation>();
   const final = deferred<QuickJsPresentation>();
@@ -202,54 +202,54 @@ test("A to B to A does not reuse the first A while the final revision is pending
     evaluate: () => {
       const job = jobs.shift();
       if (!job) {
-        throw new Error("Unexpected evaluation");
+        throw new Error('Unexpected evaluation');
       }
       return job.promise;
     },
   });
   const a = controller.update(request);
-  const b = controller.update({ ...request, values: { ...request.values, kind: "personal" } });
+  const b = controller.update({ ...request, values: { ...request.values, kind: 'personal' } });
   const backToA = controller.update(request);
   first.resolve({ company: { visible: true } });
   await a;
-  expect(controller.getSnapshot().status).toBe("pending");
-  await expect(controller.submit(request, () => undefined)).rejects.toThrow("not ready");
+  expect(controller.getSnapshot().status).toBe('pending');
+  await expect(controller.submit(request, () => undefined)).rejects.toThrow('not ready');
   final.resolve({ company: { visible: true } });
   await backToA;
-  middle.reject(new Error("obsolete B"));
+  middle.reject(new Error('obsolete B'));
   await b;
   expect(controller.getSnapshot()).toMatchObject({
     error: null,
     presentation: { company: { visible: true } },
-    status: "ready",
+    status: 'ready',
   });
   controller.dispose();
 });
 
-test("nested snapshots compare by content and action copies cannot change accepted values", async () => {
+test('nested snapshots compare by content and action copies cannot change accepted values', async () => {
   const controller = createQuickJsController({ evaluate: () => Promise.resolve({}) });
-  const nested = { ...request, values: { kind: "business", company: { name: "Acme", active: true } } };
+  const nested = { ...request, values: { kind: 'business', company: { name: 'Acme', active: true } } };
   try {
     await controller.update(nested);
-    const reordered = { ...nested, values: { company: { active: true, name: "Acme" }, kind: "business" } };
+    const reordered = { ...nested, values: { company: { active: true, name: 'Acme' }, kind: 'business' } };
     await controller.submit(reordered, (values) => {
-      const company = values["company"];
+      const company = values['company'];
       if (!isRecord(company)) {
-        throw new Error("Expected company object");
+        throw new Error('Expected company object');
       }
-      company["name"] = "action-local";
+      company['name'] = 'action-local';
     });
     await controller.submit(nested, (values) => {
-      expect(values).toEqual({ kind: "business", company: { name: "Acme", active: true } });
+      expect(values).toEqual({ kind: 'business', company: { name: 'Acme', active: true } });
     });
-    nested.values.company.name = "changed";
-    await expect(controller.submit(nested, () => undefined)).rejects.toThrow("changed");
+    nested.values.company.name = 'changed';
+    await expect(controller.submit(nested, () => undefined)).rejects.toThrow('changed');
   } finally {
     controller.dispose();
   }
 });
 
-test("metadata changes invalidate submission and clear old presentation before evaluation finishes", async () => {
+test('metadata changes invalidate submission and clear old presentation before evaluation finishes', async () => {
   const latest = deferred<QuickJsPresentation>();
   let calls = 0;
   const controller = createQuickJsController({
@@ -258,13 +258,13 @@ test("metadata changes invalidate submission and clear old presentation before e
       return calls === 1 ? Promise.resolve({ company: { visible: false } }) : latest.promise;
     },
   });
-  const original = { ...request, fieldInfo: { company: { type: "string", required: false } } };
-  const changed = { ...request, fieldInfo: { company: { type: "string", required: true } } };
+  const original = { ...request, fieldInfo: { company: { type: 'string', required: false } } };
+  const changed = { ...request, fieldInfo: { company: { type: 'string', required: true } } };
   try {
     await controller.update(original);
-    await expect(controller.submit(changed, () => undefined)).rejects.toThrow("changed");
+    await expect(controller.submit(changed, () => undefined)).rejects.toThrow('changed');
     const updating = controller.update(changed);
-    expect(controller.getSnapshot()).toMatchObject({ status: "pending", presentation: {} });
+    expect(controller.getSnapshot()).toMatchObject({ status: 'pending', presentation: {} });
     latest.resolve({ company: { disabled: true } });
     await updating;
     await controller.submit(changed, () => undefined);

@@ -12,9 +12,9 @@ const hostFixture = join(root, '.tmp', 'host-consumer-fixture');
 const coreFixture = join(root, '.tmp', 'core-consumer-fixture');
 const publicDir = join(root, 'public');
 const leadingSlashes = /^\/+/u;
-const registryPort = Number(process.env["PROTOFORM_REGISTRY_PORT"] ?? "48741");
+const registryPort = Number(process.env['PROTOFORM_REGISTRY_PORT'] ?? '48741');
 if (!Number.isInteger(registryPort) || registryPort < 1 || registryPort > 65_535) {
-  throw new Error("PROTOFORM_REGISTRY_PORT must be an integer from 1 to 65535");
+  throw new Error('PROTOFORM_REGISTRY_PORT must be an integer from 1 to 65535');
 }
 const registryOrigin = `http://127.0.0.1:${registryPort}`;
 
@@ -133,8 +133,8 @@ function servePublic() {
       response.end('Not found');
     }
   });
-  return new Promise<import("node:http").Server>((resolveServer) => {
-    server.listen(registryPort, "127.0.0.1", () => resolveServer(server));
+  return new Promise<import('node:http').Server>((resolveServer) => {
+    server.listen(registryPort, '127.0.0.1', () => resolveServer(server));
   });
 }
 
@@ -440,25 +440,25 @@ try {
     console.log(`Core-only consumer fixture passed: ${coreFixture}`);
     await $`bunx --no-install shadcn add @protoform/protoform-quickjs --cwd ${coreFixture} --yes --overwrite`;
     await writeFile(
-      join(coreFixture, "quickjs-smoke.ts"),
+      join(coreFixture, 'quickjs-smoke.ts'),
       [
         'import { createQuickJsFormRequest } from "./lib/quickjs/bindings";',
         'import { createQuickJsController } from "./lib/quickjs/controller";',
         'import { quickJsFieldConfig } from "./lib/quickjs/presentation";',
-        "const controller = createQuickJsController();",
+        'const controller = createQuickJsController();',
         'const request = createQuickJsFormRequest({ rule: { id: "consumer-smoke", version: "1", source: "(form, fields) => ({fields:{company:{visible:form.tags.length > 0 && fields.company.required}}})" }, schema: { fields: [{ key: "company", required: false, type: "string" }, { key: "tags", required: false, type: "array" }] }, values: { tags: ["consumer"] }, valueFields: ["tags"] });',
-        "await controller.update(request);",
-        "await controller.submit(request, () => { document.body.textContent = JSON.stringify(quickJsFieldConfig(controller.getSnapshot().presentation)); });",
-        "controller.dispose();",
-      ].join("\n")
+        'await controller.update(request);',
+        'await controller.submit(request, () => { document.body.textContent = JSON.stringify(quickJsFieldConfig(controller.getSnapshot().presentation)); });',
+        'controller.dispose();',
+      ].join('\n')
     );
     await writeFile(
-      join(coreFixture, "index.html"),
+      join(coreFixture, 'index.html'),
       '<!doctype html><html lang="en"><head><title>QuickJS consumer</title></head><body><script type="module" src="/quickjs-smoke.ts"></script></body></html>'
     );
-    await writeFile(join(coreFixture, "quickjs-vite.config.mjs"), "export default {};");
+    await writeFile(join(coreFixture, 'quickjs-vite.config.mjs'), 'export default {};');
     await $`bun run --cwd ${coreFixture} typecheck`;
-    await $`bun ${join(coreFixture, "node_modules/vite/bin/vite.js")} build ${coreFixture} --config ${join(coreFixture, "quickjs-vite.config.mjs")}`;
+    await $`bun ${join(coreFixture, 'node_modules/vite/bin/vite.js')} build ${coreFixture} --config ${join(coreFixture, 'quickjs-vite.config.mjs')}`;
     console.log(`Optional QuickJS consumer install and worker build passed: ${coreFixture}`);
 
     await $`bun install --cwd ${fixture}`;
