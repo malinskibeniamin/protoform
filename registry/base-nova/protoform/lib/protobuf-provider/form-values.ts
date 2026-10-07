@@ -1,4 +1,4 @@
-import type { JsonValue } from '@bufbuild/protobuf';
+import type { DescMessage, JsonValue, MessageShape } from '@bufbuild/protobuf';
 
 export type ProtoFormValues<T> = T extends { $typeName: 'google.protobuf.Timestamp' | 'google.protobuf.Duration' }
   ? string
@@ -33,10 +33,8 @@ interface FlattenOneof<T> {
   value: UnionToIntersection<T extends { case: string; value: infer V } ? V : never> | undefined;
 }
 
-export type FlattenProtoOneofs<T> = T extends (infer U)[]
-  ? FlattenProtoOneofs<U>[]
-  : T extends object
-    ? true extends IsProtoOneof<T>
-      ? { [K in keyof FlattenOneof<T>]: FlattenProtoOneofs<FlattenOneof<T>[K]> }
-      : { [K in keyof T]: FlattenProtoOneofs<T[K]> }
-    : T;
+export type ProtoFormShape<Desc extends DescMessage> = DescMessage extends Desc
+  ? Record<string, unknown>
+  : {
+      [Key in keyof Omit<MessageShape<Desc>, '$typeName' | '$unknown'>]: ProtoFormValues<MessageShape<Desc>[Key]>;
+    };

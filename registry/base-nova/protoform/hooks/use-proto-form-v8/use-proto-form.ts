@@ -4,6 +4,7 @@ import { ConnectError } from '@connectrpc/connect';
 import { useRef, useState } from 'react';
 import {
   type FieldPath,
+  get as getFormValue,
   type Path,
   type SetValueConfig,
   type UseFormProps,
@@ -11,6 +12,7 @@ import {
   useForm,
 } from 'react-hook-form-v8';
 import { createUpdateMask as createDirtyUpdateMask } from '@/registry/base-nova/protoform/lib/protobuf-provider/field-mask.js';
+import type { ProtoFormShape } from '@/registry/base-nova/protoform/lib/protobuf-provider/form-values.js';
 import {
   type ConnectErrorContext,
   extractConnectErrorContext,
@@ -25,23 +27,18 @@ import {
 import { humanizeServerFieldError } from '@/registry/base-nova/protoform/lib/protobuf-provider/humanize-validation-error.js';
 
 import { protoPathToFormPath } from './proto-error-path.js';
-import type { ProtoFormValues } from './proto-paths.js';
 import { createProtoResolver } from './proto-resolver.js';
 
 export type { ConnectErrorContext } from '@/registry/base-nova/protoform/lib/protobuf-provider/format-error.js';
-
-type FormShape<Desc extends DescMessage> = {
-  [Key in keyof Omit<MessageShape<Desc>, '$typeName' | '$unknown'>]: ProtoFormValues<MessageShape<Desc>[Key]>;
-};
 
 type NestedErrors<T> = {
   [K in keyof T]?: T[K] extends object ? NestedErrors<T[K]> & { message?: string } : { message?: string };
 };
 
 export interface UseProtoFormOptions<Desc extends DescMessage>
-  extends Omit<UseFormProps<FormShape<Desc>>, 'resolver' | 'defaultValues'> {
+  extends Omit<UseFormProps<ProtoFormShape<Desc>>, 'resolver' | 'defaultValues'> {
   defaultValues?:
-    | UseFormProps<FormShape<Desc>>['defaultValues']
+    | UseFormProps<ProtoFormShape<Desc>>['defaultValues']
     | MessageShape<Desc>
     | (() => Promise<MessageShape<Desc>>);
   emptyRepeatedStringPolicies?: ProtoConversionOptions['emptyRepeatedStringPolicies'];
@@ -50,12 +47,12 @@ export interface UseProtoFormOptions<Desc extends DescMessage>
   serverPathPrefixes?: readonly string[];
 }
 
-export type UseProtoFormReturn<Desc extends DescMessage> = Omit<UseFormReturn<FormShape<Desc>>, 'reset'> & {
+export type UseProtoFormReturn<Desc extends DescMessage> = Omit<UseFormReturn<ProtoFormShape<Desc>>, 'reset'> & {
   reset: (
-    values?: Parameters<UseFormReturn<FormShape<Desc>>['reset']>[0] | MessageShape<Desc>,
-    options?: Parameters<UseFormReturn<FormShape<Desc>>['reset']>[1]
+    values?: Parameters<UseFormReturn<ProtoFormShape<Desc>>['reset']>[0] | MessageShape<Desc>,
+    options?: Parameters<UseFormReturn<ProtoFormShape<Desc>>['reset']>[1]
   ) => void;
-  createMessage: (values?: FormShape<Desc>) => MessageShape<Desc>;
+  createMessage: (values?: ProtoFormShape<Desc>) => MessageShape<Desc>;
   createUpdateMask: () => FieldMask;
   setOneofValue: (path: string, oneofCase: string, value: unknown, options?: SetValueConfig) => void;
   getNestedErrors: <T = Record<string, { message?: string }>>(path: string) => NestedErrors<T> | undefined;
@@ -90,7 +87,7 @@ export function useProtoForm<Desc extends DescMessage>(
       : serverPathPrefixes;
   const sourceMessage = useRef(isMessage(rest.defaultValues, schema) ? rest.defaultValues : undefined);
   const normalizeValues = (values: unknown) =>
-    isMessage(values, schema) ? (protoToFormValues(schema, values) as FormShape<Desc>) : (values as FormShape<Desc>);
+    isMessage(values, schema) ? protoToFormValues(schema, values) : (values as ProtoFormShape<Desc>);
   const suppliedDefaults = rest.defaultValues;
   const normalizedDefaults = suppliedDefaults === undefined ? undefined : normalizeValues(suppliedDefaults);
   const defaultValues =
@@ -112,7 +109,7 @@ export function useProtoForm<Desc extends DescMessage>(
     defaultValues,
     mode,
     resolver: resolveValues,
-  } as unknown as UseFormProps<FormShape<Desc>>) as UseFormReturn<FormShape<Desc>>;
+  } as unknown as UseFormProps<ProtoFormShape<Desc>>) as UseFormReturn<ProtoFormShape<Desc>>;
   const { defaultValues: initialValues, dirtyFields, errors: formErrors } = form.formState;
   const reset: UseProtoFormReturn<Desc>['reset'] = (values, keepStateOptions) => {
     const next = typeof values === 'function' ? values(form.getValues()) : values;
@@ -121,7 +118,11 @@ export function useProtoForm<Desc extends DescMessage>(
     }
     form.reset(next === undefined ? undefined : normalizeValues(next), keepStateOptions);
   };
-  const createMessage = (values?: FormShape<Desc>): MessageShape<Desc> => {
+  const resetField: typeof form.resetField = (name, resetFieldOptions) => {
+    form.resetField(name, resetFieldOptions);
+    restoreDefaultSection(form, name, resetFieldOptions);
+  };
+  const createMessage = (values?: ProtoFormShape<Desc>): MessageShape<Desc> => {
     const raw = values ?? form.getValues();
     return formValuesToProto(schema, raw, sourceMessage.current, conversionOptions);
   };
@@ -129,7 +130,7 @@ export function useProtoForm<Desc extends DescMessage>(
   const createUpdateMask = (): FieldMask => createDirtyUpdateMask(schema, dirtyFields, form.getValues(), initialValues);
 
   const setOneofValue = (path: string, oneofCase: string, value: unknown, setValueOptions?: SetValueConfig) => {
-    const current = form.getValues(path as Path<FormShape<Desc>>);
+    const current = form.getValues(path as Path<ProtoFormShape<Desc>>);
     const isOneof = current === undefined || current === null || (typeof current === 'object' && 'case' in current);
     if (!isOneof) {
       throw new Error(
@@ -139,9 +140,9 @@ export function useProtoForm<Desc extends DescMessage>(
     }
     const prev = current as { case?: string; value?: unknown } | undefined;
     if (prev?.case !== undefined && prev?.case !== '' && prev.case !== oneofCase) {
-      form.setValue(path as Path<FormShape<Desc>>, { case: '', value: {} } as never);
+      form.setValue(path as Path<ProtoFormShape<Desc>>, { case: '', value: {} } as never);
     }
-    form.setValue(path as Path<FormShape<Desc>>, { case: oneofCase, value } as never, {
+    form.setValue(path as Path<ProtoFormShape<Desc>>, { case: oneofCase, value } as never, {
       shouldDirty: true,
       shouldValidate: true,
       ...setValueOptions,
@@ -191,7 +192,7 @@ export function useProtoForm<Desc extends DescMessage>(
     }
     for (const [path, messages] of fieldMessages) {
       form.setError(
-        path as FieldPath<FormShape<Desc>>,
+        path as FieldPath<ProtoFormShape<Desc>>,
         {
           message: messages[0] ?? '',
           type: 'server',
@@ -207,6 +208,7 @@ export function useProtoForm<Desc extends DescMessage>(
   return {
     ...form,
     reset,
+    resetField,
     clearServerErrorContext,
     createMessage,
     createUpdateMask,
@@ -222,6 +224,20 @@ export function useProtoFormDefaults<Desc extends DescMessage>(
   init?: MessageInitShape<Desc>
 ): MessageShape<Desc> {
   return create(schema, init ?? ({} as MessageInitShape<Desc>));
+}
+
+function restoreDefaultSection<Desc extends DescMessage>(
+  form: UseFormReturn<ProtoFormShape<Desc>>,
+  name: FieldPath<ProtoFormShape<Desc>>,
+  options: Parameters<UseFormReturn<ProtoFormShape<Desc>>['resetField']>[1]
+): void {
+  if (options?.defaultValue !== undefined) {
+    return;
+  }
+  form.setValue(name, getFormValue(form.formState.defaultValues, name), { shouldDirty: !options?.keepDirty });
+  if (!options?.keepError) {
+    form.clearErrors(name);
+  }
 }
 
 function stripPrefix(field: string, prefixes: readonly string[]): string {
