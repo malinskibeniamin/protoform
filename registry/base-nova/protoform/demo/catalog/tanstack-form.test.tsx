@@ -2,10 +2,10 @@ import { afterEach, describe, expect, rs } from '@rstest/core';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { formatSubmittedValue } from '../../lib/protobuf-provider/format-submitted-value';
+import { formatSubmittedValue } from '../runtime/format-submitted-value';
 import { TanstackFormDemo } from './tanstack-form';
 
-rs.mock('../../lib/protobuf-provider/format-submitted-value', { spy: true });
+rs.mock('../runtime/format-submitted-value', { spy: true });
 
 afterEach(() => {
   rs.restoreAllMocks();

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "auto-form-audit",
+  "title": "AutoForm configuration audit",
+  "description": "Checks AutoForm configurations for missing renderers or data providers, incompatible controls, and invalid paths or steps, and reports them as JSON or SARIF.",
+  "registryDependencies": [
+    "@protoform/auto-form-core"
+  ],
+  "files": [
+    {
+      "path": "registry/base-nova/protoform/components/auto-form/audit.ts",
+      "content": "import { type InspectAutoFormConfigurationInput, inspectAutoFormConfiguration } from './configuration';\n\nexport type AutoFormAuditFormat = 'json' | 'sarif';\n\nexport interface AutoFormAuditTarget extends InspectAutoFormConfigurationInput<Record<string, unknown>, string> {\n  name: string;\n  source?: string;\n}\n\nexport interface AutoFormAuditDiagnostic {\n  code: ReturnType<typeof inspectAutoFormConfiguration>[number]['code'];\n  message: string;\n  path: string;\n  severity: ReturnType<typeof inspectAutoFormConfiguration>[number]['severity'];\n  source?: string;\n  target: string;\n}\n\nexport interface AutoFormAuditReport {\n  diagnostics: AutoFormAuditDiagnostic[];\n  version: 1;\n}\n\nexport function auditAutoFormConfigurations(targets: readonly AutoFormAuditTarget[]): AutoFormAuditReport {\n  const diagnostics = Array.from(targets)\n    .sort((left, right) => left.name.localeCompare(right.name))\n    .flatMap(({ name, source, ...configuration }) =>\n      inspectAutoFormConfiguration(configuration).map((diagnostic) => ({\n        code: diagnostic.code,\n        message: diagnostic.message,\n        path: diagnostic.path,\n        severity: diagnostic.severity,\n        ...(source ? { source } : {}),\n        target: name,\n      }))\n    );\n\n  return { diagnostics, version: 1 };\n}\n\nfunction formatSarifReport(report: AutoFormAuditReport): string {\n  const codes = [...new Set(report.diagnostics.map((diagnostic) => diagnostic.code))].sort();\n  const sarif = {\n    $schema: 'https://json.schemastore.org/sarif-2.1.0.json',\n    runs: [\n      {\n        results: report.diagnostics.map((diagnostic) => ({\n          level: diagnostic.severity,\n          ...(diagnostic.source\n            ? {\n                locations: [\n                  {\n                    physicalLocation: {\n                      artifactLocation: { uri: diagnostic.source },\n                    },\n                  },\n                ],\n              }\n            : {}),\n          message: { text: diagnostic.target.concat(': ', diagnostic.message, ' (', diagnostic.path, ')') },\n          ruleId: diagnostic.code,\n        })),\n        tool: {\n          driver: {\n            name: 'protoform',\n            rules: codes.map((code) => ({ id: code })),\n          },\n        },\n      },\n    ],\n    version: '2.1.0',\n  };\n\n  return JSON.stringify(sarif, null, 2);\n}\n\nexport function formatAutoFormAuditReport(report: AutoFormAuditReport, format: AutoFormAuditFormat): string {\n  return format === 'sarif' ? formatSarifReport(report) : JSON.stringify(report, null, 2);\n}\n",
+      "type": "registry:component",
+      "target": "@components/auto-form/audit.ts"
+    }
+  ],
+  "type": "registry:lib"
+}

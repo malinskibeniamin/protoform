@@ -54,7 +54,7 @@ Zod 4 implementuje Standard Schema bezpośrednio. Przekaż schemat Zod do adapte
 Zod ani etapu konwersji:
 
 ```tsx
-import { createFormikValidator } from "@/lib/core"
+import { createFormikValidator } from "@/lib/core/form-library-adapters"
 import * as z from "zod"
 
 const profileSchema = z.object({
@@ -75,7 +75,7 @@ rdzeń Protoform.
 funkcyjnego interfejsu API obsługującego tree-shaking:
 
 ```tsx
-import { createFormikValidator } from "@/lib/core"
+import { createFormikValidator } from "@/lib/core/form-library-adapters"
 import { minLength, object, string } from "zod/mini"
 
 const profileSchema = object({
@@ -93,14 +93,15 @@ integracji `~standard.validate` co każda inna zgodna implementacja.
 ## Przepisy na adaptery
 
 Adaptery przekształcają problemy Standard Schema do zagnieżdżonej struktury błędów każdej biblioteki formularzy. Nie
-odpowiadają za renderowanie pól ani przesyłanie formularza.
+odpowiadają za renderowanie pól ani przesyłanie formularza. Zainstaluj je za pomocą
+`bunx shadcn@latest add @protoform/form-library-adapters`.
 
 ### Formik
 
 Formik obsługuje synchroniczną lub asynchroniczną walidację na poziomie formularza:
 
 ```tsx
-import { createFormikValidator } from "@/lib/core"
+import { createFormikValidator } from "@/lib/core/form-library-adapters"
 
 const validate = createFormikValidator(profileSchema)
 ```
@@ -112,7 +113,7 @@ Problemy bez ścieżki używają `_form`. Zobacz pełną [integrację z Formik](
 Przekaż symbol `FORM_ERROR` z Final Form jako klucz problemu na poziomie głównym:
 
 ```tsx
-import { createFinalFormValidator } from "@/lib/core"
+import { createFinalFormValidator } from "@/lib/core/form-library-adapters"
 import { FORM_ERROR } from "final-form"
 
 const validate = createFinalFormValidator(profileSchema, {

@@ -54,7 +54,7 @@ Zod 4 直接實作 Standard Schema。將 Zod 結構描述傳給 Protoform 介接
 介接器或轉換步驟：
 
 ```tsx
-import { createFormikValidator } from "@/lib/core"
+import { createFormikValidator } from "@/lib/core/form-library-adapters"
 import * as z from "zod"
 
 const profileSchema = z.object({
@@ -75,7 +75,7 @@ Zod 僅是測試用的相容性依賴項。Protoform 核心
 函式式、可 tree-shake 的 API 公開相同的 Standard Schema 合約：
 
 ```tsx
-import { createFormikValidator } from "@/lib/core"
+import { createFormikValidator } from "@/lib/core/form-library-adapters"
 import { minLength, object, string } from "zod/mini"
 
 const profileSchema = object({
@@ -93,14 +93,15 @@ Protoform 不會檢查 Zod 類別或方法。Zod 4 與 Zod Mini 和其他所有�
 ## 介接器用法
 
 介接器會將 Standard Schema 問題轉換成各表單函式庫的巢狀錯誤格式。它們
-不負責欄位呈現或提交。
+不負責欄位呈現或提交。使用
+`bunx shadcn@latest add @protoform/form-library-adapters` 安裝介接器。
 
 ### Formik
 
 Formik 接受同步或非同步的表單層級驗證：
 
 ```tsx
-import { createFormikValidator } from "@/lib/core"
+import { createFormikValidator } from "@/lib/core/form-library-adapters"
 
 const validate = createFormikValidator(profileSchema)
 ```
@@ -112,7 +113,7 @@ const validate = createFormikValidator(profileSchema)
 將 Final Form 的 `FORM_ERROR` 符號作為根層級問題鍵傳入：
 
 ```tsx
-import { createFinalFormValidator } from "@/lib/core"
+import { createFinalFormValidator } from "@/lib/core/form-library-adapters"
 import { FORM_ERROR } from "final-form"
 
 const validate = createFinalFormValidator(profileSchema, {

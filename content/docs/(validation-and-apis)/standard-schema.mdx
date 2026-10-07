@@ -55,7 +55,7 @@ Zod 4 implements Standard Schema directly. Pass a Zod schema to a Protoform adap
 adapter or conversion step:
 
 ```tsx
-import { createFormikValidator } from "@/lib/core"
+import { createFormikValidator } from "@/lib/core/form-library-adapters"
 import * as z from "zod"
 
 const profileSchema = z.object({
@@ -76,7 +76,7 @@ Protoform core.
 functional, tree-shakable API:
 
 ```tsx
-import { createFormikValidator } from "@/lib/core"
+import { createFormikValidator } from "@/lib/core/form-library-adapters"
 import { minLength, object, string } from "zod/mini"
 
 const profileSchema = object({
@@ -94,14 +94,15 @@ Protoform does not inspect Zod classes or methods. Zod 4 and Zod Mini reach the 
 ## Adapter recipes
 
 The adapters translate Standard Schema issues into each form library's nested error shape. They do
-not own field rendering or submission.
+not own field rendering or submission. Install them with
+`bunx shadcn@latest add @protoform/form-library-adapters`.
 
 ### Formik
 
 Formik accepts synchronous or asynchronous form-level validation:
 
 ```tsx
-import { createFormikValidator } from "@/lib/core"
+import { createFormikValidator } from "@/lib/core/form-library-adapters"
 
 const validate = createFormikValidator(profileSchema)
 ```
@@ -113,7 +114,7 @@ Pathless issues use `_form`. See the complete [Formik integration](/docs/formik)
 Pass Final Form's `FORM_ERROR` symbol as the root issue key:
 
 ```tsx
-import { createFinalFormValidator } from "@/lib/core"
+import { createFinalFormValidator } from "@/lib/core/form-library-adapters"
 import { FORM_ERROR } from "final-form"
 
 const validate = createFinalFormValidator(profileSchema, {

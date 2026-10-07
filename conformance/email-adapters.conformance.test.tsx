@@ -4,7 +4,10 @@ import userEvent from '@testing-library/user-event';
 
 import { TanStackFormExample } from '../examples/tanstack/tanstack-form.js';
 import { AutoForm } from '../registry/base-nova/protoform/components/auto-form/index.js';
-import { createFinalFormValidator, createFormikValidator } from '../registry/base-nova/protoform/lib/core/index.js';
+import {
+  createFinalFormValidator,
+  createFormikValidator,
+} from '../registry/base-nova/protoform/lib/core/form-library-adapters.js';
 import { createProtoFormSchema } from '../registry/base-nova/protoform/lib/protobuf-provider/index.js';
 import { EmailContractSchema } from './gen/protoform/conformance/v1/conformance_pb.js';
 

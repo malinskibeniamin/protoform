@@ -47,7 +47,12 @@ because the generator test proves public message and field comments become regis
 | Protocol buffers | [AIP-127](https://google.aip.dev/127), [AIP-213](https://google.aip.dev/213), [AIP-215](https://google.aip.dev/215) | Well-known components and HTTP path, query, and body roles are verified; API-specific proto ownership is external |
 
 Import descriptor and client workflow helpers from their opt-in subpaths. This keeps long-running
-operation metadata out of applications that only use the core form provider.
+operation metadata out of applications that only use the core form provider. The method workflow
+helpers install separately:
+
+```bash
+bunx shadcn@latest add @protoform/protobuf-method-workflow
+```
 
 ```ts
 import {

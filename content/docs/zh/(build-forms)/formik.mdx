@@ -6,7 +6,7 @@ Protoform 将 Formik 连接到所有其他集成共用的 Standard Schema。该�
 
 ```bash
 bun add formik
-bunx shadcn@latest add @protoform/protoform-foundation @protoform/protobuf-provider
+bunx shadcn@latest add @protoform/form-library-adapters @protoform/protobuf-provider
 ```
 
 ## 实时示例
@@ -38,7 +38,7 @@ const schema = createProtoFormSchema<
 Formik 接受同步或异步的表单级 `validate` 函数。将 `createFormikValidator(schema)` 传给 `validate`，而不是 `validationSchema`；后者需要特定于库的 schema 接口。
 
 ```tsx
-import { createFormikValidator } from "@/lib/core"
+import { createFormikValidator } from "@/lib/core/form-library-adapters"
 import { Formik } from "formik"
 
 const validate = createFormikValidator(schema)

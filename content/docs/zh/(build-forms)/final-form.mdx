@@ -8,7 +8,7 @@ Protoform 将 protobuf 验证公开为 Standard Schema，并将其问题适配�
 
 ```bash
 bun add final-form react-final-form
-bunx shadcn@latest add @protoform/protoform-foundation @protoform/protobuf-provider
+bunx shadcn@latest add @protoform/form-library-adapters @protoform/protobuf-provider
 ```
 
 ## 实时示例
@@ -43,7 +43,7 @@ React Final Form 接受返回错误对象或 promise 的记录验证。传入其
 `FORM_ERROR` 键，使根级问题使用框架的表单级错误通道。
 
 ```tsx
-import { createFinalFormValidator } from "@/lib/core"
+import { createFinalFormValidator } from "@/lib/core/form-library-adapters"
 import { FORM_ERROR } from "final-form"
 import { Form } from "react-final-form"
 

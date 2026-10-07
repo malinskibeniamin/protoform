@@ -31,7 +31,11 @@ Protoform 不會讓任意 API 自動符合 AIP。API 擁有者仍須定義並強
 | 完善度 | [AIP-190](https://google.aip.dev/190), [AIP-191](https://google.aip.dev/191), [AIP-192](https://google.aip.dev/192), [AIP-193](https://google.aip.dev/193), [AIP-194](https://google.aip.dev/194) | 命名、版面配置、產生的原始碼說明、標準錯誤與具冪等性意識的重試復原均已驗證 |
 | Protocol buffers | [AIP-127](https://google.aip.dev/127), [AIP-213](https://google.aip.dev/213), [AIP-215](https://google.aip.dev/215) | 常見元件與 HTTP 路徑、查詢及本文角色均已驗證；API 專屬 proto 的所有權屬於外部責任 |
 
-從選擇性加入的子路徑匯入描述元與用戶端工作流程輔助函式。這可讓只使用核心表單提供者的應用程式不必包含長時間執行作業的中繼資料。
+從選擇性加入的子路徑匯入描述元與用戶端工作流程輔助函式。這可讓只使用核心表單提供者的應用程式不必包含長時間執行作業的中繼資料。方法工作流程輔助函式需另外安裝：
+
+```bash
+bunx shadcn@latest add @protoform/protobuf-method-workflow
+```
 
 ```ts
 import {

@@ -7,7 +7,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/registry/base-nova/protof
 import { Button } from '@/registry/base-nova/protoform/components/button';
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/registry/base-nova/protoform/components/field';
 import { Input } from '@/registry/base-nova/protoform/components/input';
-import { createFormikValidator } from '@/registry/base-nova/protoform/lib/core';
+import { createFormikValidator } from '@/registry/base-nova/protoform/lib/core/form-library-adapters';
 import { createFormExamplesTransport } from '../browser-transport.js';
 import { FormExamplesService } from '../gen/protoform/examples/v1/forms_pb.js';
 import {

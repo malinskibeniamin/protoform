@@ -8,14 +8,6 @@ export type {
   ProtoformMessageFormatter,
   ProtoformMessageParams,
 } from '@/registry/base-nova/protoform/lib/core/messages';
-export {
-  type AutoFormAuditDiagnostic,
-  type AutoFormAuditFormat,
-  type AutoFormAuditReport,
-  type AutoFormAuditTarget,
-  auditAutoFormConfigurations,
-  formatAutoFormAuditReport,
-} from './audit';
 export { ShadcnAutoFormFieldComponents } from './auto-form-core';
 export {
   type CelEvaluation,
