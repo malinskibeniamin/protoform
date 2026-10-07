@@ -138,11 +138,13 @@ describe('live demo catalog', () => {
     }
   });
 
-  test('keeps submitted-value formatting inside Protoform', () => {
+  test('keeps submitted-value formatting in the shared demo runtime', () => {
     for (const demo of demoCatalog) {
       const source = read(`registry/base-nova/protoform/demo/catalog/${demo.slug}.tsx`);
 
-      expect(source, demo.id).toMatch(/from ["']\.\.\/\.\.\/lib\/protobuf-provider(?:\/index)?["']/u);
+      expect(source, demo.id).toMatch(
+        /from ["']@\/registry\/base-nova\/protoform\/demo\/runtime\/format-submitted-value["']/u
+      );
       expect(source, demo.id).toContain('formatSubmittedValue(');
       expect(source, demo.id).not.toContain('function formatSubmittedValue');
       expect(source, demo.id).not.toContain('JSON.stringify(');

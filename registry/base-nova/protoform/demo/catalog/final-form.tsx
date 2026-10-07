@@ -10,9 +10,10 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import { formatSubmittedValue } from '@/registry/base-nova/protoform/demo/runtime/format-submitted-value';
 import { EmailContractSchema } from '@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/conformance_pb';
-import { createFinalFormValidator } from '../../lib/core';
-import { createProtoFormSchema, formatSubmittedValue } from '../../lib/protobuf-provider';
+import { createFinalFormValidator } from '../../lib/core/form-library-adapters';
+import { createProtoFormSchema } from '../../lib/protobuf-provider';
 
 interface EmailValues {
   email: string;

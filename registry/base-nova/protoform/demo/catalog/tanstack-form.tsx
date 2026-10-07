@@ -9,9 +9,9 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import { formatSubmittedValue } from '@/registry/base-nova/protoform/demo/runtime/format-submitted-value';
 import { EmailContractSchema } from '@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/conformance_pb';
 import { useProtoForm } from '@/registry/base-nova/protoform/hooks/use-proto-form-tanstack';
-import { formatSubmittedValue } from '../../lib/protobuf-provider';
 
 function errorMessage(error: unknown): string | undefined {
   if (typeof error === 'string') {

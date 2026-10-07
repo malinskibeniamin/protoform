@@ -9,7 +9,7 @@ and submission contract.
 
 ```bash
 bun add formik
-bunx shadcn@latest add @protoform/protoform-foundation @protoform/protobuf-provider
+bunx shadcn@latest add @protoform/form-library-adapters @protoform/protobuf-provider
 ```
 
 ## Live example
@@ -45,7 +45,7 @@ Formik accepts synchronous or asynchronous form-level `validate` functions. Pass
 library-specific schema interface.
 
 ```tsx
-import { createFormikValidator } from "@/lib/core"
+import { createFormikValidator } from "@/lib/core/form-library-adapters"
 import { Formik } from "formik"
 
 const validate = createFormikValidator(schema)

@@ -117,7 +117,7 @@ function tanStackRegistryWrapper(): string {
 
 export const client = 'only';
 
-import { formatSubmittedValue } from '../../lib/protobuf-provider';
+import { formatSubmittedValue } from '@/registry/base-nova/protoform/demo/runtime/format-submitted-value';
 import { useState } from 'react';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -214,8 +214,9 @@ function formikRegistryWrapper(): string {
 
 export const client = 'only';
 
-import { createFormikValidator } from '../../lib/core';
-import { createProtoFormSchema, formatSubmittedValue } from '../../lib/protobuf-provider';
+import { createFormikValidator } from '../../lib/core/form-library-adapters';
+import { createProtoFormSchema } from '../../lib/protobuf-provider';
+import { formatSubmittedValue } from '@/registry/base-nova/protoform/demo/runtime/format-submitted-value';
 import { Formik } from "formik";
 import { useState } from 'react';
 
@@ -291,8 +292,9 @@ function finalFormRegistryWrapper(): string {
 
 export const client = 'only';
 
-import { createFinalFormValidator } from '../../lib/core';
-import { createProtoFormSchema, formatSubmittedValue } from '../../lib/protobuf-provider';
+import { createFinalFormValidator } from '../../lib/core/form-library-adapters';
+import { createProtoFormSchema } from '../../lib/protobuf-provider';
+import { formatSubmittedValue } from '@/registry/base-nova/protoform/demo/runtime/format-submitted-value';
 import { useState } from 'react';
 import { Field as FinalField, Form as FinalForm } from "react-final-form";
 
@@ -421,7 +423,7 @@ function reactHookFormRegistryWrapper(demo: DemoCatalogEntry): string {
 
 export const client = 'only';
 
-import { formatSubmittedValue } from '../../lib/protobuf-provider';
+import { formatSubmittedValue } from '@/registry/base-nova/protoform/demo/runtime/format-submitted-value';
 import { useState } from 'react';
 
 import {
@@ -570,6 +572,7 @@ function generateRegistryRuntime(): string[] {
 
   return [
     'registry/base-nova/protoform/demo/runtime/demo-schemas.ts',
+    'registry/base-nova/protoform/demo/runtime/format-submitted-value.ts',
     ...generatedFiles.map((file) => `registry/base-nova/protoform/demo/runtime/gen/${file}`),
   ];
 }
@@ -630,6 +633,9 @@ function generateRegistry(): void {
       const registryDependencies = [registryItem('protoform-demo-runtime')];
       if (demo.engine === 'tanstack-form') {
         registryDependencies.push(registryItem('use-proto-form-tanstack'));
+      }
+      if (demo.engine === 'formik' || demo.engine === 'final-form') {
+        registryDependencies.push(registryItem('form-library-adapters'));
       }
 
       return {

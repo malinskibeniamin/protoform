@@ -46,7 +46,12 @@ ponieważ test generatora potwierdza, że publiczne komentarze wiadomości i pó
 | Bufory protokołu | [AIP-127](https://google.aip.dev/127), [AIP-213](https://google.aip.dev/213), [AIP-215](https://google.aip.dev/215) | Powszechnie znane komponenty oraz role ścieżki HTTP, zapytania i treści są zweryfikowane; własność proto specyficznych dla API jest zewnętrzna |
 
 Importuj pomocnicze funkcje deskryptorów i przepływów pracy klienta z ich opcjonalnych podścieżek. Dzięki temu metadane operacji
-długotrwałych nie trafiają do aplikacji, które używają wyłącznie podstawowego dostawcy formularzy.
+długotrwałych nie trafiają do aplikacji, które używają wyłącznie podstawowego dostawcy formularzy. Funkcje pomocnicze przepływów pracy metod
+instaluje się oddzielnie:
+
+```bash
+bunx shadcn@latest add @protoform/protobuf-method-workflow
+```
 
 ```ts
 import {

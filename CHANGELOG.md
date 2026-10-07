@@ -29,9 +29,11 @@ source snapshots.
 - The bookstore demo shows field errors with React Hook Form's built-in `ErrorMessage` bound to `control`, so it no longer installs `@hookform/error-message`.
 - The experimental React Hook Form v8 items install `8.0.0-beta.4`.
 - Installed source uses single quotes, ES5 trailing commas, and 120-column lines, and carries no comments or license headers.
-
 - `protoToFormValues` returns `ProtoFormShape<Desc>` instead of `Record<string, unknown>`.
 - `FlattenProtoOneofs` is removed. It described the raw message, not the normalized form values; use `ProtoFormShape`.
+- The base `protoform` install no longer ships the Formik and Final Form validators, the AutoForm configuration audit, or the protobuf method workflow helpers. Install `@protoform/form-library-adapters`, `@protoform/auto-form-audit`, or `@protoform/protobuf-method-workflow` when you use them, and import them from `@/lib/core/form-library-adapters`, `@/components/auto-form/audit`, or `@/lib/protobuf-provider/method-workflow` and `mutation-request`; the base entry points no longer re-export them.
+- `formatSubmittedValue` moves into the demo runtime (`protoform-demo-runtime`).
+
 ### Fixed
 
 - Nested, repeated, map-value, and active-oneof conversion validation rejects duplicate map keys and overflowing integers before coercion.

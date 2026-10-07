@@ -6,8 +6,8 @@ import { minLength, object as zodMiniObject, string as zodMiniString } from 'zod
 import {
   createFinalFormValidator,
   createFormikValidator,
-  isStandardSchema,
-} from '../registry/base-nova/protoform/lib/core/index.js';
+} from '../registry/base-nova/protoform/lib/core/form-library-adapters.js';
+import { isStandardSchema } from '../registry/base-nova/protoform/lib/core/index.js';
 
 interface ProfileValues {
   profile: { displayName: string };

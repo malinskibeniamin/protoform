@@ -29,14 +29,6 @@ export type AutoFormProps<
   TCustomFieldType
 >;
 
-export {
-  type AutoFormAuditDiagnostic,
-  type AutoFormAuditFormat,
-  type AutoFormAuditReport,
-  type AutoFormAuditTarget,
-  auditAutoFormConfigurations,
-  formatAutoFormAuditReport,
-} from '../auto-form/audit';
 export { ShadcnAutoFormFieldComponents } from '../auto-form/auto-form-core';
 export {
   type CelEvaluation,

@@ -348,3 +348,56 @@ describe('native form adapter registry entries', () => {
     );
   });
 });
+
+const PROTOFORM = 'registry/base-nova/protoform';
+const OPT_IN_ITEMS = {
+  'auto-form-audit': {
+    files: [`${PROTOFORM}/components/auto-form/audit.ts`],
+    requires: '@protoform/auto-form-core',
+  },
+  'form-library-adapters': {
+    files: [`${PROTOFORM}/lib/core/form-library-adapters.ts`],
+    requires: '@protoform/protoform-foundation',
+  },
+  'protobuf-method-workflow': {
+    files: [
+      `${PROTOFORM}/lib/protobuf-provider/method-workflow.ts`,
+      `${PROTOFORM}/lib/protobuf-provider/mutation-request.ts`,
+    ],
+    requires: '@protoform/protobuf-provider',
+  },
+};
+const BASE_ENTRY_POINTS = [
+  `${PROTOFORM}/lib/core/index.ts`,
+  `${PROTOFORM}/lib/protobuf-provider/index.ts`,
+  `${PROTOFORM}/components/auto-form/index.tsx`,
+  `${PROTOFORM}/components/auto-form-react-hook-form-v8/index.tsx`,
+  `${PROTOFORM}/components/auto-form-tanstack/index.tsx`,
+  `${PROTOFORM}/components/auto-form-tanstack-v2/index.tsx`,
+];
+const OPT_IN_MODULE_IMPORT =
+  /from '[^']*\/(audit|form-library-adapters|method-workflow|mutation-request|format-submitted-value)(\.js)?'/u;
+
+describe('opt-in capabilities', () => {
+  test.each(Object.entries(OPT_IN_ITEMS))('%s installs separately from the base protoform install', (name, spec) => {
+    expect(filePaths(item(name))).toEqual(spec.files);
+    expect(item(name).registryDependencies).toEqual([spec.requires]);
+    const baseFiles = closureFilePaths('protoform');
+    for (const file of spec.files) {
+      expect(baseFiles).not.toContain(file);
+    }
+  });
+
+  test('the base install keeps the Standard Schema adapter that TanStack hooks and generated forms import', () => {
+    expect(closureFilePaths('protoform')).toContain(`${PROTOFORM}/lib/protobuf-provider/form-schema.ts`);
+  });
+
+  test('demos format submitted values from the demo runtime instead of the base install', () => {
+    expect(filePaths(item('protoform-demo-runtime'))).toContain(`${PROTOFORM}/demo/runtime/format-submitted-value.ts`);
+    expect(closureFilePaths('protoform').some((file) => file.endsWith('/format-submitted-value.ts'))).toBe(false);
+  });
+
+  test.each(BASE_ENTRY_POINTS)('%s does not re-export an opt-in module', (path) => {
+    expect(readFileSync(path, 'utf8')).not.toMatch(OPT_IN_MODULE_IMPORT);
+  });
+});

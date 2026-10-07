@@ -8,7 +8,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { AutoForm } from '@/registry/base-nova/protoform/components/auto-form';
 import { getDemoSchema } from '@/registry/base-nova/protoform/demo/runtime/demo-schemas';
-import { formatSubmittedValue } from '../../lib/protobuf-provider';
+import { formatSubmittedValue } from '@/registry/base-nova/protoform/demo/runtime/format-submitted-value';
 
 export function ProtobufPresenceDemo() {
   const [submittedValue, setSubmittedValue] = useState<string>();

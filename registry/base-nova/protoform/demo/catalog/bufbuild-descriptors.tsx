@@ -8,8 +8,9 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { AutoForm } from '@/registry/base-nova/protoform/components/auto-form';
 import { getDemoSchema } from '@/registry/base-nova/protoform/demo/runtime/demo-schemas';
+import { formatSubmittedValue } from '@/registry/base-nova/protoform/demo/runtime/format-submitted-value';
+
 import { LibraryService } from '@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_pb';
-import { formatSubmittedValue } from '../../lib/protobuf-provider';
 
 const method = LibraryService.method.createBook;
 

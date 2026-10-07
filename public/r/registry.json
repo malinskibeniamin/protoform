@@ -106,11 +106,6 @@
           "target": "@lib/core/field-model.ts"
         },
         {
-          "path": "registry/base-nova/protoform/lib/core/form-library-adapters.ts",
-          "type": "registry:lib",
-          "target": "@lib/core/form-library-adapters.ts"
-        },
-        {
           "path": "registry/base-nova/protoform/lib/core/index.ts",
           "type": "registry:lib",
           "target": "@lib/core/index.ts"
@@ -124,6 +119,21 @@
           "path": "registry/base-nova/protoform/lib/core/standard-schema.ts",
           "type": "registry:lib",
           "target": "@lib/core/standard-schema.ts"
+        }
+      ]
+    },
+    {
+      "name": "form-library-adapters",
+      "type": "registry:lib",
+      "title": "Form library validation adapters",
+      "description": "Formik and Final Form validators built from any Standard Schema, including Protoform schemas.",
+      "registryDependencies": ["@protoform/protoform-foundation"],
+      "dependencies": ["@standard-schema/spec"],
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/lib/core/form-library-adapters.ts",
+          "type": "registry:lib",
+          "target": "@lib/core/form-library-adapters.ts"
         }
       ]
     },
@@ -218,11 +228,6 @@
           "target": "@lib/protobuf-provider/annotations.ts"
         },
         {
-          "path": "registry/base-nova/protoform/lib/protobuf-provider/format-submitted-value.ts",
-          "type": "registry:lib",
-          "target": "@lib/protobuf-provider/format-submitted-value.ts"
-        },
-        {
           "path": "registry/base-nova/protoform/lib/protobuf-provider/gen/auto_form_ui_pb.ts",
           "type": "registry:lib",
           "target": "@lib/protobuf-provider/gen/auto_form_ui_pb.ts"
@@ -243,16 +248,6 @@
           "target": "@lib/protobuf-provider/index.ts"
         },
         {
-          "path": "registry/base-nova/protoform/lib/protobuf-provider/method-workflow.ts",
-          "type": "registry:lib",
-          "target": "@lib/protobuf-provider/method-workflow.ts"
-        },
-        {
-          "path": "registry/base-nova/protoform/lib/protobuf-provider/mutation-request.ts",
-          "type": "registry:lib",
-          "target": "@lib/protobuf-provider/mutation-request.ts"
-        },
-        {
           "path": "registry/base-nova/protoform/lib/protobuf-provider/provider.ts",
           "type": "registry:lib",
           "target": "@lib/protobuf-provider/provider.ts"
@@ -261,6 +256,26 @@
           "path": "registry/base-nova/protoform/lib/protobuf-provider/ui-options.ts",
           "type": "registry:lib",
           "target": "@lib/protobuf-provider/ui-options.ts"
+        }
+      ]
+    },
+    {
+      "name": "protobuf-method-workflow",
+      "type": "registry:lib",
+      "title": "Protobuf method workflow",
+      "description": "Reads AIP method categories, HTTP bindings, and long-running operation info from method descriptors, and composes create, update, and delete requests.",
+      "registryDependencies": ["@protoform/protobuf-provider"],
+      "dependencies": ["@buf/googleapis_googleapis.bufbuild_es", "@bufbuild/protobuf"],
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/lib/protobuf-provider/method-workflow.ts",
+          "type": "registry:lib",
+          "target": "@lib/protobuf-provider/method-workflow.ts"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/protobuf-provider/mutation-request.ts",
+          "type": "registry:lib",
+          "target": "@lib/protobuf-provider/mutation-request.ts"
         }
       ]
     },
@@ -444,11 +459,6 @@
           "path": "registry/base-nova/protoform/components/auto-form/configuration.ts",
           "type": "registry:component",
           "target": "@components/auto-form/configuration.ts"
-        },
-        {
-          "path": "registry/base-nova/protoform/components/auto-form/audit.ts",
-          "type": "registry:component",
-          "target": "@components/auto-form/audit.ts"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/context.tsx",
@@ -769,6 +779,20 @@
           "path": "registry/base-nova/protoform/components/auto-form/ui-props.ts",
           "type": "registry:component",
           "target": "@components/auto-form/ui-props.ts"
+        }
+      ]
+    },
+    {
+      "name": "auto-form-audit",
+      "type": "registry:lib",
+      "title": "AutoForm configuration audit",
+      "description": "Checks AutoForm configurations for missing renderers or data providers, incompatible controls, and invalid paths or steps, and reports them as JSON or SARIF.",
+      "registryDependencies": ["@protoform/auto-form-core"],
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/audit.ts",
+          "type": "registry:component",
+          "target": "@components/auto-form/audit.ts"
         }
       ]
     },
@@ -1343,6 +1367,11 @@
         {
           "path": "registry/base-nova/protoform/demo/runtime/demo-schemas.ts",
           "target": "~/components/protoform-examples/runtime/demo-schemas.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/demo/runtime/format-submitted-value.ts",
+          "target": "~/components/protoform-examples/runtime/format-submitted-value.ts",
           "type": "registry:lib"
         },
         {
@@ -2937,7 +2966,7 @@
         }
       ],
       "name": "formik-demo",
-      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "registryDependencies": ["@protoform/protoform-demo-runtime", "@protoform/form-library-adapters"],
       "title": "Formik interoperability",
       "type": "registry:example"
     },
@@ -2952,7 +2981,7 @@
         }
       ],
       "name": "final-form-demo",
-      "registryDependencies": ["@protoform/protoform-demo-runtime"],
+      "registryDependencies": ["@protoform/protoform-demo-runtime", "@protoform/form-library-adapters"],
       "title": "Final Form interoperability",
       "type": "registry:example"
     },

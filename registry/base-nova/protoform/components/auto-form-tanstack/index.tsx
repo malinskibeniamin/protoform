@@ -19,14 +19,6 @@ export type AutoFormProps<T extends FormValues = FormValues, TCustomFieldType ex
 >;
 
 export type { TanStackAutoFormApi, TanStackFormOptions } from '../auto-form/adapters/tanstack';
-export {
-  type AutoFormAuditDiagnostic,
-  type AutoFormAuditFormat,
-  type AutoFormAuditReport,
-  type AutoFormAuditTarget,
-  auditAutoFormConfigurations,
-  formatAutoFormAuditReport,
-} from '../auto-form/audit';
 export { ShadcnAutoFormFieldComponents } from '../auto-form/auto-form-core';
 export {
   type CelEvaluation,
