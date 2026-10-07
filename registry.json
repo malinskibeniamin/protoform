@@ -157,6 +157,11 @@
           "target": "@lib/protobuf-provider/form-schema.ts"
         },
         {
+          "path": "registry/base-nova/protoform/lib/protobuf-provider/form-values.ts",
+          "type": "registry:lib",
+          "target": "@lib/protobuf-provider/form-values.ts"
+        },
+        {
           "path": "registry/base-nova/protoform/lib/protobuf-provider/format-error.ts",
           "type": "registry:lib",
           "target": "@lib/protobuf-provider/format-error.ts"
@@ -332,11 +337,6 @@
           "target": "@hooks/use-proto-form/proto-error-path.ts"
         },
         {
-          "path": "registry/base-nova/protoform/hooks/use-proto-form/proto-paths.ts",
-          "type": "registry:hook",
-          "target": "@hooks/use-proto-form/proto-paths.ts"
-        },
-        {
           "path": "registry/base-nova/protoform/hooks/use-proto-form/proto-resolver.ts",
           "type": "registry:hook",
           "target": "@hooks/use-proto-form/proto-resolver.ts"
@@ -393,11 +393,6 @@
           "path": "registry/base-nova/protoform/hooks/use-proto-form-v8/proto-error-path.ts",
           "type": "registry:hook",
           "target": "@hooks/use-proto-form-v8/proto-error-path.ts"
-        },
-        {
-          "path": "registry/base-nova/protoform/hooks/use-proto-form-v8/proto-paths.ts",
-          "type": "registry:hook",
-          "target": "@hooks/use-proto-form-v8/proto-paths.ts"
         },
         {
           "path": "registry/base-nova/protoform/hooks/use-proto-form-v8/proto-resolver.ts",

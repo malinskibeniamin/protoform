@@ -60,4 +60,21 @@ describe('protobuf defaults and reset', () => {
       toBinary(AutoFormExampleSchema, second)
     );
   });
+
+  test('resetField restores a nested message section that has no registered inputs', () => {
+    const shippingAddress = { city: 'Lisbon', lineOne: '1 Rua Augusta', postalCode: '1100-048' };
+    const { result } = renderHook(() =>
+      useProtoForm(AutoFormExampleSchema, {
+        defaultValues: useProtoFormDefaults(AutoFormExampleSchema, { shippingAddress }),
+      })
+    );
+    act(() => result.current.setValue('shippingAddress.city', 'Porto', { shouldDirty: true }));
+    expect(result.current.getFieldState('shippingAddress').isDirty).toBe(true);
+
+    act(() => result.current.resetField('shippingAddress'));
+
+    expect(result.current.getValues('shippingAddress.city')).toBe('Lisbon');
+    expect(result.current.getFieldState('shippingAddress').isDirty).toBe(false);
+    expect(result.current.createMessage().shippingAddress).toMatchObject(shippingAddress);
+  });
 });

@@ -172,6 +172,7 @@ describe('build-time UI adapter registry', () => {
       'registry/base-nova/protoform/lib/protobuf-provider/descriptor-utils.ts',
       'registry/base-nova/protoform/lib/protobuf-provider/field-mask.ts',
       'registry/base-nova/protoform/lib/protobuf-provider/form-schema.ts',
+      'registry/base-nova/protoform/lib/protobuf-provider/form-values.ts',
       'registry/base-nova/protoform/lib/protobuf-provider/format-error.ts',
       'registry/base-nova/protoform/lib/protobuf-provider/hook-runtime.ts',
       'registry/base-nova/protoform/lib/protobuf-provider/humanize-validation-error.ts',

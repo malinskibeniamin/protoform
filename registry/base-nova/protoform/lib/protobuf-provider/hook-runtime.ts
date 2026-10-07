@@ -45,6 +45,7 @@ import {
   tracksPresence,
   VALUE_TYPE,
 } from './descriptor-utils.js';
+import type { ProtoFormShape } from './form-values.js';
 import { protoPathToFormPath } from './proto-error-path.js';
 
 const TRAILING_FRACTION_ZEROES = /0+$/u;
@@ -307,9 +308,9 @@ function messageToFormValues(desc: DescMessage, value: AnyObject): Record<string
 export function protoToFormValues<Desc extends DescMessage>(
   desc: Desc,
   value?: MessageShape<Desc>
-): Record<string, unknown> {
+): ProtoFormShape<Desc> {
   const baseValue = (value ?? create(desc)) as AnyObject;
-  return messageToFormValues(desc, baseValue);
+  return messageToFormValues(desc, baseValue) as ProtoFormShape<Desc>;
 }
 
 function normalizeBooleanValue(value: unknown): boolean | undefined {

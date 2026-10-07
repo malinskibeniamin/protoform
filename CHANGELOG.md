@@ -10,6 +10,7 @@ source snapshots.
 - Fail-closed dependency audit and installed-consumer browser checks in CI and release gates.
 - Real AutoForm browser budgets for 50, 200, and 500 controls, including typing, submit validation, and step transitions.
 
+- `ProtoFormShape<Desc>` and `ProtoFormValues<T>` describe the values a protobuf form holds; both React Hook Form hooks export them.
 - Stable shadcn source registry for protobuf descriptor-driven React forms.
 - Protobuf-ES v2, Protovalidate, CEL, Standard Schema, and Google AIP integration.
 - React Hook Form and TanStack Form hooks and AutoForm adapters.
@@ -29,6 +30,8 @@ source snapshots.
 - The experimental React Hook Form v8 items install `8.0.0-beta.4`.
 - Installed source uses single quotes, ES5 trailing commas, and 120-column lines, and carries no comments or license headers.
 
+- `protoToFormValues` returns `ProtoFormShape<Desc>` instead of `Record<string, unknown>`.
+- `FlattenProtoOneofs` is removed. It described the raw message, not the normalized form values; use `ProtoFormShape`.
 ### Fixed
 
 - Nested, repeated, map-value, and active-oneof conversion validation rejects duplicate map keys and overflowing integers before coercion.
@@ -40,6 +43,7 @@ source snapshots.
 - Quality and release workflows explicitly install Go and every browser they exercise.
 - Installation documentation links to an existing preview commit, not an unpublished release tag.
 
+- React Hook Form `resetField` restores a section whose values have no registered inputs, such as a nested message, instead of leaving it dirty.
 - Replacing a data provider, or registering one after the first render, no longer breaks React hook order.
 - A failing multi-select provider no longer clears or flags saved selections; it disables the control and reports the failure.
 - Server field violations on repeated-field items (`items[0].name` or `items.0.name`) map to the item field instead of falling back to a form-level error.
