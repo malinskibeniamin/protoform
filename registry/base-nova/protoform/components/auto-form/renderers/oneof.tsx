@@ -6,20 +6,10 @@ import type { OneofVariant, OneofWrapperProps, ParsedField } from '../core-types
 import { useAutoFormEngine } from '../engine';
 import { getLabel, getPathInObject } from '../field-utils';
 import { formSpacing } from '../form-spacing';
-import { createEmptyFieldValue, getFieldDescriptionText, getFieldErrorMessage, getFieldUiConfig } from '../helpers';
-import { FormDepthProvider, headingLevelForDepth, useAutoFormAppearance, useFormDepth } from '../layout-context';
+import { createEmptyFieldValue, getFieldErrorMessage, getFieldUiConfig } from '../helpers';
+import { FormDepthProvider, useAutoFormAppearance, useFormDepth } from '../layout-context';
 import { getAutoFormFieldTestId } from '../test-ids';
-import {
-  FieldError,
-  Heading,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Switch,
-  Text,
-} from '../ui-components';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Switch, Text } from '../ui-components';
 import { NestedFieldRenderer } from './nested';
 import { getRenderedLabel, isDeprecatedField, isFieldHidden, useFieldPresentation } from './shared';
 
@@ -185,10 +175,11 @@ function RequiredSoleVariant({
   variant: OneofVariant;
 }) {
   const form = useAutoFormEngine();
+  const { uiComponents } = useAutoFormRenderContext();
   const { testIdPrefix } = useAutoFormRuntimeContext();
-  const headingLevel = headingLevelForDepth(useFormDepth());
-  const helpText = getFieldDescriptionText(field);
   const isSelected = selected?.key === variant.key;
+  const hasError = error !== undefined && error !== '';
+  const ObjectWrapperComponent = uiComponents.ObjectWrapper;
 
   React.useEffect(
     function selectSoleRequiredVariant() {
@@ -200,32 +191,20 @@ function RequiredSoleVariant({
   );
 
   return (
-    <section className={formSpacing.field} data-testid={getAutoFormFieldTestId(testIdPrefix, id)}>
-      <div className={formSpacing.sectionHeader}>
-        <div className="flex items-baseline gap-2">
-          <Heading className="font-medium" level={headingLevel}>
-            {label}
-          </Heading>
-          <Text as="span" className="text-muted-foreground" variant="small">
-            {variant.label}
-          </Text>
-          <Text aria-hidden="true" as="span" className="text-destructive" variant="small">
-            *
-          </Text>
-        </div>
-        {helpText !== undefined && helpText !== '' ? (
-          <Text className="text-muted-foreground" variant="small">
-            {helpText}
-          </Text>
-        ) : null}
-        {error !== undefined && error !== '' ? (
-          <FieldError testId={getAutoFormFieldTestId(testIdPrefix, id, 'error')}>{error}</FieldError>
-        ) : null}
-      </div>
-      {selected && !isEmptyVariant(selected) ? (
-        <VariantBody>{renderVariant(withoutHeading(selected))}</VariantBody>
+    <>
+      <ObjectWrapperComponent field={field} hasError={hasError} label={label}>
+        {selected ? renderVariant(withoutHeading(selected)) : null}
+      </ObjectWrapperComponent>
+      {hasError ? (
+        <Text
+          className="whitespace-pre-wrap text-destructive"
+          data-testid={getAutoFormFieldTestId(testIdPrefix, id, 'error')}
+          variant="small"
+        >
+          {error}
+        </Text>
       ) : null}
-    </section>
+    </>
   );
 }
 

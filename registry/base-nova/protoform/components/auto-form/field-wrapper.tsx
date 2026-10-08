@@ -67,7 +67,7 @@ export const ArrayElementWrapper: React.FC<
     >
       <Button
         aria-label={removeButtonAriaLabel}
-        className={isSeparated ? 'absolute top-4 right-0' : 'absolute top-3 right-3'}
+        className={isSeparated ? cn('absolute right-0', index > 0 ? 'top-4' : 'top-0') : 'absolute top-3 right-3'}
         onClick={onRemove}
         size="icon-sm"
         testId={removeButtonTestId}

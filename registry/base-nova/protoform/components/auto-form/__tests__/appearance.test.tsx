@@ -91,6 +91,10 @@ describe('single-variant oneofs', () => {
 
     expect(screen.queryByRole('combobox')).toBeNull();
     expect(screen.getByRole('heading', { name: 'Delivery' })).toBeVisible();
+    expect(screen.getByRole('heading', { name: 'Delivery' }).closest('[data-layout]')).toHaveAttribute(
+      'data-layout',
+      'split'
+    );
     expect(screen.queryByRole('heading', { name: 'Webhook' })).toBeNull();
     await user.click(screen.getByRole('textbox', { name: /Endpoint/u }));
     await user.paste('https://hooks.example.com');
