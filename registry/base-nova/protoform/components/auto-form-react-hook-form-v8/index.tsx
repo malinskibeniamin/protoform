@@ -67,6 +67,7 @@ export type {
 export type { AutoFormEngineHandle } from '../auto-form/engine';
 export { defaultRegistry } from '../auto-form/fields';
 export { defaultClassifyField } from '../auto-form/helpers';
+export type { AutoFormAppearance } from '../auto-form/layout-context';
 export { type FieldMatchContext, type FieldTypeDefinition, FieldTypeRegistry } from '../auto-form/registry';
 export { AutoFormSlot } from '../auto-form/slot';
 export type {

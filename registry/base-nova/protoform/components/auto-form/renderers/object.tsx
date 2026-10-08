@@ -7,7 +7,7 @@ import { getPathInObject } from '../field-utils';
 import { getFieldErrorMessage } from '../helpers';
 import { getAutoFormFieldTestId } from '../test-ids';
 import { Text } from '../ui-components';
-import { AutoFormFieldRenderer } from '.';
+import { NestedFieldRenderer } from './nested';
 import { getRenderedLabel, useFieldPresentation } from './shared';
 
 export function ObjectFieldRenderer({
@@ -41,7 +41,7 @@ export function ObjectFieldRenderer({
     <>
       <ObjectWrapperComponent field={renderField} hasError={hasError} label={label}>
         {(renderField.schema ?? []).map((subField) => (
-          <AutoFormFieldRenderer
+          <NestedFieldRenderer
             field={subField}
             inheritedDisabled={Boolean(renderField.fieldConfig?.inputProps?.['disabled'])}
             key={`${path.join('.')}.${subField.key}`}

@@ -12,6 +12,7 @@ import type {
   SchemaProvider,
 } from './core-types';
 import type { AutoFormEngineHandle } from './engine';
+import type { AutoFormAppearance } from './layout-context';
 import type { ProtoFieldRenderType, ProtoUiRule } from './proto';
 import type { FieldTypeRegistry } from './registry';
 import type { ProtoformUIComponentMap } from './ui-component-map';
@@ -100,6 +101,7 @@ export interface AutoFormProps<
   TResolver = unknown,
   TCustomFieldType extends string = never,
 > {
+  appearance?: AutoFormAppearance | undefined;
   children?: React.ReactNode;
   classifyField?: (field: ParsedField<FieldTypes<TCustomFieldType>>) => 'simple' | 'advanced';
   components?: ProtoformUIComponentMap;

@@ -83,6 +83,10 @@ Pola oneof są spłaszczane na potrzeby formularza, a jednocześnie nadal tworz�
 form.setOneofValue("auth", "sasl", { username: "", password: "" });
 ```
 
+Pole oneof z tylko jednym dostępnym wariantem nie ma kontrolki wyboru. Wymagane pole oneof wybiera ten wariant i
+wyświetla jego pola pod nagłówkiem oneof. Opcjonalne pole oneof wyświetla przełącznik, który włącza
+i wyłącza wariant.
+
 ## Niestandardowe renderery pól
 
 Rozszerz typowany rejestr, gdy aplikacja hostująca potrzebuje kontrolki, której nie ma w pakiecie. Niestandardowa nazwa jest przekazywana
@@ -165,6 +169,25 @@ udanym zapisie ustaw przesłane wartości jako nowy stan bazowy przed nawigacją
 
 Funkcja `markClean()` aktualizuje callback synchronicznie, dzięki czemu blokady tras wykrywają czysty stan w ramach
 tego samego callbacku przesyłania.
+
+## Wygląd
+
+`appearance` zmienia sposób rozmieszczenia pól przez domyślne komponenty opakowujące:
+
+```tsx
+<AutoForm
+  schema={RequestSchema}
+  appearance={{ layout: "stacked", sections: "indented", arrayItems: "separated" }}
+/>;
+```
+
+| Opcja | Wartość domyślna | Alternatywa |
+| --- | --- | --- |
+| `layout` | `"split"`: etykiety pól najwyższego poziomu znajdują się obok kontrolek na szerszych ekranach | `"stacked"`: etykiety znajdują się nad kontrolkami |
+| `sections` | `"divided"`: linia pod każdym nagłówkiem zagnieżdżonego komunikatu | `"indented"`: linia obok pól każdego zagnieżdżonego komunikatu |
+| `arrayItems` | `"cards"`: każdy powtarzany komunikat jest renderowany w karcie | `"separated"`: linia między powtarzanymi komunikatami |
+
+Zastąp `uiComponents`, gdy aplikacja hostująca potrzebuje układu, którego te opcje nie obejmują.
 
 ## Nagłówek główny i przestarzałe pola
 

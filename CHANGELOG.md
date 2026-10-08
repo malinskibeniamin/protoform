@@ -18,6 +18,8 @@ source snapshots.
 - Component data providers (`{ component }`) that render option results through `children`.
 - Data provider results can supply an `emptyState` that select and multi-select dropdowns show when there are no options.
 - A replaceable `OneofWrapper` UI component; AutoForm supplies the available variants, selection, and variant rendering.
+- `appearance` sets the default wrappers' field layout (`split` or `stacked`), nested message sections (`divided` or `indented`), and repeated message items (`cards` or `separated`) without replacing `uiComponents`.
+- A oneof with one available variant has no picker: a required oneof selects the variant, and an optional one toggles it with a switch.
 - Formik and Final Form validation adapters.
 - Source-copy `protoc-gen-protoform` generator.
 - Conformance, accessibility, browser, performance, security, and consumer-installation evidence.
@@ -33,6 +35,8 @@ source snapshots.
 - `FlattenProtoOneofs` is removed. It described the raw message, not the normalized form values; use `ProtoFormShape`.
 - The base `protoform` install no longer ships the Formik and Final Form validators, the AutoForm configuration audit, or the protobuf method workflow helpers. Install `@protoform/form-library-adapters`, `@protoform/auto-form-audit`, or `@protoform/protobuf-method-workflow` when you use them, and import them from `@/lib/core/form-library-adapters`, `@/components/auto-form/audit`, or `@/lib/protobuf-provider/method-workflow` and `mutation-request`; the base entry points no longer re-export them.
 - `formatSubmittedValue` moves into the demo runtime (`protoform-demo-runtime`).
+- A selected oneof variant no longer repeats its label as a heading under the variant select.
+- Field help icons use the muted foreground color with any host `Button`, not only Protoform's.
 
 ### Fixed
 
@@ -55,6 +59,10 @@ source snapshots.
 - A submit from outside the form (a `form` attribute button or `requestSubmit()`) while a submission is running is ignored instead of calling `onSubmit` again and hiding the first submission's error.
 - The default oneof variant select registers with the form engine, so an error on the oneof moves focus to it and marks it `aria-invalid`.
 - The `protoform` install uses the consumer's `utils` alias for `cn` instead of shipping its own `lib/utils` and `lib/input-utils`, and no longer adds `clsx`, `tailwind-merge`, or `zod`.
+- Nested message, repeated, map, and oneof fields resolve through a custom `fieldRegistry`, not only top-level fields.
+- AutoForm renderers no longer import each other in a cycle.
+- Slots keep their children's React keys instead of keying them by position.
+- Changing `defaultMode` after mount switches mode in the same render instead of after an effect.
 
 ### Compatibility
 

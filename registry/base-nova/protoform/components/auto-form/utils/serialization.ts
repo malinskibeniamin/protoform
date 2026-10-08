@@ -6,7 +6,7 @@ export function safeStringify(value: unknown): string {
   try {
     return JSON.stringify(
       value,
-      (_key, currentValue) => {
+      (_key, currentValue: unknown) => {
         if (typeof currentValue === 'bigint') {
           return currentValue.toString();
         }

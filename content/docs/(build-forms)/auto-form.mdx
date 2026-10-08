@@ -84,6 +84,10 @@ Oneofs are flattened for form use while still creating valid protobuf messages:
 form.setOneofValue("auth", "sasl", { username: "", password: "" });
 ```
 
+A oneof with only one available variant has no picker. A required oneof selects that variant and
+shows its fields under the oneof's heading. An optional oneof shows a switch that turns the variant
+on and off.
+
 ## Custom field renderers
 
 Extend the typed registry when a host needs a control that is not bundled. The custom name flows
@@ -166,6 +170,25 @@ a successful save, establish the submitted values as the new baseline before nav
 
 `markClean()` updates the callback synchronously, so route blockers observe the clean state in the
 same submit callback.
+
+## Appearance
+
+`appearance` changes how the default wrappers lay out fields:
+
+```tsx
+<AutoForm
+  schema={RequestSchema}
+  appearance={{ layout: "stacked", sections: "indented", arrayItems: "separated" }}
+/>;
+```
+
+| Option | Default | Alternative |
+| --- | --- | --- |
+| `layout` | `"split"`: top-level labels sit beside their controls on wider screens | `"stacked"`: labels sit above controls |
+| `sections` | `"divided"`: a rule under each nested message heading | `"indented"`: a line beside each nested message's fields |
+| `arrayItems` | `"cards"`: each repeated message renders in a card | `"separated"`: a rule between repeated messages |
+
+Replace `uiComponents` when a host needs a layout these options do not cover.
 
 ## Root header and deprecated fields
 

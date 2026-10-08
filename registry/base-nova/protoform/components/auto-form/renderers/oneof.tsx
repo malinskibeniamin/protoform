@@ -2,15 +2,25 @@
 
 import React from 'react';
 import { useAutoFormRenderContext, useAutoFormRuntimeContext } from '../context';
-import type { OneofWrapperProps, ParsedField } from '../core-types';
+import type { OneofVariant, OneofWrapperProps, ParsedField } from '../core-types';
 import { useAutoFormEngine } from '../engine';
 import { getLabel, getPathInObject } from '../field-utils';
 import { formSpacing } from '../form-spacing';
-import { createEmptyFieldValue, getFieldErrorMessage, getFieldUiConfig } from '../helpers';
-import { FormDepthProvider, useFormDepth } from '../layout-context';
+import { createEmptyFieldValue, getFieldDescriptionText, getFieldErrorMessage, getFieldUiConfig } from '../helpers';
+import { FormDepthProvider, headingLevelForDepth, useAutoFormAppearance, useFormDepth } from '../layout-context';
 import { getAutoFormFieldTestId } from '../test-ids';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui-components';
-import { AutoFormFieldRenderer } from '.';
+import {
+  FieldError,
+  Heading,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Switch,
+  Text,
+} from '../ui-components';
+import { NestedFieldRenderer } from './nested';
 import { getRenderedLabel, isDeprecatedField, isFieldHidden, useFieldPresentation } from './shared';
 
 function SelectedOneofField({
@@ -36,7 +46,7 @@ function SelectedOneofField({
     }
     return (
       <FormDepthProvider depth={depth + 1}>
-        <AutoFormFieldRenderer field={field} inheritedDisabled={disabled} path={[...path, 'value']} />
+        <NestedFieldRenderer field={field} inheritedDisabled={disabled} path={[...path, 'value']} />
       </FormDepthProvider>
     );
   }
@@ -146,23 +156,121 @@ export function OneofFieldRenderer({
   );
 }
 
-export function OneofWrapper({
+function withoutHeading(variant: ParsedField): ParsedField {
+  if (variant.type !== 'object' || isEmptyVariant(variant)) {
+    return variant;
+  }
+  return { ...variant, fieldConfig: { ...variant.fieldConfig, label: '' } };
+}
+
+function isEmptyVariant(variant: ParsedField | undefined): boolean {
+  return variant?.type === 'object' && !(variant.schema && variant.schema.length > 0);
+}
+
+function VariantBody({ children }: { children: React.ReactNode }) {
+  const isIndented = useAutoFormAppearance().sections === 'indented';
+  return <div className={isIndented ? formSpacing.sectionIndent : undefined}>{children}</div>;
+}
+
+function RequiredSoleVariant({
+  disabled,
+  error,
+  field,
+  id,
+  label,
+  renderVariant,
+  selected,
+  variant,
+}: Pick<OneofWrapperProps, 'disabled' | 'error' | 'field' | 'id' | 'label' | 'renderVariant' | 'selected'> & {
+  variant: OneofVariant;
+}) {
+  const form = useAutoFormEngine();
+  const { testIdPrefix } = useAutoFormRuntimeContext();
+  const headingLevel = headingLevelForDepth(useFormDepth());
+  const helpText = getFieldDescriptionText(field);
+  const isSelected = selected?.key === variant.key;
+
+  React.useEffect(
+    function selectSoleRequiredVariant() {
+      if (!(isSelected || disabled)) {
+        form.setValue(id, { case: variant.key, value: createEmptyFieldValue(variant.field) });
+      }
+    },
+    [disabled, form, id, isSelected, variant]
+  );
+
+  return (
+    <section className={formSpacing.field} data-testid={getAutoFormFieldTestId(testIdPrefix, id)}>
+      <div className={formSpacing.sectionHeader}>
+        <div className="flex items-baseline gap-2">
+          <Heading className="font-medium" level={headingLevel}>
+            {label}
+          </Heading>
+          <Text as="span" className="text-muted-foreground" variant="small">
+            {variant.label}
+          </Text>
+          <Text aria-hidden="true" as="span" className="text-destructive" variant="small">
+            *
+          </Text>
+        </div>
+        {helpText !== undefined && helpText !== '' ? (
+          <Text className="text-muted-foreground" variant="small">
+            {helpText}
+          </Text>
+        ) : null}
+        {error !== undefined && error !== '' ? (
+          <FieldError testId={getAutoFormFieldTestId(testIdPrefix, id, 'error')}>{error}</FieldError>
+        ) : null}
+      </div>
+      {selected && !isEmptyVariant(selected) ? (
+        <VariantBody>{renderVariant(withoutHeading(selected))}</VariantBody>
+      ) : null}
+    </section>
+  );
+}
+
+function OptionalSoleVariant({
+  disabled,
+  id,
+  label,
+  onSelect,
+  selectedKey,
+  testId,
+  variant,
+}: Pick<OneofWrapperProps, 'disabled' | 'id' | 'label' | 'onSelect' | 'selectedKey' | 'testId'> & {
+  variant: OneofVariant;
+}) {
+  return (
+    <div className="flex min-h-9 items-center gap-3">
+      <Switch
+        aria-label={label}
+        checked={selectedKey === variant.key}
+        disabled={disabled}
+        id={id}
+        onCheckedChange={(checked) => onSelect(checked === true ? variant.key : undefined)}
+        testId={testId}
+      />
+      <Text as="span" className="text-muted-foreground" variant="small">
+        {variant.label}
+      </Text>
+    </div>
+  );
+}
+
+function VariantSelect({
   disabled,
   error,
   field,
   id,
   label,
   onSelect,
-  renderVariant,
   selected,
   selectedKey,
   testId,
   variants,
-}: OneofWrapperProps) {
-  const { uiComponents } = useAutoFormRenderContext();
+}: Omit<OneofWrapperProps, 'renderVariant'>) {
   const { testIdPrefix } = useAutoFormRuntimeContext();
   const { FieldController } = useAutoFormEngine();
-  const FieldWrapperComponent = field.fieldConfig?.fieldWrapper ?? uiComponents.FieldWrapper;
   let selectedValueLabel: string | undefined;
   if (selected) {
     selectedValueLabel = getLabel(selected);
@@ -173,49 +281,66 @@ export function OneofWrapper({
   }
 
   return (
-    <FieldWrapperComponent error={error} field={field} id={id} label={label}>
-      <div className={formSpacing.oneofStack}>
-        <FieldController name={id}>
-          {({ ref }) => (
-            <Select
-              items={[
-                ...(field.required ? [] : [{ label: 'Not set', value: null }]),
-                ...variants.map((variant) => ({ label: variant.label, value: variant.key })),
-              ]}
-              onValueChange={(value) => onSelect(value ?? undefined)}
-              value={selectedKey ?? null}
-            >
-              <SelectTrigger
-                aria-invalid={Boolean(error)}
-                aria-label={label}
-                disabled={disabled}
-                id={id}
-                ref={ref}
-                testId={testId}
+    <FieldController name={id}>
+      {({ ref }) => (
+        <Select
+          items={[
+            ...(field.required ? [] : [{ label: 'Not set', value: null }]),
+            ...variants.map((variant) => ({ label: variant.label, value: variant.key })),
+          ]}
+          onValueChange={(value) => onSelect(value ?? undefined)}
+          value={selectedKey ?? null}
+        >
+          <SelectTrigger
+            aria-invalid={Boolean(error)}
+            aria-label={label}
+            disabled={disabled}
+            id={id}
+            ref={ref}
+            testId={testId}
+          >
+            <SelectValue placeholder="Choose a field">{selectedValueLabel}</SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            {field.required ? null : (
+              <SelectItem testId={getAutoFormFieldTestId(testIdPrefix, id, 'option-not-set')} value={null}>
+                Not set
+              </SelectItem>
+            )}
+            {variants.map((variant) => (
+              <SelectItem
+                disabled={variant.disabled}
+                key={variant.key}
+                testId={getAutoFormFieldTestId(testIdPrefix, id, `option-${variant.key}`)}
+                value={variant.key}
               >
-                <SelectValue placeholder="Choose a field">{selectedValueLabel}</SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                {field.required ? null : (
-                  <SelectItem testId={getAutoFormFieldTestId(testIdPrefix, id, 'option-not-set')} value={null}>
-                    Not set
-                  </SelectItem>
-                )}
-                {variants.map((variant) => (
-                  <SelectItem
-                    disabled={variant.disabled}
-                    key={variant.key}
-                    testId={getAutoFormFieldTestId(testIdPrefix, id, `option-${variant.key}`)}
-                    value={variant.key}
-                  >
-                    {variant.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
-        </FieldController>
-        {selected ? renderVariant(selected) : null}
+                {variant.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      )}
+    </FieldController>
+  );
+}
+
+export function OneofWrapper(props: OneofWrapperProps) {
+  const { field, renderVariant, selected, selectedKey, variants } = props;
+  const { uiComponents } = useAutoFormRenderContext();
+  const onlyVariant = variants.length === 1 ? variants[0] : undefined;
+  const hasUnavailableSelection = selectedKey !== undefined && selectedKey !== '' && selectedKey !== onlyVariant?.key;
+  const soleVariant = hasUnavailableSelection ? undefined : onlyVariant;
+
+  if (soleVariant && field.required) {
+    return <RequiredSoleVariant {...props} variant={soleVariant} />;
+  }
+
+  const FieldWrapperComponent = field.fieldConfig?.fieldWrapper ?? uiComponents.FieldWrapper;
+  return (
+    <FieldWrapperComponent error={props.error} field={field} id={props.id} label={props.label}>
+      <div className={formSpacing.oneofStack}>
+        {soleVariant ? <OptionalSoleVariant {...props} variant={soleVariant} /> : <VariantSelect {...props} />}
+        {selected ? <VariantBody>{renderVariant(withoutHeading(selected))}</VariantBody> : null}
       </div>
     </FieldWrapperComponent>
   );

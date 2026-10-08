@@ -7,6 +7,7 @@ export const formSpacing = {
   oneofStack: 'space-y-4',
   sectionDivider: 'pb-4 border-b border-border/60',
   sectionHeader: 'space-y-1',
+  sectionIndent: 'border-border border-l-2 pl-4',
 } as const;
 
 export type FormSpacingToken = keyof typeof formSpacing;

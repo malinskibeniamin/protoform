@@ -82,6 +82,9 @@ Oneof 会被扁平化以供表单使用，同时仍会创建有效的 protobuf �
 form.setOneofValue("auth", "sasl", { username: "", password: "" });
 ```
 
+只有一个可用分支的 oneof 不显示选择器。必填 oneof 会选中该分支，并在
+oneof 标题下显示其字段。可选 oneof 会显示一个开关，用于启用或关闭该分支。
+
 ## 自定义字段 renderer
 
 当宿主需要未内置的控件时，可扩展类型化 registry。自定义名称会贯穿
@@ -162,6 +165,25 @@ useProtoForm(RequestSchema, {
 ```
 
 `markClean()` 会同步更新回调，因此路由拦截器可在同一个提交回调中观察到干净状态。
+
+## 外观
+
+`appearance` 可更改默认容器的字段布局方式：
+
+```tsx
+<AutoForm
+  schema={RequestSchema}
+  appearance={{ layout: "stacked", sections: "indented", arrayItems: "separated" }}
+/>;
+```
+
+| 选项 | 默认值 | 替代值 |
+| --- | --- | --- |
+| `layout` | `"split"`：在较宽屏幕上，顶层标签位于控件旁 | `"stacked"`：标签位于控件上方 |
+| `sections` | `"divided"`：每个嵌套消息标题下显示分隔线 | `"indented"`：每个嵌套消息的字段旁显示竖线 |
+| `arrayItems` | `"cards"`：每个重复消息渲染在卡片中 | `"separated"`：重复消息之间显示分隔线 |
+
+当宿主需要这些选项未涵盖的布局时，可替换 `uiComponents`。
 
 ## 根标题和弃用字段
 

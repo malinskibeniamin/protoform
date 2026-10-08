@@ -686,6 +686,11 @@
           "target": "@components/auto-form/renderers/map.tsx"
         },
         {
+          "path": "registry/base-nova/protoform/components/auto-form/renderers/nested.tsx",
+          "type": "registry:component",
+          "target": "@components/auto-form/renderers/nested.tsx"
+        },
+        {
           "path": "registry/base-nova/protoform/components/auto-form/renderers/object.tsx",
           "type": "registry:component",
           "target": "@components/auto-form/renderers/object.tsx"

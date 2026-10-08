@@ -7,7 +7,13 @@ import { useAutoFormRuntimeContext } from './context';
 import type { ArrayElementWrapperProps, ArrayWrapperProps, FieldWrapperProps, ObjectWrapperProps } from './core-types';
 import { formSpacing } from './form-spacing';
 import { getFieldDescriptionText, getFieldDocsUrl, getFieldHelpText, getFieldUiConfig } from './helpers';
-import { FormDepthProvider, headingLevelForDepth, useFormDepth } from './layout-context';
+import {
+  FormDepthProvider,
+  headingLevelForDepth,
+  type ResolvedAutoFormAppearance,
+  useAutoFormAppearance,
+  useFormDepth,
+} from './layout-context';
 import { getAutoFormFieldTestId } from './test-ids';
 import {
   Alert,
@@ -47,25 +53,33 @@ export const ArrayElementWrapper: React.FC<
     testId?: string;
     removeButtonTestId?: string;
   }
-> = ({ children, onRemove, removeButtonAriaLabel = 'Remove item', removeButtonTestId, testId }) => (
-  <div
-    className="relative rounded-xl border border-border/70 bg-card p-5 text-card-foreground shadow-xs"
-    data-testid={testId}
-  >
-    <Button
-      aria-label={removeButtonAriaLabel}
-      className="absolute top-3 right-3"
-      onClick={onRemove}
-      size="icon-sm"
-      testId={removeButtonTestId}
-      type="button"
-      variant="ghost"
+> = ({ children, index, onRemove, removeButtonAriaLabel = 'Remove item', removeButtonTestId, testId }) => {
+  const isSeparated = useAutoFormAppearance().arrayItems === 'separated';
+  return (
+    <div
+      className={
+        isSeparated
+          ? cn('relative', index > 0 && formSpacing.arrayItemSeparator)
+          : 'relative rounded-xl border border-border/70 bg-card p-5 text-card-foreground shadow-xs'
+      }
+      data-slot="array-item"
+      data-testid={testId}
     >
-      <TrashIcon className="size-4" />
-    </Button>
-    <div className="pr-8">{children}</div>
-  </div>
-);
+      <Button
+        aria-label={removeButtonAriaLabel}
+        className={isSeparated ? 'absolute top-4 right-0' : 'absolute top-3 right-3'}
+        onClick={onRemove}
+        size="icon-sm"
+        testId={removeButtonTestId}
+        type="button"
+        variant="ghost"
+      >
+        <TrashIcon className="size-4" />
+      </Button>
+      <div className={isSeparated ? 'pr-10' : 'pr-8'}>{children}</div>
+    </div>
+  );
+};
 
 export const ArrayWrapper: React.FC<
   ArrayWrapperProps & {
@@ -196,7 +210,23 @@ export const FieldWrapper: React.FC<FieldWrapperProps> = ({ label, children, id,
   const isDisabled = Boolean(field.fieldConfig?.inputProps?.['disabled']);
   const { hasVisibleLabel, helpLabel, displayedLabel } = getWrapperLabels(field, label);
   const fieldTestId = getAutoFormFieldTestId(testIdPrefix, id);
-  const isSplit = depth === 0 && !isCompact;
+  const { layout } = useAutoFormAppearance();
+  const isSplit = layout === 'split' && depth === 0 && !isCompact;
+
+  const feedback = (
+    <AutoFormErrorDescriptionContext.Provider value={error ? errorId : undefined}>
+      {children}
+      <FieldFeedback
+        error={error}
+        errorId={errorId}
+        field={field}
+        helpLabel={helpLabel}
+        id={id}
+        isCompact={isCompact}
+        testIdPrefix={testIdPrefix}
+      />
+    </AutoFormErrorDescriptionContext.Provider>
+  );
 
   return (
     <Field
@@ -231,7 +261,7 @@ export const FieldWrapper: React.FC<FieldWrapperProps> = ({ label, children, id,
                   type="button"
                   variant="ghost"
                 >
-                  <CircleHelp className="size-4" />
+                  <CircleHelp className="size-4 text-muted-foreground group-hover/button:text-foreground" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent
@@ -245,20 +275,7 @@ export const FieldWrapper: React.FC<FieldWrapperProps> = ({ label, children, id,
           ) : null}
         </div>
       )}
-      <FieldContent className="min-w-0 gap-2">
-        <AutoFormErrorDescriptionContext.Provider value={error ? errorId : undefined}>
-          {children}
-          <FieldFeedback
-            error={error}
-            errorId={errorId}
-            field={field}
-            helpLabel={helpLabel}
-            id={id}
-            isCompact={isCompact}
-            testIdPrefix={testIdPrefix}
-          />
-        </AutoFormErrorDescriptionContext.Provider>
-      </FieldContent>
+      {layout === 'stacked' ? feedback : <FieldContent className="min-w-0 gap-2">{feedback}</FieldContent>}
     </Field>
   );
 };
@@ -300,6 +317,7 @@ function CollapsibleObjectSection({
   field,
   hasError,
   headingLevel,
+  isIndented,
   label,
   showDivider,
   testId,
@@ -309,6 +327,7 @@ function CollapsibleObjectSection({
   field: ObjectWrapperProps['field'];
   hasError: boolean | undefined;
   headingLevel: ReturnType<typeof headingLevelForDepth>;
+  isIndented: boolean;
   label: ObjectWrapperProps['label'];
   showDivider: boolean;
   testId: string | undefined;
@@ -332,12 +351,31 @@ function CollapsibleObjectSection({
         </CollapsibleTrigger>
         <CollapsibleContent>
           <FormDepthProvider depth={depth + 1}>
-            <div className={formSpacing.field}>{children}</div>
+            <div className={cn(formSpacing.field, isIndented && formSpacing.sectionIndent)} data-slot="section-body">
+              {children}
+            </div>
           </FormDepthProvider>
         </CollapsibleContent>
       </section>
     </Collapsible>
   );
+}
+
+function resolveSectionPresentation(
+  field: ObjectWrapperProps['field'],
+  depth: number,
+  hasVisibleLabel: boolean,
+  appearance: ResolvedAutoFormAppearance
+) {
+  const customData = (field.fieldConfig?.customData ?? {}) as Record<string, unknown>;
+  const isIndented = appearance.sections === 'indented';
+  const isCollapsible = Boolean(customData['collapsible']);
+  const showDivider = !isIndented && customData['showDivider'] !== false && hasVisibleLabel;
+  const isSplit = appearance.layout === 'split' && depth === 0 && hasVisibleLabel && !isCollapsible;
+  const headerClassName = showDivider
+    ? `${formSpacing.sectionHeader} ${formSpacing.sectionDivider} ${isSplit ? 'sm:border-b-0 sm:pb-0' : ''}`
+    : formSpacing.sectionHeader;
+  return { headerClassName, isCollapsible, isIndented, isSplit, showDivider };
 }
 
 export const ObjectWrapper: React.FC<
@@ -349,13 +387,12 @@ export const ObjectWrapper: React.FC<
   const depth = useFormDepth();
   const headingLevel = headingLevelForDepth(depth);
   const hasVisibleLabel = !(typeof label === 'string' && label.trim().length === 0);
-  const customData = (field.fieldConfig?.customData ?? {}) as Record<string, unknown>;
-  const isCollapsible = Boolean(customData['collapsible']);
-  const showDivider = customData['showDivider'] !== false && hasVisibleLabel;
-  const isSplit = depth === 0 && hasVisibleLabel && !isCollapsible;
-  const headerClassName = showDivider
-    ? `${formSpacing.sectionHeader} ${formSpacing.sectionDivider} ${isSplit ? 'sm:border-b-0 sm:pb-0' : ''}`
-    : formSpacing.sectionHeader;
+  const { headerClassName, isCollapsible, isIndented, isSplit, showDivider } = resolveSectionPresentation(
+    field,
+    depth,
+    hasVisibleLabel,
+    useAutoFormAppearance()
+  );
   if (isCollapsible && hasVisibleLabel) {
     return (
       <CollapsibleObjectSection
@@ -363,6 +400,7 @@ export const ObjectWrapper: React.FC<
         field={field}
         hasError={hasError}
         headingLevel={headingLevel}
+        isIndented={isIndented}
         label={label}
         showDivider={showDivider}
         testId={testId}
@@ -388,7 +426,12 @@ export const ObjectWrapper: React.FC<
         </div>
       ) : null}
       <FormDepthProvider depth={depth + 1}>
-        <div className={cn('min-w-0', formSpacing.field)}>{children}</div>
+        <div
+          className={cn('min-w-0', formSpacing.field, isIndented && hasVisibleLabel && formSpacing.sectionIndent)}
+          data-slot="section-body"
+        >
+          {children}
+        </div>
       </FormDepthProvider>
     </section>
   );

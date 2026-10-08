@@ -11,7 +11,7 @@ import { createEmptyFieldValue, getFieldErrorMessage } from '../helpers';
 import { FormDepthProvider, useFormDepth } from '../layout-context';
 import { getAutoFormCollectionRemoveTestId, getAutoFormCollectionRowTestId, getAutoFormFieldTestId } from '../test-ids';
 import { Button } from '../ui-components';
-import { AutoFormFieldRenderer } from '.';
+import { NestedFieldRenderer } from './nested';
 import { cloneFieldForCompactRow, getRenderedLabel, isComplexCollectionField, useFieldPresentation } from './shared';
 
 const COMPACT_ROW_GRID = 'grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3';
@@ -125,7 +125,7 @@ export function ArrayFieldRenderer({
                       data-testid={rowTestId}
                       key={item.key}
                     >
-                      <AutoFormFieldRenderer
+                      <NestedFieldRenderer
                         field={compactItemField}
                         inheritedDisabled={isDisabled}
                         path={[...path, String(index)]}
@@ -166,7 +166,7 @@ export function ArrayFieldRenderer({
                   >
                     {renderedItemField ? (
                       <FormDepthProvider depth={depth + 1}>
-                        <AutoFormFieldRenderer
+                        <NestedFieldRenderer
                           field={renderedItemField}
                           inheritedDisabled={isDisabled}
                           path={[...path, String(index)]}

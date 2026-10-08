@@ -81,6 +81,9 @@ Oneof 會展平供表單使用，同時仍會建立有效的 protobuf message：
 form.setOneofValue("auth", "sasl", { username: "", password: "" });
 ```
 
+只有一個可用選項的 oneof 不會顯示選擇器。必填的 oneof 會選取該選項，
+並在 oneof 標題下顯示其欄位。選填的 oneof 會顯示可開啟或關閉該選項的開關。
+
 ## 自訂欄位 renderer
 
 當 host 需要套件未內建的 control 時，可擴充型別化 registry。自訂名稱會通過
@@ -161,6 +164,25 @@ useProtoForm(RequestSchema, {
 ```
 
 `markClean()` 會同步更新 callback，因此 route blocker 可在同一個提交 callback 中觀察到乾淨狀態。
+
+## 外觀
+
+`appearance` 可變更預設 wrapper 排列欄位的方式：
+
+```tsx
+<AutoForm
+  schema={RequestSchema}
+  appearance={{ layout: "stacked", sections: "indented", arrayItems: "separated" }}
+/>;
+```
+
+| 選項 | 預設值 | 替代值 |
+| --- | --- | --- |
+| `layout` | `"split"`：在較寬的螢幕上，頂層標籤位於其 control 旁 | `"stacked"`：標籤位於 control 上方 |
+| `sections` | `"divided"`：在每個巢狀 message 標題下顯示分隔線 | `"indented"`：在每個巢狀 message 的欄位旁顯示線條 |
+| `arrayItems` | `"cards"`：每個 repeated message 顯示於卡片中 | `"separated"`：在 repeated message 之間顯示分隔線 |
+
+當 host 需要這些選項未涵蓋的版面配置時，請替換 `uiComponents`。
 
 ## 根標頭與已棄用欄位
 
