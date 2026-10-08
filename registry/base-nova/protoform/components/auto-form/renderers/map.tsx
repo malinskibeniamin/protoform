@@ -10,7 +10,7 @@ import { formSpacing } from '../form-spacing';
 import { createEmptyFieldValue, getFieldErrorMessage } from '../helpers';
 import { getAutoFormCollectionRemoveTestId, getAutoFormCollectionRowTestId, getAutoFormFieldTestId } from '../test-ids';
 import { Button } from '../ui-components';
-import { AutoFormFieldRenderer } from '.';
+import { NestedFieldRenderer } from './nested';
 import { cloneFieldForCompactRow, getRenderedLabel, isComplexCollectionField, useFieldPresentation } from './shared';
 
 const COMPACT_PAIR_GRID = 'grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] items-center gap-3';
@@ -81,12 +81,12 @@ export function MapFieldRenderer({
                     data-testid={rowTestId}
                     key={item.key}
                   >
-                    <AutoFormFieldRenderer
+                    <NestedFieldRenderer
                       field={compactKeyField}
                       inheritedDisabled={isDisabled}
                       path={[...path, String(index), 'key']}
                     />
-                    <AutoFormFieldRenderer
+                    <NestedFieldRenderer
                       field={compactValueField}
                       inheritedDisabled={isDisabled}
                       path={[...path, String(index), 'value']}
@@ -118,7 +118,7 @@ export function MapFieldRenderer({
                 >
                   <div className={KEY_REMOVE_GRID}>
                     {compactKeyField ? (
-                      <AutoFormFieldRenderer
+                      <NestedFieldRenderer
                         field={compactKeyField}
                         inheritedDisabled={isDisabled}
                         path={[...path, String(index), 'key']}
@@ -137,7 +137,7 @@ export function MapFieldRenderer({
                     </Button>
                   </div>
                   {valueField ? (
-                    <AutoFormFieldRenderer
+                    <NestedFieldRenderer
                       field={compactValueField ?? valueField}
                       inheritedDisabled={isDisabled}
                       path={[...path, String(index), 'value']}

@@ -25,6 +25,7 @@ import {
 } from './field-wrapper';
 import { AutoFormFieldComponentRegistry } from './fields';
 import { deriveSimpleFields } from './helpers';
+import { AutoFormAppearanceProvider } from './layout-context';
 import { AutoFormModeShell } from './mode-shell';
 import {
   getProtoMessageUiConfig,
@@ -182,6 +183,25 @@ type AutoFormContentProps<T extends Record<string, unknown>, TNativeForm, TCusto
   resolvedSchema: ResolvedSchema;
 };
 
+function useAutoFormMode(modes: AutoFormMode[] | undefined, defaultMode: AutoFormMode | undefined) {
+  const availableModes = normalizeModes(modes);
+  const preferredMode = resolveInitialMode(availableModes, defaultMode);
+  const [mode, setMode] = React.useState<AutoFormMode>(preferredMode);
+  const [modeSyncedFor, setModeSyncedFor] = React.useState(defaultMode);
+
+  if (!availableModes.includes(mode)) {
+    setMode(preferredMode);
+    setModeSyncedFor(defaultMode);
+  } else if (modeSyncedFor !== defaultMode) {
+    setModeSyncedFor(defaultMode);
+    if (defaultMode && availableModes.includes(defaultMode)) {
+      setMode(defaultMode);
+    }
+  }
+
+  return { availableModes, mode, setMode };
+}
+
 function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustomFieldType extends string>({
   engine,
   resolvedSchema,
@@ -212,6 +232,7 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
   stepper,
   validationMode = 'submit',
   revalidationMode = 'change',
+  appearance,
 }: AutoFormContentProps<T, TNativeForm, TCustomFieldType>) {
   const testIdPrefix = resolveAutoFormTestIdPrefix(testId);
   const submitController = React.useRef<AbortController | undefined>(undefined);
@@ -228,15 +249,12 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
   const mergedUiComponents = { ...ShadcnUIComponents, ...uiComponents };
   const mergedFormComponents = { ...ShadcnAutoFormFieldComponents, ...formComponents };
   const conversionOptions = protoConversionOptionsFromFieldConfig(fieldConfigOverrides);
-  const availableModes = normalizeModes(modes);
-  const preferredMode = resolveInitialMode(availableModes, defaultMode);
-  const [mode, setMode] = React.useState<AutoFormMode>(preferredMode);
+  const { availableModes, mode, setMode } = useAutoFormMode(modes, defaultMode);
   const [currentStepIndex, setCurrentStepIndex] = React.useState(() =>
     stepper ? initialStepIndex(stepper.steps, stepper.defaultStep) : 0
   );
   const previousStepIndex = React.useRef(currentStepIndex);
   const [isAdvancing, setIsAdvancing] = React.useState(false);
-  const previousDefaultMode = React.useRef(defaultMode);
   const previousLifecycleValues = React.useRef(engine.values);
   const hasSubmitted = React.useRef(false);
   const submitLabel = formatProtoformMessage(formatMessage, 'auto_form.submit', {}, 'Submit');
@@ -259,21 +277,6 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
       validationController.current?.abort();
     };
   }, []);
-
-  React.useEffect(() => {
-    if (!availableModes.includes(mode)) {
-      setMode(preferredMode);
-      previousDefaultMode.current = defaultMode;
-      return;
-    }
-
-    if (previousDefaultMode.current !== defaultMode) {
-      previousDefaultMode.current = defaultMode;
-      if (defaultMode && availableModes.includes(defaultMode)) {
-        setMode(defaultMode);
-      }
-    }
-  }, [availableModes, defaultMode, mode, preferredMode]);
 
   async function validateWithProvider(
     submittedValues: Record<string, unknown>,
@@ -589,72 +592,74 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
   }
 
   return (
-    <TooltipProvider delayDuration={150} skipDelayDuration={0}>
-      <AutoFormRuntimeProvider<TNativeForm>
-        advancedFields={advancedFields}
-        conversionOptions={conversionOptions}
-        dataProviders={dataProviders}
-        deprecatedFields={deprecatedFields}
-        fieldRegistry={fieldRegistry}
-        formatMessage={formatMessage}
-        formComponents={mergedFormComponents}
-        mode={mode}
-        onFieldChange={onFieldChange}
-        payloadBuilder={payloadBuilder}
-        payloadParser={payloadParser}
-        payloadSchema={payloadSchema}
-        renderContent={(bag) => (
-          <mergedUiComponents.Form
-            {...formProps}
-            onBlurCapture={(event) => {
-              formOnBlurCapture?.(event);
-              if (activeValidationMode() === 'blur') {
-                runLifecycleValidation(engine.getValues()).catch((error: unknown) => {
-                  engine.setRootError(error instanceof Error ? error.message : 'Validation failed.');
-                });
-              }
-            }}
-            onSubmit={engine.handleSubmit(handleSubmit)}
-            testId={testIdPrefix}
-          >
-            {hasRootError ? (
-              <Alert variant="destructive">
-                <AlertTitle>
-                  {formatProtoformMessage(formatMessage, 'auto_form.validation_failed', {}, 'Form validation failed')}
-                </AlertTitle>
-                <AlertDescription className="whitespace-pre-wrap">{engine.rootError}</AlertDescription>
-              </Alert>
-            ) : null}
+    <AutoFormAppearanceProvider appearance={appearance}>
+      <TooltipProvider delayDuration={150} skipDelayDuration={0}>
+        <AutoFormRuntimeProvider<TNativeForm>
+          advancedFields={advancedFields}
+          conversionOptions={conversionOptions}
+          dataProviders={dataProviders}
+          deprecatedFields={deprecatedFields}
+          fieldRegistry={fieldRegistry}
+          formatMessage={formatMessage}
+          formComponents={mergedFormComponents}
+          mode={mode}
+          onFieldChange={onFieldChange}
+          payloadBuilder={payloadBuilder}
+          payloadParser={payloadParser}
+          payloadSchema={payloadSchema}
+          renderContent={(bag) => (
+            <mergedUiComponents.Form
+              {...formProps}
+              onBlurCapture={(event) => {
+                formOnBlurCapture?.(event);
+                if (activeValidationMode() === 'blur') {
+                  runLifecycleValidation(engine.getValues()).catch((error: unknown) => {
+                    engine.setRootError(error instanceof Error ? error.message : 'Validation failed.');
+                  });
+                }
+              }}
+              onSubmit={engine.handleSubmit(handleSubmit)}
+              testId={testIdPrefix}
+            >
+              {hasRootError ? (
+                <Alert variant="destructive">
+                  <AlertTitle>
+                    {formatProtoformMessage(formatMessage, 'auto_form.validation_failed', {}, 'Form validation failed')}
+                  </AlertTitle>
+                  <AlertDescription className="whitespace-pre-wrap">{engine.rootError}</AlertDescription>
+                </Alert>
+              ) : null}
 
-            {rootHeaderContent}
+              {rootHeaderContent}
 
-            <AutoFormModeShell
-              bestEffort={bag.payloadState.bestEffort}
-              jsonEditorError={bag.jsonEditorError}
-              jsonText={bag.jsonEditorText}
-              mode={mode}
-              modes={availableModes}
-              onFormatJson={bag.handleFormatJson}
-              onJsonTextChange={bag.handleJsonTextChange}
-              onModeChange={setMode}
-              onResetJson={bag.handleResetJson}
-              payload={bag.payloadState.payload}
-              renderFormMode={renderFormForMode}
-              renderSummary={renderSummary}
-              showSummary={showSummary && (!stepper || currentStepIndex === stepper.steps.length - 1)}
-              summaryContext={bag.summaryContext}
-              testIdPrefix={testIdPrefix}
-            />
-          </mergedUiComponents.Form>
-        )}
-        resolvedSchema={resolvedSchema}
-        simpleFields={simpleFields}
-        testIdPrefix={testIdPrefix}
-        uiComponents={mergedUiComponents}
-      >
-        {null}
-      </AutoFormRuntimeProvider>
-    </TooltipProvider>
+              <AutoFormModeShell
+                bestEffort={bag.payloadState.bestEffort}
+                jsonEditorError={bag.jsonEditorError}
+                jsonText={bag.jsonEditorText}
+                mode={mode}
+                modes={availableModes}
+                onFormatJson={bag.handleFormatJson}
+                onJsonTextChange={bag.handleJsonTextChange}
+                onModeChange={setMode}
+                onResetJson={bag.handleResetJson}
+                payload={bag.payloadState.payload}
+                renderFormMode={renderFormForMode}
+                renderSummary={renderSummary}
+                showSummary={showSummary && (!stepper || currentStepIndex === stepper.steps.length - 1)}
+                summaryContext={bag.summaryContext}
+                testIdPrefix={testIdPrefix}
+              />
+            </mergedUiComponents.Form>
+          )}
+          resolvedSchema={resolvedSchema}
+          simpleFields={simpleFields}
+          testIdPrefix={testIdPrefix}
+          uiComponents={mergedUiComponents}
+        >
+          {null}
+        </AutoFormRuntimeProvider>
+      </TooltipProvider>
+    </AutoFormAppearanceProvider>
   );
 }
 

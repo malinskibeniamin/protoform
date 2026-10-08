@@ -1166,17 +1166,6 @@
       }
     },
     {
-      // Recursive field renderers intentionally dispatch back into the renderer graph.
-      "includes": ["registry/**/components/auto-form/renderers/**"],
-      "linter": {
-        "rules": {
-          "suspicious": {
-            "noImportCycles": "off"
-          }
-        }
-      }
-    },
-    {
       // These workflows are intentionally sequential because each iteration mutates shared
       // browser or request state before the next one starts.
       "includes": ["e2e/docs-screenshots.spec.ts", "registry/**/lib/protobuf-provider/aip-client-workflow.ts"],

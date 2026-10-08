@@ -10,6 +10,7 @@ import type { AutoFormSlotProps } from '../slot';
 import { ArrayFieldRenderer } from './array';
 import { ControlledFieldRenderer } from './controlled';
 import { MapFieldRenderer } from './map';
+import { NestedFieldRendererContext } from './nested';
 import { ObjectFieldRenderer } from './object';
 import { OneofFieldRenderer } from './oneof';
 import { isFieldHidden } from './shared';
@@ -36,7 +37,26 @@ export function AutoFormFieldRenderer({
   inheritedDisabled?: boolean | undefined;
   registry?: FieldTypeRegistry<string> | undefined;
 }) {
-  const activeRegistry = registry ?? defaultRegistry;
+  return (
+    <NestedFieldRendererContext.Provider value={AutoFormFieldRenderer}>
+      <ResolvedFieldRenderer field={field} inheritedDisabled={inheritedDisabled} path={path} registry={registry} />
+    </NestedFieldRendererContext.Provider>
+  );
+}
+
+function ResolvedFieldRenderer({
+  field,
+  path,
+  inheritedDisabled,
+  registry,
+}: {
+  field: ParsedField;
+  path: string[];
+  inheritedDisabled: boolean;
+  registry: FieldTypeRegistry<string> | undefined;
+}) {
+  const { fieldRegistry } = useAutoForm();
+  const activeRegistry = registry ?? fieldRegistry ?? defaultRegistry;
   const renderType = resolveFieldType(field, activeRegistry);
 
   if ((field.type === 'array' || field.type === 'map' || field.type === 'object') && renderType !== field.type) {
@@ -75,24 +95,31 @@ interface SlotEntry {
   after?: string | undefined;
   before?: string | undefined;
   content: React.ReactNode;
+  key: React.Key;
 }
 
-function extractSlots(children: React.ReactNode): { slots: SlotEntry[]; other: React.ReactNode[] } {
+function extractSlots(children: React.ReactNode): {
+  slots: SlotEntry[];
+  other: { content: React.ReactNode; key: React.Key }[];
+} {
   const slots: SlotEntry[] = [];
-  const other: React.ReactNode[] = [];
+  const other: { content: React.ReactNode; key: React.Key }[] = [];
 
-  React.Children.forEach(children, (child) => {
+  for (const child of React.Children.toArray(children)) {
     if (React.isValidElement(child) && (child.type as { displayName?: string }).displayName === 'AutoFormSlot') {
       const props = child.props as AutoFormSlotProps;
       slots.push({
         after: props.after,
         before: props.before,
         content: props.children,
+        key: child.key ?? slots.length,
       });
-    } else if (child !== null && child !== undefined) {
-      other.push(child);
+    } else if (React.isValidElement(child)) {
+      other.push({ content: child, key: child.key ?? other.length });
+    } else {
+      other.push({ content: child, key: `text-${other.length}` });
     }
-  });
+  }
 
   return { other, slots };
 }
@@ -102,11 +129,11 @@ export function AutoFormFields({ fields, children }: { fields: ParsedField[]; ch
   const { slots, other } = React.useMemo(() => extractSlots(children), [children]);
 
   const beforeSlots = React.useMemo(() => {
-    const map = new Map<string, React.ReactNode[]>();
+    const map = new Map<string, SlotEntry[]>();
     for (const slot of slots) {
       if (slot.before !== undefined && slot.before !== '') {
         const existing = map.get(slot.before) ?? [];
-        existing.push(slot.content);
+        existing.push(slot);
         map.set(slot.before, existing);
       }
     }
@@ -114,47 +141,42 @@ export function AutoFormFields({ fields, children }: { fields: ParsedField[]; ch
   }, [slots]);
 
   const afterSlots = React.useMemo(() => {
-    const map = new Map<string, React.ReactNode[]>();
+    const map = new Map<string, SlotEntry[]>();
     for (const slot of slots) {
       if (slot.after !== undefined && slot.after !== '') {
         const existing = map.get(slot.after) ?? [];
-        existing.push(slot.content);
+        existing.push(slot);
         map.set(slot.after, existing);
       }
     }
     return map;
   }, [slots]);
 
-  const topSlots: React.ReactNode[] = [];
-  for (const slot of slots) {
-    if (!((slot.before !== undefined && slot.before !== '') || (slot.after !== undefined && slot.after !== ''))) {
-      topSlots.push(slot.content);
-    }
-  }
+  const topSlots = slots.filter(
+    (slot) => !((slot.before !== undefined && slot.before !== '') || (slot.after !== undefined && slot.after !== ''))
+  );
   const visibleFields = fields.filter((field) => !isFieldHidden(field, deprecatedFields));
 
   return (
     <div className="divide-y divide-border/60" data-slot="auto-form-fields">
-      {topSlots.map((content, i) => (
-        <div className="py-7 first:pt-0 last:pb-0" key={`slot-top-${i}`}>
-          {content}
+      {topSlots.map((slot) => (
+        <div className="py-7 first:pt-0 last:pb-0" key={slot.key}>
+          {slot.content}
         </div>
       ))}
-      {other.length > 0
-        ? other.map((content, i) => (
-            <div className="py-7 first:pt-0 last:pb-0" key={`other-${i}`}>
-              {content}
-            </div>
-          ))
-        : null}
+      {other.map((entry) => (
+        <div className="py-7 first:pt-0 last:pb-0" key={entry.key}>
+          {entry.content}
+        </div>
+      ))}
       {visibleFields.map((field) => (
         <div className="py-7 first:pt-0 last:pb-0" data-slot="auto-form-field-row" key={field.key}>
-          {beforeSlots.get(field.key)?.map((content, i) => (
-            <React.Fragment key={`before-${field.key}-${i}`}>{content}</React.Fragment>
+          {beforeSlots.get(field.key)?.map((slot) => (
+            <React.Fragment key={slot.key}>{slot.content}</React.Fragment>
           ))}
           <AutoFormFieldRenderer field={field} path={[field.key]} registry={fieldRegistry} />
-          {afterSlots.get(field.key)?.map((content, i) => (
-            <React.Fragment key={`after-${field.key}-${i}`}>{content}</React.Fragment>
+          {afterSlots.get(field.key)?.map((slot) => (
+            <React.Fragment key={slot.key}>{slot.content}</React.Fragment>
           ))}
         </div>
       ))}

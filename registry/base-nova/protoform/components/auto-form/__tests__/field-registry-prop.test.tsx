@@ -57,6 +57,28 @@ describe('AutoForm – fieldRegistry prop wiring', () => {
     expect(screen.getByTestId('nested-custom-rendered')).toBeInTheDocument();
   });
 
+  test('resolves nested fields through the registry match, not only top-level ones', () => {
+    const registry = defaultRegistry.clone().register({
+      component: NestedCustomComponent,
+      match: (field) => field.key === 'source',
+      name: 'source-picker',
+      priority: 9999,
+    });
+    const schema = createMockProvider([
+      { key: 'source', required: true, type: 'string' },
+      {
+        key: 'settings',
+        required: true,
+        schema: [{ key: 'source', required: true, type: 'string' }],
+        type: 'object',
+      },
+    ]);
+
+    render(<AutoForm fieldRegistry={registry} schema={schema} />);
+
+    expect(screen.getAllByTestId('nested-custom-rendered')).toHaveLength(2);
+  });
+
   test('shows a configuration error when a renderer has no component', () => {
     const schema = createMockProvider([{ key: 'greeting', required: true, type: 'string' }]);
 

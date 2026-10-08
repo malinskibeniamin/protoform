@@ -1,5 +1,5 @@
 import { describe, expect, rs } from '@rstest/core';
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { AutoForm as TanStackAutoForm } from '../../auto-form-tanstack';
@@ -122,13 +122,7 @@ describe.each([
     await expectEditThenClean('nested field', () => user.type(screen.getByRole('textbox', { name: 'City' }), 'Warsaw'));
     await expectEditThenClean('array field', () => user.click(screen.getByRole('button', { name: 'Add Tags' })));
     await expectEditThenClean('map field', () => user.click(screen.getByRole('button', { name: 'Add pair' })));
-    await expectEditThenClean('oneof field', async () => {
-      fireEvent.click(screen.getByRole('combobox', { name: 'Contact' }));
-      const option = await screen.findByRole('option', { name: 'Email' });
-      fireEvent.pointerEnter(option, { pointerType: 'touch' });
-      fireEvent.pointerDown(option, { pointerType: 'touch' });
-      fireEvent.click(option);
-    });
+    await expectEditThenClean('oneof field', () => user.click(screen.getByRole('switch', { name: 'Contact' })));
 
     expect(onDirtyChange.mock.calls.map(([dirty]) => dirty)).toEqual([
       false,
