@@ -1080,7 +1080,8 @@
           "type": "registry:lib",
           "target": "@lib/input-utils/index.ts"
         }
-      ]
+      ],
+      "devDependencies": ["@types/prismjs"]
     },
     {
       "name": "auto-form-tanstack",
@@ -1363,7 +1364,8 @@
           "path": "registry/base-nova/protoform/demo/auto-form-protobuf-ui-metadata.tsx",
           "type": "registry:component"
         }
-      ]
+      ],
+      "devDependencies": ["@types/prismjs"]
     },
     {
       "dependencies": ["@bufbuild/protobuf", "react", "react-hook-form"],

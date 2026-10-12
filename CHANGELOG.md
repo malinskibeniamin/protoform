@@ -66,6 +66,7 @@ source snapshots.
 - Slots keep their children's React keys instead of keying them by position.
 - Changing `defaultMode` after mount switches mode in the same render instead of after an effect.
 - A required oneof with one available variant keeps its field test id on its section, as other oneofs do.
+- `protoform-shadcn` and `protoform-examples` install `@types/prismjs`, so a strict consumer type-checks `json-field` without adding the types by hand.
 
 ### Compatibility
 

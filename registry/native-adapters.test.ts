@@ -4,6 +4,7 @@ import ts from 'typescript';
 
 interface RegistryItem {
   dependencies?: string[];
+  devDependencies?: string[];
   files?: Array<{ path: string; target?: string }>;
   name: string;
   registryDependencies?: string[];
@@ -12,6 +13,17 @@ interface RegistryItem {
 const registry = JSON.parse(readFileSync('registry.json', 'utf8')) as {
   items: RegistryItem[];
 };
+
+const HOST_OWNED_PACKAGES = new Set(['react', 'react-dom']);
+
+function packageName(dependency: string): string {
+  const versionAt = dependency.indexOf('@', dependency.startsWith('@') ? 1 : 0);
+  return versionAt === -1 ? dependency : dependency.slice(0, versionAt);
+}
+
+function typesPackageFor(name: string): string {
+  return name.startsWith('@') ? `@types/${name.slice(1).replace('/', '__')}` : `@types/${name}`;
+}
 
 const defaultUiModules = [
   'alert',
@@ -229,6 +241,22 @@ describe('build-time UI adapter registry', () => {
         expect.arrayContaining([expect.stringMatching(/^(clsx|tailwind-merge|class-variance-authority)(@|$)/u)])
       );
     }
+  });
+
+  test('installs the type packages its runtime dependencies need', () => {
+    const repoDevDependencies = (
+      JSON.parse(readFileSync('package.json', 'utf8')) as { devDependencies?: Record<string, string> }
+    ).devDependencies;
+    const missing = registry.items.flatMap((entry) =>
+      (entry.dependencies ?? [])
+        .map(packageName)
+        .filter((name) => !HOST_OWNED_PACKAGES.has(name))
+        .map(typesPackageFor)
+        .filter((types) => repoDevDependencies?.[types] !== undefined && !(entry.devDependencies ?? []).includes(types))
+        .map((types) => `${entry.name} -> ${types}`)
+    );
+
+    expect(missing).toEqual([]);
   });
 
   test('keeps the host installation free of consumer UI imports', () => {

@@ -26,6 +26,9 @@
     "tailwind-merge",
     "zod"
   ],
+  "devDependencies": [
+    "@types/prismjs"
+  ],
   "registryDependencies": [
     "@protoform/protoform",
     "@protoform/aip-121-resource-oriented-design",
