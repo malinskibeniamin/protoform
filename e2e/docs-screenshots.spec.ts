@@ -93,11 +93,11 @@ const sidebarHierarchy = [
     label: 'Reference',
     pages: [
       'Overview',
-      'Create a bookPOST',
-      'Delete a bookPOST',
-      'Get a bookPOST',
       'List booksPOST',
+      'Get a bookPOST',
+      'Create a bookPOST',
       'Update a bookPOST',
+      'Delete a bookPOST',
     ],
   },
 ] as const;
