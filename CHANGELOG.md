@@ -20,6 +20,7 @@ source snapshots.
 - A replaceable `OneofWrapper` UI component; AutoForm supplies the available variants, selection, and variant rendering.
 - `appearance` sets the default wrappers' field layout (`split` or `stacked`), nested message sections (`divided` or `indented`), and repeated message items (`cards` or `separated`) without replacing `uiComponents`.
 - A oneof with one available variant has no picker: a required oneof selects the variant, and an optional one toggles it with a switch.
+- Nested message and `FormSection` headings carry `data-slot="section-heading"`, so a host `Heading` can size them apart from page and step headings.
 - Formik and Final Form validation adapters.
 - Source-copy `protoc-gen-protoform` generator.
 - Conformance, accessibility, browser, performance, security, and consumer-installation evidence.
@@ -64,6 +65,7 @@ source snapshots.
 - AutoForm renderers no longer import each other in a cycle.
 - Slots keep their children's React keys instead of keying them by position.
 - Changing `defaultMode` after mount switches mode in the same render instead of after an effect.
+- A required oneof with one available variant keeps its field test id on its section, as other oneofs do.
 
 ### Compatibility
 

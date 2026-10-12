@@ -32,6 +32,10 @@ describe('AutoForm root header', () => {
     render(<AutoForm schema={AutoFormExampleSchema} />);
 
     expect(screen.getByRole('heading', { name: 'Request settings' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Request settings' })).not.toHaveAttribute(
+      'data-slot',
+      'section-heading'
+    );
     expect(screen.getByText('Configure the request.')).toBeInTheDocument();
   });
 

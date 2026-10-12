@@ -42,7 +42,7 @@ export function FormSection({ title, description, divider, required, testId, cla
         <div className={cn(formSpacing.sectionHeader, showDivider && formSpacing.sectionDivider)}>
           {title ? (
             <div className="flex items-center gap-2">
-              <Heading className="font-medium" level={level}>
+              <Heading className="font-medium" data-slot="section-heading" level={level}>
                 {title}
               </Heading>
               {required === true ? (

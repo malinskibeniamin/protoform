@@ -41,6 +41,7 @@ describe('AutoForm appearance', () => {
     const { container } = render(<AutoForm schema={profile} />);
 
     expect(nameFieldRoot()).toHaveAttribute('data-layout', 'split');
+    expect(screen.getByRole('heading', { name: 'Address' })).toHaveAttribute('data-slot', 'section-heading');
     expect(container.querySelector('[data-slot="section-body"]')).not.toHaveClass('border-l-2');
     expect(container.querySelectorAll('[data-slot="array-item"]')[0]).toHaveClass('rounded-xl');
   });
@@ -104,6 +105,14 @@ describe('single-variant oneofs', () => {
     expect(onSubmit.mock.calls[0]?.[0]).toMatchObject({
       delivery: { case: 'webhook', value: { endpoint: 'https://hooks.example.com' } },
     });
+  });
+
+  test('a required oneof with one variant keeps its field test id', () => {
+    render(<AutoForm schema={singleVariant(true)} testId="delivery-form" />);
+
+    expect(screen.getByTestId('delivery-form-field-delivery')).toContainElement(
+      screen.getByRole('heading', { name: 'Delivery' })
+    );
   });
 
   test('selecting the sole required variant leaves the form clean', async () => {
