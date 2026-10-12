@@ -9,7 +9,7 @@ test('publishes every permanent legacy redirect without losing its fragment', as
   const response = await request.get('/blume-redirects.json');
   expect(response.ok()).toBe(true);
   const redirects = redirectSchema.parse(await response.json());
-  expect(redirects).toHaveLength(115);
+  expect(redirects).toHaveLength(117);
   expect(new Set(redirects.map((redirect) => redirect.from)).size).toBe(redirects.length);
   const rulesResponse = await request.get('/_redirects');
   expect(rulesResponse.ok()).toBe(true);
@@ -20,6 +20,15 @@ test('publishes every permanent legacy redirect without losing its fragment', as
     expect(redirects).toContainEqual({ from, status: 308, to });
     expect(rules).toContain(`${from} ${to} 308`);
   }
+  await Promise.all(
+    ['.md', '.mdx'].map(async (extension) => {
+      const from = `/docs/feature-example-catalog${extension}`;
+      const to = `/docs/protobuf-examples${extension}`;
+      expect(redirects).toContainEqual({ from, status: 308, to });
+      expect(rules).toContain(`${from} ${to} 308`);
+      expect((await request.get(to)).ok()).toBe(true);
+    })
+  );
 });
 
 for (const hub of demoHubs) {
@@ -78,6 +87,16 @@ test('finds identifiers that appear inside code blocks', async ({ page }) => {
   await page.getByRole('button', { exact: true, name: 'Search' }).click();
   await page.getByRole('combobox', { exact: true, name: 'Search docs' }).fill('SignupRequest');
   await expect(page.getByRole('option').filter({ hasText: 'Getting started' }).first()).toBeVisible();
+});
+
+test('keeps the selected demo when switching documentation language', async ({ page }) => {
+  await page.goto('/docs/protobuf-examples#protobuf-maps');
+  await expect(page.getByRole('heading', { exact: true, name: 'Protobuf maps' })).toBeVisible();
+  await page.getByRole('banner').getByLabel('Language: English', { exact: true }).click();
+  await page.getByRole('link', { exact: true, name: 'Polski' }).click();
+  await expect(page).toHaveURL('/docs/pl/protobuf-examples#protobuf-maps');
+  await expect(page.locator('html')).toHaveAttribute('lang', 'pl');
+  await expect(page.getByRole('heading', { exact: true, name: 'Protobuf maps' })).toBeVisible();
 });
 
 test('publishes complete search assets for every configured language', async ({ request }) => {
