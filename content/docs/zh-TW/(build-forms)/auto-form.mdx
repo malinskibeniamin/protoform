@@ -182,6 +182,9 @@ useProtoForm(RequestSchema, {
 | `sections` | `"divided"`：在每個巢狀 message 標題下顯示分隔線 | `"indented"`：在每個巢狀 message 的欄位旁顯示線條 |
 | `arrayItems` | `"cards"`：每個 repeated message 顯示於卡片中 | `"separated"`：在 repeated message 之間顯示分隔線 |
 
+巢狀 message 與 `FormSection` 標題會以 `data-slot="section-heading"` 顯示，讓 host 的 `Heading` 可為其設定
+不同於頁面與步驟標題的大小。
+
 當 host 需要這些選項未涵蓋的版面配置時，請替換 `uiComponents`。
 
 ## 根標頭與已棄用欄位

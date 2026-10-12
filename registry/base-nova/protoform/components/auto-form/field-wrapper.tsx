@@ -293,7 +293,7 @@ function ObjectSectionHeading({
   return (
     <>
       <div className="flex items-center gap-2">
-        <Heading className="font-medium" level={headingLevel}>
+        <Heading className="font-medium" data-slot="section-heading" level={headingLevel}>
           {label}
         </Heading>
         {field.required ? (

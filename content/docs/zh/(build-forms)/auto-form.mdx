@@ -183,6 +183,9 @@ useProtoForm(RequestSchema, {
 | `sections` | `"divided"`：每个嵌套消息标题下显示分隔线 | `"indented"`：每个嵌套消息的字段旁显示竖线 |
 | `arrayItems` | `"cards"`：每个重复消息渲染在卡片中 | `"separated"`：重复消息之间显示分隔线 |
 
+嵌套消息和 `FormSection` 标题渲染时带有 `data-slot="section-heading"`，因此宿主的 `Heading` 可为其设置
+与页面和步骤标题不同的尺寸。
+
 当宿主需要这些选项未涵盖的布局时，可替换 `uiComponents`。
 
 ## 根标题和弃用字段

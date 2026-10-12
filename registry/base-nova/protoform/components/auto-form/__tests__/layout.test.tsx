@@ -44,6 +44,7 @@ describe('FormSection', () => {
     expect(screen.getByText('L1').tagName).toBe('H2');
     expect(screen.getByText('L2').tagName).toBe('H3');
     expect(screen.getByText('L3').tagName).toBe('H4');
+    expect(screen.getByText('L1')).toHaveAttribute('data-slot', 'section-heading');
 
     cleanup();
     render(

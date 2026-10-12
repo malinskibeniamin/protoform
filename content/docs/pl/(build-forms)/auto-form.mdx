@@ -187,6 +187,9 @@ tego samego callbacku przesyłania.
 | `sections` | `"divided"`: linia pod każdym nagłówkiem zagnieżdżonego komunikatu | `"indented"`: linia obok pól każdego zagnieżdżonego komunikatu |
 | `arrayItems` | `"cards"`: każdy powtarzany komunikat jest renderowany w karcie | `"separated"`: linia między powtarzanymi komunikatami |
 
+Nagłówki zagnieżdżonych komunikatów i `FormSection` są renderowane z `data-slot="section-heading"`, dzięki czemu komponent `Heading` aplikacji hostującej może ustawiać ich rozmiar
+niezależnie od nagłówków stron i kroków.
+
 Zastąp `uiComponents`, gdy aplikacja hostująca potrzebuje układu, którego te opcje nie obejmują.
 
 ## Nagłówek główny i przestarzałe pola

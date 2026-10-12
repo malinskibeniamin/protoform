@@ -179,7 +179,9 @@ function RequiredSoleVariant({
   const { testIdPrefix } = useAutoFormRuntimeContext();
   const isSelected = selected?.key === variant.key;
   const hasError = error !== undefined && error !== '';
-  const ObjectWrapperComponent = uiComponents.ObjectWrapper;
+  const ObjectWrapperComponent = uiComponents.ObjectWrapper as React.ComponentType<
+    React.ComponentProps<typeof uiComponents.ObjectWrapper> & { testId?: string }
+  >;
 
   React.useEffect(
     function selectSoleRequiredVariant() {
@@ -192,7 +194,12 @@ function RequiredSoleVariant({
 
   return (
     <>
-      <ObjectWrapperComponent field={field} hasError={hasError} label={label}>
+      <ObjectWrapperComponent
+        field={field}
+        hasError={hasError}
+        label={label}
+        testId={getAutoFormFieldTestId(testIdPrefix, id)}
+      >
         {selected ? renderVariant(withoutHeading(selected)) : null}
       </ObjectWrapperComponent>
       {hasError ? (
