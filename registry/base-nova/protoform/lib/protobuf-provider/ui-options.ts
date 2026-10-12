@@ -33,7 +33,6 @@ export interface ProtoFieldUiConfig {
 
 export interface ProtoMessageUiConfig {
   description?: string | undefined;
-  secretScope?: string | undefined;
   title?: string | undefined;
 }
 
@@ -156,7 +155,7 @@ function isOneofUiEmpty(options: OneofUiOptions): boolean {
 }
 
 function isMessageUiEmpty(options: MessageUiOptions): boolean {
-  return !(options.secretScope || options.title || options.description);
+  return !(options.title || options.description);
 }
 
 export function getProtoMessageUi(desc: DescMessage): ProtoMessageUiConfig | undefined {
@@ -167,7 +166,6 @@ export function getProtoMessageUi(desc: DescMessage): ProtoMessageUiConfig | und
 
   return {
     description: options.description || undefined,
-    secretScope: options.secretScope || undefined,
     title: options.title || undefined,
   };
 }

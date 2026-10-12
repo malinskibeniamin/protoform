@@ -24,6 +24,11 @@ const stableModules: readonly StableProtoModule[] = [
         message: 'Previously present file "auto-form-example.proto" was deleted.',
         type: 'FILE_NO_DELETE',
       },
+      {
+        message: 'Previously present field "2" with name "secret_scope" on message "MessageUiOptions" was deleted.',
+        path: 'protoform/v1/auto_form_ui.proto',
+        type: 'FIELD_NO_DELETE',
+      },
     ],
   },
 ];
