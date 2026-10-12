@@ -35,6 +35,7 @@ source snapshots.
 - `FlattenProtoOneofs` is removed. It described the raw message, not the normalized form values; use `ProtoFormShape`.
 - The base `protoform` install no longer ships the Formik and Final Form validators, the AutoForm configuration audit, or the protobuf method workflow helpers. Install `@protoform/form-library-adapters`, `@protoform/auto-form-audit`, or `@protoform/protobuf-method-workflow` when you use them, and import them from `@/lib/core/form-library-adapters`, `@/components/auto-form/audit`, or `@/lib/protobuf-provider/method-workflow` and `mutation-request`; the base entry points no longer re-export them.
 - `formatSubmittedValue` moves into the demo runtime (`protoform-demo-runtime`).
+- `MessageUiOptions.secret_scope` is removed, along with the `secretScope` render hint and the third parameter of `parseProtoSchema`. Protoform never read it. Field number 2 and the name are reserved.
 - A selected oneof variant no longer repeats its label as a heading under the variant select.
 - Field help icons use the muted foreground color with any host `Button`, not only Protoform's.
 

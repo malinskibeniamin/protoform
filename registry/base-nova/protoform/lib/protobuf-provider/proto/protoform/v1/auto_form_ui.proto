@@ -13,7 +13,8 @@ message UiRule {
 }
 
 message MessageUiOptions {
-  optional string secret_scope = 2;
+  reserved 2;
+  reserved "secret_scope";
   // Root-level title shown above the AutoForm body.
   optional string title = 3;
   // One-line subtitle shown under `title`.

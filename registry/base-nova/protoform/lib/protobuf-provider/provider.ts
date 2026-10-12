@@ -152,7 +152,6 @@ export interface ProtoFieldCustomData extends ProviderCustomData {
   resource?: ProtoResourceMetadata | undefined;
   resourceReference?: ProtoResourceReference | undefined;
   ruleExample?: string | undefined;
-  secretScope?: string | undefined;
   source: 'proto';
   supportsUnset?: boolean | undefined;
   ui?: ProtoFieldUiConfig | undefined;
@@ -168,7 +167,6 @@ interface ProtoParserContext {
   annotations?: ProtoAnnotations | undefined;
   messageUi?: ProtoMessageUiConfig | undefined;
   operation?: 'create' | 'update' | undefined;
-  secretScope?: string | undefined;
 }
 
 export function isProtoMessageDescriptor(value: unknown): value is DescMessage {
@@ -327,7 +325,6 @@ function hintsFromCustomData(data: ProtoFieldCustomData | undefined): FieldRende
   assign('summaryLabel', ui?.summaryLabel);
   assign('sensitive', ui?.sensitive);
   assign('step', ui?.step);
-  assign('secretScope', data.secretScope);
   assign('docsUrl', ui?.docsUrl);
   assign('visibleWhen', ui?.visibleWhen);
   assign('disabledWhen', ui?.disabledWhen);
@@ -705,13 +702,8 @@ function buildMessageField(field: MessageField, rules: FieldRules, context: Prot
         ),
         key: field.localName,
         required: rules.required,
-        schema: parseProtoSchemaInternal(
-          field.message,
-          context.annotations,
-          context.secretScope,
-          context.ancestors,
-          context.operation
-        ).fields,
+        schema: parseProtoSchemaInternal(field.message, context.annotations, context.ancestors, context.operation)
+          .fields,
         type: 'object',
       };
   }
@@ -765,13 +757,7 @@ function buildListItemField(field: ListField, context: ProtoParserContext, itemR
     ),
     key: 'value',
     required: false,
-    schema: parseProtoSchemaInternal(
-      field.message,
-      context.annotations,
-      context.secretScope,
-      context.ancestors,
-      context.operation
-    ).fields,
+    schema: parseProtoSchemaInternal(field.message, context.annotations, context.ancestors, context.operation).fields,
     type: 'object',
   };
 }
@@ -951,9 +937,6 @@ function buildProtoField(field: DescField, context: ProtoParserContext): ParsedP
   if (result.fieldConfig) {
     const { customData } = result.fieldConfig as ProtoFieldConfig;
     if (customData) {
-      if (context.secretScope !== undefined && context.secretScope !== '') {
-        customData.secretScope = context.secretScope;
-      }
       const fieldBehaviors = getProtoFieldBehaviors(field);
       const isIdentifier = fieldBehaviors.includes(FieldBehavior.IDENTIFIER);
       const isImmutable = fieldBehaviors.includes(FieldBehavior.IMMUTABLE);
@@ -993,7 +976,6 @@ export function getProtoMessageUiConfig(desc: DescMessage): ProtoMessageUiConfig
 function parseProtoSchemaInternal(
   desc: DescMessage,
   annotations: ProtoAnnotations | undefined,
-  parentSecretScope: string | undefined,
   ancestors: ReadonlySet<string>,
   operation?: 'create' | 'update'
 ): ParsedProtoSchema {
@@ -1003,7 +985,6 @@ function parseProtoSchemaInternal(
     annotations,
     messageUi,
     operation: operation ?? inferProtoOperation(desc),
-    secretScope: messageUi?.secretScope ?? parentSecretScope,
   };
   return {
     fields: desc.members.map((member) =>
@@ -1014,10 +995,9 @@ function parseProtoSchemaInternal(
 
 export function parseProtoSchema(
   desc: DescMessage,
-  annotations = getRegisteredProtoAnnotations(desc),
-  parentSecretScope?: string
+  annotations = getRegisteredProtoAnnotations(desc)
 ): ParsedProtoSchema {
-  return parseProtoSchemaInternal(desc, annotations, parentSecretScope, new Set(), undefined);
+  return parseProtoSchemaInternal(desc, annotations, new Set(), undefined);
 }
 
 const CREATE_REQUEST_PATTERN = /^Create.+Request$/u;
