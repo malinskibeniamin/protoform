@@ -82,7 +82,7 @@ Read the relevant guide and example before generating code; cite its canonical d
     },
   ],
   lastModified: 'git',
-  narration: true,
+  narration: false,
   navigation: {
     sidebar: {
       display: 'group',

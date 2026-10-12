@@ -27,14 +27,13 @@ bun run quality:gate
 
 ## Key-free documentation features
 
-Blume enables browser-voice narration, PDF and EPUB page exports, GitHub source-edit links,
-git-derived update dates, browser-language routing, and all 18 generated API sample languages.
-These features require no API keys and keep the Cloudflare Pages build static. PDF uses the
-browser print dialog; EPUB downloads only the current page. Narration stays hidden when the
-device has no voice for the page language. Choosing a language explicitly overrides automatic
-routing; deep links are never rerouted. Update dates need git history (`fetch-depth: 0` in CI).
+Blume enables PDF and EPUB page exports, GitHub source-edit links, git-derived update dates,
+browser-language routing, and all 18 generated API sample languages. These features require no
+API keys and keep the Cloudflare Pages build static. PDF uses the browser print dialog; EPUB
+downloads only the current page. Choosing a language explicitly overrides automatic routing;
+deep links are never rerouted. Update dates need git history (`fetch-depth: 0` in CI).
 
-The assistant, provider-generated narration, MCP server, analytics, consent banner, and written
+Page narration is disabled. The assistant, MCP server, analytics, consent banner, and written
 feedback remain unconfigured. Default Markdown, JSON, search, and agent-skill outputs stay enabled.
 
 ## Tests and changes

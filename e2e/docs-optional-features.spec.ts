@@ -45,77 +45,34 @@ test('exports the current page as PDF and a readable EPUB without a server', asy
   expect(chapters).toContain('SignupRequest');
 });
 
-test('reads prose with browser voices and supports pause, skip, and stop @cross-browser', async ({ page }) => {
-  await page.addInitScript(() => {
-    Object.defineProperty(window, 'SpeechSynthesisUtterance', {
-      value: class {
-        text: string;
-        constructor(text: string) {
-          this.text = text;
-        }
-      },
-    });
-    Object.defineProperty(window, 'speechSynthesis', {
-      value: {
-        cancel: () =>
-          Reflect.set(
-            window,
-            '__protoformSpeechCancelCount',
-            Number(Reflect.get(window, '__protoformSpeechCancelCount') ?? 0) + 1
-          ),
-        getVoices: () => [{ default: true, lang: 'en-US', localService: true, name: 'Test English', voiceURI: 'test' }],
-        resume: () => undefined,
-        speak: (utterance: { lang: string; onstart: () => void; text: string }) => {
-          Reflect.set(window, '__protoformSpoken', { lang: utterance.lang, text: utterance.text });
-          utterance.onstart();
+for (const locale of ['en', 'zh', 'zh-TW', 'pl']) {
+  test(`omits page narration in ${locale} even when browser voices are available @cross-browser`, async ({ page }) => {
+    await page.addInitScript(() => {
+      Object.defineProperty(window, 'speechSynthesis', {
+        value: {
+          addEventListener: () => undefined,
+          cancel: () => undefined,
+          getVoices: () =>
+            ['en-US', 'zh-CN', 'zh-TW', 'pl-PL'].map((lang) => ({
+              default: lang === 'en-US',
+              lang,
+              localService: true,
+              name: lang,
+              voiceURI: lang,
+            })),
+          removeEventListener: () => undefined,
         },
-      },
+      });
     });
-  });
-  await page.goto('/docs/getting-started');
-  await page.getByRole('button', { name: /Listen to this page/u }).click();
-  await expect
-    .poll(() => page.evaluate(() => Reflect.get(window, '__protoformSpoken')))
-    .toEqual({
-      lang: 'en-US',
-      text: 'Getting started',
-    });
-  await page.getByRole('button', { exact: true, name: 'Next sentence' }).click();
-  await expect
-    .poll(() => page.evaluate(() => Reflect.get(window, '__protoformSpoken')))
-    .not.toEqual({
-      lang: 'en-US',
-      text: 'Getting started',
-    });
-  await page.getByRole('button', { exact: true, name: 'Pause' }).click();
-  await expect(page.getByRole('button', { exact: true, name: 'Play' })).toBeVisible();
-  await expect(page.locator('[data-blume-narration-player]')).toHaveScreenshot('browser-narration-paused.png', {
-    mask: [page.locator('[data-narration-time]')],
-  });
-  await page.getByRole('button', { exact: true, name: 'Play' }).click();
-  const cancellations = await page.evaluate(() => Number(Reflect.get(window, '__protoformSpeechCancelCount')));
-  await page.getByRole('button', { exact: true, name: 'Stop listening' }).click();
-  await expect(page.getByRole('button', { name: /Listen to this page/u })).toBeVisible();
-  await expect
-    .poll(() => page.evaluate(() => Reflect.get(window, '__protoformSpeechCancelCount')))
-    .toBe(cancellations + 1);
-});
 
-test('hides narration when the browser has no voice for the page language', async ({ page }) => {
-  await page.addInitScript(() => {
-    Object.defineProperty(window, 'speechSynthesis', {
-      value: {
-        addEventListener: () => undefined,
-        getVoices: () => [],
-        removeEventListener: () => undefined,
-      },
-    });
+    await page.goto(`/docs/${locale === 'en' ? '' : `${locale}/`}getting-started`);
+    await expect(page.locator('html')).toHaveAttribute('lang', locale);
+    await expect(page.getByRole('main').getByRole('heading', { level: 1 })).toBeVisible();
+    await expect(page.getByRole('button', { name: /Listen to this page/u })).toHaveCount(0);
+    await expect(page.locator('[data-blume-narration-player]')).toHaveCount(0);
+    await expect(page.locator('[data-blume-page-actions]')).toBeVisible();
   });
-  await page.goto('/docs/getting-started');
-  await expect(page.locator('[data-blume-narration-player]')).toHaveCount(1);
-  await expect(page.getByRole('button', { name: /Listen to this page/u })).toBeHidden();
-  await expect(page.getByRole('heading', { level: 1, name: 'Getting started' })).toBeVisible();
-});
+}
 
 test.describe('browser-language routing', () => {
   test.use({ locale: 'pl-PL' });
