@@ -4,7 +4,7 @@
   "title": "Protoform Examples",
   "description": "Example protobuf AutoForm demos using generated schemas, CEL rules, oneofs, and UI metadata annotations.",
   "dependencies": [
-    "@base-ui/react",
+    "@base-ui/react@^1.9.0",
     "@buf/googleapis_googleapis.bufbuild_es",
     "@bufbuild/cel",
     "@bufbuild/protobuf",

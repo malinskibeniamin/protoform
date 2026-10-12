@@ -275,6 +275,7 @@ function SelectFieldFromProviderResult({
         emptyState={
           emptyState ?? formatProtoformMessage(formatMessage, 'auto_form.select.empty', {}, 'No options found.')
         }
+        filter={false}
         id={id}
         inputTestId={testIds.control}
         loading={isLoading}

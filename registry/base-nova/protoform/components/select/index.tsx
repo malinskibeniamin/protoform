@@ -6,7 +6,7 @@ import React from 'react';
 
 import { useGroup } from '@/components/ui/group';
 import { usePortalContainer } from '@/registry/base-nova/protoform/hooks/use-portal-container';
-import { narrowOpenChange, renderWithDataState } from '@/registry/base-nova/protoform/lib/base-ui-compat';
+import { renderWithDataState } from '@/registry/base-nova/protoform/lib/base-ui-compat';
 import { cn, type PortalContentProps, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
 type SelectRootProps = Omit<
@@ -15,7 +15,7 @@ type SelectRootProps = Omit<
 > &
   SharedProps & {
     defaultValue?: string | null;
-    onOpenChange?: (open: boolean) => void;
+    onOpenChange?: React.ComponentProps<typeof SelectPrimitive.Root>['onOpenChange'];
     onValueChange?: (value: string | null) => void;
     value?: string | null;
   };
@@ -39,7 +39,7 @@ function Select({ testId, onOpenChange, onValueChange, ...props }: SelectRootPro
     <SelectPrimitive.Root
       data-slot="select"
       data-testid={testId}
-      onOpenChange={narrowOpenChange(onOpenChange)}
+      onOpenChange={onOpenChange}
       onValueChange={adaptSelectValueChange(onValueChange)}
       {...props}
     />

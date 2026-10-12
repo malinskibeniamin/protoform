@@ -57,6 +57,33 @@ function EmptyRegionsProvider({ children }: DataProviderProps) {
 }
 
 describe('AutoForm data providers v2', () => {
+  test('keeps provider-ranked matches whose labels do not contain the typed query', async () => {
+    const user = userEvent.setup();
+    const onSubmit = rs.fn();
+    const schema = createMockProvider([
+      { key: 'region', type: 'string', required: false, fieldConfig: { customData: { dataProvider: 'regions' } } },
+    ]);
+    render(
+      <AutoForm
+        dataProviders={{
+          regions: ({ query }) => ({
+            options: query === 'polska' ? [{ label: 'Poland', value: 'PL' }] : [],
+          }),
+        }}
+        onSubmit={onSubmit}
+        schema={schema}
+        withSubmit
+      />
+    );
+    await user.click(screen.getByRole('combobox', { name: /Region/u }));
+    await user.paste('polska');
+    await screen.findByRole('option', { name: 'Poland' });
+    await user.keyboard('{Enter}');
+    await user.click(screen.getByRole('button', { name: 'Submit' }));
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
+    expect(onSubmit.mock.calls[0]?.[0]).toEqual({ region: 'PL' });
+  });
+
   test('provides a live signal after StrictMode effect replay and cancels it on unmount', async () => {
     strictModeSignals.length = 0;
     const schema = createMockProvider([
@@ -135,6 +162,7 @@ describe('AutoForm data providers v2', () => {
     await user.paste('eur');
     expect(requests.at(-1)).toMatchObject({ query: 'eur' });
 
+    await user.keyboard('{Escape}');
     await user.click(screen.getByRole('button', { name: 'Load more' }));
     expect(requests.at(-1)).toMatchObject({ cursor: 'page-2', query: 'eur' });
     await user.click(screen.getByRole('combobox', { name: /Region/u }));
@@ -349,7 +377,7 @@ describe('AutoForm data providers v2', () => {
     render(<AutoForm dataProviders={{ regions: { component: EmptyRegionsProvider } }} schema={schema} />);
 
     await user.click(screen.getByRole('combobox', { name: /Region/u }));
-    expect(screen.getByRole('link', { name: 'Create a region' })).toBeVisible();
+    expect(await screen.findByRole('link', { name: 'Create a region' })).toBeVisible();
     expect(screen.queryByText('No options found.')).toBeNull();
   });
 
@@ -383,7 +411,7 @@ describe('AutoForm data providers v2', () => {
     render(<AutoForm dataProviders={{ methods: { component: EmptyRegionsProvider } }} schema={schema} />);
 
     await user.click(screen.getByRole('button', { name: 'Multi-select trigger' }));
-    expect(screen.getByRole('link', { name: 'Create a region' })).toBeVisible();
+    expect(await screen.findByRole('link', { name: 'Create a region' })).toBeVisible();
     expect(screen.queryByText('No items found')).toBeNull();
   });
 });

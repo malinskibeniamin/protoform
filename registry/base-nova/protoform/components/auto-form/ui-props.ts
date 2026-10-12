@@ -29,6 +29,7 @@ export interface ProtoformComboboxProps extends Shared {
   clearable?: boolean;
   disabled?: boolean | undefined;
   emptyState?: React.ReactNode;
+  filter?: boolean;
   id?: string;
   inputTestId?: string;
   loading?: boolean | undefined;

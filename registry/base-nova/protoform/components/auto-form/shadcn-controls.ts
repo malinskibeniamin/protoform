@@ -144,7 +144,7 @@ export const shadcnComponentCoverage: ShadcnComponentCoverage[] = [
     kind: 'field-control',
     protoAnnotation: 'CONTROL_TYPE_COMBOBOX',
   },
-  { autoFormRole: 'Combobox and multi-select command surface', component: 'Command', kind: 'field-composition' },
+  { autoFormRole: 'Tag suggestion command surface', component: 'Command', kind: 'field-composition' },
   { autoFormRole: 'Copyable examples and generated payloads', component: 'CopyButton', kind: 'display-only' },
   { autoFormRole: 'Custom modal flows through AutoFormSlot', component: 'Dialog', kind: 'field-composition' },
   { autoFormRole: 'React Hook Form field primitives', component: 'Field', kind: 'form-shell' },
@@ -179,7 +179,7 @@ export const shadcnComponentCoverage: ShadcnComponentCoverage[] = [
     kind: 'field-control',
     protoAnnotation: 'CONTROL_TYPE_MULTI_SELECT',
   },
-  { autoFormRole: 'Date pickers, comboboxes, and field help', component: 'Popover', kind: 'field-composition' },
+  { autoFormRole: 'Date pickers, tag suggestions, and field help', component: 'Popover', kind: 'field-composition' },
   {
     autoFormRole: 'Enum fields where every option should stay visible',
     component: 'RadioGroup',

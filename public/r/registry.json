@@ -834,7 +834,7 @@
       },
       "registryDependencies": ["@protoform/protoform-react"],
       "dependencies": [
-        "@base-ui/react",
+        "@base-ui/react@^1.9.0",
         "@buf/googleapis_googleapis.bufbuild_es",
         "@bufbuild/cel",
         "@bufbuild/protobuf",
@@ -904,11 +904,6 @@
           "path": "registry/base-nova/protoform/components/combobox/index.tsx",
           "type": "registry:component",
           "target": "~/components/ui/combobox/index.tsx"
-        },
-        {
-          "path": "registry/base-nova/protoform/components/combobox/use-combobox-reducer.ts",
-          "type": "registry:component",
-          "target": "~/components/ui/combobox/use-combobox-reducer.ts"
         },
         {
           "path": "registry/base-nova/protoform/components/command/index.tsx",
@@ -1294,7 +1289,7 @@
         "@protoform/untrusted-input-demo"
       ],
       "dependencies": [
-        "@base-ui/react",
+        "@base-ui/react@^1.9.0",
         "@buf/googleapis_googleapis.bufbuild_es",
         "@bufbuild/cel",
         "@bufbuild/protobuf",

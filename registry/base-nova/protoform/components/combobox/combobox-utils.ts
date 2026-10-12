@@ -1,7 +1,5 @@
 import type { ComboboxOption } from '.';
 
-export const CREATE_ITEM_PREFIX = '__create__';
-
 export interface GroupedOptions {
   readonly heading: string;
   readonly options: readonly ComboboxOption[];
@@ -13,34 +11,17 @@ export const resolveLabel = (options: readonly ComboboxOption[], value: string):
   return opt?.label ?? value;
 };
 
-export const filterOptions = (
-  options: readonly ComboboxOption[],
-  query: string,
-  selectedLabel: string
-): ComboboxOption[] => {
-  if (!query) {
-    return [...options];
-  }
-  if (query === selectedLabel && selectedLabel) {
-    return [...options];
-  }
-  const lowerQuery = query.toLowerCase();
-  return options.filter(
-    (option) => option.label.toLowerCase().includes(lowerQuery) || option.value.toLowerCase().includes(lowerQuery)
-  );
-};
-
 export const groupOptions = (options: readonly ComboboxOption[]): GroupedOptions[] | undefined => {
   if (!options.some((option) => option.group)) {
     return;
   }
 
-  const groups = new Map<string, GroupedOptions>();
+  const groups = new Map<string, { heading: string; options: ComboboxOption[]; testId?: string | undefined }>();
   for (const option of options) {
     const groupKey = option.group || '';
     const existing = groups.get(groupKey);
     if (existing) {
-      groups.set(groupKey, { ...existing, options: [...existing.options, option] });
+      existing.options.push(option);
     } else {
       groups.set(groupKey, {
         heading: groupKey,
@@ -50,48 +31,4 @@ export const groupOptions = (options: readonly ComboboxOption[]): GroupedOptions
     }
   }
   return Array.from(groups.values());
-};
-
-export const getNavigableValues = (
-  filteredOptions: readonly ComboboxOption[],
-  canCreate: boolean,
-  inputValue: string
-): string[] => {
-  const base = filteredOptions.map((opt) => opt.label);
-  return canCreate ? [...base, `${CREATE_ITEM_PREFIX}${inputValue}`] : base;
-};
-
-export const computeNextHighlight = (
-  navigableValues: readonly string[],
-  currentHighlight: string,
-  direction: 1 | -1
-): string => {
-  if (navigableValues.length === 0) {
-    return '';
-  }
-  const currentIndex = navigableValues.findIndex((v) => v.toLowerCase() === currentHighlight.toLowerCase());
-  let nextIndex: number;
-  if (currentIndex === -1) {
-    nextIndex = direction === 1 ? 0 : navigableValues.length - 1;
-  } else {
-    nextIndex = currentIndex + direction;
-    if (nextIndex < 0) {
-      nextIndex = navigableValues.length - 1;
-    }
-    if (nextIndex >= navigableValues.length) {
-      nextIndex = 0;
-    }
-  }
-  return navigableValues[nextIndex] ?? currentHighlight;
-};
-
-export const findFirstMatch = (options: readonly ComboboxOption[], query: string): string => {
-  if (!query) {
-    return '';
-  }
-  const lowerQuery = query.toLowerCase();
-  const match = options.find(
-    (opt) => opt.label.toLowerCase().includes(lowerQuery) || opt.value.toLowerCase().includes(lowerQuery)
-  );
-  return match?.label ?? match?.value ?? '';
 };
