@@ -24,6 +24,9 @@
     "tailwind-merge",
     "zod"
   ],
+  "devDependencies": [
+    "@types/prismjs"
+  ],
   "registryDependencies": [
     "@protoform/protoform-react"
   ],
