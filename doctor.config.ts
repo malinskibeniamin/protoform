@@ -20,6 +20,10 @@ export default defineConfig({
     ],
     overrides: [
       {
+        files: ['registry/base-nova/protoform/components/multi-select/index.tsx'],
+        rules: ['react-doctor/context-provider-value-from-unmemoized-local-literal'],
+      },
+      {
         files: ['registry/base-nova/protoform/components/**'],
         rules: ['react-doctor/no-barrel-import'],
       },

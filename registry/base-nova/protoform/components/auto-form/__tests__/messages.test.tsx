@@ -67,7 +67,7 @@ describe('AutoForm runtime messages', () => {
     );
 
     await user.click(screen.getByRole('combobox', { name: 'Region' }));
-    expect(screen.getByText('Nothing translated')).toBeVisible();
+    expect(await screen.findByText(/Nothing translated/u)).toBeVisible();
   });
 
   test('formats step navigation and progress copy', () => {
