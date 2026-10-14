@@ -150,14 +150,16 @@ export function useProtoForm<Desc extends DescMessage>(
       if (validationScope !== 'modified-fields') {
         return;
       }
-      const subscription = form.watch((_values, { name }) => {
-        if (name && !suppressModifiedTrackingRef.current) {
-          setModifiedPath(modifiedFieldsRef.current, name);
-        }
+      return form.subscribe({
+        callback: ({ name }) => {
+          if (name && !suppressModifiedTrackingRef.current) {
+            setModifiedPath(modifiedFieldsRef.current, name);
+          }
+        },
+        formState: { values: true },
       });
-      return () => subscription.unsubscribe();
     },
-    [form.watch, validationScope]
+    [form.subscribe, validationScope]
   );
 
   const setValue: typeof form.setValue = (name, value, setValueOptions) => {

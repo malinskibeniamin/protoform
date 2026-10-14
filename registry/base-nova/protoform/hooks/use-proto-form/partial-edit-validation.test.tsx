@@ -108,6 +108,19 @@ describe('useProtoForm partial-edit validation', () => {
     expect(result.current.formState.errors.username).toBeUndefined();
   });
 
+  test('does not treat server errors on untouched fields as modification intent', () => {
+    const { result } = renderHook(() =>
+      useProtoForm(AutoFormExampleSchema, {
+        defaultValues: defaults,
+        validationScope: 'modified-fields',
+      })
+    );
+
+    act(() => result.current.setError('username', { message: 'Name is unavailable', type: 'server' }));
+
+    expect(result.current.createUpdateMask().paths).toEqual([]);
+  });
+
   test('matches nested modified fields to protobuf mask paths', async () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
