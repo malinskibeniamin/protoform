@@ -21,7 +21,7 @@
     "motion",
     "prismjs",
     "react-day-picker",
-    "react-hook-form",
+    "react-hook-form@^7.90.0",
     "react-simple-code-editor",
     "tailwind-merge",
     "zod"

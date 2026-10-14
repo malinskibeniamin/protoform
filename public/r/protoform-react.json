@@ -4,7 +4,7 @@
   "title": "Protoform React",
   "description": "React Hook Form AutoForm renderer and field logic using a consumer-owned shadcn-compatible component map.",
   "dependencies": [
-    "react-hook-form"
+    "react-hook-form@^7.90.0"
   ],
   "registryDependencies": [
     "@protoform/auto-form-core",

@@ -9,6 +9,16 @@ test('installed controls retain paginated selections and announce every error', 
   const title = page.getByRole('textbox', { name: /Title/u });
   const methods = page.getByRole('button', { name: 'Multi-select trigger' });
   await expect(methods).toContainText('post');
+  const chevronOffset = await methods.evaluate((trigger) => {
+    const chevron = trigger.querySelector(':scope > svg');
+    if (!chevron) {
+      throw new Error('Missing multi-select chevron');
+    }
+    const triggerBounds = trigger.getBoundingClientRect();
+    const chevronBounds = chevron.getBoundingClientRect();
+    return Math.abs(chevronBounds.y + chevronBounds.height / 2 - triggerBounds.y - triggerBounds.height / 2);
+  });
+  expect.soft(chevronOffset, 'The chevron stays vertically centered in the trigger').toBeLessThanOrEqual(1);
   await page.getByRole('button', { name: 'Submit', exact: true }).click();
   await expect(title).toHaveAccessibleDescription(/Enter a title\s+Use at least three characters/u);
   await expect(title).toHaveAttribute('aria-invalid', 'true');
@@ -23,6 +33,15 @@ test('installed controls retain paginated selections and announce every error', 
   await methods.click();
   await expect(page.getByRole('option', { name: 'POST', exact: true })).toBeVisible();
   await expect(page.getByRole('option', { name: 'GET', exact: true })).toBeVisible();
+  const search = page.getByRole('combobox', { name: 'Search options' });
+  await expect.soft(search).not.toHaveAttribute('aria-invalid', 'true');
+  const searchWidth = await search.evaluate((input) => input.getBoundingClientRect().width);
+  const popupWidth = await page
+    .getByRole('dialog', { name: 'Select options' })
+    .evaluate((popup) => popup.getBoundingClientRect().width);
+  expect
+    .soft(searchWidth / popupWidth, 'Search fills the popup row instead of shrinking to its default width')
+    .toBeGreaterThan(0.8);
   await expect(page).toHaveScreenshot('reliability-options.png');
   await page.keyboard.press('Escape');
   await title.fill('Recovered');

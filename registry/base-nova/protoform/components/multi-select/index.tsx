@@ -208,7 +208,7 @@ const MultiSelectTrigger = React.forwardRef<HTMLDivElement, MultiSelectTriggerPr
         <div
           {...props}
           className={cn(
-            'flex min-h-9 items-start justify-between gap-2 rounded-md border border-input bg-transparent px-3 py-1.5 text-sm focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 aria-invalid:border-destructive data-disabled:cursor-not-allowed data-disabled:opacity-50',
+            'flex min-h-9 items-center justify-between gap-2 rounded-md border border-input bg-transparent px-3 py-1.5 text-sm focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 aria-invalid:border-destructive data-disabled:cursor-not-allowed data-disabled:opacity-50',
             width && widthClasses[width],
             className
           )}
@@ -219,7 +219,7 @@ const MultiSelectTrigger = React.forwardRef<HTMLDivElement, MultiSelectTriggerPr
       role="button"
     >
       {children}
-      <ChevronDownIcon aria-hidden className="mt-1 size-4 shrink-0 opacity-50" />
+      <ChevronDownIcon aria-hidden className="size-4 shrink-0 opacity-50" />
     </Trigger>
   );
 });
@@ -322,15 +322,16 @@ const MultiSelectSearch = React.forwardRef<
   React.ComponentProps<typeof ComboboxPrimitive.Input> & SharedProps
 >(function renderMultiSelectSearch({ testId, className, ...props }, ref) {
   return (
-    <div className="flex items-center gap-2 border-b px-2 py-1">
+    <div className="flex items-center gap-2 border-b px-2 py-1 focus-within:border-ring">
       <Search aria-hidden className="size-4 text-muted-foreground" />
       <ComboboxPrimitive.Input
+        aria-invalid={false}
         aria-label="Search options"
         {...props}
         className={className}
         data-testid={testId}
         ref={ref}
-        render={<Input testId={testId} variant="group" />}
+        render={<Input containerClassName="min-w-0 flex-1" testId={testId} variant="group" />}
       />
     </div>
   );

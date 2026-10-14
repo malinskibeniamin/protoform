@@ -9,7 +9,7 @@
     "@connectrpc/connect",
     "@connectrpc/connect-query",
     "@tanstack/react-query",
-    "react-hook-form@^7.89.0"
+    "react-hook-form@^7.90.0"
   ],
   "registryDependencies": [
     "@protoform/protoform-shadcn",

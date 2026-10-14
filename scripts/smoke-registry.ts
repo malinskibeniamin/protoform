@@ -49,6 +49,14 @@ for (const name of expectedItems) {
     name?: string;
     registryDependencies?: string[];
   };
+  for (const dependency of item.dependencies ?? []) {
+    if (
+      (dependency === 'react-hook-form' || dependency.startsWith('react-hook-form@')) &&
+      dependency !== 'react-hook-form@^7.90.0'
+    ) {
+      throw new Error(`${path} must require react-hook-form@^7.90.0 so consumers receive the lifecycle fixes`);
+    }
+  }
   if (item.name !== name) {
     throw new Error(`${path} has name ${item.name}, expected ${name}`);
   }
