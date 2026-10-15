@@ -25,6 +25,46 @@ bunx playwright install chromium firefox webkit
 bun run quality:gate
 ```
 
+## Analyze test builds with Rsdoctor
+
+Rsdoctor 2.0 is opt-in for Rstest's Rspack builds. It does not analyze the Astro/Vite
+documentation build or change normal test commands.
+
+Choose `unit`, `integration`, `conformance`, or `browser`, then pass any Rstest filters or flags:
+
+```bash
+bun run test:rsdoctor integration examples/catalog/capability-demo.test.tsx
+bun run test:rsdoctor unit --watch
+```
+
+Each suite writes `rsdoctor-report.html` and `rsdoctor-data.json` under
+`artifacts/rsdoctor/<suite>/`. Open the HTML file locally for loader and plugin timings,
+dependency analysis, and module and chunk graphs. Tree-shaking and Brotli collection are
+enabled, but depend on compiler support. Rstest uses a watching compiler even for one-time
+runs, so Rsdoctor skips compressed sizes; test reports are not production bundle measurements.
+Reports are gitignored and overwritten on subsequent builds; copy a report directory before
+comparing runs. Keep reports private:
+they include local paths, dependency details, and build configuration.
+
+Use the pinned Agent CLI to query JSON without starting a report server:
+
+```bash
+bun run rsdoctor:agent chunks list --data-file artifacts/rsdoctor/integration/rsdoctor-data.json
+bun run rsdoctor:agent bundle optimize --data-file artifacts/rsdoctor/integration/rsdoctor-data.json
+bun run rsdoctor:agent list
+```
+
+Report generation starts no browser or persistent report server. The script uses
+`PROTOFORM_RSDOCTOR` instead of `RSDOCTOR` to avoid automatically profiling Rstest's internal
+setup compilers. Normal test builds load no Rsdoctor runtime. Profiling disables persistent
+build caching to collect fresh reports. The integration reapplies `disableClientServer` after
+construction because Rsdoctor 2.0.0 overrides it when `RSTEST=true`; otherwise profiling leaves
+a server open after tests.
+Rsdoctor requires Node.js `^20.19.0 || >=22.12.0` and Rspack 2 or later; the project's
+Node.js 26 and Rstest dependencies meet these requirements. See the
+[Rsdoctor 2.0 release notes](https://rsdoctor.rs/blog/release/release-note-2_0) and
+[Rstest profiling guide](https://rstest.rs/guide/debug/profiling) for details.
+
 ## Key-free documentation features
 
 Blume enables PDF and EPUB page exports, GitHub source-edit links, git-derived update dates,

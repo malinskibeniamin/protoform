@@ -1,7 +1,10 @@
 import { pluginReact } from '@rsbuild/plugin-react';
 import { defineConfig } from '@rstest/core';
 
+import { rsdoctorConfig } from './scripts/rsdoctor-config';
+
 export default defineConfig({
+  extends: rsdoctorConfig('unit'),
   exclude: [
     'registry/base-nova/protoform/hooks/use-proto-form/use-proto-form.test.ts',
     'registry/base-nova/protoform/lib/protobuf-v1-bridge/**',
