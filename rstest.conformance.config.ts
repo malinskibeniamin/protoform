@@ -1,7 +1,10 @@
 import { pluginReact } from '@rsbuild/plugin-react';
 import { defineConfig } from '@rstest/core';
 
+import { rsdoctorConfig } from './scripts/rsdoctor-config';
+
 export default defineConfig({
+  extends: rsdoctorConfig('conformance'),
   globals: true,
   include: [
     'conformance/**/*.conformance.test.ts',
