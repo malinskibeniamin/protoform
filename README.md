@@ -229,3 +229,7 @@ changes repository visibility.
 
 [MIT](LICENSE). See [third-party notices](THIRD_PARTY_NOTICES.md) for code under additional
 compatible licenses.
+
+### Optional runtime JavaScript rules
+
+[`protoform-quickjs`](docs/QUICKJS.md) adds worker-isolated JavaScript presentation rules as an opt-in registry item. Existing forms do not load QuickJS. Prefer CEL for ordinary conditional fields; this item is for runtime-supplied scripts.
