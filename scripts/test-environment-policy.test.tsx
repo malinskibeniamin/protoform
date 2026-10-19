@@ -1,5 +1,10 @@
+import { once } from 'node:events';
 import { existsSync, readFileSync } from 'node:fs';
+import { createServer } from 'node:http';
 import { describe, expect } from '@rstest/core';
+import type { Window as HappyDOMWindow } from 'happy-dom';
+
+declare const window: HappyDOMWindow;
 
 const repositoryDirectory = new URL('../', import.meta.url);
 const domConfigs = ['rstest.config.ts', 'rstest.conformance.config.ts', 'rstest.integration.config.ts'] as const;
@@ -17,6 +22,44 @@ const rstestScripts = [
 ] as const;
 
 describe('simulated DOM test environment', () => {
+  test('blocks implicit stylesheet and iframe requests without disabling explicit fetch', async () => {
+    const requests: string[] = [];
+    const server = createServer((request, response) => {
+      requests.push(request.url ?? '/');
+      response.writeHead(200, {
+        'Content-Type': request.url === '/fixture.css' ? 'text/css' : 'text/html',
+      });
+      response.end(request.url === '/fixture.css' ? 'html { color: inherit; }' : 'Fixture endpoint');
+    });
+    await once(server.listen(0, '127.0.0.1'), 'listening');
+    const fixture = document.createElement('div');
+
+    try {
+      const address = server.address();
+      if (address === null || typeof address === 'string') {
+        throw new Error('Fixture server did not bind a TCP port');
+      }
+      const origin = `http://127.0.0.1:${address.port}`;
+      const response = await fetch(`${origin}/probe`);
+      expect(await response.text()).toBe('Fixture endpoint');
+
+      const stylesheet = document.createElement('link');
+      stylesheet.rel = 'stylesheet';
+      stylesheet.href = `${origin}/fixture.css`;
+      const frame = document.createElement('iframe');
+      frame.src = `${origin}/fixture.html`;
+      fixture.append(stylesheet, frame);
+      document.body.append(fixture);
+      await window.happyDOM.waitUntilComplete();
+
+      expect(requests).toEqual(['/probe']);
+    } finally {
+      fixture.remove();
+      server.closeAllConnections();
+      await server[Symbol.asyncDispose]();
+    }
+  });
+
   test('uses Rstest 0.12.3 with happy-dom and no Vitest wiring', () => {
     for (const config of domConfigs) {
       expect(readFileSync(new URL(config, repositoryDirectory), 'utf8')).toContain("testEnvironment: 'happy-dom'");
