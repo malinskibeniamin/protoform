@@ -7,7 +7,7 @@ export default defineConfig({
   extends: rsdoctorConfig('integration'),
   exclude: ['registry/**/*.browser.test.tsx'],
   globals: true,
-  include: ['components/**/*.test.tsx', 'examples/**/*.test.tsx', 'registry/**/*.test.tsx'],
+  include: ['components/**/*.test.tsx', 'examples/**/*.test.tsx', 'registry/**/*.test.tsx', 'scripts/**/*.test.tsx'],
   output: {
     externals: [/^zod(?:\/|$)/u],
   },
