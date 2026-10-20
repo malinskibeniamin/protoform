@@ -1,0 +1,236 @@
+[
+  {
+    "side": "before",
+    "sha": "a5333a2",
+    "errors": [],
+    "measurements": [
+      {
+        "width": 320,
+        "cidr": {
+          "x": 87,
+          "y": 470.1875,
+          "width": 50,
+          "height": 32
+        },
+        "key": {
+          "x": 87,
+          "y": 841.1875,
+          "width": 22,
+          "height": 32
+        },
+        "value": {
+          "x": 100,
+          "y": 841.1875,
+          "width": 22,
+          "height": 32
+        }
+      },
+      {
+        "width": 390,
+        "cidr": {
+          "x": 87,
+          "y": 596.421875,
+          "width": 120,
+          "height": 32
+        },
+        "key": {
+          "x": 87,
+          "y": 843.421875,
+          "width": 38,
+          "height": 32
+        },
+        "value": {
+          "x": 133,
+          "y": 843.421875,
+          "width": 38,
+          "height": 32
+        }
+      },
+      {
+        "width": 720,
+        "cidr": {
+          "x": 281.375,
+          "y": 690.28125,
+          "width": 255.625,
+          "height": 32
+        },
+        "key": {
+          "x": 281.375,
+          "y": 916.28125,
+          "width": 105.8125,
+          "height": 32
+        },
+        "value": {
+          "x": 395.1875,
+          "y": 916.28125,
+          "width": 105.8125,
+          "height": 32
+        }
+      },
+      {
+        "width": 1280,
+        "cidr": {
+          "x": 553.5,
+          "y": 644.078125,
+          "width": 279.5,
+          "height": 32
+        },
+        "key": {
+          "x": 553.5,
+          "y": 849.078125,
+          "width": 117.75,
+          "height": 32
+        },
+        "value": {
+          "x": 679.25,
+          "y": 849.078125,
+          "width": 117.75,
+          "height": 32
+        }
+      }
+    ],
+    "invalid": {
+      "draft": "{\"theme\":",
+      "ariaInvalid": null,
+      "success": 1
+    },
+    "zero": {
+      "editor": "{}",
+      "payload": "Submitted protobuf value\n{\n  \"$typeName\": \"protoform.conformance.v1.DynamicJsonMatrix\",\n  \"objectValue\": {\n    \"$typeName\": \"google.protobuf.Struct\",\n    \"fields\": {\n      \"enabled\": {\n        \"$typeName\": \"google.protobuf.Value\",\n        \"kind\": {\n          \"case\": \"boolValue\",\n          \"value\": true\n        }\n      },\n      \"theme\": {\n        \"$typeName\": \"google.protobuf.Value\",\n        \"kind\": {\n          \"case\": \"stringValue\",\n          \"value\": \"dark\"\n        }\n      }\n    }\n  },\n  \"scalarOrNestedValue\": {\n    \"$typeName\": \"google.protobuf.Value\",\n    \"kind\": {\n      \"case\": \"numberValue\",\n      \"value\": 0\n    }\n  },\n  \"listValue\": {\n    \"$typeName\": \"google.protobuf.ListValue\",\n    \"values\": [\n      {\n        \"$typeName\": \"google.protobuf.Value\",\n        \"kind\": {\n          \"case\": \"stringValue\",\n          \"value\": \"overview\"\n        }\n      },\n      {\n        \"$typeName\": \"google.protobuf.Value\",\n        \"kind\": {\n          \"case\": \"numberValue\",\n          \"value\": 3\n        }\n      },\n      {\n        \"$typeName\": \"google.protobuf.Value\",\n        \"kind\": {\n          \"case\": \"boolValue\",\n          \"value\": true\n        }\n      }\n    ]\n  },\n  \"anyValue\": {\n    \"$typeName\": \"google.protobuf.Any\",\n    \"typeUrl\": \"type.googleapis.com/google.protobuf.Struct\",\n    \"value\": [\n      10,\n      13,\n      10,\n      7,\n      101,\n      110,\n      97,\n      98,\n      108,\n      101,\n      100,\n      18,\n      2,\n      32,\n      1,\n      10,\n      15,\n      10,\n      5,\n      116,\n      104,\n      101,\n      109,\n      101,\n      18,\n      6,\n      26,\n      4,\n      100,\n      97,\n      114,\n      107\n    ]\n  }\n}"
+    },
+    "labels": [
+      {
+        "id": "",
+        "aria": null
+      },
+      {
+        "id": "",
+        "aria": null
+      }
+    ],
+    "profileWidth": 438,
+    "environmentWidth": 400,
+    "collection": {
+      "text": "Tags\n*\nAdd Tags",
+      "aria": null
+    }
+  },
+  {
+    "side": "after",
+    "sha": "eb8c7c6",
+    "errors": [],
+    "measurements": [
+      {
+        "width": 320,
+        "cidr": {
+          "x": 51,
+          "y": 470.1875,
+          "width": 218,
+          "height": 32
+        },
+        "key": {
+          "x": 51,
+          "y": 696.1875,
+          "width": 218,
+          "height": 32
+        },
+        "value": {
+          "x": 51,
+          "y": 736.1875,
+          "width": 218,
+          "height": 32
+        }
+      },
+      {
+        "width": 390,
+        "cidr": {
+          "x": 51,
+          "y": 597.421875,
+          "width": 288,
+          "height": 32
+        },
+        "key": {
+          "x": 51,
+          "y": 802.421875,
+          "width": 288,
+          "height": 32
+        },
+        "value": {
+          "x": 51,
+          "y": 842.421875,
+          "width": 288,
+          "height": 32
+        }
+      },
+      {
+        "width": 720,
+        "cidr": {
+          "x": 281.375,
+          "y": 690.28125,
+          "width": 255.625,
+          "height": 32
+        },
+        "key": {
+          "x": 281.375,
+          "y": 916.28125,
+          "width": 255.625,
+          "height": 32
+        },
+        "value": {
+          "x": 281.375,
+          "y": 956.28125,
+          "width": 255.625,
+          "height": 32
+        }
+      },
+      {
+        "width": 1280,
+        "cidr": {
+          "x": 553.5,
+          "y": 644.078125,
+          "width": 279.5,
+          "height": 32
+        },
+        "key": {
+          "x": 553.5,
+          "y": 849.078125,
+          "width": 279.5,
+          "height": 32
+        },
+        "value": {
+          "x": 553.5,
+          "y": 889.078125,
+          "width": 279.5,
+          "height": 32
+        }
+      }
+    ],
+    "invalid": {
+      "draft": "{\"theme\":",
+      "ariaInvalid": "true",
+      "success": 0
+    },
+    "zero": {
+      "editor": "0",
+      "payload": "Submitted protobuf value\n{\n  \"$typeName\": \"protoform.conformance.v1.DynamicJsonMatrix\",\n  \"objectValue\": {\n    \"$typeName\": \"google.protobuf.Struct\",\n    \"fields\": {\n      \"enabled\": {\n        \"$typeName\": \"google.protobuf.Value\",\n        \"kind\": {\n          \"case\": \"boolValue\",\n          \"value\": true\n        }\n      },\n      \"theme\": {\n        \"$typeName\": \"google.protobuf.Value\",\n        \"kind\": {\n          \"case\": \"stringValue\",\n          \"value\": \"dark\"\n        }\n      }\n    }\n  },\n  \"scalarOrNestedValue\": {\n    \"$typeName\": \"google.protobuf.Value\",\n    \"kind\": {\n      \"case\": \"numberValue\",\n      \"value\": 0\n    }\n  },\n  \"listValue\": {\n    \"$typeName\": \"google.protobuf.ListValue\",\n    \"values\": [\n      {\n        \"$typeName\": \"google.protobuf.Value\",\n        \"kind\": {\n          \"case\": \"stringValue\",\n          \"value\": \"overview\"\n        }\n      },\n      {\n        \"$typeName\": \"google.protobuf.Value\",\n        \"kind\": {\n          \"case\": \"numberValue\",\n          \"value\": 3\n        }\n      },\n      {\n        \"$typeName\": \"google.protobuf.Value\",\n        \"kind\": {\n          \"case\": \"boolValue\",\n          \"value\": true\n        }\n      }\n    ]\n  },\n  \"anyValue\": {\n    \"$typeName\": \"google.protobuf.Any\",\n    \"typeUrl\": \"type.googleapis.com/google.protobuf.Struct\",\n    \"value\": [\n      10,\n      13,\n      10,\n      7,\n      101,\n      110,\n      97,\n      98,\n      108,\n      101,\n      100,\n      18,\n      2,\n      32,\n      1,\n      10,\n      15,\n      10,\n      5,\n      116,\n      104,\n      101,\n      109,\n      101,\n      18,\n      6,\n      26,\n      4,\n      100,\n      97,\n      114,\n      107\n    ]\n  }\n}"
+    },
+    "labels": [
+      {
+        "id": "_r_h_-%5B%22typeUrl%22%5D",
+        "label": "typeUrl",
+        "aria": "Any Value.typeUrl"
+      },
+      {
+        "id": "_r_h_-%5B%22valueBase64%22%5D",
+        "label": "valueBase64",
+        "aria": "Any Value.valueBase64"
+      }
+    ],
+    "profileWidth": 320,
+    "environmentWidth": 320,
+    "collection": {
+      "text": "Tags\n*\nAdd Tags\nmust contain no more than 3 item(s)",
+      "aria": "true"
+    }
+  }
+]
