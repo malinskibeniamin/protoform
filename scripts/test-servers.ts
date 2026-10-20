@@ -1,6 +1,8 @@
-import { type ChildProcess, spawn } from 'node:child_process';
+import { type ChildProcess, execFileSync, spawn } from 'node:child_process';
 import { once } from 'node:events';
 import { setTimeout as delay } from 'node:timers/promises';
+
+const processColumns = /\s+/u;
 
 interface TestServer {
   args: string[];
@@ -15,8 +17,20 @@ function signalGroup(pid: number, signal: NodeJS.Signals | 0) {
     process.kill(-pid, signal);
     return true;
   } catch (error) {
-    if (error instanceof Error && 'code' in error && error.code === 'ESRCH') {
-      return false;
+    if (error instanceof Error && 'code' in error) {
+      if (error.code === 'ESRCH') {
+        return false;
+      }
+      if (error.code === 'EPERM') {
+        const processes = execFileSync('ps', ['-axo', 'pgid=,stat='], { encoding: 'utf8', timeout: 2000 });
+        const live = processes.split('\n').some((line) => {
+          const [group, state] = line.trim().split(processColumns);
+          return Number(group) === pid && state !== undefined && !state.startsWith('Z');
+        });
+        if (!live) {
+          return false;
+        }
+      }
     }
     throw error;
   }

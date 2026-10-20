@@ -177,3 +177,19 @@ steps are removed; normal CI cannot create or update references implicitly.
 The required Linux verify job exercises the complete quality-gate CLI. The separate
 macOS exhaustive workflow remains enabled. A manual macOS attempt was not allocated
 a hosted runner because of reported arm64 capacity constraints; it ran no test code.
+
+The next macOS run exposed the same four native timestamp image mismatches as
+[original main's scheduled run](https://github.com/malinskibeniamin/protoform/actions/runs/39393461749):
+285 desktop and 354 mobile pixels. The hosted machine rendered US dates/12-hour times;
+the committed Darwin references use British dates/24-hour times. The macOS workflow
+now pins only its disposable runner's native locale preferences to those original
+reference settings. Browser contexts remain `en-US`/UTC, inputs stay native, and no
+pixels, tolerances, or assertions change. Native date control presentation follows the
+[operating-system locale](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input/datetime-local#value).
+
+That run also exposed a cleanup race: Darwin can return `EPERM` for an exited,
+zombie-only process group rather than `ESRCH`. The launcher accepts that response
+only after `ps` proves the exact owned group has no live members; live permission
+failures still reject cleanup. A real HTTP lifecycle test injects that OS response,
+fails before the repair and passes after it, including live-permission failure. This follows the
+[kernel's process-group filtering](https://github.com/apple-oss-distributions/xnu/blob/main/bsd/kern/kern_sig.c).

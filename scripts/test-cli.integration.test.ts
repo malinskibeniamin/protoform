@@ -60,14 +60,17 @@ test('reports SIGINT as an interrupted run, not success or an assertion failure'
   const ready = join(directory, 'ready');
   await writeFile(
     join(directory, 'fixture.test.ts'),
-    `import { writeFileSync } from 'node:fs'; import { test } from '@rstest/core'; test('interrupted', async () => { writeFileSync(${JSON.stringify(ready)}, 'ready'); await new Promise(() => {}); });`
+    "import { writeFileSync } from 'node:fs'; import { test } from '@rstest/core'; test('interrupted', async () => { const ready = process.env['PROTOFORM_TEST_READY']; if (!ready) throw new Error('Readiness path required'); writeFileSync(ready, 'ready'); await new Promise(() => {}); });"
   );
   const config = join(directory, 'rstest.config.mjs');
   await writeFile(
     config,
     `export default { root: ${JSON.stringify(directory)}, include: ['fixture.test.ts'], pool: { maxWorkers: 1 }, testEnvironment: 'node', testTimeout: 15000 };`
   );
-  const runner = spawn(process.execPath, ['scripts/run-tests.mjs', 'node', '--config', config], { stdio: 'pipe' });
+  const runner = spawn(process.execPath, ['scripts/run-tests.mjs', 'node', '--config', config], {
+    stdio: 'pipe',
+    env: { ...process.env, PROTOFORM_TEST_READY: ready },
+  });
   const exited = once(runner, 'exit');
   try {
     await expect.poll(() => existsSync(ready), { timeout: 5000 }).toBe(true);
