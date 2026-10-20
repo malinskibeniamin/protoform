@@ -187,6 +187,14 @@ reference settings. Browser contexts remain `en-US`/UTC, inputs stay native, and
 pixels, tolerances, or assertions change. Native date control presentation follows the
 [operating-system locale](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input/datetime-local#value).
 
+[The normalized hosted macOS run](https://github.com/malinskibeniamin/protoform/actions/runs/39445564215)
+still rejects four native timestamp screenshots: 15 desktop and 14 mobile
+font-rendering pixels. The original Playwright 1.64.1 comparator rejects the exact
+same captured buffers with identical counts. This remains an explicit macOS
+verification blocker, not an accepted image difference. Existing references,
+zero-pixel tolerance and native controls remain unchanged; no new OS-specific
+reference selection or implicit baseline update has been added.
+
 That run also exposed a cleanup race: Darwin can return `EPERM` for an exited,
 zombie-only process group rather than `ESRCH`. The launcher accepts that response
 only after `ps` proves the exact owned group has no live members; live permission
