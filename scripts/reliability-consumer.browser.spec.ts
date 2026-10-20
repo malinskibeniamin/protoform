@@ -5,7 +5,7 @@ import { test } from './e2e-test';
 test('installed custom options show creation failures and recover after retry', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
-  await page.goto('/custom-options.html');
+  await page.goto(`${reliabilityBaseURL}/custom-options.html`);
   const input = page.getByRole('combobox');
   await input.fill('new');
   await page.getByRole('option', { name: /create.*new/iu }).click();

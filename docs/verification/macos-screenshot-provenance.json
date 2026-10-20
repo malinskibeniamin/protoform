@@ -99,5 +99,21 @@
     }
   ],
   "artifact_id": 12278532997,
-  "artifact_digest": "sha256:94c4d8812388645a378ef113a589c14f5bb7e3eea399a9c9eaeeaf90cf391e78"
+  "artifact_digest": "sha256:94c4d8812388645a378ef113a589c14f5bb7e3eea399a9c9eaeeaf90cf391e78",
+  "main_reference_copies": {
+    "base": "af64c5586288b2ae64f41f2004d43db936657b08",
+    "method": "Byte-for-byte copies of existing merged-main Darwin references. No capture or update; normal zero-pixel keyed comparisons validate their suitability on hosted macOS.",
+    "files": [
+      {
+        "original": "scripts/__screenshots__/reliability-consumer.browser.spec.ts/desktop/darwin/custom-option-error.png",
+        "path": "scripts/__screenshots__/reliability-consumer.browser.spec.ts/desktop/darwin-25-arm64/custom-option-error.png",
+        "sha256": "b554b35acbc368ff4507bc59d36b784635ed3285a862e048060a2b6be18470ae"
+      },
+      {
+        "original": "scripts/__screenshots__/reliability-consumer.browser.spec.ts/mobile/darwin/custom-option-error.png",
+        "path": "scripts/__screenshots__/reliability-consumer.browser.spec.ts/mobile/darwin-25-arm64/custom-option-error.png",
+        "sha256": "838b2eb7656e9035e8c9874ab7955928289f44dc2354d7a81fd8e25403578420"
+      }
+    ]
+  }
 }

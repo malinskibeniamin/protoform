@@ -131,11 +131,8 @@ test('generates all 18 API sample languages and updates samples from the request
   const samples = request.getByRole('tabpanel', { includeHidden: true });
   await expect(samples).toHaveCount(18);
   await Promise.all((await samples.all()).map((sample) => expect(sample).toContainText('CreateBook')));
-  const [client] = await Promise.all([
-    page.waitForResponse((response) => new URL(response.url()).pathname.includes('playground-client')),
-    page.getByText('Try it', { exact: true }).click(),
-  ]);
-  await page.addScriptTag({ type: 'module', url: client.url() });
+  await page.waitForFunction(() => customElements.get('blume-playground') !== undefined);
+  await page.getByText('Try it', { exact: true }).click();
   await page
     .getByRole('textbox', { name: 'Request body' })
     .fill('{"bookId":"optional-samples","book":{"title":"No key required"}}');
