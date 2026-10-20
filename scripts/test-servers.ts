@@ -12,31 +12,40 @@ interface TestServer {
   url: string;
 }
 
-function signalGroup(pid: number, signal: NodeJS.Signals | 0) {
+function liveGroupMembers(pid: number) {
+  const processes = execFileSync('ps', ['-axo', 'pgid=,pid=,ppid=,uid=,stat=,comm='], {
+    encoding: 'utf8',
+    timeout: 2000,
+  });
+  return processes.split('\n').filter((line) => {
+    const [group, , , , state] = line.trim().split(processColumns);
+    return Number(group) === pid && state !== undefined && !state.startsWith('Z');
+  });
+}
+
+async function signalGroup(pid: number, signal: NodeJS.Signals | 0, deadline = Date.now() + 1000): Promise<boolean> {
   try {
     process.kill(-pid, signal);
     return true;
   } catch (error) {
-    if (error instanceof Error && 'code' in error) {
-      if (error.code === 'ESRCH') {
-        return false;
-      }
-      if (error.code === 'EPERM') {
-        const processes = execFileSync('ps', ['-axo', 'pgid=,pid=,ppid=,uid=,stat=,comm='], {
-          encoding: 'utf8',
-          timeout: 2000,
-        });
-        const live = processes.split('\n').filter((line) => {
-          const [group, , , , state] = line.trim().split(processColumns);
-          return Number(group) === pid && state !== undefined && !state.startsWith('Z');
-        });
-        if (live.length === 0) {
-          return false;
-        }
-        throw new Error(`${error.message}; live test-server group ${pid}: ${live.join('; ')}`, { cause: error });
-      }
+    if (!(error instanceof Error && 'code' in error)) {
+      throw error;
     }
-    throw error;
+    if (error.code === 'ESRCH') {
+      return false;
+    }
+    if (error.code !== 'EPERM') {
+      throw error;
+    }
+    const live = liveGroupMembers(pid);
+    if (live.length === 0) {
+      return false;
+    }
+    if (Date.now() >= deadline) {
+      throw new Error(`${error.message}; live test-server group ${pid}: ${live.join('; ')}`, { cause: error });
+    }
+    await delay(50);
+    return signalGroup(pid, signal, deadline);
   }
 }
 
@@ -45,12 +54,12 @@ async function stop(child: ChildProcess) {
     return;
   }
   const exited = child.exitCode === null && child.signalCode === null ? once(child, 'exit') : Promise.resolve();
-  signalGroup(child.pid, 'SIGTERM');
+  await signalGroup(child.pid, 'SIGTERM');
   const deadline = Date.now() + 5000;
-  while (signalGroup(child.pid, 0) && Date.now() < deadline) {
+  while ((await signalGroup(child.pid, 0)) && Date.now() < deadline) {
     await delay(50);
   }
-  signalGroup(child.pid, 'SIGKILL');
+  await signalGroup(child.pid, 'SIGKILL');
   await exited;
 }
 

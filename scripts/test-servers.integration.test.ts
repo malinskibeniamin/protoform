@@ -110,3 +110,35 @@ test('accepts a vanished process group reported as EPERM without hiding live per
     await close();
   }
 });
+
+test('retries a transient permission response while still closing the owned server', async () => {
+  const url = 'http://127.0.0.1:55133';
+  const close = await startTestServers([
+    {
+      command: process.execPath,
+      args: [
+        '-e',
+        'require("node:http").createServer((_, r) => r.end(String(process.pid))).listen(55133, "127.0.0.1")',
+      ],
+      url,
+      timeout: 5000,
+    },
+  ]);
+  const pid = Number(await (await fetch(url)).text());
+  const kill = process.kill.bind(process);
+  let pending = true;
+  const signal = rs.spyOn(process, 'kill').mockImplementation((target, action) => {
+    if (target === -pid && pending) {
+      pending = false;
+      throw Object.assign(new Error('kill EPERM'), { code: 'EPERM' });
+    }
+    return kill(target, action);
+  });
+  try {
+    await expect(close()).resolves.toBeUndefined();
+    await expect(fetch(url)).rejects.toThrow();
+  } finally {
+    signal.mockRestore();
+    await close();
+  }
+});

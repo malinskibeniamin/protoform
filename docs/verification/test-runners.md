@@ -12,7 +12,7 @@ There is one root package, not a workspace of independently managed apps.
 
 | Surface | Baseline | Migrated boundary |
 | --- | --- | --- |
-| Registry/library, domain service and pure tooling policies | Rstest Node units mixed with process/network tests | Bun: 36 existing files, 125 cases; one additional PNG comparator case |
+| Registry/library, domain service and pure tooling policies | Rstest Node units mixed with process/network tests | Bun: 36 existing files, 125 cases; three additional PNG comparator/platform-policy cases |
 | Repository tools, registry artifacts and Connect HTTP server | Mixed into the same 56-file, 246-case unit command | Rstest Node: 20 existing process/network/artifact files renamed without removing cases |
 | Docs components, example forms, registry controls and hooks | Rstest Happy DOM: 73 files, 260 cases | Rstest Happy DOM; also recovers the previously excluded hook-rendering file |
 | Schema/CEL/Protobuf/form-adapter conformance | Rstest Happy DOM: 22 files, 175 cases | Same separate conformance gate, including its existing integration overlap |
@@ -56,7 +56,9 @@ rstest.canary.config.ts     -> native E2E compatibility regression cases
 - PNG comparison uses `pixelmatch` and `pngjs`: threshold `0.2`, antialias exclusion,
   zero differing pixels, identical dimensions, CSS scale, disabled animations, hidden
   carets and consecutive stable captures. Existing PNG paths and bytes are unchanged.
-  Updates require an explicit command. Missing or mismatched references fail.
+  Updates require an explicit command. Missing or mismatched references fail. Hosted
+  macOS opts into additive `darwin-25-arm64` paths, validated against the actual OS,
+  kernel major and architecture. Default paths stay unchanged; no missing-image fallback.
 - Accessible descriptions use `dom-accessibility-api` inside the actual browser DOM.
   Accessible-name role queries retain native Playwright locator semantics.
 
@@ -98,7 +100,7 @@ regression reproduced a descendant server surviving its parent's exit before the
   Its consumer must supply v1; this root uses v2. This is an existing verification gap,
   not newly skipped migration coverage.
 - Linux screenshot verification comes from hosted CI; local macOS results alone cannot
-  certify platform-specific Linux baselines. No baseline PNG was regenerated.
+  certify platform-specific Linux baselines. All pre-existing PNG bytes remain unchanged.
 - Release-gate verification does not publish a release, create a tag, or test production
   provenance/upload operations. This migration does not authorize those operations.
 
@@ -162,7 +164,9 @@ Candidate uses the actual Rstest CLI with the E2E config, one worker, JSON repor
 and the equivalent name filter. Override both context base URLs to the same static
 preview on `55535`; preserve the existing Desktop Chrome descriptor.
 
-## Linux reference provenance
+## Hosted reference provenance
+
+### Linux
 
 The expanded Linux docs job exposed five missing reference images, not changed pixels.
 The old Linux docs subset never exercised those screenshot assertions. Original
@@ -174,30 +178,45 @@ is `sha256:2a1f07eb60cc315180b734f93e98bdb9d773e710ce2ab39726f277e98cce6167`.
 Existing Darwin and installed-consumer references remain unchanged. Temporary capture
 steps are removed; normal CI cannot create or update references implicitly.
 
+### macOS
+
 The required Linux verify job exercises the complete quality-gate CLI. The separate
-macOS exhaustive workflow remains enabled. A manual macOS attempt was not allocated
-a hosted runner because of reported arm64 capacity constraints; it ran no test code.
+macOS exhaustive workflow remains enabled and now pins `macos-26` rather than a moving
+`macos-latest` label. The [hosted image](https://github.com/actions/runner-images/blob/main/images/macos/macos-26-arm64-Readme.md)
+uses macOS 26.6.2, Darwin 25.6.0, arm64, image `20261013.0424.1`.
 
-The next macOS run exposed the same four native timestamp image mismatches as
-[original main's scheduled run](https://github.com/malinskibeniamin/protoform/actions/runs/39393461749):
-285 desktop and 354 mobile pixels. The hosted machine rendered US dates/12-hour times;
-the committed Darwin references use British dates/24-hour times. The macOS workflow
-now pins only its disposable runner's native locale preferences to those original
-reference settings. Browser contexts remain `en-US`/UTC, inputs stay native, and no
-pixels, tolerances, or assertions change. Native date control presentation follows the
-[operating-system locale](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input/datetime-local#value).
+[Original main's scheduled run](https://github.com/malinskibeniamin/protoform/actions/runs/39393461749)
+already failed four native timestamp images by 285 desktop / 354 mobile pixels.
+Matching native `en_GB` / 24-hour preferences left 15 desktop / 14 mobile font pixels;
+the original Playwright comparator rejected the exact same captures identically.
+Browser contexts remain `en-US`/UTC and inputs remain native.
 
-[The normalized hosted macOS run](https://github.com/malinskibeniamin/protoform/actions/runs/39445564215)
-still rejects four native timestamp screenshots: 15 desktop and 14 mobile
-font-rendering pixels. The original Playwright 1.64.1 comparator rejects the exact
-same captured buffers with identical counts. This remains an explicit macOS
-verification blocker, not an accepted image difference. Existing references,
-zero-pixel tolerance and native controls remain unchanged; no new OS-specific
-reference selection or implicit baseline update has been added.
+With owner authorization, [the frozen-main capture run](https://github.com/malinskibeniamin/protoform/actions/runs/39451162087)
+used original Playwright Test 1.64.1 at `a5333a28ec8b31e1eeb324539f7d95584ba21c04`
+to capture 17 additional OS-specific PNGs: 12 desktop/mobile installed-consumer images
+and five docs images. Original normal assertions passed after explicit capture. Every
+new image was copied byte-for-byte from artifact `12278532997`, ZIP digest
+`sha256:94c4d8812388645a378ef113a589c14f5bb7e3eea399a9c9eaeeaf90cf391e78`.
+[Capture provenance and per-file hashes](macos-screenshot-provenance.json) record the source,
+runtimes, image, locale and paths. All pre-existing PNGs remain byte-identical.
 
-That run also exposed a cleanup race: Darwin can return `EPERM` for an exited,
+`PROTOFORM_SCREENSHOT_PLATFORM=darwin-25-arm64` selects only that native host's references.
+Wrong-host, arbitrary and traversal keys fail; missing variants never fall back. All
+comparisons still require zero differing pixels at threshold `0.2`. Capture, checkout,
+copy and update steps were temporary and are removed from the final workflow. Normal
+hosted verification uses committed references without any update flag.
+
+Earlier macOS verification exposed a cleanup race: Darwin can return `EPERM` for an exited,
 zombie-only process group rather than `ESRCH`. The launcher accepts that response
 only after `ps` proves the exact owned group has no live members; live permission
 failures still reject cleanup. A real HTTP lifecycle test injects that OS response,
 fails before the repair and passes after it, including live-permission failure. This follows the
 [kernel's process-group filtering](https://github.com/apple-oss-distributions/xnu/blob/main/bsd/kern/kern_sig.c).
+
+The capture run's normal Rstest replay passed all eight consumer cases against the new
+images, then exposed another transient Darwin shutdown state (`?<Es`) returning `EPERM`.
+The launcher now retries that signal for at most one second, rechecking the exact owned
+process group; a permanently live permission failure still rejects with diagnostics.
+A real TCP-server regression fails before this repair and passes after it, alongside
+the existing persistent-permission and descendant-shutdown regressions. No process
+outside the owned group is signalled.

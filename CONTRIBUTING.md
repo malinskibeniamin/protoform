@@ -50,7 +50,12 @@ are forwarded unchanged; `test:e2e:ui` uses Rstest watch mode, not the removed P
 When another workspace owns the consumer ports, set `PROTOFORM_HOST_PORT` and
 `PROTOFORM_RELIABILITY_PORT` to free local ports; the launcher and tests use the same values.
 
-Existing PNG baselines and their platform/viewport paths remain unchanged. Comparisons
+Existing PNG baselines and their platform/viewport paths remain unchanged. Hosted `macos-26`
+uses additional `darwin-25-arm64` references captured with the original runner on frozen main.
+`PROTOFORM_SCREENSHOT_PLATFORM` explicitly selects an OS/kernel-major/architecture key; it
+must match the actual host. Unset keeps the existing platform paths. Missing keyed images
+fail instead of falling back to a different platform. See the verification record for provenance.
+Comparisons
 retain Playwright's color threshold `0.2`, antialias exclusion, zero differing pixels,
 CSS pixel scale, disabled animations and hidden carets. Captures must stabilize at exact
 pixel equality. Missing references fail, including in CI. `bun run test:e2e:update` and

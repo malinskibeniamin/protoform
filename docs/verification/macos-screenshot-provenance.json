@@ -1,0 +1,103 @@
+{
+  "base": "a5333a28ec8b31e1eeb324539f7d95584ba21c04",
+  "capture_run": "https://github.com/malinskibeniamin/protoform/actions/runs/39451162087",
+  "platform": "darwin-25-arm64",
+  "image_version": "20261013.0424.1",
+  "os": "ProductName:\t\tmacOS\nProductVersion:\t\t26.6.2\nBuildVersion:\t\t25G83",
+  "kernel": "Darwin sjc20-cw714-5d697b52-610c-47b2-85b4-0902d26a4028-B6945971DA2B.local 25.6.0 Darwin Kernel Version 25.6.0: Fri Jul 31 19:16:43 PDT 2026; root:xnu-12377.161.14~5/RELEASE_ARM64_VMAPPLE arm64",
+  "bun": "1.4.2",
+  "node": "v26.12.0",
+  "playwright": "Version 1.64.1",
+  "locale": "en_GB",
+  "hour24": "1",
+  "verification": "Original Playwright Test update followed by normal assertions for all 17 PNGs; candidate quality gate uses normal zero-pixel assertions",
+  "files": [
+    {
+      "original": "e2e/docs-optional-features.spec.ts-snapshots/key-free-page-actions-chromium-darwin.png",
+      "path": "e2e/docs-optional-features.spec.ts-snapshots/key-free-page-actions-chromium-darwin-25-arm64.png",
+      "sha256": "6ad9d7f99712c80f4372ba9e86801a8f7e06607e70ceb1239fd274de63c383e6"
+    },
+    {
+      "original": "e2e/docs-screenshots.spec.ts-snapshots/blume-header-desktop-dark-chromium-darwin.png",
+      "path": "e2e/docs-screenshots.spec.ts-snapshots/blume-header-desktop-dark-chromium-darwin-25-arm64.png",
+      "sha256": "5880c8116bf6b2d8042822dd200a7f1fe19992897701f8217df5efd60df47244"
+    },
+    {
+      "original": "e2e/docs-screenshots.spec.ts-snapshots/blume-header-desktop-light-chromium-darwin.png",
+      "path": "e2e/docs-screenshots.spec.ts-snapshots/blume-header-desktop-light-chromium-darwin-25-arm64.png",
+      "sha256": "e97ee94f999f9e918015cfcb9a156e76868f8359a84443a83a84214025617241"
+    },
+    {
+      "original": "e2e/docs-screenshots.spec.ts-snapshots/blume-header-mobile-light-chromium-darwin.png",
+      "path": "e2e/docs-screenshots.spec.ts-snapshots/blume-header-mobile-light-chromium-darwin-25-arm64.png",
+      "sha256": "26f620b18c5a1aff3164bc37986060993d41a53021801e6c0bbb364229a3df17"
+    },
+    {
+      "original": "e2e/docs-screenshots.spec.ts-snapshots/blume-header-polish-light-chromium-darwin.png",
+      "path": "e2e/docs-screenshots.spec.ts-snapshots/blume-header-polish-light-chromium-darwin-25-arm64.png",
+      "sha256": "7b3f8314fcf2c504d02e4f4e8dff47c77afc28223f2c7ce03e80aff48990c945"
+    },
+    {
+      "original": "scripts/__screenshots__/host-consumer.browser.spec.ts/desktop/darwin/host-ui.png",
+      "path": "scripts/__screenshots__/host-consumer.browser.spec.ts/desktop/darwin-25-arm64/host-ui.png",
+      "sha256": "5c5d1d99d6662c9f490712a5580cff2ddf8160a45746b3b8a138d5c2ed5174c6"
+    },
+    {
+      "original": "scripts/__screenshots__/host-consumer.browser.spec.ts/desktop/darwin/missing-control.png",
+      "path": "scripts/__screenshots__/host-consumer.browser.spec.ts/desktop/darwin-25-arm64/missing-control.png",
+      "sha256": "5ce1b51ad9a9c17150a859529f816b38aece777a20ed5448dba9d3dcf9674e4b"
+    },
+    {
+      "original": "scripts/__screenshots__/host-consumer.browser.spec.ts/mobile/darwin/host-ui.png",
+      "path": "scripts/__screenshots__/host-consumer.browser.spec.ts/mobile/darwin-25-arm64/host-ui.png",
+      "sha256": "2db914f279aed00048eddf62aeea272a491b71174f1e4b99d6843a4768e15d66"
+    },
+    {
+      "original": "scripts/__screenshots__/host-consumer.browser.spec.ts/mobile/darwin/missing-control.png",
+      "path": "scripts/__screenshots__/host-consumer.browser.spec.ts/mobile/darwin-25-arm64/missing-control.png",
+      "sha256": "dd10aa5fb80e6616440fb812bc309cbec72dfa2279af605b429d9e4ea0116792"
+    },
+    {
+      "original": "scripts/__screenshots__/reliability-consumer.browser.spec.ts/desktop/darwin/native-defaults-v7.png",
+      "path": "scripts/__screenshots__/reliability-consumer.browser.spec.ts/desktop/darwin-25-arm64/native-defaults-v7.png",
+      "sha256": "29f42ac6c115b6b52b6e966526f83b7d912808a4130cc87d454e7547b604943e"
+    },
+    {
+      "original": "scripts/__screenshots__/reliability-consumer.browser.spec.ts/desktop/darwin/native-defaults-v8.png",
+      "path": "scripts/__screenshots__/reliability-consumer.browser.spec.ts/desktop/darwin-25-arm64/native-defaults-v8.png",
+      "sha256": "92f19c1ae0f12a138b0916b5dff7a2d153d7955000a728da49e9c45c8416e6dc"
+    },
+    {
+      "original": "scripts/__screenshots__/reliability-consumer.browser.spec.ts/desktop/darwin/reliability-errors.png",
+      "path": "scripts/__screenshots__/reliability-consumer.browser.spec.ts/desktop/darwin-25-arm64/reliability-errors.png",
+      "sha256": "4ded620351ef019e9ad45cf6a26d530d4efe120ff63faa2f69b78c42cb45f287"
+    },
+    {
+      "original": "scripts/__screenshots__/reliability-consumer.browser.spec.ts/desktop/darwin/reliability-options.png",
+      "path": "scripts/__screenshots__/reliability-consumer.browser.spec.ts/desktop/darwin-25-arm64/reliability-options.png",
+      "sha256": "ea62bb8d04b026d4d1167d22a280ffc64edca81a5845a770b6b9ee22db559b56"
+    },
+    {
+      "original": "scripts/__screenshots__/reliability-consumer.browser.spec.ts/mobile/darwin/native-defaults-v7.png",
+      "path": "scripts/__screenshots__/reliability-consumer.browser.spec.ts/mobile/darwin-25-arm64/native-defaults-v7.png",
+      "sha256": "17324f81c6c981f3540ac0011facb990f1d08ba9cd81828a2882ce69d4a4e801"
+    },
+    {
+      "original": "scripts/__screenshots__/reliability-consumer.browser.spec.ts/mobile/darwin/native-defaults-v8.png",
+      "path": "scripts/__screenshots__/reliability-consumer.browser.spec.ts/mobile/darwin-25-arm64/native-defaults-v8.png",
+      "sha256": "8e8cd086d9ff9b43ae43c2d6b54189fcec678fe83731a5f3368d303fb8037cd1"
+    },
+    {
+      "original": "scripts/__screenshots__/reliability-consumer.browser.spec.ts/mobile/darwin/reliability-errors.png",
+      "path": "scripts/__screenshots__/reliability-consumer.browser.spec.ts/mobile/darwin-25-arm64/reliability-errors.png",
+      "sha256": "336c0565628aae24b23426ddf315d5a3a794e3178a6ea156714be0e7c2cb6c30"
+    },
+    {
+      "original": "scripts/__screenshots__/reliability-consumer.browser.spec.ts/mobile/darwin/reliability-options.png",
+      "path": "scripts/__screenshots__/reliability-consumer.browser.spec.ts/mobile/darwin-25-arm64/reliability-options.png",
+      "sha256": "a023282bcc24058cd3ad883b5f67bfd8acd2a38455f00b56ed3c48eda9450eec"
+    }
+  ],
+  "artifact_id": 12278532997,
+  "artifact_digest": "sha256:94c4d8812388645a378ef113a589c14f5bb7e3eea399a9c9eaeeaf90cf391e78"
+}
