@@ -1,0 +1,5 @@
+$ biome check . --write && bun run lint:exceptions && bun run lint:shadcn
+Checked 621 files in 2s. Fixed 2 files.
+$ bun run scripts/check-lint-exceptions.ts
+Lint exceptions have bounded, live selectors.
+$ oxlint --config shadcn-lint.jsonc --deny-warnings --report-unused-disable-directives-severity=error

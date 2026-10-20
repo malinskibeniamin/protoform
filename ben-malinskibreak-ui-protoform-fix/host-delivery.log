@@ -1,0 +1,58 @@
+$ playwright test --config=playwright.host-registry.config.ts
+[WebServer] (node:81319) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:83834) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 8 tests using 4 workers
+
+(node:85933) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:85936) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:85935) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:85931) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] 11:33:48 PM [vite] (client) [console.error] Error: Protoform requires the "Input" component. Supply it through AutoForm components.
+[WebServer]     at InjectedUIComponent (http://127.0.0.1:55117/features/forms/auto-form/ui-components.tsx:38:10)
+[WebServer]     at Object.react_stack_bottom_frame (http://127.0.0.1:55117/node_modules/.vite/deps/react-dom_client.js?v=f84459ed:14141:12)
+[WebServer]     at renderWithHooks (http://127.0.0.1:55117/node_modules/.vite/deps/react-dom_client.js?v=f84459ed:4399:19)
+[WebServer]     at updateFunctionComponent (http://127.0.0.1:55117/node_modules/.vite/deps/react-dom_client.js?v=f84459ed:5774:16)
+[WebServer]     at beginWork (http://127.0.0.1:55117/node_modules/.vite/deps/react-dom_client.js?v=f84459ed:6390:20)
+[WebServer]     at runWithFiberInDEV (http://127.0.0.1:55117/node_modules/.vite/deps/react-dom_client.js?v=f84459ed:943:66)
+[WebServer]     at performUnitOfWork (http://127.0.0.1:55117/node_modules/.vite/deps/react-dom_client.js?v=f84459ed:9147:92)
+[WebServer]     at workLoopSync (http://127.0.0.1:55117/node_modules/.vite/deps/react-dom_client.js?v=f84459ed:9043:37)
+[WebServer]     at renderRootSync (http://127.0.0.1:55117/node_modules/.vite/deps/react-dom_client.js?v=f84459ed:9027:6)
+[WebServer]     at performWorkOnRoot (http://127.0.0.1:55117/node_modules/.vite/deps/react-dom_client.js?v=f84459ed:8714:27)
+[WebServer] 
+[WebServer] The above error occurred in the <ProtoformInput> component.
+[WebServer] 
+[WebServer] React will try to recreate this component tree from scratch using the error boundary you provided, AutoFormErrorBoundary.
+[WebServer] 
+[WebServer] 11:33:48 PM [vite] (client) [console.error] Error: Protoform requires the "Input" component. Supply it through AutoForm components.
+[WebServer]     at InjectedUIComponent (http://127.0.0.1:55117/features/forms/auto-form/ui-components.tsx:38:10)
+[WebServer]     at Object.react_stack_bottom_frame (http://127.0.0.1:55117/node_modules/.vite/deps/react-dom_client.js?v=f84459ed:14141:12)
+[WebServer]     at renderWithHooks (http://127.0.0.1:55117/node_modules/.vite/deps/react-dom_client.js?v=f84459ed:4399:19)
+[WebServer]     at updateFunctionComponent (http://127.0.0.1:55117/node_modules/.vite/deps/react-dom_client.js?v=f84459ed:5774:16)
+[WebServer]     at beginWork (http://127.0.0.1:55117/node_modules/.vite/deps/react-dom_client.js?v=f84459ed:6390:20)
+[WebServer]     at runWithFiberInDEV (http://127.0.0.1:55117/node_modules/.vite/deps/react-dom_client.js?v=f84459ed:943:66)
+[WebServer]     at performUnitOfWork (http://127.0.0.1:55117/node_modules/.vite/deps/react-dom_client.js?v=f84459ed:9147:92)
+[WebServer]     at workLoopSync (http://127.0.0.1:55117/node_modules/.vite/deps/react-dom_client.js?v=f84459ed:9043:37)
+[WebServer]     at renderRootSync (http://127.0.0.1:55117/node_modules/.vite/deps/react-dom_client.js?v=f84459ed:9027:6)
+[WebServer]     at performWorkOnRoot (http://127.0.0.1:55117/node_modules/.vite/deps/react-dom_client.js?v=f84459ed:8714:27)
+[WebServer] 
+[WebServer] The above error occurred in the <ProtoformInput> component.
+[WebServer] 
+[WebServer] React will try to recreate this component tree from scratch using the error boundary you provided, AutoFormErrorBoundary.
+[WebServer] 
+  ✓  1 [mobile] › scripts/host-consumer.browser.spec.ts:3:1 › host primitives submit, report errors, and recover without a theme dependency (2.8s)
+  ✓  3 [desktop] › scripts/host-consumer.browser.spec.ts:3:1 › host primitives submit, report errors, and recover without a theme dependency (2.9s)
+  ✓  4 [mobile] › scripts/reliability-consumer.browser.spec.ts:11:1 › installed controls retain paginated selections and announce every error (3.3s)
+  ✓  2 [desktop] › scripts/reliability-consumer.browser.spec.ts:11:1 › installed controls retain paginated selections and announce every error (3.3s)
+  ✓  5 [mobile] › scripts/reliability-consumer.browser.spec.ts:63:3 › installed v7 native defaults retain untouched precision after reset (430ms)
+  ✓  6 [desktop] › scripts/reliability-consumer.browser.spec.ts:63:3 › installed v7 native defaults retain untouched precision after reset (451ms)
+  ✓  7 [mobile] › scripts/reliability-consumer.browser.spec.ts:63:3 › installed v8 native defaults retain untouched precision after reset (413ms)
+  ✓  8 [desktop] › scripts/reliability-consumer.browser.spec.ts:63:3 › installed v8 native defaults retain untouched precision after reset (428ms)
+
+  8 passed (12.8s)

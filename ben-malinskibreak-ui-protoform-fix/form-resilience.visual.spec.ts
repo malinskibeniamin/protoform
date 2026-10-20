@@ -106,12 +106,14 @@ test('shows malformed JSON feedback without discarding the draft', async ({ page
   await page.goto('/docs/blume-examples/registry/base-nova/protoform/demo/catalog/protobuf-dynamic-json-any');
   const control = page.getByTestId('autoform-field-object-value-control');
   const editor = control.getByRole('textbox');
-  await editor.fill('{"theme":');
+  await editor.press('ControlOrMeta+A');
+  await editor.pressSequentially('{"theme":');
   await editor.blur();
   await expect(editor).toHaveAttribute('aria-invalid', 'true');
   await expect(control.getByRole('alert')).toContainText('Invalid JSON');
   await expect(control).toHaveScreenshot('invalid-json-draft.png');
-  await editor.fill('{"theme":"recovered"}');
+  await editor.press('ControlOrMeta+A');
+  await editor.pressSequentially('{"theme":"recovered"}');
   await page.getByRole('button', { name: 'Submit', exact: true }).click();
   await expect(page.getByRole('status')).toContainText('recovered');
 });
@@ -168,9 +170,60 @@ test('keeps a zero JSON value visible after submission', async ({ page }) => {
   await page.goto('/docs/blume-examples/registry/base-nova/protoform/demo/catalog/protobuf-dynamic-json-any');
   const control = page.getByTestId('autoform-field-scalar-or-nested-value-control');
   const editor = control.getByRole('textbox');
-  await editor.fill('0');
+  await editor.press('ControlOrMeta+A');
+  await editor.pressSequentially('0');
   await page.getByRole('button', { name: 'Submit', exact: true }).click();
   await expect(page.getByRole('status')).toContainText('"case": "numberValue"');
-  await expect(editor).toHaveValue('0');
+  await expect(editor).toHaveText('0');
   await expect(control).toHaveScreenshot('zero-json-editor.png');
+});
+
+for (const theme of ['light', 'dark']) {
+  test(`localizes invalid JSON in ${theme}`, async ({ page }) => {
+    await page.addInitScript(theme => localStorage.setItem('blume-theme', theme), theme);
+    await page.goto('/docs/blume-examples/registry/base-nova/protoform/demo/catalog/protobuf-dynamic-json-any');
+    const control = page.getByTestId('autoform-field-object-value-control');
+    const editor = control.getByRole('textbox');
+    await editor.press('ControlOrMeta+A');
+    await editor.pressSequentially('{"enabled": tru}');
+    const error = control.locator('.cm-lintRange-error');
+    await expect(error).toBeVisible();
+    await error.hover();
+    await expect(control.locator('.cm-tooltip-lint')).toBeVisible();
+    await expect(page).toHaveScreenshot(`codemirror-error-${theme}.png`);
+    await editor.press('F8');
+    await expect(control.locator('.cm-tooltip-lint')).toBeVisible();
+    await editor.press('Tab');
+    await expect(editor).not.toBeFocused();
+  });
+}
+
+test('shows all JSON editor consumers with line numbers', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('blume-theme', 'light'));
+  await page.goto('/docs/blume-examples/registry/base-nova/protoform/demo/catalog/protobuf-dynamic-json-any');
+  await expect(page.getByTestId('autoform-field-object-value-control').getByRole('textbox')).toBeVisible();
+  await expect(page.locator('form')).toHaveScreenshot('codemirror-json-fields.png');
+});
+
+test('explains an empty JSON draft', async ({ page }) => {
+  await page.goto('/docs/blume-examples/registry/base-nova/protoform/demo/catalog/protobuf-dynamic-json-any');
+  const control = page.getByTestId('autoform-field-object-value-control');
+  const editor = control.getByRole('textbox');
+  await editor.press('ControlOrMeta+A');
+  await editor.press('Backspace');
+  await expect(control.locator('.cm-lint-marker-error')).toBeVisible();
+  await expect(control.getByRole('alert')).toContainText('Invalid JSON');
+  await expect(control).toHaveScreenshot('codemirror-empty-draft.png');
+});
+
+test('wraps long JSON on mobile without widening the document', async ({ page }) => {
+  await page.setViewportSize({width:320,height:844});
+  await page.goto('/docs/blume-examples/registry/base-nova/protoform/demo/catalog/protobuf-dynamic-json-any');
+  const control = page.getByTestId('autoform-field-object-value-control');
+  const editor = control.getByRole('textbox');
+  await editor.press('ControlOrMeta+A');
+  await editor.pressSequentially(JSON.stringify({environment:'a'.repeat(180)}));
+  await expect(editor).not.toHaveAttribute('aria-invalid','true');
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
+  await expect(control).toHaveScreenshot('codemirror-mobile-long-value.png');
 });

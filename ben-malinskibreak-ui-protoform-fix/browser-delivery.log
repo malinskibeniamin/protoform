@@ -1,0 +1,29 @@
+$ node scripts/run-tests.mjs browser --reporters verbose registry/base-nova/protoform/components/json-field/index.browser.test.tsx registry/base-nova/protoform/components/auto-form/__tests__/json-values.browser.test.tsx
+
+start   build started...
+ready   built in 0.66s
+
+info | registry/base-nova/protoform/components/json-field/index.browser.test.tsx
+Download the React DevTools for a better development experience: https://react.dev/link/react-devtools
+
+
+info | registry/base-nova/protoform/components/auto-form/__tests__/json-values.browser.test.tsx
+Download the React DevTools for a better development experience: https://react.dev/link/react-devtools
+
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/json-values.browser.test.tsx (3) 714ms
+  ✓ preserves JSON false in display, editing, and protobuf submission (479ms)
+  ✓ preserves JSON zero in display, editing, and protobuf submission (118ms)
+  ✓ preserves JSON null in display, editing, and protobuf submission (115ms)
+ ✓ registry/base-nova/protoform/components/json-field/index.browser.test.tsx (7) 1.32s
+  ✓ submits the current JSON edit without waiting for a debounce (395ms)
+  ✓ blocks malformed drafts, describes the error, and recovers after correction (32ms)
+  ✓ external resets replace malformed drafts with the last valid JSON value (810ms)
+  ✓ cannot discard a malformed nested draft by switching to JSON mode (20ms)
+  ✓ JSONField accessibility > names structured controls by property path, including array entries (6ms)
+  ✓ JSONField accessibility > labels the fallback editor for deeply nested JSON and opens an unconstrained array in JSON mode (7ms)
+  ✓ JSONField accessibility > shows a success toast after copying JSON (45ms)
+
+ Test Files 2 passed
+      Tests 10 passed
+   Duration 2.36s (build 744ms, tests 1.61s)
+

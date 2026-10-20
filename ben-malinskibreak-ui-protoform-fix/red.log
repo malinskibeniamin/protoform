@@ -1,0 +1,35 @@
+
+Running 1 test using 1 worker
+
+(node:72356) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chromium] › e2e/form-resilience.spec.ts:4:1 › underlines invalid JSON and explains the syntax error inline @cross-browser (5.2s)
+
+
+  1) [chromium] › e2e/form-resilience.spec.ts:4:1 › underlines invalid JSON and explains the syntax error inline @cross-browser 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByTestId('autoform-field-object-value-control').locator('.cm-lintRange-error').first()
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByTestId('autoform-field-object-value-control').locator('.cm-lintRange-error').first() with timeout 5000ms
+      - waiting for getByTestId('autoform-field-object-value-control').locator('.cm-lintRange-error').first()
+
+
+      10 |   await expect(control.getByRole('alert')).toContainText('Invalid JSON');
+      11 |   const syntaxError = control.locator('.cm-lintRange-error').first();
+    > 12 |   await expect(syntaxError).toBeVisible();
+         |                             ^
+      13 |   await syntaxError.hover();
+      14 |   await expect(page.getByRole('tooltip')).toContainText(/JSON|Unexpected|expected/iu);
+      15 |   await page.getByRole('button', { name: 'Submit', exact: true }).click();
+        at <checkout>/e2e/form-resilience.spec.ts:12:29
+
+    Error Context: .context/codemirror/results/form-resilience-underlines-b5312--error-inline-cross-browser-chromium/error-context.md
+
+  1 failed
+    [chromium] › e2e/form-resilience.spec.ts:4:1 › underlines invalid JSON and explains the syntax error inline @cross-browser 
