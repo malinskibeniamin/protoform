@@ -6,4 +6,3 @@ deps:
 lint:
   use:
     - STANDARD
-

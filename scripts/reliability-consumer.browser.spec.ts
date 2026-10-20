@@ -2,6 +2,28 @@ import { expect, test } from '@playwright/test';
 
 test.use({ baseURL: 'http://127.0.0.1:55120' });
 
+test('installed custom options show creation failures and recover after retry', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  await page.goto('/custom-options.html');
+  const input = page.getByRole('combobox');
+  await input.fill('new');
+  await page.getByRole('option', { name: /create.*new/iu }).click();
+  await expect(page.getByRole('alert')).toHaveText('Creation failed. Try again.');
+  await input.clear();
+  await input.press('Escape');
+  await input.blur();
+  await expect(input).toHaveValue('');
+  await expect(page.getByLabel('Selected region')).toHaveText('{}');
+  await expect(page.getByRole('listbox')).not.toBeVisible();
+  await expect(page).toHaveScreenshot('custom-option-error.png');
+  await input.fill('next');
+  await page.getByRole('option', { name: /create.*next/iu }).click();
+  await expect(page.getByLabel('Selected region')).toHaveText('{"region":"next"}');
+  await expect(page.getByRole('alert')).toHaveCount(0);
+  expect(errors).toEqual([]);
+});
+
 test('installed controls retain paginated selections and announce every error', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));

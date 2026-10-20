@@ -11,7 +11,7 @@ function makeField(partial: Partial<ParsedField> & { fieldConfig?: ParsedField['
     required: false,
     type: 'number',
     ...partial,
-  } as ParsedField;
+  };
 }
 
 describe('sliderFieldDefinition.match', () => {

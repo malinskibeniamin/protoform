@@ -92,7 +92,7 @@ function RadioGroupItem({
 }: RadioGroupItemProps) {
   return (
     <RadioPrimitive.Root
-      {...(props as React.ComponentProps<typeof RadioPrimitive.Root>)}
+      {...props}
       nativeButton
       render={(
         rootProps: React.ComponentPropsWithoutRef<'button'>,

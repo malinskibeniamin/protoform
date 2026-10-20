@@ -85,7 +85,7 @@ export function errorMessage(value: unknown): string | undefined {
     return value.message;
   }
   if (value !== null && typeof value === 'object') {
-    const message = Reflect.get(value, 'message');
+    const message: unknown = Reflect.get(value, 'message');
     if (typeof message === 'string') {
       return message;
     }

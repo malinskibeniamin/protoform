@@ -26,7 +26,7 @@ export function resolveSchema<T extends Record<string, unknown>>(
   protoSource?: Message
 ): ResolvedSchema {
   if (isSchemaProvider(schemaInput)) {
-    const provider = schemaInput as SchemaProvider<Record<string, unknown>>;
+    const provider = schemaInput;
     const parsedSchema = provider.parseSchema();
 
     if (isProtoProvider(provider)) {
@@ -87,18 +87,18 @@ export function mergeFieldOverrides<TCustom extends string = never>(
       const override = overrides?.[fieldPath];
       const existingConfig = field.fieldConfig as RenderFieldConfig<TCustom> | undefined;
       const mergedFieldConfig: RenderFieldConfig<TCustom> | undefined = override
-        ? ({
-            ...(existingConfig ?? {}),
+        ? {
+            ...existingConfig,
             ...override,
             customData: {
-              ...(existingConfig?.customData ?? {}),
-              ...(override.customData ?? {}),
+              ...existingConfig?.customData,
+              ...override.customData,
             },
             inputProps: {
-              ...(existingConfig?.inputProps ?? {}),
-              ...(override.inputProps ?? {}),
+              ...existingConfig?.inputProps,
+              ...override.inputProps,
             },
-          } as RenderFieldConfig<TCustom>)
+          }
         : existingConfig;
 
       const nextSchema =

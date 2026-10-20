@@ -173,14 +173,14 @@ describe('readiness scoring', () => {
         expect.objectContaining({
           evidence: expect.objectContaining({
             file: 'examples/kitchen-sink/kitchen-sink-cel.test.ts',
-          }),
+          }) as unknown,
           id: 'cel.message-string',
           status: 'verified',
         }),
         expect.objectContaining({
           evidence: expect.objectContaining({
             file: 'examples/kitchen-sink/kitchen-sink-cel.test.ts',
-          }),
+          }) as unknown,
           id: 'cel.language-coverage',
           status: 'verified',
         }),
@@ -271,7 +271,7 @@ describe('readiness scoring', () => {
       status: 'optional',
     });
     expect(readinessRequirements.find((requirement) => requirement.id === 'protobuf.proto2-extensions')).toMatchObject({
-      rationale: expect.stringContaining('outside the canonical v2 target'),
+      rationale: expect.stringContaining('outside the canonical v2 target') as unknown,
       status: 'out-of-target',
     });
 

@@ -1,8 +1,7 @@
 version: v2
 clean: false
 plugins:
-  - local:
-      ["bun", "run", "registry/base-nova/protoform/scripts/protoc-gen-protoform/run.ts"]
+  - local: ["bun", "run", "registry/base-nova/protoform/scripts/protoc-gen-protoform/run.ts"]
     out: conformance/gen
     opt: target=ts,import_extension=js
 inputs:

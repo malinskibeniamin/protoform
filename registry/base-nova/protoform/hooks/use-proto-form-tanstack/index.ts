@@ -34,7 +34,7 @@ function getErrorMessage(error: unknown): string | undefined {
     return error;
   }
   if (error !== null && typeof error === 'object') {
-    const message = Reflect.get(error, 'message');
+    const message: unknown = Reflect.get(error, 'message');
     return typeof message === 'string' ? message : undefined;
   }
   return undefined;

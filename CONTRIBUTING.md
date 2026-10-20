@@ -10,7 +10,7 @@ Thanks for contributing. Protoform accepts focused issues and pull requests on a
 
 ## Development
 
-Requirements: Bun 1.4.2, Node.js 26, Git, and Buf through the checked-in Bun dependency.
+Requirements: Bun 1.4.3, Node.js 26, Git, and Buf through the checked-in Bun dependency.
 
 ```bash
 bun install --frozen-lockfile
@@ -83,8 +83,8 @@ feedback remain unconfigured. Default Markdown, JSON, search, and agent-skill ou
 - Do not edit generated files independently. Run `bun run proto:generate` or `bun run registry:build`.
 - Keep public protobuf changes compatible with `bun run proto:breaking -- --against '.git#ref=origin/main'`.
 - Use `type(scope): description` commit messages.
-- Do not add source comments or inline lint suppressions; name code so it explains itself. Scope any rule
-  exception in `biome.jsonc`, `shadcn-lint.jsonc`, or `doctor.config.ts` to the files that need it.
+- Do not add source comments or inline lint suppressions; name code so it explains itself. New or broadened rule
+  exemptions are forbidden. Fix the source instead; see [the UI quality policy](docs/ui-toolchain.md).
 
 ## Pull requests
 

@@ -41,8 +41,8 @@ function validateFieldsNatively(errors: Record<string, FieldError>, options: Res
 }
 
 function isFieldArrayRoot(names: string[], path: string): boolean {
-  const escapedPath = path.replace(/[[\]]/gu, '').replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
-  return names.some((name) => name.replace(/[[\]]/gu, '').match(`^${escapedPath}\\.\\d+`));
+  const escapedPath = path.replaceAll(/[[\]]/gu, '').replaceAll(/[.*+?^${}()|[\]\\]/gu, '\\$&');
+  return names.some((name) => new RegExp(`^${escapedPath}\\.\\d+`, 'u').exec(name.replaceAll(/[[\]]/gu, '')));
 }
 
 function toNestErrors(
@@ -59,7 +59,8 @@ function toNestErrors(
       ref: field?.refs?.[0] ?? field?.ref,
     });
     if (isFieldArrayRoot(options.names ?? Object.keys(flatErrors), path)) {
-      const fieldArrayError = { ...(get(nestedErrors, path) ?? {}) };
+      const current: unknown = get(nestedErrors, path);
+      const fieldArrayError = { ...(typeof current === 'object' && current !== null ? current : {}) };
       set(fieldArrayError, 'root', error);
       set(nestedErrors, path, fieldArrayError);
     } else {

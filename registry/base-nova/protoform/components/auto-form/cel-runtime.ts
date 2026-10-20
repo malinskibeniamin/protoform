@@ -287,7 +287,7 @@ export function compileCelExpression(
 
   const expr = structuredClone(parsed.expr);
   const unknownBindings = new Map<string, string>();
-  replaceUnknownAttributes(expr, new Set(options.unknownAttributes ?? []), unknownBindings);
+  replaceUnknownAttributes(expr, new Set(options.unknownAttributes), unknownBindings);
 
   let expressionId = maximumExpressionId(expr) + 1n;
   const nextExpressionId = () => {

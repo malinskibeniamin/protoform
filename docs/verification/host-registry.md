@@ -34,9 +34,9 @@ Chromium at 1100×800 and 390×844:
 - No uncaught browser errors. React's development error-boundary report during the intentional
   missing-component step is expected.
 
-| Desktop | Mobile |
-| --- | --- |
-| ![Host form](../../scripts/__screenshots__/host-consumer.browser.spec.ts/desktop/host-ui.png) | ![Host form on mobile](../../scripts/__screenshots__/host-consumer.browser.spec.ts/mobile/host-ui.png) |
+| Desktop                                                                                                     | Mobile                                                                                                               |
+| ----------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| ![Host form](../../scripts/__screenshots__/host-consumer.browser.spec.ts/desktop/host-ui.png)               | ![Host form on mobile](../../scripts/__screenshots__/host-consumer.browser.spec.ts/mobile/host-ui.png)               |
 | ![Missing mapping](../../scripts/__screenshots__/host-consumer.browser.spec.ts/desktop/missing-control.png) | ![Missing mapping on mobile](../../scripts/__screenshots__/host-consumer.browser.spec.ts/mobile/missing-control.png) |
 
 These are new-host-entrypoint baselines, not screenshots of a redesigned legacy form. The fixture's

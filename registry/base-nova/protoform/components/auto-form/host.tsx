@@ -51,7 +51,7 @@ export function AutoForm({ components, formOptions, resolver, ...props }: AutoFo
   const resolvedResolver =
     resolver ?? (protoDescriptor ? createProtoResolver(protoDescriptor, conversionOptions) : undefined);
   const engineOptions: UseFormProps<FormValues, unknown, FormValues> = {
-    ...(formOptions ?? {}),
+    ...formOptions,
     ...(props.validationMode
       ? {
           mode: toHookFormMode(props.validationMode),

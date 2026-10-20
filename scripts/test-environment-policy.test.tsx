@@ -79,10 +79,10 @@ describe('simulated DOM test environment', () => {
     expect(manifest.devDependencies?.['vitest']).toBeUndefined();
     expect(Object.values(manifest.scripts ?? {}).join('\n')).not.toContain('vitest');
     for (const script of rstestScripts) {
-      expect(manifest.scripts?.[script]).toMatch(/^node scripts\/run-tests\.mjs /u);
+      expect(manifest.scripts?.[script]).toMatch(/^node scripts\/run-tests\.ts /u);
       expect(manifest.scripts?.[script]).not.toContain('rstest');
     }
-    expect(existsSync(new URL('scripts/run-tests.mjs', repositoryDirectory))).toBe(true);
+    expect(existsSync(new URL('scripts/run-tests.ts', repositoryDirectory))).toBe(true);
     expect(existsSync(new URL('vitest.unit.config.ts', repositoryDirectory))).toBe(false);
     expect(existsSync(new URL('vitest.integration.config.ts', repositoryDirectory))).toBe(false);
     expect(existsSync(new URL('vitest.conformance.config.ts', repositoryDirectory))).toBe(false);

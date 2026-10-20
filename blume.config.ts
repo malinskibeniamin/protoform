@@ -3,6 +3,7 @@ import { openapi } from 'blume/reference';
 import { pagefind } from 'blume/search';
 
 import { demoRedirects } from './examples/catalog/demo-docs.js';
+import { configureReactScan } from './scripts/react-scan';
 
 export default defineConfig({
   agents: {
@@ -67,7 +68,8 @@ Read the relevant guide and example before generating code; cite its canonical d
   integrations: [
     {
       hooks: {
-        'astro:config:setup': ({ updateConfig }) => {
+        'astro:config:setup': ({ command, injectScript, updateConfig }) => {
+          configureReactScan(command, process.env['PROTOFORM_REACT_SCAN'] === '1', injectScript);
           updateConfig({
             vite: {
               environments: {

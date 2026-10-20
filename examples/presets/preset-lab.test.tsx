@@ -6,7 +6,7 @@ import { PresetLab } from './preset-lab';
 import { buildPresetCode, defaultPreset, defaultRadius, presetDefinitions } from './preset-lab-presets';
 
 const originalClipboard = navigator.clipboard;
-const originalExitFullscreen = document.exitFullscreen;
+const originalExitFullscreen: unknown = Reflect.get(document, 'exitFullscreen');
 const workEmailPattern = /work email/iu;
 const submitPattern = /submit/iu;
 

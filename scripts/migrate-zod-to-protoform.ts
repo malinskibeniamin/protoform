@@ -1,9 +1,8 @@
 #!/usr/bin/env bun
-export {};
 
-const [, , zodFile = '<path-to-zod-form.tsx>', protoFile = '<path-to-target.proto>'] = process.argv;
+const [zodFile = '<path-to-zod-form.tsx>', protoFile = '<path-to-target.proto>'] = process.argv.slice(2);
 
-const prompt = `You are migrating a shadcn React Hook Form from Zod to Protoform.
+const migrationPrompt = `You are migrating a shadcn React Hook Form from Zod to Protoform.
 
 Inputs:
 - Zod/RHF file: ${zodFile}
@@ -31,4 +30,4 @@ Output:
 - Suggested tests for valid input, invalid field annotations, CEL errors, oneof switching, and server error mapping.
 `;
 
-console.log(prompt);
+console.log(migrationPrompt);

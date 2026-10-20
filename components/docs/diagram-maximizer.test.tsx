@@ -9,7 +9,7 @@ const FULL_SCREEN_PATTERN = /full screen/iu;
 function appendDiagram(tagName = 'blume-mermaid', label = 'System flow') {
   const diagram = document.createElement(tagName);
   diagram.setAttribute('aria-label', label);
-  diagram.setAttribute('data-test-diagram', '');
+  diagram.dataset['testDiagram'] = '';
   diagram.innerHTML = '<div><svg aria-label="Rendered architecture"></svg></div>';
   document.body.append(diagram);
   return diagram;
@@ -75,10 +75,10 @@ describe('DiagramMaximizer', () => {
 
   test('enhances generic architecture containers without duplicating nested Mermaid controls', async () => {
     const generic = appendDiagram('figure', 'API architecture');
-    generic.setAttribute('data-diagram', '');
+    generic.dataset['diagram'] = '';
 
     const wrapper = appendDiagram('figure', 'Deployment architecture');
-    wrapper.setAttribute('data-architecture-diagram', '');
+    wrapper.dataset['architectureDiagram'] = '';
     const nestedMermaid = document.createElement('blume-mermaid');
     nestedMermaid.innerHTML = '<div><svg></svg></div>';
     wrapper.append(nestedMermaid);

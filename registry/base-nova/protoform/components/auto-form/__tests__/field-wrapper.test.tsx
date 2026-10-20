@@ -35,7 +35,7 @@ function makeField(partial: Partial<ParsedField> = {}): ParsedField {
     required: false,
     type: 'string',
     ...partial,
-  } as ParsedField;
+  };
 }
 
 describe('ObjectWrapper', () => {

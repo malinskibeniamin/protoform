@@ -195,14 +195,14 @@ function PopoverAnchor({ asChild, children, render }: PopoverAnchorProps) {
 
   if (child) {
     return (
-      <Slot data-slot="popover-anchor" ref={setRef as React.Ref<HTMLElement>}>
+      <Slot data-slot="popover-anchor" ref={setRef}>
         {child}
       </Slot>
     );
   }
 
   return (
-    <div data-slot="popover-anchor" ref={setRef as React.Ref<HTMLDivElement>}>
+    <div data-slot="popover-anchor" ref={setRef}>
       {children}
     </div>
   );

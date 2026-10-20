@@ -16,7 +16,7 @@ function ComboboxFieldComponent({ field, id, inputProps }: AutoFormFieldProps) {
           group.options.map((option) => ({
             group: String(group.label ?? ''),
             groupTestId: testIds.group(String(group.label ?? option.value)),
-            label: `${group.label ? `${group.label} · ` : ''}${String(option.label ?? option.value)}`,
+            label: `${group.label ? `${String(group.label)} · ` : ''}${String(option.label ?? option.value)}`,
             testId: testIds.option(option.value),
             value: option.value,
           }))

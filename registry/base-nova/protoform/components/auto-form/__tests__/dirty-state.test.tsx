@@ -3,7 +3,7 @@ import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { AutoForm as TanStackAutoForm } from '../../auto-form-tanstack';
-import { AutoForm as ReactHookAutoForm } from '..';
+import { type AutoFormSubmitContext, AutoForm as ReactHookAutoForm } from '..';
 import { createMockProvider } from './test-utils';
 
 if (!HTMLElement.prototype.hasPointerCapture) {
@@ -61,9 +61,9 @@ describe.each([
 ] as const)('%s dirty-state lifecycle', (_name, FormComponent) => {
   test('reports clean initially, emits distinct changes, marks saved values clean synchronously, and adopts reset values as the baseline', async () => {
     const user = userEvent.setup();
-    const onDirtyChange = rs.fn();
+    const onDirtyChange = rs.fn<(dirty: boolean) => void>();
     let cleanBeforeNavigation = false;
-    const onSubmit = rs.fn((_values, _nativeForm, context) => {
+    const onSubmit = rs.fn((_values: unknown, _nativeForm: unknown, context: AutoFormSubmitContext) => {
       context.form.markClean();
       cleanBeforeNavigation = onDirtyChange.mock.calls.at(-1)?.[0] === false;
     });
@@ -86,8 +86,8 @@ describe.each([
     await waitFor(() => expect(onDirtyChange).toHaveBeenLastCalledWith(false));
 
     cleanup();
-    const onDirtyChangeReset = rs.fn();
-    const onSubmitReset = rs.fn((_values, _nativeForm, context) => {
+    const onDirtyChangeReset = rs.fn<(dirty: boolean) => void>();
+    const onSubmitReset = rs.fn((_values: unknown, _nativeForm: unknown, context: AutoFormSubmitContext) => {
       context.form.reset({ name: 'Saved on the server' });
     });
 
@@ -107,8 +107,10 @@ describe.each([
 
   test('tracks nested, array, map, and oneof changes', async () => {
     const user = userEvent.setup();
-    const onDirtyChange = rs.fn();
-    const onSubmit = rs.fn((_values, _nativeForm, context) => context.form.markClean());
+    const onDirtyChange = rs.fn<(dirty: boolean) => void>();
+    const onSubmit = rs.fn((_values: unknown, _nativeForm: unknown, context: AutoFormSubmitContext) =>
+      context.form.markClean()
+    );
     render(<FormComponent onDirtyChange={onDirtyChange} onSubmit={onSubmit} schema={structuredSchema} withSubmit />);
 
     async function expectEditThenClean(label: string, edit: () => void | Promise<void>) {

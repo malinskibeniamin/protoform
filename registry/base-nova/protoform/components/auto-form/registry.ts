@@ -25,7 +25,7 @@ export class FieldTypeRegistry<TName extends string = never> {
   ): FieldTypeRegistry<TName | TRegisteredName> {
     this.definitions.push(definition);
     this.definitions.sort((a, b) => b.priority - a.priority);
-    return this as FieldTypeRegistry<TName | TRegisteredName>;
+    return this;
   }
 
   resolve(field: ParsedField, context: FieldMatchContext): FieldTypeDefinition<TName> | undefined {

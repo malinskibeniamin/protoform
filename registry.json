@@ -1372,6 +1372,11 @@
           "type": "registry:lib"
         },
         {
+          "path": "registry/base-nova/protoform/demo/runtime/catalog-form-demo.tsx",
+          "target": "~/components/protoform-examples/runtime/catalog-form-demo.tsx",
+          "type": "registry:component"
+        },
+        {
           "path": "registry/base-nova/protoform/demo/runtime/format-submitted-value.ts",
           "target": "~/components/protoform-examples/runtime/format-submitted-value.ts",
           "type": "registry:lib"

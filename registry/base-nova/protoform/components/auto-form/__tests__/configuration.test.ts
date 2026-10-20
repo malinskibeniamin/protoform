@@ -158,7 +158,7 @@ describe('inspectAutoFormConfiguration', () => {
 
     expect(inspectAutoFormConfiguration({ schema: brokenSchema })).toContainEqual(
       expect.objectContaining({
-        cause: expect.any(TypeError),
+        cause: expect.any(TypeError) as unknown,
         code: 'unsupported-schema',
         path: '$',
       })

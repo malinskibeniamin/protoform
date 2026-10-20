@@ -9,9 +9,9 @@ describe('experimental React Hook Form v8 AutoForm conformance', () => {
   test('keeps the v8-native API and submits transformed provider output', async () => {
     const user = userEvent.setup();
     const onSubmit = rs.fn();
-    const onFormInit = rs.fn();
+    const onFormInit = rs.fn<(form: { register: unknown; control: unknown }) => void>();
     const schema = createNameSchema((values) => ({
-      data: { name: String(values.name).trim().toUpperCase() },
+      data: { name: values.name.trim().toUpperCase() },
       success: true,
     }));
 

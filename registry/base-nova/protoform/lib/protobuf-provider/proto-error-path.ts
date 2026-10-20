@@ -4,7 +4,7 @@ export function protoPathToFormPath(schema: DescMessage, serverPath: string): st
   if (!serverPath) {
     return null;
   }
-  const path = walk(schema, serverPath.replace(LIST_INDEX_PATTERN, '.$1').split('.'));
+  const path = walk(schema, serverPath.replaceAll(LIST_INDEX_PATTERN, '.$1').split('.'));
   return path ? path.join('.') : null;
 }
 

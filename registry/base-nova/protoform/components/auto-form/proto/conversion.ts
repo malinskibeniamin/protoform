@@ -56,5 +56,5 @@ export function normalizeProtoInitialValues(
     return protoToFormValues(desc, values as never);
   }
 
-  return values as Record<string, unknown>;
+  return values;
 }

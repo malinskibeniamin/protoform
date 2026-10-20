@@ -22,7 +22,7 @@ async function expectValid(values: Record<string, unknown>): Promise<void> {
 async function expectInvalid(values: Record<string, unknown>, path: string): Promise<void> {
   const result = await createProtoFormSchema(ProvisionCapacityRequestSchema)['~standard'].validate(values);
   expect(result.issues).toEqual(
-    expect.arrayContaining([expect.objectContaining({ path: expect.arrayContaining([path]) })])
+    expect.arrayContaining([expect.objectContaining({ path: expect.arrayContaining([path]) as unknown })])
   );
 }
 

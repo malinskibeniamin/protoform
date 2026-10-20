@@ -61,7 +61,7 @@ describe.each(implementations)('$name Standard Schema', ({ schema }) => {
 
   test('maps nested issues through every supported form-library adapter', async () => {
     const expected = {
-      profile: { displayName: expect.stringContaining('2') },
+      profile: { displayName: expect.stringContaining('2') as unknown },
     };
 
     expect(await createFormikValidator(schema)(values)).toEqual(expected);

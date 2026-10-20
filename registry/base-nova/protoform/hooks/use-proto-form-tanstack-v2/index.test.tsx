@@ -1,3 +1,4 @@
+import type { MessageShape } from '@bufbuild/protobuf';
 import { describe, expect, rs } from '@rstest/core';
 import { renderHook } from '@testing-library/react';
 import { act } from 'react';
@@ -67,7 +68,8 @@ describe('experimental TanStack Form v2 useProtoForm', () => {
     expect(errors).not.toHaveLength(0);
     expect(result.current.state.isInvalid).toBe(true);
 
-    const onValidSubmit = rs.fn();
+    const onValidSubmit =
+      rs.fn<(result: { schemaOutputs: readonly [MessageShape<typeof AutoFormExampleSchema>] }) => void>();
     const { result: valid } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: buildValidProtoFormValues(),
@@ -80,7 +82,11 @@ describe('experimental TanStack Form v2 useProtoForm', () => {
     });
 
     expect(onValidSubmit).toHaveBeenCalledTimes(1);
-    const [{ schemaOutputs }] = onValidSubmit.mock.calls[0] ?? [];
+    const [call] = onValidSubmit.mock.calls;
+    if (!call) {
+      throw new Error('Expected native form submission');
+    }
+    const [{ schemaOutputs }] = call;
     expect(schemaOutputs[0].$typeName).toBe('protoform.v1.AutoFormExample');
     expect(schemaOutputs[0].username).toBe('protoform_admin');
 

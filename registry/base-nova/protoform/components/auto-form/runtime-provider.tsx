@@ -73,7 +73,7 @@ interface AutoFormRuntimeProviderProps<TNativeForm> {
     parsedSchema: ParsedSchema;
     isProto: boolean;
     protoDesc?: DescMessage | undefined;
-    resolver?: unknown | undefined;
+    resolver?: unknown;
   };
   simpleFields: ParsedField[];
   testIdPrefix: string;
@@ -115,7 +115,7 @@ function buildPayloadState<TNativeForm>({
   let bestEffort = false;
 
   try {
-    const validationResult = resolvedSchema.provider.validateSchema(values as never, {
+    const validationResult = resolvedSchema.provider.validateSchema(values, {
       signal,
     });
     if (isPromiseLike(validationResult)) {
@@ -296,7 +296,7 @@ function AutoFormPayloadController<TNativeForm>({
     (value: string) => {
       setJsonEditorText(value);
       try {
-        const parsed = JSON.parse(value);
+        const parsed: unknown = JSON.parse(value);
         setJsonEditorError(undefined);
         applyPayloadToForm(parsed).catch((error: unknown) => {
           setJsonEditorError(error instanceof Error ? error.message : 'AutoForm could not apply this payload.');
@@ -315,7 +315,7 @@ function AutoFormPayloadController<TNativeForm>({
 
   const handleFormatJson = React.useCallback(() => {
     try {
-      const parsed = JSON.parse(jsonEditorText);
+      const parsed: unknown = JSON.parse(jsonEditorText);
       const formatted = JSON.stringify(parsed, null, 2);
       setJsonEditorText(formatted);
       setJsonEditorError(undefined);

@@ -132,7 +132,7 @@ describe('protobuf-provider', () => {
       bio: 'A protobuf-backed form with Buf reflection and Protovalidate.',
       createdAt: {
         nanos: 0,
-        seconds: 1710666000n,
+        seconds: 1_710_666_000n,
       },
       employeeNumber: 4001n,
       homepageUrl: 'https://protoform.com',
@@ -186,7 +186,7 @@ describe('protobuf-provider', () => {
         value: expect.objectContaining({
           city: 'San Francisco',
           lineOne: '500 Harbor Way',
-        }),
+        }) as unknown,
       },
     ]);
     expect(formValues['preferredContact']).toEqual({
@@ -289,7 +289,7 @@ describe('protobuf-provider', () => {
       | Array<{ value?: { city?: { message?: string } } }>
       | undefined;
     const rootError = result.errors.root as { message?: string } | undefined;
-    const formRootError = result.errors[PROTO_FORM_ROOT_ERROR_KEY] as { message?: string } | undefined;
+    const formRootError = result.errors[PROTO_FORM_ROOT_ERROR_KEY];
 
     expect(result.values).toEqual({});
     expect(rootError?.message).toMatch(MESSAGE_LEVEL_ERROR);

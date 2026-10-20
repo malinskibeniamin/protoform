@@ -1,5 +1,5 @@
 import { expect, test } from '@rstest/core';
-import { auditLintExceptions } from './lint-exceptions';
+import { auditLintExceptions, newLintExceptions } from './lint-exceptions';
 
 test('rejects a stale file selector in a TypeScript config', () => {
   const source = `export default defineConfig({ ignore: { overrides: [
@@ -98,4 +98,12 @@ test('rejects a glob exception that no longer matches any file', () => {
 test('reports the line of the offending override', () => {
   const source = `{\n  "overrides": [\n    { "files": ["missing.ts"], "rules": { "protoform/no-comments": "off" } }\n  ]\n}`;
   expect(auditLintExceptions('shadcn-lint.jsonc', source, []).map(({ line }) => line)).toEqual([3]);
+});
+
+test('does not permit new file-level rule exemptions', () => {
+  const baseline = '{ "overrides": [] }';
+  const weakened =
+    '{ "overrides": [{ "includes": ["components/input.tsx"], "linter": { "rules": { "style": { "noNonNullAssertion": "off" } } } }] }';
+  expect(newLintExceptions('biome.jsonc', weakened, baseline)).toHaveLength(1);
+  expect(newLintExceptions('biome.jsonc', baseline, weakened)).toEqual([]);
 });

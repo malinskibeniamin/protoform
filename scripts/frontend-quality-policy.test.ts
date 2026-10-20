@@ -68,7 +68,7 @@ describe('frontend quality policy', () => {
 
   test('fails on warnings, formatting drift, and inline suppressions', () => {
     expect(manifest.scripts['lint']).toContain('--error-on-warnings');
-    expect(manifest.scripts['format:check']).toBe('biome format .');
+    expect(manifest.scripts['format:check']).toBe('biome format . && bun run format:extra');
     expect(manifest.scripts['lint:no-suppressions']).toBe('bun run scripts/check-no-suppressions.ts');
     expect(existsSync('scripts/check-no-suppressions.ts')).toBe(true);
     expect(manifest.scripts['ci:gate']).toContain('bun run lint:no-suppressions');

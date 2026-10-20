@@ -66,14 +66,14 @@ function ReactHookFormArrayController({
     control: form.control,
     name: name as never,
   });
-  const values = getPathInObject(form.getValues(), name.split('.'));
+  const values: unknown = getPathInObject(form.getValues(), name.split('.'));
   const items = fields.map((field, index) => ({
     key: field.key,
-    value: Array.isArray(values) ? values[index] : undefined,
+    value: Array.isArray(values) ? (values[index] as unknown) : undefined,
   }));
 
   return children({
-    append: (value) => append(value as never),
+    append: (value) => append(value),
     items,
     remove,
   });
@@ -142,7 +142,7 @@ export function ReactHookFormEngine<T extends FormValues>({
   onDirtyChange,
 }: ReactHookFormEngineProps<T>) {
   const form = useForm<FormValues, unknown, T>({
-    ...(formOptions ?? {}),
+    ...formOptions,
     defaultValues,
     ...(resolver ? { resolver } : {}),
     ...(values ? { values } : {}),

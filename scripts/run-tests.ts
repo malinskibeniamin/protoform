@@ -7,8 +7,12 @@ const configs = {
   unit: 'rstest.unit.config.ts',
 };
 
-const [, , suite, ...args] = process.argv;
-const config = suite ? configs[suite] : undefined;
+const [suite, ...args] = process.argv.slice(2);
+function isSuite(value: string | undefined): value is keyof typeof configs {
+  return value !== undefined && Object.hasOwn(configs, value);
+}
+
+const config = isSuite(suite) ? configs[suite] : undefined;
 
 if (!config) {
   console.error(`Unknown test suite: ${suite ?? 'missing'}.`);

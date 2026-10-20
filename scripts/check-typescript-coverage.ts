@@ -1,14 +1,8 @@
 import { spawnSync } from 'node:child_process';
 import { isAbsolute, relative, resolve } from 'node:path';
+import { authoredFiles } from './source-files';
 
-const generatedPathPatterns = [
-  /(^|\/)gen\//u,
-  /(^|\/)__golden__\//u,
-  /(^|\/)registry\/base-nova\/protoform\/lib\/protobuf-v1-bridge\//u,
-  /(?:^|\/)routeTree\.gen\.ts$/u,
-  /_(?:form|pb)\.ts$/u,
-];
-const typescriptPathPattern = /\.tsx?$/u;
+const typescriptPathPattern = /\.[cm]?[jt]sx?$/u;
 const projectRoot = process.cwd();
 
 function run(command: string, args: string[]): string {
@@ -28,10 +22,7 @@ function normalizePath(path: string): string {
   return relative(projectRoot, absolutePath).replaceAll('\\', '/');
 }
 
-const authoredFiles = run('git', ['ls-files', '--cached', '--others', '--exclude-standard', '-z'])
-  .split('\0')
-  .filter((path) => typescriptPathPattern.test(path))
-  .filter((path) => !generatedPathPatterns.some((pattern) => pattern.test(path)));
+const sources = authoredFiles().filter((path) => typescriptPathPattern.test(path));
 
 const compilerFiles = new Set(
   ['tsconfig.json', 'tsconfig.tests.json'].flatMap((config) =>
@@ -42,12 +33,14 @@ const compilerFiles = new Set(
   )
 );
 
-const missingFiles = authoredFiles.filter((path) => !compilerFiles.has(path)).sort();
+const missingFiles = sources
+  .filter((path) => !compilerFiles.has(path))
+  .toSorted((left, right) => left.localeCompare(right));
 
 if (missingFiles.length > 0) {
   console.error('Authored TypeScript files missing from the compiler programs:');
   console.error(missingFiles.join('\n'));
   process.exitCode = 1;
 } else {
-  console.info(`Every authored TypeScript file is covered (${authoredFiles.length} files).`);
+  console.info(`Every authored TypeScript file is covered (${sources.length} files).`);
 }

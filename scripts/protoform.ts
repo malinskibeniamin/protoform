@@ -64,8 +64,12 @@ function isAuditTarget(value: unknown): value is AutoFormAuditTarget {
 
 async function loadAuditTargets(configPath: string): Promise<AutoFormAuditTarget[]> {
   const modulePath = pathToFileURL(resolve(configPath)).href;
-  const module = await import(modulePath);
-  const candidate: unknown = module.default ?? module.auditTargets;
+  const module: unknown = await import(modulePath);
+  if (typeof module !== 'object' || module === null) {
+    throw new TypeError('Audit target module must be an object.');
+  }
+  const candidate: unknown =
+    ('default' in module ? module.default : undefined) ?? ('auditTargets' in module ? module.auditTargets : undefined);
   if (!(Array.isArray(candidate) && candidate.every(isAuditTarget))) {
     throw new TypeError(configPath.concat(' must export an AutoFormAuditTarget array as default or auditTargets.'));
   }

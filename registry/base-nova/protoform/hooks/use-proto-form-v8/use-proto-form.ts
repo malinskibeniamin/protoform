@@ -234,7 +234,9 @@ function restoreDefaultSection<Desc extends DescMessage>(
   if (options?.defaultValue !== undefined) {
     return;
   }
-  form.setValue(name, getFormValue(form.formState.defaultValues, name), { shouldDirty: !options?.keepDirty });
+  form.setValue(name, getFormValue(form.formState.defaultValues, name) as Parameters<typeof form.setValue>[1], {
+    shouldDirty: !options?.keepDirty,
+  });
   if (!options?.keepError) {
     form.clearErrors(name);
   }

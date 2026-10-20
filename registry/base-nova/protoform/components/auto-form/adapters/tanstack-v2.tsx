@@ -180,7 +180,7 @@ function TanStackV2ArrayController({
   return (
     <ArrayField name={fieldName}>
       {(field) => {
-        const arrayValue = Array.isArray(field.value) ? field.value : [];
+        const arrayValue: unknown[] = Array.isArray(field.value) ? field.value : [];
         while (keys.current.length < arrayValue.length) {
           nextItemId.current += 1;
           keys.current.push(`${collectionId}-${nextItemId.current}`);
@@ -321,7 +321,7 @@ export function TanStackV2Engine({
     ],
   };
   const form = useForm<FormValues, V2Validators, unknown>({
-    ...(formOptions ?? {}),
+    ...formOptions,
     defaultValues: formDefaultValuesRef.current,
     validators: [...(formOptions?.validators ?? []), providerValidator],
   });

@@ -54,10 +54,8 @@ describe('AutoForm – CEL rules', () => {
       />
     );
 
-    const regionInput = screen.getByTestId('proto-ui-fields-form-field-region-control') as HTMLInputElement;
-    const maintenanceDateInput = screen.getByTestId(
-      'proto-ui-fields-form-field-maintenance-window-control-date-input'
-    ) as HTMLInputElement;
+    const regionInput = screen.getByTestId('proto-ui-fields-form-field-region-control');
+    const maintenanceDateInput = screen.getByTestId('proto-ui-fields-form-field-maintenance-window-control-date-input');
 
     expect(regionInput).toBeDisabled();
     expect(maintenanceDateInput).toBeDisabled();

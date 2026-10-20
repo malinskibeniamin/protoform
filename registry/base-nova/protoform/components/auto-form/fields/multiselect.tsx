@@ -50,9 +50,7 @@ function MultiSelectFieldComponent({ field, id, inputProps }: AutoFormFieldProps
     <SimpleMultiSelect
       {...(inputProps['disabled'] === undefined ? {} : { disabled: inputProps['disabled'] })}
       id={id}
-      onValueChange={(values) =>
-        inputProps['onValueChange'](numericOptions ? values.map((value) => Number(value)) : values)
-      }
+      onValueChange={(values) => inputProps['onValueChange'](numericOptions ? values.map(Number) : values)}
       options={options}
       placeholder={
         placeholder !== undefined && placeholder !== ''
@@ -60,7 +58,7 @@ function MultiSelectFieldComponent({ field, id, inputProps }: AutoFormFieldProps
           : formatProtoformMessage(formatMessage, 'auto_form.multiselect.placeholder', {}, 'Select one or more options')
       }
       testId={testIds.field}
-      value={Array.isArray(inputProps['value']) ? inputProps['value'].map((value: unknown) => String(value)) : []}
+      value={Array.isArray(inputProps['value']) ? inputProps['value'].map(String) : []}
       width="full"
     />
   );
@@ -89,9 +87,7 @@ function DataProviderMultiSelectComponent({ field, id, inputProps, path }: AutoF
   const providerId = readDataProviderId(itemField);
   const { dataProviders, formValues } = useAutoForm();
   const provider = resolveDataProvider(dataProviders, providerId);
-  const currentValue = Array.isArray(inputProps['value'])
-    ? inputProps['value'].map((value: unknown) => String(value))
-    : [];
+  const currentValue = Array.isArray(inputProps['value']) ? inputProps['value'].map(String) : [];
   const fieldPath = path.join('.');
   const dependencyValues = Object.fromEntries(
     (provider?.dependencies ?? []).map((dependency) => [dependency, getPathInObject(formValues, dependency.split('.'))])

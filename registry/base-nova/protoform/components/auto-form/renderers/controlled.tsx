@@ -1,8 +1,7 @@
 'use client';
 
-import type React from 'react';
 import { useAutoFormRenderContext, useAutoFormRuntimeContext } from '../context';
-import type { AutoFormFieldProps, ParsedField } from '../core-types';
+import type { ParsedField } from '../core-types';
 import { useAutoFormEngine } from '../engine';
 import { getAutoFormFieldTestId } from '../test-ids';
 import { getRenderedLabel, useFieldPresentation } from './shared';
@@ -38,7 +37,7 @@ export function ControlledFieldRenderer({
   const registeredComponent =
     formComponents[resolvedRenderType] ??
     fieldRegistry?.list().find((definition) => definition.name === resolvedRenderType)?.component;
-  const FieldComponent = (registeredComponent ?? formComponents.fallback) as React.ComponentType<AutoFormFieldProps>;
+  const FieldComponent = registeredComponent ?? formComponents.fallback;
   const componentField = registeredComponent
     ? renderField
     : {

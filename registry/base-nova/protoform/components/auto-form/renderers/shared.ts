@@ -24,9 +24,9 @@ export function cloneFieldWithDisabled(field: ParsedField, disabled: boolean): P
   return {
     ...field,
     fieldConfig: {
-      ...(field.fieldConfig ?? {}),
+      ...field.fieldConfig,
       inputProps: {
-        ...(field.fieldConfig?.inputProps ?? {}),
+        ...field.fieldConfig?.inputProps,
         disabled: true,
       },
     },
@@ -72,7 +72,7 @@ export function cloneFieldForCompactRow(field: ParsedField): ParsedField {
   return {
     ...field,
     fieldConfig: {
-      ...(field.fieldConfig ?? {}),
+      ...field.fieldConfig,
       customData: {
         ...existingCustomData,
         compactRow: true,
@@ -84,7 +84,7 @@ export function cloneFieldForCompactRow(field: ParsedField): ParsedField {
       },
       description: '',
       inputProps: {
-        ...(field.fieldConfig?.inputProps ?? {}),
+        ...field.fieldConfig?.inputProps,
         placeholder: placeholder !== undefined && placeholder !== '' ? placeholder : fallbackPlaceholder,
       },
       label: '',

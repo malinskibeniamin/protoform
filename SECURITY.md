@@ -2,11 +2,11 @@
 
 ## Supported versions
 
-| Version | Supported |
-| --- | --- |
-| Current preview on `main` | Best-effort |
-| Tagged 1.x (not yet published) | Planned |
-| Earlier versions | No |
+| Version                        | Supported   |
+| ------------------------------ | ----------- |
+| Current preview on `main`      | Best-effort |
+| Tagged 1.x (not yet published) | Planned     |
+| Earlier versions               | No          |
 
 Source-copy consumers own and may modify installed Protoform files. Until the first release, security fixes land on `main`; after release they are published as
 new immutable tags. Consumers must rerun `shadcn add`, inspect the diff, and merge the fix.
