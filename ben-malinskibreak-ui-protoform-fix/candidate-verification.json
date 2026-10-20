@@ -18,9 +18,24 @@
     "page_errors": []
   },
   "hosted": {
-    "ci": 39473445624,
-    "security": 39473445622,
-    "exhaustive_pending": 39473372294
+    "ci": {
+      "run": 39473445624,
+      "status": "success"
+    },
+    "security": {
+      "run": 39473445622,
+      "status": "success"
+    },
+    "exhaustive": {
+      "run": 39473372294,
+      "status": "success",
+      "e2e_tests": 717,
+      "conformance_tests": 175,
+      "unit_tests": 264,
+      "integration_tests": 273,
+      "real_browser_tests": 21,
+      "installed_host_tests": 10
+    }
   },
   "merged": false,
   "limits": [
@@ -28,5 +43,6 @@
     "local OpenAPI example server warning",
     "documented Buf audit limitation and existing exceptions",
     "not exhaustive accessibility or arbitrary-scale coverage"
-  ]
+  ],
+  "finished_at": "2026-10-20T18:50:15.188449+00:00"
 }
