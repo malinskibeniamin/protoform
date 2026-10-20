@@ -1,0 +1,409 @@
+$ node scripts/run-tests.ts integration --reporters verbose
+
+
+error | examples/catalog/capability-demo.test.tsx > CapabilityDemo > stacks bounded recursive array items inside their collection
+A suspended resource finished loading inside a test, but the event was not wrapped in act(...).
+
+When testing, code that resolves suspended data should be wrapped into act(...):
+
+act(() => {
+  /* finish loading suspended data */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+
+error | examples/catalog/capability-demo.test.tsx > CapabilityDemo > stacks bounded recursive array items inside their collection
+A suspended resource finished loading inside a test, but the event was not wrapped in act(...).
+
+When testing, code that resolves suspended data should be wrapped into act(...):
+
+act(() => {
+  /* finish loading suspended data */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+
+error | examples/catalog/capability-demo.test.tsx > CapabilityDemo > stacks bounded recursive array items inside their collection
+A suspended resource finished loading inside a test, but the event was not wrapped in act(...).
+
+When testing, code that resolves suspended data should be wrapped into act(...):
+
+act(() => {
+  /* finish loading suspended data */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+ ✓ examples/catalog/capability-demo.test.tsx (37) 1.42s
+  ✓ CapabilityDemo > renders a focused React Hook Form AIP demo and submits its protobuf value (80ms)
+  ✓ CapabilityDemo > renders an explicit not-found state for an unknown demo (2ms)
+  ✓ CapabilityDemo > redacts sensitive values from submitted previews (141ms)
+  ✓ CapabilityDemo > normalizes well-known type defaults for form controls (70ms)
+  ✓ CapabilityDemo > stacks bounded recursive array items inside their collection (31ms)
+  ✓ CapabilityDemo > renders repeated enum defaults with their protobuf labels (87ms)
+  ✓ CapabilityDemo > renders the book contract (30ms)
+  ✓ CapabilityDemo > renders the validation contract (89ms)
+  ✓ CapabilityDemo > renders the create-book contract (34ms)
+  ✓ CapabilityDemo > renders the get-book contract (4ms)
+  ✓ CapabilityDemo > renders the list-books contract (11ms)
+  ✓ CapabilityDemo > renders the update-book contract (35ms)
+  ✓ CapabilityDemo > renders the delete-book contract (11ms)
+  ✓ CapabilityDemo > renders the provision-capacity contract (23ms)
+  ✓ CapabilityDemo > renders the time-range contract (15ms)
+  ✓ CapabilityDemo > renders the any contract (23ms)
+  ✓ CapabilityDemo > renders the presence contract (28ms)
+  ✓ CapabilityDemo > renders the run-job contract (5ms)
+  ✓ CapabilityDemo > renders the export-books contract (14ms)
+  ✓ CapabilityDemo > renders the update-settings contract (7ms)
+  ✓ CapabilityDemo > renders the undelete-book contract (4ms)
+  ✓ CapabilityDemo > renders the purge-books contract (11ms)
+  ✓ CapabilityDemo > renders the well-known contract (37ms)
+  ✓ CapabilityDemo > renders the batch-get contract (7ms)
+  ✓ CapabilityDemo > renders the batch-create contract (101ms)
+  ✓ CapabilityDemo > renders the batch-update contract (41ms)
+  ✓ CapabilityDemo > renders the batch-delete contract (14ms)
+  ✓ CapabilityDemo > renders the commit-policy contract (10ms)
+  ✓ CapabilityDemo > renders the numeric contract (13ms)
+  ✓ CapabilityDemo > renders the collections contract (38ms)
+  ✓ CapabilityDemo > renders the import-books contract (17ms)
+  ✓ CapabilityDemo > renders the dynamic-json contract (64ms)
+  ✓ CapabilityDemo > renders the recursive contract (71ms)
+  ✓ CapabilityDemo > renders the editions contract (13ms)
+  ✓ CapabilityDemo > renders the integers contract (176ms)
+  ✓ CapabilityDemo > renders the string-network contract (41ms)
+  ✓ CapabilityDemo > renders the cel contract (23ms)
+ ✓ examples/basic/basic-form.test.tsx (4) 1.49s
+  ✓ server-error form example > shows protobuf help in an accessible field tooltip (321ms)
+  ✓ server-error form example > submits through an in-browser service when no server URL is provided (312ms)
+  ✓ server-error form example > submits a generated protobuf message to the local Connect server (336ms)
+  ✓ server-error form example > maps structured server details back to the generated field (518ms)
+ ✓ examples/readiness/readiness-dashboard.test.tsx (5) 2.33s
+  ✓ ReadinessDashboard > paginates the capability ledger 25 checks at a time (231ms)
+  ✓ ReadinessDashboard > resets pagination when search or status filters change (623ms)
+  ✓ ReadinessDashboard > keeps verified optional and out-of-target checks distinct (225ms)
+  ✓ ReadinessDashboard > shows the score and filters the capability ledger by status (707ms)
+  ✓ ReadinessDashboard > explains verified checks from the status map (544ms)
+
+warn | registry/base-nova/protoform/components/auto-form/__tests__/test-ids.test.tsx > AutoForm – test IDs > emits stable ids for collections and modes, and path-based ids under the default prefix for protobuf descriptors
+You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+
+ ✓ registry/base-nova/protoform/components/auto-form-tanstack/__tests__/conformance.test.tsx (7) 997ms
+  ✓ TanStack AutoForm conformance > keeps the native form API while rendering and submitting provider output (98ms)
+  ✓ TanStack AutoForm conformance > uses native TanStack state for repeated fields and clears the previous oneof branch (422ms)
+  ✓ TanStack AutoForm conformance > validates with the shared change and blur lifecycles (40ms)
+  ✓ TanStack AutoForm conformance > ignores stale asynchronous lifecycle results (17ms)
+  ✓ TanStack AutoForm conformance > retains native TanStack submit validators and revalidates failed submissions on the shared lifecycle (42ms)
+  ✓ TanStack AutoForm conformance > renders every provider failure and runs native TanStack submission only after validation passes (36ms)
+  ✓ TanStack AutoForm conformance > builds update masks from native TanStack dirty metadata and preserves the edit source message (342ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/data-provider-v2.test.tsx (13) 1.18s
+  ✓ AutoForm data providers v2 > keeps provider-ranked matches whose labels do not contain the typed query (233ms)
+  ✓ AutoForm data providers v2 > provides a live signal after StrictMode effect replay and cancels it on unmount (16ms)
+  ✓ AutoForm data providers v2 > supplies search, cursor, dependencies, selected values, cancellation, and stale-selection policy (223ms)
+  ✓ AutoForm data providers v2 > keeps a selected value present in the first page and clears optional numeric values without coercing them to zero (44ms)
+  ✓ AutoForm data providers v2 > aborts a repeated-field provider when a dependency changes (28ms)
+  ✓ AutoForm data providers v2 > renders options from a component provider (23ms)
+  ✓ AutoForm data providers v2 > replaces a select provider with one that calls different hooks (31ms)
+  ✓ AutoForm data providers v2 > renders a multi-select provider registered after the first render (24ms)
+  ✓ AutoForm data providers v2 > keeps multi-select values and reports the failure when the provider errors (18ms)
+  ✓ AutoForm data providers v2 > renders the provider's empty state when it returns no options (218ms)
+  ✓ AutoForm data providers v2 > puts the control test id on the provider select's input (6ms)
+  ✓ AutoForm data providers v2 > renders the provider's empty state in a multi-select with no options (217ms)
+  ✓ multi-select preserves incomplete selections and clears only missing values after the last page (101ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/test-ids.test.tsx (2) 596ms
+  ✓ AutoForm – test IDs > emits stable field, help, and option test ids for zod forms (186ms)
+  ✓ AutoForm – test IDs > emits stable ids for collections and modes, and path-based ids under the default prefix for protobuf descriptors (408ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/accessible-errors.test.tsx (5) 648ms
+  ✓ AutoForm accessible errors > announces collection validation and clears it after correction: must contain no more than 3 item(s) (311ms)
+  ✓ AutoForm accessible errors > announces collection validation and clears it after correction: repeated value must contain unique items (169ms)
+  ✓ AutoForm accessible errors > links email consumer inputs to validation errors (75ms)
+  ✓ AutoForm accessible errors > links textarea consumer inputs to validation errors (61ms)
+  ✓ keeps every same-field error and links selection controls to their errors (31ms)
+ ✓ registry/base-nova/protoform/components/auto-form-tanstack-v2/__tests__/conformance.test.tsx (8) 766ms
+  ✓ experimental TanStack Form v2 AutoForm conformance > keeps the v2-native API and submits transformed provider output (75ms)
+  ✓ experimental TanStack Form v2 AutoForm conformance > uses v2 field state for repeated fields and clears the previous oneof branch (284ms)
+  ✓ experimental TanStack Form v2 AutoForm conformance > renders a provider root error and a rejected async validation once (57ms)
+  ✓ experimental TanStack Form v2 AutoForm conformance > clears provider errors on controlled resets and builds update masks from the v2 default-value baseline (211ms)
+  ✓ experimental TanStack Form v2 AutoForm conformance > runs provider validation on change or blur when requested (42ms)
+  ✓ experimental TanStack Form v2 AutoForm conformance > ignores stale asynchronous v2 validation results (18ms)
+  ✓ experimental TanStack Form v2 AutoForm conformance > keeps native v2 validators and onSubmit validation errors alongside provider validation (30ms)
+  ✓ experimental TanStack Form v2 AutoForm conformance > renders every provider failure and runs native v2 submission only after validation passes (47ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/proto-forms.test.tsx (5) 3.73s
+  ✓ AutoForm – protobuf forms > renders registered descriptions and submits protobuf-shaped output (900ms)
+  ✓ AutoForm – protobuf forms > hydrates and preserves the edit source message through the React Hook Form adapter (1.29s)
+  ✓ AutoForm – protobuf forms > shows protobuf field-level and message-level validation feedback (388ms)
+  ✓ AutoForm – protobuf forms > switches protobuf oneof cases and submits the latest selection (718ms)
+  ✓ AutoForm – protobuf forms > updates protobuf collection values when rows are added and removed (434ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/dirty-state.test.tsx (4) 618ms
+  ✓ React Hook Form dirty-state lifecycle > reports clean initially, emits distinct changes, marks saved values clean synchronously, and adopts reset values as the baseline (147ms)
+  ✓ React Hook Form dirty-state lifecycle > tracks nested, array, map, and oneof changes (194ms)
+  ✓ TanStack Form dirty-state lifecycle > reports clean initially, emits distinct changes, marks saved values clean synchronously, and adopts reset values as the baseline (111ms)
+  ✓ TanStack Form dirty-state lifecycle > tracks nested, array, map, and oneof changes (166ms)
+ ✓ examples/form-libraries/form-libraries.test.tsx (4) 569ms
+  ✓ Formik example > validates with Formik and submits a typed protobuf message (180ms)
+  ✓ Formik example > maps structured server errors into Formik (125ms)
+  ✓ Final Form example > validates with Final Form and submits a typed protobuf message (144ms)
+  ✓ Final Form example > maps structured server errors into Final Form (120ms)
+ ✓ examples/shared/example-island.test.tsx (16) 753ms
+  ✓ shows the Loading bare-bones example status until its chunk loads (138ms)
+  ✓ shows the Loading two-step example status until its chunk loads (10ms)
+  ✓ shows the Loading CEL and RE2 example status until its chunk loads (15ms)
+  ✓ shows the Loading oneof example status until its chunk loads (17ms)
+  ✓ shows the Loading server-error example status until its chunk loads (49ms)
+  ✓ shows the Loading AIP resource example status until its chunk loads (13ms)
+  ✓ shows the Loading complex example status until its chunk loads (36ms)
+  ✓ shows the Loading kitchen sink example status until its chunk loads (84ms)
+  ✓ shows the Loading deeply nested example status until its chunk loads (256ms)
+  ✓ shows the Loading TanStack Form example status until its chunk loads (11ms)
+  ✓ shows the Loading Formik example status until its chunk loads (11ms)
+  ✓ shows the Loading Final Form example status until its chunk loads (14ms)
+  ✓ shows the Loading TanStack Form interop demo status until its chunk loads (6ms)
+  ✓ shows the Loading Formik interop demo status until its chunk loads (5ms)
+  ✓ shows the Loading Final Form interop demo status until its chunk loads (9ms)
+  ✓ shows the Loading readiness dashboard status until its chunk loads (76ms)
+ ✓ examples/presets/preset-lab.test.tsx (8) 649ms
+  ✓ PresetLab > applies preview mode changes to the Blume docs theme (133ms)
+  ✓ PresetLab > tracks Blume docs theme changes without a reload (87ms)
+  ✓ PresetLab > starts from the current Blume docs theme when mode is not shared (42ms)
+  ✓ PresetLab > keeps every preset close while rendering one focused live form (185ms)
+  ✓ PresetLab > enters and exits full screen without replacing the live workspace (72ms)
+  ✓ PresetLab > falls back to an accessible full-viewport mode when the browser API rejects (59ms)
+  ✓ PresetLab > reports invalid shared presets and clipboard failures (41ms)
+  ✓ PresetLab > preserves a supported preset when only the shared mode is invalid (30ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/root-header.test.tsx (2) 674ms
+  ✓ AutoForm root header > renders schema metadata by default (379ms)
+  ✓ AutoForm root header > uses a host renderer with the resolved root metadata and skips it when hidden (289ms)
+ ✓ examples/catalog/demo-hub.test.tsx (2) 563ms
+  ✓ DemoHub > opens a directly linked demo and keeps selection in the URL (540ms)
+  ✓ DemoHub > keeps the selected demo source available without a wrapper page (23ms)
+ ✓ registry/base-nova/protoform/demo/bookstore/bookstore-demo.test.tsx (2) 631ms
+  ✓ bookstore flagship demo > lists, gets, and creates a book through a CEL-validated RHF stepper (473ms)
+  ✓ bookstore flagship demo > updates with an etag and field mask, then deletes with AutoForm (158ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/stepper.test.tsx (6) 499ms
+  ✓ AutoForm stepper > renders an adaptive horizontal row by default and a vertical rail through the stepper config (41ms)
+  ✓ AutoForm stepper > renders one step at a time with semantic progress, linear navigation, and a final-step summary (40ms)
+  ✓ AutoForm stepper > blocks Continue on resolver root errors and keeps the earlier step when Back cancels pending validation (39ms)
+  ✓ AutoForm stepper > submits only from the final step and prevents duplicate submissions (57ms)
+  ✓ AutoForm stepper > returns to the owning step when submission reports a field error (39ms)
+  ✓ AutoForm stepper > completes validation recovery and every step using only the keyboard (282ms)
+ ✓ examples/learning/oneof-form.test.tsx (2) 484ms
+  ✓ shows oneof placeholders and labels instead of internal values (102ms)
+  ✓ clears the previous oneof branch before submitting the new one (382ms)
+ ✓ registry/base-nova/protoform/components/combobox/index.test.tsx (3) 392ms
+  ✓ highlights and selects an option arriving after the search was typed (282ms)
+  ✓ skips disabled matches and distinguishes options with the same label by value (62ms)
+  ✓ creates a typed option through the same keyboard selection contract (47ms)
+ ✓ examples/tanstack/tanstack-form.test.tsx (3) 424ms
+  ✓ TanStack Form example > maps the protobuf Standard Schema issues to fields on submit (78ms)
+  ✓ TanStack Form example > submits the Standard Schema output as a typed protobuf message (143ms)
+  ✓ TanStack Form example > maps structured server details to the owning TanStack field (203ms)
+ ✓ examples/complex/complex-form.test.tsx (2) 471ms
+  ✓ complex form example > redacts credentials from the final review summary (245ms)
+  ✓ complex form example > routes a structured submit error back to the step that owns the field (226ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/field-rendering.test.tsx (2) 520ms
+  ✓ AutoForm – field rendering > selects built-in renderers and anchors root rows and the submit action (83ms)
+  ✓ AutoForm – field rendering > drops redundant fallback helper copy (436ms)
+ ✓ registry/base-nova/protoform/hooks/use-proto-form/partial-edit-validation.test.tsx (5) 358ms
+  ✓ useProtoForm partial-edit validation > validates and masks a field modified then restored to its blank baseline until reset (146ms)
+  ✓ useProtoForm partial-edit validation > keeps message-level issues when no field has been modified (28ms)
+  ✓ useProtoForm partial-edit validation > does not treat server errors on untouched fields as modification intent (3ms)
+  ✓ useProtoForm partial-edit validation > matches nested modified fields to protobuf mask paths (93ms)
+  ✓ useProtoForm partial-edit validation > tracks modification intent from registered input events (88ms)
+ ✓ examples/nested/deeply-nested-form.test.tsx (1) 386ms
+  ✓ DeeplyNestedFormExample > renders a six-level protobuf contract from one AutoForm (385ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/cel-rules.test.tsx (1) 286ms
+  ✓ AutoForm – CEL rules > supports proto UI CEL for field visibility and disabled state (286ms)
+ ✓ examples/learning/aip-resource-form.test.tsx (1) 287ms
+  ✓ shows the AIP-safe update mask produced by editable changes (287ms)
+ ✓ registry/base-nova/protoform/demo/catalog/interop.test.tsx (3) 272ms
+  ✓ TanStack Form registry demo > validates and submits a typed protobuf value (126ms)
+  ✓ Formik registry demo > validates and submits a typed protobuf value (74ms)
+  ✓ Final Form registry demo > validates and submits a typed protobuf value (70ms)
+ ✓ registry/base-nova/protoform/components/multi-select/index.test.tsx (5) 301ms
+  ✓ exposes multiple selection independently of keyboard highlight and keeps the popup open (126ms)
+  ✓ enforces the selection limit with searchable=true while allowing deselection (51ms)
+  ✓ enforces the selection limit with searchable=false while allowing deselection (63ms)
+  ✓ hides empty groups when searching (41ms)
+  ✓ shows the supplied empty state without a search input (20ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/resilience.test.tsx (3) 248ms
+  ✓ AutoForm – onSubmit error handling > shows a root error when onSubmit throws or rejects (143ms)
+  ✓ AutoForm – onSubmit error handling > ignores submits from outside the form while a submission is in flight (33ms)
+  ✓ AutoForm – onSubmit error handling > aborts superseded and unmounted submit contexts and active provider validation (71ms)
+ ✓ examples/kitchen-sink/kitchen-sink-form.test.tsx (1) 223ms
+  ✓ KitchenSinkFormExample > presents the large contract as a linear source-owned shadcn flow (223ms)
+
+warn | registry/base-nova/protoform/components/auto-form/__tests__/modes-and-payload.test.tsx > AutoForm – modes and payload > supports payloadBuilder and custom summary rendering
+You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+
+ ✓ examples/learning/cel-re2-form.test.tsx (1) 326ms
+  ✓ explains and accepts a focused RE2-backed CEL rule (326ms)
+ ✓ registry/base-nova/protoform/components/auto-form-react-hook-form-v8/__tests__/conformance.test.tsx (3) 387ms
+  ✓ experimental React Hook Form v8 AutoForm conformance > keeps the v8-native API and submits transformed provider output (217ms)
+  ✓ experimental React Hook Form v8 AutoForm conformance > uses v8 field keys to append and remove primitive repeated fields (132ms)
+  ✓ experimental React Hook Form v8 AutoForm conformance > renders every provider field failure, focuses the first v8 field, and renders a root error once (38ms)
+ ✓ examples/learning/two-step-form.test.tsx (1) 345ms
+  ✓ reveals one simple field per step (345ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/modes-and-payload.test.tsx (2) 373ms
+  ✓ AutoForm – modes and payload > supports payloadBuilder and custom summary rendering (214ms)
+  ✓ AutoForm – modes and payload > supports editable JSON mode via payloadParser and updates the summary after switching back to advanced (159ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/compact-rows.test.tsx (3) 151ms
+  ✓ AutoForm – compact array row rendering > compact array rows suppress item labels and remove the selected item (59ms)
+  ✓ AutoForm – compact array row rendering > array items in compact mode still show validation errors on submit (54ms)
+  ✓ AutoForm – compact array row rendering > hides customData.hidden fields, disables customData.immutable fields, and collapses customData.collapsible objects (38ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/appearance.test.tsx (8) 179ms
+  ✓ AutoForm appearance > keeps the split layout, divided sections, and card array items by default (43ms)
+  ✓ AutoForm appearance > stacks fields, indents section bodies, and separates array items on request (21ms)
+  ✓ single-variant oneofs > a required oneof with one variant selects it and renders its fields without a picker (48ms)
+  ✓ single-variant oneofs > a required oneof with one variant keeps its field test id (6ms)
+  ✓ single-variant oneofs > selecting the sole required variant leaves the form clean (8ms)
+  ✓ single-variant oneofs > a disabled required oneof with one variant is not selected for the user (5ms)
+  ✓ single-variant oneofs > an optional oneof with one variant toggles it with a switch (32ms)
+  ✓ single-variant oneofs > a oneof with several variants keeps the picker and does not repeat the variant heading (15ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/oneof-wrapper.test.tsx (3) 167ms
+  ✓ OneofWrapper > replaces the variant picker while Protoform owns selection and variant rendering (82ms)
+  ✓ OneofWrapper > clears the selection through onSelect (38ms)
+  ✓ OneofWrapper > moves focus to the default variant select when the oneof reports an error (47ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/deprecated-fields.test.tsx (4) 251ms
+  ✓ React Hook Form deprecated field policy > shows deprecated fields by default and disables them and an active deprecated oneof branch on request (63ms)
+  ✓ React Hook Form deprecated field policy > hides deprecated fields and choices while preserving their submitted values (88ms)
+  ✓ TanStack Form deprecated field policy > shows deprecated fields by default and disables them and an active deprecated oneof branch on request (29ms)
+  ✓ TanStack Form deprecated field policy > hides deprecated fields and choices while preserving their submitted values (71ms)
+ ✓ registry/base-nova/protoform/hooks/use-proto-form-tanstack-v2/index.test.tsx (2) 166ms
+  ✓ experimental TanStack Form v2 useProtoForm > keeps the v2-native form surface and adds protobuf message, mask, and oneof helpers (11ms)
+  ✓ experimental TanStack Form v2 useProtoForm > runs protobuf validation through the v2 validator pipeline alongside native validators and exposes the validated message (155ms)
+ ✓ components/docs/diagram-maximizer.test.tsx (4) 196ms
+  ✓ DiagramMaximizer > gives an unlabeled Mermaid fallback a readable dialog title (99ms)
+  ✓ DiagramMaximizer > opens an accessible full-viewport fallback and restores focus (56ms)
+  ✓ DiagramMaximizer > enhances generic architecture containers without duplicating nested Mermaid controls (8ms)
+  ✓ DiagramMaximizer > uses the browser Fullscreen API when available and exits from the same control (33ms)
+ ✓ registry/base-nova/protoform/demo/catalog/tanstack-form.test.tsx (2) 173ms
+  ✓ TanStack Form registry demo > shows a detailed submission failure and clears it after a successful retry (119ms)
+  ✓ TanStack Form registry demo > shows an empty-message submission failure and clears it after a successful retry (54ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/update-mask.test.tsx (1) 159ms
+  ✓ AutoForm update masks > passes only touched protobuf fields to onSubmit (159ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/error-augmentation.test.tsx (1) 58ms
+  ✓ AutoForm – regex error augmentation > appends the configured example only to regex validation errors (57ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/ui-components.test.tsx (2) 113ms
+  ✓ ProtoformUIProvider > shows a missing host control without requiring Alert and recovers when supplied (96ms)
+  ✓ ProtoformUIProvider > renders consumer controls, translates test IDs, and names a missing control (17ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/messages.test.tsx (2) 117ms
+  ✓ AutoForm runtime messages > formats Protoform-owned submit, collection ARIA, multiselect, and provider empty-state copy through stable message codes (108ms)
+  ✓ AutoForm runtime messages > formats step navigation and progress copy (9ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/diagnostic-callback.test.tsx (1) 107ms
+  ✓ AutoForm diagnostic callback > delivers configuration diagnostics and schema resolution causes without a logging dependency (107ms)
+ ✓ registry/base-nova/protoform/components/code-block/index.test.tsx (8) 95ms
+  ✓ renders code as text, preserving blank lines and never executing HTML (17ms)
+  ✓ retains blank numbered lines and exposes line variants without changing the code (14ms)
+  ✓ numbers string lines without losing a blank line (3ms)
+  ✓ copies the original source without line-number or diff decoration (18ms)
+  ✓ shows clipboard failure and allows retry rather than reporting false success (17ms)
+  ✓ copying inside a form does not submit the form (8ms)
+  ✓ respects a caller-cancelled copy action (7ms)
+  ✓ does not show copied feedback for a different value (10ms)
+ ✓ registry/base-nova/protoform/hooks/use-proto-form-tanstack/index.test.tsx (3) 89ms
+  ✓ TanStack useProtoForm > preserves the native form API and adds protobuf message, mask, and oneof helpers (14ms)
+  ✓ TanStack useProtoForm > validates the generated protobuf contract and composes caller validators before submission (70ms)
+  ✓ TanStack useProtoForm > maps Connect field violations, including prefixed and nested paths, onto native TanStack field errors (5ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/on-field-change.test.tsx (1) 93ms
+  ✓ AutoForm – onFieldChange callback > calls onFieldChange when a field value changes (93ms)
+ ✓ registry/base-nova/protoform/hooks/use-proto-form-v8/conformance.test.tsx (3) 93ms
+  ✓ experimental React Hook Form v8 useProtoForm conformance > exposes the v8-native form API, creates protobuf messages, and builds update masks (19ms)
+  ✓ experimental React Hook Form v8 useProtoForm conformance > validates protobuf fields without the v7-only resolver package (70ms)
+  ✓ experimental React Hook Form v8 useProtoForm conformance > maps Connect field violations, including prefixed paths, onto v8 field errors (4ms)
+ ✓ registry/base-nova/protoform/hooks/use-proto-form/defaults-reset.test.tsx (4) 74ms
+  ✓ protobuf defaults and reset > normalizes asynchronously loaded native defaults (66ms)
+  ✓ protobuf defaults and reset > normalizes native defaults without dropping well-known fields on an untouched edit (2ms)
+  ✓ protobuf defaults and reset > reset to a new protobuf message adopts its unknown fields, not the previous record's (4ms)
+  ✓ protobuf defaults and reset > resetField restores a nested message section that has no registered inputs (2ms)
+ ✓ registry/base-nova/protoform/hooks/use-proto-form/rhf-lifecycle.test.tsx (5) 96ms
+  ✓ React Hook Form lifecycle through useProtoForm > reset without values keeps the original defaults clean with keepDefaultValues (13ms)
+  ✓ React Hook Form lifecycle through useProtoForm > setting and clearing errors publishes new references for subscribers (3ms)
+  ✓ React Hook Form lifecycle through useProtoForm > tracks touched and dirty values for the protobuf field hasOwnProperty (2ms)
+  ✓ React Hook Form lifecycle through useProtoForm > tracks touched and dirty values for the protobuf field isPrototypeOf (1ms)
+  ✓ React Hook Form lifecycle through useProtoForm > removing duplicate array indexes preserves remaining protobuf values and the caller indexes (77ms)
+
+warn | registry/base-nova/protoform/components/auto-form/__tests__/classification.test.tsx > AutoForm – simple/advanced field classification > simple mode shows required fields, honors customData.advanced, and advanced mode reveals the rest
+You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+
+ ✓ registry/base-nova/protoform/hooks/use-proto-form-v8/defaults-reset.test.tsx (4) 81ms
+  ✓ protobuf defaults and reset > normalizes asynchronously loaded native defaults (70ms)
+  ✓ protobuf defaults and reset > normalizes native defaults without dropping well-known fields on an untouched edit (3ms)
+  ✓ protobuf defaults and reset > reset to a new protobuf message adopts its unknown fields, not the previous record's (5ms)
+  ✓ protobuf defaults and reset > resetField restores a nested message section that has no registered inputs (3ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/classification.test.tsx (2) 247ms
+  ✓ AutoForm – simple/advanced field classification > simple mode shows required fields, honors customData.advanced, and advanced mode reveals the rest (237ms)
+  ✓ AutoForm – simple/advanced field classification > custom classifyField prop controls which fields appear in simple mode (10ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/field-wrapper.test.tsx (6) 255ms
+  ✓ ObjectWrapper > toggles a collapsible section through the Protoform button (152ms)
+  ✓ ObjectWrapper > opens a collapsible section with errors and keeps it open once they clear (45ms)
+  ✓ ObjectWrapper > uses nested heading levels and label rails, spacing tokens, and dividers only under visible labels (25ms)
+  ✓ FieldWrapper > preserves caller descriptions and isolates error links between fields (8ms)
+  ✓ FieldWrapper > renders field help as a named shadcn button in a responsive label rail (20ms)
+  ✓ ArrayWrapper > renders with the field-spacing token and an add button, and contains complex items in native cards (5ms)
+ ✓ examples/learning/bare-bones-form.test.tsx (1) 248ms
+  ✓ submits the simplest generated form without a server (247ms)
+
+warn | registry/base-nova/protoform/components/auto-form/__tests__/slots-and-modes.test.tsx > AutoForm modes > follows a changed defaultMode and falls back when the current mode is removed
+You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+
+ ✓ registry/base-nova/protoform/components/trace/index.test.tsx (3) 205ms
+  ✓ opens output by keyboard without making output a nested button (126ms)
+  ✓ exposes readable pending, running, and failed steps with supplemental descriptions (3ms)
+  ✓ supports a controlled trace and forwards native trigger props (76ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/slots-and-modes.test.tsx (2) 165ms
+  ✓ AutoForm slots > places slot content around fields without empty rows or key warnings (38ms)
+  ✓ AutoForm modes > follows a changed defaultMode and falls back when the current mode is removed (126ms)
+ ✓ registry/base-nova/protoform/components/toast/index.test.tsx (1) 150ms
+  ✓ Toaster > renders and dismisses a toast added through the shared manager (150ms)
+ ✓ registry/base-nova/protoform/components/nova-style.test.tsx (1) 131ms
+  ✓ Base Nova form controls > use Nova density and geometry by default (131ms)
+ ✓ registry/base-nova/protoform/hooks/use-proto-form/server-errors.test.tsx (3) 18ms
+  ✓ useProtoForm server errors > humanizes violations mapped through singular and plural server path prefixes and keeps unmapped ones unchanged (13ms)
+  ✓ useProtoForm server errors > maps violations on repeated-field items to the item's form path (2ms)
+  ✓ retains multiple backend violations for the same field (3ms)
+ ✓ registry/base-nova/protoform/components/input/index.test.tsx (2) 37ms
+  ✓ Input icon controls > names the password visibility control and updates its state (33ms)
+  ✓ Input icon controls > names number step controls (4ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/field-registry-prop.test.tsx (4) 120ms
+  ✓ AutoForm – fieldRegistry prop wiring > uses a custom fieldRegistry to resolve field components (59ms)
+  ✓ AutoForm – fieldRegistry prop wiring > renders custom field types inside nested messages (27ms)
+  ✓ AutoForm – fieldRegistry prop wiring > resolves nested fields through the registry match, not only top-level ones (26ms)
+  ✓ AutoForm – fieldRegistry prop wiring > shows a configuration error when a renderer has no component (7ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/form-components-defaults.test.tsx (1) 50ms
+  ✓ formComponents defaults > a generic wrapper can add default field components and still accept caller overrides (49ms)
+ ✓ registry/base-nova/protoform/components/auto-form/fields/slider.test.tsx (1) 59ms
+  ✓ SliderFieldComponent > labels the range input independently from its number input (58ms)
+ ✓ registry/base-nova/protoform/components/tabs/index.test.tsx (3) 35ms
+  ✓ TabsList equal layout > preserves data attributes for non-string tab values (30ms)
+  ✓ TabsList equal layout > only accepts the style objects the component can merge (0ms)
+  ✓ TabsList equal layout > applies the requested column count and updates it (5ms)
+ ✓ registry/base-nova/protoform/components/input-group/index.test.tsx (1) 73ms
+  ✓ InputGroupAddon > focuses the input without adding a decorative keyboard stop (73ms)
+ ✓ registry/base-nova/protoform/hooks/use-proto-form/map-fields.test.tsx (1) 15ms
+  ✓ useProtoForm map fields > keeps protobuf-native map values when creating an update (15ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/layout.test.tsx (4) 27ms
+  ✓ FormLayout > renders a form element with the form-spacing token and forwards native form props (14ms)
+  ✓ FormSection > renders nested heading levels and the header description, required marker, and optional divider only when needed (7ms)
+  ✓ FormField > renders label, control, and help text, replaces help with the error, and renders no trailing text without either (4ms)
+  ✓ FormSubmit > renders a submit-typed button that defaults to "Submit" (2ms)
+ ✓ scripts/test-environment-policy.test.tsx (2) 11ms
+  ✓ simulated DOM test environment > blocks implicit stylesheet and iframe requests without disabling explicit fetch (8ms)
+  ✓ simulated DOM test environment > uses Rstest 0.12.3 with happy-dom and no Vitest wiring (2ms)
+ ✓ registry/base-nova/protoform/demo/bookstore/rhf-field-error.test.tsx (1) 22ms
+  ✓ renders and clears mapped server errors from the form control without a FormProvider (21ms)
+ ✓ registry/base-nova/protoform/components/popover/index.test.tsx (1) 14ms
+  ✓ PopoverAnchor > supports Base UI render composition without adding a wrapper (14ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/use-auto-form.test.tsx (1) 11ms
+  ✓ useAutoForm > throws a clear error when used outside AutoForm (9ms)
+ ✓ components/docs/scrollable-code-blocks.test.tsx (2) 1ms
+  ✓ syncScrollableCodeBlocks > adds keyboard access only while a code block overflows (1ms)
+  ✓ syncScrollableCodeBlocks > preserves an author-provided tab stop (0ms)
+
+ Test Files 74 passed
+      Tests 273 passed
+   Duration 11.2s (build 511ms, tests 10.7s)
+

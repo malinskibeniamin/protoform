@@ -1,0 +1,66 @@
+$ playwright test --config=playwright.config.ts "e2e/bundled-ui.spec.ts" "e2e/form-resilience.spec.ts" "--workers=3" "--max-failures=3"
+[WebServer] $ bun run docs:blume:build && blume preview --host 127.0.0.1 --port 55013
+[WebServer] $ blume build --strict && bun run scripts/finalize-docs-build.ts
+[WebServer] (node:44058) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] BLUME_OPENAPI_LOCAL_SERVER In OpenAPI spec "./openapi.yaml": The spec's server http://127.0.0.1:55012 is a local address, so the reference publishes it as the server Try it sends requests to and the code samples call, which readers can't reach.
+[WebServer]   fix: List the API's public URL in the spec's `servers`, or replace it with an overlay (an action with `target: $.servers[0]` and `update: { url: "https://api.example.com" }`).
+[WebServer]   docs: https://useblume.dev/docs/references/openapi#spec-warnings
+[WebServer] 
+[WebServer] 1 warning(s)
+[WebServer] (node:44055) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ bun run examples/server/server.ts
+
+Running 30 tests using 3 workers
+
+(node:46654) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:46656) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:46655) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   2 [chromium] › e2e/bundled-ui.spec.ts:51:1 › clipboard failure stays visible and does not claim copied @cross-browser (286ms)
+  ✓   3 [chromium] › e2e/bundled-ui.spec.ts:33:1 › bundled code and trace fit a narrow container @cross-browser (362ms)
+  ✓   1 [chromium] › e2e/bundled-ui.spec.ts:5:1 › bundled code block copies source and trace output opens by keyboard @cross-browser (378ms)
+  ✓   5 [chromium] › e2e/form-resilience.spec.ts:31:3 › keeps deeply nested fields editable at 320px @cross-browser (562ms)
+  ✓   6 [chromium] › e2e/form-resilience.spec.ts:31:3 › keeps deeply nested fields editable at 390px @cross-browser (575ms)
+  ✓   7 [chromium] › e2e/form-resilience.spec.ts:53:3 › makes Copy JSON readable in light theme @cross-browser (363ms)
+  ✓   8 [chromium] › e2e/form-resilience.spec.ts:53:3 › makes Copy JSON readable in dark theme @cross-browser (366ms)
+  ✓  10 [chromium] › e2e/form-resilience.spec.ts:126:1 › uses the form container rather than viewport for nested layouts @cross-browser (543ms)
+(node:46940) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   4 [chromium] › e2e/form-resilience.spec.ts:4:1 › underlines invalid JSON and explains the syntax error inline @cross-browser (2.1s)
+(node:47028) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  11 [firefox] › e2e/bundled-ui.spec.ts:5:1 › bundled code block copies source and trace output opens by keyboard @cross-browser (953ms)
+  ✓  13 [firefox] › e2e/bundled-ui.spec.ts:51:1 › clipboard failure stays visible and does not claim copied @cross-browser (252ms)
+  ✓  12 [firefox] › e2e/bundled-ui.spec.ts:33:1 › bundled code and trace fit a narrow container @cross-browser (985ms)
+  ✓   9 [chromium] › e2e/form-resilience.spec.ts:103:1 › wraps contract-valid success identifiers on mobile @cross-browser (3.1s)
+(node:47377) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  15 [firefox] › e2e/form-resilience.spec.ts:31:3 › keeps deeply nested fields editable at 320px @cross-browser (747ms)
+  ✓  17 [firefox] › e2e/form-resilience.spec.ts:53:3 › makes Copy JSON readable in light theme @cross-browser (792ms)
+  ✓  14 [firefox] › e2e/form-resilience.spec.ts:4:1 › underlines invalid JSON and explains the syntax error inline @cross-browser (2.7s)
+  ✓  18 [firefox] › e2e/form-resilience.spec.ts:53:3 › makes Copy JSON readable in dark theme @cross-browser (1.1s)
+  ✓  16 [firefox] › e2e/form-resilience.spec.ts:31:3 › keeps deeply nested fields editable at 390px @cross-browser (2.3s)
+  ✓  20 [firefox] › e2e/form-resilience.spec.ts:126:1 › uses the form container rather than viewport for nested layouts @cross-browser (1.3s)
+(node:48349) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  19 [firefox] › e2e/form-resilience.spec.ts:103:1 › wraps contract-valid success identifiers on mobile @cross-browser (1.8s)
+(node:48465) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:48480) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  21 [webkit] › e2e/bundled-ui.spec.ts:5:1 › bundled code block copies source and trace output opens by keyboard @cross-browser (575ms)
+  ✓  22 [webkit] › e2e/bundled-ui.spec.ts:33:1 › bundled code and trace fit a narrow container @cross-browser (427ms)
+  ✓  23 [webkit] › e2e/bundled-ui.spec.ts:51:1 › clipboard failure stays visible and does not claim copied @cross-browser (374ms)
+  ✓  25 [webkit] › e2e/form-resilience.spec.ts:31:3 › keeps deeply nested fields editable at 320px @cross-browser (988ms)
+  ✓  26 [webkit] › e2e/form-resilience.spec.ts:31:3 › keeps deeply nested fields editable at 390px @cross-browser (921ms)
+  ✓  27 [webkit] › e2e/form-resilience.spec.ts:53:3 › makes Copy JSON readable in light theme @cross-browser (542ms)
+  ✓  24 [webkit] › e2e/form-resilience.spec.ts:4:1 › underlines invalid JSON and explains the syntax error inline @cross-browser (2.0s)
+  ✓  28 [webkit] › e2e/form-resilience.spec.ts:53:3 › makes Copy JSON readable in dark theme @cross-browser (510ms)
+  ✓  30 [webkit] › e2e/form-resilience.spec.ts:126:1 › uses the form container rather than viewport for nested layouts @cross-browser (787ms)
+  ✓  29 [webkit] › e2e/form-resilience.spec.ts:103:1 › wraps contract-valid success identifiers on mobile @cross-browser (1.8s)
+
+  30 passed (29.1s)

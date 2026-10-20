@@ -1,0 +1,69 @@
+chromium INITIAL {
+  doc: 320,
+  viewport: 320,
+  boxes: [
+    { slot: 'code-block', w: 272, sw: 270 },
+    { slot: 'code-block-actions', w: 52, sw: 52 },
+    { slot: 'code-block-content', w: 270, sw: 1029 },
+    { slot: 'code-block', w: 272, sw: 270 },
+    { slot: 'code-block-content', w: 270, sw: 270 }
+  ]
+}
+chromium ERROR {
+  doc: 320,
+  viewport: 320,
+  boxes: [
+    { slot: 'code-block', w: 272, sw: 270 },
+    { slot: 'code-block-actions', w: 235.375, sw: 235 },
+    { slot: 'code-block-content', w: 270, sw: 1029 },
+    { slot: 'code-block', w: 272, sw: 270 },
+    { slot: 'code-block-content', w: 270, sw: 270 }
+  ]
+}
+chromium PASS retry, space, enter, wrap, collapse []
+firefox INITIAL {
+  doc: 320,
+  viewport: 320,
+  boxes: [
+    { slot: 'code-block', w: 272, sw: 270 },
+    { slot: 'code-block-actions', w: 52, sw: 52 },
+    { slot: 'code-block-content', w: 270, sw: 1030 },
+    { slot: 'code-block', w: 272, sw: 270 },
+    { slot: 'code-block-content', w: 270, sw: 270 }
+  ]
+}
+firefox ERROR {
+  doc: 320,
+  viewport: 320,
+  boxes: [
+    { slot: 'code-block', w: 272, sw: 270 },
+    { slot: 'code-block-actions', w: 235.38333129882812, sw: 235 },
+    { slot: 'code-block-content', w: 270, sw: 1030 },
+    { slot: 'code-block', w: 272, sw: 270 },
+    { slot: 'code-block-content', w: 270, sw: 270 }
+  ]
+}
+firefox PASS retry, space, enter, wrap, collapse []
+webkit INITIAL {
+  doc: 320,
+  viewport: 320,
+  boxes: [
+    { slot: 'code-block', w: 272, sw: 270 },
+    { slot: 'code-block-actions', w: 52, sw: 52 },
+    { slot: 'code-block-content', w: 270, sw: 1055 },
+    { slot: 'code-block', w: 272, sw: 270 },
+    { slot: 'code-block-content', w: 270, sw: 270 }
+  ]
+}
+webkit ERROR {
+  doc: 320,
+  viewport: 320,
+  boxes: [
+    { slot: 'code-block', w: 272, sw: 270 },
+    { slot: 'code-block-actions', w: 235.375, sw: 235 },
+    { slot: 'code-block-content', w: 270, sw: 1055 },
+    { slot: 'code-block', w: 272, sw: 270 },
+    { slot: 'code-block-content', w: 270, sw: 270 }
+  ]
+}
+webkit PASS retry, space, enter, wrap, collapse []

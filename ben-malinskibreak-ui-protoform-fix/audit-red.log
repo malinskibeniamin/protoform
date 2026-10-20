@@ -1,0 +1,18 @@
+$ bun run scripts/security-audit.ts
+warn: https://buf.build/gen/npm/v1 did not answer the audit request (404); skipped @buf/googleapis_googleapis.bufbuild_es
+Temporary audit exception: braces https://github.com/advisories/GHSA-vfj7-8cjw-p6xm; review before 2026-11-04: Maintainer-approved temporary exception for transitive registry/lint tooling; no published upstream fix.
+Temporary audit exception: sprintf-js https://github.com/advisories/GHSA-hp3w-g68c-fv3c; review before 2026-11-04: Maintainer-approved temporary exception for transitive Blume frontmatter tooling; no published upstream fix.
+moderate: hono: Hono: `serveStatic` decodes the request path a second time, leading to bypass of middleware on static paths
+https://github.com/advisories/GHSA-5r4p-p66f-jhc7
+31 | }
+32 | for (const finding of blocking) {
+33 |   console.error(`${finding.severity}: ${finding.package}: ${finding.title}\n${finding.url}`);
+34 | }
+35 | if (blocking.length > 0) {
+36 |   throw new Error(`${blocking.length} dependency advisories require remediation.`);
+                 ^
+error: 1 dependency advisories require remediation.
+      at <workspace>/scripts/security-audit.ts:36:13
+
+Bun v1.4.3 (macOS arm64)
+error: script "security:audit" exited with code 1

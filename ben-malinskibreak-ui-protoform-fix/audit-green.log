@@ -1,0 +1,5 @@
+$ bun run scripts/security-audit.ts
+warn: https://buf.build/gen/npm/v1 did not answer the audit request (404); skipped @buf/googleapis_googleapis.bufbuild_es
+Temporary audit exception: braces https://github.com/advisories/GHSA-vfj7-8cjw-p6xm; review before 2026-11-04: Maintainer-approved temporary exception for transitive registry/lint tooling; no published upstream fix.
+Temporary audit exception: sprintf-js https://github.com/advisories/GHSA-hp3w-g68c-fv3c; review before 2026-11-04: Maintainer-approved temporary exception for transitive Blume frontmatter tooling; no published upstream fix.
+Dependency audit passed (2 explicit exceptions). Private registries may not support auditing; see warnings above.

@@ -1,0 +1,65 @@
+$ node scripts/run-tests.ts browser --reporters verbose
+
+start   build started...
+ready   built in 0.44s
+
+info | registry/base-nova/protoform/components/select/index.browser.test.tsx
+Download the React DevTools for a better development experience: https://react.dev/link/react-devtools
+
+
+info | registry/base-nova/protoform/components/combobox/index.browser.test.tsx
+Download the React DevTools for a better development experience: https://react.dev/link/react-devtools
+
+
+info | registry/base-nova/protoform/hooks/use-proto-form/defaults.browser.test.tsx
+Download the React DevTools for a better development experience: https://react.dev/link/react-devtools
+
+
+info | registry/base-nova/protoform/components/json-field/index.browser.test.tsx
+Download the React DevTools for a better development experience: https://react.dev/link/react-devtools
+
+
+info | registry/base-nova/protoform/components/auto-form/__browser__/performance.browser.test.tsx
+Download the React DevTools for a better development experience: https://react.dev/link/react-devtools
+
+
+info | registry/base-nova/protoform/components/auto-form/__browser__/auto-form.browser.test.tsx
+Download the React DevTools for a better development experience: https://react.dev/link/react-devtools
+
+
+info | registry/base-nova/protoform/components/auto-form/__tests__/json-values.browser.test.tsx
+Download the React DevTools for a better development experience: https://react.dev/link/react-devtools
+
+ ✓ registry/base-nova/protoform/components/select/index.browser.test.tsx (1) 237ms
+  ✓ forwards close-retention events and completes closing only after the manual unmount (236ms)
+ ✓ registry/base-nova/protoform/components/combobox/index.browser.test.tsx (1) 264ms
+  ✓ keeps browser focus on the input after keyboard selection, clearing, and dismissal (263ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__browser__/auto-form.browser.test.tsx (3) 231ms
+  ✓ renders a simple shadcn-native auto form in a browser (74ms)
+  ✓ renders labels for controlled enum selections on first paint (24ms)
+  ✓ renders every built-in field type through the configured UI alias (133ms)
+ ✓ registry/base-nova/protoform/hooks/use-proto-form/defaults.browser.test.tsx (2) 340ms
+  ✓ v7 renders native timestamp defaults and preserves untouched nanoseconds (201ms)
+  ✓ v8 renders native timestamp defaults and preserves untouched nanoseconds (137ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/json-values.browser.test.tsx (3) 651ms
+  ✓ preserves JSON false in display, editing, and protobuf submission (447ms)
+  ✓ preserves JSON zero in display, editing, and protobuf submission (103ms)
+  ✓ preserves JSON null in display, editing, and protobuf submission (99ms)
+ ✓ registry/base-nova/protoform/components/json-field/index.browser.test.tsx (8) 1.53s
+  ✓ submits the current JSON edit without waiting for a debounce (422ms)
+  ✓ blocks malformed drafts, describes the error, and recovers after correction (28ms)
+  ✓ external resets replace malformed drafts with the last valid JSON value (811ms)
+  ✓ cannot discard a malformed nested draft by switching to JSON mode (15ms)
+  ✓ JSONField accessibility > names structured controls by property path, including array entries (5ms)
+  ✓ JSONField accessibility > labels the fallback editor for deeply nested JSON and opens an unconstrained array in JSON mode (7ms)
+  ✓ JSONField accessibility > shows rejected custom option creation instead of losing the error (201ms)
+  ✓ JSONField accessibility > shows a success toast after copying JSON (39ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__browser__/performance.browser.test.tsx (3) 1.51s
+  ✓ renders, types, validates, and steps through a real 50-field AutoForm (408ms)
+  ✓ renders, types, validates, and steps through a real 200-field AutoForm (377ms)
+  ✓ renders, types, validates, and steps through a real 500-field AutoForm (724ms)
+
+ Test Files 7 passed
+      Tests 21 passed
+   Duration 2.44s (build 493ms, tests 1.95s)
+

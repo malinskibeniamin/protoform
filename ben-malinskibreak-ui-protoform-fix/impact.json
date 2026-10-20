@@ -1,0 +1,8 @@
+{
+  "baseline": "f5bc6bc",
+  "distributionBytesBefore": 321067,
+  "distributionBytesAfter": 341361,
+  "deltaBytes": 20294,
+  "newPackagesForCodeAndTrace": 0,
+  "claim": "New importable presentation modules; not a speed or client-bundle-size claim"
+}
