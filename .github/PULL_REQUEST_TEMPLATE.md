@@ -13,3 +13,7 @@
 ## Compatibility and risk
 
 <!-- Note protobuf, source-copy, dependency, accessibility, security, or migration impact. -->
+
+## How to revert
+
+<!-- Name the rollback commit or dependency/source-copy steps; do not assume deleting generated output is safe. -->
