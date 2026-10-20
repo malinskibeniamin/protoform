@@ -1,10 +1,10 @@
+import { describe, expect, test } from 'bun:test';
 import { create, createFileRegistry, type DescMessage } from '@bufbuild/protobuf';
 import {
   FieldDescriptorProto_Label,
   FieldDescriptorProto_Type,
   FileDescriptorProtoSchema,
 } from '@bufbuild/protobuf/wkt';
-import { describe, expect } from '@rstest/core';
 
 import { formValuesToProtoInit } from './provider.js';
 

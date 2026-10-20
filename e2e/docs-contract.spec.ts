@@ -1,7 +1,7 @@
-import { expect, test } from '@playwright/test';
 import { z } from 'zod';
 import { demoCatalog } from '../examples/catalog/demo-catalog';
 import { demoHubs, demoRedirects } from '../examples/catalog/demo-docs';
+import { expect, test } from '../scripts/e2e-test';
 
 const redirectSchema = z.array(z.object({ from: z.string(), status: z.literal(308), to: z.string() }));
 
@@ -94,7 +94,7 @@ test('keeps the selected demo when switching documentation language', async ({ p
   await expect(page.getByRole('heading', { exact: true, name: 'Protobuf maps' })).toBeVisible();
   await page.getByRole('banner').getByLabel('Language: English', { exact: true }).click();
   await page.getByRole('link', { exact: true, name: 'Polski' }).click();
-  await expect(page).toHaveURL('/docs/pl/protobuf-examples#protobuf-maps');
+  await expect(page).toHaveURL('http://127.0.0.1:55013/docs/pl/protobuf-examples#protobuf-maps');
   await expect(page.locator('html')).toHaveAttribute('lang', 'pl');
   await expect(page.getByRole('heading', { exact: true, name: 'Protobuf maps' })).toBeVisible();
 });

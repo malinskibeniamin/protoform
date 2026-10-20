@@ -1,5 +1,5 @@
+import { describe, test } from 'bun:test';
 import type { DescMessage } from '@bufbuild/protobuf';
-import { describe } from '@rstest/core';
 import { expectTypeOf } from 'expect-type';
 import type { Control, Path } from 'react-hook-form';
 import type { Control as ControlV8 } from 'react-hook-form-v8';

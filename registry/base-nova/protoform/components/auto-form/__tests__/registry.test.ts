@@ -1,4 +1,4 @@
-import { describe, expect } from '@rstest/core';
+import { describe, expect, test } from 'bun:test';
 import { expectTypeOf } from 'expect-type';
 
 import type { AutoFormFieldProps, ParsedField } from '../core-types';

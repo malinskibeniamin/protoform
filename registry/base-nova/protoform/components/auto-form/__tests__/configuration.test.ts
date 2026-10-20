@@ -1,4 +1,4 @@
-import { describe, expect } from '@rstest/core';
+import { describe, expect, test } from 'bun:test';
 
 import { type AutoFormConfigurationDiagnostic, inspectAutoFormConfiguration } from '../configuration';
 import { defaultRegistry } from '../fields';

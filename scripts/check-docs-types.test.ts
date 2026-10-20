@@ -1,4 +1,4 @@
-import { describe, expect } from '@rstest/core';
+import { describe, expect, test } from 'bun:test';
 import { parseDocsDiagnosticSummary } from './check-docs-types';
 
 describe('documentation typecheck diagnostics', () => {

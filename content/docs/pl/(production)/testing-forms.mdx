@@ -20,14 +20,17 @@ bun add --dev @rsbuild/plugin-react @rstest/core happy-dom undici @testing-libra
 
 Skonfiguruj zestaw testów integracyjnych z użyciem `happy-dom` i załaduj matchery Testing Library:
 
-```ts title="rstest.integration.config.ts"
+```ts title="rstest.dom.config.ts"
 import { pluginReact } from "@rsbuild/plugin-react";
 import { defineConfig } from "@rstest/core";
 
 export default defineConfig({
   plugins: [pluginReact()],
   setupFiles: ["./rstest.setup.ts"],
-  testEnvironment: "happy-dom",
+  testEnvironment: {
+    name: "happy-dom",
+    options: { settings: { disableCSSFileLoading: true, disableIframePageLoading: true } },
+  },
 });
 ```
 
@@ -141,5 +144,5 @@ przykładowego formularza. Zestaw testów zgodności Protoform obejmuje wielokro
 i mapowania ścieżek. Dodaj kolejny test integracyjny aplikacji tylko wtedy, gdy formularz wprowadza
 inny przepływ przesyłania lub odzyskiwania po błędzie.
 
-Użyj Playwright osobno, gdy testowane ryzyko dotyczy układu w przeglądarce, obsługi fokusu, natywnych kontrolek lub kompletnej
-ścieżki użytkownika we wdrożonej aplikacji.
+Użyj trybu przeglądarkowego Rstest do testowania natywnych interakcji komponentów. Użyj integracji Rstest z Playwright
+z uruchomioną aplikacją do testowania kompletnych ścieżek użytkownika. Happy DOM nie zastępuje żadnej z tych granic.

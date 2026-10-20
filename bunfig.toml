@@ -1,0 +1,14 @@
+[test]
+pathIgnorePatterns = [
+  "**/*.test.tsx",
+  "**/*.spec.ts",
+  "**/*.integration.test.ts",
+  "conformance/**",
+  "registry/base-nova/protoform/hooks/use-proto-form/use-proto-form.test.ts",
+  "registry/base-nova/protoform/lib/protobuf-v1-bridge/**",
+  ".context/**",
+  ".tmp/**",
+  ".blume/**",
+  ".blume-verify/**",
+  "node_modules/**",
+]

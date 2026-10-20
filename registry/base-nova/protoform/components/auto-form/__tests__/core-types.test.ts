@@ -1,4 +1,4 @@
-import { describe, expect } from '@rstest/core';
+import { describe, expect, test } from 'bun:test';
 
 import type { ParsedField } from '../core-types';
 import { getLabel, getPathInObject, sortFieldsByOrder } from '../field-utils';

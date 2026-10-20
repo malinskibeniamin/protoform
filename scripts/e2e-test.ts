@@ -1,0 +1,71 @@
+import { readFile } from 'node:fs/promises';
+import { basename, dirname, join } from 'node:path';
+import { rstest } from '@rstest/core';
+import { test as base, expect } from '@rstest/playwright';
+import type { Locator, Page } from 'playwright';
+import { docsContextOptions } from './e2e-context';
+import { matchScreenshot } from './e2e-screenshots';
+
+export { afterAll, afterEach, beforeAll, beforeEach, describe, expect } from '@rstest/playwright';
+export type { Locator, Page } from 'playwright';
+export const test = base.extend({ browserName: 'chromium' });
+
+export function withLocale(locale: string) {
+  return test.extend({
+    playwright: {
+      contextOptions: { ...docsContextOptions, locale },
+      requestOptions: { baseURL: 'http://127.0.0.1:55013' },
+      trace: 'on-first-retry',
+    },
+  });
+}
+
+expect.extend({
+  async toHaveScreenshot(this: { isNot: boolean }, target: Page | Locator, name: string) {
+    if (this.isNot) {
+      throw new Error('Negated screenshot comparisons are not supported');
+    }
+    if (basename(name) !== name || !name.endsWith('.png')) {
+      throw new Error('Screenshot name must be a PNG filename');
+    }
+    const { testPath } = expect.getState();
+    if (testPath === undefined) {
+      throw new Error('Screenshot assertion requires an active Rstest test');
+    }
+    const project = process.env['PROTOFORM_SCREENSHOT_PROJECT'] ?? 'chromium';
+    const reference =
+      process.env['PROTOFORM_SCREENSHOT_STYLE'] === 'consumer'
+        ? join(dirname(testPath), '__screenshots__', basename(testPath), project, process.platform, name)
+        : join(`${testPath}-snapshots`, `${name.slice(0, -4)}-${project}-${process.platform}.png`);
+    await matchScreenshot(target, reference, {
+      update: process.env['PROTOFORM_UPDATE_SCREENSHOTS'] === 'true',
+      timeout: rstest.getConfig().expect.poll.timeout,
+    });
+    return { pass: true, message: () => `Screenshot matches ${reference}` };
+  },
+  async toHaveAccessibleDescription(this: { isNot: boolean }, target: Locator, expected: string | RegExp) {
+    const bundle = await readFile('.tmp/e2e/accessibility.js', 'utf8');
+    await target.page().addScriptTag({ content: bundle });
+    const description = () =>
+      target.evaluate((element) => {
+        const compute = Reflect.get(window, '__protoformAccessibleDescription');
+        if (typeof compute !== 'function') {
+          throw new Error('Accessible description helper was not loaded');
+        }
+        return String(compute(element));
+      });
+    const assertion = expect.poll(description, { timeout: rstest.getConfig().expect.poll.timeout });
+    if (this.isNot) {
+      if (typeof expected === 'string') {
+        await assertion.not.toBe(expected);
+      } else {
+        await assertion.not.toMatch(expected);
+      }
+    } else if (typeof expected === 'string') {
+      await assertion.toBe(expected);
+    } else {
+      await assertion.toMatch(expected);
+    }
+    return { pass: !this.isNot, message: () => `Accessible description does not match ${String(expected)}` };
+  },
+});

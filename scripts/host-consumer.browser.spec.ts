@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './e2e-test';
 
 test('host primitives submit, report errors, and recover without a theme dependency', async ({ page }) => {
   const uncaughtErrors: string[] = [];

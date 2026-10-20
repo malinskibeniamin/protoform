@@ -1,7 +1,7 @@
+import { describe, expect, test } from 'bun:test';
 import { create } from '@bufbuild/protobuf';
 import { timestampFromDate } from '@bufbuild/protobuf/wkt';
 import { createValidator } from '@bufbuild/protovalidate';
-import { describe, expect } from '@rstest/core';
 
 import {
   KitchenSinkEnvironment,

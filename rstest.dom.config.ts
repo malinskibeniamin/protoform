@@ -4,10 +4,17 @@ import { defineConfig } from '@rstest/core';
 import { rsdoctorConfig } from './scripts/rsdoctor-config';
 
 export default defineConfig({
-  extends: rsdoctorConfig('integration'),
+  name: 'dom',
+  extends: rsdoctorConfig('dom'),
   exclude: ['registry/**/*.browser.test.tsx'],
   globals: true,
-  include: ['components/**/*.test.tsx', 'examples/**/*.test.tsx', 'registry/**/*.test.tsx', 'scripts/**/*.test.tsx'],
+  include: [
+    'registry/base-nova/protoform/hooks/use-proto-form/use-proto-form.test.ts',
+    'components/**/*.test.tsx',
+    'examples/**/*.test.tsx',
+    'registry/**/*.test.tsx',
+    'scripts/**/*.test.tsx',
+  ],
   output: {
     externals: [/^zod(?:\/|$)/u],
   },
@@ -25,6 +32,9 @@ export default defineConfig({
     type: 'vmThreads',
   },
   setupFiles: ['./rstest.setup.ts'],
-  testEnvironment: 'happy-dom',
+  testEnvironment: {
+    name: 'happy-dom',
+    options: { settings: { disableCSSFileLoading: true, disableIframePageLoading: true } },
+  },
   testTimeout: 15_000,
 });

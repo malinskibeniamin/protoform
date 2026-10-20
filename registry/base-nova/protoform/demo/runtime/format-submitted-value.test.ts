@@ -1,4 +1,4 @@
-import { describe, expect } from '@rstest/core';
+import { describe, expect, test } from 'bun:test';
 
 import { formatSubmittedValue } from './format-submitted-value.js';
 

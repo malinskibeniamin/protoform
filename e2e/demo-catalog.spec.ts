@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../scripts/e2e-test';
 
 const aipCreateHubUrl = /\/docs\/aip-example-catalog#aip-133-standard-methods-create$/u;
 const aipGetHubUrl = /\/docs\/aip-example-catalog#aip-131-standard-methods-get$/u;

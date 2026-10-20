@@ -1,6 +1,6 @@
+import { describe, expect, test } from 'bun:test';
 import { create, fromBinary, toBinary } from '@bufbuild/protobuf';
 import { FieldOptionsSchema } from '@bufbuild/protobuf/wkt';
-import { describe, expect } from '@rstest/core';
 
 import './auto-form-example-annotations';
 

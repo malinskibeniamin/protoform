@@ -1,4 +1,4 @@
-import { expect, test } from '@rstest/core';
+import { expect, test } from 'bun:test';
 import { auditLintExceptions, newLintExceptions } from './lint-exceptions';
 
 test('rejects a stale file selector in a TypeScript config', () => {

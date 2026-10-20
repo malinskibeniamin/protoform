@@ -27,5 +27,5 @@ jobs:
           cache: false
           go-version: 1.26.6
       - run: bun install --frozen-lockfile
-      - run: bunx playwright install chromium firefox webkit
+      - run: bunx playwright install chromium
       - run: bun run quality:gate

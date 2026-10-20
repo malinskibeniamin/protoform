@@ -20,14 +20,17 @@ bun add --dev @rsbuild/plugin-react @rstest/core happy-dom undici @testing-libra
 
 使用 `happy-dom` 配置集成测试套件，并加载 Testing Library matcher：
 
-```ts title="rstest.integration.config.ts"
+```ts title="rstest.dom.config.ts"
 import { pluginReact } from "@rsbuild/plugin-react";
 import { defineConfig } from "@rstest/core";
 
 export default defineConfig({
   plugins: [pluginReact()],
   setupFiles: ["./rstest.setup.ts"],
-  testEnvironment: "happy-dom",
+  testEnvironment: {
+    name: "happy-dom",
+    options: { settings: { disableCSSFileLoading: true, disableIframePageLoading: true } },
+  },
 });
 ```
 
@@ -138,5 +141,5 @@ bun run test:integration -- examples/basic/basic-form.test.tsx
 示例表单。Protoform 的一致性测试套件覆盖其可复用的 descriptor、validation、conversion
 和 path-mapping contract。仅当表单引入不同的提交或恢复工作流时，才添加另一个应用集成测试。
 
-如果要测试的风险涉及浏览器布局、焦点行为、原生控件或完整的
-已部署用户旅程，请单独使用 Playwright。
+使用 Rstest Browser Mode 测试组件的原生交互。通过 Rstest 的 Playwright 集成，
+针对运行中的应用测试完整用户旅程。Happy DOM 不能替代这两类测试。

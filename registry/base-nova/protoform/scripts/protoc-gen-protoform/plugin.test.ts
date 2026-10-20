@@ -1,3 +1,4 @@
+import { expect, test } from 'bun:test';
 import { readFileSync } from 'node:fs';
 import { create, fromBinary } from '@bufbuild/protobuf';
 import {
@@ -6,7 +7,6 @@ import {
   CodeGeneratorResponse_Feature,
   FileDescriptorSetSchema,
 } from '@bufbuild/protobuf/wkt';
-import { expect } from '@rstest/core';
 import { pluginVersion, protocGenProtoform } from './plugin.js';
 
 function runPluginOnTracerProto(): CodeGeneratorResponse {

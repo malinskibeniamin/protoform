@@ -1,10 +1,10 @@
+import { describe, expect, test } from 'bun:test';
 import { create, createFileRegistry } from '@bufbuild/protobuf';
 import {
   FileDescriptorProtoSchema,
   FieldDescriptorProto_Label as Label,
   FieldDescriptorProto_Type as Type,
 } from '@bufbuild/protobuf/wkt';
-import { describe, expect } from '@rstest/core';
 import { createProtoFormSchema } from './form-schema.js';
 
 const registry = createFileRegistry(

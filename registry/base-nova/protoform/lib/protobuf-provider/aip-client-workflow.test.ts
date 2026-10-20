@@ -1,3 +1,4 @@
+import { describe, expect, mock, test } from 'bun:test';
 import {
   type Operation,
   OperationSchema,
@@ -7,7 +8,6 @@ import { StatusSchema } from '@buf/googleapis_googleapis.bufbuild_es/google/rpc/
 import { create, type DescMethod } from '@bufbuild/protobuf';
 import { AnySchema, MethodOptions_IdempotencyLevel } from '@bufbuild/protobuf/wkt';
 import { Code, ConnectError } from '@connectrpc/connect';
-import { describe, expect, rs } from '@rstest/core';
 
 import { FormExamplesService } from '../../../../../examples/gen/protoform/examples/v1/forms_pb.js';
 import {
@@ -34,7 +34,7 @@ function method(idempotency: MethodOptions_IdempotencyLevel): DescMethod {
 describe('runProtoOperation', () => {
   test('polls named AIP-151 operations until success or a terminal google.rpc.Status failure', async () => {
     const updates: boolean[] = [];
-    const poll = rs.fn(async () =>
+    const poll = mock(async () =>
       operation('operations/123', true, {
         case: 'response',
         value: create(AnySchema),
@@ -67,7 +67,7 @@ describe('runProtoOperation', () => {
 
   test('cancels the remote operation when the caller aborts', async () => {
     const controller = new AbortController();
-    const cancel = rs.fn(async () => undefined);
+    const cancel = mock(async () => undefined);
 
     await expect(
       runProtoOperation({

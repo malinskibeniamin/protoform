@@ -1,4 +1,4 @@
-import { expect } from '@rstest/core';
+import { expect, test } from 'bun:test';
 import { expectTypeOf } from 'expect-type';
 import { isStandardSchema } from '../core/index.js';
 import { createProtoFormSchema } from './form-schema.js';

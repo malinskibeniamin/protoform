@@ -1,3 +1,4 @@
+import { describe, expect, test } from 'bun:test';
 import { create, createFileRegistry, type DescMessage, fromBinary, toBinary } from '@bufbuild/protobuf';
 import {
   FieldDescriptorProto_Label,
@@ -6,7 +7,6 @@ import {
   TimestampSchema,
   timestampFromDate,
 } from '@bufbuild/protobuf/wkt';
-import { describe, expect } from '@rstest/core';
 
 import { preserveProtoMessageSource } from './hook-runtime.js';
 import { formValuesToProto, protoToFormValues } from './provider.js';

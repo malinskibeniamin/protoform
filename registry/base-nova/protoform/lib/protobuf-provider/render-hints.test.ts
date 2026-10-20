@@ -1,4 +1,4 @@
-import { expect } from '@rstest/core';
+import { expect, test } from 'bun:test';
 import {
   IntegerRulesSchema,
   ValidationMatrixSchema,

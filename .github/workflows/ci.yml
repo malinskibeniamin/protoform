@@ -48,6 +48,15 @@ jobs:
           fi
       - run: bunx playwright install --with-deps chromium
       - run: bun run ci:gate
+      - name: Upload runner failure evidence
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: runner-failures
+          path: .rstest/
+          include-hidden-files: true
+          if-no-files-found: ignore
+          retention-days: 7
 
   docs:
     runs-on: ubuntu-latest
@@ -66,6 +75,15 @@ jobs:
       - run: bunx playwright install --with-deps chromium
       - run: bun run docs:blume:validate
       - run: bun run docs:blume:translate:check
-      - name: Build and check redirects, search, agent guidance, locales, and live demos
-        run: bun run docs:blume:test
+      - name: Build and exercise docs, demos, accessibility, and screenshots
+        run: bun run test:e2e
       - run: bun run docs:blume:audit
+      - name: Upload E2E failure evidence
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: docs-e2e-failures
+          path: .rstest/
+          include-hidden-files: true
+          if-no-files-found: ignore
+          retention-days: 7

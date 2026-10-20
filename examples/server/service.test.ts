@@ -1,7 +1,7 @@
+import { describe, expect, test } from 'bun:test';
 import { BadRequestSchema } from '@buf/googleapis_googleapis.bufbuild_es/google/rpc/error_details_pb.js';
 import { create } from '@bufbuild/protobuf';
 import { Code, ConnectError } from '@connectrpc/connect';
-import { describe, expect } from '@rstest/core';
 import {
   BookSchema,
   BookState,

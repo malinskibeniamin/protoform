@@ -53,3 +53,7 @@ next-env.d.ts
 .blume-verify/
 
 packages/*/dist/
+
+/.rstest/
+**/*-snapshots-results/
+/scripts/__screenshots__-results/

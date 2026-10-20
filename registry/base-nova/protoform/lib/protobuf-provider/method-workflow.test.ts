@@ -1,3 +1,4 @@
+import { describe, expect, test } from 'bun:test';
 import { http } from '@buf/googleapis_googleapis.bufbuild_es/google/api/annotations_pb.js';
 import { HttpRuleSchema } from '@buf/googleapis_googleapis.bufbuild_es/google/api/http_pb.js';
 import {
@@ -7,7 +8,6 @@ import {
 } from '@buf/googleapis_googleapis.bufbuild_es/google/longrunning/operations_pb.js';
 import { create, type DescMessage, type DescMethod, setExtension } from '@bufbuild/protobuf';
 import { MethodDescriptorProtoSchema, MethodOptionsSchema } from '@bufbuild/protobuf/wkt';
-import { describe, expect } from '@rstest/core';
 
 import {
   BookSchema,

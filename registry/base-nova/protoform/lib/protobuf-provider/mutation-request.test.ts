@@ -1,6 +1,6 @@
+import { describe, expect, test } from 'bun:test';
 import { create } from '@bufbuild/protobuf';
 import { FieldMaskSchema } from '@bufbuild/protobuf/wkt';
-import { describe, expect } from '@rstest/core';
 
 import { BookSchema, LibraryService } from '../../../../../conformance/gen/protoform/conformance/v1/aip_pb.js';
 import { composeCreateRequest, composeDeleteRequest, composeUpdateRequest } from './mutation-request.js';
