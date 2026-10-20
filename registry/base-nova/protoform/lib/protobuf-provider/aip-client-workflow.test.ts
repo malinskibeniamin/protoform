@@ -58,27 +58,31 @@ describe('runProtoOperation', () => {
       message: 'The import source is no longer available.',
     });
 
-    await expect(
-      runProtoOperation({
-        poll: async () => operation('operations/unused'),
-        start: async () => operation('operations/123', true, { case: 'error', value: status }),
-      })
-    ).rejects.toEqual<unknown>(expect.any(ProtoOperationError));
+    await Promise.resolve(
+      expect(
+        runProtoOperation({
+          poll: async () => operation('operations/unused'),
+          start: async () => operation('operations/123', true, { case: 'error', value: status }),
+        })
+      ).rejects.toEqual<unknown>(expect.any(ProtoOperationError))
+    );
   });
 
   test('cancels the remote operation when the caller aborts', async () => {
     const controller = new AbortController();
     const cancel = jest.fn(async () => undefined);
 
-    await expect(
-      runProtoOperation({
-        cancel,
-        poll: async () => operation('operations/123'),
-        signal: controller.signal,
-        sleep: async () => controller.abort(),
-        start: async () => operation('operations/123'),
-      })
-    ).rejects.toMatchObject({ name: 'AbortError' });
+    await Promise.resolve(
+      expect(
+        runProtoOperation({
+          cancel,
+          poll: async () => operation('operations/123'),
+          signal: controller.signal,
+          sleep: async () => controller.abort(),
+          start: async () => operation('operations/123'),
+        })
+      ).rejects.toMatchObject({ name: 'AbortError' })
+    );
     expect(cancel).toHaveBeenCalledWith('operations/123');
   });
 });

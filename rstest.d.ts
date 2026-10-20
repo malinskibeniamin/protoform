@@ -1,7 +1,8 @@
 import type { TestingLibraryMatchers } from '@testing-library/jest-dom/matchers';
+import type { Locator, Page } from 'playwright';
 
 declare module '@rstest/core' {
-  interface Assertion<T> extends TestingLibraryMatchers<unknown, T> {
+  interface Assertion<T> extends TestingLibraryMatchers<unknown, T extends Locator | Page ? Promise<void> : void> {
     toHaveScreenshot: (name: string) => Promise<void>;
   }
 }

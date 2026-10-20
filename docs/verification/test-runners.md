@@ -21,6 +21,12 @@ Main's post-merge CI failed its dependency audit on Hono `4.13.9`
 `bun update hono` moved only that transitive lock entry to `4.13.13`, within existing
 consumer ranges. No dependency or audit exception was added; the audit passes.
 
+The shared matcher declaration now distinguishes asynchronous Playwright Locator/Page
+assertions from synchronous simulated-DOM matchers. This repairs the strict checker’s
+incorrect await hints without removing awaits. Bun rejection assertions still await
+their actual result through `Promise.resolve`, accounting for their void-typed declaration.
+The real CLI failure/interruption and process-lifecycle replay passes all ten cases.
+
 ## Application and test inventory
 
 Baseline: `a5333a28ec8b31e1eeb324539f7d95584ba21c04`.
