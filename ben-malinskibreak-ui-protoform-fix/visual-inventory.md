@@ -1,6 +1,6 @@
 # CodeMirror JSON diagnostics: verification inventory
 
-Candidate: `27c29df304897c5db8587e6aab1b943b94e290bd`.
+Candidate: `f5bc6bcae2887e5b74689b25439d05c7332d5817`.
 PR base: `a5333a28ec8b31e1eeb324539f7d95584ba21c04`.
 Follow-up comparison: actual previous PR head `ed7d0121c385a7f86cbd238a3ce500a8c03d8b73`.
 
@@ -38,10 +38,10 @@ Loading-only final refactor uses React.lazy + Suspense and module-scoped asynchr
 
 ## Evidence provenance
 
-- `cm-invalid-before` is the actual previous PR head ed7d012; `cm-invalid-after` is 27c29df, same malformed document, browser and framing. After additionally shows the hover diagnostic.
-- `focus-invalid-json`, `focus-zero-value`, `copy-light/dark` compare actual PR base captures with fresh 27c29df captures; full-view after screenshots are included.
+- `cm-invalid-before` is the actual previous PR head ed7d012; `cm-invalid-after` is f5bc6bc, same malformed document, browser and framing. After additionally shows the hover diagnostic.
+- `focus-invalid-json`, `focus-zero-value`, `copy-light/dark` compare actual PR base captures with fresh f5bc6bc captures; full-view after screenshots are included.
 - Video: actual matched typing/submission takes, ed7d012 left and candidate right. Both insert the same malformed fragment into the existing theme string and block submit; only candidate has squiggles/gutter diagnostics. It does not claim to replace the entire document. The separate E2E test asserts exact `tru` token localization.
-- Unchanged collection/nested/map/success screenshots remain pinned in the original appendix, labeled with their actual capture revision. Their equivalence to 27c29df is checked by the 27 unchanged passing screenshot cases; they are not represented as newly captured.
+- Unchanged collection/nested/map/success screenshots remain pinned in the original appendix, labeled with their actual capture revision. Their equivalence to f5bc6bc is checked by the 27 unchanged passing screenshot cases; they are not represented as newly captured.
 - Original layout measurements remain applicable: nested CIDR 50 -> 218px; metadata key/value 22 -> 218px at 320px. Correctness/layout evidence, not speed evidence.
 
 ## Risk / limits
@@ -49,3 +49,7 @@ Loading-only final refactor uses React.lazy + Suspense and module-scoped asynchr
 Riskiest boundary: asynchronous editor loading plus hidden native-validation proxy. Preserve synchronous parse and submit constraints; no debounce for value publication (only visual lint delay). Packages replace Prism/react-simple-code-editor; no schema or stored-data migration. Revert the single feature commit and rebuild installed registry copies.
 
 Not exhaustive assistive-technology, native zoom, RTL or arbitrary large JSON coverage. No runtime speed claim. Browser accessibility assertions do not certify all screen readers. Native video URL/body readback proves publication, not universal playback. Existing two audit exceptions and private Buf audit limitation remain visible. Human code-owner approval remains unresolved; automation is not approval.
+
+## Final CI test repair
+
+The initial exhaustive run failed at the one-second Testing Library wait for a controlled external reset. UIW’s installed binding intentionally defers external values while typing. Final test uses Rstest browser-native auto-wait on the same rendered JSON predicate, then checks aria-invalid cleared and no onChange echo. No arbitrary sleep or timeout increase. A trial immediate-reset adapter moved the cursor during rapid typing in Firefox/WebKit and was discarded; final runtime editor is exactly the already-reviewed 27c29df implementation. Stronger correction typing now checks the complete document and recovered submitted field in all engines. Final 20 browser tests and 260 integration tests pass.

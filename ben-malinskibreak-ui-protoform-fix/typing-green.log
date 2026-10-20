@@ -1,0 +1,26 @@
+$ playwright test --config=playwright.config.ts "e2e/form-resilience.spec.ts" --grep "underlines invalid JSON" "--max-failures=3"
+[WebServer] $ bun run docs:blume:build && blume preview --host 127.0.0.1 --port 55013
+[WebServer] $ blume build --strict && bun run scripts/finalize-docs-build.ts
+[WebServer] (node:72418) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] BLUME_OPENAPI_LOCAL_SERVER In OpenAPI spec "./openapi.yaml": The spec's server http://127.0.0.1:55012 is a local address, so the reference publishes it as the server Try it sends requests to and the code samples call, which readers can't reach.
+[WebServer]   fix: List the API's public URL in the spec's `servers`, or replace it with an overlay (an action with `target: $.servers[0]` and `update: { url: "https://api.example.com" }`).
+[WebServer]   docs: https://useblume.dev/docs/references/openapi#spec-warnings
+[WebServer] 
+[WebServer] 1 warning(s)
+[WebServer] (node:72405) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 3 tests using 3 workers
+
+(node:84476) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:84480) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:84481) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  3 [chromium] › e2e/form-resilience.spec.ts:4:1 › underlines invalid JSON and explains the syntax error inline @cross-browser (2.2s)
+  ✓  2 [webkit] › e2e/form-resilience.spec.ts:4:1 › underlines invalid JSON and explains the syntax error inline @cross-browser (3.0s)
+  ✓  1 [firefox] › e2e/form-resilience.spec.ts:4:1 › underlines invalid JSON and explains the syntax error inline @cross-browser (3.2s)
+
+  3 passed (25.8s)

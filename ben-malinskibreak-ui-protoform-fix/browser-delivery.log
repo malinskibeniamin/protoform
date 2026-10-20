@@ -1,29 +1,64 @@
-$ node scripts/run-tests.mjs browser --reporters verbose registry/base-nova/protoform/components/json-field/index.browser.test.tsx registry/base-nova/protoform/components/auto-form/__tests__/json-values.browser.test.tsx
+$ node scripts/run-tests.mjs browser --reporters verbose
 
 start   build started...
-ready   built in 0.66s
+ready   built in 0.42s
+
+info | registry/base-nova/protoform/components/combobox/index.browser.test.tsx
+Download the React DevTools for a better development experience: https://react.dev/link/react-devtools
+
+
+info | registry/base-nova/protoform/components/select/index.browser.test.tsx
+Download the React DevTools for a better development experience: https://react.dev/link/react-devtools
+
+
+info | registry/base-nova/protoform/hooks/use-proto-form/defaults.browser.test.tsx
+Download the React DevTools for a better development experience: https://react.dev/link/react-devtools
+
 
 info | registry/base-nova/protoform/components/json-field/index.browser.test.tsx
+Download the React DevTools for a better development experience: https://react.dev/link/react-devtools
+
+
+info | registry/base-nova/protoform/components/auto-form/__browser__/auto-form.browser.test.tsx
+Download the React DevTools for a better development experience: https://react.dev/link/react-devtools
+
+
+info | registry/base-nova/protoform/components/auto-form/__browser__/performance.browser.test.tsx
 Download the React DevTools for a better development experience: https://react.dev/link/react-devtools
 
 
 info | registry/base-nova/protoform/components/auto-form/__tests__/json-values.browser.test.tsx
 Download the React DevTools for a better development experience: https://react.dev/link/react-devtools
 
- ✓ registry/base-nova/protoform/components/auto-form/__tests__/json-values.browser.test.tsx (3) 714ms
-  ✓ preserves JSON false in display, editing, and protobuf submission (479ms)
-  ✓ preserves JSON zero in display, editing, and protobuf submission (118ms)
-  ✓ preserves JSON null in display, editing, and protobuf submission (115ms)
- ✓ registry/base-nova/protoform/components/json-field/index.browser.test.tsx (7) 1.32s
-  ✓ submits the current JSON edit without waiting for a debounce (395ms)
-  ✓ blocks malformed drafts, describes the error, and recovers after correction (32ms)
-  ✓ external resets replace malformed drafts with the last valid JSON value (810ms)
-  ✓ cannot discard a malformed nested draft by switching to JSON mode (20ms)
-  ✓ JSONField accessibility > names structured controls by property path, including array entries (6ms)
+ ✓ registry/base-nova/protoform/components/select/index.browser.test.tsx (1) 180ms
+  ✓ forwards close-retention events and completes closing only after the manual unmount (180ms)
+ ✓ registry/base-nova/protoform/components/combobox/index.browser.test.tsx (1) 211ms
+  ✓ keeps browser focus on the input after keyboard selection, clearing, and dismissal (210ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__browser__/auto-form.browser.test.tsx (3) 194ms
+  ✓ renders a simple shadcn-native auto form in a browser (52ms)
+  ✓ renders labels for controlled enum selections on first paint (18ms)
+  ✓ renders every built-in field type through the configured UI alias (124ms)
+ ✓ registry/base-nova/protoform/hooks/use-proto-form/defaults.browser.test.tsx (2) 273ms
+  ✓ v7 renders native timestamp defaults and preserves untouched nanoseconds (179ms)
+  ✓ v8 renders native timestamp defaults and preserves untouched nanoseconds (93ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/json-values.browser.test.tsx (3) 641ms
+  ✓ preserves JSON false in display, editing, and protobuf submission (445ms)
+  ✓ preserves JSON zero in display, editing, and protobuf submission (101ms)
+  ✓ preserves JSON null in display, editing, and protobuf submission (95ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__browser__/performance.browser.test.tsx (3) 1.32s
+  ✓ renders, types, validates, and steps through a real 50-field AutoForm (327ms)
+  ✓ renders, types, validates, and steps through a real 200-field AutoForm (268ms)
+  ✓ renders, types, validates, and steps through a real 500-field AutoForm (728ms)
+ ✓ registry/base-nova/protoform/components/json-field/index.browser.test.tsx (7) 1.74s
+  ✓ submits the current JSON edit without waiting for a debounce (360ms)
+  ✓ blocks malformed drafts, describes the error, and recovers after correction (22ms)
+  ✓ external resets replace malformed drafts with the last valid JSON value (1.30s)
+  ✓ cannot discard a malformed nested draft by switching to JSON mode (9ms)
+  ✓ JSONField accessibility > names structured controls by property path, including array entries (4ms)
   ✓ JSONField accessibility > labels the fallback editor for deeply nested JSON and opens an unconstrained array in JSON mode (7ms)
-  ✓ JSONField accessibility > shows a success toast after copying JSON (45ms)
+  ✓ JSONField accessibility > shows a success toast after copying JSON (41ms)
 
- Test Files 2 passed
-      Tests 10 passed
-   Duration 2.36s (build 744ms, tests 1.61s)
+ Test Files 7 passed
+      Tests 20 passed
+   Duration 2.50s (build 469ms, tests 2.04s)
 
