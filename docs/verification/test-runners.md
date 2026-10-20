@@ -220,3 +220,9 @@ process group; a permanently live permission failure still rejects with diagnost
 A real TCP-server regression fails before this repair and passes after it, alongside
 the existing persistent-permission and descendant-shutdown regressions. No process
 outside the owned group is signalled.
+
+The permanent/vanished-group regression injects its signal-zero `EPERM` independently
+of the host kernel's native exit error. The first hosted replay exposed the prior
+fixture's Linux-only `ESRCH` assumption; all eight consumer screenshots and actual
+shutdown had passed. Both the persistent-denial rejection and real closed-port assertion
+remain required.

@@ -81,7 +81,7 @@ test('accepts a vanished process group reported as EPERM without hiding live per
   const pid = Number(await (await fetch(url)).text());
   const kill = process.kill.bind(process);
   const denied = Object.assign(new Error('kill EPERM'), { code: 'EPERM' });
-  let exitedPermissionFailure = false;
+  let probePermissionFailure = false;
   const signal = rs.spyOn(process, 'kill').mockImplementation((target, action) => {
     if (target === -pid && action === 'SIGTERM') {
       throw denied;
@@ -92,18 +92,14 @@ test('accepts a vanished process group reported as EPERM without hiding live per
     await expect(close()).rejects.toThrow(`kill EPERM; live test-server group ${pid}:`);
     expect(await (await fetch(url)).text()).toBe(String(pid));
     signal.mockImplementation((target, action) => {
-      try {
-        return kill(target, action);
-      } catch (error) {
-        if (target === -pid && error instanceof Error && 'code' in error && error.code === 'ESRCH') {
-          exitedPermissionFailure = true;
-          throw denied;
-        }
-        throw error;
+      if (target === -pid && action === 0) {
+        probePermissionFailure = true;
+        throw denied;
       }
+      return kill(target, action);
     });
     await close();
-    expect(exitedPermissionFailure).toBe(true);
+    expect(probePermissionFailure).toBe(true);
     await expect(fetch(url)).rejects.toThrow();
   } finally {
     signal.mockRestore();
