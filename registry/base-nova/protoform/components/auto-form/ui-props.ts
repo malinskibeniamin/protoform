@@ -77,6 +77,8 @@ export interface ProtoformUIProps {
   InputGroupInput: React.ComponentProps<'input'> & Shared;
   InputGroupText: React.ComponentProps<'span'> & Shared;
   JSONField: Shared & {
+    id?: string;
+    label?: string;
     maxDepth?: number;
     onBlur?: (() => void) | undefined;
     onChange: (value: unknown) => void;

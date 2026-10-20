@@ -32,6 +32,11 @@ describe('Protoform registry style', () => {
         target: '~/proto/protoform/conformance/v1/aip.proto',
         type: 'registry:file',
       },
+      {
+        path: 'LICENSES/shadcn-MIT.txt',
+        target: '~/LICENSES/shadcn-MIT.txt',
+        type: 'registry:file',
+      },
     ]);
   });
 

@@ -52,11 +52,13 @@ type CommandDialogProps = Omit<React.ComponentProps<typeof Dialog>, 'children'> 
     description?: string;
     className?: string;
     children?: React.ReactNode;
+    showCloseButton?: boolean;
   };
 
 function CommandDialog({
   title = 'Command Palette',
   description = 'Search for a command to run...',
+  showCloseButton = false,
   children,
   showOverlay = true,
   container,
@@ -77,6 +79,7 @@ function CommandDialog({
       <DialogContent
         className={cn('overflow-hidden', container && 'absolute', className)}
         container={container}
+        showCloseButton={showCloseButton}
         showOverlay={showOverlay}
         {...openAutoFocusProps}
       >

@@ -30,7 +30,7 @@ Read the relevant guide and example before generating code; cite its canonical d
   examples: {
     css: 'theme.css',
     source:
-      '{examples/basic/basic-form.tsx,examples/complex/complex-form.tsx,examples/kitchen-sink/kitchen-sink-form.tsx,examples/learning/cel-re2-form.tsx,examples/learning/oneof-form.tsx,examples/learning/two-step-form.tsx,examples/nested/deeply-nested-form.tsx,registry/base-nova/protoform/demo/catalog/!(*.test).tsx}',
+      '{examples/basic/basic-form.tsx,examples/complex/complex-form.tsx,examples/kitchen-sink/kitchen-sink-form.tsx,examples/learning/cel-re2-form.tsx,examples/learning/oneof-form.tsx,examples/learning/two-step-form.tsx,examples/nested/deeply-nested-form.tsx,registry/base-nova/protoform/demo/ui/code-and-trace.tsx,registry/base-nova/protoform/demo/ui/shadcn-parity.tsx,registry/base-nova/protoform/demo/ui/shadcn-api.tsx,registry/base-nova/protoform/demo/catalog/!(*.test).tsx}',
   },
   export: true,
 

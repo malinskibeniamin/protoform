@@ -1,16 +1,10 @@
 'use client';
 
 import { Slider as SliderPrimitive } from '@base-ui/react/slider';
-import type React from 'react';
 
 import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
-type SliderProps = Omit<React.ComponentProps<typeof SliderPrimitive.Root>, 'value' | 'defaultValue' | 'onValueChange'> &
-  SharedProps & {
-    value?: number | readonly number[];
-    defaultValue?: number | readonly number[];
-    onValueChange?: (value: number[]) => void;
-  };
+type SliderProps<Value extends number | readonly number[] = number[]> = SliderPrimitive.Root.Props<Value> & SharedProps;
 
 function getThumbLabel(label: string | undefined, count: number, index: number): string | undefined {
   if (!(label !== undefined && label !== '')) {
@@ -19,7 +13,7 @@ function getThumbLabel(label: string | undefined, count: number, index: number):
   return count === 1 ? label : `${label} ${index + 1}`;
 }
 
-function Slider({
+function Slider<Value extends number | readonly number[] = number[]>({
   className,
   defaultValue,
   value,
@@ -29,33 +23,29 @@ function Slider({
   onValueChange,
   'aria-label': ariaLabel,
   ...props
-}: SliderProps) {
+}: SliderProps<Value>) {
   let values: readonly number[] = [min, max];
-  if (value !== undefined && typeof value !== 'number') {
-    values = value;
-  } else if (defaultValue !== undefined && typeof defaultValue !== 'number') {
-    values = defaultValue;
+  if (value !== undefined) {
+    values = typeof value === 'number' ? [value] : value;
+  } else if (defaultValue !== undefined) {
+    values = typeof defaultValue === 'number' ? [defaultValue] : defaultValue;
   }
-  const thumbs = values.map((thumbValue, index) => ({ index, key: `${thumbValue}:${index}` }));
-  const handleValueChange = onValueChange
-    ? (nextValue: number | readonly number[]) => {
-        const asArray = typeof nextValue === 'number' ? [nextValue] : [...nextValue];
-        onValueChange(asArray);
-      }
-    : undefined;
+  const thumbs = values.map((_thumbValue, index) => ({ index, key: `thumb-${index}` }));
 
   return (
     <SliderPrimitive.Root
-      className={cn(
-        'relative flex w-full touch-none select-none items-center data-[orientation=vertical]:h-full data-[orientation=vertical]:min-h-40 data-[orientation=vertical]:w-auto data-[orientation=vertical]:flex-col data-[disabled]:opacity-50',
-        className
-      )}
+      className={(state) =>
+        cn(
+          'relative flex w-full touch-none select-none items-center data-[orientation=vertical]:h-full data-[orientation=vertical]:min-h-40 data-[orientation=vertical]:w-auto data-[orientation=vertical]:flex-col data-[disabled]:opacity-50',
+          typeof className === 'function' ? className(state) : className
+        )
+      }
       data-slot="slider"
       data-testid={testId}
       defaultValue={defaultValue}
       max={max}
       min={min}
-      onValueChange={handleValueChange}
+      onValueChange={onValueChange}
       value={value}
       {...props}
     >

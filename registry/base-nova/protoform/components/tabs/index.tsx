@@ -12,6 +12,7 @@ import {
 } from 'motion/react';
 import React from 'react';
 
+import { splitMotionProps } from '@/registry/base-nova/protoform/lib/base-ui-compat';
 import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
 const DEFAULT_TRANSITION = {
@@ -93,26 +94,17 @@ const tabsVariants = cva('flex flex-col', {
   },
 });
 
-type TabsProps = Omit<React.ComponentProps<typeof TabsPrimitive.Root>, 'onValueChange'> &
-  VariantProps<typeof tabsVariants> &
-  SharedProps & {
-    onValueChange?: (value: string) => void;
-  };
+type TabsProps = React.ComponentProps<typeof TabsPrimitive.Root> & VariantProps<typeof tabsVariants> & SharedProps;
 
 function Tabs({ className, size, variant, testId, onValueChange, ...props }: TabsProps) {
-  const handleValueChange = React.useCallback(
-    (nextValue: unknown) => {
-      onValueChange?.(nextValue as string);
-    },
-    [onValueChange]
-  );
-
   return (
     <TabsPrimitive.Root
-      className={cn(tabsVariants({ size, variant }), className)}
+      className={(state) =>
+        cn(tabsVariants({ size, variant }), typeof className === 'function' ? className(state) : className)
+      }
       data-slot="tabs"
       data-testid={testId}
-      onValueChange={onValueChange ? handleValueChange : undefined}
+      onValueChange={onValueChange}
       {...props}
     />
   );
@@ -138,6 +130,7 @@ const tabsListVariants = cva('inline-flex h-10 items-center justify-center text-
     },
     variant: {
       default: 'w-fit gap-1 rounded-lg bg-muted p-1',
+      line: 'gap-1 bg-transparent',
       underline: '!border-border relative w-full justify-start rounded-t-xl border-b bg-background py-0 text-current',
     },
   },
@@ -150,17 +143,17 @@ const tabsListActiveVariants = cva('rounded-sm bg-background shadow-sm', {
   variants: {
     variant: {
       default: '',
+      line: 'gap-1 bg-transparent',
       underline:
         "rounded-none bg-transparent shadow-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:rounded-t-full after:bg-selected after:content-['']",
     },
   },
 });
 
-type TabsListProps = Omit<React.ComponentProps<typeof TabsPrimitive.List>, 'style'> &
+type TabsListProps = React.ComponentProps<typeof TabsPrimitive.List> &
   VariantProps<typeof tabsListVariants> &
   SharedProps & {
     activeClassName?: string;
-    style?: React.CSSProperties | undefined;
     transition?: Transition;
     columns?: number;
   };
@@ -253,26 +246,46 @@ const TabsList = React.forwardRef<HTMLDivElement, TabsListProps>(
     }, [transition, isHorizontal]);
 
     const showHighlight = bounds !== null;
-    const listStyle: React.CSSProperties & { '--tabs-columns': number | undefined } = {
-      '--tabs-columns': columns,
-      ...style,
-    };
+    React.useLayoutEffect(
+      function synchronizeColumnCount() {
+        const list = localRef.current;
+        if (typeof style === 'object' && Reflect.has(style, '--tabs-columns')) {
+          return;
+        }
+        if (list !== null && (list.dataset['orientation'] ?? 'horizontal') !== orientation) {
+          return;
+        }
+        if (list === null || columns === undefined || list.style.getPropertyValue('--tabs-columns') !== '') {
+          return;
+        }
+        const value = String(columns);
+        list.style.setProperty('--tabs-columns', value);
+        return () => {
+          if (list.style.getPropertyValue('--tabs-columns') === value) {
+            list.style.removeProperty('--tabs-columns');
+          }
+        };
+      },
+      [columns, style, orientation]
+    );
 
     return (
       <TabsPrimitive.List
-        className={cn(
-          'relative',
-          tabsListVariants({ gap, layout, variant }),
-          layout === 'equal' &&
-            columns !== undefined &&
-            columns !== 0 &&
-            'grid-cols-[repeat(var(--tabs-columns),minmax(0,1fr))]',
-          className
-        )}
+        className={(state) =>
+          cn(
+            'relative',
+            tabsListVariants({ gap, layout, variant }),
+            layout === 'equal' &&
+              columns !== undefined &&
+              columns !== 0 &&
+              'grid-cols-[repeat(var(--tabs-columns),minmax(0,1fr))]',
+            typeof className === 'function' ? className(state) : className
+          )
+        }
         data-slot="tabs-list"
         data-testid={testId}
         ref={localRef}
-        style={listStyle}
+        style={style}
         {...props}
       >
         <AnimatePresence initial={false}>
@@ -311,6 +324,7 @@ const tabsTriggerVariants = cva(
     variants: {
       variant: {
         default: 'px-3 py-1.5',
+        line: 'gap-1 bg-transparent',
         underline: 'px-4 py-2 text-muted-foreground data-[state=active]:text-selected',
       },
     },
@@ -330,7 +344,9 @@ function TabsTrigger({ className, value, variant, testId, disabled, render, ...p
 
   return (
     <TabsPrimitive.Tab
-      className={cn(tabsTriggerVariants({ variant }), className)}
+      className={(state) =>
+        cn(tabsTriggerVariants({ variant }), typeof className === 'function' ? className(state) : className)
+      }
       data-slot="tabs-trigger"
       data-testid={testId}
       data-value={attributeValue}
@@ -344,7 +360,7 @@ function TabsTrigger({ className, value, variant, testId, disabled, render, ...p
 }
 
 type TabsContentProps = React.ComponentProps<typeof TabsPrimitive.Panel> &
-  HTMLMotionProps<'div'> &
+  Omit<HTMLMotionProps<'div'>, keyof React.ComponentProps<typeof TabsPrimitive.Panel>> &
   SharedProps & {
     transition?: Transition;
   };
@@ -354,37 +370,39 @@ function TabsContent({
   children,
   transition = DEFAULT_PANEL_TRANSITION,
   testId,
+  render,
   ...props
 }: TabsContentProps) {
   const prefersReducedMotion = useReducedMotion();
   const reducedMotionConfig = React.useContext(MotionConfigContext).reducedMotion;
+  const separated = splitMotionProps(props);
   const shouldReduceMotion = reducedMotionConfig === 'always' || prefersReducedMotion;
 
   return (
     <TabsPrimitive.Panel
-      render={
-        <motion.div
-          className={cn('flex-1 space-y-6 outline-none', className)}
-          data-slot="tabs-content"
-          data-testid={testId}
-          {...(shouldReduceMotion === true
-            ? {
-                initial: false,
-                layout: false,
-              }
-            : {
-                animate: { filter: 'blur(0px)', opacity: 1, y: 0 },
-                exit: { filter: 'blur(4px)', opacity: 0, y: 10 },
-                initial: { filter: 'blur(4px)', opacity: 0, y: -10 },
-                layout: true,
-                transition,
-              })}
-        >
-          {children}
-        </motion.div>
+      className={(state) =>
+        cn('flex-1 space-y-6 outline-none', typeof className === 'function' ? className(state) : className)
       }
-      {...props}
-    />
+      data-slot="tabs-content"
+      data-testid={testId}
+      render={render}
+      {...separated.native}
+    >
+      <motion.div
+        {...(shouldReduceMotion === true
+          ? { initial: false, layout: false }
+          : {
+              animate: { filter: 'blur(0px)', opacity: 1, y: 0 },
+              exit: { filter: 'blur(4px)', opacity: 0, y: 10 },
+              initial: { filter: 'blur(4px)', opacity: 0, y: -10 },
+              layout: true,
+              transition,
+            })}
+        {...separated.motion}
+      >
+        {children}
+      </motion.div>
+    </TabsPrimitive.Panel>
   );
 }
 
@@ -490,4 +508,5 @@ export {
   TabsSection,
   TabsTrigger,
   type TabsTriggerProps,
+  tabsListVariants,
 };

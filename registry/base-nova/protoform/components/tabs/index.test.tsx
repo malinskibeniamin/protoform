@@ -1,8 +1,8 @@
 import { describe, expect, test } from '@rstest/core';
 import { render, screen } from '@testing-library/react';
-import { expectTypeOf } from 'expect-type';
+import React from 'react';
 
-import { Tabs, TabsList, type TabsListProps, TabsTrigger } from './index';
+import { Tabs, TabsList, TabsTrigger } from './index';
 
 function Example({ columns }: { columns: number }) {
   return (
@@ -28,8 +28,23 @@ describe('TabsList equal layout', () => {
     expect(screen.getByRole('tab', { name: 'Enabled' })).toHaveAttribute('data-value', 'true');
   });
 
-  test('only accepts the style objects the component can merge', () => {
-    expectTypeOf<Extract<NonNullable<TabsListProps['style']>, (...args: never[]) => unknown>>().toEqualTypeOf<never>();
+  test('resolves shadcn style callbacks together with column metadata', () => {
+    render(
+      <Tabs defaultValue="one">
+        {React.createElement(
+          TabsList,
+          {
+            'aria-label': 'State styles',
+            className: (state) => (state.orientation === 'horizontal' ? 'horizontal-list' : 'vertical-list'),
+            columns: 2,
+            style: (state) => ({ opacity: state.orientation === 'horizontal' ? 1 : 0.5 }),
+          },
+          <TabsTrigger value="one">One</TabsTrigger>
+        )}
+      </Tabs>
+    );
+    expect(screen.getByRole('tablist', { name: 'State styles' })).toHaveClass('horizontal-list');
+    expect(screen.getByRole('tablist', { name: 'State styles' })).toHaveStyle({ opacity: '1', '--tabs-columns': '2' });
   });
 
   test('applies the requested column count and updates it', () => {

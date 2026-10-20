@@ -1,0 +1,102 @@
+'use client';
+
+import { ScrollArea as ScrollAreaPrimitive } from '@base-ui/react/scroll-area';
+import type React from 'react';
+import { cn } from '@/registry/base-nova/protoform/lib/utils';
+
+function scrollTableWithKeyboard(event: React.KeyboardEvent<HTMLDivElement>) {
+  if (
+    event.defaultPrevented ||
+    event.altKey ||
+    event.ctrlKey ||
+    event.metaKey ||
+    event.shiftKey ||
+    event.target !== event.currentTarget
+  ) {
+    return;
+  }
+  if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+    event.preventDefault();
+    event.currentTarget.scrollLeft += event.key === 'ArrowRight' ? 40 : -40;
+  }
+}
+
+function Table({ className, ...props }: React.ComponentProps<'table'>) {
+  return (
+    <ScrollAreaPrimitive.Root
+      className="relative w-full min-w-0 focus-within:ring-2 focus-within:ring-ring"
+      data-slot="table-container"
+    >
+      <ScrollAreaPrimitive.Viewport
+        aria-label={props['aria-label'] ?? 'Scrollable table'}
+        className="w-full min-w-0 overflow-x-auto outline-none"
+        onKeyDown={scrollTableWithKeyboard}
+        role="region"
+        tabIndex={0}
+      >
+        <table className={cn('w-full caption-bottom text-sm', className)} data-slot="table" {...props} />
+      </ScrollAreaPrimitive.Viewport>
+      <ScrollAreaPrimitive.Scrollbar
+        className="absolute inset-x-0 bottom-0 flex h-2 touch-none select-none p-px"
+        orientation="horizontal"
+      >
+        <ScrollAreaPrimitive.Thumb className="relative flex-1 rounded-full bg-border" />
+      </ScrollAreaPrimitive.Scrollbar>
+    </ScrollAreaPrimitive.Root>
+  );
+}
+function TableHeader({ className, ...props }: React.ComponentProps<'thead'>) {
+  return <thead className={cn('[&_tr]:border-b', className)} data-slot="table-header" {...props} />;
+}
+function TableBody({ className, ...props }: React.ComponentProps<'tbody'>) {
+  return <tbody className={cn('[&_tr:last-child]:border-0', className)} data-slot="table-body" {...props} />;
+}
+function TableFooter({ className, ...props }: React.ComponentProps<'tfoot'>) {
+  return (
+    <tfoot
+      className={cn('border-t bg-muted/50 font-medium [&>tr]:last:border-b-0', className)}
+      data-slot="table-footer"
+      {...props}
+    />
+  );
+}
+function TableRow({ className, ...props }: React.ComponentProps<'tr'>) {
+  return (
+    <tr
+      className={cn(
+        'border-b transition-colors hover:bg-muted/50 has-aria-expanded:bg-muted/50 data-[state=selected]:bg-muted',
+        className
+      )}
+      data-slot="table-row"
+      {...props}
+    />
+  );
+}
+function TableHead({ className, ...props }: React.ComponentProps<'th'>) {
+  return (
+    <th
+      className={cn(
+        'h-10 whitespace-nowrap px-2 text-left align-middle font-medium text-foreground [&:has([role=checkbox])]:pr-0',
+        className
+      )}
+      data-slot="table-head"
+      {...props}
+    />
+  );
+}
+function TableCell({ className, ...props }: React.ComponentProps<'td'>) {
+  return (
+    <td
+      className={cn('whitespace-nowrap p-2 align-middle [&:has([role=checkbox])]:pr-0', className)}
+      data-slot="table-cell"
+      {...props}
+    />
+  );
+}
+function TableCaption({ className, ...props }: React.ComponentProps<'caption'>) {
+  return (
+    <caption className={cn('mt-4 text-muted-foreground text-sm', className)} data-slot="table-caption" {...props} />
+  );
+}
+
+export { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow };

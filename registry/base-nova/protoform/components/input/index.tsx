@@ -48,11 +48,12 @@ const inputContainerVariants = cva('', {
 
 export interface InputProps
   extends Omit<React.ComponentProps<'input'>, 'size'>,
-    VariantProps<typeof inputVariants>,
+    Omit<VariantProps<typeof inputVariants>, 'size'>,
     SharedProps {
   children?: React.ReactNode;
   containerClassName?: string | undefined;
   showStepControls?: boolean | undefined;
+  size?: VariantProps<typeof inputVariants>['size'] | number;
 }
 
 function useInputState(value: InputProps['value'], defaultValue: InputProps['defaultValue']) {
@@ -160,7 +161,7 @@ function PasswordVisibilityControl({
   showPassword,
   onToggle,
 }: {
-  size: InputProps['size'];
+  size: VariantProps<typeof inputVariants>['size'];
   disabled: InputProps['disabled'];
   showPassword: boolean;
   onToggle: () => void;
@@ -188,7 +189,7 @@ function NumberInputControls({
   increment,
   decrement,
 }: {
-  size: InputProps['size'];
+  size: VariantProps<typeof inputVariants>['size'];
   disabled: InputProps['disabled'];
   increment: () => void;
   decrement: () => void;
@@ -220,13 +221,20 @@ function NumberInputControls({
   );
 }
 
+function getInputSizes(requestedSize: InputProps['size']) {
+  return {
+    size: typeof requestedSize === 'number' ? undefined : requestedSize,
+    nativeSize: typeof requestedSize === 'number' ? requestedSize : undefined,
+  };
+}
+
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   (
     {
       className,
       type,
       showStepControls,
-      size,
+      size: requestedSize,
       variant,
       testId,
       children,
@@ -237,6 +245,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     },
     ref
   ) => {
+    const { size, nativeSize } = getInputSizes(requestedSize);
     const { value, setValue, showPassword, setShowPassword } = useInputState(props.value, defaultValue);
     const fieldCtx = useFieldContext();
     const [startWidth, setStartWidth] = useState<number | undefined>();
@@ -283,6 +292,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         onChange={isNumberInput ? handleInputChange : props.onChange}
         readOnly={readOnly}
         ref={ref}
+        size={nativeSize}
         step={isNumberInput ? step : undefined}
         style={
           {

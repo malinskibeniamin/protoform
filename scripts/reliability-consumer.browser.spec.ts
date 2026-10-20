@@ -16,6 +16,7 @@ test('installed custom options show creation failures and recover after retry', 
   await expect(input).toHaveValue('');
   await expect(page.getByLabel('Selected region')).toHaveText('{}');
   await expect(page.getByRole('listbox')).not.toBeVisible();
+  await expect(page.getByRole('alert')).toHaveText('Creation failed. Try again.');
   await expect(page).toHaveScreenshot('custom-option-error.png');
   await input.fill('next');
   await page.getByRole('option', { name: /create.*next/iu }).click();

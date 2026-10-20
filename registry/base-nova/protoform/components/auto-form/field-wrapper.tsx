@@ -39,8 +39,8 @@ import {
 const REGEX_ERROR_PATTERN = /regex pattern\s*`([^`]+)`/u;
 
 export const Form = React.forwardRef<HTMLFormElement, React.ComponentProps<'form'> & { testId?: string | undefined }>(
-  ({ children, testId, ...props }, ref) => (
-    <form className={formSpacing.form} data-testid={testId} ref={ref} {...props}>
+  ({ children, testId, className, ...props }, ref) => (
+    <form className={cn('@container/autoform', formSpacing.form, className)} data-testid={testId} ref={ref} {...props}>
       <FormDepthProvider depth={0}>{children}</FormDepthProvider>
     </form>
   )
@@ -60,14 +60,17 @@ export const ArrayElementWrapper: React.FC<
       className={
         isSeparated
           ? cn('relative', index > 0 && formSpacing.arrayItemSeparator)
-          : 'relative rounded-xl border border-border/70 bg-card p-5 text-card-foreground shadow-xs'
+          : 'relative rounded-xl border border-border/70 bg-card @min-[40rem]/autoform:p-5 p-2 text-card-foreground shadow-xs'
       }
       data-slot="array-item"
       data-testid={testId}
     >
       <Button
         aria-label={removeButtonAriaLabel}
-        className={isSeparated ? cn('absolute right-0', index > 0 ? 'top-4' : 'top-0') : 'absolute top-3 right-3'}
+        className={cn(
+          '@min-[40rem]/autoform:absolute @min-[40rem]/autoform:mb-0 mb-2 ml-auto flex',
+          isSeparated ? cn('right-0', index > 0 ? 'top-4' : 'top-0') : 'top-3 right-3'
+        )}
         onClick={onRemove}
         size="icon-sm"
         testId={removeButtonTestId}
@@ -76,7 +79,9 @@ export const ArrayElementWrapper: React.FC<
       >
         <TrashIcon className="size-4" />
       </Button>
-      <div className={isSeparated ? 'pr-10' : 'pr-8'}>{children}</div>
+      <div className={cn('min-w-0', isSeparated ? '@min-[40rem]/autoform:pr-10' : '@min-[40rem]/autoform:pr-8')}>
+        {children}
+      </div>
     </div>
   );
 };
@@ -88,7 +93,7 @@ export const ArrayWrapper: React.FC<
     testId?: string;
   }
 > = ({ label, children, onAddItem, addButtonLabel, addButtonTestId, testId }) => (
-  <div className={formSpacing.field} data-testid={testId}>
+  <div className={cn('@container/collection', formSpacing.field)} data-testid={testId}>
     {children}
     <Button onClick={onAddItem} size="sm" testId={addButtonTestId} type="button" variant="outline">
       <PlusIcon className="size-4" />
@@ -200,6 +205,31 @@ function getWrapperLabels(field: FieldWrapperProps['field'], label: FieldWrapper
   return { hasVisibleLabel, helpLabel, displayedLabel };
 }
 
+function getCollectionAccessibility({
+  field,
+  isCompact,
+  error,
+  errorId,
+  labelId,
+}: {
+  field: FieldWrapperProps['field'];
+  isCompact: boolean;
+  error: FieldWrapperProps['error'];
+  errorId: string;
+  labelId: string;
+}): React.AriaAttributes & { role?: 'group' | undefined } {
+  if (field.type !== 'array' && field.type !== 'map') {
+    return {};
+  }
+  const hasError = Boolean(error);
+  return {
+    'aria-describedby': hasError ? errorId : undefined,
+    'aria-invalid': hasError ? true : undefined,
+    'aria-labelledby': isCompact ? undefined : labelId,
+    role: isCompact ? undefined : 'group',
+  };
+}
+
 export const FieldWrapper: React.FC<FieldWrapperProps> = ({ label, children, id, field, error: rawError }) => {
   const depth = useFormDepth();
   const { testIdPrefix } = useAutoFormRuntimeContext();
@@ -207,6 +237,8 @@ export const FieldWrapper: React.FC<FieldWrapperProps> = ({ label, children, id,
   const tooltipText = isCompact ? '' : getFieldHelpText(field);
   const error = augmentError(rawError, field);
   const errorId = React.useId();
+  const labelId = React.useId();
+  const collectionAccessibility = getCollectionAccessibility({ field, isCompact, error, errorId, labelId });
   const isDisabled = Boolean(field.fieldConfig?.inputProps?.['disabled']);
   const { hasVisibleLabel, helpLabel, displayedLabel } = getWrapperLabels(field, label);
   const fieldTestId = getAutoFormFieldTestId(testIdPrefix, id);
@@ -230,8 +262,11 @@ export const FieldWrapper: React.FC<FieldWrapperProps> = ({ label, children, id,
 
   return (
     <Field
+      {...collectionAccessibility}
       className={
-        isSplit ? 'grid items-start gap-x-8 gap-y-2 sm:grid-cols-[minmax(10rem,0.34fr)_minmax(0,1fr)]' : undefined
+        isSplit
+          ? 'grid @min-[32rem]/autoform:grid-cols-[minmax(10rem,0.34fr)_minmax(0,1fr)] items-start gap-x-8 gap-y-2'
+          : undefined
       }
       data-disabled={isDisabled}
       data-invalid={Boolean(error)}
@@ -239,8 +274,8 @@ export const FieldWrapper: React.FC<FieldWrapperProps> = ({ label, children, id,
       testId={fieldTestId}
     >
       {isCompact ? null : (
-        <div className={cn('flex min-w-0 items-center gap-2', isSplit && 'sm:pt-2')}>
-          <FieldLabel className={hasVisibleLabel ? 'items-center gap-2' : 'sr-only'} htmlFor={id}>
+        <div className={cn('flex min-w-0 items-center gap-2', isSplit && '@min-[32rem]/autoform:pt-2')}>
+          <FieldLabel className={hasVisibleLabel ? 'items-center gap-2' : 'sr-only'} htmlFor={id} id={labelId}>
             <Text as="span" variant="labelStrongSmall">
               {displayedLabel}
             </Text>
@@ -373,7 +408,7 @@ function resolveSectionPresentation(
   const showDivider = !isIndented && customData['showDivider'] !== false && hasVisibleLabel;
   const isSplit = appearance.layout === 'split' && depth === 0 && hasVisibleLabel && !isCollapsible;
   const headerClassName = showDivider
-    ? `${formSpacing.sectionHeader} ${formSpacing.sectionDivider} ${isSplit ? 'sm:border-b-0 sm:pb-0' : ''}`
+    ? `${formSpacing.sectionHeader} ${formSpacing.sectionDivider} ${isSplit ? '@min-[32rem]/autoform:border-b-0 @min-[32rem]/autoform:pb-0' : ''}`
     : formSpacing.sectionHeader;
   return { headerClassName, isCollapsible, isIndented, isSplit, showDivider };
 }
@@ -414,7 +449,7 @@ export const ObjectWrapper: React.FC<
     <section
       className={
         isSplit
-          ? 'grid items-start gap-6 sm:grid-cols-[minmax(10rem,0.34fr)_minmax(0,1fr)] sm:gap-x-8'
+          ? 'grid @min-[32rem]/autoform:grid-cols-[minmax(10rem,0.34fr)_minmax(0,1fr)] items-start gap-6 @min-[32rem]/autoform:gap-x-8'
           : formSpacing.field
       }
       data-layout={isSplit ? 'split' : 'stacked'}

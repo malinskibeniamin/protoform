@@ -1,12 +1,15 @@
 'use client';
 
+import { mergeProps } from '@base-ui/react/merge-props';
 import { Toggle as TogglePrimitive } from '@base-ui/react/toggle';
 import { ToggleGroup as ToggleGroupPrimitive } from '@base-ui/react/toggle-group';
+import { useRender } from '@base-ui/react/use-render';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { AnimatePresence, type HTMLMotionProps, motion, type Transition } from 'motion/react';
 import React from 'react';
 
 import type { GroupContextValue, GroupPosition } from '@/components/ui/group';
+import { splitMotionProps } from '@/registry/base-nova/protoform/lib/base-ui-compat';
 import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
 const DEFAULT_TRANSITION = { bounce: 0, damping: 25, stiffness: 200, type: 'spring' } satisfies Transition;
@@ -76,15 +79,15 @@ type ToggleGroupContextProps = VariantProps<typeof toggleVariants> &
     registerItem: RegisterItem;
   };
 
-const ToggleGroupContext = React.createContext<ToggleGroupContextProps | undefined>(undefined);
-
-const useToggleGroup = (): ToggleGroupContextProps => {
-  const context = React.useContext(ToggleGroupContext);
-  if (context === undefined) {
-    throw new Error('useToggleGroup must be used within a ToggleGroup');
-  }
-  return context;
-};
+const registerUnattachedItem: RegisterItem = () => undefined;
+const ToggleGroupContext = React.createContext<ToggleGroupContextProps>({
+  attached: false,
+  orientation: 'horizontal',
+  registerItem: registerUnattachedItem,
+  size: 'default',
+  variant: 'default',
+});
+const useToggleGroup = () => React.useContext(ToggleGroupContext);
 
 function ToggleGroupItemContext({
   attached,
@@ -115,11 +118,10 @@ type ToggleGroupBaseProps = Omit<
   };
 
 type ToggleGroupSingleProps = ToggleGroupBaseProps & {
-  type?: 'single';
   value?: string;
   defaultValue?: string;
   onValueChange?: (value: string) => void;
-};
+} & ({ type: 'single' } | { type?: 'single'; value: string } | { type?: 'single'; defaultValue: string });
 
 type ToggleGroupMultipleProps = ToggleGroupBaseProps & {
   type: 'multiple';
@@ -128,7 +130,60 @@ type ToggleGroupMultipleProps = ToggleGroupBaseProps & {
   onValueChange?: (value: string[]) => void;
 };
 
-type ToggleGroupProps = ToggleGroupSingleProps | ToggleGroupMultipleProps;
+type LegacyToggleGroupProps = ToggleGroupSingleProps | ToggleGroupMultipleProps;
+type ShadcnToggleGroupProps = React.ComponentProps<typeof ToggleGroupPrimitive> &
+  Omit<VariantProps<typeof toggleVariants>, 'type'> &
+  SharedProps & { type?: never; spacing?: number; orientation?: Orientation };
+type ToggleGroupProps = LegacyToggleGroupProps | ShadcnToggleGroupProps;
+
+function OfficialToggleGroup({
+  className,
+  children,
+  size,
+  variant,
+  spacing = 2,
+  orientation = 'horizontal',
+  testId,
+  style,
+  render,
+  ...props
+}: ShadcnToggleGroupProps) {
+  const context: ToggleGroupContextProps = {
+    attached: spacing === 0,
+    orientation,
+    position: undefined,
+    registerItem: registerUnattachedItem,
+    size,
+    variant,
+  };
+  return (
+    <ToggleGroupPrimitive
+      {...props}
+      className={(state) =>
+        cn(
+          'group/toggle-group flex w-fit items-center gap-(--toggle-gap)',
+          orientation === 'vertical' && 'flex-col',
+          typeof className === 'function' ? className(state) : className
+        )
+      }
+      data-slot="toggle-group"
+      data-spacing={spacing}
+      data-testid={testId}
+      orientation={orientation}
+      render={render ?? <div style={{ '--toggle-gap': `${spacing * 0.25}rem` } as React.CSSProperties} />}
+      style={style}
+    >
+      <ToggleGroupItemContext {...context}>{children}</ToggleGroupItemContext>
+    </ToggleGroupPrimitive>
+  );
+}
+
+function ToggleGroup(props: ToggleGroupProps) {
+  if (props.type !== undefined || typeof props.value === 'string' || typeof props.defaultValue === 'string') {
+    return <LegacyToggleGroup {...(props as LegacyToggleGroupProps)} />;
+  }
+  return <OfficialToggleGroup {...(props as ShadcnToggleGroupProps)} />;
+}
 
 function toValueArray(v: string | string[] | undefined): string[] | undefined {
   if (v === undefined) {
@@ -137,7 +192,7 @@ function toValueArray(v: string | string[] | undefined): string[] | undefined {
   return Array.isArray(v) ? v : [v];
 }
 
-function ToggleGroup({
+function LegacyToggleGroup({
   className,
   variant,
   size,
@@ -152,7 +207,7 @@ function ToggleGroup({
   onValueChange,
   orientation = 'horizontal',
   ...props
-}: ToggleGroupProps) {
+}: LegacyToggleGroupProps) {
   'use no memo';
 
   const isMultiple = type === 'multiple';
@@ -265,14 +320,16 @@ function ToggleGroup({
 
   return (
     <ToggleGroupPrimitive
-      className={cn(
-        'relative flex items-center justify-center',
-        !isHorizontal && 'flex-col',
-        !isHorizontal && attached === true && 'items-stretch',
-        variant === 'outline' && '!border-primary-foreground rounded-md border p-0.5',
-        attached !== true && 'gap-1',
-        className
-      )}
+      className={(state) =>
+        cn(
+          'relative flex items-center justify-center',
+          !isHorizontal && 'flex-col',
+          !isHorizontal && attached === true && 'items-stretch',
+          variant === 'outline' && '!border-primary-foreground rounded-md border p-0.5',
+          attached !== true && 'gap-1',
+          typeof className === 'function' ? className(state) : className
+        )
+      }
       data-attached={attached === true ? true : undefined}
       data-slot="toggle-group"
       data-testid={testId}
@@ -320,19 +377,43 @@ function ToggleGroup({
   );
 }
 
-type ToggleGroupItemProps = Omit<React.ComponentProps<typeof TogglePrimitive>, 'onPressedChange'> &
+type ToggleGroupItemProps = React.ComponentProps<typeof TogglePrimitive> &
   Omit<VariantProps<typeof toggleVariants>, 'type'> &
   SharedProps & {
-    value: string;
+    value?: string | undefined;
     children?: React.ReactNode;
     buttonProps?: HTMLMotionProps<'button'>;
     spanProps?: React.ComponentProps<'span'>;
   };
 
-type MotionButtonStyle = NonNullable<HTMLMotionProps<'button'>['style']>;
+function ToggleGroupNativeButton({
+  ref,
+  type = 'button',
+  ...props
+}: React.ComponentProps<'button'> & { 'data-state'?: 'on' | 'off' }) {
+  return useRender({ defaultTagName: 'button', ref, props: { ...props, type } });
+}
 
 const ToggleGroupItem = React.forwardRef<HTMLButtonElement, ToggleGroupItemProps>(
-  ({ className, children, variant, size, buttonProps, spanProps, testId, disabled, value, ...props }, ref) => {
+  (
+    {
+      className,
+      children,
+      variant,
+      size,
+      buttonProps,
+      spanProps,
+      testId,
+      disabled,
+      value: suppliedValue,
+      render,
+      nativeButton,
+      ...props
+    },
+    ref
+  ) => {
+    const id = React.useId();
+    const value = suppliedValue ?? id;
     const {
       type,
       variant: contextVariant,
@@ -359,60 +440,53 @@ const ToggleGroupItem = React.forwardRef<HTMLButtonElement, ToggleGroupItemProps
       [registerItem, value, ref]
     );
 
+    const { className: buttonClassName, style: buttonStyle, value: _buttonValue, ...buttonOptions } = buttonProps ?? {};
+    const separated = splitMotionProps(buttonOptions, false);
+    const renderRoot: NonNullable<React.ComponentProps<typeof TogglePrimitive>['render']> = (rootProps, state) => {
+      const requestedType: unknown = Reflect.get(rootProps, 'type');
+      const buttonType = requestedType === 'submit' || requestedType === 'reset' ? requestedType : 'button';
+      return React.createElement(ToggleGroupNativeButton, {
+        ...rootProps,
+        type: buttonType,
+        'aria-checked': isSingle ? state.pressed : undefined,
+        'aria-pressed': isSingle ? undefined : state.pressed,
+        'data-state': state.pressed ? 'on' : 'off',
+      });
+    };
     return (
       <TogglePrimitive
-        disabled={disabled}
+        {...mergeProps<typeof TogglePrimitive>(separated.native, props)}
+        className={(state) =>
+          cn(
+            'relative',
+            buttonClassName,
+            toggleVariants({ size: size || contextSize, type, variant: variant || contextVariant }),
+            positionClasses,
+            isVerticalAttached && 'w-full',
+            typeof className === 'function' ? className(state) : className
+          )
+        }
+        data-slot="toggle-group-item"
+        data-testid={testId}
+        disabled={disabled ?? buttonOptions.disabled}
+        nativeButton={nativeButton ?? render === undefined}
+        ref={setRef}
+        render={render ?? renderRoot}
+        role={isSingle ? 'radio' : undefined}
         value={value}
-        {...props}
-        render={(
-          rootProps: React.ComponentPropsWithoutRef<'button'>,
-          state: { pressed?: boolean; disabled?: boolean }
-        ) => {
-          const { className: buttonClassName, style: buttonStyle, ...restButtonProps } = buttonProps ?? {};
-          const {
-            onAnimationEnd: _onAnimationEnd,
-            onAnimationStart: _onAnimationStart,
-            onDrag: _onDrag,
-            onDragEnd: _onDragEnd,
-            onDragStart: _onDragStart,
-            style,
-            ...motionButtonProps
-          } = rootProps;
-          const resolvedStyle = buttonStyle ?? style;
-          return (
-            <motion.button
-              {...motionButtonProps}
-              aria-checked={isSingle ? Boolean(state.pressed) : undefined}
-              data-slot="toggle-group-item"
-              data-state={state.pressed === true ? 'on' : 'off'}
-              data-testid={testId}
-              disabled={disabled ?? state.disabled}
-              initial={{ scale: 1 }}
-              ref={setRef}
-              role={isSingle ? 'radio' : undefined}
-              whileTap={{ scale: 0.9 }}
-              {...restButtonProps}
-              {...(resolvedStyle ? { style: resolvedStyle as MotionButtonStyle } : {})}
-              className={cn('relative', isVerticalAttached && 'w-full', buttonClassName)}
-            >
-              <span
-                {...spanProps}
-                className={cn(
-                  'relative z-[1]',
-                  toggleVariants({ size: size || contextSize, type, variant: variant || contextVariant }),
-                  positionClasses,
-                  isVerticalAttached && 'w-full',
-                  className,
-                  spanProps?.className
-                )}
-                data-state={state.pressed === true ? 'on' : 'off'}
-              >
-                {children}
-              </span>
-            </motion.button>
-          );
-        }}
-      />
+      >
+        <motion.span
+          initial={{ scale: 1 }}
+          whileTap={{ scale: 0.9 }}
+          {...separated.motion}
+          {...(buttonStyle === undefined ? {} : { style: buttonStyle })}
+          className={cn('relative z-[1]', isVerticalAttached && 'w-full')}
+        >
+          <span {...spanProps} className={cn(isVerticalAttached && 'w-full', spanProps?.className)}>
+            {children}
+          </span>
+        </motion.span>
+      </TogglePrimitive>
     );
   }
 );

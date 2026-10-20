@@ -1,7 +1,18 @@
 import { AxeBuilder } from '@axe-core/playwright';
 import { expect } from '@rstest/playwright';
-import type { Page } from 'playwright';
+import type { Locator, Page } from 'playwright';
 import { test } from '../scripts/e2e-test';
+
+async function expectContentSettled(content: Locator) {
+  await expect
+    .poll(() =>
+      content.evaluate((element) => {
+        const visual = element.firstElementChild;
+        return visual === null ? 1 : Number(getComputedStyle(visual).opacity);
+      })
+    )
+    .toBe(1);
+}
 
 async function expectNoSeriousViolations(page: Page) {
   const results = await new AxeBuilder({ page }).exclude('[data-base-ui-focus-guard]').analyze();
@@ -23,7 +34,7 @@ for (const theme of ['light', 'dark'] as const) {
       document.documentElement.dataset['theme'] = nextTheme;
     }, theme);
     await page.locator('astro-island button[aria-label]').first().hover();
-    const content = page.getByRole('tooltip').locator('[data-slot="tooltip-content"]');
+    const content = page.getByRole('tooltip');
     await expect(content).toBeVisible();
     await expect(content).toHaveCSS('background-color', 'oklch(0.145 0 0)');
     await expect(content).toHaveCSS('color', 'rgb(255, 255, 255)');
@@ -53,7 +64,7 @@ for (const theme of ['light', 'dark'] as const) {
     await expect(helpButton.locator('svg')).toHaveCSS('height', '16px');
     await helpButton.hover();
 
-    const content = page.getByRole('tooltip').locator('[data-slot="tooltip-content"]');
+    const content = page.getByRole('tooltip');
     await expect(content).toBeVisible();
     await expect(content).toContainText('Use the name teammates will recognize');
 
@@ -76,7 +87,7 @@ test('keeps localized demo hubs readable in dark theme', async ({ page }) => {
 
   await expect(page.getByLabel('Email')).toBeVisible({ timeout: 30_000 });
   const preview = page.getByRole('tabpanel', { name: 'Preview' });
-  await expect(preview).toHaveCSS('opacity', '1');
+  await expectContentSettled(preview);
   await expectNoSeriousViolations(page);
 });
 
@@ -131,7 +142,7 @@ test('has no serious accessibility violations across representative form states'
   await page.goto('/docs/aip-133-standard-methods-create');
   const preview = page.getByRole('tabpanel', { name: 'Preview' });
   await expect(preview.getByText('React Hook Form', { exact: true })).toBeVisible({ timeout: 30_000 });
-  await expect(preview).toHaveCSS('opacity', '1');
+  await expectContentSettled(preview);
   await expectNoSeriousViolations(page);
 });
 

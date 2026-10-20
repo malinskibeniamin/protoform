@@ -13,6 +13,10 @@ const separatorVariants = cva(
     variants: {
       variant: {
         default: 'bg-border',
+        item: 'my-2 bg-border',
+        sidebar: 'mx-2 w-auto bg-border',
+        group:
+          'relative self-stretch bg-border data-horizontal:mx-px data-vertical:my-px data-vertical:h-auto data-horizontal:w-auto',
         strong: 'bg-border',
         subtle: 'bg-border/50',
       },
@@ -39,7 +43,9 @@ function Separator({
   const a11yProps = decorative === true ? { 'aria-hidden': true, role: 'none' as const } : {};
   return (
     <SeparatorPrimitive
-      className={cn(separatorVariants({ variant }), className)}
+      className={(state) =>
+        cn(separatorVariants({ variant }), typeof className === 'function' ? className(state) : className)
+      }
       data-orientation={orientation}
       data-slot="separator"
       data-testid={testId}

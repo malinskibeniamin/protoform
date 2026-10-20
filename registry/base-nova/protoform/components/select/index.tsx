@@ -9,41 +9,17 @@ import { usePortalContainer } from '@/registry/base-nova/protoform/hooks/use-por
 import { renderWithDataState } from '@/registry/base-nova/protoform/lib/base-ui-compat';
 import { cn, type PortalContentProps, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
-type SelectRootProps = Omit<
-  React.ComponentProps<typeof SelectPrimitive.Root>,
-  'defaultValue' | 'onOpenChange' | 'onValueChange' | 'value'
+type SelectRootProps<Value = string, Multiple extends boolean | undefined = false> = SelectPrimitive.Root.Props<
+  Value,
+  Multiple
 > &
-  SharedProps & {
-    defaultValue?: string | null;
-    onOpenChange?: React.ComponentProps<typeof SelectPrimitive.Root>['onOpenChange'];
-    onValueChange?: (value: string | null) => void;
-    value?: string | null;
-  };
+  SharedProps;
 
-function adaptSelectValueChange(
-  handler: ((value: string | null) => void) | undefined
-): ((value: unknown) => void) | undefined {
-  if (!handler) {
-    return;
-  }
-  return (value) => {
-    if (value !== null && typeof value !== 'string') {
-      throw new TypeError('Select values must be strings or null.');
-    }
-    handler(value);
-  };
-}
-
-function Select({ testId, onOpenChange, onValueChange, ...props }: SelectRootProps) {
-  return (
-    <SelectPrimitive.Root
-      data-slot="select"
-      data-testid={testId}
-      onOpenChange={onOpenChange}
-      onValueChange={adaptSelectValueChange(onValueChange)}
-      {...props}
-    />
-  );
+function Select<Value = string, Multiple extends boolean | undefined = false>({
+  testId,
+  ...props
+}: SelectRootProps<Value, Multiple>) {
+  return <SelectPrimitive.Root data-slot="select" data-testid={testId} {...props} />;
 }
 
 Select.displayName = 'Select';
@@ -106,11 +82,13 @@ const SelectTrigger = React.forwardRef<
 
   return (
     <SelectPrimitive.Trigger
-      className={cn(
-        "!border-input flex w-full cursor-pointer select-none items-center justify-between gap-1.5 whitespace-nowrap border bg-transparent py-2 pr-2 pl-2.5 text-sm outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 data-[size=default]:h-8 data-[size=lg]:h-9 data-[size=sm]:h-7 data-[placeholder]:text-muted-foreground *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-1.5 dark:bg-input/30 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 dark:hover:bg-input/50 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0",
-        positionClasses,
-        className
-      )}
+      className={(state) =>
+        cn(
+          "!border-input flex w-full cursor-pointer select-none items-center justify-between gap-1.5 whitespace-nowrap border bg-transparent py-2 pr-2 pl-2.5 text-sm outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 data-[size=default]:h-8 data-[size=lg]:h-9 data-[size=sm]:h-7 data-[placeholder]:text-muted-foreground *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-1.5 dark:bg-input/30 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 dark:hover:bg-input/50 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0",
+          positionClasses,
+          typeof className === 'function' ? className(state) : className
+        )
+      }
       data-size={size}
       data-slot="select-trigger"
       data-testid={testId}
@@ -134,13 +112,9 @@ SelectTrigger.displayName = 'SelectTrigger';
 
 type SelectContentProps = React.ComponentProps<typeof SelectPrimitive.Popup> &
   SharedProps &
-  Pick<PortalContentProps, 'container'> & {
-    position?: 'item-aligned' | 'popper';
-    side?: 'top' | 'right' | 'bottom' | 'left';
-    align?: 'start' | 'center' | 'end';
-    sideOffset?: number;
-    alignOffset?: number;
-    alignItemWithTrigger?: boolean;
+  Pick<PortalContentProps, 'container' | 'onOpenAutoFocus'> &
+  Pick<SelectPrimitive.Positioner.Props, 'side' | 'sideOffset' | 'align' | 'alignOffset' | 'alignItemWithTrigger'> & {
+    position?: 'popper' | 'item-aligned';
   };
 
 const SelectContent = React.forwardRef<React.ComponentRef<typeof SelectPrimitive.Popup>, SelectContentProps>(
@@ -171,12 +145,14 @@ const SelectContent = React.forwardRef<React.ComponentRef<typeof SelectPrimitive
           sideOffset={sideOffset}
         >
           <SelectPrimitive.Popup
-            className={cn(
-              'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 relative z-50 max-h-(--available-height) min-w-36 origin-(--transform-origin) overflow-hidden rounded-lg bg-popover text-popover-foreground shadow-md ring-1 ring-foreground/10 data-[state=closed]:animate-out data-[state=open]:animate-in',
-              position === 'popper' &&
-                'data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=bottom]:translate-y-1 data-[side=top]:-translate-y-1',
-              className
-            )}
+            className={(state) =>
+              cn(
+                'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 relative z-50 max-h-(--available-height) min-w-36 origin-(--transform-origin) overflow-hidden rounded-lg bg-popover text-popover-foreground shadow-md ring-1 ring-foreground/10 data-[state=closed]:animate-out data-[state=open]:animate-in',
+                position === 'popper' &&
+                  'data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=bottom]:translate-y-1 data-[side=top]:-translate-y-1',
+                typeof className === 'function' ? className(state) : className
+              )
+            }
             data-slot="select-content"
             data-testid={testId}
             ref={ref}
@@ -207,7 +183,9 @@ const SelectLabel = React.forwardRef<
   React.ComponentProps<typeof SelectPrimitive.GroupLabel>
 >(({ className, ...props }, ref) => (
   <SelectPrimitive.GroupLabel
-    className={cn('px-2 py-1.5 text-muted-foreground text-xs', className)}
+    className={(state) =>
+      cn('px-2 py-1.5 text-muted-foreground text-xs', typeof className === 'function' ? className(state) : className)
+    }
     data-slot="select-label"
     ref={ref}
     {...props}
@@ -221,10 +199,12 @@ const SelectItem = React.forwardRef<
   React.ComponentProps<typeof SelectPrimitive.Item> & SharedProps
 >(({ className, children, testId, ...props }, ref) => (
   <SelectPrimitive.Item
-    className={cn(
-      "relative flex w-full cursor-pointer select-none items-center gap-1.5 rounded-md py-1 pr-8 pl-1.5 text-sm outline-hidden *:last:flex *:last:items-center *:last:gap-2 focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0",
-      className
-    )}
+    className={(state) =>
+      cn(
+        "relative flex w-full cursor-pointer select-none items-center gap-1.5 rounded-md py-1 pr-8 pl-1.5 text-sm outline-hidden *:last:flex *:last:items-center *:last:gap-2 focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0",
+        typeof className === 'function' ? className(state) : className
+      )
+    }
     data-slot="select-item"
     data-testid={testId}
     ref={ref}
@@ -246,7 +226,12 @@ const SelectSeparator = React.forwardRef<
   React.ComponentProps<typeof SelectPrimitive.Separator>
 >(({ className, ...props }, ref) => (
   <SelectPrimitive.Separator
-    className={cn('pointer-events-none -mx-1 my-1 h-px bg-border', className)}
+    className={(state) =>
+      cn(
+        'pointer-events-none -mx-1 my-1 h-px bg-border',
+        typeof className === 'function' ? className(state) : className
+      )
+    }
     data-slot="select-separator"
     ref={ref}
     {...props}
@@ -260,7 +245,12 @@ const SelectScrollUpButton = React.forwardRef<
   React.ComponentProps<typeof SelectPrimitive.ScrollUpArrow>
 >(({ className, ...props }, ref) => (
   <SelectPrimitive.ScrollUpArrow
-    className={cn('flex cursor-pointer items-center justify-center py-1', className)}
+    className={(state) =>
+      cn(
+        'flex cursor-pointer items-center justify-center py-1',
+        typeof className === 'function' ? className(state) : className
+      )
+    }
     data-slot="select-scroll-up-button"
     ref={ref}
     {...props}
@@ -276,7 +266,12 @@ const SelectScrollDownButton = React.forwardRef<
   React.ComponentProps<typeof SelectPrimitive.ScrollDownArrow>
 >(({ className, ...props }, ref) => (
   <SelectPrimitive.ScrollDownArrow
-    className={cn('flex cursor-pointer items-center justify-center py-1', className)}
+    className={(state) =>
+      cn(
+        'flex cursor-pointer items-center justify-center py-1',
+        typeof className === 'function' ? className(state) : className
+      )
+    }
     data-slot="select-scroll-down-button"
     ref={ref}
     {...props}

@@ -234,9 +234,16 @@ export function getRootErrorMessage(rootError: unknown): string | undefined {
 
 export function getFieldErrorMessage(errors: unknown, path: string[]): string | undefined {
   const nestedError = getPathInObject(errors as Record<string, unknown>, path);
-  const message: unknown =
-    nestedError !== null && typeof nestedError === 'object' ? Reflect.get(nestedError, 'message') : undefined;
-  return typeof message === 'string' ? message : undefined;
+  if (nestedError === null || typeof nestedError !== 'object') {
+    return;
+  }
+  const message: unknown = Reflect.get(nestedError, 'message');
+  if (typeof message === 'string') {
+    return message;
+  }
+  const root: unknown = Reflect.get(nestedError, 'root');
+  const rootMessage: unknown = root !== null && typeof root === 'object' ? Reflect.get(root, 'message') : undefined;
+  return typeof rootMessage === 'string' ? rootMessage : undefined;
 }
 
 export function createEmptyFieldValue(field: ParsedField | undefined): unknown {
