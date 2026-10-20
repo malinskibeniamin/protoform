@@ -27,7 +27,7 @@ export function ObjectFieldRenderer({
   const { isVisible, renderField } = useFieldPresentation(field, path, inheritedDisabled);
   const { testIdPrefix } = useAutoFormRuntimeContext();
 
-  const errorAtPath = getPathInObject(errors as Record<string, unknown>, path);
+  const errorAtPath = getPathInObject(errors, path);
   const hasDescendantError = errorAtPath !== undefined && errorAtPath !== null && typeof errorAtPath === 'object';
   const hasError = Boolean(error) || hasDescendantError;
 

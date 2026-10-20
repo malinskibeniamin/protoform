@@ -29,7 +29,7 @@ test('exports the current page as PDF and a readable EPUB without a server', asy
   await expect(page.locator('[data-blume-page-actions]')).toHaveScreenshot('key-free-page-actions.png');
   await page.getByText('Export', { exact: true }).click();
   await page.getByRole('button', { exact: true, name: 'Export to PDF' }).click();
-  await expect.poll(() => page.evaluate(() => Reflect.get(window, '__protoformPrinted'))).toBe(true);
+  await expect.poll(() => page.evaluate((): unknown => Reflect.get(window, '__protoformPrinted'))).toBe(true);
 
   const downloading = page.waitForEvent('download');
   await page.getByRole('button', { exact: true, name: 'Export to EPUB' }).click();

@@ -113,7 +113,7 @@ function ToastClose({ children, className, render, ...props }: ToastPrimitive.Cl
 }
 
 function ToastIcon({ type }: { type: string | undefined }) {
-  let icon: React.ReactNode = null;
+  let icon: React.ReactNode;
 
   switch (type) {
     case 'success':

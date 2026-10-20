@@ -125,27 +125,36 @@ describe('live demo catalog', () => {
   });
 
   test('publishes the actual form implementation for every catalog demo', () => {
+    const runtime = read('registry/base-nova/protoform/demo/runtime/catalog-form-demo.tsx');
+    expect(runtime).toContain('<AutoForm');
+    expect(runtime).toContain('onSubmit=');
+    expect(runtime).toContain('schema={schema}');
+    expect(runtime).toContain('getDemoSchema');
     for (const demo of demoCatalog) {
       const source = read(`registry/base-nova/protoform/demo/catalog/${demo.slug}.tsx`);
 
       expect(source, demo.id).not.toContain('RegistryCapabilityDemo');
       if (demo.engine === 'react-hook-form') {
-        expect(source, demo.id).toContain('<AutoForm');
-        expect(source, demo.id).toContain('onSubmit=');
-        expect(source, demo.id).toContain('schema={schema}');
-        expect(source, demo.id).toContain('getDemoSchema');
+        expect(source, demo.id).toContain('<CatalogFormDemo');
+        expect(source, demo.id).toContain('schemaKey=');
+        expect(source, demo.id).toContain('/demo/runtime/catalog-form-demo');
       }
     }
   });
 
   test('keeps submitted-value formatting in the shared demo runtime', () => {
+    const runtime = read('registry/base-nova/protoform/demo/runtime/catalog-form-demo.tsx');
+    expect(runtime).toContain("from './format-submitted-value'");
+    expect(runtime).toContain('formatSubmittedValue(');
     for (const demo of demoCatalog) {
       const source = read(`registry/base-nova/protoform/demo/catalog/${demo.slug}.tsx`);
 
-      expect(source, demo.id).toMatch(
-        /from ["']@\/registry\/base-nova\/protoform\/demo\/runtime\/format-submitted-value["']/u
-      );
-      expect(source, demo.id).toContain('formatSubmittedValue(');
+      if (demo.engine !== 'react-hook-form') {
+        expect(source, demo.id).toMatch(
+          /from ["']@\/registry\/base-nova\/protoform\/demo\/runtime\/format-submitted-value["']/u
+        );
+        expect(source, demo.id).toContain('formatSubmittedValue(');
+      }
       expect(source, demo.id).not.toContain('function formatSubmittedValue');
       expect(source, demo.id).not.toContain('JSON.stringify(');
     }

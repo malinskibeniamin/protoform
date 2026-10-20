@@ -26,8 +26,8 @@ function profileId(displayName: string): string {
   const slug = displayName
     .trim()
     .toLowerCase()
-    .replace(/[^a-z0-9]+/gu, '-')
-    .replace(/^-|-$/gu, '');
+    .replaceAll(/[^a-z0-9]+/gu, '-')
+    .replaceAll(/^-|-$/gu, '');
   return `profiles/${slug}`;
 }
 

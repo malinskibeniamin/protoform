@@ -112,3 +112,23 @@ export function auditLintExceptions(
     });
   });
 }
+
+function exceptionFingerprints(file: string, source: string): string[] {
+  const text = file.endsWith('.jsonc') ? `const config = ${source};` : source;
+  const parsed = ts.createSourceFile('config.ts', text, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+  const assignments: ts.PropertyAssignment[] = [];
+  collectOverrideArrays(parsed, assignments);
+  const printer = ts.createPrinter({ removeComments: true });
+  return assignments.flatMap(({ initializer }) =>
+    ts.isArrayLiteralExpression(initializer)
+      ? initializer.elements
+          .filter((node): node is ts.ObjectLiteralExpression => ts.isObjectLiteralExpression(node) && isException(node))
+          .map((node) => printer.printNode(ts.EmitHint.Unspecified, node, parsed))
+      : []
+  );
+}
+
+export function newLintExceptions(file: string, source: string, baseline: string): string[] {
+  const approved = new Set(exceptionFingerprints(file, baseline));
+  return exceptionFingerprints(file, source).filter((exception) => !approved.has(exception));
+}

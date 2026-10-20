@@ -173,7 +173,7 @@ function fieldToFormValue(field: DescField, value: unknown): unknown {
           return toDateTimeLocalValue(value as MessageShape<typeof TimestampSchema> | undefined);
         case DURATION_TYPE:
           return hasValue
-            ? toJsonString(DurationSchema, value as MessageShape<typeof DurationSchema>).replace(/"/gu, '')
+            ? toJsonString(DurationSchema, value as MessageShape<typeof DurationSchema>).replaceAll('"', '')
             : undefined;
         case FIELD_MASK_TYPE:
           return isPlainObject(value) && Array.isArray((value as { paths?: unknown[] }).paths)
@@ -824,7 +824,7 @@ export function protoFormValuesToPayload<Desc extends DescMessage>(
   try {
     const init = formValuesToProtoInit(desc, values, options);
     const message = create(desc, init);
-    return toJson(desc, message, { alwaysEmitImplicit: true }) as unknown;
+    return toJson(desc, message, { alwaysEmitImplicit: true });
   } catch {
     try {
       return formValuesToProtoInit(desc, values, options);
@@ -1047,7 +1047,7 @@ function getMapConversionIssue(value: unknown): string | undefined {
     if (!isPlainObject(entry)) {
       return [];
     }
-    const key = entry['key'];
+    const { key } = entry;
     return key === undefined || key === null || key === '' ? [] : [String(key)];
   });
   return new Set(keys).size === keys.length ? undefined : 'Map keys must be unique.';

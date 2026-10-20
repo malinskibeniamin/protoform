@@ -116,7 +116,7 @@ describe('single-variant oneofs', () => {
   });
 
   test('selecting the sole required variant leaves the form clean', async () => {
-    const onDirtyChange = rs.fn();
+    const onDirtyChange = rs.fn<(dirty: boolean) => void>();
     render(<AutoForm onDirtyChange={onDirtyChange} schema={singleVariant(true)} />);
 
     expect(await screen.findByRole('textbox', { name: /Endpoint/u })).toBeVisible();
@@ -124,7 +124,7 @@ describe('single-variant oneofs', () => {
   });
 
   test('a disabled required oneof with one variant is not selected for the user', async () => {
-    const onDirtyChange = rs.fn();
+    const onDirtyChange = rs.fn<(dirty: boolean) => void>();
     render(<AutoForm onDirtyChange={onDirtyChange} schema={singleVariant(true, { immutable: true })} />);
 
     await waitFor(() => expect(onDirtyChange).toHaveBeenCalled());

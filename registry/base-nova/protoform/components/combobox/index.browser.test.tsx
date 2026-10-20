@@ -10,7 +10,7 @@ function CountryPicker() {
   return (
     <>
       <Combobox aria-label="Country" onChange={setValue} options={[{ label: 'Poland', value: 'PL' }]} value={value} />
-      <output aria-label="Selected country">{String(value)}</output>
+      <output aria-label="Selected country">{value}</output>
     </>
   );
 }

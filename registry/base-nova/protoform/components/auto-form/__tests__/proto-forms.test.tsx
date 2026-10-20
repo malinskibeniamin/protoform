@@ -1,4 +1,4 @@
-import { create, fromBinary, toBinary } from '@bufbuild/protobuf';
+import { create, fromBinary, type MessageShape, toBinary } from '@bufbuild/protobuf';
 import { describe, expect, rs } from '@rstest/core';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -92,7 +92,7 @@ const buildValidProtoDefaults = () => ({
 describe('AutoForm – protobuf forms', () => {
   test('renders registered descriptions and submits protobuf-shaped output', async () => {
     const user = userEvent.setup();
-    const onSubmit = rs.fn();
+    const onSubmit = rs.fn<(message: MessageShape<typeof AutoFormExampleSchema>) => void>();
 
     render(
       <AutoForm
@@ -123,19 +123,19 @@ describe('AutoForm – protobuf forms', () => {
     expect(submittedValue.storageQuotaBytes).toBe(4096n);
     expect(Array.from(submittedValue.avatarBytes)).toEqual([1, 2, 3, 4]);
     expect(submittedValue.labels).toEqual({ team: 'frontend' });
-    expect(submittedValue.officeLocations.hq.city).toBe('San Francisco');
+    expect(submittedValue.officeLocations['hq']?.city).toBe('San Francisco');
     expect(submittedValue.preferredContact).toEqual({
       case: 'preferredEmail',
       value: 'forms@protoform.com',
     });
-    expect(submittedValue.createdAt.$typeName).toBe('google.protobuf.Timestamp');
-    expect(submittedValue.reminderInterval.$typeName).toBe('google.protobuf.Duration');
-    expect(submittedValue.writablePaths.paths).toEqual(['profile']);
+    expect(submittedValue.createdAt?.$typeName).toBe('google.protobuf.Timestamp');
+    expect(submittedValue.reminderInterval?.$typeName).toBe('google.protobuf.Duration');
+    expect(submittedValue.writablePaths?.paths).toEqual(['profile']);
   }, 10_000);
 
   test('hydrates and preserves the edit source message through the React Hook Form adapter', async () => {
     const user = userEvent.setup();
-    const onSubmit = rs.fn();
+    const onSubmit = rs.fn<(message: MessageShape<typeof AutoFormExampleSchema>) => void>();
     const base = formValuesToProto(AutoFormExampleSchema, buildValidProtoDefaults());
     if (!base.shippingAddress) {
       throw new Error('Expected valid defaults to include a shipping address.');
@@ -203,7 +203,7 @@ describe('AutoForm – protobuf forms', () => {
 
   test('shows protobuf field-level and message-level validation feedback', async () => {
     const user = userEvent.setup();
-    const onSubmit = rs.fn();
+    const onSubmit = rs.fn<(message: MessageShape<typeof AutoFormExampleSchema>) => void>();
 
     render(
       <AutoForm
@@ -233,7 +233,7 @@ describe('AutoForm – protobuf forms', () => {
 
   test('switches protobuf oneof cases and submits the latest selection', async () => {
     const user = userEvent.setup();
-    const onSubmit = rs.fn();
+    const onSubmit = rs.fn<(message: MessageShape<typeof AutoFormExampleSchema>) => void>();
 
     render(
       <AutoForm

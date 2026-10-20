@@ -23,12 +23,20 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/registry/base-nova/protoform/components/tabs';
 
 import { ExampleLoading } from '../shared/example-loading';
-import type { DemoCatalogEntry } from './demo-catalog';
+import { type DemoCatalogEntry, demoCatalog } from './demo-catalog';
 import { type DemoHubCategory, demosForHub, getDemoHub } from './demo-docs';
 
 interface DemoModule {
   default: ComponentType;
 }
+
+const catalogFormSource = Object.values(
+  import.meta.glob<string>('../../registry/base-nova/protoform/demo/runtime/catalog-form-demo.tsx', {
+    eager: true,
+    import: 'default',
+    query: '?raw',
+  })
+).join('\n');
 
 const demoModules = import.meta.glob<DemoModule>([
   '../../registry/base-nova/protoform/demo/catalog/*.tsx',
@@ -52,10 +60,14 @@ for (const [path, load] of Object.entries(demoModules)) {
 }
 
 for (const [path, load] of Object.entries(demoSourceModules)) {
+  const usesSharedForm = demoCatalog.some((demo) => modulePathFor(demo) === path && demo.engine === 'react-hook-form');
   demoSourceComponents.set(
     path,
     lazy(async () => {
-      const source = await load();
+      const demoSource = await load();
+      const source = usesSharedForm
+        ? `${demoSource}\n\n// Shared form implementation: demo/runtime/catalog-form-demo.tsx\n${catalogFormSource}`
+        : demoSource;
       return {
         default() {
           return (

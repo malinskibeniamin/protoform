@@ -133,7 +133,7 @@ function requireRecord(value: unknown, label: string): Record<string, unknown> {
 
 function requireArray(value: unknown, label: string): unknown[] {
   if (!Array.isArray(value)) {
-    throw new Error(`Expected ${label} to be an array.`);
+    throw new TypeError(`Expected ${label} to be an array.`);
   }
   return value;
 }

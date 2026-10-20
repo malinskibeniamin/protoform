@@ -161,18 +161,18 @@ function ToggleGroup({
   const [internalActive, setInternalActive] = React.useState<string | undefined>(
     typeof defaultValue === 'string' ? defaultValue : undefined
   );
-  const activeValue = isMultiple ? undefined : ((value as string | undefined) ?? internalActive);
+  const activeValue = isMultiple ? undefined : (value ?? internalActive);
   const hasActiveValue = Boolean(activeValue);
 
   const handleValueChange = React.useCallback(
     (groupValue: unknown[]) => {
       if (isMultiple) {
-        (onValueChange as ((v: string[]) => void) | undefined)?.(groupValue as string[]);
+        onValueChange?.(groupValue as string[]);
         return;
       }
       const next = (groupValue[0] as string | undefined) ?? '';
       setInternalActive(next || undefined);
-      (onValueChange as ((v: string) => void) | undefined)?.(next);
+      onValueChange?.(next);
     },
     [isMultiple, onValueChange]
   );
@@ -353,7 +353,7 @@ const ToggleGroupItem = React.forwardRef<HTMLButtonElement, ToggleGroupItemProps
         if (typeof ref === 'function') {
           ref(el);
         } else if (ref) {
-          (ref as React.RefObject<HTMLButtonElement | null>).current = el;
+          ref.current = el;
         }
       },
       [registerItem, value, ref]

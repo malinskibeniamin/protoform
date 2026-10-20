@@ -1,7 +1,8 @@
 import { describe, expect, test } from '@rstest/core';
 import { render, screen } from '@testing-library/react';
+import { expectTypeOf } from 'expect-type';
 
-import { Tabs, TabsList, TabsTrigger } from './index';
+import { Tabs, TabsList, type TabsListProps, TabsTrigger } from './index';
 
 function Example({ columns }: { columns: number }) {
   return (
@@ -15,6 +16,22 @@ function Example({ columns }: { columns: number }) {
 }
 
 describe('TabsList equal layout', () => {
+  test('preserves data attributes for non-string tab values', () => {
+    render(
+      <Tabs defaultValue>
+        <TabsList aria-label="Boolean values">
+          <TabsTrigger value>Enabled</TabsTrigger>
+          <TabsTrigger value={false}>Disabled</TabsTrigger>
+        </TabsList>
+      </Tabs>
+    );
+    expect(screen.getByRole('tab', { name: 'Enabled' })).toHaveAttribute('data-value', 'true');
+  });
+
+  test('only accepts the style objects the component can merge', () => {
+    expectTypeOf<Extract<NonNullable<TabsListProps['style']>, (...args: never[]) => unknown>>().toEqualTypeOf<never>();
+  });
+
   test('applies the requested column count and updates it', () => {
     const { rerender } = render(<Example columns={2} />);
 

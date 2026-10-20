@@ -21,6 +21,6 @@ globalThis.matchMedia = (query: string): MediaQueryList => ({
   removeListener: () => undefined,
 });
 globalThis.scrollTo = () => undefined;
-if (typeof Element !== 'undefined') {
-  Element.prototype.scrollIntoView ??= () => undefined;
+if (typeof Element !== 'undefined' && typeof Element.prototype.scrollIntoView !== 'function') {
+  Element.prototype.scrollIntoView = () => undefined;
 }

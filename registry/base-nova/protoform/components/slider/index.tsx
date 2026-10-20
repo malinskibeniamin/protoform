@@ -31,15 +31,15 @@ function Slider({
   ...props
 }: SliderProps) {
   let values: readonly number[] = [min, max];
-  if (Array.isArray(value)) {
+  if (value !== undefined && typeof value !== 'number') {
     values = value;
-  } else if (Array.isArray(defaultValue)) {
+  } else if (defaultValue !== undefined && typeof defaultValue !== 'number') {
     values = defaultValue;
   }
   const thumbs = values.map((thumbValue, index) => ({ index, key: `${thumbValue}:${index}` }));
   const handleValueChange = onValueChange
     ? (nextValue: number | readonly number[]) => {
-        const asArray = Array.isArray(nextValue) ? [...nextValue] : [nextValue as number];
+        const asArray = typeof nextValue === 'number' ? [nextValue] : [...nextValue];
         onValueChange(asArray);
       }
     : undefined;

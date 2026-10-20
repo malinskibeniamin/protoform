@@ -20,7 +20,7 @@ import { kebab_case } from './gen/protoform/conformance/v1/predefined_pb.js';
 type ValidationResult = Awaited<ReturnType<ReturnType<typeof createProtoFormSchema>['~standard']['validate']>>;
 
 function paths(result: ValidationResult): string[][] {
-  return (result.issues ?? []).map((issue) => (issue.path ?? []).map((segment) => String(segment)));
+  return (result.issues ?? []).map((issue) => (issue.path ?? []).map(String));
 }
 
 async function expectValid(schema: ReturnType<typeof createProtoFormSchema>, field: string, value: unknown) {
@@ -73,8 +73,8 @@ describe('Protovalidate format rule conformance', () => {
     ['allowed', bytes('one'), bytes('three')],
     ['denied', bytes('safe'), bytes('bad')],
     ['ip', bytes([192, 0, 2, 1]), bytes([192, 0, 2])],
-    ['ipv4', bytes([192, 0, 2, 1]), bytes(new Array(16).fill(0))],
-    ['ipv6', bytes(new Array(16).fill(0)), bytes([192, 0, 2, 1])],
+    ['ipv4', bytes([192, 0, 2, 1]), bytes(Array.from({ length: 16 }, () => 0))],
+    ['ipv6', bytes(Array.from({ length: 16 }, () => 0)), bytes([192, 0, 2, 1])],
     [
       'uuid',
       bytes([0x12, 0x3e, 0x45, 0x67, 0xe8, 0x9b, 0x12, 0xd3, 0xa4, 0x56, 0x42, 0x66, 0x14, 0x17, 0x40, 0x00]),

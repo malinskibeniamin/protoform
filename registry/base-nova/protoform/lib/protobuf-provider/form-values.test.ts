@@ -41,38 +41,38 @@ type ExampleForm = ProtoFormShape<typeof AutoFormExampleSchema>;
 
 describe('ProtoFormValues: deeply nested oneof paths resolve without casts', () => {
   test('resolves a field through the delivery oneof', () => {
-    expectTypeOf<'delivery.value.endpoint'>().toMatchTypeOf<Path<NotificationForm>>();
+    expectTypeOf<'delivery.value.endpoint'>().toExtend<Path<NotificationForm>>();
   });
 
   test('resolves the discriminator for a nested credentials oneof', () => {
-    expectTypeOf<'delivery.value.credentials.case'>().toMatchTypeOf<Path<NotificationForm>>();
+    expectTypeOf<'delivery.value.credentials.case'>().toExtend<Path<NotificationForm>>();
   });
 
   test('resolves a field through two oneof levels', () => {
-    expectTypeOf<'delivery.value.credentials.value.secretRef'>().toMatchTypeOf<Path<NotificationForm>>();
+    expectTypeOf<'delivery.value.credentials.value.secretRef'>().toExtend<Path<NotificationForm>>();
   });
 
   test('resolves a field unique to another nested branch', () => {
-    expectTypeOf<'delivery.value.credentials.value.clientId'>().toMatchTypeOf<Path<NotificationForm>>();
+    expectTypeOf<'delivery.value.credentials.value.clientId'>().toExtend<Path<NotificationForm>>();
   });
 
   test('resolves fields unique to sibling delivery branches', () => {
-    expectTypeOf<'delivery.value.topic'>().toMatchTypeOf<Path<NotificationForm>>();
-    expectTypeOf<'delivery.value.region'>().toMatchTypeOf<Path<NotificationForm>>();
+    expectTypeOf<'delivery.value.topic'>().toExtend<Path<NotificationForm>>();
+    expectTypeOf<'delivery.value.region'>().toExtend<Path<NotificationForm>>();
   });
 
   test('resolves nested branch fields without a containing message', () => {
-    expectTypeOf<'credentials.value.secretRef'>().toMatchTypeOf<Path<WebhookDeliveryForm>>();
-    expectTypeOf<'credentials.value.tokenUrl'>().toMatchTypeOf<Path<WebhookDeliveryForm>>();
+    expectTypeOf<'credentials.value.secretRef'>().toExtend<Path<WebhookDeliveryForm>>();
+    expectTypeOf<'credentials.value.tokenUrl'>().toExtend<Path<WebhookDeliveryForm>>();
   });
 });
 
 describe('ProtoFormShape: the values a protobuf form holds', () => {
   test('omits protobuf message internals from form paths', () => {
-    expectTypeOf<'$typeName'>().not.toMatchTypeOf<Path<ExampleForm>>();
-    expectTypeOf<'$unknown'>().not.toMatchTypeOf<Path<ExampleForm>>();
-    expectTypeOf<'shippingAddress.$typeName'>().not.toMatchTypeOf<Path<ExampleForm>>();
-    expectTypeOf<'shippingAddress.city'>().toMatchTypeOf<Path<ExampleForm>>();
+    expectTypeOf<'$typeName'>().not.toExtend<Path<ExampleForm>>();
+    expectTypeOf<'$unknown'>().not.toExtend<Path<ExampleForm>>();
+    expectTypeOf<'shippingAddress.$typeName'>().not.toExtend<Path<ExampleForm>>();
+    expectTypeOf<'shippingAddress.city'>().toExtend<Path<ExampleForm>>();
   });
 
   test('represents well-known types, 64-bit integers, and bytes as their form values', () => {

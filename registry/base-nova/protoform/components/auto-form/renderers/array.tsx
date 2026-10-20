@@ -149,7 +149,7 @@ export function ArrayFieldRenderer({
                   ? {
                       ...itemField,
                       fieldConfig: {
-                        ...(itemField.fieldConfig ?? {}),
+                        ...itemField.fieldConfig,
                         label: getCollectionItemLabel(label, index),
                       },
                     }

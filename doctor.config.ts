@@ -2,7 +2,6 @@ import { defineConfig } from 'react-doctor/api';
 
 export default defineConfig({
   blocking: 'warning',
-  deadCode: false,
   ignore: {
     files: [
       '.blume/**',

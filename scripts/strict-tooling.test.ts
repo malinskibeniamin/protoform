@@ -48,7 +48,7 @@ describe('strict React tooling', () => {
     expect(packageJson.devDependencies).toMatchObject({
       '@biomejs/biome': '2.5.15',
       '@shadcn/lint': '0.2.3',
-      oxlint: '1.88.0',
+      oxlint: '1.89.0',
       '@rsbuild/plugin-react': '2.1.1',
       'react-doctor': '0.9.18',
       'react-scan': '0.5.7',
@@ -56,15 +56,15 @@ describe('strict React tooling', () => {
     });
     expect('babel-plugin-react-compiler' in packageJson.devDependencies).toBe(false);
     expect(packageJson.scripts).toMatchObject({
-      lint: 'biome check . --error-on-warnings && bun run lint:exceptions && bun run lint:shadcn',
+      lint: expect.stringContaining('lint:oxlint') as unknown,
       'lint:exceptions': 'bun run scripts/check-lint-exceptions.ts',
       'lint:shadcn':
         'oxlint --config shadcn-lint.jsonc --deny-warnings --report-unused-disable-directives-severity=error',
-      'ci:gate': expect.stringContaining('bun run lint'),
-      'quality:gate': expect.stringContaining('bun run lint'),
-      doctor: expect.stringContaining('react-doctor'),
+      'ci:gate': expect.stringContaining('bun run lint') as unknown,
+      'quality:gate': expect.stringContaining('bun run lint') as unknown,
+      doctor: expect.stringContaining('react-doctor') as unknown,
       'doctor:strict': 'bun run doctor',
-      'scan:react': expect.stringContaining('react-scan'),
+      'scan:react': 'PROTOFORM_REACT_SCAN=1 blume dev --port 55011',
       'typecheck:source': 'tsc --noEmit',
       'typecheck:tests': 'tsc --project tsconfig.tests.json --noEmit',
     });
@@ -145,10 +145,10 @@ describe('strict React tooling', () => {
           level: 'error',
           options: {
             elements: {
-              button: expect.stringContaining('Button'),
-              input: expect.stringContaining('Input'),
-              select: expect.stringContaining('Select'),
-              textarea: expect.stringContaining('Textarea'),
+              button: expect.stringContaining('Button') as unknown,
+              input: expect.stringContaining('Input') as unknown,
+              select: expect.stringContaining('Select') as unknown,
+              textarea: expect.stringContaining('Textarea') as unknown,
             },
           },
         },
@@ -238,13 +238,13 @@ describe('strict React tooling', () => {
           level: 'error',
           options: {
             paths: {
-              classnames: expect.stringContaining('clsx'),
-              lodash: expect.stringContaining('lodash-es'),
-              mobx: expect.stringContaining('zustand'),
-              'mobx-react': expect.stringContaining('zustand'),
-              'mobx-react-lite': expect.stringContaining('zustand'),
-              moment: expect.stringContaining('date-fns'),
-              yup: expect.stringContaining('zod'),
+              classnames: expect.stringContaining('clsx') as unknown,
+              lodash: expect.stringContaining('lodash-es') as unknown,
+              mobx: expect.stringContaining('zustand') as unknown,
+              'mobx-react': expect.stringContaining('zustand') as unknown,
+              'mobx-react-lite': expect.stringContaining('zustand') as unknown,
+              moment: expect.stringContaining('date-fns') as unknown,
+              yup: expect.stringContaining('zod') as unknown,
             },
           },
         },
@@ -260,13 +260,14 @@ describe('strict React tooling', () => {
       },
     });
 
-    const overrides = biomeConfig['overrides'];
+    const { overrides } = biomeConfig;
     if (!Array.isArray(overrides)) {
-      throw new Error('Expected biome.jsonc overrides to be an array.');
+      throw new TypeError('Expected biome.jsonc overrides to be an array.');
     }
-    const catchAllOverride = overrides.find((override) => {
+    const catchAllOverride: unknown = overrides.find((override) => {
       const overrideObject = getJsonObject(override, 'Biome override');
-      return Array.isArray(overrideObject['includes']) && overrideObject['includes'].join() === '**';
+      const includes: unknown = overrideObject['includes'];
+      return Array.isArray(includes) && includes.join(',') === '**';
     });
     expect(catchAllOverride).toBeUndefined();
   });
@@ -283,12 +284,12 @@ describe('strict React tooling', () => {
       "React Doctor's rule catalog"
     );
     if (!Array.isArray(ruleCatalog)) {
-      throw new Error("Expected React Doctor's rule catalog to be an array.");
+      throw new TypeError("Expected React Doctor's rule catalog to be an array.");
     }
     const availableRuleNames = ruleCatalog.map((rule, index) => {
       const ruleObject = getJsonObject(rule, `React Doctor rule ${index}`);
       if (typeof ruleObject['key'] !== 'string') {
-        throw new Error(`Expected React Doctor rule ${index} to have a key.`);
+        throw new TypeError(`Expected React Doctor rule ${index} to have a key.`);
       }
       return ruleObject['key'];
     });

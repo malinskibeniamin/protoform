@@ -1,3 +1,16 @@
+interface CommentLocation {
+  end: { column: number; line: number };
+  start: { column: number; line: number };
+}
+
+interface CommentContext {
+  report: (diagnostic: { loc: CommentLocation; messageId: string }) => void;
+  sourceCode: {
+    getAllComments: () => { loc: CommentLocation; range: [number, number] }[];
+    text: string;
+  };
+}
+
 export default {
   meta: { name: 'protoform' },
   rules: {
@@ -7,7 +20,7 @@ export default {
         schema: [],
         messages: { forbidden: 'Remove the comment; name the code so it explains itself.' },
       },
-      create(context) {
+      create(context: CommentContext) {
         return {
           Program() {
             const { sourceCode } = context;

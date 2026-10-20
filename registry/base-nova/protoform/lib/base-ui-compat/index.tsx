@@ -4,7 +4,7 @@ type HTMLPropsCompat<T = Element> = React.HTMLAttributes<T> & {
   ref?: React.Ref<T> | undefined;
 };
 
-type ComponentRenderFnCompat<Props, State> = (props: Props, state: State) => React.ReactElement<unknown>;
+type ComponentRenderFnCompat<Props, State> = (props: Props, state: State) => React.ReactElement;
 
 interface AsChildInput {
   asChild?: boolean | undefined;
@@ -24,7 +24,7 @@ function compatStateAttrs(state: CompatState | undefined): Record<string, string
   if (state && typeof state.open === 'boolean') {
     attrs['data-state'] = state.open === true ? 'open' : 'closed';
   }
-  if (state && state.checked !== undefined) {
+  if (state?.checked !== undefined) {
     if (state.checked === 'indeterminate') {
       attrs['data-state'] = 'indeterminate';
     } else if (typeof state.checked === 'boolean') {
@@ -160,11 +160,11 @@ export function renderDescription({
 const warnedKeys = new Set<string>();
 
 function isProductionRuntime(): boolean {
-  const processValue = Reflect.get(globalThis, 'process');
+  const processValue: unknown = Reflect.get(globalThis, 'process');
   if (!(typeof processValue === 'object' && processValue !== null)) {
     return false;
   }
-  const environment = Reflect.get(processValue, 'env');
+  const environment: unknown = Reflect.get(processValue, 'env');
   return (
     typeof environment === 'object' && environment !== null && Reflect.get(environment, 'NODE_ENV') === 'production'
   );
@@ -225,18 +225,18 @@ function isEventHandlerKey(key: string): boolean {
 }
 
 function readHandler(source: object, key: string): EventHandler | undefined {
-  const value = Reflect.get(source, key);
+  const value: unknown = Reflect.get(source, key);
   return typeof value === 'function' ? (value as EventHandler) : undefined;
 }
 
 function readString(source: object, key: string): string | undefined {
-  const value = Reflect.get(source, key);
+  const value: unknown = Reflect.get(source, key);
   return typeof value === 'string' ? value : undefined;
 }
 
 function readStyle(source: object): React.CSSProperties | undefined {
-  const value = Reflect.get(source, 'style');
-  return value !== null && typeof value === 'object' ? (value as React.CSSProperties) : undefined;
+  const value: unknown = Reflect.get(source, 'style');
+  return value !== null && typeof value === 'object' ? value : undefined;
 }
 
 function composeRefs<T>(...refs: Array<React.Ref<T> | undefined>): React.RefCallback<T> {
@@ -255,7 +255,7 @@ function composeRefs<T>(...refs: Array<React.Ref<T> | undefined>): React.RefCall
 }
 
 function getElementRef(element: React.ReactElement): React.Ref<unknown> | undefined {
-  const refFromProps = Reflect.get(element.props as object, 'ref');
+  const refFromProps: unknown = Reflect.get(element.props as object, 'ref');
   if (refFromProps !== undefined) {
     return refFromProps as React.Ref<unknown>;
   }
@@ -275,7 +275,7 @@ function mergeSlotProps(slotProps: object, childProps: object): Record<string, u
   const slotStyle = readStyle(slotProps);
   const childStyle = readStyle(childProps);
   if (slotStyle || childStyle) {
-    merged['style'] = { ...(slotStyle ?? {}), ...(childStyle ?? {}) };
+    merged['style'] = { ...slotStyle, ...childStyle };
   }
 
   for (const key of Object.keys(slotProps)) {

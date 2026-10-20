@@ -190,13 +190,13 @@ export function inspectAutoFormConfiguration<
   let resolvedSchema: ReturnType<typeof resolveSchema>;
   try {
     resolvedSchema = resolveSchema(schema, protoConversionOptionsFromFieldConfig(fieldConfig));
-  } catch (cause) {
+  } catch (error) {
     return [
       ...stepDiagnostic,
       {
-        cause,
+        cause: error,
         code: 'unsupported-schema',
-        message: cause instanceof Error ? cause.message : 'The schema could not be resolved.',
+        message: error instanceof Error ? error.message : 'The schema could not be resolved.',
         path: '$',
         severity: 'error',
       },

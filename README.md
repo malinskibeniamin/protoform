@@ -137,20 +137,20 @@ bunx shadcn@latest add @protoform/protoc-gen-protoform
 
 Useful items:
 
-| Item | Source copied into the app |
-| --- | --- |
-| `protoform-foundation` | Framework-neutral field model and Standard Schema adapters |
-| `hook-runtime` | Hook conversion, Protovalidate, field masks, and Connect errors |
-| `protoform-core` | Protobuf conversion, validation, and `useProtoForm` without UI |
-| `protobuf-provider` | Full schema/UI parsing, annotations, AIP metadata, and workflows |
-| `use-proto-form` | Native React Hook Form integration |
-| `use-proto-form-tanstack` | Native TanStack Form integration |
-| `protoform-react` | React Hook Form AutoForm using a consumer-owned shadcn component map |
-| `protoform-shadcn` | Explicit legacy/demo UI source |
-| `protoform-shadcn-host` | Editable adapter for existing Radix-style controls |
-| `auto-form-tanstack` | TanStack Form AutoForm |
-| `protoc-gen-protoform` | Source-copy Buf plugin |
-| `bookstore` | Complete five-RPC example |
+| Item                      | Source copied into the app                                           |
+| ------------------------- | -------------------------------------------------------------------- |
+| `protoform-foundation`    | Framework-neutral field model and Standard Schema adapters           |
+| `hook-runtime`            | Hook conversion, Protovalidate, field masks, and Connect errors      |
+| `protoform-core`          | Protobuf conversion, validation, and `useProtoForm` without UI       |
+| `protobuf-provider`       | Full schema/UI parsing, annotations, AIP metadata, and workflows     |
+| `use-proto-form`          | Native React Hook Form integration                                   |
+| `use-proto-form-tanstack` | Native TanStack Form integration                                     |
+| `protoform-react`         | React Hook Form AutoForm using a consumer-owned shadcn component map |
+| `protoform-shadcn`        | Explicit legacy/demo UI source                                       |
+| `protoform-shadcn-host`   | Editable adapter for existing Radix-style controls                   |
+| `auto-form-tanstack`      | TanStack Form AutoForm                                               |
+| `protoc-gen-protoform`    | Source-copy Buf plugin                                               |
+| `bookstore`               | Complete five-RPC example                                            |
 
 To test newer changes, build the registry locally with
 `bun install --frozen-lockfile && bun run registry:build`.

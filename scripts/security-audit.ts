@@ -6,7 +6,7 @@ const { stdout, stderr, exitCode } = await new Promise<{ stdout: string; stderr:
     execFile('bun', ['audit', '--json'], { encoding: 'utf8' }, (error, auditStdout, auditStderr) => {
       const auditExitCode = error === null ? 0 : error.code;
       if (typeof auditExitCode !== 'number') {
-        reject(error);
+        reject(error ?? new Error('Bun audit failed without an exit code.'));
         return;
       }
       resolve({ stdout: auditStdout, stderr: auditStderr, exitCode: auditExitCode });

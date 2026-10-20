@@ -60,8 +60,7 @@ const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
 
     const isIndeterminate = indeterminate ?? isChecked === 'indeterminate';
     const baseChecked = isChecked === 'indeterminate' ? false : (isChecked as boolean | undefined);
-    const baseDefaultChecked =
-      (defaultChecked as unknown) === 'indeterminate' ? false : (defaultChecked as boolean | undefined);
+    const baseDefaultChecked = (defaultChecked as unknown) === 'indeterminate' ? false : defaultChecked;
 
     let dataState = 'unchecked';
     if (isIndeterminate) {
@@ -132,13 +131,13 @@ const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
 
     return (
       <CheckboxPrimitive.Root
-        {...(props as React.ComponentProps<typeof CheckboxPrimitive.Root>)}
+        {...props}
         checked={baseChecked}
         defaultChecked={baseDefaultChecked}
         indeterminate={isIndeterminate}
         nativeButton
         onCheckedChange={handleCheckedChange}
-        ref={ref as React.Ref<HTMLElement>}
+        ref={ref}
         render={renderRoot}
       />
     );

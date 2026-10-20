@@ -76,7 +76,7 @@ export function DiagramMaximizer() {
       for (const [target, host] of hosts) {
         if (!nextTargets.has(target)) {
           host.remove();
-          target.removeAttribute('data-diagram-enhanced');
+          Reflect.deleteProperty(target.dataset, 'diagramEnhanced');
           hosts.delete(target);
         }
       }
@@ -106,7 +106,7 @@ export function DiagramMaximizer() {
       document.removeEventListener('astro:page-load', syncDiagrams);
       for (const [target, host] of hosts) {
         host.remove();
-        target.removeAttribute('data-diagram-enhanced');
+        Reflect.deleteProperty(target.dataset, 'diagramEnhanced');
       }
     };
   }, []);

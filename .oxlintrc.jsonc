@@ -1,0 +1,1802 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["eslint", "typescript", "unicorn", "oxc", "import", "jsdoc", "node", "promise", "vitest"],
+  "options": {
+    "denyWarnings": true,
+    "maxWarnings": 0,
+    "typeAware": true,
+    "typeCheck": true,
+    "respectEslintDisableDirectives": false,
+    "reportUnusedDisableDirectives": "error"
+  },
+  "ignorePatterns": [
+    "**/gen/**",
+    "**/*_pb.ts",
+    "**/*_form.ts",
+    "**/__golden__/**",
+    "public/r/**",
+    "registry/base-nova/protoform/lib/protobuf-v1-bridge/**"
+  ],
+  "rules": {
+    // Reviewed: enforce as an error, including nursery checks.
+    "accessor-pairs": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "array-callback-return": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "arrow-body-style": ["error", "as-needed"],
+    // Reviewed: enforce as an error, including nursery checks.
+    "block-scoped-var": "error",
+    // Reviewed capitalized-comments: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "capitalized-comments": "off",
+    // Reviewed class-methods-use-this: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "class-methods-use-this": "off",
+    // Reviewed complexity: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "complexity": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "constructor-super": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "curly": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "default-case": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "default-case-last": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "default-param-last": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "eqeqeq": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "for-direction": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "func-name-matching": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "func-names": "error",
+    // Reviewed func-style: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "func-style": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "getter-return": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "grouped-accessor-pairs": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "guard-for-in": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "id-denylist": "error",
+    // Reviewed id-length: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "id-length": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "id-match": "error",
+    // Reviewed init-declarations: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "init-declarations": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "logical-assignment-operators": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "max-classes-per-file": "error",
+    // Reviewed max-depth: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "max-depth": "off",
+    // Reviewed max-lines: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "max-lines": "off",
+    // Reviewed max-lines-per-function: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "max-lines-per-function": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "max-nested-callbacks": "error",
+    // Reviewed max-params: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "max-params": "off",
+    // Reviewed max-statements: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "max-statements": "off",
+    // Reviewed new-cap: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "new-cap": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-alert": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-array-constructor": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-async-promise-executor": "error",
+    // Biome owns this check and reviewed sequential browser/RPC workflows; parallelizing shared state is incorrect.
+    "no-await-in-loop": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-bitwise": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-caller": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-case-declarations": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-class-assign": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-compare-neg-zero": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-cond-assign": "error",
+    // Reviewed no-console: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "no-console": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-const-assign": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-constant-binary-expression": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-constant-condition": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-constructor-return": "error",
+    // Reviewed no-continue: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "no-continue": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-control-regex": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-debugger": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-delete-var": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-div-regex": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-dupe-class-members": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-dupe-else-if": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-dupe-keys": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-duplicate-case": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-duplicate-imports": [
+      "error",
+      {
+        "allowSeparateTypeImports": true
+      }
+    ],
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-else-return": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-empty": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-empty-character-class": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-empty-function": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-empty-pattern": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-empty-static-block": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-eq-null": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-eval": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-ex-assign": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-extend-native": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-extra-bind": "error",
+    // Biome requires explicit Boolean coercion for mixed unions; the Oxlint fixer removes it and creates a rule conflict.
+    "no-extra-boolean-cast": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-extra-label": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-fallthrough": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-func-assign": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-global-assign": "error",
+    // Reviewed no-implicit-coercion: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "no-implicit-coercion": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-implicit-globals": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-implied-eval": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-import-assign": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-inline-comments": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-inner-declarations": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-invalid-regexp": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-irregular-whitespace": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-iterator": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-label-var": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-labels": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-lone-blocks": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-lonely-if": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-loop-func": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-loss-of-precision": "error",
+    // Reviewed no-magic-numbers: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "no-magic-numbers": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-misleading-character-class": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-multi-assign": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-multi-str": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-negated-condition": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-nested-ternary": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-new": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-new-func": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-new-native-nonconstructor": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-new-wrappers": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-nonoctal-decimal-escape": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-obj-calls": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-object-constructor": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-param-reassign": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-plusplus": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-promise-executor-return": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-proto": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-prototype-builtins": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-redeclare": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-regex-spaces": "error",
+    // Reviewed no-restricted-exports: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "no-restricted-exports": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-restricted-globals": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-restricted-imports": "error",
+    // Reviewed no-restricted-properties: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "no-restricted-properties": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-return-assign": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-script-url": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-self-assign": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-self-compare": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-sequences": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-setter-return": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-shadow": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-shadow-restricted-names": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-sparse-arrays": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-template-curly-in-string": "error",
+    // Reviewed no-ternary: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "no-ternary": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-this-before-super": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-throw-literal": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-unassigned-vars": "error",
+    // Native compiler and Biome check bindings, with Astro template-aware checks supplied by Blume.
+    "no-undef": "off",
+    // Reviewed no-undefined: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "no-undefined": "off",
+    // Reviewed no-underscore-dangle: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "no-underscore-dangle": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-unexpected-multiline": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-unmodified-loop-condition": [
+      "error",
+      {
+        "checkConditionalExpressions": true
+      }
+    ],
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-unneeded-ternary": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-unreachable": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-unreachable-loop": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-unsafe-finally": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-unsafe-negation": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-unsafe-optional-chaining": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-unused-expressions": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-unused-labels": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-unused-private-class-members": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-unused-vars": "error",
+    // Biome and the compiler own declaration checks; function hoisting is intentional.
+    "no-use-before-define": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-useless-assignment": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-useless-backreference": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-useless-call": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-useless-catch": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-useless-computed-key": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-useless-concat": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-useless-constructor": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-useless-escape": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-useless-rename": "error",
+    // Reviewed no-useless-return: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "no-useless-return": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-var": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-void": [
+      "error",
+      {
+        "allowAsStatement": true
+      }
+    ],
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-warning-comments": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "no-with": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "object-shorthand": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "one-var": ["error", "never"],
+    // Reviewed: enforce as an error, including nursery checks.
+    "operator-assignment": "error",
+    // Reviewed prefer-arrow-callback: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "prefer-arrow-callback": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "prefer-const": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "prefer-destructuring": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "prefer-exponentiation-operator": "error",
+    // Reviewed prefer-named-capture-group: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "prefer-named-capture-group": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "prefer-numeric-literals": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "prefer-object-has-own": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "prefer-object-spread": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "prefer-promise-reject-errors": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "prefer-regex-literals": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "prefer-rest-params": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "prefer-spread": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "prefer-template": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "preserve-caught-error": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "radix": "error",
+    // Reviewed require-await: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "require-await": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "require-unicode-regexp": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "require-yield": "error",
+    // Reviewed sort-imports: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "sort-imports": "off",
+    // Reviewed sort-keys: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "sort-keys": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "sort-vars": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "symbol-description": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicode-bom": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "use-isnan": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "valid-typeof": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "vars-on-top": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "yoda": "error",
+    // Reviewed import/consistent-type-specifier-style: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "import/consistent-type-specifier-style": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "import/default": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "import/export": "error",
+    // Reviewed import/exports-last: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "import/exports-last": "off",
+    // Reviewed import/extensions: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "import/extensions": "off",
+    // Reviewed import/first: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "import/first": "off",
+    // Reviewed import/group-exports: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "import/group-exports": "off",
+    // Reviewed import/max-dependencies: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "import/max-dependencies": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "import/named": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "import/namespace": "error",
+    // Reviewed import/newline-after-import: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "import/newline-after-import": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "import/no-absolute-path": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "import/no-amd": "error",
+    // Reviewed import/no-anonymous-default-export: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "import/no-anonymous-default-export": "off",
+    // Reviewed import/no-commonjs: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "import/no-commonjs": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "import/no-cycle": "error",
+    // Reviewed import/no-default-export: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "import/no-default-export": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "import/no-duplicates": "error",
+    // Reviewed import/no-dynamic-require: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "import/no-dynamic-require": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "import/no-empty-named-blocks": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "import/no-mutable-exports": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "import/no-named-as-default": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "import/no-named-as-default-member": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "import/no-named-default": "error",
+    // Reviewed import/no-named-export: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "import/no-named-export": "off",
+    // Reviewed import/no-namespace: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "import/no-namespace": "off",
+    // Reviewed import/no-nodejs-modules: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "import/no-nodejs-modules": "off",
+    // Reviewed import/no-relative-parent-imports: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "import/no-relative-parent-imports": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "import/no-self-import": "error",
+    // Reviewed import/no-unassigned-import: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "import/no-unassigned-import": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "import/no-webpack-loader-syntax": "error",
+    // Reviewed import/prefer-default-export: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "import/prefer-default-export": "off",
+    // Reviewed import/unambiguous: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "import/unambiguous": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/consistent-test-it": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/expect-expect": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/max-expects": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/max-nested-describe": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/no-alias-methods": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/no-commented-out-tests": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/no-conditional-expect": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/no-conditional-in-test": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/no-confusing-set-timeout": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/no-deprecated-functions": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/no-disabled-tests": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/no-done-callback": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/no-duplicate-hooks": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/no-export": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/no-focused-tests": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/no-hooks": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/no-identical-title": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/no-interpolation-in-snapshots": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/no-jasmine-globals": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/no-large-snapshots": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/no-mocks-import": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/no-restricted-jest-methods": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/no-restricted-matchers": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/no-standalone-expect": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/no-test-prefixes": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/no-test-return-statement": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/no-unneeded-async-expect-function": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/no-untyped-mock-factory": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/padding-around-after-all-blocks": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/padding-around-test-blocks": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/prefer-called-with": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/prefer-comparison-matcher": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/prefer-each": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/prefer-ending-with-an-expect": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/prefer-equality-matcher": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/prefer-expect-assertions": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/prefer-expect-resolves": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/prefer-hooks-in-order": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/prefer-hooks-on-top": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/prefer-importing-jest-globals": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/prefer-jest-mocked": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/prefer-lowercase-title": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/prefer-mock-promise-shorthand": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/prefer-mock-return-shorthand": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/prefer-snapshot-hint": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/prefer-spy-on": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/prefer-strict-equal": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/prefer-to-be": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/prefer-to-contain": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/prefer-to-have-been-called": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/prefer-to-have-been-called-times": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/prefer-to-have-length": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/prefer-todo": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/require-hook": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/require-to-throw-message": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/require-top-level-describe": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/valid-describe-callback": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/valid-expect": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/valid-expect-in-promise": "off",
+    // jest is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "jest/valid-title": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "jsdoc/check-access": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "jsdoc/check-property-names": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "jsdoc/check-tag-names": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "jsdoc/empty-tags": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "jsdoc/implements-on-classes": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "jsdoc/no-blank-blocks": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "jsdoc/no-defaults": "error",
+    // Authored source comments are forbidden; TypeScript owns the API types.
+    "jsdoc/require-param": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "jsdoc/require-param-description": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "jsdoc/require-param-name": "error",
+    // Authored source comments are forbidden; TypeScript owns the API types.
+    "jsdoc/require-param-type": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "jsdoc/require-property": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "jsdoc/require-property-description": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "jsdoc/require-property-name": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "jsdoc/require-property-type": "error",
+    // Authored source comments are forbidden; TypeScript owns the API types.
+    "jsdoc/require-returns": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "jsdoc/require-returns-description": "error",
+    // Authored source comments are forbidden; TypeScript owns the API types.
+    "jsdoc/require-returns-type": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "jsdoc/require-throws-description": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "jsdoc/require-throws-type": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "jsdoc/require-yields": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "jsdoc/require-yields-description": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "jsdoc/require-yields-type": "error",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "jsx-a11y/alt-text": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "jsx-a11y/anchor-ambiguous-text": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "jsx-a11y/anchor-has-content": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "jsx-a11y/anchor-is-valid": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "jsx-a11y/aria-activedescendant-has-tabindex": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "jsx-a11y/aria-props": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "jsx-a11y/aria-proptypes": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "jsx-a11y/aria-role": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "jsx-a11y/aria-unsupported-elements": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "jsx-a11y/autocomplete-valid": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "jsx-a11y/click-events-have-key-events": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "jsx-a11y/control-has-associated-label": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "jsx-a11y/heading-has-content": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "jsx-a11y/html-has-lang": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "jsx-a11y/iframe-has-title": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "jsx-a11y/img-redundant-alt": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "jsx-a11y/interactive-supports-focus": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "jsx-a11y/label-has-associated-control": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "jsx-a11y/lang": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "jsx-a11y/media-has-caption": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "jsx-a11y/mouse-events-have-key-events": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "jsx-a11y/no-access-key": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "jsx-a11y/no-aria-hidden-on-focusable": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "jsx-a11y/no-autofocus": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "jsx-a11y/no-distracting-elements": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "jsx-a11y/no-interactive-element-to-noninteractive-role": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "jsx-a11y/no-noninteractive-element-interactions": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "jsx-a11y/no-noninteractive-element-to-interactive-role": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "jsx-a11y/no-noninteractive-tabindex": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "jsx-a11y/no-redundant-roles": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "jsx-a11y/no-static-element-interactions": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "jsx-a11y/prefer-tag-over-role": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "jsx-a11y/role-has-required-aria-props": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "jsx-a11y/role-supports-aria-props": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "jsx-a11y/scope": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "jsx-a11y/tabindex-no-positive": "off",
+    // nextjs is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "nextjs/google-font-display": "off",
+    // nextjs is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "nextjs/google-font-preconnect": "off",
+    // nextjs is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "nextjs/inline-script-id": "off",
+    // nextjs is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "nextjs/next-script-for-ga": "off",
+    // nextjs is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "nextjs/no-assign-module-variable": "off",
+    // nextjs is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "nextjs/no-async-client-component": "off",
+    // nextjs is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "nextjs/no-before-interactive-script-outside-document": "off",
+    // nextjs is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "nextjs/no-css-tags": "off",
+    // nextjs is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "nextjs/no-document-import-in-page": "off",
+    // nextjs is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "nextjs/no-duplicate-head": "off",
+    // nextjs is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "nextjs/no-head-element": "off",
+    // nextjs is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "nextjs/no-head-import-in-document": "off",
+    // nextjs is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "nextjs/no-html-link-for-pages": "off",
+    // nextjs is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "nextjs/no-img-element": "off",
+    // nextjs is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "nextjs/no-page-custom-font": "off",
+    // nextjs is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "nextjs/no-script-component-in-head": "off",
+    // nextjs is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "nextjs/no-styled-jsx-in-document": "off",
+    // nextjs is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "nextjs/no-sync-scripts": "off",
+    // nextjs is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "nextjs/no-title-in-document-head": "off",
+    // nextjs is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "nextjs/no-typos": "off",
+    // nextjs is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "nextjs/no-unwanted-polyfillio": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "node/callback-return": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "node/exports-style": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "node/global-require": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "node/handle-callback-err": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "node/no-exports-assign": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "node/no-mixed-requires": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "node/no-new-require": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "node/no-path-concat": "error",
+    // Reviewed node/no-process-env: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "node/no-process-env": "off",
+    // Reviewed node/no-sync: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "node/no-sync": "off",
+    // Reviewed node/no-top-level-await: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "node/no-top-level-await": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "oxc/approx-constant": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "oxc/bad-array-method-on-arguments": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "oxc/bad-bitwise-operator": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "oxc/bad-char-at-comparison": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "oxc/bad-comparison-sequence": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "oxc/bad-match-all-arg": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "oxc/bad-min-max-func": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "oxc/bad-object-literal-comparison": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "oxc/bad-replace-all-arg": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "oxc/branches-sharing-code": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "oxc/const-comparisons": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "oxc/double-comparisons": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "oxc/erasing-op": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "oxc/misrefactored-assign-op": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "oxc/missing-throw": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "oxc/no-accumulating-spread": "error",
+    // Reviewed oxc/no-async-await: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "oxc/no-async-await": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "oxc/no-async-endpoint-handlers": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "oxc/no-barrel-file": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "oxc/no-const-enum": "error",
+    // Reviewed oxc/no-map-spread: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "oxc/no-map-spread": "off",
+    // Reviewed oxc/no-optional-chaining: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "oxc/no-optional-chaining": "off",
+    // Reviewed oxc/no-rest-spread-properties: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "oxc/no-rest-spread-properties": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "oxc/no-this-in-exported-function": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "oxc/number-arg-out-of-range": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "oxc/only-used-in-recursion": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "oxc/uninvoked-array-callback": "error",
+    // Reviewed promise/always-return: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "promise/always-return": "off",
+    // Reviewed promise/avoid-new: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "promise/avoid-new": "off",
+    // Reviewed promise/catch-or-return: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "promise/catch-or-return": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "promise/no-callback-in-promise": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "promise/no-multiple-resolved": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "promise/no-nesting": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "promise/no-new-statics": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "promise/no-promise-in-callback": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "promise/no-return-in-finally": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "promise/no-return-wrap": "error",
+    // Domain-specific resolver names avoid shadowing node:path resolve; constructors are checked for multiple resolution.
+    "promise/param-names": "off",
+    // Reviewed promise/prefer-await-to-callbacks: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "promise/prefer-await-to-callbacks": "off",
+    // Reviewed promise/prefer-await-to-then: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "promise/prefer-await-to-then": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "promise/prefer-catch": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "promise/spec-only": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "promise/valid-params": "error",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/button-has-type": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/capitalized-calls": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/checked-requires-onchange-or-readonly": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/display-name": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/error-boundaries": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/exhaustive-deps": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/exhaustive-effect-dependencies": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/forbid-component-props": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/forbid-dom-props": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/forbid-elements": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/forward-ref-uses-ref": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/function-component-definition": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/globals": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/hook-use-state": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/hooks": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/iframe-missing-sandbox": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/immutability": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/incompatible-library": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/invariant": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/jsx-boolean-value": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/jsx-curly-brace-presence": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/jsx-filename-extension": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/jsx-fragments": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/jsx-handler-names": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/jsx-key": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/jsx-max-depth": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/jsx-no-comment-textnodes": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/jsx-no-constructed-context-values": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/jsx-no-duplicate-props": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/jsx-no-literals": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/jsx-no-script-url": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/jsx-no-target-blank": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/jsx-no-undef": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/jsx-no-useless-fragment": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/jsx-pascal-case": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/jsx-props-no-spread-multi": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/jsx-props-no-spreading": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/memo-dependencies": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/no-array-index-key": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/no-children-prop": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/no-clone-element": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/no-danger": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/no-danger-with-children": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/no-deriving-state-in-effects": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/no-did-mount-set-state": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/no-did-update-set-state": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/no-direct-mutation-state": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/no-find-dom-node": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/no-is-mounted": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/no-multi-comp": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/no-namespace": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/no-object-type-as-default-prop": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/no-react-children": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/no-redundant-should-component-update": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/no-render-return-value": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/no-set-state": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/no-string-refs": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/no-this-in-sfc": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/no-unescaped-entities": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/no-unknown-property": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/no-unsafe": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/no-unstable-nested-components": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/no-will-update-set-state": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/only-export-components": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/prefer-es6-class": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/prefer-function-component": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/preserve-manual-memoization": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/purity": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/react-in-jsx-scope": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/refs": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/require-render-return": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/rule-suppression": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/rules-of-hooks": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/self-closing-comp": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/set-state-in-effect": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/set-state-in-render": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/state-in-constructor": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/static-components": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/style-prop-object": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/syntax": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/todo": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/unsupported-syntax": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/use-memo": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/void-dom-elements-no-children": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react/void-use-memo": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react-perf/jsx-no-jsx-as-prop": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react-perf/jsx-no-new-array-as-prop": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react-perf/jsx-no-new-function-as-prop": "off",
+    // React Doctor and Biome own React Compiler, accessibility and component contracts; avoid contradictory duplicate diagnostics.
+    "react-perf/jsx-no-new-object-as-prop": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/adjacent-overload-signatures": "error",
+    // Reviewed typescript/array-type: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "typescript/array-type": "off",
+    // React act returns a thenable even when its selected overload says void; Biome owns await checks with reviewed boundaries.
+    "typescript/await-thenable": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/ban-ts-comment": [
+      "error",
+      {
+        "ts-ignore": true,
+        "ts-expect-error": true,
+        "ts-nocheck": true
+      }
+    ],
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/ban-tslint-comment": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/ban-types": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/class-literal-property-style": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/consistent-generic-constructors": "error",
+    // Reviewed typescript/consistent-indexed-object-style: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "typescript/consistent-indexed-object-style": "off",
+    // Reviewed typescript/consistent-return: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "typescript/consistent-return": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/consistent-type-assertions": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/consistent-type-definitions": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/consistent-type-exports": "error",
+    // Reviewed typescript/consistent-type-imports: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "typescript/consistent-type-imports": "off",
+    // Reviewed typescript/dot-notation: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "typescript/dot-notation": "off",
+    // Reviewed typescript/explicit-function-return-type: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "typescript/explicit-function-return-type": "off",
+    // Reviewed typescript/explicit-member-accessibility: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "typescript/explicit-member-accessibility": "off",
+    // Reviewed typescript/explicit-module-boundary-types: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "typescript/explicit-module-boundary-types": "off",
+    // Reviewed typescript/method-signature-style: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "typescript/method-signature-style": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/no-array-delete": "error",
+    // Biome owns this check; the semantic engine loses protobuf recursive primitive unions at conversion seams.
+    "typescript/no-base-to-string": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/no-confusing-non-null-assertion": "error",
+    // Void-returning expression callbacks are the project convention; no-floating-promises separately rejects discarded async work.
+    "typescript/no-confusing-void-expression": "off",
+    // Compatibility mocks intentionally implement legacy browser APIs; stable and experimental adapters must coexist.
+    "typescript/no-deprecated": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/no-duplicate-enum-values": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/no-duplicate-type-constituents": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/no-dynamic-delete": "error",
+    // Reviewed typescript/no-empty-interface: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "typescript/no-empty-interface": "off",
+    // Reviewed typescript/no-empty-object-type: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "typescript/no-empty-object-type": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/no-explicit-any": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/no-extra-non-null-assertion": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/no-extraneous-class": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/no-floating-promises": [
+      "error",
+      {
+        "ignoreVoid": false,
+        "ignoreIIFE": false
+      }
+    ],
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/no-for-in-array": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/no-generated-empty-object-type": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/no-implied-eval": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/no-import-type-side-effects": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/no-inferrable-types": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/no-invalid-void-type": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/no-meaningless-void-operator": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/no-misused-new": "error",
+    // React/form APIs permit async callbacks in void positions; Biome and no-floating-promises cover unhandled async work.
+    "typescript/no-misused-promises": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/no-misused-spread": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/no-mixed-enums": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/no-namespace": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/no-non-null-asserted-nullish-coalescing": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/no-non-null-asserted-optional-chain": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/no-non-null-assertion": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/no-redundant-type-constituents": "error",
+    // Reviewed typescript/no-require-imports: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "typescript/no-require-imports": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/no-restricted-types": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/no-this-alias": "error",
+    // Reviewed typescript/no-unnecessary-boolean-literal-compare: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "typescript/no-unnecessary-boolean-literal-compare": "off",
+    // Public components retain runtime guards for consumers with different declaration/runtime versions.
+    "typescript/no-unnecessary-condition": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/no-unnecessary-parameter-property-assignment": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/no-unnecessary-qualifier": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/no-unnecessary-template-expression": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/no-unnecessary-type-arguments": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/no-unnecessary-type-assertion": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/no-unnecessary-type-constraint": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/no-unnecessary-type-conversion": "error",
+    // Reviewed typescript/no-unnecessary-type-parameters: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "typescript/no-unnecessary-type-parameters": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/no-unsafe-argument": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/no-unsafe-assignment": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/no-unsafe-call": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/no-unsafe-declaration-merging": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/no-unsafe-enum-comparison": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/no-unsafe-function-type": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/no-unsafe-member-access": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/no-unsafe-return": "error",
+    // Descriptor-driven protobuf and form adapters need checked generic type refinements not expressible by this rule. Unsafe any flows remain errors.
+    "typescript/no-unsafe-type-assertion": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/no-unsafe-unary-minus": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/no-useless-default-assignment": "error",
+    // A standalone CLI may need explicit module scope; moduleDetection force also enforces that scope.
+    "typescript/no-useless-empty-export": "off",
+    // Reviewed typescript/no-var-requires: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "typescript/no-var-requires": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/no-wrapper-object-types": "error",
+    // Reviewed typescript/non-nullable-type-assertion-style: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "typescript/non-nullable-type-assertion-style": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/only-throw-error": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/parameter-properties": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/prefer-as-const": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/prefer-enum-initializers": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/prefer-find": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/prefer-for-of": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/prefer-function-type": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/prefer-includes": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/prefer-literal-enum-member": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/prefer-namespace-keyword": "error",
+    // Reviewed typescript/prefer-nullish-coalescing: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "typescript/prefer-nullish-coalescing": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/prefer-optional-chain": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/prefer-promise-reject-errors": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/prefer-readonly": "error",
+    // React and protobuf APIs intentionally accept mutable messages, refs and third-party callbacks.
+    "typescript/prefer-readonly-parameter-types": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/prefer-reduce-type-parameter": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/prefer-regexp-exec": "error",
+    // Generic builders refine their return type after registration; returning this or an intersection loses literal-name inference.
+    "typescript/prefer-return-this-type": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/prefer-string-starts-ends-with": "error",
+    // All compiler suppression directives are banned, not replaced by a different suppression.
+    "typescript/prefer-ts-expect-error": "off",
+    // Reviewed typescript/promise-function-async: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "typescript/promise-function-async": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/related-getter-setter-pairs": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/require-array-sort-compare": "error",
+    // Reviewed typescript/require-await: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "typescript/require-await": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/restrict-plus-operands": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/restrict-template-expressions": [
+      "error",
+      {
+        "allowNever": true
+      }
+    ],
+    // Reviewed typescript/return-await: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "typescript/return-await": "off",
+    // Truthiness is deliberate for optional form values, empty strings and React nodes; Biome enforces explicit lengths and coercions.
+    "typescript/strict-boolean-expressions": "off",
+    // Conflicts with expression callbacks accepted by React and the form libraries; promises are checked independently.
+    "typescript/strict-void-return": "off",
+    // Biome useExhaustiveSwitchCases owns exhaustiveness, including runtime guards for public enum inputs.
+    "typescript/switch-exhaustiveness-check": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/triple-slash-reference": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/unbound-method": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/unified-signatures": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "typescript/use-unknown-in-catch-callback-variable": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/catch-error-name": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/consistent-assert": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/consistent-date-clone": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/consistent-empty-array-spread": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/consistent-existence-index-check": "error",
+    // Reviewed unicorn/consistent-function-scoping: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "unicorn/consistent-function-scoping": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/consistent-template-literal-escape": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/custom-error-definition": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/empty-brace-spaces": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/error-message": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/escape-case": "error",
+    // Reviewed unicorn/explicit-length-check: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "unicorn/explicit-length-check": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/explicit-timer-delay": "error",
+    // Reviewed unicorn/filename-case: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "unicorn/filename-case": "off",
+    // Reviewed unicorn/import-style: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "unicorn/import-style": "off",
+    // Reviewed unicorn/max-nested-calls: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "unicorn/max-nested-calls": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/new-for-builtins": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/no-abusive-eslint-disable": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/no-accessor-recursion": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/no-anonymous-default-export": "error",
+    // Reviewed unicorn/no-array-callback-reference: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "unicorn/no-array-callback-reference": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/no-array-fill-with-reference-type": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/no-array-for-each": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/no-array-method-this-argument": "error",
+    // Reviewed unicorn/no-array-reduce: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "unicorn/no-array-reduce": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/no-array-reverse": "error",
+    // Reviewed unicorn/no-array-sort: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "unicorn/no-array-sort": "off",
+    // Reviewed unicorn/no-await-expression-member: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "unicorn/no-await-expression-member": "off",
+    // Reviewed unicorn/no-await-in-promise-methods: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "unicorn/no-await-in-promise-methods": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/no-confusing-array-with": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/no-console-spaces": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/no-document-cookie": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/no-empty-file": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/no-hex-escape": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/no-immediate-mutation": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/no-instanceof-array": "error",
+    // Reviewed unicorn/no-instanceof-builtins: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "unicorn/no-instanceof-builtins": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/no-invalid-fetch-options": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/no-invalid-remove-event-listener": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/no-length-as-slice-end": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/no-lonely-if": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/no-magic-array-flat-depth": "error",
+    // Reviewed unicorn/no-negated-condition: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "unicorn/no-negated-condition": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/no-negation-in-equality-check": "error",
+    // Reviewed unicorn/no-nested-ternary: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "unicorn/no-nested-ternary": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/no-new-array": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/no-new-buffer": "error",
+    // Reviewed unicorn/no-null: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "unicorn/no-null": "off",
+    // Reviewed unicorn/no-object-as-default-parameter: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "unicorn/no-object-as-default-parameter": "off",
+    // Reviewed unicorn/no-process-exit: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "unicorn/no-process-exit": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/no-single-promise-in-promise-methods": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/no-static-only-class": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/no-thenable": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/no-this-assignment": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/no-typeof-undefined": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/no-unnecessary-array-flat-depth": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/no-unnecessary-array-splice-count": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/no-unnecessary-await": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/no-unnecessary-slice-end": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/no-unreadable-array-destructuring": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/no-unreadable-iife": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/no-useless-collection-argument": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/no-useless-error-capture-stack-trace": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/no-useless-fallback-in-spread": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/no-useless-iterator-to-array": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/no-useless-length-check": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/no-useless-promise-resolve-reject": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/no-useless-spread": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/no-useless-switch-case": "error",
+    // Required generic callback arguments and exact optional property contracts use explicit undefined.
+    "unicorn/no-useless-undefined": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/no-zero-fractions": "error",
+    // Reviewed unicorn/number-literal-case: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "unicorn/number-literal-case": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/numeric-separators-style": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-add-event-listener": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-array-find": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-array-flat": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-array-flat-map": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-array-index-of": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-array-some": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-at": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-bigint-literals": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-blob-reading-methods": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-class-fields": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-classlist-toggle": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-code-point": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-date-now": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-default-parameters": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-dom-node-append": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-dom-node-dataset": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-dom-node-remove": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-dom-node-text-content": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-event-target": "error",
+    // Reviewed unicorn/prefer-export-from: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "unicorn/prefer-export-from": "off",
+    // Reviewed unicorn/prefer-global-this: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "unicorn/prefer-global-this": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-import-meta-properties": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-includes": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-keyboard-event-key": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-logical-operator-over-ternary": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-math-min-max": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-math-trunc": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-modern-dom-apis": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-modern-math-apis": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-module": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-native-coercion-functions": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-negative-index": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-node-protocol": "error",
+    // Number.parseFloat must parse CSS dimensions with units. Number would change behavior to NaN.
+    "unicorn/prefer-number-coercion": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-number-properties": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-object-from-entries": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-optional-catch-binding": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-prototype-methods": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-query-selector": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-reflect-apply": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-regexp-test": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-response-static-json": "error",
+    // Reviewed unicorn/prefer-set-has: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "unicorn/prefer-set-has": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-set-size": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-single-call": "error",
+    // Reviewed unicorn/prefer-spread: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "unicorn/prefer-spread": "off",
+    // Reviewed unicorn/prefer-string-raw: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "unicorn/prefer-string-raw": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-string-replace-all": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-string-slice": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-string-starts-ends-with": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-string-trim-start-end": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-structured-clone": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-ternary": "error",
+    // Reviewed unicorn/prefer-top-level-await: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "unicorn/prefer-top-level-await": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/prefer-type-error": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/relative-url-style": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/require-array-join-separator": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/require-module-attributes": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/require-module-specifiers": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/require-number-to-fixed-digits-argument": "error",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/require-post-message-target-origin": "error",
+    // Reviewed unicorn/switch-case-braces: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "unicorn/switch-case-braces": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/switch-case-break-position": "error",
+    // Reviewed unicorn/text-encoding-identifier-case: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "unicorn/text-encoding-identifier-case": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "unicorn/throw-new-error": "error",
+    // Reviewed vitest/consistent-each-for: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/consistent-each-for": "off",
+    // Rstest and Playwright use distinct .test/.spec/conformance/browser suffix contracts, already checked by their runners.
+    "vitest/consistent-test-filename": "off",
+    // Reviewed vitest/consistent-test-it: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/consistent-test-it": "off",
+    // Reviewed vitest/consistent-vitest-vi: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/consistent-vitest-vi": "off",
+    // Reviewed: enforce as an error, including nursery checks.
+    "vitest/expect-expect": [
+      "error",
+      {
+        "assertFunctionNames": ["expect", "expect*", "assert*", "check*"]
+      }
+    ],
+    // Reviewed vitest/hoisted-apis-on-top: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/hoisted-apis-on-top": "off",
+    // Reviewed vitest/max-expects: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/max-expects": "off",
+    // Reviewed vitest/max-nested-describe: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/max-nested-describe": "off",
+    // Reviewed vitest/no-alias-methods: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/no-alias-methods": "off",
+    // Reviewed vitest/no-commented-out-tests: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/no-commented-out-tests": "off",
+    // Reviewed vitest/no-conditional-expect: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/no-conditional-expect": "off",
+    // Reviewed vitest/no-conditional-in-test: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/no-conditional-in-test": "off",
+    // Reviewed vitest/no-conditional-tests: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/no-conditional-tests": "off",
+    // Reviewed vitest/no-disabled-tests: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/no-disabled-tests": "off",
+    // Reviewed vitest/no-duplicate-hooks: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/no-duplicate-hooks": "off",
+    // Reviewed vitest/no-focused-tests: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/no-focused-tests": "off",
+    // Reviewed vitest/no-hooks: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/no-hooks": "off",
+    // Reviewed vitest/no-identical-title: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/no-identical-title": "off",
+    // Reviewed vitest/no-import-node-test: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/no-import-node-test": "off",
+    // Reviewed vitest/no-importing-vitest-globals: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/no-importing-vitest-globals": "off",
+    // Reviewed vitest/no-interpolation-in-snapshots: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/no-interpolation-in-snapshots": "off",
+    // Reviewed vitest/no-large-snapshots: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/no-large-snapshots": "off",
+    // Reviewed vitest/no-mocks-import: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/no-mocks-import": "off",
+    // Reviewed vitest/no-restricted-matchers: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/no-restricted-matchers": "off",
+    // Reviewed vitest/no-restricted-vi-methods: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/no-restricted-vi-methods": "off",
+    // Reviewed vitest/no-standalone-expect: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/no-standalone-expect": "off",
+    // Reviewed vitest/no-test-prefixes: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/no-test-prefixes": "off",
+    // Reviewed vitest/no-test-return-statement: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/no-test-return-statement": "off",
+    // Reviewed vitest/no-unneeded-async-expect-function: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/no-unneeded-async-expect-function": "off",
+    // Reviewed vitest/padding-around-after-all-blocks: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/padding-around-after-all-blocks": "off",
+    // Reviewed vitest/padding-around-test-blocks: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/padding-around-test-blocks": "off",
+    // Reviewed vitest/prefer-called-exactly-once-with: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/prefer-called-exactly-once-with": "off",
+    // Reviewed vitest/prefer-called-once: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/prefer-called-once": "off",
+    // Reviewed vitest/prefer-called-times: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/prefer-called-times": "off",
+    // Reviewed vitest/prefer-called-with: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/prefer-called-with": "off",
+    // Reviewed vitest/prefer-comparison-matcher: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/prefer-comparison-matcher": "off",
+    // Reviewed vitest/prefer-describe-function-title: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/prefer-describe-function-title": "off",
+    // Playwright has no test.each. Existing runner-neutral parameterization uses loops.
+    "vitest/prefer-each": "off",
+    // Reviewed vitest/prefer-equality-matcher: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/prefer-equality-matcher": "off",
+    // Reviewed vitest/prefer-expect-assertions: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/prefer-expect-assertions": "off",
+    // Reviewed vitest/prefer-expect-resolves: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/prefer-expect-resolves": "off",
+    // Reviewed vitest/prefer-expect-type-of: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/prefer-expect-type-of": "off",
+    // Reviewed vitest/prefer-hooks-in-order: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/prefer-hooks-in-order": "off",
+    // Reviewed vitest/prefer-hooks-on-top: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/prefer-hooks-on-top": "off",
+    // Reviewed vitest/prefer-import-in-mock: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/prefer-import-in-mock": "off",
+    // Rstest supplies test globals, not Vitest. Importing Vitest would change the runner.
+    "vitest/prefer-importing-vitest-globals": "off",
+    // Reviewed vitest/prefer-lowercase-title: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/prefer-lowercase-title": "off",
+    // Reviewed vitest/prefer-mock-promise-shorthand: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/prefer-mock-promise-shorthand": "off",
+    // Reviewed vitest/prefer-mock-return-shorthand: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/prefer-mock-return-shorthand": "off",
+    // Reviewed vitest/prefer-snapshot-hint: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/prefer-snapshot-hint": "off",
+    // Reviewed vitest/prefer-spy-on: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/prefer-spy-on": "off",
+    // Reviewed vitest/prefer-strict-boolean-matchers: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/prefer-strict-boolean-matchers": "off",
+    // Reviewed vitest/prefer-strict-equal: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/prefer-strict-equal": "off",
+    // Reviewed vitest/prefer-to-be: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/prefer-to-be": "off",
+    // Reviewed vitest/prefer-to-be-falsy: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/prefer-to-be-falsy": "off",
+    // Reviewed vitest/prefer-to-be-object: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/prefer-to-be-object": "off",
+    // Reviewed vitest/prefer-to-be-truthy: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/prefer-to-be-truthy": "off",
+    // Reviewed vitest/prefer-to-contain: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/prefer-to-contain": "off",
+    // Reviewed vitest/prefer-to-have-been-called-times: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/prefer-to-have-been-called-times": "off",
+    // Reviewed vitest/prefer-to-have-length: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/prefer-to-have-length": "off",
+    // Reviewed vitest/prefer-todo: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/prefer-todo": "off",
+    // Reviewed vitest/require-awaited-expect-poll: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/require-awaited-expect-poll": "off",
+    // Reviewed vitest/require-hook: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/require-hook": "off",
+    // Reviewed vitest/require-local-test-context-for-concurrent-snapshots: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/require-local-test-context-for-concurrent-snapshots": "off",
+    // Reviewed vitest/require-mock-type-parameters: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/require-mock-type-parameters": "off",
+    // Reviewed vitest/require-test-timeout: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/require-test-timeout": "off",
+    // Reviewed vitest/require-to-throw-message: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/require-to-throw-message": "off",
+    // Top-level Playwright tests are valid; forcing a Vitest grouping API breaks runner-neutral tests.
+    "vitest/require-top-level-describe": "off",
+    // Reviewed vitest/valid-describe-callback: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/valid-describe-callback": "off",
+    // Reviewed vitest/valid-expect: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/valid-expect": "off",
+    // Reviewed vitest/valid-expect-in-promise: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/valid-expect-in-promise": "off",
+    // Reviewed vitest/valid-title: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/valid-title": "off",
+    // Reviewed vitest/warn-todo: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    "vitest/warn-todo": "off",
+    // vue is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "vue/component-definition-name-casing": "off",
+    // vue is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "vue/define-emits-declaration": "off",
+    // vue is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "vue/define-props-declaration": "off",
+    // vue is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "vue/define-props-destructuring": "off",
+    // vue is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "vue/max-props": "off",
+    // vue is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "vue/next-tick-style": "off",
+    // vue is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "vue/no-arrow-functions-in-watch": "off",
+    // vue is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "vue/no-async-in-computed-properties": "off",
+    // vue is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "vue/no-computed-properties-in-data": "off",
+    // vue is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "vue/no-deprecated-data-object-declaration": "off",
+    // vue is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "vue/no-deprecated-delete-set": "off",
+    // vue is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "vue/no-deprecated-destroyed-lifecycle": "off",
+    // vue is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "vue/no-deprecated-events-api": "off",
+    // vue is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "vue/no-deprecated-model-definition": "off",
+    // vue is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "vue/no-deprecated-props-default-this": "off",
+    // vue is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "vue/no-deprecated-vue-config-keycodes": "off",
+    // vue is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "vue/no-dupe-keys": "off",
+    // vue is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "vue/no-export-in-script-setup": "off",
+    // vue is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "vue/no-expose-after-await": "off",
+    // vue is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "vue/no-import-compiler-macros": "off",
+    // vue is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "vue/no-lifecycle-after-await": "off",
+    // vue is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "vue/no-multiple-slot-args": "off",
+    // vue is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "vue/no-required-prop-with-default": "off",
+    // vue is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "vue/no-reserved-component-names": "off",
+    // vue is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "vue/no-reserved-keys": "off",
+    // vue is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "vue/no-reserved-props": "off",
+    // vue is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "vue/no-shared-component-data": "off",
+    // vue is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "vue/no-side-effects-in-computed-properties": "off",
+    // vue is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "vue/no-this-in-before-route-enter": "off",
+    // vue is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "vue/no-watch-after-await": "off",
+    // vue is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "vue/prefer-import-from-vue": "off",
+    // vue is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "vue/prop-name-casing": "off",
+    // vue is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "vue/require-default-export": "off",
+    // vue is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "vue/require-default-prop": "off",
+    // vue is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "vue/require-direct-export": "off",
+    // vue is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "vue/require-prop-type-constructor": "off",
+    // vue is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "vue/require-prop-types": "off",
+    // vue is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "vue/require-render-return": "off",
+    // vue is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "vue/require-slots-as-functions": "off",
+    // vue is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "vue/require-typed-ref": "off",
+    // vue is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "vue/return-in-computed-property": "off",
+    // vue is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "vue/return-in-emits-validator": "off",
+    // vue is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "vue/valid-define-emits": "off",
+    // vue is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "vue/valid-define-options": "off",
+    // vue is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "vue/valid-define-props": "off",
+    // vue is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
+    "vue/valid-next-tick": "off"
+  }
+}

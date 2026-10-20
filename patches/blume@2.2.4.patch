@@ -1,0 +1,29 @@
+diff --git a/src/components/openapi/Playground.astro b/src/components/openapi/Playground.astro
+index d8b5f35..f853518 100644
+--- a/src/components/openapi/Playground.astro
++++ b/src/components/openapi/Playground.astro
+@@ -10,4 +10,3 @@ import { paramKey, type PlaygroundModel } from "./request.ts";
+- * inputs, keyboard-operable with zero JS — and the client module only loads
+- * when the reader first opens it (see the loader script at the foot of this
+- * file). The request model the client consumes is embedded as JSON so the
+- * lazy chunk needs no data fetch.
++ * inputs, keyboard-operable with zero JS. Client event handlers attach on
++ * first open, with their module already loaded so early edits and Send clicks
++ * cannot race initialization. The request model is embedded as JSON.
+@@ -301,5 +300,4 @@ const CHECKBOX_ROW =
+-  // Hydration waits for intent: a collapsed <details> can only fire its first
+-  // `toggle` by opening, so the one-shot listener imports the client module —
+-  // a separate chunk readers who never try a request never download — and
+-  // wires the form. The custom element lives here, not in the client module,
+-  // so that module stays import-safe under the test runner.
++  import { initPlayground } from "./playground-client.ts";
++
++  // Load the module before defining the element. Wiring stays intent-driven,
++  // but the first open cannot expose editable controls before listeners exist.
+@@ -314,2 +312 @@ const CHECKBOX_ROW =
+-      const init = async () => {
+-        const { initPlayground } = await import("./playground-client.ts");
++      const init = () => {
+@@ -322 +319 @@ const CHECKBOX_ROW =
+-        void init();
++        init();

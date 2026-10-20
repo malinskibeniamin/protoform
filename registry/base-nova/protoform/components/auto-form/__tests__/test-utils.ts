@@ -12,6 +12,6 @@ export function createMockProvider(
   return {
     getDefaultValues: () => defaults,
     parseSchema: () => ({ fields }),
-    validateSchema: (values) => (validator ?? defaultValidator)(values as Record<string, unknown>),
+    validateSchema: (values) => (validator ?? defaultValidator)(values),
   };
 }

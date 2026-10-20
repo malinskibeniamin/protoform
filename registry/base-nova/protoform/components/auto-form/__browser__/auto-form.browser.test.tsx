@@ -231,7 +231,7 @@ test('renders every built-in field type through the configured UI alias', async 
   );
 
   const renderedTestIds = new Set(
-    [...document.querySelectorAll<HTMLElement>('[data-testid]')].map((element) => element.getAttribute('data-testid'))
+    [...document.querySelectorAll<HTMLElement>('[data-testid]')].map((element) => element.dataset['testid'])
   );
   for (const field of fieldMatrix) {
     expect(renderedTestIds.has(getAutoFormFieldTestId('browser-field-matrix', field.key)), field.key).toBe(true);

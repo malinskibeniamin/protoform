@@ -47,6 +47,17 @@ export default defineMeta({
 });`;
 }
 
+function jsxText(value: string): string {
+  return value
+    .replaceAll('&', '&amp;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('{', '&#123;')
+    .replaceAll('}', '&#125;');
+}
+
 function registryItem(name: string): string {
   return `@protoform/${name}`;
 }
@@ -72,17 +83,6 @@ function seoDescription(description: string): string {
   }
 
   return expanded;
-}
-
-function jsxText(value: string): string {
-  return value
-    .replaceAll('&', '&amp;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#39;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('{', '&#123;')
-    .replaceAll('}', '&#125;');
 }
 
 function hubPage(title: string, description: string, category: string): string {
@@ -133,7 +133,7 @@ function errorMessage(error: unknown): string | undefined {
     return error;
   }
   if (error !== null && typeof error === 'object') {
-    const message = Reflect.get(error, 'message');
+    const message: unknown = Reflect.get(error, 'message');
     return typeof message === 'string' ? message : undefined;
   }
   return undefined;
@@ -377,97 +377,21 @@ export default FinalFormDemo;`;
 }
 
 function reactHookFormRegistryWrapper(demo: DemoCatalogEntry): string {
-  const methodImport =
-    demo.slug === 'bufbuild-descriptors'
-      ? "\nimport { LibraryService } from '@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_pb';\n"
-      : '';
-  const methodDeclaration =
-    demo.slug === 'bufbuild-descriptors' ? '\nconst method = LibraryService.method.createBook;\n' : '';
-  const schemaDeclaration =
-    demo.slug === 'bufbuild-descriptors'
-      ? `  const { defaultValues } = getDemoSchema(${JSON.stringify(demo.schemaKey)});
-  const schema = method.input;`
-      : `  const { defaultValues, schema } = getDemoSchema(${JSON.stringify(demo.schemaKey)});`;
-  const methodBadge =
-    demo.slug === 'bufbuild-descriptors' ? '\n        <Badge variant="outline">{method.methodKind} RPC</Badge>' : '';
-  const methodShape =
-    demo.slug === 'bufbuild-descriptors'
-      ? `
-      <fieldset
-        aria-label="RPC method shape"
-        className="grid gap-3 rounded-lg border border-border bg-muted/30 p-4 text-sm sm:grid-cols-2"
-      >
-        <div>
-          <p className="font-medium text-foreground">{method.name}</p>
-          <p className="text-muted-foreground">Generated method descriptor</p>
-        </div>
-        <dl className="grid gap-2">
-          <div>
-            <dt className="font-medium text-foreground">Input</dt>
-            <dd className="break-all text-muted-foreground">
-              {method.input.typeName}
-            </dd>
-          </div>
-          <div>
-            <dt className="font-medium text-foreground">Output</dt>
-            <dd className="break-all text-muted-foreground">
-              {method.output.typeName}
-            </dd>
-          </div>
-        </dl>
-      </fieldset>`
-      : '';
-
+  const isMethodDemo = demo.slug === 'bufbuild-descriptors';
+  const methodImport = isMethodDemo
+    ? "import { LibraryService } from '@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_pb';"
+    : '';
+  const methodProp = isMethodDemo ? ' method={LibraryService.method.createBook}' : '';
   return `${generatedSourceHeader}
 'use client';
 
 export const client = 'only';
 
-import { formatSubmittedValue } from '@/registry/base-nova/protoform/demo/runtime/format-submitted-value';
-import { useState } from 'react';
+import { CatalogFormDemo } from '@/registry/base-nova/protoform/demo/runtime/catalog-form-demo';
+${methodImport}
 
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-} from '@/components/ui/alert';
-import { AutoForm } from '@/registry/base-nova/protoform/components/auto-form';
-import { Badge } from '@/components/ui/badge';
-import { getDemoSchema } from '@/registry/base-nova/protoform/demo/runtime/demo-schemas';
-${methodImport}${methodDeclaration}
 export function ${wrapperName(demo.slug)}() {
-  const [submittedValue, setSubmittedValue] = useState<string>();
-${schemaDeclaration}
-
-  return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-center gap-2">
-        <Badge variant="primary-inverted">React Hook Form</Badge>
-        <Badge variant="outline">Live protobuf contract</Badge>${methodBadge}
-      </div>${methodShape}
-      <p className="text-muted-foreground text-sm">
-        ${jsxText(demo.tryIt)}
-      </p>
-      <AutoForm
-        defaultValues={defaultValues}
-        formOptions={{ mode: 'onBlur', reValidateMode: 'onChange' }}
-        onFieldChange={() => setSubmittedValue(undefined)}
-        onSubmit={(values) => setSubmittedValue(formatSubmittedValue(values))}
-        schema={schema}
-        withSubmit
-      />
-      {submittedValue ? (
-        <Alert role="status" variant="success">
-          <AlertTitle>Submitted protobuf value</AlertTitle>
-          <AlertDescription>
-            <pre className="max-h-80 max-w-full overflow-auto whitespace-pre-wrap text-xs">
-              {submittedValue}
-            </pre>
-          </AlertDescription>
-        </Alert>
-      ) : null}
-    </div>
-  );
+  return <CatalogFormDemo description="${jsxText(demo.tryIt)}"${methodProp} schemaKey="${demo.schemaKey}" />;
 }
 
 export default ${wrapperName(demo.slug)};`;
@@ -572,6 +496,7 @@ function generateRegistryRuntime(): string[] {
 
   return [
     'registry/base-nova/protoform/demo/runtime/demo-schemas.ts',
+    'registry/base-nova/protoform/demo/runtime/catalog-form-demo.tsx',
     'registry/base-nova/protoform/demo/runtime/format-submitted-value.ts',
     ...generatedFiles.map((file) => `registry/base-nova/protoform/demo/runtime/gen/${file}`),
   ];
@@ -593,7 +518,7 @@ function generateRegistry(): void {
     if (generatedNames.has(item.name)) {
       return false;
     }
-    const files = Array.isArray(item['files']) ? item['files'] : [];
+    const files: unknown[] = Array.isArray(item['files']) ? item['files'] : [];
     return !files.some(
       (file) =>
         typeof file === 'object' &&
@@ -612,23 +537,23 @@ function generateRegistry(): void {
     ...demoCatalog.map((demo) => registryItem(demo.registryName)),
   ];
 
-  items.push({
-    dependencies: ['@bufbuild/protobuf', 'react', 'react-hook-form'],
-    description: 'Shared fixture descriptors and generated compatibility contracts for focused Protoform demos.',
-    files: runtimeFiles.map((path) => ({
-      path,
-      target: `~/components/protoform-examples/runtime/${path.replace(
-        'registry/base-nova/protoform/demo/runtime/',
-        ''
-      )}`,
-      type: path.endsWith('.tsx') ? 'registry:component' : 'registry:lib',
-    })),
-    name: 'protoform-demo-runtime',
-    registryDependencies: [registryItem('protoform')],
-    title: 'Protoform demo runtime',
-    type: 'registry:block',
-  });
   items.push(
+    {
+      dependencies: ['@bufbuild/protobuf', 'react', 'react-hook-form@^7.90.0'],
+      description: 'Shared fixture descriptors and generated compatibility contracts for focused Protoform demos.',
+      files: runtimeFiles.map((path) => ({
+        path,
+        target: `~/components/protoform-examples/runtime/${path.replace(
+          'registry/base-nova/protoform/demo/runtime/',
+          ''
+        )}`,
+        type: path.endsWith('.tsx') ? 'registry:component' : 'registry:lib',
+      })),
+      name: 'protoform-demo-runtime',
+      registryDependencies: [registryItem('protoform')],
+      title: 'Protoform demo runtime',
+      type: 'registry:block',
+    },
     ...demoCatalog.map((demo) => {
       const registryDependencies = [registryItem('protoform-demo-runtime')];
       if (demo.engine === 'tanstack-form') {
@@ -664,5 +589,5 @@ generateDocs();
 generateRegistry();
 execFileSync('bunx', ['biome', 'check', '--write', '--no-errors-on-unmatched', ...writtenPaths], {
   cwd: root,
-  stdio: 'ignore',
+  stdio: 'inherit',
 });

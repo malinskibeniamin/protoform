@@ -1,5 +1,5 @@
 export function isPromiseLike<T>(value: T | Promise<T>): value is Promise<T> {
-  return Boolean(Boolean(value) && typeof value === 'object' && 'then' in (value as Record<string, unknown>));
+  return value !== null && typeof value === 'object' && 'then' in value;
 }
 
 export function safeStringify(value: unknown): string {

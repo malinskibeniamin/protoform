@@ -7,13 +7,13 @@ import '@/registry/base-nova/protoform/lib/protobuf-provider/auto-form-example-a
 import { AddressSchema } from '@/registry/base-nova/protoform/lib/protobuf-provider/gen/auto-form-example_pb';
 
 import type { SchemaProvider } from '../../auto-form/core-types';
-import { AutoForm } from '..';
+import { AutoForm, type AutoFormSubmitContext, type TanStackAutoFormApi } from '..';
 
 describe('TanStack AutoForm conformance', () => {
   test('keeps the native form API while rendering and submitting provider output', async () => {
     const user = userEvent.setup();
     const onSubmit = rs.fn();
-    const onFormInit = rs.fn();
+    const onFormInit = rs.fn<(form: TanStackAutoFormApi) => void>();
     const schema: SchemaProvider<{ name: string }> = {
       getDefaultValues: () => ({ name: '' }),
       parseSchema: () => ({
@@ -219,7 +219,7 @@ describe('TanStack AutoForm conformance', () => {
 
   test('renders every provider failure and runs native TanStack submission only after validation passes', async () => {
     const user = userEvent.setup();
-    const nativeOnSubmit = rs.fn();
+    const nativeOnSubmit = rs.fn<(event: { value: unknown }) => void>();
     const onSubmit = rs.fn();
     const schema: SchemaProvider<{ name: string }> = {
       getDefaultValues: () => ({ name: '' }),
@@ -256,11 +256,17 @@ describe('TanStack AutoForm conformance', () => {
 
   test('builds update masks from native TanStack dirty metadata and preserves the edit source message', async () => {
     const user = userEvent.setup();
-    const onSubmit = rs.fn((_message, _nativeForm, context) => {
-      if (onSubmit.mock.calls.length === 1) {
-        context.form.markClean();
+    const onSubmit = rs.fn(
+      (
+        _message: ReturnType<typeof create<typeof AddressSchema>>,
+        _nativeForm: unknown,
+        context: AutoFormSubmitContext
+      ) => {
+        if (onSubmit.mock.calls.length === 1) {
+          context.form.markClean();
+        }
       }
-    });
+    );
     const knownSource = create(AddressSchema, {
       city: 'Warsaw',
       country: 4,
@@ -280,7 +286,7 @@ describe('TanStack AutoForm conformance', () => {
     await user.click(screen.getByRole('button', { name: 'Submit' }));
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
-    expect(onSubmit.mock.calls[0]?.[2].updateMask.paths).toEqual(['city']);
+    expect(onSubmit.mock.calls[0]?.[2].updateMask?.paths).toEqual(['city']);
     expect(onSubmit.mock.calls[0]?.[0].city).toBe('Krakow');
     expect(onSubmit.mock.calls[0]?.[0].$unknown).toEqual(source.$unknown);
 
@@ -291,6 +297,6 @@ describe('TanStack AutoForm conformance', () => {
     await user.click(screen.getByRole('button', { name: 'Submit' }));
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(2));
-    expect(onSubmit.mock.calls[1]?.[2].updateMask.paths).toEqual([]);
+    expect(onSubmit.mock.calls[1]?.[2].updateMask?.paths).toEqual([]);
   });
 });

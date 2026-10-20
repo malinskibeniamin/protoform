@@ -217,9 +217,9 @@ function isUnspecifiedEnumValue(enumValue: { number: number; localName: string; 
 
 function humanize(input: string): string {
   return input
-    .replace(CAMEL_BOUNDARY_PATTERN, '$1 $2')
-    .replace(WORD_SEPARATOR_PATTERN, ' ')
-    .replace(WHITESPACE_PATTERN, ' ')
+    .replaceAll(CAMEL_BOUNDARY_PATTERN, '$1 $2')
+    .replaceAll(WORD_SEPARATOR_PATTERN, ' ')
+    .replaceAll(WHITESPACE_PATTERN, ' ')
     .trim()
     .split(' ')
     .map((word) => {
@@ -235,8 +235,8 @@ function humanize(input: string): string {
 const NORMALIZE_SEPARATOR_PATTERN = /[\s_-]+/gu;
 
 function formatEnumLabel(enumLocalName: string, enumTypeName: string): string {
-  const typePrefixNormalized = enumTypeName.toLowerCase().replace(NORMALIZE_SEPARATOR_PATTERN, '');
-  const valueNormalized = enumLocalName.toLowerCase().replace(NORMALIZE_SEPARATOR_PATTERN, '');
+  const typePrefixNormalized = enumTypeName.toLowerCase().replaceAll(NORMALIZE_SEPARATOR_PATTERN, '');
+  const valueNormalized = enumLocalName.toLowerCase().replaceAll(NORMALIZE_SEPARATOR_PATTERN, '');
   if (valueNormalized.startsWith(typePrefixNormalized) && valueNormalized.length > typePrefixNormalized.length) {
     const stripped = enumLocalName.slice(typePrefixNormalized.length);
     if (stripped.length > 0) {
@@ -600,7 +600,7 @@ function buildMessageField(field: MessageField, rules: FieldRules, context: Prot
   if (isWrapperDesc(field.message)) {
     const wrappedScalar = field.message.fields[0]?.scalar;
     if (wrappedScalar === ScalarType.BOOL) {
-      return buildBooleanField(field as DescField, rules, context);
+      return buildBooleanField(field, rules, context);
     }
     if (wrappedScalar === ScalarType.BYTES) {
       return buildBytesField(field, rules, context);
@@ -608,7 +608,7 @@ function buildMessageField(field: MessageField, rules: FieldRules, context: Prot
     if (wrappedScalar === ScalarType.STRING) {
       return buildStringField(field, rules, context);
     }
-    return buildNumberField(field as DescField, rules, context);
+    return buildNumberField(field, rules, context);
   }
 
   const description = getFieldDescription(field, context);
@@ -958,11 +958,8 @@ function buildProtoField(field: DescField, context: ProtoParserContext): ParsedP
           ? field.message
           : undefined;
       customData.resource = messageDesc ? getProtoResourceMetadata(messageDesc) : undefined;
-      result.required = Boolean(
-        result.required ||
-          fieldBehaviors.includes(FieldBehavior.REQUIRED) ||
-          (isIdentifier && context.operation === 'update')
-      );
+      result.required ||=
+        fieldBehaviors.includes(FieldBehavior.REQUIRED) || (isIdentifier && context.operation === 'update');
     }
   }
 

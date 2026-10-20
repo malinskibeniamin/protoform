@@ -92,7 +92,7 @@ export const ArrayWrapper: React.FC<
     {children}
     <Button onClick={onAddItem} size="sm" testId={addButtonTestId} type="button" variant="outline">
       <PlusIcon className="size-4" />
-      {addButtonLabel ?? (label ? `Add ${label}` : 'Add item')}
+      {addButtonLabel ?? (label ? `Add ${String(label)}` : 'Add item')}
     </Button>
   </div>
 );
@@ -203,7 +203,7 @@ function getWrapperLabels(field: FieldWrapperProps['field'], label: FieldWrapper
 export const FieldWrapper: React.FC<FieldWrapperProps> = ({ label, children, id, field, error: rawError }) => {
   const depth = useFormDepth();
   const { testIdPrefix } = useAutoFormRuntimeContext();
-  const isCompact = Boolean((field.fieldConfig?.customData as Record<string, unknown> | undefined)?.['compactRow']);
+  const isCompact = Boolean(field.fieldConfig?.customData?.['compactRow']);
   const tooltipText = isCompact ? '' : getFieldHelpText(field);
   const error = augmentError(rawError, field);
   const errorId = React.useId();

@@ -12,11 +12,11 @@ export function ExpandedDiagramPreview({ target }: { target: HTMLElement }) {
       }
 
       const clone = target.cloneNode(true) as HTMLElement;
-      clone.removeAttribute('data-diagram-enhanced');
+      Reflect.deleteProperty(clone.dataset, 'diagramEnhanced');
       for (const controls of clone.querySelectorAll('[data-diagram-controls]')) {
         controls.remove();
       }
-      clone.setAttribute('data-diagram-expanded', '');
+      clone.dataset['diagramExpanded'] = '';
       clone.tabIndex = 0;
       preview.replaceChildren(clone);
 

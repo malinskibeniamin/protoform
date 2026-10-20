@@ -108,13 +108,13 @@ function deriveAnnotatedControl(
     (ui) => typeof ui?.dataProvider === 'string' && ui.dataProvider !== ''
   );
   if (hasDataProvider) {
-    return 'dataProviderSelect' as FieldTypes;
+    return 'dataProviderSelect';
   }
 
   const dropzone = direct?.dropzone === true || nested?.dropzone === true || protoUi?.dropzone === true;
   const control = direct?.control ?? nested?.control ?? protoUi?.control;
   if (dropzone && control === 'json') {
-    return 'dropzone-json' as FieldTypes;
+    return 'dropzone-json';
   }
   return undefined;
 }
@@ -177,9 +177,9 @@ export function getFieldUiConfig<TFieldType extends string = string>(
   const annotatedControl = deriveAnnotatedControl(field.type, protoUi, nested, direct);
 
   return {
-    ...(protoUi ?? {}),
-    ...(nested ?? {}),
-    ...(direct ?? {}),
+    ...protoUi,
+    ...nested,
+    ...direct,
     control:
       [
         typeof field.fieldConfig?.fieldType === 'string'
@@ -198,7 +198,7 @@ export function getFieldUiConfig<TFieldType extends string = string>(
     placeholder:
       [
         typeof field.fieldConfig?.inputProps?.['placeholder'] === 'string'
-          ? (field.fieldConfig.inputProps['placeholder'] as string)
+          ? field.fieldConfig.inputProps['placeholder']
           : undefined,
         direct?.placeholder,
         nested?.placeholder,
@@ -234,7 +234,7 @@ export function getRootErrorMessage(rootError: unknown): string | undefined {
 
 export function getFieldErrorMessage(errors: unknown, path: string[]): string | undefined {
   const nestedError = getPathInObject(errors as Record<string, unknown>, path);
-  const message =
+  const message: unknown =
     nestedError !== null && typeof nestedError === 'object' ? Reflect.get(nestedError, 'message') : undefined;
   return typeof message === 'string' ? message : undefined;
 }
@@ -425,9 +425,9 @@ function buildFallbackHelp(field: ParsedField): string {
     renderType === 'json' ? 'Provide valid JSON for this field.' : undefined,
     field.type === 'duration' ? 'Use protobuf duration syntax like 300s.' : undefined,
     field.type === 'fieldMask' ? 'Enter one field path per line, or separate them with commas.' : undefined,
-  ].filter((hint): hint is string => Boolean(hint));
+  ].find((hint): hint is string => Boolean(hint));
 
-  return hints[0] ?? '';
+  return hints ?? '';
 }
 
 export function getFieldHelpText(field: ParsedField): string {

@@ -2,11 +2,12 @@
 
 import { access, cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { createServer } from 'node:http';
-import { extname, join, resolve } from 'node:path';
+import { extname, join, resolve as resolvePath } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { $, Glob } from 'bun';
+import { z } from 'zod';
 
-const root = resolve(fileURLToPath(new URL('..', import.meta.url)));
+const root = resolvePath(fileURLToPath(new URL('..', import.meta.url)));
 const fixture = join(root, '.tmp', 'consumer-fixture');
 const hostFixture = join(root, '.tmp', 'host-consumer-fixture');
 const coreFixture = join(root, '.tmp', 'core-consumer-fixture');
@@ -112,7 +113,7 @@ function servePublic() {
   const server = createServer(async (request, response) => {
     const url = new URL(request.url ?? '/', registryOrigin);
     const pathname = decodeURIComponent(url.pathname.replace(leadingSlashes, ''));
-    const filePath = resolve(publicDir, pathname);
+    const filePath = resolvePath(publicDir, pathname);
     if (!filePath.startsWith(publicDir)) {
       response.writeHead(403);
       response.end('Forbidden');
@@ -129,8 +130,8 @@ function servePublic() {
       response.end('Not found');
     }
   });
-  return new Promise<import('node:http').Server>((resolveServer) => {
-    server.listen(48_741, '127.0.0.1', () => resolveServer(server));
+  return new Promise<import('node:http').Server>((resolve) => {
+    server.listen(48_741, '127.0.0.1', () => resolve(server));
   });
 }
 
@@ -311,13 +312,19 @@ async function assertCoreInstalled() {
 
 async function assertHostInstalled() {
   await cp(fixture, hostFixture, { recursive: true });
-  const config = JSON.parse(await readFile(join(hostFixture, 'components.json'), 'utf8'));
-  config.style = 'new-york';
-  config.aliases.components = '@/features/forms';
-  config.aliases.ui = '@/design-system/ui';
-  config.aliases.lib = '@/domain/runtime';
-  config.aliases.hooks = '@/features/hooks';
-  config.registries['@host'] = 'https://ui.shadcn.com/r/styles/new-york/{name}.json';
+  const config = z
+    .looseObject({
+      aliases: z.record(z.string(), z.string()),
+      registries: z.record(z.string(), z.string()),
+      style: z.string(),
+    })
+    .parse(JSON.parse(await readFile(join(hostFixture, 'components.json'), 'utf8')));
+  config['style'] = 'new-york';
+  config['aliases']['components'] = '@/features/forms';
+  config['aliases']['ui'] = '@/design-system/ui';
+  config['aliases']['lib'] = '@/domain/runtime';
+  config['aliases']['hooks'] = '@/features/hooks';
+  config['registries']['@host'] = 'https://ui.shadcn.com/r/styles/new-york/{name}.json';
   await writeFile(join(hostFixture, 'components.json'), JSON.stringify(config, null, 2));
   await mkdir(join(hostFixture, 'lib'), { recursive: true });
   await writeFile(
@@ -456,10 +463,15 @@ try {
       join(fixture, 'native.html'),
       '<html lang="en"><head><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Native timestamp defaults</title><link rel="stylesheet" href="/app/globals.css" /></head><body><div id="root"></div><script type="module" src="/native-defaults-browser.tsx"></script></body></html>'
     );
+    await cp(join(root, 'scripts/fixtures/custom-options-browser.tsx'), join(fixture, 'custom-options-browser.tsx'));
+    await writeFile(
+      join(fixture, 'custom-options.html'),
+      '<html lang="en"><head><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Custom option creation</title><link rel="stylesheet" href="/app/globals.css" /></head><body><div id="root"></div><script type="module" src="/custom-options-browser.tsx"></script></body></html>'
+    );
     const theme = await readFile(join(root, 'scripts/fixtures/host-theme.css'), 'utf8');
     await writeFile(
       join(fixture, 'app/globals.css'),
-      `${theme}\n@source "../components";\n@source "../reliability-browser.tsx";\n@source "../native-defaults-browser.tsx";\n`
+      `${theme}\n@source "../components";\n@source "../reliability-browser.tsx";\n@source "../native-defaults-browser.tsx";\n@source "../custom-options-browser.tsx";\n`
     );
     await writeFile(
       join(fixture, 'index.html'),
@@ -473,7 +485,7 @@ try {
     console.log(`Registry-only consumer fixture passed: ${fixture}`);
   }
 } finally {
-  await new Promise<void>((resolveClose, rejectClose) => {
-    server.close((error) => (error ? rejectClose(error) : resolveClose()));
+  await new Promise<void>((resolve, reject) => {
+    server.close((error) => (error ? reject(error) : resolve()));
   });
 }

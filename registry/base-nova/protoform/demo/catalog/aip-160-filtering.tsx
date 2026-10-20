@@ -3,44 +3,14 @@
 
 export const client = 'only';
 
-import { useState } from 'react';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
-import { AutoForm } from '@/registry/base-nova/protoform/components/auto-form';
-import { getDemoSchema } from '@/registry/base-nova/protoform/demo/runtime/demo-schemas';
-import { formatSubmittedValue } from '@/registry/base-nova/protoform/demo/runtime/format-submitted-value';
+import { CatalogFormDemo } from '@/registry/base-nova/protoform/demo/runtime/catalog-form-demo';
 
 export function Aip160FilteringDemo() {
-  const [submittedValue, setSubmittedValue] = useState<string>();
-  const { defaultValues, schema } = getDemoSchema('list-books');
-
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-center gap-2">
-        <Badge variant="primary-inverted">React Hook Form</Badge>
-        <Badge variant="outline">Live protobuf contract</Badge>
-      </div>
-      <p className="text-muted-foreground text-sm">
-        Edit the focused request, submit it, and compare the live behavior with the executable compatibility evidence
-        below.
-      </p>
-      <AutoForm
-        defaultValues={defaultValues}
-        formOptions={{ mode: 'onBlur', reValidateMode: 'onChange' }}
-        onFieldChange={() => setSubmittedValue(undefined)}
-        onSubmit={(values) => setSubmittedValue(formatSubmittedValue(values))}
-        schema={schema}
-        withSubmit
-      />
-      {submittedValue ? (
-        <Alert role="status" variant="success">
-          <AlertTitle>Submitted protobuf value</AlertTitle>
-          <AlertDescription>
-            <pre className="max-h-80 max-w-full overflow-auto whitespace-pre-wrap text-xs">{submittedValue}</pre>
-          </AlertDescription>
-        </Alert>
-      ) : null}
-    </div>
+    <CatalogFormDemo
+      description="Edit the focused request, submit it, and compare the live behavior with the executable compatibility evidence below."
+      schemaKey="list-books"
+    />
   );
 }
 

@@ -62,10 +62,10 @@ function renderTabWithActiveState(Element: 'button' | 'div', userRender?: TabsRe
       return React.createElement(Element as string, mergedProps);
     }
     if (React.isValidElement(userRender)) {
-      return React.cloneElement(userRender as React.ReactElement, mergedProps);
+      return React.cloneElement(userRender, mergedProps);
     }
     if (typeof userRender === 'function') {
-      return (userRender as TabsRenderFn)(mergedProps, state);
+      return userRender(mergedProps, state);
     }
     return React.createElement(Element as string, mergedProps);
   };
@@ -156,10 +156,11 @@ const tabsListActiveVariants = cva('rounded-sm bg-background shadow-sm', {
   },
 });
 
-type TabsListProps = React.ComponentProps<typeof TabsPrimitive.List> &
+type TabsListProps = Omit<React.ComponentProps<typeof TabsPrimitive.List>, 'style'> &
   VariantProps<typeof tabsListVariants> &
   SharedProps & {
     activeClassName?: string;
+    style?: React.CSSProperties | undefined;
     transition?: Transition;
     columns?: number;
   };
@@ -193,8 +194,7 @@ const TabsList = React.forwardRef<HTMLDivElement, TabsListProps>(
         return;
       }
       const activeTab = list.querySelector<HTMLElement>('[data-slot="tabs-trigger"][data-state="active"]');
-      const nextOrientation =
-        (list.getAttribute('data-orientation') as 'horizontal' | 'vertical' | null) ?? 'horizontal';
+      const nextOrientation = (list.dataset['orientation'] as 'horizontal' | 'vertical' | null) ?? 'horizontal';
       setOrientation((prev) => (prev === nextOrientation ? prev : nextOrientation));
 
       if (!activeTab) {
@@ -324,6 +324,7 @@ type TabsTriggerProps = Omit<React.ComponentProps<typeof TabsPrimitive.Tab>, 're
   };
 
 function TabsTrigger({ className, value, variant, testId, disabled, render, ...props }: TabsTriggerProps) {
+  const attributeValue: unknown = value;
   const nativeButton =
     React.isValidElement(render) && typeof render.type === 'string' && render.type !== 'button' ? false : undefined;
 
@@ -332,7 +333,7 @@ function TabsTrigger({ className, value, variant, testId, disabled, render, ...p
       className={cn(tabsTriggerVariants({ variant }), className)}
       data-slot="tabs-trigger"
       data-testid={testId}
-      data-value={value}
+      data-value={attributeValue}
       disabled={disabled}
       nativeButton={nativeButton}
       render={renderTabWithActiveState('button', render)}

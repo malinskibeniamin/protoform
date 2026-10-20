@@ -6,7 +6,7 @@
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "jsx": "react-jsx",
-    "allowJs": false,
+    "allowJs": true,
     "allowImportingTsExtensions": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
@@ -32,15 +32,16 @@
     "noEmit": true,
     "incremental": true,
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.tsbuildinfo",
-    "ignoreDeprecations": "6.0",
     "types": ["bun", "@types/node", "@rstest/core/globals", "vite/client"],
     "paths": {
       "@/components/ui/*": ["./registry/base-nova/protoform/components/*"],
       "@/*": ["./*"],
       "@/components/ui": ["./registry/base-nova/protoform/components"]
-    }
+    },
+    "moduleDetection": "force",
+    "checkJs": true
   },
-  "include": ["**/*.ts", "**/*.tsx"],
+  "include": ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts", "**/*.js", "**/*.jsx", "**/*.mjs", "**/*.cjs"],
   "exclude": [
     "node_modules",
     ".output",
@@ -52,14 +53,8 @@
     "artifacts",
     "registry/base-nova/protoform/lib/protobuf-v1-bridge",
     "**/gen/**",
-    "**/__browser__/**",
     "**/__golden__/**",
-    "**/*.test.ts",
-    "**/*.test.tsx",
-    "**/*.spec.ts",
-    "**/*.spec.tsx",
     "**/*_form.ts",
-    "**/*_pb.ts",
-    "**/__tests__/**"
+    "**/*_pb.ts"
   ]
 }

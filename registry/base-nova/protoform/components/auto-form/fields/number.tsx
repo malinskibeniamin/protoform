@@ -19,8 +19,8 @@ function NumberFieldComponent({ error, field, id, inputProps }: AutoFormFieldPro
       disabled={inputProps['disabled']}
       id={id}
       inputMode="decimal"
-      max={inputProps['max'] as number | undefined}
-      min={inputProps['min'] as number | undefined}
+      max={inputProps['max']}
+      min={inputProps['min']}
       onBlur={inputProps['onBlur']}
       onChange={(event) => {
         const nextValue = event.target.value;

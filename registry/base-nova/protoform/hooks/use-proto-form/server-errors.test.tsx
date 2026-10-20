@@ -62,21 +62,23 @@ describe('useProtoForm server errors', () => {
   });
 });
 
-test('retains multiple backend violations for the same field', () => {
+test('retains multiple backend violations for the same field', async () => {
   const { result } = renderHook(() => useProtoForm(AutoFormExampleSchema));
-  act(() =>
-    result.current.setServerErrors(
-      new ConnectError('Invalid', Code.InvalidArgument, {}, [
-        {
-          desc: BadRequestSchema,
-          value: {
-            fieldViolations: [
-              { field: 'primary_email', description: 'Enter an email' },
-              { field: 'primary_email', description: 'Use a company email' },
-            ],
+  await Promise.resolve(
+    act(() =>
+      result.current.setServerErrors(
+        new ConnectError('Invalid', Code.InvalidArgument, {}, [
+          {
+            desc: BadRequestSchema,
+            value: {
+              fieldViolations: [
+                { field: 'primary_email', description: 'Enter an email' },
+                { field: 'primary_email', description: 'Use a company email' },
+              ],
+            },
           },
-        },
-      ])
+        ])
+      )
     )
   );
   const { error } = result.current.getFieldState('primaryEmail');

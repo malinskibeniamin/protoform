@@ -596,8 +596,8 @@ const featureDemoDefinitions: readonly FeatureDemoDefinition[] = [
 function slugify(value: string): string {
   return value
     .toLowerCase()
-    .replace(/[^a-z0-9]+/gu, '-')
-    .replace(/^-|-$/gu, '');
+    .replaceAll(/[^a-z0-9]+/gu, '-')
+    .replaceAll(/^-|-$/gu, '');
 }
 
 const aipSchemas: Readonly<Partial<Record<number, DemoSchemaKey>>> = {

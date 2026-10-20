@@ -121,7 +121,7 @@ function TanStackArrayController({
 
   const { form } = useTanStackEngineContext();
   const value = useSelector(form.store, (state) => getPathInObject(state.values, name.split('.')));
-  const arrayValue = Array.isArray(value) ? value : [];
+  const arrayValue: unknown[] = Array.isArray(value) ? value : [];
   const collectionId = React.useId();
   const nextItemId = React.useRef(0);
   const keys = React.useRef<string[]>([]);
@@ -276,7 +276,7 @@ export function TanStackEngine({ children, defaultValues, formOptions, values, o
     AsyncValidator,
     unknown
   >({
-    ...(formOptions ?? {}),
+    ...formOptions,
     defaultValues: formDefaultValuesRef.current,
     onSubmit: async (submission) => {
       nativeSubmissionRef.current = submission;

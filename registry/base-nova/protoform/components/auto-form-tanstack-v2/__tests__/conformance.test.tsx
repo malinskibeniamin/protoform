@@ -6,15 +6,15 @@ import '@/registry/base-nova/protoform/lib/protobuf-provider/auto-form-example-a
 import { AddressSchema } from '@/registry/base-nova/protoform/lib/protobuf-provider/gen/auto-form-example_pb';
 
 import type { SchemaProvider } from '../../auto-form/core-types';
-import { AutoForm } from '..';
+import { AutoForm, type AutoFormSubmitContext, type TanStackV2AutoFormApi } from '..';
 
 describe('experimental TanStack Form v2 AutoForm conformance', () => {
   test('keeps the v2-native API and submits transformed provider output', async () => {
     const user = userEvent.setup();
-    const onSubmit = rs.fn();
-    const onFormInit = rs.fn();
+    const onSubmit = rs.fn<(values: unknown, form: unknown, context: AutoFormSubmitContext) => void>();
+    const onFormInit = rs.fn<(form: TanStackV2AutoFormApi) => void>();
     const schema = createNameSchema((values) => ({
-      data: { name: String(values.name).trim().toUpperCase() },
+      data: { name: values.name.trim().toUpperCase() },
       success: true,
     }));
 
@@ -35,7 +35,7 @@ describe('experimental TanStack Form v2 AutoForm conformance', () => {
 
   test('uses v2 field state for repeated fields and clears the previous oneof branch', async () => {
     const user = userEvent.setup();
-    const onSubmit = rs.fn();
+    const onSubmit = rs.fn<(values: unknown, form: unknown, context: AutoFormSubmitContext) => void>();
     const schema: SchemaProvider<{ tags: string[] }> = {
       getDefaultValues: () => ({ tags: ['first'] }),
       parseSchema: () => ({
@@ -151,7 +151,7 @@ describe('experimental TanStack Form v2 AutoForm conformance', () => {
     expect(screen.getByRole('textbox', { name: /name/iu })).toHaveValue('Ada');
 
     cleanup();
-    const onSubmit = rs.fn();
+    const onSubmit = rs.fn<(values: unknown, form: unknown, context: AutoFormSubmitContext) => void>();
     render(
       <AutoForm
         defaultValues={{
@@ -173,13 +173,13 @@ describe('experimental TanStack Form v2 AutoForm conformance', () => {
     await user.click(screen.getByRole('button', { name: 'Submit' }));
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
-    expect(onSubmit.mock.calls[0]?.[2].updateMask.paths).toEqual(['city']);
+    expect(onSubmit.mock.calls[0]?.[2].updateMask?.paths).toEqual(['city']);
   });
 
   test('runs provider validation on change or blur when requested', async () => {
     const user = userEvent.setup();
     const schema = createNameSchema((values) =>
-      String(values.name).length >= 3
+      values.name.length >= 3
         ? { data: values, success: true }
         : {
             errors: [
@@ -243,7 +243,7 @@ describe('experimental TanStack Form v2 AutoForm conformance', () => {
 
   test('keeps native v2 validators and onSubmit validation errors alongside provider validation', async () => {
     const user = userEvent.setup();
-    const onSubmit = rs.fn();
+    const onSubmit = rs.fn<(values: unknown, form: unknown, context: AutoFormSubmitContext) => void>();
     const nativeValidator = rs.fn(() => ({
       fields: { name: 'Native validation failed.' },
     }));
@@ -287,7 +287,7 @@ describe('experimental TanStack Form v2 AutoForm conformance', () => {
   test('renders every provider failure and runs native v2 submission only after validation passes', async () => {
     const user = userEvent.setup();
     const nativeOnSubmit = rs.fn();
-    const onSubmit = rs.fn();
+    const onSubmit = rs.fn<(values: unknown, form: unknown, context: AutoFormSubmitContext) => void>();
     const schema = createNameSchema((values) =>
       values.name
         ? { data: values, success: true }

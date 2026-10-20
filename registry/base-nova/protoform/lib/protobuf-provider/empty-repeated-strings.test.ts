@@ -114,7 +114,7 @@ describe('empty repeated string conversion', () => {
       numbers: [0, 2],
       payloads: ['', 'AQ=='],
       states: [0, 1],
-    }) as Record<string, unknown>;
+    });
 
     expect(converted['labels']).toEqual(['foo', 'bar']);
     expect(converted['numbers']).toEqual([0, 2]);
@@ -141,7 +141,7 @@ describe('empty repeated string conversion', () => {
           'nested.labels': 'preserve',
         },
       }
-    ) as Record<string, unknown>;
+    );
 
     expect(converted['labels']).toEqual(['root', '', '   ']);
     expect(converted['nested']).toEqual({ labels: ['nested', '', '   '] });

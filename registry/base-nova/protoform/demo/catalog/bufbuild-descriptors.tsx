@@ -3,68 +3,16 @@
 
 export const client = 'only';
 
-import { useState } from 'react';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
-import { AutoForm } from '@/registry/base-nova/protoform/components/auto-form';
-import { getDemoSchema } from '@/registry/base-nova/protoform/demo/runtime/demo-schemas';
-import { formatSubmittedValue } from '@/registry/base-nova/protoform/demo/runtime/format-submitted-value';
-
+import { CatalogFormDemo } from '@/registry/base-nova/protoform/demo/runtime/catalog-form-demo';
 import { LibraryService } from '@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_pb';
 
-const method = LibraryService.method.createBook;
-
 export function BufbuildDescriptorsDemo() {
-  const [submittedValue, setSubmittedValue] = useState<string>();
-  const { defaultValues } = getDemoSchema('create-book');
-  const schema = method.input;
-
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-center gap-2">
-        <Badge variant="primary-inverted">React Hook Form</Badge>
-        <Badge variant="outline">Live protobuf contract</Badge>
-        <Badge variant="outline">{method.methodKind} RPC</Badge>
-      </div>
-      <fieldset
-        aria-label="RPC method shape"
-        className="grid gap-3 rounded-lg border border-border bg-muted/30 p-4 text-sm sm:grid-cols-2"
-      >
-        <div>
-          <p className="font-medium text-foreground">{method.name}</p>
-          <p className="text-muted-foreground">Generated method descriptor</p>
-        </div>
-        <dl className="grid gap-2">
-          <div>
-            <dt className="font-medium text-foreground">Input</dt>
-            <dd className="break-all text-muted-foreground">{method.input.typeName}</dd>
-          </div>
-          <div>
-            <dt className="font-medium text-foreground">Output</dt>
-            <dd className="break-all text-muted-foreground">{method.output.typeName}</dd>
-          </div>
-        </dl>
-      </fieldset>
-      <p className="text-muted-foreground text-sm">
-        Complete the request form that a generated service method accepts.
-      </p>
-      <AutoForm
-        defaultValues={defaultValues}
-        formOptions={{ mode: 'onBlur', reValidateMode: 'onChange' }}
-        onFieldChange={() => setSubmittedValue(undefined)}
-        onSubmit={(values) => setSubmittedValue(formatSubmittedValue(values))}
-        schema={schema}
-        withSubmit
-      />
-      {submittedValue ? (
-        <Alert role="status" variant="success">
-          <AlertTitle>Submitted protobuf value</AlertTitle>
-          <AlertDescription>
-            <pre className="max-h-80 max-w-full overflow-auto whitespace-pre-wrap text-xs">{submittedValue}</pre>
-          </AlertDescription>
-        </Alert>
-      ) : null}
-    </div>
+    <CatalogFormDemo
+      description="Complete the request form that a generated service method accepts."
+      method={LibraryService.method.createBook}
+      schemaKey="create-book"
+    />
   );
 }
 

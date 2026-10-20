@@ -41,7 +41,7 @@ describe('AutoForm diagnostic callback', () => {
     await waitFor(() =>
       expect(diagnostics).toContainEqual(
         expect.objectContaining({
-          cause: expect.any(TypeError),
+          cause: expect.any(TypeError) as unknown,
           code: 'render-error',
           fieldPath: '$',
           severity: 'error',

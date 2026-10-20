@@ -1,4 +1,5 @@
 import { describe, expect } from '@rstest/core';
+import { expectTypeOf } from 'expect-type';
 
 import type { AutoFormFieldProps, ParsedField } from '../core-types';
 import { type FieldMatchContext, type FieldTypeDefinition, FieldTypeRegistry } from '../registry';
@@ -13,8 +14,7 @@ function makeDef(
   return { component: MockComponent, match: matchFn, name, priority };
 }
 
-const stubField = (type: string, key = 'test'): ParsedField =>
-  ({ key, required: false, schema: [], type }) as unknown as ParsedField;
+const stubField = (type: string, key = 'test'): ParsedField => ({ key, required: false, schema: [], type });
 
 const stubContext = (identity = 'test test'): FieldMatchContext => ({
   identity,
@@ -23,6 +23,18 @@ const stubContext = (identity = 'test test'): FieldMatchContext => ({
 });
 
 describe('FieldTypeRegistry', () => {
+  test('accumulates literal field names through chained registration', () => {
+    const registry = new FieldTypeRegistry()
+      .register({ component: MockComponent, match: () => true, name: 'alpha', priority: 1 })
+      .register({ component: MockComponent, match: () => true, name: 'beta', priority: 2 });
+
+    expectTypeOf(registry.list()).toEqualTypeOf<readonly FieldTypeDefinition<'alpha' | 'beta'>[]>();
+    expectTypeOf(registry.resolve(stubField('string'), stubContext())).toEqualTypeOf<
+      FieldTypeDefinition<'alpha' | 'beta'> | undefined
+    >();
+    expectTypeOf(registry.clone()).toEqualTypeOf<FieldTypeRegistry<'alpha' | 'beta'>>();
+  });
+
   test('lists and resolves definitions by priority and clones independently', () => {
     const registry = new FieldTypeRegistry()
       .register(makeDef('alpha', 10, (f) => f.type === 'string'))

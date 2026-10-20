@@ -31,9 +31,27 @@ const JSON_PRISM_GRAMMAR: Prism.Grammar = {
   string: { greedy: true, lookbehind: true, pattern: /(^|[^\\])"(?:\\.|[^\\"\r\n])*"(?!\s*:)/u },
 };
 
+function isJsonValue(value: unknown): value is JSONValue {
+  if (value === null || typeof value === 'string' || typeof value === 'boolean' || typeof value === 'number') {
+    return true;
+  }
+  if (Array.isArray(value)) {
+    return value.every(isJsonValue);
+  }
+  return typeof value === 'object' && Object.values(value).every(isJsonValue);
+}
+
+function parseJson(source: string): JSONValue {
+  const value: unknown = JSON.parse(source);
+  if (!isJsonValue(value)) {
+    throw new TypeError('Invalid JSON value');
+  }
+  return value;
+}
+
 function parseJsonOrUndefined(source: string): JSONValue {
   try {
-    return JSON.parse(source);
+    return parseJson(source);
   } catch {
     return undefined;
   }
@@ -131,23 +149,29 @@ const generateExampleData = (schema: JSONSchemaType): JSONValue => {
   }
 
   switch (schema.type) {
-    case 'string':
-      return (schema.examples?.[0] as string) || '';
+    case 'string': {
+      const example = schema.examples?.[0];
+      const hasExample = Boolean(example);
+      return hasExample ? example : '';
+    }
     case 'number':
-    case 'integer':
-      return (schema.examples?.[0] as number) || 42;
+    case 'integer': {
+      const example = schema.examples?.[0];
+      const hasExample = Boolean(example);
+      return hasExample ? example : 42;
+    }
     case 'boolean':
       return true;
     case 'array':
       if (schema.items) {
-        return [generateExampleData(schema.items as JSONSchemaType)];
+        return [generateExampleData(schema.items)];
       }
       return [];
     case 'object':
       if (schema.properties) {
         const result: Record<string, JSONValue> = {};
         for (const [key, propSchema] of Object.entries(schema.properties)) {
-          result[key] = generateExampleData(propSchema as JSONSchemaType);
+          result[key] = generateExampleData(propSchema);
         }
         return result;
       }
@@ -173,7 +197,7 @@ const hasEmptyValues = (value: JSONValue, schema: JSONSchemaType): boolean => {
     if (schema.properties) {
       return Object.entries(schema.properties).every(([key, propSchema]) => {
         const val = obj[key];
-        const subSchema = propSchema as JSONSchemaType;
+        const subSchema = propSchema;
 
         if (val === undefined || val === null) {
           return true;
@@ -278,11 +302,11 @@ const JSONField = ({
   const handleSwitchToFormMode = () => {
     if (isJSONMode === true) {
       try {
-        const parsed = JSON.parse(rawJSONValue);
+        const parsed = parseJson(rawJSONValue);
         onChange(parsed);
         setIsJSONMode(false);
-      } catch (err) {
-        setJSONError(err instanceof Error ? err.message : 'Invalid JSON');
+      } catch (error) {
+        setJSONError(error instanceof Error ? error.message : 'Invalid JSON');
       }
     } else {
       let displayValue: JSONValue;
@@ -308,8 +332,8 @@ const JSONField = ({
       setRawJSONValue(formatted);
       debouncedUpdateParent(formatted);
       setJSONError(undefined);
-    } catch (err) {
-      setJSONError(err instanceof Error ? err.message : 'Invalid JSON');
+    } catch (error) {
+      setJSONError(error instanceof Error ? error.message : 'Invalid JSON');
     }
   };
 
@@ -328,11 +352,11 @@ const JSONField = ({
           label={jsonEditorLabel(propertyName, path)}
           onChange={(newValue) => {
             try {
-              const parsed = JSON.parse(newValue);
+              const parsed = parseJson(newValue);
               handleFieldChange(path, parsed);
               setJSONError(undefined);
-            } catch (err) {
-              setJSONError(err instanceof Error ? err.message : 'Invalid JSON');
+            } catch (error) {
+              setJSONError(error instanceof Error ? error.message : 'Invalid JSON');
             }
           }}
           value={JSON.stringify(currentValue ?? (propSchema.type === 'array' ? [] : {}), null, 2)}
@@ -373,7 +397,12 @@ const JSONField = ({
               }}
               onCreateOption={(newValue) => {
                 if (customFieldConfig.onCreateOption) {
-                  customFieldConfig.onCreateOption(newValue, path, handleFieldChange);
+                  customFieldConfig
+                    .onCreateOption(newValue, path, handleFieldChange)
+                    .then(() => setJSONError(undefined))
+                    .catch((error: unknown) => {
+                      setJSONError(error instanceof Error ? error.message : 'Could not create the option.');
+                    });
                 } else {
                   const newOption = { label: newValue, value: newValue };
                   customFieldConfig.options.push(newOption);
@@ -443,7 +472,7 @@ const JSONField = ({
           );
         }
 
-        let inputType = 'text';
+        let inputType: string;
         switch (propSchema.format) {
           case 'email':
             inputType = 'email';
@@ -546,11 +575,11 @@ const JSONField = ({
               label={jsonEditorLabel(propertyName, path)}
               onChange={(newValue) => {
                 try {
-                  const parsed = JSON.parse(newValue);
+                  const parsed = parseJson(newValue);
                   handleFieldChange(path, parsed);
                   setJSONError(undefined);
-                } catch (err) {
-                  setJSONError(err instanceof Error ? err.message : 'Invalid JSON');
+                } catch (error) {
+                  setJSONError(error instanceof Error ? error.message : 'Invalid JSON');
                 }
               }}
               value={JSON.stringify(currentValue ?? {}, null, 2)}
@@ -558,7 +587,7 @@ const JSONField = ({
           );
         }
 
-        const requiredFields = new Set(propSchema.required ?? []);
+        const requiredFields = new Set(propSchema.required);
 
         return (
           <div className="space-y-2 p-3">
@@ -570,11 +599,11 @@ const JSONField = ({
                     {requiredFields.has(key) && <span className="ml-1 text-destructive">*</span>}
                   </Text>
                   <Badge size="sm" variant="outline">
-                    {(subSchema as JSONSchemaType).type ?? 'unknown'}
+                    {subSchema.type ?? 'unknown'}
                   </Badge>
                 </div>
                 {renderFormFields(
-                  subSchema as JSONSchemaType,
+                  subSchema,
                   getJSONProperty(currentValue, key),
                   [...path, key],
                   depth + 1,
@@ -593,12 +622,12 @@ const JSONField = ({
         }
 
         if (arrayValue.length === 0) {
-          const defaultValue = getArrayItemDefault(propSchema.items as JSONSchemaType);
+          const defaultValue = getArrayItemDefault(propSchema.items);
           arrayValue = [defaultValue];
         }
 
         if (isSimpleObject(propSchema.items)) {
-          const requiredItemFields = new Set(propSchema.items.required ?? []);
+          const requiredItemFields = new Set(propSchema.items.required);
           return (
             <div className="space-y-4">
               {propSchema.description !== undefined && propSchema.description !== '' ? (
@@ -647,12 +676,12 @@ const JSONField = ({
                                     {key}
                                   </Text>
                                   <Badge size="sm" variant="outline">
-                                    {(subSchema as JSONSchemaType).type ?? 'unknown'}
+                                    {subSchema.type ?? 'unknown'}
                                   </Badge>
                                   {requiredItemFields.has(key) && <span className="ml-1 text-destructive">*</span>}
                                 </div>
                                 {renderFormFields(
-                                  subSchema as JSONSchemaType,
+                                  subSchema,
                                   getJSONProperty(item, key),
                                   [...path, index.toString(), key],
                                   depth + 1,
@@ -699,11 +728,11 @@ const JSONField = ({
             label={jsonEditorLabel(propertyName, path)}
             onChange={(newValue) => {
               try {
-                const parsed = JSON.parse(newValue);
+                const parsed = parseJson(newValue);
                 handleFieldChange(path, parsed);
                 setJSONError(undefined);
-              } catch (err) {
-                setJSONError(err instanceof Error ? err.message : 'Invalid JSON');
+              } catch (error) {
+                setJSONError(error instanceof Error ? error.message : 'Invalid JSON');
               }
             }}
             value={JSON.stringify(currentValue ?? [], null, 2)}
@@ -745,14 +774,14 @@ const JSONField = ({
       if (currentSchema.type === 'array' && currentSchema.items) {
         const arrayValue = Array.isArray(currentValue) ? currentValue : [];
         if (arrayValue.length === 0) {
-          const defaultValue = getArrayItemDefault(currentSchema.items as JSONSchemaType);
+          const defaultValue = getArrayItemDefault(currentSchema.items);
           const newValue = updateValueAtPath(value, path, [defaultValue]);
           onChange(newValue);
         }
       } else if (currentSchema.type === 'object' && currentSchema.properties) {
         for (const [key, subSchema] of Object.entries(currentSchema.properties)) {
           const subValue = getJSONProperty(currentValue, key);
-          initializeArrayDefaults(subSchema as JSONSchemaType, subValue, [...path, key]);
+          initializeArrayDefaults(subSchema, subValue, [...path, key]);
         }
       }
     };
@@ -770,15 +799,14 @@ const JSONField = ({
           const customFieldConfig = customFieldsByName.get(key);
 
           if (
-            customFieldConfig !== undefined &&
-            customFieldConfig.options.length === 1 &&
+            customFieldConfig?.options.length === 1 &&
             !(subValue !== undefined && subValue !== null && Boolean(subValue))
           ) {
             const autoSelectedValue = customFieldConfig.options[0]?.value ?? '';
             handleFieldChangeEffect([...path, key], autoSelectedValue);
           }
 
-          syncAutoSelections(subSchema as JSONSchemaType, subValue, [...path, key]);
+          syncAutoSelections(subSchema, subValue, [...path, key]);
         }
       }
     };
@@ -830,6 +858,11 @@ const JSONField = ({
         </Button>
       </div>
 
+      {isJSONMode === false && jsonError !== undefined ? (
+        <Text className="text-destructive" role="alert">
+          {jsonError}
+        </Text>
+      ) : null}
       {isJSONMode === true ? (
         <JSONEditor
           error={jsonError}
@@ -958,7 +991,7 @@ function updateValueAtPath(obj: JSONValue, path: string[], value: JSONValue): JS
     return updateArray(mutableObj, path, value);
   }
   if (typeof mutableObj === 'object' && mutableObj !== null) {
-    return updateObject(mutableObj as JSONObject, path, value);
+    return updateObject(mutableObj, path, value);
   }
   return mutableObj;
 }
@@ -981,18 +1014,14 @@ function updateArray(array: JSONValue[], path: string[], value: JSONValue): JSON
   }
 
   if (arrayIndex >= newArray.length) {
-    const extendedArray: JSONValue[] = new Array(arrayIndex).fill(null);
+    const extendedArray: JSONValue[] = Array.from({ length: arrayIndex }, () => null);
     for (let i = 0; i < newArray.length; i += 1) {
       extendedArray[i] = newArray[i];
     }
     newArray = extendedArray;
   }
 
-  if (restPath.length === 0) {
-    newArray[arrayIndex] = value;
-  } else {
-    newArray[arrayIndex] = updateValueAtPath(newArray[arrayIndex], restPath, value);
-  }
+  newArray[arrayIndex] = restPath.length === 0 ? value : updateValueAtPath(newArray[arrayIndex], restPath, value);
   return newArray;
 }
 

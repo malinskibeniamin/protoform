@@ -10,15 +10,15 @@ The registry was rebuilt and freshly installed, and all eight installed-consumer
 passed normally without snapshot updates. The original captures remain unchanged; they were not recaptured.
 Direct recovery, pagination, reload, and v7/v8 native edit/reset journeys also passed with no page errors.
 
-| Surface / state | Evidence | Automated coverage |
-| --- | --- | --- |
-| Two same-field errors and selection-control error descriptions | `before/after-desktop.png`, `before/after-mobile.png`, `before-after.gif` | Installed reliability consumer, desktop and mobile |
-| Selection absent from page one, then loaded on page two | `before/after-options.png` | Installed reliability consumer plus provider integration tests |
-| Native v7/v8 timestamp defaults | `native-before/after-desktop.png`, `native-before/after-mobile.png` | Native-hook browser tests and installed-consumer screenshots |
-| Native edit and reset retain only untouched precision | Installed `native-defaults-v7/v8.png` baselines under `scripts/__screenshots__` | Edit, inspect, reset, inspect, reload in both hooks and viewports |
-| Existing host-owned primitives, missing-input recovery | Existing host screenshots | Installed host consumer, desktop and mobile |
-| Docs and shared controls | Existing docs screenshots | Chromium, Firefox, WebKit E2E suite |
-| 50/200/500-field form | Real AutoForm fixture | Browser render, edit, submit and step budgets; no speedup claimed |
+| Surface / state                                                | Evidence                                                                        | Automated coverage                                                |
+| -------------------------------------------------------------- | ------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| Two same-field errors and selection-control error descriptions | `before/after-desktop.png`, `before/after-mobile.png`, `before-after.gif`       | Installed reliability consumer, desktop and mobile                |
+| Selection absent from page one, then loaded on page two        | `before/after-options.png`                                                      | Installed reliability consumer plus provider integration tests    |
+| Native v7/v8 timestamp defaults                                | `native-before/after-desktop.png`, `native-before/after-mobile.png`             | Native-hook browser tests and installed-consumer screenshots      |
+| Native edit and reset retain only untouched precision          | Installed `native-defaults-v7/v8.png` baselines under `scripts/__screenshots__` | Edit, inspect, reset, inspect, reload in both hooks and viewports |
+| Existing host-owned primitives, missing-input recovery         | Existing host screenshots                                                       | Installed host consumer, desktop and mobile                       |
+| Docs and shared controls                                       | Existing docs screenshots                                                       | Chromium, Firefox, WebKit E2E suite                               |
+| 50/200/500-field form                                          | Real AutoForm fixture                                                           | Browser render, edit, submit and step budgets; no speedup claimed |
 
 Reliability captures: 1280×800 / 390×844. Native captures: 1100×800 / 390×844.
 Native inputs display local time; synthetic source instant is `2026-10-03T12:00:37.123456789Z`.
@@ -34,8 +34,7 @@ rerun normally. Initial nanosecond defaults produced blank native inputs; regres
 cover millisecond-compatible display, lossless untouched output, explicit nanosecond edits,
 collection source matching, and no rounding into the next second.
 
-Local consumer installation used port 48742 instead of 48741 because another workspace owned
-48741. Only the server/origin port literals changed; assertions were unchanged.
+Local consumer installation used port 48742 instead of 48741 because another workspace owned 48741. Only the server/origin port literals changed; assertions were unchanged.
 The post-rebase fresh installation used the normal port 48741 with no script overrides.
 
 The full quality gate is **not green**: React Doctor flags the existing selection-clear effect

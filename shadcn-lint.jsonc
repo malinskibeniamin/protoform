@@ -2,10 +2,11 @@
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   // Explicit filename keeps React Doctor’s generated Oxlint config independent.
   // Biome owns general linting. This runner only enforces design-system rules.
+  "options": { "respectEslintDisableDirectives": false },
   "categories": {
     "correctness": "off"
   },
-  "jsPlugins": ["@shadcn/lint", "./scripts/oxlint-no-comments.mjs"],
+  "jsPlugins": ["@shadcn/lint", "./scripts/oxlint-no-comments.ts"],
   "rules": {
     "protoform/no-comments": "error",
     "typescript/ban-ts-comment": [

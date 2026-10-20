@@ -4,7 +4,7 @@ import { describe, expect } from '@rstest/core';
 const manifest = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')) as {
   scripts: Record<string, string>;
 };
-const runner = readFileSync(new URL('./check-api-linter.ts', import.meta.url), 'utf8');
+const runner = readFileSync(new URL('check-api-linter.ts', import.meta.url), 'utf8');
 const ciWorkflow = readFileSync(new URL('../.github/workflows/ci.yml', import.meta.url), 'utf8');
 
 describe('Google API Linter gate', () => {

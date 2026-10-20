@@ -5,12 +5,12 @@ import userEvent from '@testing-library/user-event';
 
 import { MaskableProfileSchema } from '@/examples/gen/protoform/examples/v1/forms_pb.js';
 
-import { AutoForm } from '..';
+import { AutoForm, type AutoFormSubmitContext } from '..';
 
 describe('AutoForm update masks', () => {
   test('passes only touched protobuf fields to onSubmit', async () => {
     const user = userEvent.setup();
-    const onSubmit = rs.fn();
+    const onSubmit = rs.fn<(message: unknown, form: unknown, context: AutoFormSubmitContext) => void>();
     render(
       <AutoForm
         defaultValues={create(MaskableProfileSchema, {
@@ -31,6 +31,6 @@ describe('AutoForm update masks', () => {
     await waitFor(() => {
       expect(onSubmit).toHaveBeenCalledOnce();
     });
-    expect(onSubmit.mock.calls[0]?.[2].updateMask.paths).toEqual(['display_name']);
+    expect(onSubmit.mock.calls[0]?.[2].updateMask?.paths).toEqual(['display_name']);
   });
 });

@@ -1,7 +1,7 @@
 import { describe, expect, rs } from '@rstest/core';
 import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { AutoForm } from '..';
+import { AutoForm, type AutoFormSubmitContext } from '..';
 import type { SchemaProvider } from '../core-types';
 import { createMockProvider } from './test-utils';
 
@@ -46,7 +46,7 @@ describe('AutoForm – onSubmit error handling', () => {
     const user = userEvent.setup();
     let failSave: ((error: Error) => void) | undefined;
     const onSubmit = rs
-      .fn()
+      .fn<(values: unknown, form: unknown, context: AutoFormSubmitContext) => Promise<void>>()
       .mockImplementationOnce(
         () =>
           new Promise<void>((_resolve, reject) => {
@@ -83,7 +83,7 @@ describe('AutoForm – onSubmit error handling', () => {
     const signals: AbortSignal[] = [];
     let finish: (() => void) | undefined;
     const onSubmit = rs.fn(
-      (_values, _form, context) =>
+      (_values: unknown, _form: unknown, context: AutoFormSubmitContext) =>
         new Promise<void>((resolve) => {
           signals.push(context.signal);
           finish = resolve;

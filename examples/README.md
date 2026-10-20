@@ -17,17 +17,17 @@ terminals.
 
 ## Structure
 
-| Path | Purpose |
-| --- | --- |
+| Path                                  | Purpose                                                                  |
+| ------------------------------------- | ------------------------------------------------------------------------ |
 | `proto/protoform/examples/v1/*.proto` | Focused learning contracts plus shared RPC and advanced-example messages |
-| `gen/` | Generated Protobuf-ES descriptors and message types |
-| `learning/` | Bare-bones, two-step, CEL/RE2, oneof, and AIP examples |
-| `basic/` | Focused descriptor-to-server error flow |
-| `complex/` | Four-step flow with a oneof, redacted review summary, and error routing |
-| `tanstack/` | Manual TanStack Form fields using the protobuf Standard Schema contract |
-| `form-libraries/` | Formik and Final Form live examples plus shared adapter fixtures |
-| `server/` | Node.js ConnectRPC server with the validation interceptor |
-| `apply-server-errors.ts` | `google.rpc.BadRequest` field-path mapping for AutoForm |
+| `gen/`                                | Generated Protobuf-ES descriptors and message types                      |
+| `learning/`                           | Bare-bones, two-step, CEL/RE2, oneof, and AIP examples                   |
+| `basic/`                              | Focused descriptor-to-server error flow                                  |
+| `complex/`                            | Four-step flow with a oneof, redacted review summary, and error routing  |
+| `tanstack/`                           | Manual TanStack Form fields using the protobuf Standard Schema contract  |
+| `form-libraries/`                     | Formik and Final Form live examples plus shared adapter fixtures         |
+| `server/`                             | Node.js ConnectRPC server with the validation interceptor                |
+| `apply-server-errors.ts`              | `google.rpc.BadRequest` field-path mapping for AutoForm                  |
 
 ## End-to-end contract
 

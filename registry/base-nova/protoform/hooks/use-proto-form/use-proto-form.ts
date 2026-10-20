@@ -316,7 +316,9 @@ function restoreDefaultSection<Desc extends DescMessage>(
   if (options?.defaultValue !== undefined) {
     return;
   }
-  form.setValue(name, getFormValue(form.formState.defaultValues, name), { shouldDirty: !options?.keepDirty });
+  form.setValue(name, getFormValue(form.formState.defaultValues, name) as Parameters<typeof form.setValue>[1], {
+    shouldDirty: !options?.keepDirty,
+  });
   if (!options?.keepError) {
     form.clearErrors(name);
   }
@@ -365,7 +367,7 @@ function clearModifiedPath(target: ModifiedFieldTree, path: string): void {
     return;
   }
   if (rest.length === 0) {
-    delete target[segment];
+    Reflect.deleteProperty(target, segment);
     return;
   }
   const child = target[segment];
@@ -374,7 +376,7 @@ function clearModifiedPath(target: ModifiedFieldTree, path: string): void {
   }
   clearModifiedPath(child, rest.join('.'));
   if (Object.keys(child).length === 0) {
-    delete target[segment];
+    Reflect.deleteProperty(target, segment);
   }
 }
 

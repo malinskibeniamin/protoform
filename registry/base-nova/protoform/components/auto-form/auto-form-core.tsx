@@ -350,7 +350,7 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
     const targetStepIndex = stepper.steps.findIndex((step) =>
       fieldsForStep(advancedFields, stepper.steps, step.id).some((field) => engine.getFieldInvalid(field.key))
     );
-    if (targetStepIndex < 0) {
+    if (targetStepIndex === -1) {
       return;
     }
     if (targetStepIndex !== currentStepIndex) {
@@ -525,7 +525,7 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
       const stepFieldKeys = new Set(fieldsForStep(advancedFields, stepper.steps, step.id).map((field) => field.key));
       return fieldErrorKeys.some((key) => stepFieldKeys.has(key));
     });
-    if (targetStepIndex >= 0 && targetStepIndex !== currentStepIndex) {
+    if (targetStepIndex !== -1 && targetStepIndex !== currentStepIndex) {
       setCurrentStepIndex(targetStepIndex);
     }
   }, [advancedFields, currentStepIndex, engine.errors, stepper]);
@@ -682,9 +682,9 @@ function AutoFormCoreInner<T extends Record<string, unknown>, TNativeForm, TCust
     resolvedSchema.isProto && resolvedSchema.protoDesc
       ? {
           ...providerDefaults,
-          ...(normalizeProtoInitialValues(resolvedSchema.protoDesc, defaultValues) ?? {}),
+          ...normalizeProtoInitialValues(resolvedSchema.protoDesc, defaultValues),
         }
-      : { ...providerDefaults, ...(defaultValues ?? {}) };
+      : { ...providerDefaults, ...defaultValues };
   let controlledValues = values;
   if (values && resolvedSchema.isProto && resolvedSchema.protoDesc) {
     controlledValues = normalizeProtoInitialValues(resolvedSchema.protoDesc, values);
