@@ -1,8 +1,8 @@
-import { describe, expect, test } from 'bun:test';
-
 import { type AutoFormConfigurationDiagnostic, inspectAutoFormConfiguration } from '../configuration';
 import { defaultRegistry } from '../fields';
 import { createMockProvider } from './test-utils';
+
+declare const { describe, expect, test }: typeof import('bun:test');
 
 function CustomRenderer(): null {
   return null;
@@ -148,7 +148,7 @@ describe('inspectAutoFormConfiguration', () => {
           ],
         },
       })
-    ).toContainEqual(
+    ).toContainEqual<unknown>(
       expect.objectContaining({
         code: 'invalid-step-configuration',
         path: '$',
@@ -156,7 +156,7 @@ describe('inspectAutoFormConfiguration', () => {
       })
     );
 
-    expect(inspectAutoFormConfiguration({ schema: brokenSchema })).toContainEqual(
+    expect(inspectAutoFormConfiguration({ schema: brokenSchema })).toContainEqual<unknown>(
       expect.objectContaining({
         cause: expect.any(TypeError) as unknown,
         code: 'unsupported-schema',
@@ -179,7 +179,7 @@ describe('inspectAutoFormConfiguration', () => {
           ],
         },
       })
-    ).toEqual(
+    ).toEqual<unknown>(
       expect.arrayContaining([
         expect.objectContaining({ code: 'invalid-step-configuration', path: '$' }),
         expect.objectContaining({ code: 'invalid-step-configuration', path: 'name' }),

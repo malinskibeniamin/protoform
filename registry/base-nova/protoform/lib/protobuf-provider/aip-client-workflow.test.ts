@@ -1,4 +1,3 @@
-import { describe, expect, mock, test } from 'bun:test';
 import {
   type Operation,
   OperationSchema,
@@ -20,6 +19,8 @@ import {
   runProtoOperation,
 } from './aip-client-workflow.js';
 
+declare const { describe, expect, jest, test }: typeof import('bun:test');
+
 function operation(name: string, done = false, result: Operation['result'] = { case: undefined }): Operation {
   return create(OperationSchema, { done, name, result });
 }
@@ -34,7 +35,7 @@ function method(idempotency: MethodOptions_IdempotencyLevel): DescMethod {
 describe('runProtoOperation', () => {
   test('polls named AIP-151 operations until success or a terminal google.rpc.Status failure', async () => {
     const updates: boolean[] = [];
-    const poll = mock(async () =>
+    const poll = jest.fn(async () =>
       operation('operations/123', true, {
         case: 'response',
         value: create(AnySchema),
@@ -62,12 +63,12 @@ describe('runProtoOperation', () => {
         poll: async () => operation('operations/unused'),
         start: async () => operation('operations/123', true, { case: 'error', value: status }),
       })
-    ).rejects.toEqual(expect.any(ProtoOperationError));
+    ).rejects.toEqual<unknown>(expect.any(ProtoOperationError));
   });
 
   test('cancels the remote operation when the caller aborts', async () => {
     const controller = new AbortController();
-    const cancel = mock(async () => undefined);
+    const cancel = jest.fn(async () => undefined);
 
     await expect(
       runProtoOperation({

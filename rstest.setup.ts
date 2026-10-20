@@ -1,6 +1,6 @@
-import './rstest.shared.setup';
 import { Storage } from 'happy-dom';
 import { fetch as nodeFetch } from 'undici';
+import { ResizeObserverMock } from './rstest.shared.setup';
 
 if (typeof window !== 'undefined') {
   Object.defineProperty(Element.prototype, 'animate', {
@@ -21,12 +21,6 @@ if (typeof window !== 'undefined') {
   });
 }
 
-class ResizeObserverMock implements ResizeObserver {
-  observe = (): void => undefined;
-  unobserve = (): void => undefined;
-  disconnect = (): void => undefined;
-}
-
 globalThis.ResizeObserver ??= ResizeObserverMock;
 globalThis.matchMedia = (query: string): MediaQueryList => ({
   addEventListener: () => undefined,
@@ -39,6 +33,6 @@ globalThis.matchMedia = (query: string): MediaQueryList => ({
   removeListener: () => undefined,
 });
 globalThis.scrollTo = () => undefined;
-if (typeof Element !== 'undefined') {
-  Element.prototype.scrollIntoView ??= () => undefined;
+if (typeof Element !== 'undefined' && typeof Reflect.get(Element.prototype, 'scrollIntoView') !== 'function') {
+  Element.prototype.scrollIntoView = () => undefined;
 }

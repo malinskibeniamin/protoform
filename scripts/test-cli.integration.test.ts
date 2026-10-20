@@ -36,7 +36,7 @@ test.each(failures)('propagates $name failures through the real runner CLI', asy
     );
     const result = spawnSync(
       process.execPath,
-      ['scripts/run-tests.mjs', 'node', '--config', config, '--reporters', 'dot'],
+      ['scripts/run-tests.ts', 'node', '--config', config, '--reporters', 'dot'],
       {
         encoding: 'utf8',
         timeout: 20_000,
@@ -50,7 +50,7 @@ test.each(failures)('propagates $name failures through the real runner CLI', asy
 });
 
 test('rejects unknown suites before running tests', () => {
-  const result = spawnSync(process.execPath, ['scripts/run-tests.mjs', 'not-a-suite'], { encoding: 'utf8' });
+  const result = spawnSync(process.execPath, ['scripts/run-tests.ts', 'not-a-suite'], { encoding: 'utf8' });
   expect(result.status).toBe(1);
   expect(result.stderr).toContain('Unknown test suite: not-a-suite');
 });
@@ -67,11 +67,11 @@ test('reports SIGINT as an interrupted run, not success or an assertion failure'
     config,
     `export default { root: ${JSON.stringify(directory)}, include: ['fixture.test.ts'], pool: { maxWorkers: 1 }, testEnvironment: 'node', testTimeout: 15000 };`
   );
-  const runner = spawn(process.execPath, ['scripts/run-tests.mjs', 'node', '--config', config], {
+  const runner = spawn(process.execPath, ['scripts/run-tests.ts', 'node', '--config', config], {
     stdio: 'pipe',
     env: { ...process.env, PROTOFORM_TEST_READY: ready },
   });
-  const exited = once(runner, 'exit');
+  const exited: Promise<unknown[]> = once(runner, 'exit');
   try {
     await expect.poll(() => existsSync(ready), { timeout: 5000 }).toBe(true);
     runner.kill('SIGINT');

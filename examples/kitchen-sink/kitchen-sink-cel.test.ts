@@ -1,4 +1,3 @@
-import { describe, expect, test } from 'bun:test';
 import { create } from '@bufbuild/protobuf';
 import { timestampFromDate } from '@bufbuild/protobuf/wkt';
 import { createValidator } from '@bufbuild/protovalidate';
@@ -8,6 +7,8 @@ import {
   type SubmitKitchenSinkFormRequest,
   SubmitKitchenSinkFormRequestSchema,
 } from '../gen/protoform/examples/v1/forms_pb.js';
+
+declare const { describe, expect, test }: typeof import('bun:test');
 
 function buildValidRequest() {
   return create(SubmitKitchenSinkFormRequestSchema, {
@@ -140,7 +141,7 @@ describe('kitchen-sink CEL contract', () => {
     if (result.kind !== 'invalid') {
       throw new Error(`Expected invalid, received ${result.kind}.`);
     }
-    expect(result.violations).toEqual(
+    expect(result.violations).toEqual<unknown>(
       expect.arrayContaining([
         expect.objectContaining({
           message: expectedMessage,

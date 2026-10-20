@@ -1,6 +1,6 @@
-import { describe, expect, test } from 'bun:test';
-
 import { safeStringify } from './serialization';
+
+declare const { describe, expect, test }: typeof import('bun:test');
 
 describe('safeStringify', () => {
   test('indents output, serializes bigint and Date values, and returns a placeholder for circular references', () => {

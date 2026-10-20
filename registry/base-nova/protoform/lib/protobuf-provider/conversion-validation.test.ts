@@ -1,4 +1,3 @@
-import { describe, expect, test } from 'bun:test';
 import { create, createFileRegistry } from '@bufbuild/protobuf';
 import {
   FileDescriptorProtoSchema,
@@ -6,6 +5,8 @@ import {
   FieldDescriptorProto_Type as Type,
 } from '@bufbuild/protobuf/wkt';
 import { createProtoFormSchema } from './form-schema.js';
+
+declare const { describe, expect, test }: typeof import('bun:test');
 
 const registry = createFileRegistry(
   create(FileDescriptorProtoSchema, {
@@ -91,6 +92,6 @@ describe('raw conversion validation', () => {
     { values: { quotas: [overflow] }, path: ['quotas', 0] },
   ])('rejects lossy input at $path before protobuf conversion', async ({ values, path }) => {
     const result = await schema['~standard'].validate(values);
-    expect(result.issues).toEqual(expect.arrayContaining([expect.objectContaining({ path })]));
+    expect(result.issues).toEqual<unknown>(expect.arrayContaining([expect.objectContaining({ path })]));
   });
 });

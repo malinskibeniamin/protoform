@@ -5,3 +5,9 @@ declare module '@rstest/core' {
     toHaveScreenshot: (name: string) => Promise<void>;
   }
 }
+
+declare global {
+  interface Window {
+    __protoformAccessibleDescription?: (element: Element) => string;
+  }
+}

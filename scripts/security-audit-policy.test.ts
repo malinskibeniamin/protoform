@@ -1,5 +1,6 @@
-import { expect, test } from 'bun:test';
 import { auditExceptions, classifyAudit } from './security-audit-policy';
+
+declare const { expect, test }: typeof import('bun:test');
 
 const advisory = {
   url: 'https://github.com/advisories/GHSA-vfj7-8cjw-p6xm',

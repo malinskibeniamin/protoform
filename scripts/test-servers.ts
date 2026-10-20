@@ -18,7 +18,7 @@ function liveGroupMembers(pid: number) {
     timeout: 2000,
   });
   return processes.split('\n').filter((line) => {
-    const [group, , , , state] = line.trim().split(processColumns);
+    const { 0: group, 4: state } = line.trim().split(processColumns);
     return Number(group) === pid && state !== undefined && !state.startsWith('Z');
   });
 }
@@ -49,16 +49,20 @@ async function signalGroup(pid: number, signal: NodeJS.Signals | 0, deadline = D
   }
 }
 
+async function waitForGroupExit(pid: number, deadline: number): Promise<void> {
+  if ((await signalGroup(pid, 0)) && Date.now() < deadline) {
+    await delay(50);
+    await waitForGroupExit(pid, deadline);
+  }
+}
+
 async function stop(child: ChildProcess) {
   if (!child.pid) {
     return;
   }
   const exited = child.exitCode === null && child.signalCode === null ? once(child, 'exit') : Promise.resolve();
   await signalGroup(child.pid, 'SIGTERM');
-  const deadline = Date.now() + 5000;
-  while ((await signalGroup(child.pid, 0)) && Date.now() < deadline) {
-    await delay(50);
-  }
+  await waitForGroupExit(child.pid, Date.now() + 5000);
   await signalGroup(child.pid, 'SIGKILL');
   await exited;
 }
@@ -77,7 +81,10 @@ async function waitForServer(child: ChildProcess, server: TestServer, signal?: A
   child.on('error', (error) => {
     failure = error;
   });
-  while (Date.now() < deadline) {
+  async function poll(): Promise<void> {
+    if (Date.now() >= deadline) {
+      throw new Error(`Test server ${server.url} did not become ready within ${server.timeout}ms`);
+    }
     signal?.throwIfAborted();
     if (failure || child.exitCode !== null || child.signalCode !== null) {
       throw new Error(`Test server ${server.url} exited before readiness (${child.exitCode ?? child.signalCode})`, {
@@ -89,8 +96,9 @@ async function waitForServer(child: ChildProcess, server: TestServer, signal?: A
       return;
     }
     await delay(100, undefined, signal ? { signal } : undefined);
+    await poll();
   }
-  throw new Error(`Test server ${server.url} did not become ready within ${server.timeout}ms`);
+  await poll();
 }
 
 export async function startTestServers(servers: TestServer[], signal?: AbortSignal) {
@@ -99,14 +107,15 @@ export async function startTestServers(servers: TestServer[], signal?: AbortSign
     await Promise.all(children.map(stop));
   };
   try {
-    for (const server of servers) {
+    await servers.reduce<Promise<void>>(async (previous, server) => {
+      await previous;
       if ((await isReady(server.url)) === true) {
         throw new Error(`Refusing to reuse an existing test server at ${server.url}`);
       }
       const child = spawn(server.command, server.args, { cwd: server.cwd, detached: true, stdio: 'inherit' });
       children.push(child);
       await waitForServer(child, server, signal);
-    }
+    }, Promise.resolve());
     return close;
   } catch (error) {
     await close();

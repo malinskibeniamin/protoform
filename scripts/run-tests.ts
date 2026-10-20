@@ -1,4 +1,4 @@
-import { spawn, spawnSync } from 'node:child_process';
+import { type ChildProcess, spawn, spawnSync } from 'node:child_process';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { startTestServers } from './test-servers.ts';
@@ -25,14 +25,15 @@ if (!config) {
   console.error(`Unknown test suite: ${suite ?? 'missing'}.`);
   process.exit(1);
 }
-const needsServers = ['e2e', 'host'].includes(suite) && !args.some((arg) => ['--help', '-h', 'list'].includes(arg));
+const needsServers =
+  (suite === 'e2e' || suite === 'host') && !args.some((arg) => ['--help', '-h', 'list'].includes(arg));
 if (args.includes('--update') || args.includes('-u')) {
   process.env['PROTOFORM_UPDATE_SCREENSHOTS'] = 'true';
 }
 const controller = new AbortController();
-let runner;
-let close = async () => undefined;
-const handleSignal = (signal) => {
+let runner: ChildProcess | undefined;
+let close: () => Promise<void> = async () => undefined;
+const handleSignal = (signal: NodeJS.Signals) => {
   controller.abort(new Error(`Test run interrupted by ${signal}`));
   runner?.kill(signal);
   process.exitCode = signal === 'SIGINT' ? 130 : 143;
@@ -80,10 +81,13 @@ try {
   controller.signal.throwIfAborted();
   const cli = join(dirname(fileURLToPath(import.meta.resolve('@rstest/core/package.json'))), 'bin/rstest.js');
   const customConfig = args.some((arg) => ['--config', '-c'].includes(arg) || arg.startsWith('--config='));
-  runner = spawn(process.execPath, [cli, ...(customConfig ? [] : ['--config', config]), ...args], { stdio: 'inherit' });
-  process.exitCode = await new Promise((resolve, reject) => {
-    runner.once('error', reject);
-    runner.once('exit', (code) => resolve(code ?? 1));
+  const child = spawn(process.execPath, [cli, ...(customConfig ? [] : ['--config', config]), ...args], {
+    stdio: 'inherit',
+  });
+  runner = child;
+  process.exitCode = await new Promise<number>((resolve, reject) => {
+    child.once('error', reject);
+    child.once('exit', (code) => resolve(code ?? 1));
   });
 } catch (error) {
   if (!controller.signal.aborted) {

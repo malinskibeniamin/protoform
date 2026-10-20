@@ -1,8 +1,9 @@
-import { describe, expect, test } from 'bun:test';
 import { expectTypeOf } from 'expect-type';
 
 import type { AutoFormFieldProps, ParsedField } from '../core-types';
 import { type FieldMatchContext, type FieldTypeDefinition, FieldTypeRegistry } from '../registry';
+
+declare const { describe, expect, test }: typeof import('bun:test');
 
 const MockComponent = (() => null) as unknown as React.ComponentType<AutoFormFieldProps>;
 

@@ -1,7 +1,8 @@
+import { expect } from '@rstest/playwright';
 import { z } from 'zod';
 import { demoCatalog } from '../examples/catalog/demo-catalog';
 import { demoHubs, demoRedirects } from '../examples/catalog/demo-docs';
-import { expect, test } from '../scripts/e2e-test';
+import { test } from '../scripts/e2e-test';
 
 const redirectSchema = z.array(z.object({ from: z.string(), status: z.literal(308), to: z.string() }));
 

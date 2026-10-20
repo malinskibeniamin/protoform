@@ -1,9 +1,10 @@
-import { describe, expect, test } from 'bun:test';
 import { create } from '@bufbuild/protobuf';
 import { FieldMaskSchema } from '@bufbuild/protobuf/wkt';
 
 import { BookSchema, LibraryService } from '../../../../../conformance/gen/protoform/conformance/v1/aip_pb.js';
 import { composeCreateRequest, composeDeleteRequest, composeUpdateRequest } from './mutation-request.js';
+
+declare const { describe, expect, test }: typeof import('bun:test');
 
 describe('descriptor-driven mutation request composers', () => {
   const book = create(BookSchema, {

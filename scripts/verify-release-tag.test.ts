@@ -1,6 +1,6 @@
-import { describe, expect, test } from 'bun:test';
-
 import { expectedReleaseTag, verifyReleaseTag } from './verify-release-tag';
+
+declare const { describe, expect, test }: typeof import('bun:test');
 
 describe('release tag verification', () => {
   test('requires the immutable tag to match the package version', () => {

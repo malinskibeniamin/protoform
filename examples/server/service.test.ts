@@ -1,4 +1,3 @@
-import { describe, expect, test } from 'bun:test';
 import { BadRequestSchema } from '@buf/googleapis_googleapis.bufbuild_es/google/rpc/error_details_pb.js';
 import { create } from '@bufbuild/protobuf';
 import { Code, ConnectError } from '@connectrpc/connect';
@@ -15,6 +14,8 @@ import {
 } from '../../conformance/gen/protoform/conformance/v1/aip_pb.js';
 import { SubmitBasicFormRequestSchema, SubmitComplexFormRequestSchema } from '../gen/protoform/examples/v1/forms_pb.js';
 import { createLibraryService, formExamplesService } from './service.js';
+
+declare const { describe, expect, test }: typeof import('bun:test');
 
 async function expectConnectCode(action: () => unknown, code: Code): Promise<void> {
   try {

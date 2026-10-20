@@ -1,4 +1,3 @@
-import { expect, test } from 'bun:test';
 import {
   IntegerRulesSchema,
   ValidationMatrixSchema,
@@ -6,6 +5,8 @@ import {
 import { getFieldHints } from '../core/index.js';
 import { AutoFormUiMetadataExampleSchema } from './gen/auto-form-example_pb.js';
 import { parseProtoSchema } from './provider.js';
+
+declare const { expect, test }: typeof import('bun:test');
 
 test('maps field and oneof annotations onto hints without empty hint objects', () => {
   const schema = parseProtoSchema(AutoFormUiMetadataExampleSchema);

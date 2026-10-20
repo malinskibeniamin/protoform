@@ -1,6 +1,6 @@
-import { describe, expect, test } from 'bun:test';
-
 import { humanizeServerFieldError, humanizeValidationError } from './humanize-validation-error';
+
+declare const { describe, expect, test }: typeof import('bun:test');
 
 describe('humanizeServerFieldError', () => {
   test('turns server descriptions into actionable copy', () => {

@@ -10,6 +10,6 @@ describe('browser production matrix', () => {
     expect(e2eConfig.name).toBe('chromium');
     expect(e2eConfig.pool).toEqual({ maxWorkers: 4 });
     expect(readFileSync('.github/workflows/quality.yml', 'utf8')).toMatch(browserInstall);
-    expect(readFileSync('scripts/run-tests.mjs', 'utf8')).toContain('http://127.0.0.1:55012/health');
+    expect(readFileSync('scripts/run-tests.ts', 'utf8')).toContain('http://127.0.0.1:55012/health');
   });
 });

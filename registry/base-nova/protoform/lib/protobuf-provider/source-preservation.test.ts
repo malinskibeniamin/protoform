@@ -1,4 +1,3 @@
-import { describe, expect, test } from 'bun:test';
 import { create, createFileRegistry, type DescMessage, fromBinary, toBinary } from '@bufbuild/protobuf';
 import {
   FieldDescriptorProto_Label,
@@ -10,6 +9,8 @@ import {
 
 import { preserveProtoMessageSource } from './hook-runtime.js';
 import { formValuesToProto, protoToFormValues } from './provider.js';
+
+declare const { describe, expect, test }: typeof import('bun:test');
 
 function createPreservationFixture(): {
   nested: DescMessage;

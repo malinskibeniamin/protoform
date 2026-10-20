@@ -1,9 +1,10 @@
 import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { expect } from '@rstest/playwright';
 import { PNG } from 'pngjs';
 import { matchScreenshot } from './e2e-screenshots';
-import { expect, test } from './e2e-test';
+import { test } from './e2e-test';
 
 test('retains trusted keyboard chords, drag, live DOM access and runtime viewport changes', async ({ page }) => {
   await page.setContent('<button id="drag" draggable="true">Drag</button><button id="drop">Drop</button>');
@@ -26,13 +27,15 @@ test('retains trusted keyboard chords, drag, live DOM access and runtime viewpor
     .getByRole('button', { name: 'Drag', exact: true })
     .dragTo(page.getByRole('button', { name: 'Drop', exact: true }));
   await expect(page.locator('body')).toHaveAttribute('data-dropped', 'true');
-  for (const width of [390, 1440]) {
+  async function verifyViewport(width: number) {
     await page.setViewportSize({ width, height: 844 });
     expect(await page.evaluate(() => innerWidth)).toBe(width);
     expect(
       await page.getByRole('button').evaluateAll((elements) => elements.map((element) => element.textContent))
     ).toEqual(['Drag', 'Drop']);
   }
+  await verifyViewport(390);
+  await verifyViewport(1440);
 });
 
 test('computes all accessible descriptions using the actual browser DOM', async ({ page }) => {

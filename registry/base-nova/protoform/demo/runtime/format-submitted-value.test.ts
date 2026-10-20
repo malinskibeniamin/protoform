@@ -1,6 +1,6 @@
-import { describe, expect, test } from 'bun:test';
-
 import { formatSubmittedValue } from './format-submitted-value.js';
+
+declare const { describe, expect, test }: typeof import('bun:test');
 
 describe('formatSubmittedValue', () => {
   test('formats protobuf JavaScript values as readable JSON', () => {

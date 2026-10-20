@@ -1,11 +1,11 @@
-import { describe, expect, test } from 'bun:test';
-
 import {
   AutoFormExampleSchema,
   AutoFormUiMetadataExampleSchema,
 } from '../../lib/protobuf-provider/gen/auto-form-example_pb.js';
 
 import { protoPathToFormPath } from './proto-error-path.js';
+
+declare const { describe, expect, test }: typeof import('bun:test');
 
 describe('protoPathToFormPath', () => {
   test('maps scalar and nested message paths to camelCase and returns null for empty or unknown paths', () => {

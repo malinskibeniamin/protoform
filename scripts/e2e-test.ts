@@ -7,8 +7,6 @@ import type { Locator, Page } from 'playwright';
 import { docsContextOptions } from './e2e-context';
 import { matchScreenshot, screenshotPlatform } from './e2e-screenshots';
 
-export { afterAll, afterEach, beforeAll, beforeEach, describe, expect } from '@rstest/playwright';
-export type { Locator, Page } from 'playwright';
 export const test = base.extend({ browserName: 'chromium' });
 
 export function withLocale(locale: string) {
@@ -53,24 +51,16 @@ expect.extend({
     await target.page().addScriptTag({ content: bundle });
     const description = () =>
       target.evaluate((element) => {
-        const compute = Reflect.get(window, '__protoformAccessibleDescription');
+        const compute = window.__protoformAccessibleDescription;
         if (typeof compute !== 'function') {
-          throw new Error('Accessible description helper was not loaded');
+          throw new TypeError('Accessible description helper was not loaded');
         }
-        return String(compute(element));
+        const value: unknown = compute(element);
+        return String(value);
       });
     const assertion = expect.poll(description, { timeout: rstest.getConfig().expect.poll.timeout });
-    if (this.isNot) {
-      if (typeof expected === 'string') {
-        await assertion.not.toBe(expected);
-      } else {
-        await assertion.not.toMatch(expected);
-      }
-    } else if (typeof expected === 'string') {
-      await assertion.toBe(expected);
-    } else {
-      await assertion.toMatch(expected);
-    }
+    const selected = this.isNot ? assertion.not : assertion;
+    await (typeof expected === 'string' ? selected.toBe(expected) : selected.toMatch(expected));
     return { pass: !this.isNot, message: () => `Accessible description does not match ${String(expected)}` };
   },
 });

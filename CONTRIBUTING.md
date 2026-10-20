@@ -42,10 +42,10 @@ bun run quality:gate
   `bun run registry:consumer-smoke` to install the real source-copy fixtures.
 - `bun run test:e2e:canary`: real-browser runner compatibility contracts.
 
-Use `scripts/run-tests.mjs` through these scripts for app E2E: it builds the accessibility
+Use `scripts/run-tests.ts` through these scripts for app E2E: it builds the accessibility
 helper, starts and waits for the owned application servers, invokes the actual Rstest CLI,
 and closes servers on success, failure, or interruption. It refuses to reuse an unrelated
-listener. Normal `node scripts/run-tests.mjs <suite> <file> --reporters dot` filters and flags
+listener. Normal `node scripts/run-tests.ts <suite> <file> --reporters dot` filters and flags
 are forwarded unchanged; `test:e2e:ui` uses Rstest watch mode, not the removed Playwright Test UI.
 When another workspace owns the consumer ports, set `PROTOFORM_HOST_PORT` and
 `PROTOFORM_RELIABILITY_PORT` to free local ports; the launcher and tests use the same values.
@@ -59,7 +59,7 @@ Comparisons
 retain Playwright's color threshold `0.2`, antialias exclusion, zero differing pixels,
 CSS pixel scale, disabled animations and hidden carets. Captures must stabilize at exact
 pixel equality. Missing references fail, including in CI. `bun run test:e2e:update` and
-`node scripts/run-tests.mjs host --update` explicitly replace only the selected captures;
+`node scripts/run-tests.ts host --update` explicitly replace only the selected captures;
 review pixels before committing. Failure actual/diff PNGs and traces live under `.rstest/`.
 The adapter uses public Playwright APIs and `pixelmatch`/`pngjs`, not Playwright Test internals.
 Accessible descriptions use `dom-accessibility-api` in the actual browser document.

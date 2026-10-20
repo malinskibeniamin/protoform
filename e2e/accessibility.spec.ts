@@ -1,5 +1,7 @@
 import { AxeBuilder } from '@axe-core/playwright';
-import { expect, type Page, test } from '../scripts/e2e-test';
+import { expect } from '@rstest/playwright';
+import type { Page } from 'playwright';
+import { test } from '../scripts/e2e-test';
 
 async function expectNoSeriousViolations(page: Page) {
   const results = await new AxeBuilder({ page }).exclude('[data-base-ui-focus-guard]').analyze();

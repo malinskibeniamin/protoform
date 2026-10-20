@@ -1,5 +1,6 @@
-import { expect, test } from 'bun:test';
 import { auditLintExceptions, newLintExceptions } from './lint-exceptions';
+
+declare const { expect, test }: typeof import('bun:test');
 
 test('rejects a stale file selector in a TypeScript config', () => {
   const source = `export default defineConfig({ ignore: { overrides: [

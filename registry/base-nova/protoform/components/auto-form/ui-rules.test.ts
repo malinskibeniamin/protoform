@@ -1,6 +1,6 @@
-import { describe, expect, test } from 'bun:test';
-
 import { evaluateUiRules } from './ui-rules';
+
+declare const { describe, expect, test }: typeof import('bun:test');
 
 const readyRule = {
   expression: "form.enabled && this == 'ready'",

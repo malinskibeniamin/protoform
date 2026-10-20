@@ -1,5 +1,6 @@
+import { expect } from '@rstest/playwright';
 import { reliabilityBaseURL } from './e2e-context';
-import { expect, test } from './e2e-test';
+import { test } from './e2e-test';
 
 test('installed custom options show creation failures and recover after retry', async ({ page }) => {
   const errors: string[] = [];

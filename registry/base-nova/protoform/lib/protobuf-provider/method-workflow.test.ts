@@ -1,4 +1,3 @@
-import { describe, expect, test } from 'bun:test';
 import { http } from '@buf/googleapis_googleapis.bufbuild_es/google/api/annotations_pb.js';
 import { HttpRuleSchema } from '@buf/googleapis_googleapis.bufbuild_es/google/api/http_pb.js';
 import {
@@ -17,6 +16,8 @@ import {
 } from '../../../../../conformance/gen/protoform/conformance/v1/aip_pb.js';
 import { FormExamplesService } from '../../../../../examples/gen/protoform/examples/v1/forms_pb.js';
 import { getProtoMethodWorkflow } from './method-workflow.js';
+
+declare const { describe, expect, test }: typeof import('bun:test');
 
 interface MethodFixture {
   body?: string;

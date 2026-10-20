@@ -748,7 +748,6 @@
     }
   },
   "overrides": [
-    { "includes": ["scripts/e2e-test.ts"], "linter": { "rules": { "performance": { "noBarrelFile": "off" } } } },
     {
       // The highlighter escapes checked-in source files and returns trusted build-time markup,
       // never user-supplied HTML. The directive is required to render syntax-highlighted code.
@@ -832,7 +831,7 @@
     },
     {
       // ResizeObserver requires instance methods even though this no-op DOM mock has no state.
-      "includes": ["rstest.setup.ts"],
+      "includes": ["rstest.shared.setup.ts"],
       "linter": {
         "rules": {
           "nursery": {
@@ -1055,7 +1054,8 @@
       }
     },
     {
-      // Rstest supplies globals to integration tests; Bun units and fixture-aware E2E specs import their own test API.
+      // Rstest supplies its test function globally; Playwright specs remain excluded so their
+      // fixture-aware test API must always be imported from @playwright/test.
       "includes": ["**/*.test.ts", "**/*.test.tsx"],
       "javascript": {
         "globals": ["test"]
@@ -1168,13 +1168,7 @@
     {
       // These workflows are intentionally sequential because each iteration mutates shared
       // browser or request state before the next one starts.
-      "includes": [
-        "e2e/docs-screenshots.spec.ts",
-        "registry/**/lib/protobuf-provider/aip-client-workflow.ts",
-        "scripts/e2e-screenshots.ts",
-        "scripts/e2e-compatibility.spec.ts",
-        "scripts/test-servers.ts"
-      ],
+      "includes": ["e2e/docs-screenshots.spec.ts", "registry/**/lib/protobuf-provider/aip-client-workflow.ts"],
       "linter": {
         "rules": {
           "performance": {
@@ -1325,47 +1319,8 @@
       }
     },
     {
-      // The consumer smoke test and unit tests run only in Bun, never in browser bundles.
-      "includes": [
-        "scripts/consumer-fixture-smoke.ts",
-        "examples/kitchen-sink/kitchen-sink-cel.test.ts",
-        "examples/learning/learning-contracts.test.ts",
-        "examples/server/service.test.ts",
-        "registry/base-nova/protoform/components/auto-form/__tests__/audit.test.ts",
-        "registry/base-nova/protoform/components/auto-form/__tests__/configuration.test.ts",
-        "registry/base-nova/protoform/components/auto-form/__tests__/core-types.test.ts",
-        "registry/base-nova/protoform/components/auto-form/__tests__/registry.test.ts",
-        "registry/base-nova/protoform/components/auto-form/__tests__/schema.test.ts",
-        "registry/base-nova/protoform/components/auto-form/__tests__/shadcn-controls.test.ts",
-        "registry/base-nova/protoform/components/auto-form/__tests__/slider-matcher.test.ts",
-        "registry/base-nova/protoform/components/auto-form/ui-rules.test.ts",
-        "registry/base-nova/protoform/components/auto-form/utils/serialization.test.ts",
-        "registry/base-nova/protoform/demo/runtime/format-submitted-value.test.ts",
-        "registry/base-nova/protoform/hooks/use-proto-form/proto-error-path.test.ts",
-        "registry/base-nova/protoform/lib/core/form-library-adapters.test.ts",
-        "registry/base-nova/protoform/lib/core/standard-schema.test.ts",
-        "registry/base-nova/protoform/lib/protobuf-provider/aip-client-workflow.test.ts",
-        "registry/base-nova/protoform/lib/protobuf-provider/conversion-validation.test.ts",
-        "registry/base-nova/protoform/lib/protobuf-provider/empty-repeated-strings.test.ts",
-        "registry/base-nova/protoform/lib/protobuf-provider/field-mask.test.ts",
-        "registry/base-nova/protoform/lib/protobuf-provider/form-schema.test.ts",
-        "registry/base-nova/protoform/lib/protobuf-provider/form-values.test.ts",
-        "registry/base-nova/protoform/lib/protobuf-provider/humanize-validation-error.test.ts",
-        "registry/base-nova/protoform/lib/protobuf-provider/index.test.ts",
-        "registry/base-nova/protoform/lib/protobuf-provider/method-workflow.test.ts",
-        "registry/base-nova/protoform/lib/protobuf-provider/mutation-request.test.ts",
-        "registry/base-nova/protoform/lib/protobuf-provider/render-hints.test.ts",
-        "registry/base-nova/protoform/lib/protobuf-provider/source-preservation.test.ts",
-        "registry/base-nova/protoform/lib/protobuf-provider/ui-options.test.ts",
-        "registry/base-nova/protoform/scripts/protoc-gen-protoform/plugin.test.ts",
-        "scripts/check-docs-types.test.ts",
-        "scripts/check-no-suppressions.test.ts",
-        "scripts/lint-exceptions.test.ts",
-        "scripts/protoform.test.ts",
-        "scripts/security-audit-policy.test.ts",
-        "scripts/verify-release-tag.test.ts",
-        "scripts/e2e-screenshots.test.ts"
-      ],
+      // The consumer smoke test drives the Bun shell and glob APIs directly.
+      "includes": ["scripts/consumer-fixture-smoke.ts"],
       "linter": {
         "rules": {
           "nursery": {

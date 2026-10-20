@@ -5,21 +5,37 @@ for integrations and real Chromium journeys. This record distinguishes those
 boundaries and preserves the existing application and installed-consumer coverage.
 Firefox and WebKit were intentionally removed from the automated matrix.
 
+## Rebase integration
+
+Current target: `af64c55` (strict UI tooling); the original migration inventory,
+benchmark workload and reference provenance below remain frozen at `a5333a2`.
+The launcher follows main's TypeScript rename (`scripts/run-tests.ts`). Bun units
+use documented native globals with file-local Bun type declarations; they need no
+new runtime-import exemptions. Sequential polling remains bounded and sequential
+without await-in-loop exemptions. Existing lint rules and exception scopes are unchanged.
+Historical benchmark samples predate this rebase and are not a performance claim for
+the upgraded compiler, linter or Blume version.
+
+Main's post-merge CI failed its dependency audit on Hono `4.13.9`
+([GHSA-5r4p-p66f-jhc7](https://github.com/advisories/GHSA-5r4p-p66f-jhc7)).
+`bun update hono` moved only that transitive lock entry to `4.13.13`, within existing
+consumer ranges. No dependency or audit exception was added; the audit passes.
+
 ## Application and test inventory
 
 Baseline: `a5333a28ec8b31e1eeb324539f7d95584ba21c04`.
 There is one root package, not a workspace of independently managed apps.
 
-| Surface | Baseline | Migrated boundary |
-| --- | --- | --- |
-| Registry/library, domain service and pure tooling policies | Rstest Node units mixed with process/network tests | Bun: 36 existing files, 125 cases; three additional PNG comparator/platform-policy cases |
-| Repository tools, registry artifacts and Connect HTTP server | Mixed into the same 56-file, 246-case unit command | Rstest Node: 20 existing process/network/artifact files renamed without removing cases |
-| Docs components, example forms, registry controls and hooks | Rstest Happy DOM: 73 files, 260 cases | Rstest Happy DOM; also recovers the previously excluded hook-rendering file |
-| Schema/CEL/Protobuf/form-adapter conformance | Rstest Happy DOM: 22 files, 175 cases | Same separate conformance gate, including its existing integration overlap |
-| Native component interaction and large-form budgets | Rstest Chromium: 5 files, 10 cases | Same cases plus native media-query/scroll regression coverage |
-| Built Blume docs/demo application and running Connect example server | Playwright Test: 229 cases per browser engine | Rstest Playwright integration: all 229 Chromium cases |
-| Two installed-consumer applications | Playwright Test: 8 desktop/mobile cases | Same real Vite apps, viewports, locale, timezone, screenshots and cases through Rstest |
-| Additional source-copy consumer fixtures | Registry build/install/type checks | Same consumer smoke entrypoint and type checks |
+| Surface                                                              | Baseline                                           | Migrated boundary                                                                        |
+| -------------------------------------------------------------------- | -------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Registry/library, domain service and pure tooling policies           | Rstest Node units mixed with process/network tests | Bun: 36 existing files, 125 cases; three additional PNG comparator/platform-policy cases |
+| Repository tools, registry artifacts and Connect HTTP server         | Mixed into the same 56-file, 246-case unit command | Rstest Node: 20 existing process/network/artifact files renamed without removing cases   |
+| Docs components, example forms, registry controls and hooks          | Rstest Happy DOM: 73 files, 260 cases              | Rstest Happy DOM; also recovers the previously excluded hook-rendering file              |
+| Schema/CEL/Protobuf/form-adapter conformance                         | Rstest Happy DOM: 22 files, 175 cases              | Same separate conformance gate, including its existing integration overlap               |
+| Native component interaction and large-form budgets                  | Rstest Chromium: 5 files, 10 cases                 | Same cases plus native media-query/scroll regression coverage                            |
+| Built Blume docs/demo application and running Connect example server | Playwright Test: 229 cases per browser engine      | Rstest Playwright integration: all 229 Chromium cases                                    |
+| Two installed-consumer applications                                  | Playwright Test: 8 desktop/mobile cases            | Same real Vite apps, viewports, locale, timezone, screenshots and cases through Rstest   |
+| Additional source-copy consumer fixtures                             | Registry build/install/type checks                 | Same consumer smoke entrypoint and type checks                                           |
 
 Classification follows exercised behavior. Pure `.ts` files use Bun; subprocess,
 filesystem-artifact and network contracts use Node integration. The hook-rendering
@@ -47,7 +63,7 @@ rstest.canary.config.ts     -> native E2E compatibility regression cases
 - Shared Testing Library matchers and AutoForm test utilities remain. Simulated media,
   scrolling, storage and resize shims stay confined to Happy DOM, not native browsers.
   Happy DOM disables implicit CSS/iframe loading while retaining explicit real HTTP fetch.
-- `scripts/run-tests.mjs` runs the actual Rstest CLI, forwards failures/signals, and owns
+- `scripts/run-tests.ts` runs the actual Rstest CLI, forwards failures/signals, and owns
   application readiness and bounded process-group cleanup. It rejects healthy existing
   listeners. Consumer ports can be overridden without reusing another workspace's app.
 - Native keyboard chords, trusted drag events, runtime viewport changes, and live DOM
@@ -113,10 +129,10 @@ No selected case failed, skipped, or retried. Reporter-specific parameter displa
 and test-directory prefixes were normalized before comparing case identities.
 [Measured samples and source hashes](test-runner-benchmarks.json) retain the evidence.
 
-| Cohort | Before median (range), seconds | After median (range), seconds | Observed change |
-| --- | --- | --- | --- |
-| Six provider files, 26 pure unit cases, two workers | 1.229 (0.901–1.597) | 0.146 (0.113–0.216) | 1.083 seconds less, 88.1% reduction |
-| Two real-app search/keyboard journeys, one worker | 1.951 (1.708–2.151) | 2.289 (1.942–6.363) | 0.337 seconds more, 17.3% increase |
+| Cohort                                              | Before median (range), seconds | After median (range), seconds | Observed change                     |
+| --------------------------------------------------- | ------------------------------ | ----------------------------- | ----------------------------------- |
+| Six provider files, 26 pure unit cases, two workers | 1.229 (0.901–1.597)            | 0.146 (0.113–0.216)           | 1.083 seconds less, 88.1% reduction |
+| Two real-app search/keyboard journeys, one worker   | 1.951 (1.708–2.151)            | 2.289 (1.942–6.363)           | 0.337 seconds more, 17.3% increase  |
 
 The unit result exceeds the predeclared 10% worthwhile reduction. The three-file,
 46-case DOM cohort showed no meaningful change within its observed variability.

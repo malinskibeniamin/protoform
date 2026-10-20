@@ -1,6 +1,7 @@
 import { mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
-import { beforeAll, expect, test } from '../scripts/e2e-test';
+import { beforeAll, expect } from '@rstest/playwright';
+import { test } from '../scripts/e2e-test';
 
 const screenshotDir = 'artifacts/screenshots';
 const productionComplexChunkPattern = /\/_astro\/complex-form\.[^/]+\.js$/u;

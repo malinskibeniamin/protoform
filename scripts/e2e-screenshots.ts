@@ -112,10 +112,13 @@ export async function matchScreenshot(
   let actual: Buffer | undefined;
   let failure = 'Screenshot did not become pixel-stable';
   let diff: Buffer | undefined;
-  while (Date.now() < deadline) {
+  async function poll(): Promise<void> {
+    if (Date.now() >= deadline) {
+      return reportMismatch(referencePath, actual, diff, failure);
+    }
     const next = await capture(target, deadline, actual !== undefined);
     if (next === undefined) {
-      break;
+      return reportMismatch(referencePath, actual, diff, failure);
     }
     actual = next;
     if (previous?.equals(actual)) {
@@ -135,6 +138,7 @@ export async function matchScreenshot(
     }
     previous = actual;
     await delay(50);
+    return poll();
   }
-  await reportMismatch(referencePath, actual, diff, failure);
+  await poll();
 }

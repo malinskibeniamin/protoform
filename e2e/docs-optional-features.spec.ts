@@ -1,5 +1,6 @@
 import { execFileSync } from 'node:child_process';
-import { describe, expect, test, withLocale } from '../scripts/e2e-test';
+import { describe, expect } from '@rstest/playwright';
+import { test, withLocale } from '../scripts/e2e-test';
 
 test("links to each page's actual GitHub source and shows its update date", async ({ page }) => {
   await page.goto('/docs/getting-started');

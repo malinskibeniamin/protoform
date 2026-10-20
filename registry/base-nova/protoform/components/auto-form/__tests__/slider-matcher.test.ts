@@ -1,8 +1,8 @@
-import { describe, expect, test } from 'bun:test';
-
 import type { ParsedField } from '../core-types';
 import { sliderFieldDefinition } from '../fields/slider';
 import { buildFieldMatchContext } from '../registry';
+
+declare const { describe, expect, test }: typeof import('bun:test');
 
 function makeField(partial: Partial<ParsedField> & { fieldConfig?: ParsedField['fieldConfig'] } = {}): ParsedField {
   return {

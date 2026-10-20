@@ -1,6 +1,6 @@
-import { expect, test } from 'bun:test';
-
 import { isStandardSchema } from './standard-schema.js';
+
+declare const { expect, test }: typeof import('bun:test');
 
 function specConformingSchema() {
   return {

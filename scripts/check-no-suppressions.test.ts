@@ -1,5 +1,6 @@
-import { describe, expect, test } from 'bun:test';
 import { findForbiddenDirectives } from './check-no-suppressions';
+
+declare const { describe, expect, test }: typeof import('bun:test');
 
 const forbiddenDirectiveCases = [
   ['biome', 'ignore'].join('-'),
