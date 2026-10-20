@@ -8,7 +8,7 @@ export default defineConfig({
   extends: definePlaywrightConfig({
     contextOptions: docsContextOptions,
     requestOptions: { baseURL: 'http://127.0.0.1:55013' },
-    trace: 'on-first-retry',
+    trace: 'retain-on-failure',
   }),
   env: { PROTOFORM_SCREENSHOT_PROJECT: 'chromium' },
   expect: { poll: { timeout: 10_000 } },

@@ -14,7 +14,7 @@ export function withLocale(locale: string) {
     playwright: {
       contextOptions: { ...docsContextOptions, locale },
       requestOptions: { baseURL: 'http://127.0.0.1:55013' },
-      trace: 'on-first-retry',
+      trace: 'retain-on-failure',
     },
   });
 }
