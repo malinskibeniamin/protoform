@@ -89,7 +89,7 @@ test('accepts a vanished process group reported as EPERM without hiding live per
     return kill(target, action);
   });
   try {
-    await expect(close()).rejects.toThrow('kill EPERM');
+    await expect(close()).rejects.toThrow(`kill EPERM; live test-server group ${pid}:`);
     expect(await (await fetch(url)).text()).toBe(String(pid));
     signal.mockImplementation((target, action) => {
       try {

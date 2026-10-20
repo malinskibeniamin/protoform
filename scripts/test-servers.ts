@@ -22,14 +22,18 @@ function signalGroup(pid: number, signal: NodeJS.Signals | 0) {
         return false;
       }
       if (error.code === 'EPERM') {
-        const processes = execFileSync('ps', ['-axo', 'pgid=,stat='], { encoding: 'utf8', timeout: 2000 });
-        const live = processes.split('\n').some((line) => {
-          const [group, state] = line.trim().split(processColumns);
+        const processes = execFileSync('ps', ['-axo', 'pgid=,pid=,ppid=,uid=,stat=,comm='], {
+          encoding: 'utf8',
+          timeout: 2000,
+        });
+        const live = processes.split('\n').filter((line) => {
+          const [group, , , , state] = line.trim().split(processColumns);
           return Number(group) === pid && state !== undefined && !state.startsWith('Z');
         });
-        if (!live) {
+        if (live.length === 0) {
           return false;
         }
+        throw new Error(`${error.message}; live test-server group ${pid}: ${live.join('; ')}`, { cause: error });
       }
     }
     throw error;
