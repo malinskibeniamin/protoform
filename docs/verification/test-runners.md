@@ -63,7 +63,8 @@ rstest.canary.config.ts     -> native E2E compatibility regression cases
 ## CI, caches and entrypoints
 
 `ci:gate` retains the registry, security, conformance, types, lint and browser gates,
-and adds compatibility canaries. The PR docs job runs the complete Chromium E2E
+and adds compatibility canaries. The required PR verify job runs `quality:gate`,
+so its protected check includes real application E2E as well. The PR docs job runs the complete Chromium E2E
 suite rather than the previous subset. Scheduled quality and release gates retain
 all other steps. No CI job is disabled.
 
@@ -160,3 +161,19 @@ CLI with only Chromium, one worker, no retries, no `webServer`, and JSON reporti
 Candidate uses the actual Rstest CLI with the E2E config, one worker, JSON reporting,
 and the equivalent name filter. Override both context base URLs to the same static
 preview on `55535`; preserve the existing Desktop Chrome descriptor.
+
+## Linux reference provenance
+
+The expanded Linux docs job exposed five missing reference images, not changed pixels.
+The old Linux docs subset never exercised those screenshot assertions. Original
+Playwright Test 1.64.1 on frozen baseline `a5333a2` generated only those missing
+Chromium/Linux references in [the capture run](https://github.com/malinskibeniamin/protoform/actions/runs/39436847738).
+Rstest then passed all 229 app cases normally against those exact original pixels.
+The five PNGs were copied byte-for-byte from artifact `12271926671`; its ZIP digest
+is `sha256:2a1f07eb60cc315180b734f93e98bdb9d773e710ce2ab39726f277e98cce6167`.
+Existing Darwin and installed-consumer references remain unchanged. Temporary capture
+steps are removed; normal CI cannot create or update references implicitly.
+
+The required Linux verify job exercises the complete quality-gate CLI. The separate
+macOS exhaustive workflow remains enabled. A manual macOS attempt was not allocated
+a hosted runner because of reported arm64 capacity constraints; it ran no test code.
