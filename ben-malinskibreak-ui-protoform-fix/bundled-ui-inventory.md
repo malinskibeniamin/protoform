@@ -1,19 +1,23 @@
 # Bundled UI evidence
 
-Baseline f5bc6bc; rebased UI f9fc2a8 on main af64c55. Hono-only lockfile follow-up does not change these UI sources.
+Baseline f5bc6bc; final candidate ebf02da9290ac031e80771c6cb2c72c54784ceb9 on main af64c5586288b2ae64f41f2004d43db936657b08. The Code Block/Trace screenshots were captured after rebase; subsequent dependency, notice-test and structured-label typography repairs do not change the showcase sources.
 
 | Surface | States | Proof |
 |---|---|---|
 | New bundled Code Block | plain/numbered, blank line, wrapping, diff/highlighted line, 320px/1000px, light/dark | 24 PNG baselines, three browser engines |
 | Copy | exact source success, denial, retry, no false success, filename retained on mobile error | six error PNGs, component tests, E2E and direct dogfood |
 | Trace | pending, error, keyboard expand/collapse, output composed outside trigger | desktop/mobile open/closed PNGs; three-engine E2E and dogfood |
-| Existing JSON/form surfaces | all original seven fixes + CodeMirror squiggle/diagnostics, empty draft, zero, false/null, reset/mode guard, mobile/contrast | 48 unchanged visual cases pass after rebase; 30 focused native E2E pass |
-| Custom-option failure | failed creation persists across local clear/value echo, successful retry clears it | installed consumer assertion; reviewed desktop/mobile label-font snapshot updates |
+| Existing JSON/form surfaces | all original seven fixes + CodeMirror squiggle/diagnostics, empty draft, zero, false/null, reset/mode guard, mobile/contrast | 48 visual cases pass normally on final candidate; 45 PNGs unchanged, three whole-form PNGs restore original bold structured labels; 30 focused native E2E pass |
+| Custom-option failure | failed creation persists across local clear/value echo, successful retry clears it | installed consumer assertion; original desktop/mobile baselines pass without updates |
 
 New-view comparison is explicit: old head had no bundled showcase. Before footage navigates from existing Registry install docs to the proposed /examples/ui path and records a real 404. New footage operates the final /registry/base-nova/protoform/demo/ui/code-and-trace showcase (moved to the repository's existing default-export demo contract during rebase). It is not a matched pre-existing feature flow.
 
-All 30 new PNG expectations were inspected and passed normally without update flags (18 tests, 3 engines). The two committed custom-option expectations only change the text-label typography to the existing Label component; the error remains visible. No tolerances or masks were loosened.
+All 30 new Code Block/Trace PNG expectations were inspected and passed normally without update flags (18 tests, 3 engines). The existing 48-case suite also passes normally. Its three whole-form CodeMirror PNGs were narrowly updated after inspecting each engine diff: only the Any Value typeUrl/valueBase64 labels and adjacent badge placement change, restoring main’s original bold typography. The other 45 PNGs remain unchanged. Before images and per-engine diffs are published. These supplemental PNGs are separate from the committed custom-option snapshots, which remain identical to main. Structured labels use the existing Label primitive with an additive strong variant matching the original Text label typography. Both macOS custom-option PNGs were restored from main; Linux PNGs were never changed. The installed host suite passes against the original baselines. Exact registry notice allowlists were expanded only for the bundled upstream MIT notice and provenance. No tolerances or masks were loosened.
 
 Replay: copy bundled-ui.visual.spec.ts and playwright.visual.config.ts into one folder, restore bundled-*.png under bundled-ui.visual.spec.ts-snapshots/, serve the production docs on port 55130, then run Playwright with that config. Logs replace local filesystem roots with placeholders. Read the root repository package scripts for native assertions.
 
 Limits: static presentation traces, not instrumentation. Optional Shiki hook is not bundled; React token children are supported. Not exhaustive screen-reader, RTL, native zoom or arbitrary-size JSON coverage. Clipboard browser tests mock only the platform clipboard boundary; direct real-flow video exercises the available browser clipboard.
+
+Final exact-head local replay: lint:fix, type:check (zero errors/warnings/hints), 264 unit tests, production build, 18 new visual tests and 48 original visual tests pass. Direct three-engine dogfood covers clipboard denial/retry, Space/Enter disclosure and wrapping; JSON capture proves squiggle/hover, blocked malformed draft and retained zero. Native CI on the same head passes 175 conformance, 264 unit, 273 integration, 21 real-browser and 10 installed-host tests, plus docs. Native exhaustive run is tracked separately. Existing build warning: local OpenAPI example server URL; audit retains the documented private Buf limitation and existing exceptions.
+
+Original-suite replay: restore form-resilience.visual.spec.ts and playwright.rebase.config.ts in a clean folder, with the codemirror/copy/nested/collection/zero/success/bool-map PNGs from the evidence branch under form-resilience.visual.spec.ts-snapshots/. Keep any publication archive outside the runner testDir to avoid duplicate test discovery. The three updated full-form files are codemirror-json-fields-{chromium,firefox,webkit}-darwin.png.

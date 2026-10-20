@@ -1,0 +1,32 @@
+{
+  "head": "ebf02da9290ac031e80771c6cb2c72c54784ceb9",
+  "base": "af64c5586288b2ae64f41f2004d43db936657b08",
+  "local": {
+    "lint": "pass",
+    "types": "pass",
+    "unit": 264,
+    "production_build": "pass",
+    "new_visual_tests": 18,
+    "original_visual_tests": 48,
+    "original_pngs_unchanged": 45,
+    "original_pngs_restored_typography": 3,
+    "dogfood_engines": [
+      "chromium",
+      "firefox",
+      "webkit"
+    ],
+    "page_errors": []
+  },
+  "hosted": {
+    "ci": 39473445624,
+    "security": 39473445622,
+    "exhaustive_pending": 39473372294
+  },
+  "merged": false,
+  "limits": [
+    "expected nonrequired Scorecard skip",
+    "local OpenAPI example server warning",
+    "documented Buf audit limitation and existing exceptions",
+    "not exhaustive accessibility or arbitrary-scale coverage"
+  ]
+}

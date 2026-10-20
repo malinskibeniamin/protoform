@@ -12,4 +12,6 @@ Costs: two source-copy modules, using existing Base UI/Lucide/Motion dependencie
 
 Inline product/review/lie-detector: justified, no remaining concrete P0/P1 after observed repairs. No claim of human approval, exhaustive accessibility, arbitrary-token highlighting, instrumentation, or universal playback.
 
-Final receipts and hosted checks are recorded separately against the final head; earlier screenshots/videos retain their real baseline identities.
+Final candidate: ebf02da9290ac031e80771c6cb2c72c54784ceb9; base af64c5586288b2ae64f41f2004d43db936657b08. Label strong preserves original font family, weight, line height and tracking. Original custom-option screenshots are unchanged on both platforms; native Linux CI and installed macOS tests pass. Exact legal-notice allowlists include the bundled MIT/provenance. Earlier screenshots/videos retain their real baseline identities. CI and Security pass; exhaustive run 39473372294 remains pending at this checkpoint. No human review or merge claimed.
+
+Final visual review: Code Block/Trace 18 cases and original UI 48 cases pass normally on ebf02da. Three supplemental whole-form CodeMirror PNGs intentionally restore original bold labels, with each engine diff inspected; the other 45 PNGs and all committed custom-option snapshots are unchanged. An initial duplicate staging-spec discovery was corrected by moving the publication directory outside testDir, not by suppressing assertions. Direct clipboard recovery and JSON submission dogfood pass with no page errors.

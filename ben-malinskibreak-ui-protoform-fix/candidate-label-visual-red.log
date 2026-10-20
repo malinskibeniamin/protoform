@@ -1,0 +1,171 @@
+
+Running 3 tests using 3 workers
+
+(node:74349) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:74348) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:74347) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  3 [chromium] › .context/codemirror/form-resilience.visual.spec.ts:201:1 › shows all JSON editor consumers with line numbers (1.3s)
+  ✘  1 [webkit] › .context/codemirror/form-resilience.visual.spec.ts:201:1 › shows all JSON editor consumers with line numbers (1.6s)
+  ✘  2 [firefox] › .context/codemirror/form-resilience.visual.spec.ts:201:1 › shows all JSON editor consumers with line numbers (1.9s)
+
+
+  1) [chromium] › .context/codemirror/form-resilience.visual.spec.ts:201:1 › shows all JSON editor consumers with line numbers 
+
+    Error: expect(locator).toHaveScreenshot(expected) failed
+
+    Locator: locator('form')
+      675 pixels (ratio 0.01 of all image pixels) are different.
+
+      Snapshot: codemirror-json-fields.png
+
+    Call log:
+      - Expect "toHaveScreenshot(codemirror-json-fields.png)" locator('form') with timeout 10000ms
+        - verifying given screenshot expectation
+      - waiting for locator('form')
+        - locator resolved to <form data-testid="autoform" class="@container/autoform space-y-8">…</form>
+      - taking element screenshot
+        - disabled all CSS animations
+      - waiting for fonts to load...
+      - fonts loaded
+      - attempting scroll into view action
+        - waiting for element to be stable
+      - 675 pixels (ratio 0.01 of all image pixels) are different.
+      - waiting 100ms before taking screenshot
+      - waiting for locator('form')
+        - locator resolved to <form data-testid="autoform" class="@container/autoform space-y-8">…</form>
+      - taking element screenshot
+        - disabled all CSS animations
+      - waiting for fonts to load...
+      - fonts loaded
+      - attempting scroll into view action
+        - waiting for element to be stable
+      - captured a stable screenshot
+      - 675 pixels (ratio 0.01 of all image pixels) are different.
+
+
+      203 |   await page.goto('/docs/blume-examples/registry/base-nova/protoform/demo/catalog/protobuf-dynamic-json-any');
+      204 |   await expect(page.getByTestId('autoform-field-object-value-control').getByRole('textbox')).toBeVisible();
+    > 205 |   await expect(page.locator('form')).toHaveScreenshot('codemirror-json-fields.png');
+          |                                      ^
+      206 | });
+      207 |
+      208 | test('explains an empty JSON draft', async ({ page }) => {
+        at <workspace>/.context/codemirror/form-resilience.visual.spec.ts:205:38
+
+    attachment #1: codemirror-json-fields (image/png) ──────────────────────────────────────────────
+    Expected: .context/codemirror/form-resilience.visual.spec.ts-snapshots/codemirror-json-fields-chromium-darwin.png
+    Received: .context/codemirror/results/form-resilience.visual-sho-04e33-consumers-with-line-numbers-chromium/codemirror-json-fields-actual.png
+    Diff:     .context/codemirror/results/form-resilience.visual-sho-04e33-consumers-with-line-numbers-chromium/codemirror-json-fields-diff.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: .context/codemirror/results/form-resilience.visual-sho-04e33-consumers-with-line-numbers-chromium/error-context.md
+
+  2) [firefox] › .context/codemirror/form-resilience.visual.spec.ts:201:1 › shows all JSON editor consumers with line numbers 
+
+    Error: expect(locator).toHaveScreenshot(expected) failed
+
+    Locator: locator('form')
+      697 pixels (ratio 0.01 of all image pixels) are different.
+
+      Snapshot: codemirror-json-fields.png
+
+    Call log:
+      - Expect "toHaveScreenshot(codemirror-json-fields.png)" locator('form') with timeout 10000ms
+        - verifying given screenshot expectation
+      - waiting for locator('form')
+        - locator resolved to <form data-testid="autoform" class="@container/autoform space-y-8">…</form>
+      - taking element screenshot
+        - disabled all CSS animations
+      - waiting for fonts to load...
+      - fonts loaded
+      - attempting scroll into view action
+        - waiting for element to be stable
+      - 697 pixels (ratio 0.01 of all image pixels) are different.
+      - waiting 100ms before taking screenshot
+      - waiting for locator('form')
+        - locator resolved to <form data-testid="autoform" class="@container/autoform space-y-8">…</form>
+      - taking element screenshot
+        - disabled all CSS animations
+      - waiting for fonts to load...
+      - fonts loaded
+      - attempting scroll into view action
+        - waiting for element to be stable
+      - captured a stable screenshot
+      - 697 pixels (ratio 0.01 of all image pixels) are different.
+
+
+      203 |   await page.goto('/docs/blume-examples/registry/base-nova/protoform/demo/catalog/protobuf-dynamic-json-any');
+      204 |   await expect(page.getByTestId('autoform-field-object-value-control').getByRole('textbox')).toBeVisible();
+    > 205 |   await expect(page.locator('form')).toHaveScreenshot('codemirror-json-fields.png');
+          |                                      ^
+      206 | });
+      207 |
+      208 | test('explains an empty JSON draft', async ({ page }) => {
+        at <workspace>/.context/codemirror/form-resilience.visual.spec.ts:205:38
+
+    attachment #1: codemirror-json-fields (image/png) ──────────────────────────────────────────────
+    Expected: .context/codemirror/form-resilience.visual.spec.ts-snapshots/codemirror-json-fields-firefox-darwin.png
+    Received: .context/codemirror/results/form-resilience.visual-sho-04e33-consumers-with-line-numbers-firefox/codemirror-json-fields-actual.png
+    Diff:     .context/codemirror/results/form-resilience.visual-sho-04e33-consumers-with-line-numbers-firefox/codemirror-json-fields-diff.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: .context/codemirror/results/form-resilience.visual-sho-04e33-consumers-with-line-numbers-firefox/error-context.md
+
+  3) [webkit] › .context/codemirror/form-resilience.visual.spec.ts:201:1 › shows all JSON editor consumers with line numbers 
+
+    Error: expect(locator).toHaveScreenshot(expected) failed
+
+    Locator: locator('form')
+      691 pixels (ratio 0.01 of all image pixels) are different.
+
+      Snapshot: codemirror-json-fields.png
+
+    Call log:
+      - Expect "toHaveScreenshot(codemirror-json-fields.png)" locator('form') with timeout 10000ms
+        - verifying given screenshot expectation
+      - waiting for locator('form')
+        - locator resolved to <form data-testid="autoform" class="@container/autoform space-y-8">…</form>
+      - taking element screenshot
+        - disabled all CSS animations
+      - waiting for fonts to load...
+      - fonts loaded
+      - attempting scroll into view action
+        - waiting for element to be stable
+      - 691 pixels (ratio 0.01 of all image pixels) are different.
+      - waiting 100ms before taking screenshot
+      - waiting for locator('form')
+        - locator resolved to <form data-testid="autoform" class="@container/autoform space-y-8">…</form>
+      - taking element screenshot
+        - disabled all CSS animations
+      - waiting for fonts to load...
+      - fonts loaded
+      - attempting scroll into view action
+        - waiting for element to be stable
+      - captured a stable screenshot
+      - 691 pixels (ratio 0.01 of all image pixels) are different.
+
+
+      203 |   await page.goto('/docs/blume-examples/registry/base-nova/protoform/demo/catalog/protobuf-dynamic-json-any');
+      204 |   await expect(page.getByTestId('autoform-field-object-value-control').getByRole('textbox')).toBeVisible();
+    > 205 |   await expect(page.locator('form')).toHaveScreenshot('codemirror-json-fields.png');
+          |                                      ^
+      206 | });
+      207 |
+      208 | test('explains an empty JSON draft', async ({ page }) => {
+        at <workspace>/.context/codemirror/form-resilience.visual.spec.ts:205:38
+
+    attachment #1: codemirror-json-fields (image/png) ──────────────────────────────────────────────
+    Expected: .context/codemirror/form-resilience.visual.spec.ts-snapshots/codemirror-json-fields-webkit-darwin.png
+    Received: .context/codemirror/results/form-resilience.visual-sho-04e33-consumers-with-line-numbers-webkit/codemirror-json-fields-actual.png
+    Diff:     .context/codemirror/results/form-resilience.visual-sho-04e33-consumers-with-line-numbers-webkit/codemirror-json-fields-diff.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: .context/codemirror/results/form-resilience.visual-sho-04e33-consumers-with-line-numbers-webkit/error-context.md
+
+  3 failed
+    [chromium] › .context/codemirror/form-resilience.visual.spec.ts:201:1 › shows all JSON editor consumers with line numbers 
+    [firefox] › .context/codemirror/form-resilience.visual.spec.ts:201:1 › shows all JSON editor consumers with line numbers 
+    [webkit] › .context/codemirror/form-resilience.visual.spec.ts:201:1 › shows all JSON editor consumers with line numbers 

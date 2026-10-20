@@ -1,0 +1,21 @@
+$ bun run lint:no-suppressions && oxlint --config .oxlintrc.jsonc --fix && biome check . --write && bun run lint
+$ bun run scripts/check-no-suppressions.ts
+No inline quality-rule suppressions found in 842 authored source files.
+Checked 639 files in 785ms. No fixes applied.
+$ bun run lint:no-suppressions && bun run lint:rules && biome check . --error-on-warnings && bun run lint:exceptions && bun run lint:oxlint && bun run lint:shadcn && bun run lint:coverage && bun run format:extra
+$ bun run scripts/check-no-suppressions.ts
+No inline quality-rule suppressions found in 842 authored source files.
+$ bun run scripts/check-rule-coverage.ts
+Every installed Biome, Oxlint, shadcn and React Doctor rule has an explicit error/off decision.
+Checked 639 files in 712ms. No fixes applied.
+$ bun run scripts/check-lint-exceptions.ts
+Lint exceptions have bounded, live selectors.
+$ oxlint --config .oxlintrc.jsonc --deny-warnings --report-unused-disable-directives-severity=error
+$ oxlint --config shadcn-lint.jsonc --deny-warnings --report-unused-disable-directives-severity=error
+$ bun run scripts/check-lint-coverage.ts
+Lint coverage verified: 639 Biome files; 626 Oxlint files.
+$ oxfmt --check "**/*.{md,yaml,yml}"
+Checking formatting...
+
+All matched files use the correct format.
+Finished in 27ms on 39 files using 18 threads.

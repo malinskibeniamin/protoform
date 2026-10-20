@@ -1,0 +1,17 @@
+
+Running 3 tests using 3 workers
+
+(node:81979) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:81980) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:81978) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+<workspace>/.context/codemirror/form-resilience.visual.spec.ts-snapshots/codemirror-json-fields-chromium-darwin.png is re-generated, writing actual.
+  ✓  1 [chromium] › .context/codemirror/form-resilience.visual.spec.ts:201:1 › shows all JSON editor consumers with line numbers (1.3s)
+<workspace>/.context/codemirror/form-resilience.visual.spec.ts-snapshots/codemirror-json-fields-webkit-darwin.png is re-generated, writing actual.
+  ✓  2 [webkit] › .context/codemirror/form-resilience.visual.spec.ts:201:1 › shows all JSON editor consumers with line numbers (1.5s)
+<workspace>/.context/codemirror/form-resilience.visual.spec.ts-snapshots/codemirror-json-fields-firefox-darwin.png is re-generated, writing actual.
+  ✓  3 [firefox] › .context/codemirror/form-resilience.visual.spec.ts:201:1 › shows all JSON editor consumers with line numbers (1.5s)
+
+  3 passed (2.7s)

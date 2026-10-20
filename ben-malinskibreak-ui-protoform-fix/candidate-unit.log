@@ -1,0 +1,330 @@
+$ node scripts/run-tests.ts unit --reporters verbose
+
+ ✓ scripts/registry-only-distribution.test.ts (8) 39ms
+  ✓ registry-only distribution > ships Protoform under MIT without private package workspaces (2ms)
+  ✓ registry-only distribution > distributes Protoform MIT and the bundled shadcn notices (0ms)
+  ✓ registry-only distribution > copies license notices with every installable registry item (2ms)
+  ✓ registry-only distribution > does not ask consumers for private Protoform packages (31ms)
+  ✓ registry-only distribution > documents the public Buf registry and portable bookstore install (0ms)
+  ✓ registry-only distribution > uses the public registry and Git tags as the distribution boundary (1ms)
+  ✓ registry-only distribution > tests consumers through registry source only (0ms)
+  ✓ registry-only distribution > keeps the source generator explicit and runnable (2ms)
+ ✓ scripts/bundle-budget.test.ts (1) 80ms
+  ✓ bundle budgets > enforces registry runtime and example budgets (79ms)
+ ✓ scripts/removed-control.test.ts (2) 105ms
+  ✓ removed controls > ignores transient shadcn lint fixtures inside registry (4ms)
+  ✓ removed controls > does not publish the removed control in source or registry artifacts (101ms)
+ ✓ examples/server/service.test.ts (5) 30ms
+  ✓ form example service > accepts the basic form and returns a stable profile id (1ms)
+  ✓ form example service > returns structured field details for business validation failures (17ms)
+  ✓ library demo service > runs isolated create, get, list, update, and delete workflows (7ms)
+  ✓ library demo service > isolates visitor libraries and rejects stale or immutable updates (1ms)
+  ✓ library demo service > uses current AIP lifecycle error codes for soft deletion (1ms)
+ ✓ scripts/rsdoctor-config.test.ts (2) 134ms
+  ✓ leaves normal test builds unchanged (1ms)
+  ✓ preserves server-disabled report settings inside Rstest (131ms)
+ ✓ registry/base-nova/protoform/lib/protobuf-provider/form-schema.test.ts (2) 123ms
+  ✓ valid form values produce a typed message value through a Standard Schema with a consumer-specific input type (95ms)
+  ✓ invalid form values produce issues with form-shaped camelCase paths or a root issue (27ms)
+ ✓ registry/base-nova/protoform/components/auto-form/utils/serialization.test.ts (1) 4ms
+  ✓ safeStringify > indents output, serializes bigint and Date values, and returns a placeholder for circular references (3ms)
+ ✓ registry/native-adapters.test.ts (31) 341ms
+  ✓ build-time UI adapter registry > auto-form-core requires the native-rule Protovalidate release (1ms)
+  ✓ build-time UI adapter registry > hook-runtime requires the native-rule Protovalidate release (0ms)
+  ✓ build-time UI adapter registry > protobuf-provider requires the native-rule Protovalidate release (0ms)
+  ✓ build-time UI adapter registry > protoform-examples requires the native-rule Protovalidate release (0ms)
+  ✓ build-time UI adapter registry > protoform-shadcn requires the native-rule Protovalidate release (0ms)
+  ✓ build-time UI adapter registry > default installation leaves host primitives and theme untouched (2ms)
+  ✓ build-time UI adapter registry > splits core, React, and optional shadcn capabilities (1ms)
+  ✓ build-time UI adapter registry > keeps hook installs on the focused runtime instead of the complete provider (2ms)
+  ✓ build-time UI adapter registry > keeps generated fixtures in the examples item (0ms)
+  ✓ build-time UI adapter registry > keeps primitive implementations out of the shared AutoForm renderer (0ms)
+  ✓ build-time UI adapter registry > uses the consumer's utils alias instead of shipping its own class helpers (2ms)
+  ✓ build-time UI adapter registry > installs the type packages its runtime dependencies need (1ms)
+  ✓ build-time UI adapter registry > keeps the host installation free of consumer UI imports (326ms)
+  ✓ build-time UI adapter registry > keeps the complete core capability free of UI source (2ms)
+  ✓ native form adapter registry entries > ships the legacy shadcn map only with explicit legacy adapters (0ms)
+  ✓ native form adapter registry entries > keeps the shared AutoForm core independent from form engines (0ms)
+  ✓ native form adapter registry entries > ships React Hook Form as the default AutoForm adapter (0ms)
+  ✓ native form adapter registry entries > ships TanStack Form without pulling React Hook Form (0ms)
+  ✓ native form adapter registry entries > ships TanStack Form v2 as separate experimental registry items (0ms)
+  ✓ native form adapter registry entries > ships React Hook Form v8 as separate experimental registry items (1ms)
+  ✓ opt-in capabilities > auto-form-audit installs separately from the base protoform install (0ms)
+  ✓ opt-in capabilities > form-library-adapters installs separately from the base protoform install (0ms)
+  ✓ opt-in capabilities > protobuf-method-workflow installs separately from the base protoform install (0ms)
+  ✓ opt-in capabilities > the base install keeps the Standard Schema adapter that TanStack hooks and generated forms import (0ms)
+  ✓ opt-in capabilities > demos format submitted values from the demo runtime instead of the base install (0ms)
+  ✓ opt-in capabilities > registry/base-nova/protoform/lib/core/index.ts does not re-export an opt-in module (0ms)
+  ✓ opt-in capabilities > registry/base-nova/protoform/lib/protobuf-provider/index.ts does not re-export an opt-in module (1ms)
+  ✓ opt-in capabilities > registry/base-nova/protoform/components/auto-form/index.tsx does not re-export an opt-in module (0ms)
+  ✓ opt-in capabilities > registry/base-nova/protoform/components/auto-form-react-hook-form-v8/index.tsx does not re-export an opt-in module (0ms)
+  ✓ opt-in capabilities > registry/base-nova/protoform/components/auto-form-tanstack/index.tsx does not re-export an opt-in module (0ms)
+  ✓ opt-in capabilities > registry/base-nova/protoform/components/auto-form-tanstack-v2/index.tsx does not re-export an opt-in module (0ms)
+ ✓ scripts/demo-field-policy.test.ts (2) 337ms
+  ✓ demo Field policy > wraps every visible shadcn control in Field (235ms)
+  ✓ demo Field policy > wraps every visible shadcn control in docs examples in Field (100ms)
+ ✓ scripts/demo-catalog.test.ts (12) 39ms
+  ✓ live demo catalog > excludes test modules from the production demo glob (1ms)
+  ✓ live demo catalog > maps every applicable readiness requirement to a live demo (0ms)
+  ✓ live demo catalog > keeps an extensive, uniquely addressable visual feature catalog (0ms)
+  ✓ live demo catalog > consolidates generated demos into five focused documentation hubs (5ms)
+  ✓ live demo catalog > keeps React Hook Form as the default while labeling interop demos (1ms)
+  ✓ live demo catalog > ships registry interop demos backed by their named form libraries (0ms)
+  ✓ live demo catalog > publishes the actual form implementation for every catalog demo (7ms)
+  ✓ live demo catalog > keeps submitted-value formatting in the shared demo runtime (7ms)
+  ✓ live demo catalog > keeps every registry demo renderable by the consolidated hub (6ms)
+  ✓ live demo catalog > redirects every retired demo page to its deep-linked hub selection (4ms)
+  ✓ live demo catalog > makes every demo independently installable from the registry (3ms)
+  ✓ live demo catalog > keeps generated demo descriptors synchronized in the full generation pipeline (3ms)
+ ✓ registry/base-nova/protoform/lib/protobuf-provider/conversion-validation.test.ts (8) 26ms
+  ✓ raw conversion validation > rejects lossy input at child,labels before protobuf conversion (2ms)
+  ✓ raw conversion validation > rejects lossy input at children,0,labels before protobuf conversion (0ms)
+  ✓ raw conversion validation > rejects lossy input at byKey,0,value,labels before protobuf conversion (1ms)
+  ✓ raw conversion validation > rejects lossy input at choice,value,labels before protobuf conversion (20ms)
+  ✓ raw conversion validation > rejects lossy input at child,quota before protobuf conversion (1ms)
+  ✓ raw conversion validation > rejects lossy input at children,0,quota before protobuf conversion (0ms)
+  ✓ raw conversion validation > rejects lossy input at choice,value before protobuf conversion (0ms)
+  ✓ raw conversion validation > rejects lossy input at quotas,0 before protobuf conversion (0ms)
+ ✓ registry/base-nova/protoform/lib/protobuf-provider/render-hints.test.ts (3) 34ms
+  ✓ maps field and oneof annotations onto hints without empty hint objects (18ms)
+  ✓ enum aliases produce one selectable option per numeric value (10ms)
+  ✓ reversed numeric ranges do not become invalid native input bounds (5ms)
+ ✓ examples/server/server.test.ts (4) 278ms
+  ✓ form example Connect server > serves health checks and reflects browser origins (147ms)
+  ✓ form example Connect server > runs the generated route and validation interceptor in process (42ms)
+  ✓ form example Connect server > serves generated clients and rejects invalid protobuf requests (53ms)
+  ✓ form example Connect server > serves the LibraryService CRUD API and enforces the ISBN-13 CEL rule (20ms)
+ ✓ examples/kitchen-sink/kitchen-sink-cel.test.ts (7) 464ms
+  ✓ kitchen-sink CEL contract > accepts a request that satisfies every cross-collection policy (89ms)
+  ✓ kitchen-sink CEL contract > rejects a direct service dependency cycle (218ms)
+  ✓ kitchen-sink CEL contract > rejects an incomplete production approval (45ms)
+  ✓ kitchen-sink CEL contract > rejects an over-budget service allocation (30ms)
+  ✓ kitchen-sink CEL contract > rejects a backwards change window (31ms)
+  ✓ kitchen-sink CEL contract > rejects a missing live-deployment notification (27ms)
+  ✓ kitchen-sink CEL contract > rejects an invalid progressive rollout sequence (23ms)
+ ✓ registry/base-nova/protoform/lib/protobuf-provider/index.test.ts (4) 462ms
+  ✓ protobuf-provider > parses enums, oneofs, descriptions, and deprecation into autoform-friendly fields (11ms)
+  ✓ protobuf-provider > converts protobuf messages into form values, supplies defaults, and round-trips optional, wrapper, and JSON-backed fields (317ms)
+  ✓ protobuf-provider > maps nested field and root validation errors and preserves the edit source message through the resolver (132ms)
+  ✓ protobuf-provider > normalizes proto field and oneof UI metadata for focused UI demos (1ms)
+ ✓ scripts/lint-exceptions.test.ts (15) 64ms
+  ✓ rejects a stale file selector in a TypeScript config (22ms)
+  ✓ accepts a bounded scoped exception in JSONC (1ms)
+  ✓ does not mistake a stricter override for an exception (0ms)
+  ✓ rejects a repository-wide weakening (1ms)
+  ✓ rejects a repository-wide warn severity downgrade (0ms)
+  ✓ rejects a repository-wide info severity downgrade (32ms)
+  ✓ rejects broad structural selectors: registry/** (1ms)
+  ✓ rejects broad structural selectors: ./registry/base-nova/**/*.{ts,tsx} (0ms)
+  ✓ rejects broad structural selectors: registry/base-nova/protoform/** (1ms)
+  ✓ rejects broad structural selectors: registry/base-nova/protoform/*/*.tsx (0ms)
+  ✓ rejects broad structural selectors: **/*.tsx (1ms)
+  ✓ allows a named owner rather than the entire registry (0ms)
+  ✓ rejects a glob exception that no longer matches any file (0ms)
+  ✓ reports the line of the offending override (1ms)
+  ✓ does not permit new file-level rule exemptions (2ms)
+ ✓ registry/base-nova/protoform/lib/protobuf-provider/empty-repeated-strings.test.ts (2) 4ms
+  ✓ empty repeated string conversion > discards empty and whitespace-only strings by default without changing other list types (2ms)
+  ✓ empty repeated string conversion > preserves empty strings for configured root, nested, and oneof-message fields (1ms)
+ ✓ registry/base-nova/protoform/components/auto-form/ui-rules.test.ts (1) 8ms
+  ✓ AutoForm UI CEL profile > exposes only form and current-field values and fails closed for malformed, unknown, erroring, and non-boolean rules (8ms)
+ ✓ scripts/static-hosting.test.ts (3) 4ms
+  ✓ static docs and registry hosting > builds one Cloudflare Pages artifact containing docs and registry JSON (1ms)
+  ✓ static docs and registry hosting > fetches git history for page update dates in the docs CI job (1ms)
+  ✓ static docs and registry hosting > pins the Bun toolchain consistently (1ms)
+ ✓ registry/base-nova/protoform/lib/protobuf-provider/source-preservation.test.ts (4) 16ms
+  ✓ source-message preservation > does not round native timestamp defaults into the next second (7ms)
+  ✓ source-message preservation > preserves untouched timestamp precision through nested, reordered, map and oneof edits (4ms)
+  ✓ source-message preservation > preserves unknown fields on every surviving message node (1ms)
+  ✓ source-message preservation > does not resurrect unknown fields from removed messages or changed oneofs (2ms)
+ ✓ scripts/security-audit-policy.test.ts (5) 7ms
+  ✓ temporarily permits the approved braces advisory, but blocks it at and after expiry (5ms)
+  ✓ temporarily permits the approved sprintf-js advisory, but blocks it at and after expiry (0ms)
+  ✓ does not extend approved exceptions to another package or advisory (0ms)
+  ✓ fails unexcepted advisories and rejects malformed audit responses (2ms)
+  ✓ accepts only an exact, unexpired advisory exception (0ms)
+ ✓ registry/base-nova/protoform/hooks/use-proto-form/proto-error-path.test.ts (3) 4ms
+  ✓ protoPathToFormPath > maps scalar and nested message paths to camelCase and returns null for empty or unknown paths (2ms)
+  ✓ protoPathToFormPath > flattens oneof branches into {oneof.localName}.value and the group into {oneof.localName} (0ms)
+  ✓ protoPathToFormPath > maps repeated-field indexes in bracket and dot notation (0ms)
+ ✓ scripts/bookstore-docs.test.ts (2) 3ms
+  ✓ bookstore flagship documentation > ships a native live demo and source workspace (2ms)
+  ✓ bookstore flagship documentation > shows real generated artifacts rather than a simulated IDE (0ms)
+ ✓ scripts/verify-release-tag.test.ts (1) 3ms
+  ✓ release tag verification > requires the immutable tag to match the package version (2ms)
+ ✓ scripts/readiness-profile.test.ts (12) 22ms
+  ✓ readiness scoring > counts only applicable requirements in the percentage (1ms)
+  ✓ readiness scoring > publishes a unique, sourced production profile (1ms)
+  ✓ readiness scoring > completes the capability profile without self-certifying release (1ms)
+  ✓ readiness scoring > rejects a profile gate with a recommended gap (0ms)
+  ✓ readiness scoring > backs every verified and optional capability with a discoverable test (11ms)
+  ✓ readiness scoring > counts the kitchen-sink CEL contract as verified evidence (1ms)
+  ✓ readiness scoring > tracks the complete form-relevant CEL baseline without unsupported rows (0ms)
+  ✓ readiness scoring > tracks every General AIP with an explicit readiness status (1ms)
+  ✓ readiness scoring > reports the maintained v1 bridge separately from out-of-target proto2 features (3ms)
+  ✓ readiness scoring > pins the upstream ranges that define the profile denominator (0ms)
+  ✓ readiness scoring > does not turn profile completeness into a release claim (1ms)
+  ✓ readiness scoring > formats a report with the score and next tests (1ms)
+ ✓ registry/base-nova/protoform/lib/protobuf-provider/method-workflow.test.ts (2) 26ms
+  ✓ getProtoMethodWorkflow > classifies standard unary methods with their path, query, and body fields and marks streaming RPCs as non-form (3ms)
+  ✓ getProtoMethodWorkflow > classifies custom long-running workflows and exposes operation types (19ms)
+ ✓ scripts/check-no-suppressions.test.ts (14) 27ms
+  ✓ inline suppression policy > rejects biome-ignore (7ms)
+  ✓ inline suppression policy > rejects eslint-disable (1ms)
+  ✓ inline suppression policy > rejects oxlint-disable (1ms)
+  ✓ inline suppression policy > rejects prettier-ignore (3ms)
+  ✓ inline suppression policy > rejects oxfmt-ignore (1ms)
+  ✓ inline suppression policy > rejects react-doctor-disable (1ms)
+  ✓ inline suppression policy > rejects @ts-expect-error (0ms)
+  ✓ inline suppression policy > rejects @ts-ignore (0ms)
+  ✓ inline suppression policy > rejects @ts-nocheck (1ms)
+  ✓ inline suppression policy > rejects case-insensitive compiler bypasses (0ms)
+  ✓ inline suppression policy > rejects inline rule configuration (3ms)
+  ✓ inline suppression policy > does not treat documented string values as directives (1ms)
+  ✓ inline suppression policy > rejects directives after interpolated templates (1ms)
+  ✓ inline suppression policy > accepts ordinary comments (0ms)
+ ✓ registry/base-nova/protoform/scripts/protoc-gen-protoform/plugin.test.ts (2) 13ms
+  ✓ emits only a _form.ts file matching the golden fixture (12ms)
+  ✓ declares support for proto3 optional fields (1ms)
+ ✓ scripts/buf-policy.test.ts (4) 1.07s
+  ✓ Buf policy > passes Buf STANDARD including the complete Protovalidate lint rule (593ms)
+  ✓ Buf policy > keeps intentional Protovalidate lint failures in an isolated module (231ms)
+  ✓ Buf policy > runs the complete lint policy in CI (0ms)
+  ✓ Buf policy > enforces target-branch compatibility and rejects an isolated fixture (246ms)
+ ✓ registry/base-nova/protoform/lib/protobuf-provider/aip-client-workflow.test.ts (6) 25ms
+  ✓ runProtoOperation > polls named AIP-151 operations until success or a terminal google.rpc.Status failure (3ms)
+  ✓ runProtoOperation > cancels the remote operation when the caller aborts (0ms)
+  ✓ getProtoRetryDecision > retries only idempotent unary UNAVAILABLE calls and respects RetryInfo (19ms)
+  ✓ getProtoPartialResult > turns AIP-217 unreachable resources into a warning and targeted recovery actions (1ms)
+  ✓ destructive and preview workflow plans > requires an AIP-165 purge preview and distinguishes AIP-236 non-enforcing preview from live commit (0ms)
+  ✓ getProtoStability > presents AIP-181 alpha, beta, stable, and deprecated guidance from generated descriptors (1ms)
+ ✓ registry/base-nova/protoform/lib/protobuf-provider/field-mask.test.ts (4) 3ms
+  ✓ createFieldMask > normalizes and minimizes explicit read-mask paths and collapses a wildcard (1ms)
+  ✓ createUpdateMask > includes only dirty, client-owned protobuf fields and collapses collections (1ms)
+  ✓ createUpdateMask > masks the cleared initial oneof branch and nested dirty leaves in the active branch (0ms)
+  ✓ dirtyFieldsFromValues > builds a nested dirty tree, collapses changed collections, and ignores equal values (0ms)
+ ✓ scripts/frontend-quality-policy.test.ts (7) 1.19s
+  ✓ frontend quality policy > uses the native compiler with every practical strictness flag (1ms)
+  ✓ frontend quality policy > typechecks every authored test with the strict project settings (1ms)
+  ✓ frontend quality policy > typechecks every tracked authored TypeScript file (1.19s)
+  ✓ frontend quality policy > fails documentation typechecks on every diagnostic severity (0ms)
+  ✓ frontend quality policy > checks authored installable registry source (1ms)
+  ✓ frontend quality policy > fails on warnings, formatting drift, and inline suppressions (0ms)
+  ✓ frontend quality policy > runs a full warning-blocking React Doctor gate (0ms)
+ ✓ registry/style-contract.test.ts (6) 3ms
+  ✓ Protoform registry style > targets the Base UI Nova style (2ms)
+  ✓ Protoform registry style > publishes runtime source and the documented proto contract (0ms)
+  ✓ Protoform registry style > points shadcn at the actual non-RSC stylesheet (0ms)
+  ✓ Protoform registry style > creates smoke-test consumers with the same Base Nova style (1ms)
+  ✓ Protoform registry style > never publishes the internal unset sentinel (0ms)
+  ✓ Protoform registry style > uses semantic card colors in light and dark hosts (0ms)
+ ✓ scripts/strict-tooling.test.ts (6) 442ms
+  ✓ strict React tooling > pins the latest analysis toolchain and exposes strict entrypoints (2ms)
+  ✓ strict React tooling > explicitly configures every stable and nursery Biome rule (17ms)
+  ✓ strict React tooling > explicitly promotes every applicable React Doctor rule and design surface (418ms)
+  ✓ strict React tooling > limits React Doctor exemptions to generated output and installable components (0ms)
+  ✓ strict React tooling > enables fail-fast React Compiler coverage for docs and every React test suite (2ms)
+  ✓ strict React tooling > keeps TypeScript stricter than the requested baseline (1ms)
+ ✓ registry/base-nova/protoform/lib/protobuf-provider/form-values.test.ts (10) 7ms
+  ✓ ProtoFormValues: deeply nested oneof paths resolve without casts > resolves a field through the delivery oneof (1ms)
+  ✓ ProtoFormValues: deeply nested oneof paths resolve without casts > resolves the discriminator for a nested credentials oneof (0ms)
+  ✓ ProtoFormValues: deeply nested oneof paths resolve without casts > resolves a field through two oneof levels (0ms)
+  ✓ ProtoFormValues: deeply nested oneof paths resolve without casts > resolves a field unique to another nested branch (2ms)
+  ✓ ProtoFormValues: deeply nested oneof paths resolve without casts > resolves fields unique to sibling delivery branches (1ms)
+  ✓ ProtoFormValues: deeply nested oneof paths resolve without casts > resolves nested branch fields without a containing message (0ms)
+  ✓ ProtoFormShape: the values a protobuf form holds > omits protobuf message internals from form paths (0ms)
+  ✓ ProtoFormShape: the values a protobuf form holds > represents well-known types, 64-bit integers, and bytes as their form values (0ms)
+  ✓ ProtoFormShape: the values a protobuf form holds > falls back to a string-keyed record for descriptors only known at runtime (0ms)
+  ✓ ProtoFormShape: the values a protobuf form holds > is the value type of protoToFormValues and of both React Hook Form hooks (1ms)
+ ✓ registry/base-nova/protoform/lib/protobuf-provider/humanize-validation-error.test.ts (2) 16ms
+  ✓ humanizeServerFieldError > turns server descriptions into actionable copy (2ms)
+  ✓ localized validation messages > passes a stable code, parameters, and fallback to the host formatter (2ms)
+ ✓ scripts/react-scan.test.ts (5) 4ms
+  ✓ React Scan instrumentation > loads the installed profiler before React hydration only when opted in (1ms)
+  ✓ React Scan instrumentation > never profiles build output (0ms)
+  ✓ React Scan instrumentation > never profiles preview output (0ms)
+  ✓ React Scan instrumentation > never profiles sync output (1ms)
+  ✓ React Scan instrumentation > keeps the normal development server uninstrumented (0ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/schema.test.ts (3) 48ms
+  ✓ resolveSchema > maps per-field repeated-string policies to descriptor paths (2ms)
+  ✓ resolveSchema > throws for unsupported input types (1ms)
+  ✓ resolveSchema > resolves a SchemaProvider and a proto descriptor (44ms)
+ ✓ scripts/quality-gates.test.ts (3) 1.23s
+  ✓ strict quality gates at the CLI > accepts checked source (550ms)
+  ✓ strict quality gates at the CLI > rejects discarded promises instead of silently accepting a type-aware flag (337ms)
+  ✓ strict quality gates at the CLI > rejects unsafe data flows from untyped APIs (344ms)
+ ✓ registry/base-nova/protoform/lib/protobuf-provider/mutation-request.test.ts (2) 4ms
+  ✓ descriptor-driven mutation request composers > composes create, update, and delete controls without performing an RPC (3ms)
+  ✓ descriptor-driven mutation request composers > rejects a descriptor whose standard method shape is ambiguous (0ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/core-types.test.ts (3) 3ms
+  ✓ sortFieldsByOrder > sorts by ascending order, treats missing order as 0, recurses into nested fields, and handles undefined input (2ms)
+  ✓ getLabel > prefers fieldConfig.label, then description, then the beautified key, and returns empty string for numeric keys (0ms)
+  ✓ getPathInObject > traverses nested paths and returns undefined through missing, null, or undefined segments (0ms)
+ ✓ registry/base-nova/protoform/demo/runtime/format-submitted-value.test.ts (1) 3ms
+  ✓ formatSubmittedValue > formats protobuf JavaScript values as readable JSON (1ms)
+ ✓ registry/base-nova/protoform/lib/core/form-library-adapters.test.ts (4) 3ms
+  ✓ form-library Standard Schema adapters > maps Standard Schema issues for Formik (1ms)
+  ✓ form-library Standard Schema adapters > maps Standard Schema issues for Final Form (1ms)
+  ✓ form-library Standard Schema adapters > returns no errors for valid values and forwards library options (0ms)
+  ✓ form-library Standard Schema adapters > does not allow issue paths to mutate object prototypes (0ms)
+ ✓ scripts/check-docs-types.test.ts (4) 3ms
+  ✓ documentation typecheck diagnostics > parses a clean summary (1ms)
+  ✓ documentation typecheck diagnostics > parses a warning summary (0ms)
+  ✓ documentation typecheck diagnostics > parses a hint summary (1ms)
+  ✓ documentation typecheck diagnostics > rejects output without a complete summary (0ms)
+ ✓ scripts/openapi-bookstore.test.ts (6) 4ms
+  ✓ bookstore OpenAPI surface > documents ListBooks (1ms)
+  ✓ bookstore OpenAPI surface > documents GetBook (1ms)
+  ✓ bookstore OpenAPI surface > documents CreateBook (0ms)
+  ✓ bookstore OpenAPI surface > documents UpdateBook (0ms)
+  ✓ bookstore OpenAPI surface > documents DeleteBook (0ms)
+  ✓ bookstore OpenAPI surface > documents ISBN-13, update masks, and etags (0ms)
+ ✓ examples/learning/learning-contracts.test.ts (2) 2ms
+  ✓ keeps the bare-bones contract to one string field (1ms)
+  ✓ assigns one simple field to each step (0ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/shadcn-controls.test.ts (1) 1ms
+  ✓ shadcn AutoForm coverage manifest > keeps proto control annotations unique and explicit (1ms)
+ ✓ scripts/browser-matrix.test.ts (1) 3ms
+  ✓ browser production matrix > runs the end-to-end form suite in Chromium, Firefox, and WebKit (1ms)
+ ✓ registry/base-nova/protoform/lib/core/standard-schema.test.ts (1) 2ms
+  ✓ accepts spec-conforming Standard Schema v1 objects and rejects everything else (1ms)
+ ✓ registry/base-nova/protoform/lib/protobuf-provider/ui-options.test.ts (1) 10ms
+  ✓ control type value 18 remains available (10ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/registry.test.ts (2) 17ms
+  ✓ FieldTypeRegistry > accumulates literal field names through chained registration (3ms)
+  ✓ FieldTypeRegistry > lists and resolves definitions by priority and clones independently (1ms)
+ ✓ scripts/api-linter.test.ts (1) 2ms
+  ✓ Google API Linter gate > pins the linter and verifies the AIP service contract in CI and release gates (1ms)
+ ✓ scripts/source-files.test.ts (2) 2ms
+  ✓ quality source ownership > does not trust generated-looking names or directories (1ms)
+  ✓ quality source ownership > recognizes checked-in generator outputs by exact path (0ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/configuration.test.ts (4) 10ms
+  ✓ inspectAutoFormConfiguration > returns deterministic diagnostics for every nested configuration defect (8ms)
+  ✓ inspectAutoFormConfiguration > accepts registered renderers, providers, and supported nested configuration (1ms)
+  ✓ inspectAutoFormConfiguration > reports incompatible built-in controls (0ms)
+  ✓ inspectAutoFormConfiguration > reports broken step configuration, unknown step references, and unsupported schema shapes instead of throwing (1ms)
+ ✓ scripts/protoform.test.ts (2) 3ms
+  ✓ protoform CLI > parses audit targets and the requested output format (1ms)
+  ✓ protoform CLI > rejects unsupported commands and formats (1ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/slider-matcher.test.ts (1) 2ms
+  ✓ sliderFieldDefinition.match > matches only number fields annotated through customData.control or the proto ui path (2ms)
+ ✓ scripts/shadcn-lint.test.ts (4) 1.78s
+  ✓ shadcn lint does not broaden the SVG property-list allowance to arbitrary transitions (504ms)
+  ✓ shadcn lint rejects all six design-system violations at usage sites (557ms)
+  ✓ shadcn lint accepts semantic tokens, static layout, and dynamic CSS variables (353ms)
+  ✓ shadcn lint rejects all six violations in authored component definitions (360ms)
+ ✓ registry/base-nova/protoform/components/auto-form/__tests__/audit.test.ts (1) 2ms
+  ✓ AutoForm audit reports > emits deterministic JSON and SARIF from named audit targets (2ms)
+ ✓ scripts/oxlint-no-comments.test.ts (7) 2.05s
+  ✓ comment policy > rejects line comments (500ms)
+  ✓ comment policy > rejects block comments (284ms)
+  ✓ comment policy > rejects JSX comments (427ms)
+  ✓ comment policy > rejects documentation comments (271ms)
+  ✓ comment policy > permits a shebang (211ms)
+  ✓ comment policy > rejects license headers (190ms)
+  ✓ comment policy > rejects TypeScript directive comments (167ms)
+
+ Test Files 59 passed
+      Tests 264 passed
+   Duration 2.40s (build 139ms, tests 2.26s)
+
