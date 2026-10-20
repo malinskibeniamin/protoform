@@ -10,12 +10,15 @@ permissions:
 
 jobs:
   verify:
-    runs-on: macos-latest
+    runs-on: macos-26
+    env:
+      PROTOFORM_SCREENSHOT_PLATFORM: darwin-25-arm64
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
+          persist-credentials: false
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
         with:
           bun-version: 1.4.3
@@ -32,6 +35,79 @@ jobs:
         run: |
           defaults write -g AppleLocale -string en_GB
           defaults write -g AppleICUForce24HourTime -bool true
+      - name: Check out frozen original main for one-off reference capture
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: a5333a28ec8b31e1eeb324539f7d95584ba21c04
+          path: .context/frozen-main-macos
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Capture and verify references with the original runner
+        working-directory: .context/frozen-main-macos
+        run: |
+          test "$(git rev-parse HEAD)" = a5333a28ec8b31e1eeb324539f7d95584ba21c04
+          bun install --frozen-lockfile
+          bun run registry:build
+          bun run registry:consumer-smoke
+          bun run registry:host-browser --update-snapshots
+          bun run registry:host-browser
+          bun x --no-install playwright test --config=playwright.config.ts --project=chromium e2e/docs-screenshots.spec.ts e2e/docs-optional-features.spec.ts --grep 'exports the current page|keeps docs navigation usable' --update-snapshots
+          bun x --no-install playwright test --config=playwright.config.ts --project=chromium e2e/docs-screenshots.spec.ts e2e/docs-optional-features.spec.ts --grep 'exports the current page|keeps docs navigation usable'
+      - name: Export additive references and capture provenance
+        run: |
+          node --input-type=module <<'NODE'
+          import { createHash } from 'node:crypto';
+          import { execFileSync } from 'node:child_process';
+          import { copyFileSync, globSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+          import { release } from 'node:os';
+          import { dirname, join, resolve } from 'node:path';
+          const source = resolve('.context/frozen-main-macos');
+          const output = resolve('.context/macos-original-references');
+          const platform = `${process.platform}-${release().split('.')[0]}-${process.arch}`;
+          if (platform !== 'darwin-25-arm64') throw new Error(`Unexpected capture host ${platform}`);
+          const paths = globSync([
+            'scripts/__screenshots__/*/*/darwin/*.png',
+            'e2e/*-snapshots/*-chromium-darwin.png',
+          ], { cwd: source }).sort();
+          if (paths.length !== 17) throw new Error(`Expected 17 original captures, found ${paths.length}`);
+          const files = paths.map((original) => {
+            const path = original.startsWith('scripts/')
+              ? original.replace('/darwin/', `/${platform}/`)
+              : original.replace('-chromium-darwin.png', `-chromium-${platform}.png`);
+            const bytes = readFileSync(join(source, original));
+            for (const root of [output, process.cwd()]) {
+              const target = join(root, path);
+              mkdirSync(dirname(target), { recursive: true });
+              copyFileSync(join(source, original), target);
+            }
+            return { original, path, sha256: createHash('sha256').update(bytes).digest('hex') };
+          });
+          const run = (command, args) => execFileSync(command, args, { cwd: source, encoding: 'utf8' }).trim();
+          const provenance = {
+            base: run('git', ['rev-parse', 'HEAD']),
+            capture_run: `https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`,
+            platform,
+            image_version: process.env.ImageVersion,
+            os: run('sw_vers', []),
+            kernel: run('uname', ['-a']),
+            bun: run('bun', ['--version']),
+            node: process.version,
+            playwright: run('bun', ['x', '--no-install', 'playwright', '--version']),
+            locale: run('defaults', ['read', '-g', 'AppleLocale']),
+            hour24: run('defaults', ['read', '-g', 'AppleICUForce24HourTime']),
+            verification: 'Original Playwright Test update followed by normal assertions for all 17 PNGs; candidate quality gate uses normal zero-pixel assertions',
+            files,
+          };
+          writeFileSync(join(output, 'provenance.json'), `${JSON.stringify(provenance, null, 2)}\n`);
+          NODE
+      - name: Upload original-main reference evidence
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: macos-original-references
+          path: .context/macos-original-references/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30
       - run: bun run quality:gate
       - name: Upload runner failure evidence
         if: failure()

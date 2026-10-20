@@ -1,10 +1,11 @@
 import { readFile } from 'node:fs/promises';
+import { release } from 'node:os';
 import { basename, dirname, join } from 'node:path';
 import { rstest } from '@rstest/core';
 import { test as base, expect } from '@rstest/playwright';
 import type { Locator, Page } from 'playwright';
 import { docsContextOptions } from './e2e-context';
-import { matchScreenshot } from './e2e-screenshots';
+import { matchScreenshot, screenshotPlatform } from './e2e-screenshots';
 
 export { afterAll, afterEach, beforeAll, beforeEach, describe, expect } from '@rstest/playwright';
 export type { Locator, Page } from 'playwright';
@@ -33,10 +34,14 @@ expect.extend({
       throw new Error('Screenshot assertion requires an active Rstest test');
     }
     const project = process.env['PROTOFORM_SCREENSHOT_PROJECT'] ?? 'chromium';
+    const platform = screenshotPlatform(
+      { platform: process.platform, release: release(), architecture: process.arch },
+      process.env['PROTOFORM_SCREENSHOT_PLATFORM']
+    );
     const reference =
       process.env['PROTOFORM_SCREENSHOT_STYLE'] === 'consumer'
-        ? join(dirname(testPath), '__screenshots__', basename(testPath), project, process.platform, name)
-        : join(`${testPath}-snapshots`, `${name.slice(0, -4)}-${project}-${process.platform}.png`);
+        ? join(dirname(testPath), '__screenshots__', basename(testPath), project, platform, name)
+        : join(`${testPath}-snapshots`, `${name.slice(0, -4)}-${project}-${platform}.png`);
     await matchScreenshot(target, reference, {
       update: process.env['PROTOFORM_UPDATE_SCREENSHOTS'] === 'true',
       timeout: rstest.getConfig().expect.poll.timeout,

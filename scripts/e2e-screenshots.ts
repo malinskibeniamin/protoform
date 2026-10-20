@@ -8,6 +8,20 @@ import { PNG } from 'pngjs';
 
 type ScreenshotTarget = Locator | Page;
 
+export function screenshotPlatform(
+  host: { platform: NodeJS.Platform; release: string; architecture: string },
+  requested?: string
+) {
+  if (requested === undefined) {
+    return host.platform;
+  }
+  const native = `${host.platform}-${host.release.split('.')[0]}-${host.architecture}`;
+  if (requested !== native) {
+    throw new Error(`Screenshot platform must match host ${native}; received ${JSON.stringify(requested)}`);
+  }
+  return requested;
+}
+
 export function compareScreenshotBuffers(expectedBuffer: Buffer, actualBuffer: Buffer) {
   const expected = PNG.sync.read(expectedBuffer);
   const actual = PNG.sync.read(actualBuffer);
