@@ -1,0 +1,29 @@
+
+Running 18 tests using 3 workers
+
+(node:19694) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:19693) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:19692) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   3 [chromium] › .context/bundled-components/bundled-ui.visual.spec.ts:5:3 › light 320 bundled code and trace (1.3s)
+  ✓   1 [webkit] › .context/bundled-components/bundled-ui.visual.spec.ts:5:3 › light 320 bundled code and trace (1.4s)
+  ✓   2 [firefox] › .context/bundled-components/bundled-ui.visual.spec.ts:5:3 › light 320 bundled code and trace (1.8s)
+  ✓   4 [chromium] › .context/bundled-components/bundled-ui.visual.spec.ts:5:3 › light 1000 bundled code and trace (1.2s)
+  ✓   7 [chromium] › .context/bundled-components/bundled-ui.visual.spec.ts:18:2 › light denied clipboard (232ms)
+  ✓   5 [webkit] › .context/bundled-components/bundled-ui.visual.spec.ts:5:3 › light 1000 bundled code and trace (1.3s)
+  ✓   9 [webkit] › .context/bundled-components/bundled-ui.visual.spec.ts:18:2 › light denied clipboard (334ms)
+  ✓   6 [firefox] › .context/bundled-components/bundled-ui.visual.spec.ts:5:3 › light 1000 bundled code and trace (1.2s)
+  ✓  11 [firefox] › .context/bundled-components/bundled-ui.visual.spec.ts:18:2 › light denied clipboard (341ms)
+  ✓   8 [chromium] › .context/bundled-components/bundled-ui.visual.spec.ts:5:3 › dark 320 bundled code and trace (1.2s)
+  ✓  10 [webkit] › .context/bundled-components/bundled-ui.visual.spec.ts:5:3 › dark 320 bundled code and trace (1.3s)
+  ✓  12 [firefox] › .context/bundled-components/bundled-ui.visual.spec.ts:5:3 › dark 320 bundled code and trace (1.4s)
+  ✓  13 [chromium] › .context/bundled-components/bundled-ui.visual.spec.ts:5:3 › dark 1000 bundled code and trace (1.3s)
+  ✓  16 [chromium] › .context/bundled-components/bundled-ui.visual.spec.ts:18:2 › dark denied clipboard (361ms)
+  ✓  14 [webkit] › .context/bundled-components/bundled-ui.visual.spec.ts:5:3 › dark 1000 bundled code and trace (1.5s)
+  ✓  17 [webkit] › .context/bundled-components/bundled-ui.visual.spec.ts:18:2 › dark denied clipboard (334ms)
+  ✓  15 [firefox] › .context/bundled-components/bundled-ui.visual.spec.ts:5:3 › dark 1000 bundled code and trace (1.5s)
+  ✓  18 [firefox] › .context/bundled-components/bundled-ui.visual.spec.ts:18:2 › dark denied clipboard (273ms)
+
+  18 passed (7.3s)

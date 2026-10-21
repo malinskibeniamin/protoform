@@ -1,0 +1,53 @@
+
+Running 30 tests using 3 workers
+
+(node:5190) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:5192) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:5191) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   3 [chromium] › e2e/shadcn-parity.spec.ts:68:1 › layout controls preserve editing and resize by keyboard @cross-browser (954ms)
+  ✓   1 [chromium] › e2e/shadcn-parity.spec.ts:18:1 › catalog basics support local creation and validated entry @cross-browser (1.3s)
+  ✓   4 [chromium] › e2e/shadcn-parity.spec.ts:90:1 › message samples recover and questionnaire validates before completion @cross-browser (1.2s)
+  ✓   6 [chromium] › e2e/shadcn-parity.spec.ts:131:3 › catalog Basics fits narrow viewports with accessible controls @cross-browser (1.3s)
+  ✓   5 [chromium] › e2e/shadcn-parity.spec.ts:106:1 › composition recipes filter, select, paginate and recover @cross-browser (2.3s)
+  ✓   2 [chromium] › e2e/shadcn-parity.spec.ts:38:1 › catalog overlays allow cancellation, recovery and keyboard actions @cross-browser (4.4s)
+  ✓   7 [chromium] › e2e/shadcn-parity.spec.ts:131:3 › catalog Overlays fits narrow viewports with accessible controls @cross-browser (1.3s)
+  ✓   8 [chromium] › e2e/shadcn-parity.spec.ts:131:3 › catalog Layout fits narrow viewports with accessible controls @cross-browser (1.3s)
+(node:7769) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   9 [chromium] › e2e/shadcn-parity.spec.ts:131:3 › catalog Messages fits narrow viewports with accessible controls @cross-browser (1.3s)
+(node:7862) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  10 [chromium] › e2e/shadcn-parity.spec.ts:131:3 › catalog Recipes fits narrow viewports with accessible controls @cross-browser (1.3s)
+(node:7955) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  11 [firefox] › e2e/shadcn-parity.spec.ts:18:1 › catalog basics support local creation and validated entry @cross-browser (1.8s)
+  ✓  13 [firefox] › e2e/shadcn-parity.spec.ts:68:1 › layout controls preserve editing and resize by keyboard @cross-browser (1.6s)
+  ✓  14 [firefox] › e2e/shadcn-parity.spec.ts:90:1 › message samples recover and questionnaire validates before completion @cross-browser (1.2s)
+  ✓  16 [firefox] › e2e/shadcn-parity.spec.ts:131:3 › catalog Basics fits narrow viewports with accessible controls @cross-browser (1.6s)
+  ✓  15 [firefox] › e2e/shadcn-parity.spec.ts:106:1 › composition recipes filter, select, paginate and recover @cross-browser (2.5s)
+  ✓  17 [firefox] › e2e/shadcn-parity.spec.ts:131:3 › catalog Overlays fits narrow viewports with accessible controls @cross-browser (1.6s)
+  ✓  12 [firefox] › e2e/shadcn-parity.spec.ts:38:1 › catalog overlays allow cancellation, recovery and keyboard actions @cross-browser (5.7s)
+  ✓  18 [firefox] › e2e/shadcn-parity.spec.ts:131:3 › catalog Layout fits narrow viewports with accessible controls @cross-browser (1.6s)
+(node:10403) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  20 [firefox] › e2e/shadcn-parity.spec.ts:131:3 › catalog Recipes fits narrow viewports with accessible controls @cross-browser (1.9s)
+  ✓  19 [firefox] › e2e/shadcn-parity.spec.ts:131:3 › catalog Messages fits narrow viewports with accessible controls @cross-browser (2.1s)
+(node:10676) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:10677) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  21 [webkit] › e2e/shadcn-parity.spec.ts:18:1 › catalog basics support local creation and validated entry @cross-browser (1.7s)
+  ✓  23 [webkit] › e2e/shadcn-parity.spec.ts:68:1 › layout controls preserve editing and resize by keyboard @cross-browser (1.7s)
+  ✓  24 [webkit] › e2e/shadcn-parity.spec.ts:90:1 › message samples recover and questionnaire validates before completion @cross-browser (1.7s)
+  ✓  26 [webkit] › e2e/shadcn-parity.spec.ts:131:3 › catalog Basics fits narrow viewports with accessible controls @cross-browser (1.6s)
+  ✓  25 [webkit] › e2e/shadcn-parity.spec.ts:106:1 › composition recipes filter, select, paginate and recover @cross-browser (2.5s)
+  ✓  27 [webkit] › e2e/shadcn-parity.spec.ts:131:3 › catalog Overlays fits narrow viewports with accessible controls @cross-browser (1.5s)
+  ✓  22 [webkit] › e2e/shadcn-parity.spec.ts:38:1 › catalog overlays allow cancellation, recovery and keyboard actions @cross-browser (5.5s)
+  ✓  28 [webkit] › e2e/shadcn-parity.spec.ts:131:3 › catalog Layout fits narrow viewports with accessible controls @cross-browser (1.5s)
+  ✓  29 [webkit] › e2e/shadcn-parity.spec.ts:131:3 › catalog Messages fits narrow viewports with accessible controls @cross-browser (1.5s)
+  ✓  30 [webkit] › e2e/shadcn-parity.spec.ts:131:3 › catalog Recipes fits narrow viewports with accessible controls @cross-browser (1.5s)
+
+  30 passed (22.4s)
