@@ -18,3 +18,12 @@ filename is not an exemption: only `scripts/generated-sources.json` defines revi
 
 State impact, verification, compatibility risk and how to revert in the pull request. One coherent
 UI/tooling change per PR; no protocol or backend changes without their own compatibility evidence.
+
+## Test runner changes
+
+- Require a failing behavior test before new compatibility logic. Preserve native browser
+  interactions, screenshot tolerances and existing test assertions; do not add skips or disable gates.
+- Require `bun run ci:gate`; runner/browser changes also need `bun run quality:gate`.
+  Name unavailable environments, existing exclusions and measurement limits explicitly.
+- Security audit exceptions remain advisory-specific and time-bounded. Passing automation
+  is not independent human approval.

@@ -1,0 +1,498 @@
+{
+  "base": "a5333a28ec8b31e1eeb324539f7d95584ba21c04",
+  "environment": {
+    "bun": "1.4.2",
+    "node": "v26.12.0",
+    "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+    "processor": "Apple M5 Max"
+  },
+  "method": {
+    "thesis": "Native Bun reduces startup/build overhead for existing pure unit contracts; measure other migrated categories without presuming improvement.",
+    "primary": "warm CLI wall time for the identical six provider files / 26 selected tests",
+    "worthwhile_delta": "10% median reduction; report variance and regressions, no full-suite or CI extrapolation",
+    "guardrails": "identical selected test identities/counts; no test failures, runtime skips, or retries; same machine/runtimes/browser/context and one shared built app for E2E",
+    "method": "three warmups per runner, then five alternating before/after pairs for each category; two isolated workers for units/DOM and one for app E2E; CI=1 TZ=UTC",
+    "limits": "macOS local warm caches; shared app startup excluded from E2E runner timing; not Linux, cold install, full suite, or CI speed evidence",
+    "e2e_amendment_before_measurement": "Host ports 55012/55013 became occupied by an unrelated Docker workload. Share one candidate static app on 55535 for both runners; retain search plus Escape/scroll-state restoration journeys, two unchanged existing cases, one worker. No Connect-dependent case in benchmark. Full E2E verification still uses original application/Connect endpoints."
+  },
+  "identity_normalization": [
+    "Rstest uses comma-joined array parameters while Bun renders JSON arrays; normalized only the unchanged conversion-validation path parameters.",
+    "Playwright JSON uses paths relative to testDir; normalized those to repository-relative e2e paths."
+  ],
+  "identities": {
+    "unit": [
+      [
+        "registry/base-nova/protoform/lib/protobuf-provider/aip-client-workflow.test.ts",
+        "destructive and preview workflow plans > requires an AIP-165 purge preview and distinguishes AIP-236 non-enforcing preview from live commit"
+      ],
+      [
+        "registry/base-nova/protoform/lib/protobuf-provider/aip-client-workflow.test.ts",
+        "getProtoPartialResult > turns AIP-217 unreachable resources into a warning and targeted recovery actions"
+      ],
+      [
+        "registry/base-nova/protoform/lib/protobuf-provider/aip-client-workflow.test.ts",
+        "getProtoRetryDecision > retries only idempotent unary UNAVAILABLE calls and respects RetryInfo"
+      ],
+      [
+        "registry/base-nova/protoform/lib/protobuf-provider/aip-client-workflow.test.ts",
+        "getProtoStability > presents AIP-181 alpha, beta, stable, and deprecated guidance from generated descriptors"
+      ],
+      [
+        "registry/base-nova/protoform/lib/protobuf-provider/aip-client-workflow.test.ts",
+        "runProtoOperation > cancels the remote operation when the caller aborts"
+      ],
+      [
+        "registry/base-nova/protoform/lib/protobuf-provider/aip-client-workflow.test.ts",
+        "runProtoOperation > polls named AIP-151 operations until success or a terminal google.rpc.Status failure"
+      ],
+      [
+        "registry/base-nova/protoform/lib/protobuf-provider/conversion-validation.test.ts",
+        "raw conversion validation > rejects lossy input at byKey,0,value,labels before protobuf conversion"
+      ],
+      [
+        "registry/base-nova/protoform/lib/protobuf-provider/conversion-validation.test.ts",
+        "raw conversion validation > rejects lossy input at child,labels before protobuf conversion"
+      ],
+      [
+        "registry/base-nova/protoform/lib/protobuf-provider/conversion-validation.test.ts",
+        "raw conversion validation > rejects lossy input at child,quota before protobuf conversion"
+      ],
+      [
+        "registry/base-nova/protoform/lib/protobuf-provider/conversion-validation.test.ts",
+        "raw conversion validation > rejects lossy input at children,0,labels before protobuf conversion"
+      ],
+      [
+        "registry/base-nova/protoform/lib/protobuf-provider/conversion-validation.test.ts",
+        "raw conversion validation > rejects lossy input at children,0,quota before protobuf conversion"
+      ],
+      [
+        "registry/base-nova/protoform/lib/protobuf-provider/conversion-validation.test.ts",
+        "raw conversion validation > rejects lossy input at choice,value before protobuf conversion"
+      ],
+      [
+        "registry/base-nova/protoform/lib/protobuf-provider/conversion-validation.test.ts",
+        "raw conversion validation > rejects lossy input at choice,value,labels before protobuf conversion"
+      ],
+      [
+        "registry/base-nova/protoform/lib/protobuf-provider/conversion-validation.test.ts",
+        "raw conversion validation > rejects lossy input at quotas,0 before protobuf conversion"
+      ],
+      [
+        "registry/base-nova/protoform/lib/protobuf-provider/field-mask.test.ts",
+        "createFieldMask > normalizes and minimizes explicit read-mask paths and collapses a wildcard"
+      ],
+      [
+        "registry/base-nova/protoform/lib/protobuf-provider/field-mask.test.ts",
+        "createUpdateMask > includes only dirty, client-owned protobuf fields and collapses collections"
+      ],
+      [
+        "registry/base-nova/protoform/lib/protobuf-provider/field-mask.test.ts",
+        "createUpdateMask > masks the cleared initial oneof branch and nested dirty leaves in the active branch"
+      ],
+      [
+        "registry/base-nova/protoform/lib/protobuf-provider/field-mask.test.ts",
+        "dirtyFieldsFromValues > builds a nested dirty tree, collapses changed collections, and ignores equal values"
+      ],
+      [
+        "registry/base-nova/protoform/lib/protobuf-provider/method-workflow.test.ts",
+        "getProtoMethodWorkflow > classifies custom long-running workflows and exposes operation types"
+      ],
+      [
+        "registry/base-nova/protoform/lib/protobuf-provider/method-workflow.test.ts",
+        "getProtoMethodWorkflow > classifies standard unary methods with their path, query, and body fields and marks streaming RPCs as non-form"
+      ],
+      [
+        "registry/base-nova/protoform/lib/protobuf-provider/mutation-request.test.ts",
+        "descriptor-driven mutation request composers > composes create, update, and delete controls without performing an RPC"
+      ],
+      [
+        "registry/base-nova/protoform/lib/protobuf-provider/mutation-request.test.ts",
+        "descriptor-driven mutation request composers > rejects a descriptor whose standard method shape is ambiguous"
+      ],
+      [
+        "registry/base-nova/protoform/lib/protobuf-provider/source-preservation.test.ts",
+        "source-message preservation > does not resurrect unknown fields from removed messages or changed oneofs"
+      ],
+      [
+        "registry/base-nova/protoform/lib/protobuf-provider/source-preservation.test.ts",
+        "source-message preservation > does not round native timestamp defaults into the next second"
+      ],
+      [
+        "registry/base-nova/protoform/lib/protobuf-provider/source-preservation.test.ts",
+        "source-message preservation > preserves unknown fields on every surviving message node"
+      ],
+      [
+        "registry/base-nova/protoform/lib/protobuf-provider/source-preservation.test.ts",
+        "source-message preservation > preserves untouched timestamp precision through nested, reordered, map and oneof edits"
+      ]
+    ],
+    "e2e": [
+      ["e2e/docs-contract.spec.ts", "finds identifiers that appear inside code blocks"],
+      ["e2e/docs-contract.spec.ts", "search restores the page scroll state (default)"]
+    ]
+  },
+  "samples": [
+    {
+      "category": "unit",
+      "runner": "before",
+      "index": 0,
+      "warmup": true,
+      "seconds": 1.203760958975181,
+      "tests": 26,
+      "exit": 0,
+      "host_load": [51.55615234375, 72.5419921875, 76.109375]
+    },
+    {
+      "category": "unit",
+      "runner": "after",
+      "index": 0,
+      "warmup": true,
+      "seconds": 0.2719224999891594,
+      "tests": 26,
+      "exit": 0,
+      "host_load": [51.55615234375, 72.5419921875, 76.109375]
+    },
+    {
+      "category": "unit",
+      "runner": "after",
+      "index": 1,
+      "warmup": true,
+      "seconds": 0.47834866697667167,
+      "tests": 26,
+      "exit": 0,
+      "host_load": [51.55615234375, 72.5419921875, 76.109375]
+    },
+    {
+      "category": "unit",
+      "runner": "before",
+      "index": 1,
+      "warmup": true,
+      "seconds": 1.2236804999993183,
+      "tests": 26,
+      "exit": 0,
+      "host_load": [51.55615234375, 72.5419921875, 76.109375]
+    },
+    {
+      "category": "unit",
+      "runner": "before",
+      "index": 2,
+      "warmup": true,
+      "seconds": 1.5334065839997493,
+      "tests": 26,
+      "exit": 0,
+      "host_load": [51.55615234375, 72.5419921875, 76.109375]
+    },
+    {
+      "category": "unit",
+      "runner": "after",
+      "index": 2,
+      "warmup": true,
+      "seconds": 0.20695424999576062,
+      "tests": 26,
+      "exit": 0,
+      "host_load": [51.55615234375, 72.5419921875, 76.109375]
+    },
+    {
+      "category": "unit",
+      "runner": "after",
+      "index": 3,
+      "warmup": false,
+      "seconds": 0.2157320419792086,
+      "tests": 26,
+      "exit": 0,
+      "host_load": [51.55615234375, 72.5419921875, 76.109375]
+    },
+    {
+      "category": "unit",
+      "runner": "before",
+      "index": 3,
+      "warmup": false,
+      "seconds": 1.5967757909675129,
+      "tests": 26,
+      "exit": 0,
+      "host_load": [53.43310546875, 72.58251953125, 76.1025390625]
+    },
+    {
+      "category": "unit",
+      "runner": "before",
+      "index": 4,
+      "warmup": false,
+      "seconds": 1.418636833957862,
+      "tests": 26,
+      "exit": 0,
+      "host_load": [53.43310546875, 72.58251953125, 76.1025390625]
+    },
+    {
+      "category": "unit",
+      "runner": "after",
+      "index": 4,
+      "warmup": false,
+      "seconds": 0.17727291700430214,
+      "tests": 26,
+      "exit": 0,
+      "host_load": [53.43310546875, 72.58251953125, 76.1025390625]
+    },
+    {
+      "category": "unit",
+      "runner": "after",
+      "index": 5,
+      "warmup": false,
+      "seconds": 0.14628583303419873,
+      "tests": 26,
+      "exit": 0,
+      "host_load": [53.43310546875, 72.58251953125, 76.1025390625]
+    },
+    {
+      "category": "unit",
+      "runner": "before",
+      "index": 5,
+      "warmup": false,
+      "seconds": 1.2291830420144834,
+      "tests": 26,
+      "exit": 0,
+      "host_load": [53.43310546875, 72.58251953125, 76.1025390625]
+    },
+    {
+      "category": "unit",
+      "runner": "before",
+      "index": 6,
+      "warmup": false,
+      "seconds": 0.901417582994327,
+      "tests": 26,
+      "exit": 0,
+      "host_load": [53.43310546875, 72.58251953125, 76.1025390625]
+    },
+    {
+      "category": "unit",
+      "runner": "after",
+      "index": 6,
+      "warmup": false,
+      "seconds": 0.1136658750474453,
+      "tests": 26,
+      "exit": 0,
+      "host_load": [53.43310546875, 72.58251953125, 76.1025390625]
+    },
+    {
+      "category": "unit",
+      "runner": "after",
+      "index": 7,
+      "warmup": false,
+      "seconds": 0.11335262499051169,
+      "tests": 26,
+      "exit": 0,
+      "host_load": [53.43310546875, 72.58251953125, 76.1025390625]
+    },
+    {
+      "category": "unit",
+      "runner": "before",
+      "index": 7,
+      "warmup": false,
+      "seconds": 0.9340535419760272,
+      "tests": 26,
+      "exit": 0,
+      "host_load": [50.43505859375, 71.64306640625, 75.75]
+    },
+    {
+      "category": "e2e",
+      "runner": "before",
+      "index": 0,
+      "warmup": true,
+      "seconds": 2.0294670420116745,
+      "tests": 2,
+      "exit": 0,
+      "host_load": [23.07177734375, 50.58349609375, 66.33349609375]
+    },
+    {
+      "category": "e2e",
+      "runner": "after",
+      "index": 0,
+      "warmup": true,
+      "seconds": 2.219899291987531,
+      "tests": 2,
+      "exit": 0,
+      "host_load": [24.26708984375, 50.37451171875, 66.1669921875]
+    },
+    {
+      "category": "e2e",
+      "runner": "after",
+      "index": 1,
+      "warmup": true,
+      "seconds": 2.0364662500214763,
+      "tests": 2,
+      "exit": 0,
+      "host_load": [24.26708984375, 50.37451171875, 66.1669921875]
+    },
+    {
+      "category": "e2e",
+      "runner": "before",
+      "index": 1,
+      "warmup": true,
+      "seconds": 1.9764107500086538,
+      "tests": 2,
+      "exit": 0,
+      "host_load": [24.26708984375, 50.37451171875, 66.1669921875]
+    },
+    {
+      "category": "e2e",
+      "runner": "before",
+      "index": 2,
+      "warmup": true,
+      "seconds": 2.3918675840250216,
+      "tests": 2,
+      "exit": 0,
+      "host_load": [25.28662109375, 50.15234375, 65.99560546875]
+    },
+    {
+      "category": "e2e",
+      "runner": "after",
+      "index": 2,
+      "warmup": true,
+      "seconds": 2.3245938339969143,
+      "tests": 2,
+      "exit": 0,
+      "host_load": [25.28662109375, 50.15234375, 65.99560546875]
+    },
+    {
+      "category": "e2e",
+      "runner": "after",
+      "index": 3,
+      "warmup": false,
+      "seconds": 2.2886644590180367,
+      "tests": 2,
+      "exit": 0,
+      "host_load": [24.94287109375, 49.66796875, 65.73193359375]
+    },
+    {
+      "category": "e2e",
+      "runner": "before",
+      "index": 3,
+      "warmup": false,
+      "seconds": 1.7078014169819653,
+      "tests": 2,
+      "exit": 0,
+      "host_load": [24.94287109375, 49.66796875, 65.73193359375]
+    },
+    {
+      "category": "e2e",
+      "runner": "before",
+      "index": 4,
+      "warmup": false,
+      "seconds": 2.151446625008248,
+      "tests": 2,
+      "exit": 0,
+      "host_load": [24.06640625, 49.07568359375, 65.4287109375]
+    },
+    {
+      "category": "e2e",
+      "runner": "after",
+      "index": 4,
+      "warmup": false,
+      "seconds": 1.9416663330048323,
+      "tests": 2,
+      "exit": 0,
+      "host_load": [24.06640625, 49.07568359375, 65.4287109375]
+    },
+    {
+      "category": "e2e",
+      "runner": "after",
+      "index": 5,
+      "warmup": false,
+      "seconds": 2.1407540420186706,
+      "tests": 2,
+      "exit": 0,
+      "host_load": [24.06640625, 49.07568359375, 65.4287109375]
+    },
+    {
+      "category": "e2e",
+      "runner": "before",
+      "index": 5,
+      "warmup": false,
+      "seconds": 1.951298833009787,
+      "tests": 2,
+      "exit": 0,
+      "host_load": [23.02001953125, 48.443359375, 65.109375]
+    },
+    {
+      "category": "e2e",
+      "runner": "before",
+      "index": 6,
+      "warmup": false,
+      "seconds": 2.0211867499747314,
+      "tests": 2,
+      "exit": 0,
+      "host_load": [23.02001953125, 48.443359375, 65.109375]
+    },
+    {
+      "category": "e2e",
+      "runner": "after",
+      "index": 6,
+      "warmup": false,
+      "seconds": 6.363109165977221,
+      "tests": 2,
+      "exit": 0,
+      "host_load": [28.30322265625, 49.1162109375, 65.2490234375]
+    },
+    {
+      "category": "e2e",
+      "runner": "after",
+      "index": 7,
+      "warmup": false,
+      "seconds": 4.2027089999755844,
+      "tests": 2,
+      "exit": 0,
+      "host_load": [34.36474609375, 50.02734375, 65.47607421875]
+    },
+    {
+      "category": "e2e",
+      "runner": "before",
+      "index": 7,
+      "warmup": false,
+      "seconds": 1.925617166038137,
+      "tests": 2,
+      "exit": 0,
+      "host_load": [33.85498046875, 49.66162109375, 65.25634765625]
+    }
+  ],
+  "sources": {
+    "registry/base-nova/protoform/lib/protobuf-provider/field-mask.test.ts": {
+      "before": "4dd33844cae939f6196dcccda6c77920f06a2d5e0b16de5b27462f8fc67579f5",
+      "after": "dd90708fc5f945b2ba09bcfb79e68b8d800c71144fe7253aead7d47c0d7d9704"
+    },
+    "registry/base-nova/protoform/lib/protobuf-provider/source-preservation.test.ts": {
+      "before": "430ae304509931564091ddb58607ef18b67430a80aeb0fafc8b28fb3d6434c65",
+      "after": "23edf945554bb7c9bf6e9ab0c02c3f8bad738c3b3d47e05d355018312e010ad0"
+    },
+    "registry/base-nova/protoform/lib/protobuf-provider/mutation-request.test.ts": {
+      "before": "ed07bd9eb004c8e1cbf94ab7806f0944d8c0ec4e72bc4ab757947bddc4028ac5",
+      "after": "bd1c2c9208446af39f78c3ec55ecd305d382a871e38f8fd8418abb76336ee737"
+    },
+    "registry/base-nova/protoform/lib/protobuf-provider/conversion-validation.test.ts": {
+      "before": "49569baa24c9c1a9f8b0aee5f1c1264f2c075a187ac4e46f2509610e50d669cd",
+      "after": "6603b226cda75306b09f0a3b54cd86de26d9690597435d0c31aeecf66087fced"
+    },
+    "registry/base-nova/protoform/lib/protobuf-provider/aip-client-workflow.test.ts": {
+      "before": "362b47b887f8d0ca1600dd178e1abc4c311e0d2fab1a4a06d33c6a2ced040060",
+      "after": "b4469fc0c35120e5839955ee756bab7caf202d44b396bbecdb720ca8608b450d"
+    },
+    "registry/base-nova/protoform/lib/protobuf-provider/method-workflow.test.ts": {
+      "before": "987be59237026bbcf26f8106deb2e1a6d8817e19c74246cb4bea0a21fc5176d3",
+      "after": "626c621c3bd2008816dc25f16e11270d89d8671845e794deacba71ae7496dd96"
+    },
+    "examples/catalog/capability-demo.test.tsx": {
+      "before": "dd2f3abc53655785d6b1c9d5438cc4b92d4e8206bc2f407b46b1969e522fabb0",
+      "after": "dd2f3abc53655785d6b1c9d5438cc4b92d4e8206bc2f407b46b1969e522fabb0"
+    },
+    "examples/form-libraries/form-libraries.test.tsx": {
+      "before": "3a549d4fc929bcff4f12488e489b891ca79d18054dab2bd48e3562e63a15cb32",
+      "after": "3a549d4fc929bcff4f12488e489b891ca79d18054dab2bd48e3562e63a15cb32"
+    },
+    "registry/base-nova/protoform/components/auto-form/__tests__/proto-forms.test.tsx": {
+      "before": "e4602b22026e2abc7cc7664ac5dd7c9a054c49e736f9e021f88e884d7e81de00",
+      "after": "e4602b22026e2abc7cc7664ac5dd7c9a054c49e736f9e021f88e884d7e81de00"
+    },
+    "e2e/docs-contract.spec.ts": {
+      "before": "645a9bbb51bdc60139b83126de7e23a611cbdc2317652c2bc712a92bc5797bd7",
+      "after": "2d3eb3d020832df49939094f9fe91881608dec826f860e4fa37bc355814ce53f"
+    }
+  }
+}

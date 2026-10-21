@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
-import { expect, test } from '@playwright/test';
+import { expect } from '@rstest/playwright';
+import { test } from '../scripts/e2e-test';
 
 const aipCreateHubUrl = /\/docs\/aip-example-catalog#aip-133-standard-methods-create$/u;
 const aipGetHubUrl = /\/docs\/aip-example-catalog#aip-131-standard-methods-get$/u;
@@ -213,7 +214,7 @@ test('renders the native OpenAPI reference and real RPC method shape', async ({ 
   const cleanup = await page.request.post('http://127.0.0.1:55012/protoform.conformance.v1.LibraryService/DeleteBook', {
     data: { name: `publishers/demo-library/books/${bookId}` },
   });
-  await expect(cleanup).toBeOK();
+  expect(cleanup.ok()).toBe(true);
 
   await page.goto('/docs/example-bufbuild-descriptors');
   await expect(page).toHaveURL(bufbuildHubUrl);

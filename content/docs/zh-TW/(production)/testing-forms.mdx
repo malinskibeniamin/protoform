@@ -20,14 +20,17 @@ bun add --dev @rsbuild/plugin-react @rstest/core happy-dom undici @testing-libra
 
 使用 `happy-dom` 設定整合測試套件，並載入 Testing Library matchers：
 
-```ts title="rstest.integration.config.ts"
+```ts title="rstest.dom.config.ts"
 import { pluginReact } from "@rsbuild/plugin-react";
 import { defineConfig } from "@rstest/core";
 
 export default defineConfig({
   plugins: [pluginReact()],
   setupFiles: ["./rstest.setup.ts"],
-  testEnvironment: "happy-dom",
+  testEnvironment: {
+    name: "happy-dom",
+    options: { settings: { disableCSSFileLoading: true, disableIframePageLoading: true } },
+  },
 });
 ```
 
@@ -139,5 +142,5 @@ assertion。Protoform 的 conformance suite 已涵蓋其可重複使用的 descr
 conversion 及 path-mapping contracts。只有當表單引入不同的提交或復原 workflow 時，
 才新增應用程式整合測試。
 
-若要測試的風險涉及瀏覽器 layout、focus 行為、原生 controls，或完整的已部署使用者流程，
-請另外使用 Playwright。
+使用 Rstest Browser Mode 測試元件的原生互動。透過 Rstest 的 Playwright 整合，
+針對執行中的應用程式測試完整使用者流程。Happy DOM 不能取代這兩類測試。

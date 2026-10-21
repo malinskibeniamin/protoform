@@ -6,10 +6,11 @@ import {
   TimestampSchema,
   timestampFromDate,
 } from '@bufbuild/protobuf/wkt';
-import { describe, expect } from '@rstest/core';
 
 import { preserveProtoMessageSource } from './hook-runtime.js';
 import { formValuesToProto, protoToFormValues } from './provider.js';
+
+declare const { describe, expect, test }: typeof import('bun:test');
 
 function createPreservationFixture(): {
   nested: DescMessage;

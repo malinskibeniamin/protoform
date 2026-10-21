@@ -1,6 +1,6 @@
-import { describe, expect } from '@rstest/core';
-
 import { parseProtoformCliArguments } from './protoform';
+
+declare const { describe, expect, test }: typeof import('bun:test');
 
 describe('protoform CLI', () => {
   test('parses audit targets and the requested output format', () => {

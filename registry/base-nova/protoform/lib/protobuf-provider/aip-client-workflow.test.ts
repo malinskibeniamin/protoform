@@ -7,7 +7,6 @@ import { StatusSchema } from '@buf/googleapis_googleapis.bufbuild_es/google/rpc/
 import { create, type DescMethod } from '@bufbuild/protobuf';
 import { AnySchema, MethodOptions_IdempotencyLevel } from '@bufbuild/protobuf/wkt';
 import { Code, ConnectError } from '@connectrpc/connect';
-import { describe, expect, rs } from '@rstest/core';
 
 import { FormExamplesService } from '../../../../../examples/gen/protoform/examples/v1/forms_pb.js';
 import {
@@ -19,6 +18,8 @@ import {
   ProtoOperationError,
   runProtoOperation,
 } from './aip-client-workflow.js';
+
+declare const { describe, expect, jest, test }: typeof import('bun:test');
 
 function operation(name: string, done = false, result: Operation['result'] = { case: undefined }): Operation {
   return create(OperationSchema, { done, name, result });
@@ -34,7 +35,7 @@ function method(idempotency: MethodOptions_IdempotencyLevel): DescMethod {
 describe('runProtoOperation', () => {
   test('polls named AIP-151 operations until success or a terminal google.rpc.Status failure', async () => {
     const updates: boolean[] = [];
-    const poll = rs.fn(async () =>
+    const poll = jest.fn(async () =>
       operation('operations/123', true, {
         case: 'response',
         value: create(AnySchema),
@@ -57,27 +58,31 @@ describe('runProtoOperation', () => {
       message: 'The import source is no longer available.',
     });
 
-    await expect(
-      runProtoOperation({
-        poll: async () => operation('operations/unused'),
-        start: async () => operation('operations/123', true, { case: 'error', value: status }),
-      })
-    ).rejects.toEqual(expect.any(ProtoOperationError));
+    await Promise.resolve(
+      expect(
+        runProtoOperation({
+          poll: async () => operation('operations/unused'),
+          start: async () => operation('operations/123', true, { case: 'error', value: status }),
+        })
+      ).rejects.toEqual<unknown>(expect.any(ProtoOperationError))
+    );
   });
 
   test('cancels the remote operation when the caller aborts', async () => {
     const controller = new AbortController();
-    const cancel = rs.fn(async () => undefined);
+    const cancel = jest.fn(async () => undefined);
 
-    await expect(
-      runProtoOperation({
-        cancel,
-        poll: async () => operation('operations/123'),
-        signal: controller.signal,
-        sleep: async () => controller.abort(),
-        start: async () => operation('operations/123'),
-      })
-    ).rejects.toMatchObject({ name: 'AbortError' });
+    await Promise.resolve(
+      expect(
+        runProtoOperation({
+          cancel,
+          poll: async () => operation('operations/123'),
+          signal: controller.signal,
+          sleep: async () => controller.abort(),
+          start: async () => operation('operations/123'),
+        })
+      ).rejects.toMatchObject({ name: 'AbortError' })
+    );
     expect(cancel).toHaveBeenCalledWith('operations/123');
   });
 });

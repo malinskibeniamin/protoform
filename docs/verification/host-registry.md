@@ -6,7 +6,7 @@
 bun install --frozen-lockfile
 bun run registry:build
 bun run registry:consumer-smoke
-bunx --no-install playwright test --config playwright.host-registry.config.ts
+bun run registry:host-browser
 ```
 
 The consumer smoke uses the repository's locked shadcn CLI. It creates disposable fixtures under

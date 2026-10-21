@@ -7,7 +7,6 @@ import {
 } from '@buf/googleapis_googleapis.bufbuild_es/google/longrunning/operations_pb.js';
 import { create, type DescMessage, type DescMethod, setExtension } from '@bufbuild/protobuf';
 import { MethodDescriptorProtoSchema, MethodOptionsSchema } from '@bufbuild/protobuf/wkt';
-import { describe, expect } from '@rstest/core';
 
 import {
   BookSchema,
@@ -17,6 +16,8 @@ import {
 } from '../../../../../conformance/gen/protoform/conformance/v1/aip_pb.js';
 import { FormExamplesService } from '../../../../../examples/gen/protoform/examples/v1/forms_pb.js';
 import { getProtoMethodWorkflow } from './method-workflow.js';
+
+declare const { describe, expect, test }: typeof import('bun:test');
 
 interface MethodFixture {
   body?: string;

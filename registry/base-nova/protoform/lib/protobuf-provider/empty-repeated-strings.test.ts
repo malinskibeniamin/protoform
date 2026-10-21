@@ -4,9 +4,10 @@ import {
   FieldDescriptorProto_Type,
   FileDescriptorProtoSchema,
 } from '@bufbuild/protobuf/wkt';
-import { describe, expect } from '@rstest/core';
 
 import { formValuesToProtoInit } from './provider.js';
+
+declare const { describe, expect, test }: typeof import('bun:test');
 
 function createConversionFixture(): DescMessage {
   const file = create(FileDescriptorProtoSchema, {

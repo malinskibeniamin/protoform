@@ -1,10 +1,10 @@
-import { describe, expect } from '@rstest/core';
-
 import '@/registry/base-nova/protoform/lib/protobuf-provider/auto-form-example-annotations';
 
 import { AutoFormExampleSchema } from '@/registry/base-nova/protoform/lib/protobuf-provider/gen/auto-form-example_pb';
 import { protoConversionOptionsFromFieldConfig, resolveSchema } from '../schema';
 import { createMockProvider } from './test-utils';
+
+declare const { describe, expect, test }: typeof import('bun:test');
 
 describe('resolveSchema', () => {
   test('maps per-field repeated-string policies to descriptor paths', () => {

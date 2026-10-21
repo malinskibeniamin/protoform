@@ -1,8 +1,9 @@
-import { expect } from '@rstest/core';
 import { expectTypeOf } from 'expect-type';
 import { isStandardSchema } from '../core/index.js';
 import { createProtoFormSchema } from './form-schema.js';
 import { AutoFormExampleSchema } from './gen/auto-form-example_pb.js';
+
+declare const { expect, test }: typeof import('bun:test');
 
 function buildValidProtoFormValues(): Record<string, unknown> {
   return {
@@ -85,7 +86,7 @@ test('invalid form values produce issues with form-shaped camelCase paths or a r
   );
 
   expect(paths).toContainEqual(['primaryEmail']);
-  expect(paths.flat()).not.toContainEqual(expect.stringContaining('_'));
+  expect(paths.flat()).not.toContainEqual<unknown>(expect.stringContaining('_'));
 
   const rootResult = await schema['~standard'].validate('not an object');
   expect(rootResult.issues?.length).toBeGreaterThan(0);

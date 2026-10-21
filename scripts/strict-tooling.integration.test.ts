@@ -342,9 +342,8 @@ describe('strict React tooling', () => {
     const configPaths = [
       'rstest.browser.config.ts',
       'rstest.conformance.config.ts',
-      'rstest.config.ts',
-      'rstest.integration.config.ts',
-      'rstest.unit.config.ts',
+      'rstest.dom.config.ts',
+      'rstest.node.config.ts',
     ];
     const configSources = await Promise.all(configPaths.map((configPath) => readFile(configPath, 'utf8')));
     for (const source of configSources) {

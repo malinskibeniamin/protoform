@@ -1,5 +1,4 @@
 import type { DescMessage } from '@bufbuild/protobuf';
-import { describe } from '@rstest/core';
 import { expectTypeOf } from 'expect-type';
 import type { Control, Path } from 'react-hook-form';
 import type { Control as ControlV8 } from 'react-hook-form-v8';
@@ -8,6 +7,8 @@ import type { UseProtoFormReturn as UseProtoFormV8Return } from '../../hooks/use
 import type { ProtoFormShape, ProtoFormValues } from './form-values.js';
 import type { AutoFormExampleSchema } from './gen/auto-form-example_pb.js';
 import type { protoToFormValues } from './hook-runtime.js';
+
+declare const { describe, test }: typeof import('bun:test');
 
 type DeliveryCredentials =
   | { case: 'sharedSecret'; value: { secretRef: string } }

@@ -25,5 +25,8 @@ export default defineConfig({
     }),
   ],
   setupFiles: ['./rstest.setup.ts'],
-  testEnvironment: 'happy-dom',
+  testEnvironment: {
+    name: 'happy-dom',
+    options: { settings: { disableCSSFileLoading: true, disableIframePageLoading: true } },
+  },
 });

@@ -7,7 +7,7 @@ import type { Window as HappyDOMWindow } from 'happy-dom';
 declare const window: HappyDOMWindow;
 
 const repositoryDirectory = new URL('../', import.meta.url);
-const domConfigs = ['rstest.config.ts', 'rstest.conformance.config.ts', 'rstest.integration.config.ts'] as const;
+const domConfigs = ['rstest.dom.config.ts', 'rstest.conformance.config.ts'] as const;
 const rstestScripts = [
   'test:browser',
   'test:browser:update',
@@ -16,9 +16,6 @@ const rstestScripts = [
   'test:integration',
   'test:integration:smoke',
   'test:integration:watch',
-  'test:unit',
-  'test:unit:ci',
-  'test:unit:watch',
 ] as const;
 
 describe('simulated DOM test environment', () => {
@@ -60,9 +57,9 @@ describe('simulated DOM test environment', () => {
     }
   });
 
-  test('uses Rstest 0.12.3 with happy-dom and no Vitest wiring', () => {
+  test('uses Rstest 0.12.4 with happy-dom and no Vitest wiring', () => {
     for (const config of domConfigs) {
-      expect(readFileSync(new URL(config, repositoryDirectory), 'utf8')).toContain("testEnvironment: 'happy-dom'");
+      expect(readFileSync(new URL(config, repositoryDirectory), 'utf8')).toContain("name: 'happy-dom'");
     }
 
     const manifest = JSON.parse(readFileSync(new URL('package.json', repositoryDirectory), 'utf8')) as {
@@ -70,11 +67,16 @@ describe('simulated DOM test environment', () => {
       scripts?: Record<string, string>;
     };
 
-    expect(manifest.devDependencies?.['@rstest/browser']).toBe('0.12.3');
-    expect(manifest.devDependencies?.['@rstest/browser-react']).toBe('0.12.3');
-    expect(manifest.devDependencies?.['@rstest/core']).toBe('0.12.3');
+    expect(manifest.devDependencies?.['@rstest/browser']).toBe('0.12.4');
+    expect(manifest.devDependencies?.['@rstest/browser-react']).toBe('0.12.4');
+    expect(manifest.devDependencies?.['@rstest/core']).toBe('0.12.4');
     expect(manifest.devDependencies?.['happy-dom']).toBeDefined();
     expect(manifest.devDependencies?.['undici']).toBe('8.12.2');
+    expect(manifest.devDependencies?.['@rstest/playwright']).toBe('0.12.4');
+    expect(manifest.devDependencies?.['@playwright/test']).toBeUndefined();
+    expect(manifest.scripts?.['test:unit']).toBe('bun test --parallel=4');
+    expect(manifest.scripts?.['test:unit:ci']).toBe('bun test --parallel=1 --dots');
+    expect(manifest.scripts?.['test:unit:watch']).toBe('bun test --watch --parallel=4');
     expect(manifest.devDependencies?.['jsdom']).toBeUndefined();
     expect(manifest.devDependencies?.['vitest']).toBeUndefined();
     expect(Object.values(manifest.scripts ?? {}).join('\n')).not.toContain('vitest');

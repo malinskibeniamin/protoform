@@ -1,16 +1,18 @@
 diff --git a/src/components/openapi/Playground.astro b/src/components/openapi/Playground.astro
-index d8b5f35..f853518 100644
+index d8b5f35..917df4c 100644
 --- a/src/components/openapi/Playground.astro
 +++ b/src/components/openapi/Playground.astro
-@@ -10,4 +10,3 @@ import { paramKey, type PlaygroundModel } from "./request.ts";
+@@ -7,9 +6,0 @@ import { paramKey, type PlaygroundModel } from "./request.ts";
+-/**
+- * The interactive "Try it" panel for one operation. Everything is
+- * server-rendered — a native collapsed `<details>` with plain labelled
 - * inputs, keyboard-operable with zero JS — and the client module only loads
 - * when the reader first opens it (see the loader script at the foot of this
 - * file). The request model the client consumes is embedded as JSON so the
 - * lazy chunk needs no data fetch.
-+ * inputs, keyboard-operable with zero JS. Client event handlers attach on
-+ * first open, with their module already loaded so early edits and Send clicks
-+ * cannot race initialization. The request model is embedded as JSON.
-@@ -301,5 +300,4 @@ const CHECKBOX_ROW =
+- */
+-
+@@ -301,5 +292,2 @@ const CHECKBOX_ROW =
 -  // Hydration waits for intent: a collapsed <details> can only fire its first
 -  // `toggle` by opening, so the one-shot listener imports the client module —
 -  // a separate chunk readers who never try a request never download — and
@@ -18,12 +20,23 @@ index d8b5f35..f853518 100644
 -  // so that module stays import-safe under the test runner.
 +  import { initPlayground } from "./playground-client.ts";
 +
-+  // Load the module before defining the element. Wiring stays intent-driven,
-+  // but the first open cannot expose editable controls before listeners exist.
-@@ -314,2 +312 @@ const CHECKBOX_ROW =
+@@ -308,18 +296 @@ const CHECKBOX_ROW =
+-      const details = this.querySelector<HTMLDetailsElement>(
+-        "details[data-playground]"
+-      );
+-      if (!details) {
+-        return;
+-      }
 -      const init = async () => {
 -        const { initPlayground } = await import("./playground-client.ts");
-+      const init = () => {
-@@ -322 +319 @@ const CHECKBOX_ROW =
+-        initPlayground(this);
+-      };
+-      // A re-attached element (bfcache restore, DOM moves) can arrive with the
+-      // panel already open — its first toggle has fired, so a listener alone
+-      // would leave a visible form dead.
+-      if (details.open) {
 -        void init();
-+        init();
+-        return;
+-      }
+-      details.addEventListener("toggle", init, { once: true });
++      initPlayground(this);

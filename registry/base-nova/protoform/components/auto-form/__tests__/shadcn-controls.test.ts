@@ -1,6 +1,6 @@
-import { describe, expect } from '@rstest/core';
-
 import { shadcnAutoFormControls } from '../shadcn-controls';
+
+declare const { describe, expect, test }: typeof import('bun:test');
 
 describe('shadcn AutoForm coverage manifest', () => {
   test('keeps proto control annotations unique and explicit', () => {

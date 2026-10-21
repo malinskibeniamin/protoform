@@ -124,8 +124,9 @@ describe('readiness scoring', () => {
     const manifest = JSON.parse(readFileSync('package.json', 'utf8')) as {
       scripts?: Record<string, string>;
     };
-    expect(workflow).toContain('bun run ci:gate');
+    expect(workflow).toContain('bun run quality:gate');
     expect(manifest.scripts?.['ci:gate']).toContain('bun run readiness:gate');
+    expect(manifest.scripts?.['quality:gate']).toContain('bun run readiness:gate');
     expect(manifest.scripts?.['readiness:gate']).toContain('--require-profile-complete');
     expect(manifest.scripts?.['release:gate']).toBe('bun run quality:gate');
   });

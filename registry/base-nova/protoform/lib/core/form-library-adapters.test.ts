@@ -1,4 +1,3 @@
-import { describe, expect } from '@rstest/core';
 import type { StandardSchemaV1 } from '@standard-schema/spec';
 
 import {
@@ -6,6 +5,8 @@ import {
   createFormikValidator,
   standardSchemaIssuesToFormErrors,
 } from './form-library-adapters.js';
+
+declare const { describe, expect, test }: typeof import('bun:test');
 
 interface ProfileValues {
   contacts: Array<{ email: string }>;

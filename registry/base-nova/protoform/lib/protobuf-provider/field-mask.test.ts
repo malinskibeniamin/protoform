@@ -1,10 +1,11 @@
-import { describe, expect } from '@rstest/core';
 import {
   MaskableProfileSchema,
   SubmitComplexFormRequestSchema,
 } from '../../../../../examples/gen/protoform/examples/v1/forms_pb.js';
 import { createFieldMask, createUpdateMask, dirtyFieldsFromValues } from './field-mask.js';
 import { AutoFormExampleSchema } from './gen/auto-form-example_pb.js';
+
+declare const { describe, expect, test }: typeof import('bun:test');
 
 describe('createFieldMask', () => {
   test('normalizes and minimizes explicit read-mask paths and collapses a wildcard', () => {

@@ -1213,7 +1213,7 @@ const aipRequirements: readonly ReadinessRequirement[] = [
   aipVerified(
     180,
     'Backwards compatibility',
-    'scripts/buf-policy.test.ts',
+    'scripts/buf-policy.integration.test.ts',
     'enforces target-branch compatibility and rejects an isolated fixture',
     'CI compares stable protobuf modules with the pull request target and rejects every non-waived FILE compatibility violation.'
   ),
@@ -1227,7 +1227,7 @@ const aipRequirements: readonly ReadinessRequirement[] = [
   aipVerified(
     182,
     'External software dependencies',
-    'scripts/registry-only-distribution.test.ts',
+    'scripts/registry-only-distribution.integration.test.ts',
     'ships Protoform under MIT without private package workspaces',
     'Every external runtime dependency is declared by a public source-copy registry item.',
     'reviewing'
@@ -1241,13 +1241,13 @@ const aipRequirements: readonly ReadinessRequirement[] = [
   aipVerified(
     190,
     'Naming conventions',
-    'scripts/buf-policy.test.ts',
+    'scripts/buf-policy.integration.test.ts',
     'passes Buf STANDARD including the complete Protovalidate lint rule'
   ),
   aipVerified(
     191,
     'File and directory structure',
-    'scripts/buf-policy.test.ts',
+    'scripts/buf-policy.integration.test.ts',
     'passes Buf STANDARD including the complete Protovalidate lint rule'
   ),
   aipVerified(
@@ -1466,10 +1466,10 @@ const productionRequirements: readonly ReadinessRequirement[] = [
   ),
   verified(
     'production',
-    'production.cross-browser',
-    'Chromium, Firefox, and WebKit',
-    'scripts/browser-matrix.test.ts',
-    'runs the end-to-end form suite in Chromium, Firefox, and WebKit'
+    'production.browser-workflows',
+    'Chromium end-to-end workflows',
+    'scripts/browser-matrix.integration.test.ts',
+    'runs the end-to-end form suite in Chromium through Rstest'
   ),
   verified(
     'production',
@@ -1503,7 +1503,7 @@ const productionRequirements: readonly ReadinessRequirement[] = [
     'production',
     'production.registry-dependencies',
     'Registry dependency contract',
-    'scripts/registry-only-distribution.test.ts',
+    'scripts/registry-only-distribution.integration.test.ts',
     'ships Protoform under MIT without private package workspaces'
   ),
   verified(
@@ -1518,7 +1518,7 @@ const productionRequirements: readonly ReadinessRequirement[] = [
     'production',
     'production.bundle-size',
     'Bundle-size budget',
-    'scripts/bundle-budget.test.ts',
+    'scripts/bundle-budget.integration.test.ts',
     'enforces registry runtime and example budgets',
     recommended
   ),

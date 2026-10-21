@@ -6,8 +6,9 @@ import {
   CodeGeneratorResponse_Feature,
   FileDescriptorSetSchema,
 } from '@bufbuild/protobuf/wkt';
-import { expect } from '@rstest/core';
 import { pluginVersion, protocGenProtoform } from './plugin.js';
+
+declare const { expect, test }: typeof import('bun:test');
 
 function runPluginOnTracerProto(): CodeGeneratorResponse {
   const bytes = readFileSync(new URL('testdata/tracer.binpb', import.meta.url));

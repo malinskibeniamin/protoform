@@ -17,7 +17,7 @@ Direct recovery, pagination, reload, and v7/v8 native edit/reset journeys also p
 | Native v7/v8 timestamp defaults                                | `native-before/after-desktop.png`, `native-before/after-mobile.png`             | Native-hook browser tests and installed-consumer screenshots      |
 | Native edit and reset retain only untouched precision          | Installed `native-defaults-v7/v8.png` baselines under `scripts/__screenshots__` | Edit, inspect, reset, inspect, reload in both hooks and viewports |
 | Existing host-owned primitives, missing-input recovery         | Existing host screenshots                                                       | Installed host consumer, desktop and mobile                       |
-| Docs and shared controls                                       | Existing docs screenshots                                                       | Chromium, Firefox, WebKit E2E suite                               |
+| Docs and shared controls                                       | Existing docs screenshots                                                       | Chromium E2E suite                                                |
 | 50/200/500-field form                                          | Real AutoForm fixture                                                           | Browser render, edit, submit and step budgets; no speedup claimed |
 
 Reliability captures: 1280×800 / 390×844. Native captures: 1100×800 / 390×844.

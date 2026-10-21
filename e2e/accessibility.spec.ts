@@ -1,5 +1,7 @@
 import { AxeBuilder } from '@axe-core/playwright';
-import { expect, type Page, test } from '@playwright/test';
+import { expect } from '@rstest/playwright';
+import type { Page } from 'playwright';
+import { test } from '../scripts/e2e-test';
 
 async function expectNoSeriousViolations(page: Page) {
   const results = await new AxeBuilder({ page }).exclude('[data-base-ui-focus-guard]').analyze();
@@ -78,9 +80,9 @@ test('keeps localized demo hubs readable in dark theme', async ({ page }) => {
   await expectNoSeriousViolations(page);
 });
 
-test('has no serious accessibility violations across representative form states', async ({ page }) => {
-  test.setTimeout(120_000);
-
+test('has no serious accessibility violations across representative form states', { timeout: 120_000 }, async ({
+  page,
+}) => {
   await page.addInitScript(() => {
     Object.defineProperty(Element.prototype, 'requestFullscreen', {
       configurable: true,

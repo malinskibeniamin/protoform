@@ -29,7 +29,10 @@ before React hydration. Profiling is never injected into builds or previews. The
 Blume 2.2.4 has a Bun-managed patch in `patches/blume@2.2.4.patch`: load the OpenAPI request
 module before defining its custom element. Its new lazy import lost early edits and Send clicks
 while the already-visible controls were unwired. The existing fast-edit/send browser regressions
-failed before this patch. This trades deferred download for working controls; remove the patch
+failed before this patch. Handlers attach when the element connects, not on the queued disclosure
+`toggle` event: otherwise a first edit can arrive before the listener exists. A real-app regression
+opens and edits in one event-loop task and checks the generated sample without a second input.
+This trades deferred initialization for working controls; remove the patch
 when upstream makes initialization synchronous or exposes a real loading/readiness state.
 The pinned package integrity in `bun.lock` owns provenance; upstream license files are unchanged.
 

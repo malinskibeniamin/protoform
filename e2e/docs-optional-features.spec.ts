@@ -1,5 +1,6 @@
 import { execFileSync } from 'node:child_process';
-import { expect, test } from '@playwright/test';
+import { describe, expect } from '@rstest/playwright';
+import { test, withLocale } from '../scripts/e2e-test';
 
 test("links to each page's actual GitHub source and shows its update date", async ({ page }) => {
   await page.goto('/docs/getting-started');
@@ -74,10 +75,10 @@ for (const locale of ['en', 'zh', 'zh-TW', 'pl']) {
   });
 }
 
-test.describe('browser-language routing', () => {
-  test.use({ locale: 'pl-PL' });
+describe('browser-language routing', () => {
+  const polishTest = withLocale('pl-PL');
 
-  test('routes first visits but remembers an explicit language choice @cross-browser', async ({ page }) => {
+  polishTest('routes first visits but remembers an explicit language choice @cross-browser', async ({ page }) => {
     await page.goto('/docs?reader=first#intro');
     await expect(page).toHaveURL(/\/docs\/pl\?reader=first#intro$/u);
     await expect(page.locator('html')).toHaveAttribute('lang', 'pl');
@@ -90,7 +91,7 @@ test.describe('browser-language routing', () => {
     await expect(page.locator('html')).toHaveAttribute('lang', 'en');
   });
 
-  test('does not reroute a deep link with no translated API reference', async ({ page }) => {
+  polishTest('does not reroute a deep link with no translated API reference', async ({ page }) => {
     await page.goto('/docs/reference');
     await expect(page).toHaveURL(/\/docs\/reference$/u);
     await expect(page.getByRole('heading', { name: 'Protoform bookstore Connect API' })).toBeVisible();
@@ -127,14 +128,39 @@ test('generates all 18 API sample languages and updates samples from the request
     'Kotlin',
     'Dart',
   ]);
-  await expect(request.getByRole('tabpanel', { includeHidden: true })).toContainText(
-    Array.from({ length: 18 }, () => 'CreateBook')
-  );
+  const samples = request.getByRole('tabpanel', { includeHidden: true });
+  await expect(samples).toHaveCount(18);
+  await Promise.all((await samples.all()).map((sample) => expect(sample).toContainText('CreateBook')));
+  await page.waitForFunction(() => customElements.get('blume-playground') !== undefined);
   await page.getByText('Try it', { exact: true }).click();
   await page
     .getByRole('textbox', { name: 'Request body' })
     .fill('{"bookId":"optional-samples","book":{"title":"No key required"}}');
+  await expect(request.getByRole('tabpanel')).toContainText('optional-samples');
   await request.getByRole('tab', { exact: true, name: 'TypeScript' }).click();
   await expect(request.getByRole('tabpanel')).toContainText('optional-samples');
   await expect(request.getByRole('tabpanel')).toContainText('No key required');
+});
+
+test('retains request edits made before the disclosure toggle task', async ({ page }) => {
+  await page.goto('/docs/reference');
+  await page.getByRole('link').filter({ hasText: 'Create a book' }).first().click();
+  await page.waitForFunction(() => customElements.get('blume-playground') !== undefined);
+
+  await page.locator('blume-playground').evaluate((root) => {
+    const summary = root.querySelector('summary');
+    const body = root.querySelector('textarea');
+    if (!(summary instanceof HTMLElement && body instanceof HTMLTextAreaElement)) {
+      throw new TypeError('Request disclosure and body must be rendered');
+    }
+    summary.click();
+    body.value = '{"bookId":"queued-first-edit"}';
+    body.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+
+  await expect(page.getByRole('textbox', { name: 'Request body' })).toHaveValue('{"bookId":"queued-first-edit"}');
+  const request = page
+    .locator('blume-panel-tabs')
+    .filter({ has: page.getByRole('tablist', { exact: true, name: 'Request' }) });
+  await expect(request.getByRole('tabpanel')).toContainText('queued-first-edit');
 });

@@ -1,11 +1,11 @@
-import { expect, test } from '@playwright/test';
-
-test.use({ baseURL: 'http://127.0.0.1:55120' });
+import { expect } from '@rstest/playwright';
+import { reliabilityBaseURL } from './e2e-context';
+import { test } from './e2e-test';
 
 test('installed custom options show creation failures and recover after retry', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
-  await page.goto('/custom-options.html');
+  await page.goto(`${reliabilityBaseURL}/custom-options.html`);
   const input = page.getByRole('combobox');
   await input.fill('new');
   await page.getByRole('option', { name: /create.*new/iu }).click();
@@ -27,7 +27,7 @@ test('installed custom options show creation failures and recover after retry', 
 test('installed controls retain paginated selections and announce every error', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
-  await page.goto('/');
+  await page.goto(`${reliabilityBaseURL}/`);
   const title = page.getByRole('textbox', { name: /Title/u });
   const methods = page.getByRole('button', { name: 'Multi-select trigger' });
   await expect(methods).toContainText('post');
@@ -79,7 +79,7 @@ for (const version of ['v7', 'v8']) {
   test(`installed ${version} native defaults retain untouched precision after reset`, async ({ page }) => {
     const errors: string[] = [];
     page.on('pageerror', (error) => errors.push(error.message));
-    await page.goto('/native.html');
+    await page.goto(`${reliabilityBaseURL}/native.html`);
     const section = page.getByRole('region', { name: `${version} timestamp` });
     const input = section.getByLabel('Created at');
     await expect(input).toHaveValue(/T\d{2}:00:37\.123$/u);

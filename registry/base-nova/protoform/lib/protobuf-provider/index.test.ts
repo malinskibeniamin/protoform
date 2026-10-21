@@ -1,6 +1,5 @@
 import { create, fromBinary, toBinary } from '@bufbuild/protobuf';
 import { FieldOptionsSchema } from '@bufbuild/protobuf/wkt';
-import { describe, expect } from '@rstest/core';
 
 import './auto-form-example-annotations';
 
@@ -18,6 +17,8 @@ import {
   AutoFormExampleSchema,
   AutoFormUiMetadataExampleSchema,
 } from './gen/auto-form-example_pb';
+
+declare const { describe, expect, test }: typeof import('bun:test');
 
 const MESSAGE_LEVEL_ERROR = /minimum threshold must be less than or equal to maximum threshold/iu;
 const DATETIME_LOCAL_VALUE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/u;
@@ -93,7 +94,7 @@ describe('protobuf-provider', () => {
     ]);
 
     const labels = accessTierField?.options?.map(([, label]) => label) ?? [];
-    expect(labels).toEqual(expect.arrayContaining(['Viewer', 'Editor', 'Admin']));
+    expect(labels).toEqual<unknown>(expect.arrayContaining(['Viewer', 'Editor', 'Admin']));
     for (const label of labels) {
       expect(label.startsWith('Access Tier')).toBe(false);
     }
@@ -180,7 +181,7 @@ describe('protobuf-provider', () => {
     expect(formValues['storageQuotaBytes']).toBe('4096');
     expect(formValues['avatarBytes']).toBe('AQIDBA==');
     expect(formValues['labels']).toEqual([{ key: 'team', value: 'frontend' }]);
-    expect(formValues['officeLocations']).toEqual([
+    expect(formValues['officeLocations']).toEqual<unknown>([
       {
         key: 'hq',
         value: expect.objectContaining({
@@ -240,7 +241,7 @@ describe('protobuf-provider', () => {
       validationResult.data as AutoFormExample | undefined
     );
 
-    expect(roundTrippedValues).toEqual(
+    expect(roundTrippedValues).toEqual<unknown>(
       expect.objectContaining({
         betaTester: true,
         bonusPoints: 42,
@@ -324,18 +325,20 @@ describe('protobuf-provider', () => {
     const escalationReasonField = parsedSchema.fields.find((field) => field.key === 'escalationReason');
     const supportContactField = parsedSchema.fields.find((field) => field.key === 'supportContact');
 
-    expect(getProtoFieldCustomData(requireDefined(providerField, 'provider field'))?.ui).toEqual(
+    expect(getProtoFieldCustomData(requireDefined(providerField, 'provider field'))?.ui).toEqual<unknown>(
       expect.objectContaining({
         control: 'radio',
         help: 'Radio buttons make small enums easier to scan in generated forms.',
       })
     );
 
-    expect(getProtoFieldCustomData(requireDefined(regionField, 'region field'))?.ui?.disabledWhen).toEqual([
+    expect(getProtoFieldCustomData(requireDefined(regionField, 'region field'))?.ui?.disabledWhen).toEqual<unknown>([
       expect.objectContaining({ expression: 'form.provider == 0' }),
     ]);
 
-    expect(getProtoFieldCustomData(requireDefined(escalationReasonField, 'escalation reason field'))?.ui).toEqual(
+    expect(
+      getProtoFieldCustomData(requireDefined(escalationReasonField, 'escalation reason field'))?.ui
+    ).toEqual<unknown>(
       expect.objectContaining({
         control: 'textarea',
         sensitive: true,
@@ -343,7 +346,7 @@ describe('protobuf-provider', () => {
       })
     );
 
-    expect(getProtoFieldCustomData(requireDefined(supportContactField, 'support contact field'))?.ui).toEqual(
+    expect(getProtoFieldCustomData(requireDefined(supportContactField, 'support contact field'))?.ui).toEqual<unknown>(
       expect.objectContaining({
         help: 'This oneof is also driven by UI metadata, so it only appears after a support tier is chosen.',
         visibleWhen: [expect.objectContaining({ expression: 'form.enableSupportMode && form.supportTier != 0' })],
@@ -352,7 +355,7 @@ describe('protobuf-provider', () => {
 
     const apiTokenField = parsedSchema.fields.find((field) => field.key === 'apiToken');
 
-    expect(getProtoFieldCustomData(requireDefined(apiTokenField, 'API token field'))?.ui).toEqual(
+    expect(getProtoFieldCustomData(requireDefined(apiTokenField, 'API token field'))?.ui).toEqual<unknown>(
       expect.objectContaining({
         control: 'password',
         sensitive: true,

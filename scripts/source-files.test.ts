@@ -1,5 +1,6 @@
-import { describe, expect } from '@rstest/core';
 import { isGeneratedSource } from './source-files';
+
+declare const { describe, expect, test }: typeof import('bun:test');
 
 describe('quality source ownership', () => {
   test('does not trust generated-looking names or directories', () => {

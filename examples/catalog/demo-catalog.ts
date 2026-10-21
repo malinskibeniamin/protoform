@@ -527,7 +527,7 @@ const featureDemoDefinitions: readonly FeatureDemoDefinition[] = [
   {
     category: 'production',
     description: 'Keep generated forms usable across browser engines and narrow viewports.',
-    requirementIds: ['production.cross-browser', 'production.narrow-viewport'],
+    requirementIds: ['production.browser-workflows', 'production.narrow-viewport'],
     schemaKey: 'collections',
     slug: 'responsive-cross-browser',
     title: 'Responsive cross-browser forms',

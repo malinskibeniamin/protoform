@@ -1,6 +1,7 @@
 import { mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
-import { expect, test } from '@playwright/test';
+import { beforeAll, expect } from '@rstest/playwright';
+import { test } from '../scripts/e2e-test';
 
 const screenshotDir = 'artifacts/screenshots';
 const productionComplexChunkPattern = /\/_astro\/complex-form\.[^/]+\.js$/u;
@@ -263,7 +264,7 @@ const pages: DocsPage[] = [
   { heading: 'Port audit', name: 'port-audit', path: '/docs/port-audit' },
 ];
 
-test.beforeAll(async () => {
+beforeAll(async () => {
   await mkdir(screenshotDir, { recursive: true });
 });
 

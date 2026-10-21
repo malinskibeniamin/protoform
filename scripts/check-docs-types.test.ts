@@ -1,5 +1,6 @@
-import { describe, expect } from '@rstest/core';
 import { parseDocsDiagnosticSummary } from './check-docs-types';
+
+declare const { describe, expect, test }: typeof import('bun:test');
 
 describe('documentation typecheck diagnostics', () => {
   test.each([

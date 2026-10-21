@@ -1,7 +1,7 @@
-import { describe, expect } from '@rstest/core';
-
 import type { ParsedField } from '../core-types';
 import { getLabel, getPathInObject, sortFieldsByOrder } from '../field-utils';
+
+declare const { describe, expect, test }: typeof import('bun:test');
 
 describe('sortFieldsByOrder', () => {
   test('sorts by ascending order, treats missing order as 0, recurses into nested fields, and handles undefined input', () => {

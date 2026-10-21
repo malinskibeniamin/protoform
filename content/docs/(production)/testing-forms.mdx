@@ -21,14 +21,17 @@ bun add --dev @rsbuild/plugin-react @rstest/core happy-dom undici @testing-libra
 
 Configure the integration suite with `happy-dom` and load the Testing Library matchers:
 
-```ts title="rstest.integration.config.ts"
+```ts title="rstest.dom.config.ts"
 import { pluginReact } from "@rsbuild/plugin-react";
 import { defineConfig } from "@rstest/core";
 
 export default defineConfig({
   plugins: [pluginReact()],
   setupFiles: ["./rstest.setup.ts"],
-  testEnvironment: "happy-dom",
+  testEnvironment: {
+    name: "happy-dom",
+    options: { settings: { disableCSSFileLoading: true, disableIframePageLoading: true } },
+  },
 });
 ```
 
@@ -142,5 +145,5 @@ example form. Protoform's conformance suite covers its reusable descriptor, vali
 and path-mapping contracts. Add another application integration test only when a form introduces a
 different submission or recovery workflow.
 
-Use Playwright separately when browser layout, focus behavior, native controls, or a complete
-deployed user journey is the risk being tested.
+Use Rstest Browser Mode for native component interactions. Use Rstest’s Playwright integration
+against the running application for complete user journeys. Neither boundary is replaced by Happy DOM.
