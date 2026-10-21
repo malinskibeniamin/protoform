@@ -5,6 +5,7 @@ import { docsBaseURL, docsContextOptions } from './scripts/e2e-context';
 export default defineConfig({
   name: 'chromium',
   include: ['e2e/**/*.spec.ts'],
+  exclude: ['e2e/quickjs.spec.ts'],
   extends: definePlaywrightConfig({
     contextOptions: docsContextOptions,
     requestOptions: { baseURL: docsBaseURL },

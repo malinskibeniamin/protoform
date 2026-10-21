@@ -8,6 +8,7 @@ const configs = {
   e2e: 'rstest.e2e.config.ts',
   canary: 'rstest.canary.config.ts',
   host: 'rstest.host-registry.config.ts',
+  quickjs: 'rstest.quickjs.config.ts',
   conformance: 'rstest.conformance.config.ts',
   integration: 'rstest.config.ts',
   node: 'rstest.node.config.ts',
@@ -26,7 +27,8 @@ if (!config) {
   process.exit(1);
 }
 const needsServers =
-  (suite === 'e2e' || suite === 'host') && !args.some((arg) => ['--help', '-h', 'list'].includes(arg));
+  (suite === 'e2e' || suite === 'host' || suite === 'quickjs') &&
+  !args.some((arg) => ['--help', '-h', 'list'].includes(arg));
 if (args.includes('--update') || args.includes('-u')) {
   process.env['PROTOFORM_UPDATE_SCREENSHOTS'] = 'true';
 }
@@ -41,7 +43,7 @@ const handleSignal = (signal: NodeJS.Signals) => {
 process.once('SIGINT', handleSignal);
 process.once('SIGTERM', handleSignal);
 try {
-  if (needsServers || suite === 'canary') {
+  if ((needsServers && suite !== 'quickjs') || suite === 'canary') {
     const build = spawnSync(
       'bun',
       ['build', 'scripts/e2e-accessibility.ts', '--target=browser', '--outfile=.tmp/e2e/accessibility.js'],
@@ -51,13 +53,30 @@ try {
       throw new Error('Could not build E2E accessibility helper');
     }
   }
-  if (needsServers) {
+  if (needsServers && suite === 'quickjs') {
+    close = await startTestServers(
+      [
+        {
+          command: 'bun',
+          args: ['run', 'quickjs:dev'],
+          url: 'http://127.0.0.1:55124/e2e/fixtures/quickjs.html',
+          timeout: 60_000,
+        },
+      ],
+      controller.signal
+    );
+  } else if (needsServers) {
     const { docsBaseURL, hostBaseURL, reliabilityBaseURL, tanstackBaseURL } = await import('./e2e-context.ts');
     close = await startTestServers(
       suite === 'e2e'
         ? [
             { command: 'bun', args: ['run', 'docs:blume:e2e'], url: `${docsBaseURL}/docs`, timeout: 120_000 },
-            { command: 'bun', args: ['run', 'examples:server'], url: 'http://127.0.0.1:55012/health', timeout: 60_000 },
+            {
+              command: 'bun',
+              args: ['run', 'examples:server'],
+              url: 'http://127.0.0.1:55012/health',
+              timeout: 60_000,
+            },
           ]
         : [
             {

@@ -114,6 +114,7 @@ jobs:
             run: bun run docs:blume:validate
           - name: Check translations
             run: bun run docs:blume:translate:check
+      - run: bun run test:quickjs
       - name: Build and exercise docs, demos, accessibility, and screenshots
         run: bun run test:e2e
       - run: bun run docs:blume:audit
