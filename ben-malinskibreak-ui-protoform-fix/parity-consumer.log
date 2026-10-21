@@ -1,0 +1,746 @@
+$ bun run scripts/consumer-fixture-smoke.ts
+bun install v1.4.3 (c6da4a4d3)
+Resolving dependencies
+Resolved, downloaded and extracted [23]
+Saved lockfile
+
++ @types/node@26.6.5
++ @types/react@19.3.0
++ @types/react-dom@19.3.0
++ @vitejs/plugin-react@6.1.2
++ react@19.3.1
++ react-dom@19.3.1
++ typescript@7.0.2
++ vite@8.3.4
+
+27 packages installed [303.00ms]
+bun add v1.4.3 (c6da4a4d3)
+Resolving dependencies
+Resolved, downloaded and extracted [18]
+Saved lockfile
+
+installed clsx@2.1.1
+installed tailwind-merge@3.7.0
+installed tailwindcss@4.3.3
+installed @tailwindcss/vite@4.3.3
+
+19 packages installed [265.00ms]
+- Checking registry.
+✔ Checking registry.
+- Installing dependencies.
+- Installing dependencies.
+✔ Installing dependencies.
+- Updating files.
+✔ Created 20 files:
+  - design-system/ui/alert.tsx
+  - design-system/ui/button.tsx
+  - design-system/ui/checkbox.tsx
+  - design-system/ui/collapsible.tsx
+  - design-system/ui/input.tsx
+  - design-system/ui/popover.tsx
+  - design-system/ui/radio-group.tsx
+  - design-system/ui/select.tsx
+  - design-system/ui/slider.tsx
+  - design-system/ui/switch.tsx
+  - design-system/ui/tabs.tsx
+  - design-system/ui/textarea.tsx
+  - design-system/ui/toggle.tsx
+  - design-system/ui/tooltip.tsx
+  - design-system/ui/label.tsx
+  - design-system/ui/separator.tsx
+  - design-system/ui/calendar.tsx
+  - design-system/ui/input-group.tsx
+  - design-system/ui/toggle-group.tsx
+  - design-system/ui/field.tsx
+- Checking registry.
+✔ Checking registry.
+- Installing dependencies.
+- Installing dependencies.
+✔ Installing dependencies.
+- Updating files.
+✔ Created 96 files:
+  - LICENSES/protoform-MIT.txt
+  - domain/runtime/core/field-model.ts
+  - domain/runtime/core/index.ts
+  - domain/runtime/core/messages.ts
+  - domain/runtime/core/standard-schema.ts
+  - domain/runtime/protobuf-provider/descriptor-utils.ts
+  - domain/runtime/protobuf-provider/field-mask.ts
+  - domain/runtime/protobuf-provider/form-schema.ts
+  - domain/runtime/protobuf-provider/form-values.ts
+  - domain/runtime/protobuf-provider/format-error.ts
+  - domain/runtime/protobuf-provider/hook-runtime.ts
+  - domain/runtime/protobuf-provider/humanize-validation-error.ts
+  - domain/runtime/protobuf-provider/proto-error-path.ts
+  - domain/runtime/protobuf-provider/validation-schema.ts
+  - domain/runtime/protobuf-provider/aip-client-workflow.ts
+  - domain/runtime/protobuf-provider/aip.ts
+  - domain/runtime/protobuf-provider/annotations.ts
+  - domain/runtime/protobuf-provider/gen/auto_form_ui_pb.ts
+  - domain/runtime/protobuf-provider/gen/buf/validate/validate_pb.ts
+  - domain/runtime/protobuf-provider/gen/protoform/v1/auto_form_ui_pb.ts
+  - domain/runtime/protobuf-provider/index.ts
+  - domain/runtime/protobuf-provider/provider.ts
+  - domain/runtime/protobuf-provider/ui-options.ts
+  - features/hooks/use-proto-form/index.ts
+  - features/hooks/use-proto-form/proto-error-path.ts
+  - features/hooks/use-proto-form/proto-resolver.ts
+  - features/hooks/use-proto-form/use-proto-form.ts
+  - features/forms/auto-form/configuration.ts
+  - features/forms/auto-form/context.tsx
+  - features/forms/auto-form/core-types.ts
+  - features/forms/auto-form/data-providers.ts
+  - features/forms/auto-form/field-utils.ts
+  - features/forms/auto-form/field-wrapper.tsx
+  - features/forms/auto-form/fields/boolean.tsx
+  - features/forms/auto-form/fields/bytes.tsx
+  - features/forms/auto-form/fields/choicebox.tsx
+  - features/forms/auto-form/fields/combobox.tsx
+  - features/forms/auto-form/fields/currency.tsx
+  - features/forms/auto-form/fields/date.tsx
+  - features/forms/auto-form/fields/duration.tsx
+  - features/forms/auto-form/fields/email.tsx
+  - features/forms/auto-form/fields/fallback.tsx
+  - features/forms/auto-form/fields/field-mask-control.tsx
+  - features/forms/auto-form/fields/index.ts
+  - features/forms/auto-form/fields/int64.tsx
+  - features/forms/auto-form/fields/json.tsx
+  - features/forms/auto-form/fields/key-value.tsx
+  - features/forms/auto-form/fields/multiselect.tsx
+  - features/forms/auto-form/fields/number.tsx
+  - features/forms/auto-form/fields/password.tsx
+  - features/forms/auto-form/fields/radio.tsx
+  - features/forms/auto-form/fields/select.tsx
+  - features/forms/auto-form/fields/shared.tsx
+  - features/forms/auto-form/fields/slider.tsx
+  - features/forms/auto-form/fields/string.tsx
+  - features/forms/auto-form/fields/textarea.tsx
+  - features/forms/auto-form/fields/toggle-group.tsx
+  - features/forms/auto-form/fields/url.tsx
+  - features/forms/auto-form/form-spacing.ts
+  - features/forms/auto-form/helpers.ts
+  - features/forms/auto-form/auto-form-core.tsx
+  - features/forms/auto-form/engine.tsx
+  - features/forms/auto-form/layout-context.tsx
+  - features/forms/auto-form/layout.tsx
+  - features/forms/auto-form/mode-shell.tsx
+  - features/forms/auto-form/proto/conversion.ts
+  - features/forms/auto-form/proto/index.ts
+  - features/forms/auto-form/proto/schema.ts
+  - features/forms/auto-form/registry.ts
+  - features/forms/auto-form/renderers/array.tsx
+  - features/forms/auto-form/renderers/controlled.tsx
+  - features/forms/auto-form/renderers/index.tsx
+  - features/forms/auto-form/renderers/map.tsx
+  - features/forms/auto-form/renderers/nested.tsx
+  - features/forms/auto-form/renderers/object.tsx
+  - features/forms/auto-form/renderers/oneof.tsx
+  - features/forms/auto-form/renderers/shared.ts
+  - features/forms/auto-form/runtime-provider.tsx
+  - features/forms/auto-form/schema.ts
+  - features/forms/auto-form/slot.tsx
+  - features/forms/auto-form/stepper.tsx
+  - features/forms/auto-form/step-configuration.ts
+  - features/forms/auto-form/test-ids.ts
+  - features/forms/auto-form/types.ts
+  - features/forms/auto-form/ui-component-map.ts
+  - features/forms/auto-form/ui-components.tsx
+  - features/forms/auto-form/cel-runtime.ts
+  - features/forms/auto-form/ui-rules.ts
+  - features/forms/auto-form/utils/modes.ts
+  - features/forms/auto-form/utils/serialization.ts
+  - domain/runtime/form-types/index.ts
+  - features/forms/auto-form/shadcn-controls.ts
+  - features/forms/auto-form/ui-props.ts
+  - features/forms/auto-form/adapters/react-hook-form.tsx
+  - features/forms/auto-form/host.tsx
+  - features/forms/auto-form/shadcn-host.tsx
+$ tsc --noEmit
+$ tsc --noEmit
+Host registry fixture passed with new-york, custom aliases, and 20 unchanged primitive files: $WORKSPACE/.tmp/host-consumer-fixture
+bun install v1.4.3 (c6da4a4d3)
+Saved lockfile
+
++ @types/node@26.6.5
++ @types/react@19.3.0
++ @types/react-dom@19.3.0
++ @vitejs/plugin-react@6.1.2
++ react@19.3.1
++ react-dom@19.3.1
++ typescript@7.0.2
++ vite@8.3.4
+
+27 packages installed [75.00ms]
+- Checking registry.
+✔ Checking registry.
+- Installing dependencies.
+- Installing dependencies.
+✔ Installing dependencies.
+- Updating files.
+✔ Created 18 files:
+  - LICENSES/protoform-MIT.txt
+  - lib/core/field-model.ts
+  - lib/core/index.ts
+  - lib/core/messages.ts
+  - lib/core/standard-schema.ts
+  - lib/protobuf-provider/descriptor-utils.ts
+  - lib/protobuf-provider/field-mask.ts
+  - lib/protobuf-provider/form-schema.ts
+  - lib/protobuf-provider/form-values.ts
+  - lib/protobuf-provider/format-error.ts
+  - lib/protobuf-provider/hook-runtime.ts
+  - lib/protobuf-provider/humanize-validation-error.ts
+  - lib/protobuf-provider/proto-error-path.ts
+  - lib/protobuf-provider/validation-schema.ts
+  - hooks/use-proto-form/index.ts
+  - hooks/use-proto-form/proto-error-path.ts
+  - hooks/use-proto-form/proto-resolver.ts
+  - hooks/use-proto-form/use-proto-form.ts
+$ tsc --noEmit
+Core-only consumer fixture passed: $WORKSPACE/.tmp/core-consumer-fixture
+bun install v1.4.3 (c6da4a4d3)
+Saved lockfile
+
++ @types/node@26.6.5
++ @types/react@19.3.0
++ @types/react-dom@19.3.0
++ @vitejs/plugin-react@6.1.2
++ react@19.3.1
++ react-dom@19.3.1
++ typescript@7.0.2
++ vite@8.3.4
+
+27 packages installed [43.00ms]
+- Checking registry.
+✔ Checking registry.
+- Installing dependencies.
+- Installing dependencies.
+✔ Installing dependencies.
+- Updating files.
+✔ Created 208 files:
+  - LICENSES/protoform-MIT.txt
+  - lib/core/field-model.ts
+  - lib/core/index.ts
+  - lib/core/messages.ts
+  - lib/core/standard-schema.ts
+  - lib/protobuf-provider/descriptor-utils.ts
+  - lib/protobuf-provider/field-mask.ts
+  - lib/protobuf-provider/form-schema.ts
+  - lib/protobuf-provider/form-values.ts
+  - lib/protobuf-provider/format-error.ts
+  - lib/protobuf-provider/hook-runtime.ts
+  - lib/protobuf-provider/humanize-validation-error.ts
+  - lib/protobuf-provider/proto-error-path.ts
+  - lib/protobuf-provider/validation-schema.ts
+  - lib/protobuf-provider/aip-client-workflow.ts
+  - lib/protobuf-provider/aip.ts
+  - lib/protobuf-provider/annotations.ts
+  - lib/protobuf-provider/gen/auto_form_ui_pb.ts
+  - lib/protobuf-provider/gen/buf/validate/validate_pb.ts
+  - lib/protobuf-provider/gen/protoform/v1/auto_form_ui_pb.ts
+  - lib/protobuf-provider/index.ts
+  - lib/protobuf-provider/provider.ts
+  - lib/protobuf-provider/ui-options.ts
+  - hooks/use-proto-form/index.ts
+  - hooks/use-proto-form/proto-error-path.ts
+  - hooks/use-proto-form/proto-resolver.ts
+  - hooks/use-proto-form/use-proto-form.ts
+  - components/auto-form/configuration.ts
+  - components/auto-form/context.tsx
+  - components/auto-form/core-types.ts
+  - components/auto-form/data-providers.ts
+  - components/auto-form/field-utils.ts
+  - components/auto-form/field-wrapper.tsx
+  - components/auto-form/fields/boolean.tsx
+  - components/auto-form/fields/bytes.tsx
+  - components/auto-form/fields/choicebox.tsx
+  - components/auto-form/fields/combobox.tsx
+  - components/auto-form/fields/currency.tsx
+  - components/auto-form/fields/date.tsx
+  - components/auto-form/fields/duration.tsx
+  - components/auto-form/fields/email.tsx
+  - components/auto-form/fields/fallback.tsx
+  - components/auto-form/fields/field-mask-control.tsx
+  - components/auto-form/fields/index.ts
+  - components/auto-form/fields/int64.tsx
+  - components/auto-form/fields/json.tsx
+  - components/auto-form/fields/key-value.tsx
+  - components/auto-form/fields/multiselect.tsx
+  - components/auto-form/fields/number.tsx
+  - components/auto-form/fields/password.tsx
+  - components/auto-form/fields/radio.tsx
+  - components/auto-form/fields/select.tsx
+  - components/auto-form/fields/shared.tsx
+  - components/auto-form/fields/slider.tsx
+  - components/auto-form/fields/string.tsx
+  - components/auto-form/fields/textarea.tsx
+  - components/auto-form/fields/toggle-group.tsx
+  - components/auto-form/fields/url.tsx
+  - components/auto-form/form-spacing.ts
+  - components/auto-form/helpers.ts
+  - components/auto-form/auto-form-core.tsx
+  - components/auto-form/engine.tsx
+  - components/auto-form/layout-context.tsx
+  - components/auto-form/layout.tsx
+  - components/auto-form/mode-shell.tsx
+  - components/auto-form/proto/conversion.ts
+  - components/auto-form/proto/index.ts
+  - components/auto-form/proto/schema.ts
+  - components/auto-form/registry.ts
+  - components/auto-form/renderers/array.tsx
+  - components/auto-form/renderers/controlled.tsx
+  - components/auto-form/renderers/index.tsx
+  - components/auto-form/renderers/map.tsx
+  - components/auto-form/renderers/nested.tsx
+  - components/auto-form/renderers/object.tsx
+  - components/auto-form/renderers/oneof.tsx
+  - components/auto-form/renderers/shared.ts
+  - components/auto-form/runtime-provider.tsx
+  - components/auto-form/schema.ts
+  - components/auto-form/slot.tsx
+  - components/auto-form/stepper.tsx
+  - components/auto-form/step-configuration.ts
+  - components/auto-form/test-ids.ts
+  - components/auto-form/types.ts
+  - components/auto-form/ui-component-map.ts
+  - components/auto-form/ui-components.tsx
+  - components/auto-form/cel-runtime.ts
+  - components/auto-form/ui-rules.ts
+  - components/auto-form/utils/modes.ts
+  - components/auto-form/utils/serialization.ts
+  - lib/form-types/index.ts
+  - components/auto-form/shadcn-controls.ts
+  - components/auto-form/ui-props.ts
+  - components/auto-form/adapters/react-hook-form.tsx
+  - components/auto-form/host.tsx
+  - components/ui/alert/index.tsx
+  - components/ui/badge/index.tsx
+  - components/ui/button/index.tsx
+  - components/ui/calendar/index.tsx
+  - components/ui/card/index.tsx
+  - components/ui/checkbox/index.tsx
+  - components/ui/choicebox/index.tsx
+  - components/ui/collapsible/index.tsx
+  - components/ui/trace/index.tsx
+  - components/ui/code-block/index.tsx
+  - components/ui/combobox/combobox-utils.ts
+  - components/ui/combobox/index.tsx
+  - components/ui/command/index.tsx
+  - components/ui/copy-button/index.tsx
+  - components/ui/dialog/index.tsx
+  - components/ui/field/index.tsx
+  - components/ui/group/index.tsx
+  - components/ui/input/index.tsx
+  - components/ui/input-group/index.tsx
+  - components/ui/json-field/index.tsx
+  - components/ui/json-field/json-code-editor.tsx
+  - components/ui/key-value-field/index.tsx
+  - components/ui/label/index.tsx
+  - components/ui/multi-select/index.tsx
+  - components/ui/popover/index.tsx
+  - components/ui/radio-group/index.tsx
+  - components/ui/select/index.tsx
+  - components/ui/separator/index.tsx
+  - components/ui/slider/index.tsx
+  - components/ui/spinner/index.tsx
+  - components/ui/switch/index.tsx
+  - components/ui/tabs/index.tsx
+  - components/ui/tags/index.tsx
+  - components/ui/textarea/index.tsx
+  - components/ui/toggle/index.tsx
+  - components/ui/toggle-group/index.tsx
+  - components/ui/toast/index.tsx
+  - components/ui/tooltip/index.tsx
+  - components/ui/typography/index.tsx
+  - hooks/use-controllable-state/index.ts
+  - hooks/use-layout-effect/index.ts
+  - hooks/use-portal-container/index.ts
+  - lib/base-ui-compat/index.tsx
+  - components/auto-form/index.tsx
+  - components/auto-form/shadcn-ui-components.ts
+  - lib/utils/index.tsx
+  - lib/input-utils/index.ts
+  - LICENSES/shadcn-MIT.txt
+  - LICENSES/protoform-shadcn-provenance.md
+  - components/ui/accordion/index.tsx
+  - components/ui/alert-dialog/index.tsx
+  - components/ui/aspect-ratio/index.tsx
+  - components/ui/attachment/index.tsx
+  - components/ui/avatar/index.tsx
+  - components/ui/breadcrumb/index.tsx
+  - components/ui/bubble/index.tsx
+  - components/ui/button-group/index.tsx
+  - components/ui/carousel/index.tsx
+  - components/ui/chart/index.tsx
+  - components/ui/context-menu/index.tsx
+  - components/ui/direction/index.tsx
+  - components/ui/drawer/index.tsx
+  - components/ui/dropdown-menu/index.tsx
+  - components/ui/empty/index.tsx
+  - components/ui/hover-card/index.tsx
+  - components/ui/input-otp/index.tsx
+  - components/ui/item/index.tsx
+  - components/ui/kbd/index.tsx
+  - components/ui/marker/index.tsx
+  - components/ui/menubar/index.tsx
+  - components/ui/message/index.tsx
+  - components/ui/message-scroller/index.tsx
+  - components/ui/native-select/index.tsx
+  - components/ui/navigation-menu/index.tsx
+  - components/ui/pagination/index.tsx
+  - components/ui/progress/index.tsx
+  - components/ui/questionnaire/index.tsx
+  - components/ui/resizable/index.tsx
+  - components/ui/scroll-area/index.tsx
+  - components/ui/sheet/index.tsx
+  - components/ui/sidebar/index.tsx
+  - components/ui/skeleton/index.tsx
+  - components/ui/table/index.tsx
+  - hooks/use-mobile.ts
+  - components/ui/examples/date-picker.tsx
+  - components/ui/examples/data-table.tsx
+  - components/protoform-examples/runtime/demo-schemas.ts
+  - components/protoform-examples/runtime/catalog-form-demo.tsx
+  - components/protoform-examples/runtime/format-submitted-value.ts
+  - components/protoform-examples/runtime/gen/buf/validate/validate_pb.ts
+  - components/protoform-examples/runtime/gen/google/api/annotations_pb.ts
+  - components/protoform-examples/runtime/gen/google/api/client_pb.ts
+  - components/protoform-examples/runtime/gen/google/api/field_behavior_pb.ts
+  - components/protoform-examples/runtime/gen/google/api/field_info_pb.ts
+  - components/protoform-examples/runtime/gen/google/api/http_pb.ts
+  - components/protoform-examples/runtime/gen/google/api/launch_stage_pb.ts
+  - components/protoform-examples/runtime/gen/google/api/resource_pb.ts
+  - components/protoform-examples/runtime/gen/google/rpc/status_pb.ts
+  - components/protoform-examples/runtime/gen/protoform/conformance/v1/aip_form.ts
+  - components/protoform-examples/runtime/gen/protoform/conformance/v1/aip_pb.ts
+  - components/protoform-examples/runtime/gen/protoform/conformance/v1/conformance_pb.ts
+  - components/protoform-examples/runtime/gen/protoform/conformance/v1/editions_2024_pb.ts
+  - components/protoform-examples/runtime/gen/protoform/conformance/v1/editions_pb.ts
+  - components/protoform-examples/runtime/gen/protoform/conformance/v1/predefined_pb.ts
+  - components/protoform-bookstore/bookstore-demo.tsx
+  - components/protoform-bookstore/bookstore-workspace.tsx
+  - components/protoform-bookstore/book-detail.tsx
+  - components/protoform-bookstore/create-book-form.tsx
+  - components/protoform-bookstore/update-book-form.tsx
+  - components/protoform-bookstore/delete-book-form.tsx
+  - components/protoform-bookstore/delete-submit-button.tsx
+  - components/protoform-bookstore/library-service.ts
+  - proto/protoform/conformance/v1/aip.proto
+- Updating app/globals.css
+✔ Updating app/globals.css
+- Checking registry.
+✔ Checking registry.
+- Installing dependencies.
+- Installing dependencies.
+✔ Installing dependencies.
+- Updating files.
+✔ Created 6 files:
+ℹ Skipped 90 files: (files might be identical, use --overwrite to overwrite)
+  - hooks/use-proto-form-v8/index.ts
+  - hooks/use-proto-form-v8/proto-error-path.ts
+  - hooks/use-proto-form-v8/proto-resolver.ts
+  - hooks/use-proto-form-v8/use-proto-form.ts
+  - components/auto-form-react-hook-form-v8/index.tsx
+  - components/auto-form/adapters/react-hook-form-v8.tsx
+  - LICENSES/protoform-MIT.txt
+  - lib/core/field-model.ts
+  - lib/core/index.ts
+  - lib/core/messages.ts
+  - lib/core/standard-schema.ts
+  - lib/protobuf-provider/descriptor-utils.ts
+  - lib/protobuf-provider/field-mask.ts
+  - lib/protobuf-provider/form-schema.ts
+  - lib/protobuf-provider/form-values.ts
+  - lib/protobuf-provider/format-error.ts
+  - lib/protobuf-provider/hook-runtime.ts
+  - lib/protobuf-provider/humanize-validation-error.ts
+  - lib/protobuf-provider/proto-error-path.ts
+  - lib/protobuf-provider/validation-schema.ts
+  - lib/protobuf-provider/aip-client-workflow.ts
+  - lib/protobuf-provider/aip.ts
+  - lib/protobuf-provider/annotations.ts
+  - lib/protobuf-provider/gen/auto_form_ui_pb.ts
+  - lib/protobuf-provider/gen/buf/validate/validate_pb.ts
+  - lib/protobuf-provider/gen/protoform/v1/auto_form_ui_pb.ts
+  - lib/protobuf-provider/index.ts
+  - lib/protobuf-provider/provider.ts
+  - lib/protobuf-provider/ui-options.ts
+  - components/auto-form/configuration.ts
+  - components/auto-form/context.tsx
+  - components/auto-form/core-types.ts
+  - components/auto-form/data-providers.ts
+  - components/auto-form/field-utils.ts
+  - components/auto-form/field-wrapper.tsx
+  - components/auto-form/fields/boolean.tsx
+  - components/auto-form/fields/bytes.tsx
+  - components/auto-form/fields/choicebox.tsx
+  - components/auto-form/fields/combobox.tsx
+  - components/auto-form/fields/currency.tsx
+  - components/auto-form/fields/date.tsx
+  - components/auto-form/fields/duration.tsx
+  - components/auto-form/fields/email.tsx
+  - components/auto-form/fields/fallback.tsx
+  - components/auto-form/fields/field-mask-control.tsx
+  - components/auto-form/fields/index.ts
+  - components/auto-form/fields/int64.tsx
+  - components/auto-form/fields/json.tsx
+  - components/auto-form/fields/key-value.tsx
+  - components/auto-form/fields/multiselect.tsx
+  - components/auto-form/fields/number.tsx
+  - components/auto-form/fields/password.tsx
+  - components/auto-form/fields/radio.tsx
+  - components/auto-form/fields/select.tsx
+  - components/auto-form/fields/shared.tsx
+  - components/auto-form/fields/slider.tsx
+  - components/auto-form/fields/string.tsx
+  - components/auto-form/fields/textarea.tsx
+  - components/auto-form/fields/toggle-group.tsx
+  - components/auto-form/fields/url.tsx
+  - components/auto-form/form-spacing.ts
+  - components/auto-form/helpers.ts
+  - components/auto-form/auto-form-core.tsx
+  - components/auto-form/engine.tsx
+  - components/auto-form/layout-context.tsx
+  - components/auto-form/layout.tsx
+  - components/auto-form/mode-shell.tsx
+  - components/auto-form/proto/conversion.ts
+  - components/auto-form/proto/index.ts
+  - components/auto-form/proto/schema.ts
+  - components/auto-form/registry.ts
+  - components/auto-form/renderers/array.tsx
+  - components/auto-form/renderers/controlled.tsx
+  - components/auto-form/renderers/index.tsx
+  - components/auto-form/renderers/map.tsx
+  - components/auto-form/renderers/nested.tsx
+  - components/auto-form/renderers/object.tsx
+  - components/auto-form/renderers/oneof.tsx
+  - components/auto-form/renderers/shared.ts
+  - components/auto-form/runtime-provider.tsx
+  - components/auto-form/schema.ts
+  - components/auto-form/slot.tsx
+  - components/auto-form/stepper.tsx
+  - components/auto-form/step-configuration.ts
+  - components/auto-form/test-ids.ts
+  - components/auto-form/types.ts
+  - components/auto-form/ui-component-map.ts
+  - components/auto-form/ui-components.tsx
+  - components/auto-form/cel-runtime.ts
+  - components/auto-form/ui-rules.ts
+  - components/auto-form/utils/modes.ts
+  - components/auto-form/utils/serialization.ts
+  - lib/form-types/index.ts
+  - components/auto-form/shadcn-controls.ts
+  - components/auto-form/ui-props.ts
+  - components/auto-form/shadcn-ui-components.ts
+- Checking registry.
+✔ Checking registry.
+- Installing dependencies.
+- Installing dependencies.
+✔ Installing dependencies.
+- Updating files.
+✔ Created 3 files:
+  - hooks/use-proto-form-tanstack/index.ts
+  - components/auto-form-tanstack/index.tsx
+  - components/auto-form/adapters/tanstack.tsx
+ℹ Skipped 90 files: (files might be identical, use --overwrite to overwrite)
+  - LICENSES/protoform-MIT.txt
+  - lib/core/field-model.ts
+  - lib/core/index.ts
+  - lib/core/messages.ts
+  - lib/core/standard-schema.ts
+  - lib/protobuf-provider/descriptor-utils.ts
+  - lib/protobuf-provider/field-mask.ts
+  - lib/protobuf-provider/form-schema.ts
+  - lib/protobuf-provider/form-values.ts
+  - lib/protobuf-provider/format-error.ts
+  - lib/protobuf-provider/hook-runtime.ts
+  - lib/protobuf-provider/humanize-validation-error.ts
+  - lib/protobuf-provider/proto-error-path.ts
+  - lib/protobuf-provider/validation-schema.ts
+  - lib/protobuf-provider/aip-client-workflow.ts
+  - lib/protobuf-provider/aip.ts
+  - lib/protobuf-provider/annotations.ts
+  - lib/protobuf-provider/gen/auto_form_ui_pb.ts
+  - lib/protobuf-provider/gen/buf/validate/validate_pb.ts
+  - lib/protobuf-provider/gen/protoform/v1/auto_form_ui_pb.ts
+  - lib/protobuf-provider/index.ts
+  - lib/protobuf-provider/provider.ts
+  - lib/protobuf-provider/ui-options.ts
+  - components/auto-form/configuration.ts
+  - components/auto-form/context.tsx
+  - components/auto-form/core-types.ts
+  - components/auto-form/data-providers.ts
+  - components/auto-form/field-utils.ts
+  - components/auto-form/field-wrapper.tsx
+  - components/auto-form/fields/boolean.tsx
+  - components/auto-form/fields/bytes.tsx
+  - components/auto-form/fields/choicebox.tsx
+  - components/auto-form/fields/combobox.tsx
+  - components/auto-form/fields/currency.tsx
+  - components/auto-form/fields/date.tsx
+  - components/auto-form/fields/duration.tsx
+  - components/auto-form/fields/email.tsx
+  - components/auto-form/fields/fallback.tsx
+  - components/auto-form/fields/field-mask-control.tsx
+  - components/auto-form/fields/index.ts
+  - components/auto-form/fields/int64.tsx
+  - components/auto-form/fields/json.tsx
+  - components/auto-form/fields/key-value.tsx
+  - components/auto-form/fields/multiselect.tsx
+  - components/auto-form/fields/number.tsx
+  - components/auto-form/fields/password.tsx
+  - components/auto-form/fields/radio.tsx
+  - components/auto-form/fields/select.tsx
+  - components/auto-form/fields/shared.tsx
+  - components/auto-form/fields/slider.tsx
+  - components/auto-form/fields/string.tsx
+  - components/auto-form/fields/textarea.tsx
+  - components/auto-form/fields/toggle-group.tsx
+  - components/auto-form/fields/url.tsx
+  - components/auto-form/form-spacing.ts
+  - components/auto-form/helpers.ts
+  - components/auto-form/auto-form-core.tsx
+  - components/auto-form/engine.tsx
+  - components/auto-form/layout-context.tsx
+  - components/auto-form/layout.tsx
+  - components/auto-form/mode-shell.tsx
+  - components/auto-form/proto/conversion.ts
+  - components/auto-form/proto/index.ts
+  - components/auto-form/proto/schema.ts
+  - components/auto-form/registry.ts
+  - components/auto-form/renderers/array.tsx
+  - components/auto-form/renderers/controlled.tsx
+  - components/auto-form/renderers/index.tsx
+  - components/auto-form/renderers/map.tsx
+  - components/auto-form/renderers/nested.tsx
+  - components/auto-form/renderers/object.tsx
+  - components/auto-form/renderers/oneof.tsx
+  - components/auto-form/renderers/shared.ts
+  - components/auto-form/runtime-provider.tsx
+  - components/auto-form/schema.ts
+  - components/auto-form/slot.tsx
+  - components/auto-form/stepper.tsx
+  - components/auto-form/step-configuration.ts
+  - components/auto-form/test-ids.ts
+  - components/auto-form/types.ts
+  - components/auto-form/ui-component-map.ts
+  - components/auto-form/ui-components.tsx
+  - components/auto-form/cel-runtime.ts
+  - components/auto-form/ui-rules.ts
+  - components/auto-form/utils/modes.ts
+  - components/auto-form/utils/serialization.ts
+  - lib/form-types/index.ts
+  - components/auto-form/shadcn-controls.ts
+  - components/auto-form/ui-props.ts
+  - components/auto-form/shadcn-ui-components.ts
+- Checking registry.
+✔ Checking registry.
+- Installing dependencies.
+- Installing dependencies.
+✔ Installing dependencies.
+- Updating files.
+✔ Created 3 files:
+  - hooks/use-proto-form-tanstack-v2/index.ts
+  - components/auto-form-tanstack-v2/index.tsx
+  - components/auto-form/adapters/tanstack-v2.tsx
+ℹ Skipped 91 files: (files might be identical, use --overwrite to overwrite)
+  - LICENSES/protoform-MIT.txt
+  - lib/core/field-model.ts
+  - lib/core/index.ts
+  - lib/core/messages.ts
+  - lib/core/standard-schema.ts
+  - lib/protobuf-provider/descriptor-utils.ts
+  - lib/protobuf-provider/field-mask.ts
+  - lib/protobuf-provider/form-schema.ts
+  - lib/protobuf-provider/form-values.ts
+  - lib/protobuf-provider/format-error.ts
+  - lib/protobuf-provider/hook-runtime.ts
+  - lib/protobuf-provider/humanize-validation-error.ts
+  - lib/protobuf-provider/proto-error-path.ts
+  - lib/protobuf-provider/validation-schema.ts
+  - lib/protobuf-provider/aip-client-workflow.ts
+  - lib/protobuf-provider/aip.ts
+  - lib/protobuf-provider/annotations.ts
+  - lib/protobuf-provider/gen/auto_form_ui_pb.ts
+  - lib/protobuf-provider/gen/buf/validate/validate_pb.ts
+  - lib/protobuf-provider/gen/protoform/v1/auto_form_ui_pb.ts
+  - lib/protobuf-provider/index.ts
+  - lib/protobuf-provider/provider.ts
+  - lib/protobuf-provider/ui-options.ts
+  - components/auto-form/configuration.ts
+  - components/auto-form/context.tsx
+  - components/auto-form/core-types.ts
+  - components/auto-form/data-providers.ts
+  - components/auto-form/field-utils.ts
+  - components/auto-form/field-wrapper.tsx
+  - components/auto-form/fields/boolean.tsx
+  - components/auto-form/fields/bytes.tsx
+  - components/auto-form/fields/choicebox.tsx
+  - components/auto-form/fields/combobox.tsx
+  - components/auto-form/fields/currency.tsx
+  - components/auto-form/fields/date.tsx
+  - components/auto-form/fields/duration.tsx
+  - components/auto-form/fields/email.tsx
+  - components/auto-form/fields/fallback.tsx
+  - components/auto-form/fields/field-mask-control.tsx
+  - components/auto-form/fields/index.ts
+  - components/auto-form/fields/int64.tsx
+  - components/auto-form/fields/json.tsx
+  - components/auto-form/fields/key-value.tsx
+  - components/auto-form/fields/multiselect.tsx
+  - components/auto-form/fields/number.tsx
+  - components/auto-form/fields/password.tsx
+  - components/auto-form/fields/radio.tsx
+  - components/auto-form/fields/select.tsx
+  - components/auto-form/fields/shared.tsx
+  - components/auto-form/fields/slider.tsx
+  - components/auto-form/fields/string.tsx
+  - components/auto-form/fields/textarea.tsx
+  - components/auto-form/fields/toggle-group.tsx
+  - components/auto-form/fields/url.tsx
+  - components/auto-form/form-spacing.ts
+  - components/auto-form/helpers.ts
+  - components/auto-form/auto-form-core.tsx
+  - components/auto-form/engine.tsx
+  - components/auto-form/layout-context.tsx
+  - components/auto-form/layout.tsx
+  - components/auto-form/mode-shell.tsx
+  - components/auto-form/proto/conversion.ts
+  - components/auto-form/proto/index.ts
+  - components/auto-form/proto/schema.ts
+  - components/auto-form/registry.ts
+  - components/auto-form/renderers/array.tsx
+  - components/auto-form/renderers/controlled.tsx
+  - components/auto-form/renderers/index.tsx
+  - components/auto-form/renderers/map.tsx
+  - components/auto-form/renderers/nested.tsx
+  - components/auto-form/renderers/object.tsx
+  - components/auto-form/renderers/oneof.tsx
+  - components/auto-form/renderers/shared.ts
+  - components/auto-form/runtime-provider.tsx
+  - components/auto-form/schema.ts
+  - components/auto-form/slot.tsx
+  - components/auto-form/stepper.tsx
+  - components/auto-form/step-configuration.ts
+  - components/auto-form/test-ids.ts
+  - components/auto-form/types.ts
+  - components/auto-form/ui-component-map.ts
+  - components/auto-form/ui-components.tsx
+  - components/auto-form/cel-runtime.ts
+  - components/auto-form/ui-rules.ts
+  - components/auto-form/utils/modes.ts
+  - components/auto-form/utils/serialization.ts
+  - lib/form-types/index.ts
+  - components/auto-form/shadcn-controls.ts
+  - components/auto-form/ui-props.ts
+  - components/auto-form/shadcn-ui-components.ts
+  - lib/input-utils/index.ts
+bun add v1.4.3 (c6da4a4d3)
+Saved lockfile
+
+installed tailwindcss@4.3.3
+installed @tailwindcss/vite@4.3.3
+
+17 packages installed [51.00ms]
+$ tsc --noEmit
+Registry-only consumer fixture passed: $WORKSPACE/.tmp/consumer-fixture

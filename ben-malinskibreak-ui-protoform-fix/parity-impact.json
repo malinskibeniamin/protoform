@@ -410,10 +410,10 @@
   "files_before": 49,
   "files_after": 86,
   "source_bytes_before": 320131,
-  "source_bytes_after": 494353,
-  "source_byte_delta": 174222,
+  "source_bytes_after": 495556,
+  "source_byte_delta": 175425,
   "json_bytes_before": 341548,
-  "json_bytes_after": 529564,
+  "json_bytes_after": 530812,
   "dependencies": [
     "@base-ui/react@^1.9.0",
     "@buf/googleapis_googleapis.bufbuild_es",
@@ -449,5 +449,6 @@
   ],
   "devDependencies": [
     "@types/js-cookie@3.0.6"
-  ]
+  ],
+  "head": "3727730e602fbe7de5fa69b574151ff9f4004837"
 }

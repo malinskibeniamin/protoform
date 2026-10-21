@@ -24,7 +24,7 @@ All category capture files reside under parity.visual.spec.ts-snapshots; contact
 
 30 native category journeys pass in all three engines: local creation/reset, progress, native enum and OTP format, safe cancellation/confirm/recovery, menus, focus return, carousel text editing, resize, message recovery/scroller, required/optional questionnaire and data-table/date-picker actions. Narrow table viewport uses unmodified arrow keys without capturing nested controls. Manual dogfood additionally covers questionnaire back/persisted selection/skip, mobile sidebar, hover/navigation/pagination; no page errors or mutating network requests.
 
-Existing OpenAPI browser test failed once during the first heavily concurrent local suite, with stock request text after editing (hydration timing symptom); the unchanged WebKit journey then passed 3/3 in isolation. No retry, timeout increase or test weakening was introduced. The final full native run and exact-head hosted exhaustive gate must pass before completion.
+Existing OpenAPI browser test failed once during the first heavily concurrent local suite, with stock request text after editing (hydration timing symptom); the unchanged WebKit journey then passed 3/3 in isolation. No retry, timeout increase or test weakening was introduced. A later broad local run hit widespread navigation timeouts. The fresh unchanged exact-head replay now passes all 747 tests in 2.3 minutes; exact-head hosted gates remain pending at publication.
 
 ## Provenance and limits
 
