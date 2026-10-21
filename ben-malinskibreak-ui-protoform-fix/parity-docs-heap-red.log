@@ -1,0 +1,80 @@
+$ bun run scripts/check-docs-types.ts
+[blume] ◐ Type-checking 170 page(s)
+BLUME_OPENAPI_LOCAL_SERVER In OpenAPI spec "./openapi.yaml": The spec's server http://127.0.0.1:55012 is a local address, so the reference publishes it as the server Try it sends requests to and the code samples call, which readers can't reach.
+  fix: List the API's public URL in the spec's `servers`, or replace it with an overlay (an action with `target: $.servers[0]` and `update: { url: "https://api.example.com" }`).
+  docs: https://useblume.dev/docs/references/openapi#spec-warnings
+
+1 warning(s)
+
+<--- Last few GCs --->
+
+[99933:0x759e000000]    37715 ms: Scavenge (during sweeping) 2019.1 (2051.9) -> 2017.3 (2051.9) MB, pooled: 0.0 MB, 3.11 / 0.00 ms (average mu = 0.189, current mu = 0.000) allocation failure; 
+[99933:0x759e000000]    38255 ms: Mark-Compact 2021.5 (2053.9) -> 2016.6 (2049.1) MB, pooled: 6.2 MB, 519.04 / 0.00 ms (average mu = 0.156, current mu = 0.132) allocation failure; scavenge might not succeed
+
+FATAL ERROR: Ineffective mark-compacts near heap limit Allocation failed - JavaScript heap out of memory
+----- Native stack trace -----
+
+ 1: 0x10970b7d8 node::(anonymous namespace)::DefaultAbortHandler(char const*, char const*) [/opt/homebrew/Cellar/node/26.12.0/lib/libnode.147.dylib]
+ 2: 0x10970ba60 node::OOMErrorHandler(char const*, v8::OOMDetails const&) [/opt/homebrew/Cellar/node/26.12.0/lib/libnode.147.dylib]
+ 3: 0x108689cb8 v8::internal::V8::FatalProcessOutOfMemory(v8::internal::Isolate*, char const*, v8::OOMDetails const&) [/opt/homebrew/Cellar/node/26.12.0/lib/libnode.147.dylib]
+ 4: 0x10883d50c v8::internal::Heap::NotifyContextDisposed(bool) [/opt/homebrew/Cellar/node/26.12.0/lib/libnode.147.dylib]
+ 5: 0x10883cbf4 v8::internal::Heap::GlobalConsumedBytes() const [/opt/homebrew/Cellar/node/26.12.0/lib/libnode.147.dylib]
+ 6: 0x10883af7c v8::internal::Heap::CollectGarbage(v8::internal::AllocationSpace, v8::internal::GarbageCollectionReason, v8::GCCallbackFlags, v8::internal::PerformHeapLimitCheck, v8::internal::PerformIneffectiveMarkCompactCheck) [/opt/homebrew/Cellar/node/26.12.0/lib/libnode.147.dylib]
+ 7: 0x108834d04 v8::internal::HeapAllocator::CollectGarbageAndRetryAllocation(v8::base::FunctionRef<bool ()>, v8::internal::AllocationType) [/opt/homebrew/Cellar/node/26.12.0/lib/libnode.147.dylib]
+ 8: 0x108834b6c v8::internal::HeapAllocator::RetryCustomAllocate(v8::base::FunctionRef<bool ()>, v8::internal::AllocationType) [/opt/homebrew/Cellar/node/26.12.0/lib/libnode.147.dylib]
+ 9: 0x108834874 v8::internal::HeapAllocator::RetryCustomAllocateOrFail(v8::base::FunctionRef<bool ()>, v8::internal::AllocationType) [/opt/homebrew/Cellar/node/26.12.0/lib/libnode.147.dylib]
+10: 0x108824f1c v8::internal::Factory::NewFillerObject(int, v8::internal::AllocationAlignment, v8::internal::AllocationType, v8::internal::AllocationOrigin) [/opt/homebrew/Cellar/node/26.12.0/lib/libnode.147.dylib]
+11: 0x108af775c v8::internal::Runtime_AllocateInYoungGeneration(int, unsigned long*, v8::internal::Isolate*) [/opt/homebrew/Cellar/node/26.12.0/lib/libnode.147.dylib]
+12: 0x108f70cac Builtins_CEntry_Return1_ArgvOnStack_NoBuiltinExit [/opt/homebrew/Cellar/node/26.12.0/lib/libnode.147.dylib]
+13: 0x11b72e8b0 
+14: 0x11b73ecc4 
+15: 0x11b73ef14 
+16: 0x11a9a243c 
+17: 0x11b0a3238 
+18: 0x11b067460 
+19: 0x11a3b8cc4 
+20: 0x11ae60b44 
+21: 0x11a1d105c 
+22: 0x11a1d12b0 
+23: 0x11ae6251c 
+24: 0x11b012034 
+25: 0x11b5920a0 
+26: 0x11a5b601c 
+27: 0x11b23d458 
+28: 0x11a5b8f7c 
+29: 0x11b9238f0 
+30: 0x11a555580 
+31: 0x108f56368 Builtins_SetPrototypeForEach [/opt/homebrew/Cellar/node/26.12.0/lib/libnode.147.dylib]
+32: 0x11af3fef0 
+33: 0x11b1833b0 
+34: 0x11b1dcf14 
+35: 0x11b1dcb5c 
+36: 0x11b1cd1f8 
+37: 0x11a341c38 
+38: 0x11b07b31c 
+39: 0x11a341998 
+40: 0x11af9ea60 
+41: 0x11b810360 
+42: 0x11a1ddc34 
+43: 0x11a3415b4 
+44: 0x11b07c2d0 
+45: 0x11b707adc 
+46: 0x11b86c690 
+47: 0x108f0b764 Builtins_AsyncFunctionAwaitResolveClosure [/opt/homebrew/Cellar/node/26.12.0/lib/libnode.147.dylib]
+48: 0x108fe9458 Builtins_PromiseFulfillReactionJob [/opt/homebrew/Cellar/node/26.12.0/lib/libnode.147.dylib]
+49: 0x108efa904 Builtins_RunMicrotasks [/opt/homebrew/Cellar/node/26.12.0/lib/libnode.147.dylib]
+50: 0x108eca678 Builtins_JSRunMicrotasksEntry [/opt/homebrew/Cellar/node/26.12.0/lib/libnode.147.dylib]
+51: 0x1087b2a70 v8::internal::(anonymous namespace)::Invoke(v8::internal::Isolate*, v8::internal::(anonymous namespace)::InvokeParams const&) [/opt/homebrew/Cellar/node/26.12.0/lib/libnode.147.dylib]
+52: 0x1087b3270 v8::internal::(anonymous namespace)::InvokeWithTryCatch(v8::internal::Isolate*, v8::internal::(anonymous namespace)::InvokeParams const&) [/opt/homebrew/Cellar/node/26.12.0/lib/libnode.147.dylib]
+53: 0x1087db658 v8::internal::MicrotaskQueue::PerformCheckpointInternal(v8::Isolate*) [/opt/homebrew/Cellar/node/26.12.0/lib/libnode.147.dylib]
+54: 0x10838580c node::InternalCallbackScope::Close() [/opt/homebrew/Cellar/node/26.12.0/lib/libnode.147.dylib]
+55: 0x108385638 node::InternalCallbackScope::~InternalCallbackScope() [/opt/homebrew/Cellar/node/26.12.0/lib/libnode.147.dylib]
+56: 0x1083f64b4 node::Environment::RunTimers(uv_timer_s*) [/opt/homebrew/Cellar/node/26.12.0/lib/libnode.147.dylib]
+57: 0x1046db870 uv__run_timers [/opt/homebrew/Cellar/libuv/1.53.0/lib/libuv.1.0.0.dylib]
+58: 0x1046ded7c uv_run [/opt/homebrew/Cellar/libuv/1.53.0/lib/libuv.1.0.0.dylib]
+59: 0x108386400 node::SpinEventLoopInternal(node::Environment*) [/opt/homebrew/Cellar/node/26.12.0/lib/libnode.147.dylib]
+60: 0x1084bee74 node::NodeMainInstance::Run(node::ExitCode*, node::Environment*) [/opt/homebrew/Cellar/node/26.12.0/lib/libnode.147.dylib]
+61: 0x1084bebac node::NodeMainInstance::Run() [/opt/homebrew/Cellar/node/26.12.0/lib/libnode.147.dylib]
+62: 0x1084270e0 node::Start(int, char**) [/opt/homebrew/Cellar/node/26.12.0/lib/libnode.147.dylib]
+63: 0x18d34be80 start [/usr/lib/dyld]
+error: script "docs:blume:check" exited with code 1
