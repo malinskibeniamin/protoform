@@ -1,0 +1,81 @@
+{
+  "status": "verified_open_unmerged",
+  "head": "443ec1638a633ee438554caad7c01b8418d9c652",
+  "base": "23958c736a2751c8fe4b53baa41895055754d29e",
+  "branch": "ben-malinskibreak-ui-protoform-fix",
+  "ownedCommits": 1,
+  "pr": "https://github.com/malinskibeniamin/protoform/pull/114",
+  "runs": [
+    {
+      "conclusion": "success",
+      "databaseId": 39603457439,
+      "headSha": "443ec1638a633ee438554caad7c01b8418d9c652",
+      "status": "completed",
+      "url": "https://github.com/malinskibeniamin/protoform/actions/runs/39603457439"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 39603457786,
+      "headSha": "443ec1638a633ee438554caad7c01b8418d9c652",
+      "status": "completed",
+      "url": "https://github.com/malinskibeniamin/protoform/actions/runs/39603457786"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 39603450804,
+      "headSha": "443ec1638a633ee438554caad7c01b8418d9c652",
+      "status": "completed",
+      "url": "https://github.com/malinskibeniamin/protoform/actions/runs/39603450804"
+    }
+  ],
+  "scope": {
+    "catalogEntries": 66,
+    "primitiveModules": 63,
+    "officialExports": 388,
+    "preservesAdditiveProtoformApis": true
+  },
+  "verification": {
+    "hosted": {
+      "unit": 206,
+      "integration": 447,
+      "browser": 31,
+      "conformance": 175,
+      "e2e": 253,
+      "host": 10,
+      "canary": 3
+    },
+    "supplementalVisualCases": 138,
+    "unchangedOriginalPngReferences": 138,
+    "newApiPngReferences": 12,
+    "finalAcceptanceCases": 10,
+    "tsrsTypesAndLint": "pass",
+    "invalidContractTdd": "TSRS rejects the deliberate invalid assertion; official contracts pass",
+    "manual": "no page errors or failed requests; settled document width320"
+  },
+  "feedback": {
+    "comments": 0,
+    "reviews": 0,
+    "unresolvedThreads": 0,
+    "humanApprovalClaimed": false
+  },
+  "readiness": {
+    "mergeability": "CLEAN",
+    "nativeRequiredChecks": "pass",
+    "helperReason": [
+      "check-skipping:scorecard"
+    ],
+    "expectedNonrequiredSkip": "Scorecard excludes PR events; no policy weakened"
+  },
+  "media": {
+    "video": "https://github.com/user-attachments/assets/f967e2ee-877f-4b59-9f47-820bf057fadb",
+    "staticPin": "dfa6602ea36fbd3742eda838b495c03fb5cddb96",
+    "sourceArtifactPin": "f6be0f7733044f72ecdb7b8a293c3fcfd3693630"
+  },
+  "limits": [
+    "Pinned Base UI catalog, not alternate stacks, AI Elements, blocks or optional Shiki",
+    "Not byte-identical styling or exhaustive arbitrary-props/accessibility coverage",
+    "Existing OpenAPI local-example warning, private Buf audit limitation and two time-bounded audit exceptions"
+  ],
+  "endpoint": "No merge authorized or executed; no ongoing monitors or agents planned",
+  "recordedAt": "2026-10-21T13:19:26.033314+00:00"
+}
