@@ -1,0 +1,73 @@
+{
+  "status": "verified-unmerged",
+  "finished_at": "2026-10-21T07:51:01.584Z",
+  "pr": "https://github.com/malinskibeniamin/protoform/pull/114",
+  "head": "46d44aaf1a0bd2527692b1d8a092ca09b3047e46",
+  "base": "af64c5586288b2ae64f41f2004d43db936657b08",
+  "branch": "ben-malinskibreak-ui-protoform-fix",
+  "commits_above_base": 1,
+  "source_clean": true,
+  "remote_head_matches": true,
+  "catalog": {
+    "entries": 66,
+    "primitives": 63,
+    "composition_guides": 3,
+    "scope": "Base UI base-nova catalog; existing Protoform APIs preserved, not exact upstream API compatibility",
+    "added_modules": 34,
+    "added_recipes": 2
+  },
+  "checks": {
+    "ci": {
+      "id": 39560972806,
+      "status": "success"
+    },
+    "security": {
+      "id": 39560972854,
+      "status": "success"
+    },
+    "exhaustive": {
+      "id": 39560987276,
+      "status": "success"
+    }
+  },
+  "tests": {
+    "e2e": 747,
+    "conformance": 175,
+    "unit": 264,
+    "integration": 275,
+    "real_browser": 26,
+    "installed_host": 10,
+    "supplemental_visual": 126
+  },
+  "ui_evidence_revision": "3727730e602fbe7de5fa69b574151ff9f4004837",
+  "rendering_unchanged_since_capture": true,
+  "ci_only_followup": "two-line bounded 4096MiB Node heap for quality step; 2048MiB docs OOM reproduced, same strict check passes at4096MiB",
+  "evidence_pins": [
+    "c5d80c5229e78df376176861af93a48df236ba76",
+    "620d35e7cc16cb4e6deb049846a926dd0a0d9848",
+    "32c88ea3777894602d4ccbf4b0d7c6d15eb7ab8e"
+  ],
+  "feedback": {
+    "comments": 0,
+    "reviews": 0,
+    "unresolved_threads": 0,
+    "required_approvals": 0
+  },
+  "readiness_helper": {
+    "status": "blocked",
+    "reasons": [
+      "check-skipping:scorecard"
+    ],
+    "explanation": "Intentional nonrequired PR-event skip; all native required checks and exact-head exhaustive gate pass. No policy changed to hide skip."
+  },
+  "limits": [
+    "No human review claimed",
+    "Catalog coverage, not identical styling/API compatibility or every prop combination",
+    "AI Elements, blocks and optional Shiki excluded",
+    "Existing local OpenAPI warning, private Buf audit limitation and two existing exceptions remain"
+  ],
+  "servers_stopped": true,
+  "merged": false,
+  "auto_merge": false,
+  "next_action": "Owner retains merge decision."
+}
