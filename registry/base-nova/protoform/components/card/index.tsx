@@ -14,6 +14,7 @@ const cardVariants = cva(
     },
     variants: {
       size: {
+        default: 'max-w-md gap-4 px-8 py-6',
         full: 'w-full gap-4 px-8 py-6',
         lg: 'max-w-lg gap-4 px-10 py-8',
         md: 'max-w-md gap-4 px-8 py-6',
@@ -38,7 +39,7 @@ export type CardSize = VariantProps<typeof cardVariants>['size'];
 type BaseCardProps = SharedProps & {
   size?: CardSize;
   variant?: CardVariant;
-  className?: string;
+  className?: string | undefined;
 };
 
 type StaticCardProps = BaseCardProps & Omit<React.ComponentProps<'div'>, keyof BaseCardProps> & { animated?: false };

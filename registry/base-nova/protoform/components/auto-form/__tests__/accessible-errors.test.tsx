@@ -1,7 +1,9 @@
-import { describe, expect, test } from '@rstest/core';
-import { render, screen, waitFor } from '@testing-library/react';
+import { create } from '@bufbuild/protobuf';
+import { describe, expect, rs, test } from '@rstest/core';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type React from 'react';
+import { getDemoSchema } from '@/registry/base-nova/protoform/demo/runtime/demo-schemas';
 import { AutoForm, shadcnUIComponents } from '..';
 import { createMockProvider } from './test-utils';
 
@@ -28,6 +30,38 @@ const components = {
 };
 
 describe('AutoForm accessible errors', () => {
+  test.each([
+    { tags: ['forms', 'one', 'two', 'three'], message: 'must contain no more than 3 item(s)' },
+    { tags: ['forms', 'forms'], message: 'repeated value must contain unique items' },
+  ])('announces collection validation and clears it after correction: $message', async ({ tags, message }) => {
+    const user = userEvent.setup();
+    const onSubmit = rs.fn();
+    const demo = getDemoSchema('validation');
+    render(
+      <AutoForm
+        defaultValues={create(demo.schema, { ...demo.defaultValues, labels: { team: 'forms' }, tags })}
+        onSubmit={onSubmit}
+        schema={demo.schema}
+        withSubmit
+      />
+    );
+    await user.click(screen.getByRole('button', { name: 'Submit' }));
+    expect(await screen.findByText(message)).toBeVisible();
+    expect(onSubmit).not.toHaveBeenCalled();
+    const group = screen.getByRole('group', { name: /^Tags/u });
+    expect(group).toHaveAccessibleDescription(message);
+    expect(group).toHaveAttribute('aria-invalid', 'true');
+    const remove = within(group).getAllByRole('button', { name: 'Remove item' }).at(-1);
+    if (!remove) {
+      throw new Error('Expected a removable tag.');
+    }
+    await user.click(remove);
+    await user.click(screen.getByRole('button', { name: 'Submit' }));
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
+    expect(group).not.toHaveAccessibleDescription();
+    expect(group).not.toHaveAttribute('aria-invalid', 'true');
+  });
+
   test.each(['email', 'textarea'])('links %s consumer inputs to validation errors', async (fieldType) => {
     const user = userEvent.setup();
     const schema = createMockProvider([{ key: 'value', required: false, type: 'string' }], {}, (values) =>

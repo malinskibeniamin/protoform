@@ -1,7 +1,8 @@
+import { useRender } from '@base-ui/react/use-render';
 import { cva, type VariantProps } from 'class-variance-authority';
 import type React from 'react';
 
-import { Slot } from '@/registry/base-nova/protoform/lib/base-ui-compat';
+import { asChildToRender } from '@/registry/base-nova/protoform/lib/base-ui-compat';
 import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
 const badgeVariants = cva(
@@ -18,6 +19,9 @@ const badgeVariants = cva(
         sm: 'h-5 gap-1 px-1.5 py-0 text-xs has-[>svg]:px-1 [&_svg]:size-3',
       },
       variant: {
+        default: 'border-transparent bg-primary text-primary-foreground',
+        ghost: 'border-transparent bg-transparent text-foreground hover:bg-accent',
+        link: 'border-transparent bg-transparent text-primary underline-offset-4 hover:underline',
         accent: 'border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90',
         'accent-inverted': 'border-transparent bg-primary/10 text-primary [a&]:hover:bg-primary/15',
         'accent-outline': 'border-primary bg-transparent text-primary [a&]:hover:bg-primary/10',
@@ -76,15 +80,16 @@ function Badge({
   children,
   size,
   ref,
+  render,
   ...props
-}: React.ComponentProps<'span'> &
+}: useRender.ComponentProps<'span'> &
   SharedProps & {
     asChild?: boolean;
     icon?: React.ReactNode;
     variant?: BadgeVariant;
     size?: BadgeSize;
   }) {
-  const Comp = asChild === true ? Slot : 'span';
+  const childProps = asChildToRender({ asChild, children, render });
 
   const renderContent = () => {
     if (asChild === true) {
@@ -111,17 +116,18 @@ function Badge({
     return null;
   };
 
-  return (
-    <Comp
-      className={cn(badgeVariants({ size, variant }), className)}
-      data-slot="badge"
-      data-testid={testId}
-      ref={ref}
-      {...props}
-    >
-      {renderContent()}
-    </Comp>
-  );
+  return useRender({
+    defaultTagName: 'span',
+    render: childProps.render,
+    ref,
+    props: {
+      ...props,
+      className: cn(badgeVariants({ size, variant }), className),
+      'data-slot': 'badge',
+      'data-testid': testId,
+      children: asChild === true ? undefined : renderContent(),
+    },
+  });
 }
 
 export { Badge, badgeVariants };

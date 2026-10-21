@@ -6,6 +6,7 @@ import { extname, join, resolve as resolvePath } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { $, Glob } from 'bun';
 import { z } from 'zod';
+import shadcnCatalog from '../registry/shadcn-catalog.json' with { type: 'json' };
 
 const root = resolvePath(fileURLToPath(new URL('..', import.meta.url)));
 const fixture = join(root, '.tmp', 'consumer-fixture');
@@ -155,8 +156,10 @@ async function assertInstalled() {
     'hooks/use-proto-form-v8/index.ts',
     'lib/core/index.ts',
     'lib/protobuf-provider/index.ts',
-    'components/ui/button/index.tsx',
-    'components/ui/select/index.tsx',
+    ...shadcnCatalog.components.map((component) => component.installPath),
+    ...shadcnCatalog.compositions.map((composition) => composition.installPath),
+    'LICENSES/shadcn-MIT.txt',
+    'LICENSES/protoform-shadcn-provenance.md',
     'LICENSES/protoform-MIT.txt',
     'proto/protoform/conformance/v1/aip.proto',
   ];
@@ -168,7 +171,11 @@ async function assertInstalled() {
       });
     }
   }
-  const notices = [['LICENSES/protoform-MIT.txt', 'LICENSE']] as const;
+  const notices = [
+    ['LICENSES/protoform-MIT.txt', 'LICENSE'],
+    ['LICENSES/shadcn-MIT.txt', 'LICENSES/shadcn-MIT.txt'],
+    ['LICENSES/protoform-shadcn-provenance.md', 'registry/base-nova/protoform/SHADCN_COMPONENTS.md'],
+  ] as const;
   await Promise.all(
     notices.map(async ([installedPath, repositoryPath]) => {
       const [installedNotice, repositoryNotice] = await Promise.all([
@@ -187,6 +194,19 @@ async function assertInstalled() {
       "import { AutoForm as ReactHookFormV8AutoForm } from './components/auto-form-react-hook-form-v8';",
       "import { AutoForm as TanStackAutoForm } from './components/auto-form-tanstack';",
       "import { AutoForm as TanStackV2AutoForm } from './components/auto-form-tanstack-v2';",
+      "import DatePickerExample from './components/ui/examples/date-picker';",
+      "import DataTableExample from './components/ui/examples/data-table';",
+      "import { CodeBlock, CodeBlockContent, CodeBlockCopyButton } from './components/ui/code-block';",
+      "import { Trace, TraceLine, TraceTitle, TraceCollapsible, TraceCollapsibleTrigger, TraceCollapsibleContent } from './components/ui/trace';",
+      "import { Button } from './components/ui/button';",
+      "import { Badge } from './components/ui/badge';",
+      "import { ChartStyle } from './components/ui/chart';",
+      "import { Combobox, ComboboxInput, ComboboxContent, ComboboxList, ComboboxItem } from './components/ui/combobox';",
+      "import { Select, SelectTrigger, SelectContent, SelectItem } from './components/ui/select';",
+      "import { PopoverHeader, PopoverTitle, PopoverDescription } from './components/ui/popover';",
+      "import { tabsListVariants } from './components/ui/tabs';",
+      "import { ToggleGroup, ToggleGroupItem } from './components/ui/toggle-group';",
+
       "import { BookstoreDemo } from './components/protoform-bookstore/bookstore-demo';",
       "import { createLibraryService } from './components/protoform-bookstore/library-service';",
       "import { BookSchema } from './components/protoform-examples/runtime/gen/protoform/conformance/v1/aip_pb';",
@@ -196,6 +216,14 @@ async function assertInstalled() {
       "import type { SchemaProvider } from './lib/core';",
       "import { createProtoFormSchema } from './lib/protobuf-provider';",
       '',
+      'const bundledUi = <Trace><TraceLine><TraceTitle>Request</TraceTitle></TraceLine><TraceCollapsible><TraceCollapsibleTrigger>Details</TraceCollapsibleTrigger><TraceCollapsibleContent><CodeBlock><CodeBlockCopyButton value="source" /><CodeBlockContent lineNumbers wrap>source</CodeBlockContent></CodeBlock></TraceCollapsibleContent></TraceCollapsible></Trace>;',
+      'void bundledUi;',
+      'const shadcnApi = <><Button render={<span />} nativeButton={false} size="default" variant="default" /><Badge render={<span />} variant="link">Link</Badge><ChartStyle id="installed-chart" config={{ example: { color: "var(--primary)" } }} /><Combobox items={["one", "two"]}><ComboboxInput /><ComboboxContent><ComboboxList>{(item: string) => <ComboboxItem key={item} value={item}>{item}</ComboboxItem>}</ComboboxList></ComboboxContent></Combobox><Select defaultValue={1} onValueChange={(value, details) => { const number: number | null = value; details.cancel(); void number; }}><SelectTrigger /><SelectContent><SelectItem value={1}>One</SelectItem></SelectContent></Select><ToggleGroup multiple defaultValue={["bold"]}><ToggleGroupItem value="bold">Bold</ToggleGroupItem></ToggleGroup><PopoverHeader><PopoverTitle>Details</PopoverTitle><PopoverDescription>Description</PopoverDescription></PopoverHeader></>;',
+      'void shadcnApi;',
+      'tabsListVariants({ variant: "line" });',
+
+      'const compositions = <><DatePickerExample /><DataTableExample /></>;',
+      'void compositions;',
       'const CodeField = () => <div>Code</div>;',
       'const schema: SchemaProvider<{ code: string }> = {',
       "  getDefaultValues: () => ({ code: '' }),",

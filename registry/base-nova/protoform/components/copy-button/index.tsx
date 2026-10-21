@@ -26,7 +26,7 @@ const buttonVariants = cva(
           'bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:bg-destructive/60 dark:focus-visible:ring-destructive/40',
         ghost: 'hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50',
         outline:
-          '!border-border border text-primary-foreground shadow-xs hover:border-ring hover:bg-primary/10 active:border-ring active:bg-primary/15 disabled:border-border disabled:text-muted-foreground',
+          '!border-border border bg-background text-foreground shadow-xs hover:border-ring hover:bg-primary/10 active:border-ring active:bg-primary/15 disabled:border-border disabled:text-muted-foreground',
         primary: 'bg-secondary text-primary-foreground shadow-xs hover:bg-secondary/80',
         secondary: 'bg-primary text-primary-foreground shadow-xs hover:bg-primary/90',
       },

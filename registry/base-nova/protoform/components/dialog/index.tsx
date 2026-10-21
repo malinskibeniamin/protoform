@@ -7,27 +7,16 @@ import { Button } from '@/components/ui/button';
 import { usePortalContainer } from '@/registry/base-nova/protoform/hooks/use-portal-container';
 import {
   asChildTrigger,
-  narrowOpenChange,
   renderDescription,
   renderWithDataState,
   warnDeprecatedProp,
 } from '@/registry/base-nova/protoform/lib/base-ui-compat';
 import { cn, type FixedPositionContentProps, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
-type DialogRootProps = Omit<React.ComponentProps<typeof DialogPrimitive.Root>, 'onOpenChange'> &
-  SharedProps & {
-    onOpenChange?: (open: boolean) => void;
-  };
+type DialogRootProps = React.ComponentProps<typeof DialogPrimitive.Root> & SharedProps;
 
 function Dialog({ testId, onOpenChange, ...props }: DialogRootProps) {
-  return (
-    <DialogPrimitive.Root
-      data-slot="dialog"
-      data-testid={testId}
-      onOpenChange={narrowOpenChange(onOpenChange)}
-      {...props}
-    />
-  );
+  return <DialogPrimitive.Root data-slot="dialog" data-testid={testId} onOpenChange={onOpenChange} {...props} />;
 }
 
 type DialogTriggerProps = React.ComponentProps<typeof DialogPrimitive.Trigger> & {
@@ -37,7 +26,7 @@ type DialogTriggerProps = React.ComponentProps<typeof DialogPrimitive.Trigger> &
 function DialogTrigger({ className, ...props }: DialogTriggerProps) {
   return (
     <DialogPrimitive.Trigger
-      className={cn('cursor-pointer', className)}
+      className={(state) => cn('cursor-pointer', typeof className === 'function' ? className(state) : className)}
       data-slot="dialog-trigger"
       {...asChildTrigger(props)}
     />
@@ -59,10 +48,12 @@ function DialogClose({ ...props }: DialogCloseProps) {
 function DialogOverlay({ className, ...props }: React.ComponentProps<typeof DialogPrimitive.Backdrop>) {
   return (
     <DialogPrimitive.Backdrop
-      className={cn(
-        'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/40 fill-mode-forwards backdrop-blur-xs data-[state=closed]:animate-out data-[state=open]:animate-in',
-        className
-      )}
+      className={(state) =>
+        cn(
+          'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/40 fill-mode-forwards backdrop-blur-xs data-[state=closed]:animate-out data-[state=open]:animate-in',
+          typeof className === 'function' ? className(state) : className
+        )
+      }
       data-slot="dialog-overlay"
       render={renderWithDataState('div')}
       {...props}
@@ -128,7 +119,9 @@ function DialogContent(contentProps: DialogContentProps) {
     <DialogPortal container={container ?? portalContainer}>
       {showOverlay ? <DialogOverlay /> : null}
       <DialogPrimitive.Popup
-        className={cn(dialogContentVariants({ size, variant }), className)}
+        className={(state) =>
+          cn(dialogContentVariants({ size, variant }), typeof className === 'function' ? className(state) : className)
+        }
         data-slot="dialog-content"
         data-testid={testId}
         render={renderWithDataState('div')}
@@ -202,22 +195,42 @@ const dialogFooterVariants = cva('flex shrink-0 p-4 [&:is([data-slot=dialog-body
   },
 });
 
-interface DialogFooterProps extends React.ComponentProps<'div'>, VariantProps<typeof dialogFooterVariants> {}
+interface DialogFooterProps extends React.ComponentProps<'div'>, VariantProps<typeof dialogFooterVariants> {
+  showCloseButton?: boolean;
+}
 
-function DialogFooter({ className, direction, justify, gap, ...props }: DialogFooterProps) {
+function DialogFooter({
+  className,
+  direction,
+  justify,
+  gap,
+  children,
+  showCloseButton = false,
+  ...props
+}: DialogFooterProps) {
   return (
     <div
       className={cn(dialogFooterVariants({ direction, gap, justify }), className)}
       data-slot="dialog-footer"
       {...props}
-    />
+    >
+      {children}
+      {showCloseButton === true ? (
+        <DialogClose render={<Button type="button" variant="outline" />}>Close</DialogClose>
+      ) : null}
+    </div>
   );
 }
 
 function DialogTitle({ className, ...props }: React.ComponentProps<typeof DialogPrimitive.Title>) {
   return (
     <DialogPrimitive.Title
-      className={cn('font-semibold text-lg leading-none tracking-tight', className)}
+      className={(state) =>
+        cn(
+          'font-semibold text-lg leading-none tracking-tight',
+          typeof className === 'function' ? className(state) : className
+        )
+      }
       data-slot="dialog-title"
       {...props}
     />

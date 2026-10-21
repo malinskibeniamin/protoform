@@ -1,5 +1,6 @@
 'use client';
 
+import { Button as ButtonPrimitive } from '@base-ui/react/button';
 import { cva, type VariantProps } from 'class-variance-authority';
 import React, { type ElementType } from 'react';
 
@@ -31,6 +32,8 @@ const buttonVariants = cva(
     },
     variants: {
       size: {
+        default: 'h-8 gap-1.5 px-2.5 has-[>svg]:px-2 [&_svg]:size-4',
+        rail: 'h-auto w-4 rounded-none p-0',
         icon: 'size-8 [&_svg]:size-4',
         'icon-lg': 'size-9 [&_svg]:size-4',
         'icon-sm': 'size-7 [&_svg]:size-3.5',
@@ -41,6 +44,8 @@ const buttonVariants = cva(
         xs: 'h-6 gap-1 px-2 text-xs has-[>svg]:px-1.5 [&_svg]:size-3',
       },
       variant: {
+        default: 'bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 active:bg-primary/80',
+        rail: 'rounded-none border-0 bg-transparent shadow-none transition-none hover:bg-transparent hover:after:bg-sidebar-border',
         calendar:
           'flex aspect-square size-auto w-full min-w-(--cell-size) flex-col gap-1 bg-transparent font-normal text-foreground leading-none hover:bg-muted hover:text-foreground active:bg-muted/80 data-[range-end=true]:rounded-md data-[range-middle=true]:rounded-none data-[range-start=true]:rounded-md data-[range-end=true]:rounded-r-md data-[range-start=true]:rounded-l-md data-[range-end=true]:bg-selected data-[range-middle=true]:bg-accent data-[range-start=true]:bg-selected data-[selected-single=true]:bg-selected data-[range-end=true]:text-selected-foreground data-[range-middle=true]:text-accent-foreground data-[range-start=true]:text-selected-foreground data-[selected-single=true]:text-selected-foreground group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-10 group-data-[focused=true]/day:border-selected group-data-[focused=true]/day:ring-3 group-data-[focused=true]/day:ring-selected/50 dark:hover:text-accent-foreground [&>span]:text-xs [&>span]:opacity-70',
         accent: [
@@ -149,7 +154,7 @@ const buttonVariants = cva(
 
 export type ButtonVariants = VariantProps<typeof buttonVariants>;
 
-export type ButtonProps = React.ComponentProps<'button'> &
+export type ButtonProps = ButtonPrimitive.Props &
   ButtonVariants & {
     asChild?: boolean | undefined;
     as?: ElementType | undefined;
@@ -160,6 +165,96 @@ export type ButtonProps = React.ComponentProps<'button'> &
     target?: string | undefined;
     rel?: string | undefined;
   } & SharedProps;
+
+function ButtonContent({ children, icon, isLoading }: Pick<ButtonProps, 'children' | 'icon' | 'isLoading'>) {
+  const content = icon ? (
+    <>
+      {children}
+      {icon}
+    </>
+  ) : (
+    children
+  );
+  if (isLoading === true) {
+    return (
+      <>
+        <span className="invisible contents">{content}</span>
+        <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center">
+          <Spinner />
+        </span>
+      </>
+    );
+  }
+  return content;
+}
+
+type ButtonStyleProps = Pick<ButtonProps, 'className' | 'variant' | 'size' | 'icon' | 'isLoading'> & {
+  positionClasses: string;
+};
+
+function getButtonClasses(
+  { className, variant, size, icon, isLoading, positionClasses }: ButtonStyleProps,
+  state: ButtonPrimitive.State
+) {
+  return cn(
+    buttonVariants({ size, variant }),
+    positionClasses,
+    icon && 'gap-2',
+    isLoading === true && 'relative',
+    typeof className === 'function' ? className(state) : className
+  );
+}
+
+function getButtonPositionClasses(attached: boolean, position: ReturnType<typeof useGroup>['position']) {
+  if (!attached) {
+    return 'rounded-lg';
+  }
+  if (position === 'first') {
+    return 'rounded-r-none rounded-l-lg border-r-0';
+  }
+  if (position === 'last') {
+    return 'rounded-r-lg rounded-l-none border-l-0';
+  }
+  if (position === 'middle') {
+    return 'rounded-none border-r-0 border-l-0';
+  }
+  return 'rounded-lg';
+}
+
+function LegacyButton({
+  as,
+  asChild,
+  children,
+  className,
+  variant,
+  size,
+  icon,
+  isLoading,
+  positionClasses,
+  disabled,
+  style,
+  focusableWhenDisabled: _focusableWhenDisabled,
+  ...props
+}: ButtonProps & { positionClasses: string }) {
+  const Component = as ?? Slot;
+  const state: ButtonPrimitive.State = { disabled: disabled === true };
+  return React.createElement(
+    Component,
+    {
+      ...props,
+      className: getButtonClasses({ className, variant, size, icon, isLoading, positionClasses }, state),
+      disabled,
+      style: typeof style === 'function' ? style(state) : style,
+    },
+    asChild === true ? (
+      children
+    ) : (
+      <ButtonContent icon={icon} isLoading={isLoading}>
+        {children}
+      </ButtonContent>
+    )
+  );
+}
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (
@@ -175,72 +270,45 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       isLoading = false,
       disabled,
       children,
+      render,
+      nativeButton,
+      type = 'button',
       ...props
     },
     ref
   ) => {
-    const Comp = as ?? (asChild === true ? Slot : 'button');
     const { attached, position } = useGroup();
-
-    let positionClasses = 'rounded-lg';
-    if (attached && position === 'first') {
-      positionClasses = 'rounded-r-none rounded-l-lg border-r-0';
-    } else if (attached && position === 'last') {
-      positionClasses = 'rounded-r-lg rounded-l-none border-l-0';
-    } else if (attached && position === 'middle') {
-      positionClasses = 'rounded-none border-r-0 border-l-0';
-    }
-
-    const isDisabled = disabled || isLoading;
-
-    const renderContent = () => {
-      if (asChild === true) {
-        return children;
-      }
-
-      const content = icon ? (
-        <>
+    const isDisabled = disabled === true || isLoading;
+    const positionClasses = getButtonPositionClasses(attached, position);
+    const shared = {
+      'aria-busy': isLoading === true ? true : undefined,
+      'data-loading': isLoading === true ? true : undefined,
+      'data-slot': 'button',
+      'data-testid': testId,
+      disabled: isDisabled,
+      ref,
+      type,
+    } as const;
+    const styleProps = { className, variant, size, icon, isLoading, positionClasses };
+    if (asChild === true || as !== undefined) {
+      return (
+        <LegacyButton {...shared} {...props} {...styleProps} as={as} asChild={asChild} to={to}>
           {children}
-          {icon}
-        </>
-      ) : (
-        children
+        </LegacyButton>
       );
-
-      if (isLoading === true) {
-        return (
-          <>
-            <span className="invisible contents">{content}</span>
-            <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center">
-              <Spinner />
-            </span>
-          </>
-        );
-      }
-
-      return content;
-    };
-
+    }
     return (
-      <Comp
-        aria-busy={isLoading === true ? true : undefined}
-        className={cn(
-          buttonVariants({ className, size, variant }),
-          positionClasses,
-          icon && 'gap-2',
-          isLoading === true && 'relative',
-          className
-        )}
-        data-loading={isLoading === true ? true : undefined}
-        data-slot="button"
-        data-testid={testId}
-        disabled={isDisabled}
-        ref={ref}
-        to={to}
+      <ButtonPrimitive
+        {...shared}
         {...props}
+        className={(state) => getButtonClasses(styleProps, state)}
+        nativeButton={nativeButton}
+        render={render}
       >
-        {renderContent()}
-      </Comp>
+        <ButtonContent icon={icon} isLoading={isLoading}>
+          {children}
+        </ButtonContent>
+      </ButtonPrimitive>
     );
   }
 );

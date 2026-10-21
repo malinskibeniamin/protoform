@@ -36,6 +36,8 @@ jobs:
           defaults write -g AppleLocale -string en_GB
           defaults write -g AppleICUForce24HourTime -bool true
       - run: bun run quality:gate
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
       - name: Upload runner failure evidence
         if: failure()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

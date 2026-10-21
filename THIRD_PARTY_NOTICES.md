@@ -14,7 +14,8 @@ Technologies, Inc. and Google LLC. The generated files retain their upstream cop
 
 Some UI component source under `registry/base-nova/protoform` is adapted from
 [shadcn/ui](https://github.com/shadcn-ui/ui). It is used under the MIT License. The upstream notice
-is in [LICENSES/shadcn-MIT.txt](LICENSES/shadcn-MIT.txt).
+is in [LICENSES/shadcn-MIT.txt](LICENSES/shadcn-MIT.txt). Code Block and Trace source provenance
+and local adaptations are recorded in [SHADCN_COMPONENTS.md](registry/base-nova/protoform/SHADCN_COMPONENTS.md).
 
 ## Blume
 

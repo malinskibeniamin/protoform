@@ -1,7 +1,7 @@
 'use client';
 
 import { Plus, X } from 'lucide-react';
-import { type ReactNode, useMemo, useRef } from 'react';
+import { type ReactNode, useRef } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Combobox, type ComboboxProps } from '@/components/ui/combobox';
@@ -77,25 +77,11 @@ function FieldRenderer({
   );
 }
 
-function ErrorRow({ keyError, valueError }: { keyError?: string | undefined; valueError?: string | undefined }) {
-  if (!((keyError !== undefined && keyError !== '') || (valueError !== undefined && valueError !== ''))) {
+function KeyValueError({ message }: { message: string | undefined }) {
+  if (message === undefined || message === '') {
     return null;
   }
-  return (
-    <>
-      {keyError !== undefined && keyError !== '' ? (
-        <p className="-mt-1 text-destructive text-sm">{keyError}</p>
-      ) : (
-        <span />
-      )}
-      {valueError !== undefined && valueError !== '' ? (
-        <p className="-mt-1 text-destructive text-sm">{valueError}</p>
-      ) : (
-        <span />
-      )}
-      <span />
-    </>
-  );
+  return <p className="text-destructive text-sm">{message}</p>;
 }
 
 function KeyValueRow({
@@ -132,27 +118,35 @@ function KeyValueRow({
   const hasTestId = testId !== undefined && testId !== '';
   const isKeyInvalid = Boolean(error?.key) || Boolean(pair.value && !pair.key) || isDuplicate;
   const isValueInvalid = Boolean(error?.value) || Boolean(pair.key && !pair.value);
+  const keyError = isDuplicate ? 'Duplicate key' : error?.key;
 
   return (
-    <div className="grid grid-cols-[1fr_1fr_auto] items-center gap-2">
-      <FieldRenderer
-        config={keyFieldProps}
-        disabled={disabled}
-        isInvalid={isKeyInvalid}
-        onChange={(val) => onKeyChange(index, val)}
-        testId={hasTestId ? `${testId}-key-${index}` : undefined}
-        value={pair.key}
-      />
-      <FieldRenderer
-        config={valueFieldProps}
-        disabled={disabled}
-        isInvalid={isValueInvalid}
-        onChange={(val) => onValueChange(index, val)}
-        testId={hasTestId ? `${testId}-value-${index}` : undefined}
-        value={pair.value}
-      />
+    <div className="grid @min-[28rem]/key-value:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] grid-cols-[minmax(0,1fr)] items-start gap-2">
+      <div className="col-start-1 row-start-1 min-w-0 space-y-1">
+        <FieldRenderer
+          config={keyFieldProps}
+          disabled={disabled}
+          isInvalid={isKeyInvalid}
+          onChange={(val) => onKeyChange(index, val)}
+          testId={hasTestId ? `${testId}-key-${index}` : undefined}
+          value={pair.key}
+        />
+        <KeyValueError message={keyError} />
+      </div>
+      <div className="@min-[28rem]/key-value:col-start-2 col-start-1 @min-[28rem]/key-value:row-start-1 row-start-2 min-w-0 space-y-1">
+        <FieldRenderer
+          config={valueFieldProps}
+          disabled={disabled}
+          isInvalid={isValueInvalid}
+          onChange={(val) => onValueChange(index, val)}
+          testId={hasTestId ? `${testId}-value-${index}` : undefined}
+          value={pair.value}
+        />
+        <KeyValueError message={error?.value} />
+      </div>
       <Button
         aria-label="Delete key-value pair"
+        className="@min-[28rem]/key-value:col-start-3 col-start-1 @min-[28rem]/key-value:row-start-1 row-start-3 justify-self-end"
         data-testid={hasTestId ? `${testId}-delete-${index}` : undefined}
         disabled={disabled}
         onClick={() => onDelete(index)}
@@ -162,10 +156,9 @@ function KeyValueRow({
       >
         <X size={16} />
       </Button>
-      <ErrorRow keyError={isDuplicate ? 'Duplicate key' : error?.key} valueError={error?.value} />
       {onAdd && isLast ? (
         <Button
-          className="col-span-2"
+          className="col-span-full"
           data-slot="add-button"
           data-testid={hasTestId ? `${testId}-add` : undefined}
           disabled={disabled}
@@ -199,7 +192,7 @@ export function KeyValueField({
   const containerRef = useRef<HTMLDivElement>(null);
   const { onAdd, onRemove } = useInputListFocus(containerRef);
 
-  const duplicateIndices = useMemo(() => findDuplicateIndices(value, (pair) => pair.key), [value]);
+  const duplicateIndices = findDuplicateIndices(value, (pair) => pair.key);
 
   const isAtLimit = maxItems !== undefined && value.length >= maxItems;
 
@@ -236,7 +229,12 @@ export function KeyValueField({
   };
 
   return (
-    <div className="flex flex-col gap-2" data-slot="key-value-field" data-testid={testId} ref={containerRef}>
+    <div
+      className="@container/key-value flex min-w-0 flex-col gap-2"
+      data-slot="key-value-field"
+      data-testid={testId}
+      ref={containerRef}
+    >
       {label || description ? (
         <div className="flex flex-col gap-0.5">
           {label ? <Label>{label}</Label> : null}

@@ -1,35 +1,22 @@
 'use client';
 
 import { Braces, FileEdit, SpellCheck, Trash2 } from 'lucide-react';
-import Prism from 'prismjs';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import EditorModule from 'react-simple-code-editor';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox';
 import { CopyButton } from '@/components/ui/copy-button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/components/ui/toast';
 import { Heading, Text } from '@/components/ui/typography';
 import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
-function isCommonJsEditorModule(value: unknown): value is { default: typeof EditorModule } {
-  return typeof value === 'object' && value !== null && 'default' in value;
-}
-
-const Editor = isCommonJsEditorModule(EditorModule) ? EditorModule.default : EditorModule;
-
-const JSON_PRISM_GRAMMAR: Prism.Grammar = {
-  boolean: /\b(?:false|true)\b/u,
-  comment: { greedy: true, pattern: /\/\/.*|\/\*[\s\S]*?(?:\*\/|$)/u },
-  null: { alias: 'keyword', pattern: /\bnull\b/u },
-  number: /-?\b\d+(?:\.\d+)?(?:e[+-]?\d+)?\b/iu,
-  operator: /:/u,
-  property: { greedy: true, lookbehind: true, pattern: /(^|[^\\])"(?:\\.|[^\\"\r\n])*"(?=\s*:)/u },
-  punctuation: /[{}[\],]/u,
-  string: { greedy: true, lookbehind: true, pattern: /(^|[^\\])"(?:\\.|[^\\"\r\n])*"(?!\s*:)/u },
-};
+const JSONCodeEditor = React.lazy(() =>
+  import('./json-code-editor').then((module) => ({ default: module.JSONCodeEditor }))
+);
 
 function isJsonValue(value: unknown): value is JSONValue {
   if (value === null || typeof value === 'string' || typeof value === 'boolean' || typeof value === 'number') {
@@ -47,18 +34,6 @@ function parseJson(source: string): JSONValue {
     throw new TypeError('Invalid JSON value');
   }
   return value;
-}
-
-function parseJsonOrUndefined(source: string): JSONValue {
-  try {
-    return parseJson(source);
-  } catch {
-    return undefined;
-  }
-}
-
-function highlightJson(code: string): string {
-  return Prism.highlight(code, Prism.languages['json'] ?? JSON_PRISM_GRAMMAR, 'json');
 }
 
 const TRAILING_S_REGEX = /s$/u;
@@ -86,6 +61,7 @@ type JSONFieldProps = {
   value: JSONValue;
   onChange: (value: JSONValue) => void;
   onBlur?: () => void;
+  label?: string;
   maxDepth?: number;
   showPlaceholder?: boolean;
   customFields?: CustomFieldConfig[];
@@ -97,6 +73,13 @@ const SIMPLE_JSON_TYPES = new Set(['string', 'number', 'integer', 'boolean', 'nu
 
 function getJSONProperty(value: JSONValue, key: string): JSONValue {
   return typeof value === 'object' && value !== null && !Array.isArray(value) ? value[key] : undefined;
+}
+
+function withJSONDefault(value: JSONValue, fallback: JSONValue): JSONValue {
+  if (value === undefined) {
+    return fallback;
+  }
+  return value;
 }
 
 const isTypeSupported = (type: JSONSchemaType['type'], supportedTypes: ReadonlySet<string>): boolean => {
@@ -184,11 +167,11 @@ const generateExampleData = (schema: JSONSchemaType): JSONValue => {
 };
 
 const hasEmptyValues = (value: JSONValue, schema: JSONSchemaType): boolean => {
-  if (!(value !== undefined && value !== null && Boolean(value))) {
+  if (value === undefined) {
     return true;
   }
 
-  if (schema.type === 'object' && typeof value === 'object' && !Array.isArray(value)) {
+  if (schema.type === 'object' && typeof value === 'object' && value !== null && !Array.isArray(value)) {
     const obj = value as Record<string, JSONValue>;
     if (Object.keys(obj).length === 0) {
       return true;
@@ -199,16 +182,10 @@ const hasEmptyValues = (value: JSONValue, schema: JSONSchemaType): boolean => {
         const val = obj[key];
         const subSchema = propSchema;
 
-        if (val === undefined || val === null) {
+        if (val === undefined) {
           return true;
         }
         if (subSchema.type === 'string' && val === '') {
-          return true;
-        }
-        if ((subSchema.type === 'number' || subSchema.type === 'integer') && val === 0) {
-          return true;
-        }
-        if (subSchema.type === 'boolean' && val === false) {
           return true;
         }
         if (subSchema.type === 'array' && Array.isArray(val) && val.length === 0) {
@@ -239,19 +216,22 @@ const JSONField = ({
   showPlaceholder = true,
   customFields = EMPTY_CUSTOM_FIELDS,
   className,
+  label,
+  id,
   testId,
   ref,
   ...rest
 }: JSONFieldProps) => {
   'use no memo';
 
-  const hasValue = Boolean(value);
+  const instanceId = React.useId();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const controlId = (path: string[]) => `${instanceId}-${encodeURIComponent(JSON.stringify(path))}`;
+  const controlLabel = (path: string[]) => [label, ...path].filter(Boolean).join('.') || 'Value';
+  const hasValue = value !== undefined;
   const [isJSONMode, setIsJSONMode] = useState(false);
   const [jsonError, setJSONError] = useState<string>();
-  const customFieldsByName = React.useMemo(
-    () => new Map(customFields.map((field) => [field.fieldName, field])),
-    [customFields]
-  );
+  const [optionError, setOptionError] = useState<string>();
 
   const [rawJSONValue, setRawJSONValue] = useState<string>(() => {
     let initialValue: JSONValue;
@@ -265,27 +245,21 @@ const JSONField = ({
     return JSON.stringify(initialValue, null, 2);
   });
 
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastPublishedValue = useRef(value);
 
-  const debouncedUpdateParent = useCallback(
-    (jsonString: string) => {
-      if (timeoutRef.current !== null) {
-        clearTimeout(timeoutRef.current);
-      }
-
-      timeoutRef.current = setTimeout(() => {
-        const parsed = parseJsonOrUndefined(jsonString);
-        if (parsed !== undefined) {
-          onChange(parsed);
-          setJSONError(undefined);
-        }
-      }, 300);
-    },
-    [onChange]
-  );
+  const publishValue = (parsed: JSONValue) => {
+    lastPublishedValue.current = parsed;
+    onChange(parsed);
+    setJSONError(undefined);
+  };
 
   useEffect(
-    function synchronizeAutoSelections() {
+    function synchronizeExternalValue() {
+      if (Object.is(value, lastPublishedValue.current)) {
+        return;
+      }
+      lastPublishedValue.current = value;
+      setJSONError(undefined);
       let displayValue: JSONValue;
       if (showPlaceholder === true && hasEmptyValues(value, schema)) {
         displayValue = generateExampleData(schema);
@@ -300,14 +274,23 @@ const JSONField = ({
   );
 
   const handleSwitchToFormMode = () => {
+    const invalidEditor = Array.from(containerRef.current?.querySelectorAll('textarea') ?? []).find(
+      (textarea) => !textarea.checkValidity()
+    );
+    if (invalidEditor) {
+      invalidEditor.reportValidity();
+      return;
+    }
     if (isJSONMode === true) {
+      let parsed: JSONValue;
       try {
-        const parsed = parseJson(rawJSONValue);
-        onChange(parsed);
-        setIsJSONMode(false);
+        parsed = parseJson(rawJSONValue);
       } catch (error) {
         setJSONError(error instanceof Error ? error.message : 'Invalid JSON');
+        return;
       }
+      publishValue(parsed);
+      setIsJSONMode(false);
     } else {
       let displayValue: JSONValue;
       if (showPlaceholder === true && hasEmptyValues(value, schema)) {
@@ -323,18 +306,19 @@ const JSONField = ({
   };
 
   const formatJSON = () => {
+    let parsed: JSONValue;
     try {
       const jsonStr = rawJSONValue.trim();
       if (!jsonStr) {
         return;
       }
-      const formatted = JSON.stringify(JSON.parse(jsonStr), null, 2);
-      setRawJSONValue(formatted);
-      debouncedUpdateParent(formatted);
-      setJSONError(undefined);
+      parsed = parseJson(jsonStr);
     } catch (error) {
       setJSONError(error instanceof Error ? error.message : 'Invalid JSON');
+      return;
     }
+    setRawJSONValue(JSON.stringify(parsed, null, 2));
+    publishValue(parsed);
   };
 
   const renderFormFields = (
@@ -346,20 +330,12 @@ const JSONField = ({
     propertyName?: string
   ): React.ReactNode => {
     if (depth >= maxDepth && (propSchema.type === 'object' || propSchema.type === 'array')) {
+      const emptyValue = propSchema.type === 'array' ? [] : {};
       return (
         <JSONEditor
-          error={jsonError}
           label={jsonEditorLabel(propertyName, path)}
-          onChange={(newValue) => {
-            try {
-              const parsed = parseJson(newValue);
-              handleFieldChange(path, parsed);
-              setJSONError(undefined);
-            } catch (error) {
-              setJSONError(error instanceof Error ? error.message : 'Invalid JSON');
-            }
-          }}
-          value={JSON.stringify(currentValue ?? (propSchema.type === 'array' ? [] : {}), null, 2)}
+          onChange={(parsed) => handleFieldChange(path, parsed)}
+          value={JSON.stringify(withJSONDefault(currentValue, emptyValue), null, 2)}
         />
       );
     }
@@ -387,7 +363,9 @@ const JSONField = ({
 
           return (
             <Combobox
+              aria-label={controlLabel(path)}
               creatable
+              id={controlId(path)}
               onChange={(val) => {
                 if (val || isRequired) {
                   handleFieldChange(path, val);
@@ -399,9 +377,9 @@ const JSONField = ({
                 if (customFieldConfig.onCreateOption) {
                   customFieldConfig
                     .onCreateOption(newValue, path, handleFieldChange)
-                    .then(() => setJSONError(undefined))
+                    .then(() => setOptionError(undefined))
                     .catch((error: unknown) => {
-                      setJSONError(error instanceof Error ? error.message : 'Could not create the option.');
+                      setOptionError(error instanceof Error ? error.message : 'Could not create the option.');
                     });
                 } else {
                   const newOption = { label: newValue, value: newValue };
@@ -424,7 +402,9 @@ const JSONField = ({
 
           return (
             <Combobox
+              aria-label={controlLabel(path)}
               creatable
+              id={controlId(path)}
               onChange={(val) => {
                 if (val || isRequired) {
                   handleFieldChange(path, val);
@@ -452,7 +432,9 @@ const JSONField = ({
 
           return (
             <Combobox
+              aria-label={controlLabel(path)}
               creatable
+              id={controlId(path)}
               onChange={(val) => {
                 if (val || isRequired) {
                   handleFieldChange(path, val);
@@ -493,6 +475,8 @@ const JSONField = ({
 
         return (
           <Input
+            aria-label={controlLabel(path)}
+            id={controlId(path)}
             maxLength={propSchema.maxLength}
             minLength={propSchema.minLength}
             onChange={(e) => {
@@ -511,6 +495,8 @@ const JSONField = ({
       case 'number':
         return (
           <Input
+            aria-label={controlLabel(path)}
+            id={controlId(path)}
             max={propSchema.maximum}
             min={propSchema.minimum}
             onChange={(e) => {
@@ -534,6 +520,8 @@ const JSONField = ({
       case 'integer':
         return (
           <Input
+            aria-label={controlLabel(path)}
+            id={controlId(path)}
             max={propSchema.maximum}
             min={propSchema.minimum}
             onChange={(e) => {
@@ -558,8 +546,10 @@ const JSONField = ({
       case 'boolean':
         return (
           <Input
+            aria-label={controlLabel(path)}
             checked={typeof currentValue === 'boolean' ? currentValue : false}
             className="size-4"
+            id={controlId(path)}
             onChange={(e) => handleFieldChange(path, e.target.checked)}
             required={isRequired}
             type="checkbox"
@@ -571,18 +561,9 @@ const JSONField = ({
         if (!propSchema.properties) {
           return (
             <JSONEditor
-              error={jsonError}
               label={jsonEditorLabel(propertyName, path)}
-              onChange={(newValue) => {
-                try {
-                  const parsed = parseJson(newValue);
-                  handleFieldChange(path, parsed);
-                  setJSONError(undefined);
-                } catch (error) {
-                  setJSONError(error instanceof Error ? error.message : 'Invalid JSON');
-                }
-              }}
-              value={JSON.stringify(currentValue ?? {}, null, 2)}
+              onChange={(parsed) => handleFieldChange(path, parsed)}
+              value={JSON.stringify(withJSONDefault(currentValue, {}), null, 2)}
             />
           );
         }
@@ -594,10 +575,10 @@ const JSONField = ({
             {Object.entries(propSchema.properties).map(([key, subSchema]) => (
               <div key={key}>
                 <div className="mb-1 flex items-center gap-2">
-                  <Text className="text-sm" variant="label">
+                  <Label htmlFor={controlId([...path, key])} variant="strong">
                     {key}
                     {requiredFields.has(key) && <span className="ml-1 text-destructive">*</span>}
-                  </Text>
+                  </Label>
                   <Badge size="sm" variant="outline">
                     {subSchema.type ?? 'unknown'}
                   </Badge>
@@ -617,17 +598,18 @@ const JSONField = ({
       }
       case 'array': {
         let arrayValue = Array.isArray(currentValue) ? currentValue : [];
-        if (!propSchema.items) {
+        const itemSchema = propSchema.items;
+        if (!itemSchema) {
           return null;
         }
 
         if (arrayValue.length === 0) {
-          const defaultValue = getArrayItemDefault(propSchema.items);
+          const defaultValue = getArrayItemDefault(itemSchema);
           arrayValue = [defaultValue];
         }
 
-        if (isSimpleObject(propSchema.items)) {
-          const requiredItemFields = new Set(propSchema.items.required);
+        if (isSimpleObject(itemSchema)) {
+          const requiredItemFields = new Set(itemSchema.required);
           return (
             <div className="space-y-4">
               {propSchema.description !== undefined && propSchema.description !== '' ? (
@@ -639,11 +621,9 @@ const JSONField = ({
               <div className="space-y-4">
                 {arrayValue.map((item, index) => {
                   const itemTypeName =
-                    [
-                      propSchema.items?.title,
-                      propSchema.items?.description,
-                      propertyName?.replace(TRAILING_S_REGEX, ''),
-                    ].find(Boolean) ?? 'Item';
+                    [itemSchema?.title, itemSchema?.description, propertyName?.replace(TRAILING_S_REGEX, '')].find(
+                      Boolean
+                    ) ?? 'Item';
                   const itemDisplayName = itemTypeName.charAt(0).toUpperCase() + itemTypeName.slice(1);
 
                   return (
@@ -653,6 +633,7 @@ const JSONField = ({
                           {itemDisplayName} #{index + 1}
                         </Heading>
                         <Button
+                          aria-label={`Remove ${controlLabel([...path, String(index)])}`}
                           className={arrayValue.length <= 1 ? 'invisible' : ''}
                           disabled={arrayValue.length <= 1}
                           onClick={() => {
@@ -668,13 +649,13 @@ const JSONField = ({
                         </Button>
                       </div>
                       <div className="space-y-3">
-                        {propSchema.items?.type === 'object' && propSchema.items.properties
-                          ? Object.entries(propSchema.items.properties).map(([key, subSchema]) => (
+                        {itemSchema?.type === 'object' && itemSchema.properties
+                          ? Object.entries(itemSchema.properties).map(([key, subSchema]) => (
                               <div className="space-y-1" key={key}>
                                 <div className="flex items-center gap-2">
-                                  <Text className="text-sm" variant="label">
+                                  <Label htmlFor={controlId([...path, String(index), key])} variant="strong">
                                     {key}
-                                  </Text>
+                                  </Label>
                                   <Badge size="sm" variant="outline">
                                     {subSchema.type ?? 'unknown'}
                                   </Badge>
@@ -685,17 +666,12 @@ const JSONField = ({
                                   getJSONProperty(item, key),
                                   [...path, index.toString(), key],
                                   depth + 1,
-                                  propSchema.items,
+                                  itemSchema,
                                   key
                                 )}
                               </div>
                             ))
-                          : renderFormFields(
-                              propSchema.items as JSONSchemaType,
-                              item,
-                              [...path, index.toString()],
-                              depth + 1
-                            )}
+                          : renderFormFields(itemSchema, item, [...path, index.toString()], depth + 1)}
                       </div>
                     </div>
                   );
@@ -703,7 +679,7 @@ const JSONField = ({
                 <Button
                   className="w-full"
                   onClick={() => {
-                    const defaultValue = getArrayItemDefault(propSchema.items as JSONSchemaType);
+                    const defaultValue = getArrayItemDefault(itemSchema);
                     handleFieldChange(path, [...arrayValue, defaultValue]);
                   }}
                   size="sm"
@@ -711,11 +687,9 @@ const JSONField = ({
                   variant="dashed"
                 >
                   + Add{' '}
-                  {[
-                    propSchema.items?.title,
-                    propSchema.items?.description,
-                    propertyName?.replace(TRAILING_S_REGEX, ''),
-                  ].find(Boolean) ?? 'Item'}
+                  {[itemSchema?.title, itemSchema?.description, propertyName?.replace(TRAILING_S_REGEX, '')].find(
+                    Boolean
+                  ) ?? 'Item'}
                 </Button>
               </div>
             </div>
@@ -726,16 +700,8 @@ const JSONField = ({
           <JSONEditor
             error={jsonError}
             label={jsonEditorLabel(propertyName, path)}
-            onChange={(newValue) => {
-              try {
-                const parsed = parseJson(newValue);
-                handleFieldChange(path, parsed);
-                setJSONError(undefined);
-              } catch (error) {
-                setJSONError(error instanceof Error ? error.message : 'Invalid JSON');
-              }
-            }}
-            value={JSON.stringify(currentValue ?? [], null, 2)}
+            onChange={(parsed) => handleFieldChange(path, parsed)}
+            value={JSON.stringify(withJSONDefault(currentValue, []), null, 2)}
           />
         );
       }
@@ -791,33 +757,51 @@ const JSONField = ({
     }
   }, [schema, value, onChange, isJSONMode]);
 
-  useEffect(() => {
-    const syncAutoSelections = (currentSchema: JSONSchemaType, currentValue: JSONValue, path: string[] = []) => {
-      if (currentSchema.type === 'object' && currentSchema.properties) {
-        for (const [key, subSchema] of Object.entries(currentSchema.properties)) {
-          const subValue = getJSONProperty(currentValue, key);
-          const customFieldConfig = customFieldsByName.get(key);
+  useEffect(
+    function synchronizeCustomFields() {
+      const customFieldsByName = new Map(customFields.map((field) => [field.fieldName, field]));
+      const syncAutoSelections = (currentSchema: JSONSchemaType, currentValue: JSONValue, path: string[] = []) => {
+        if (currentSchema.type === 'object' && currentSchema.properties) {
+          for (const [key, subSchema] of Object.entries(currentSchema.properties)) {
+            const subValue = getJSONProperty(currentValue, key);
+            const customFieldConfig = customFieldsByName.get(key);
 
-          if (
-            customFieldConfig?.options.length === 1 &&
-            !(subValue !== undefined && subValue !== null && Boolean(subValue))
-          ) {
-            const autoSelectedValue = customFieldConfig.options[0]?.value ?? '';
-            handleFieldChangeEffect([...path, key], autoSelectedValue);
+            if (
+              customFieldConfig?.options.length === 1 &&
+              !(subValue !== undefined && subValue !== null && Boolean(subValue))
+            ) {
+              const autoSelectedValue = customFieldConfig.options[0]?.value ?? '';
+              handleFieldChangeEffect([...path, key], autoSelectedValue);
+            }
+
+            syncAutoSelections(subSchema, subValue, [...path, key]);
           }
-
-          syncAutoSelections(subSchema, subValue, [...path, key]);
         }
-      }
-    };
+      };
 
-    if (value !== undefined && isJSONMode !== true && customFieldsByName.size > 0) {
-      syncAutoSelections(schema, value);
-    }
-  }, [schema, value, customFieldsByName, isJSONMode]);
+      if (value !== undefined && isJSONMode !== true && customFieldsByName.size > 0) {
+        syncAutoSelections(schema, value);
+      }
+    },
+    [schema, value, customFields, isJSONMode]
+  );
 
   return (
-    <div className={cn('space-y-4', className)} data-testid={testId} onBlur={onBlur} ref={ref} {...rest}>
+    <div
+      className={cn('space-y-4', className)}
+      data-testid={testId}
+      onBlur={onBlur}
+      ref={(element) => {
+        containerRef.current = element;
+        if (typeof ref === 'function') {
+          return ref(element);
+        }
+        if (ref) {
+          ref.current = element;
+        }
+      }}
+      {...rest}
+    >
       <div className="flex flex-wrap justify-end gap-2">
         {isJSONMode === true ? (
           <>
@@ -858,20 +842,18 @@ const JSONField = ({
         </Button>
       </div>
 
-      {isJSONMode === false && jsonError !== undefined ? (
+      {isJSONMode === false && (optionError ?? jsonError) !== undefined ? (
         <Text className="text-destructive" role="alert">
-          {jsonError}
+          {optionError ?? jsonError}
         </Text>
       ) : null}
       {isJSONMode === true ? (
         <JSONEditor
           error={jsonError}
-          label="JSON value"
-          onChange={(newValue) => {
-            setRawJSONValue(newValue);
-
-            debouncedUpdateParent(newValue);
-          }}
+          id={id}
+          label={label !== undefined && label !== '' ? `${label} JSON` : 'JSON value'}
+          onChange={publishValue}
+          onDraftChange={setRawJSONValue}
           value={rawJSONValue}
         />
       ) : (
@@ -883,32 +865,78 @@ const JSONField = ({
 
 interface JSONEditorProps {
   error?: string | undefined;
+  id?: string | undefined;
   label: string;
-  onChange: (value: string) => void;
+  onChange: (value: JSONValue) => void;
+  onDraftChange?: (value: string) => void;
   value: string;
 }
 
-const JSONEditor = ({ value, onChange, error: externalError, label }: JSONEditorProps) => {
+const JSONEditor = ({ value, onChange, error: externalError, label, onDraftChange, id }: JSONEditorProps) => {
   'use no memo';
 
-  const [editorContent, setEditorContent] = useState(value || '');
-  const [internalError, setInternalError] = useState<string | undefined>(undefined);
-  const editorId = React.useId();
+  const [editorContent, setEditorContent] = useState(value);
+  const [internalError, setInternalError] = useState<string>();
+  const generatedId = React.useId();
+  const editorId = id ?? generatedId;
+  const containerRef = useRef<HTMLDivElement>(null);
+  const lastPublishedText = useRef<string | undefined>(undefined);
+  const previousValue = useRef(value);
 
-  useEffect(() => {
-    setEditorContent(value || '');
-  }, [value]);
+  useEffect(
+    function synchronizeEditor() {
+      if (previousValue.current === value) {
+        return;
+      }
+      previousValue.current = value;
+      if (value !== lastPublishedText.current && value !== editorContent) {
+        setEditorContent(value);
+        setInternalError(undefined);
+      }
+      lastPublishedText.current = undefined;
+    },
+    [value, editorContent]
+  );
 
   const handleEditorChange = (newContent: string) => {
     setEditorContent(newContent);
+    onDraftChange?.(newContent);
+    let parsed: JSONValue;
+    try {
+      parsed = parseJson(newContent);
+    } catch (error) {
+      setInternalError(`Invalid JSON. ${error instanceof Error ? error.message : 'Check the syntax.'}`);
+      return;
+    }
+    lastPublishedText.current = JSON.stringify(parsed, null, 2);
     setInternalError(undefined);
-    onChange(newContent);
+    onChange(parsed);
   };
 
-  const displayError = internalError !== undefined && internalError !== '' ? internalError : externalError;
+  const displayError = internalError ?? externalError;
+  const errorId = `${editorId}-error`;
+  const focusEditor = () => containerRef.current?.querySelector<HTMLElement>('[role="textbox"]')?.focus();
+
+  useLayoutEffect(
+    function synchronizeTextareaValidity() {
+      const textarea = containerRef.current?.querySelector('textarea');
+      if (!textarea) {
+        return;
+      }
+      textarea.setCustomValidity(displayError ?? '');
+      if (displayError) {
+        textarea.setAttribute('aria-invalid', 'true');
+        textarea.setAttribute('aria-describedby', errorId);
+      } else {
+        textarea.removeAttribute('aria-invalid');
+        textarea.removeAttribute('aria-describedby');
+      }
+    },
+    [displayError, errorId]
+  );
 
   return (
-    <div className="relative">
+    <div className="relative" ref={containerRef}>
       <label className="sr-only" htmlFor={editorId}>
         {label}
       </label>
@@ -918,17 +946,40 @@ const JSONEditor = ({ value, onChange, error: externalError, label }: JSONEditor
           displayError !== undefined && displayError !== '' ? 'border-destructive' : 'border-border'
         )}
       >
-        <Editor
-          className="min-h-25 w-full bg-transparent font-mono text-sm"
-          highlight={highlightJson}
-          onValueChange={handleEditorChange}
-          padding={10}
-          textareaId={editorId}
+        <Textarea
+          aria-hidden="true"
+          className="sr-only"
+          id={editorId}
+          onChange={(event) => handleEditorChange(event.currentTarget.value)}
+          onFocus={focusEditor}
+          onInvalid={(event) => {
+            event.preventDefault();
+            focusEditor();
+          }}
+          tabIndex={-1}
           value={editorContent}
         />
+        <React.Suspense
+          fallback={
+            <div className="min-h-25 p-2.5">
+              <Text role="status" variant="small">
+                Loading JSON editor…
+              </Text>
+            </div>
+          }
+        >
+          <JSONCodeEditor
+            error={displayError}
+            errorId={errorId}
+            id={editorId}
+            label={label}
+            onChange={handleEditorChange}
+            value={editorContent}
+          />
+        </React.Suspense>
       </div>
       {displayError !== undefined && displayError !== '' ? (
-        <Text className="mt-1 text-destructive" variant="small">
+        <Text className="mt-1 text-destructive" id={errorId} role="alert" variant="small">
           {displayError}
         </Text>
       ) : null}

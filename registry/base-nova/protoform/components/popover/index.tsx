@@ -7,9 +7,8 @@ import React from 'react';
 import { usePortalContainer } from '@/registry/base-nova/protoform/hooks/use-portal-container';
 import {
   asChildTrigger,
-  narrowOpenChange,
-  renderWithDataState,
   Slot,
+  splitMotionProps,
   useMirroredOpen,
 } from '@/registry/base-nova/protoform/lib/base-ui-compat';
 import { cn, type PortalContentProps, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
@@ -36,8 +35,7 @@ interface PopoverAnchorContextType {
 
 const PopoverAnchorContext = React.createContext<PopoverAnchorContextType | undefined>(undefined);
 
-type Side = 'top' | 'bottom' | 'left' | 'right';
-type Align = 'start' | 'center' | 'end';
+type Side = NonNullable<PopoverPrimitive.Positioner.Props['side']>;
 
 const getInitialPosition = (side: Side) => {
   switch (side) {
@@ -54,11 +52,7 @@ const getInitialPosition = (side: Side) => {
   }
 };
 
-type PopoverProps = Omit<React.ComponentProps<typeof PopoverPrimitive.Root>, 'onOpenChange' | 'children'> &
-  SharedProps & {
-    onOpenChange?: (open: boolean) => void;
-    children?: React.ReactNode;
-  };
+type PopoverProps = React.ComponentProps<typeof PopoverPrimitive.Root> & SharedProps & { delayDuration?: number };
 
 function Popover({ children, testId, onOpenChange, ...props }: PopoverProps) {
   const { isOpen, handleOpenChange } = useMirroredOpen(props.open, props.defaultOpen, onOpenChange);
@@ -74,12 +68,7 @@ function Popover({ children, testId, onOpenChange, ...props }: PopoverProps) {
   return (
     <PopoverContext.Provider value={popoverContextValue}>
       <PopoverAnchorContext.Provider value={anchorCtx}>
-        <PopoverPrimitive.Root
-          data-slot="popover"
-          data-testid={testId}
-          {...props}
-          onOpenChange={narrowOpenChange(handleOpenChange)}
-        >
+        <PopoverPrimitive.Root data-slot="popover" data-testid={testId} {...props} onOpenChange={handleOpenChange}>
           {children}
         </PopoverPrimitive.Root>
       </PopoverAnchorContext.Provider>
@@ -95,7 +84,7 @@ type PopoverTriggerProps = React.ComponentProps<typeof PopoverPrimitive.Trigger>
 function PopoverTrigger({ className, testId, ...props }: PopoverTriggerProps) {
   return (
     <PopoverPrimitive.Trigger
-      className={cn('cursor-pointer', className)}
+      className={(state) => cn('cursor-pointer', typeof className === 'function' ? className(state) : className)}
       data-slot="popover-trigger"
       data-testid={testId}
       {...asChildTrigger(props)}
@@ -104,14 +93,11 @@ function PopoverTrigger({ className, testId, ...props }: PopoverTriggerProps) {
 }
 
 type PopoverContentProps = React.ComponentProps<typeof PopoverPrimitive.Popup> &
-  HTMLMotionProps<'div'> &
+  Omit<HTMLMotionProps<'div'>, keyof React.ComponentProps<typeof PopoverPrimitive.Popup>> &
   SharedProps &
-  Pick<PortalContentProps, 'container' | 'onOpenAutoFocus'> & {
+  Pick<PortalContentProps, 'container' | 'onOpenAutoFocus'> &
+  Pick<PopoverPrimitive.Positioner.Props, 'side' | 'align' | 'sideOffset' | 'alignOffset'> & {
     transition?: Transition;
-    side?: Side;
-    align?: Align;
-    sideOffset?: number;
-    alignOffset?: number;
   };
 
 function PopoverContent(contentProps: PopoverContentProps) {
@@ -121,6 +107,7 @@ function PopoverContent(contentProps: PopoverContentProps) {
     side = 'bottom',
     sideOffset = 4,
     alignOffset,
+    render,
     transition = { damping: 25, stiffness: 300, type: 'spring' },
     children,
     testId,
@@ -130,6 +117,7 @@ function PopoverContent(contentProps: PopoverContentProps) {
   Reflect.deleteProperty(props, 'onOpenAutoFocus');
   const { isOpen } = usePopover();
   const initialPosition = getInitialPosition(side);
+  const separated = splitMotionProps(props);
   const portalContainer = usePortalContainer();
   const anchorCtx = React.useContext(PopoverAnchorContext);
 
@@ -145,19 +133,25 @@ function PopoverContent(contentProps: PopoverContentProps) {
             side={side}
             sideOffset={sideOffset}
           >
-            <PopoverPrimitive.Popup render={renderWithDataState('div')} {...props}>
+            <PopoverPrimitive.Popup
+              {...separated.native}
+              className={(state) =>
+                cn(
+                  '!border-input w-72 rounded-lg border bg-popover p-4 text-popover-foreground shadow-md outline-none',
+                  typeof className === 'function' ? className(state) : className
+                )
+              }
+              data-slot="popover-content"
+              data-testid={testId}
+              render={render}
+            >
               <motion.div
                 animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
-                className={cn(
-                  '!border-input w-72 rounded-lg border bg-popover p-4 text-popover-foreground shadow-md outline-none',
-                  className
-                )}
-                data-slot="popover-content"
-                data-testid={testId}
                 exit={{ opacity: 0, scale: 0.5, ...initialPosition }}
                 initial={{ opacity: 0, scale: 0.5, ...initialPosition }}
                 key="popover-content"
                 transition={transition}
+                {...separated.motion}
               >
                 {children}
               </motion.div>
@@ -208,6 +202,30 @@ function PopoverAnchor({ asChild, children, render }: PopoverAnchorProps) {
   );
 }
 
+function PopoverHeader({ className, ...props }: React.ComponentProps<'div'>) {
+  return <div className={cn('flex flex-col gap-0.5 text-sm', className)} data-slot="popover-header" {...props} />;
+}
+
+function PopoverTitle({ className, ...props }: PopoverPrimitive.Title.Props) {
+  return (
+    <PopoverPrimitive.Title
+      className={(state) => cn('font-medium', typeof className === 'function' ? className(state) : className)}
+      data-slot="popover-title"
+      {...props}
+    />
+  );
+}
+
+function PopoverDescription({ className, ...props }: PopoverPrimitive.Description.Props) {
+  return (
+    <PopoverPrimitive.Description
+      className={(state) => cn('text-muted-foreground', typeof className === 'function' ? className(state) : className)}
+      data-slot="popover-description"
+      {...props}
+    />
+  );
+}
+
 export {
   Popover,
   PopoverAnchor,
@@ -215,7 +233,10 @@ export {
   PopoverContent,
   type PopoverContentProps,
   type PopoverContextType,
+  PopoverDescription,
+  PopoverHeader,
   type PopoverProps,
+  PopoverTitle,
   PopoverTrigger,
   type PopoverTriggerProps,
   usePopover,

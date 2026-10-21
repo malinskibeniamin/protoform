@@ -4,31 +4,31 @@ import type React from 'react';
 import { renderWithDataState } from '@/registry/base-nova/protoform/lib/base-ui-compat';
 import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
-type SwitchProps = Omit<React.ComponentProps<typeof SwitchPrimitive.Root>, 'onCheckedChange'> &
+type SwitchProps = React.ComponentProps<typeof SwitchPrimitive.Root> &
   SharedProps & {
-    onCheckedChange?: (checked: boolean) => void;
     size?: 'default' | 'sm';
   };
 
 function Switch(allProps: SwitchProps) {
-  const { className, size = 'default', testId, onCheckedChange, ...props } = allProps;
-  const handleCheckedChange = onCheckedChange ? (next: boolean) => onCheckedChange(next) : undefined;
+  const { className, size = 'default', testId, onCheckedChange, render, nativeButton, ...props } = allProps;
 
   const hasCheckedProp = 'checked' in allProps;
   const checkedOverride = hasCheckedProp && allProps.checked === undefined ? { checked: false } : undefined;
 
   return (
     <SwitchPrimitive.Root
-      className={cn(
-        'peer group/switch relative inline-flex shrink-0 cursor-pointer items-center rounded-full border border-transparent outline-none transition-all after:absolute after:-inset-x-3 after:-inset-y-2 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 data-[size=default]:h-[18.4px] data-[size=sm]:h-[14px] data-[size=default]:w-[32px] data-[size=sm]:w-[24px] data-[state=checked]:bg-primary data-[state=unchecked]:bg-input dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40',
-        className
-      )}
+      className={(state) =>
+        cn(
+          'peer group/switch relative inline-flex shrink-0 cursor-pointer items-center rounded-full border border-transparent outline-none transition-all after:absolute after:-inset-x-3 after:-inset-y-2 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 data-[size=default]:h-[18.4px] data-[size=sm]:h-[14px] data-[size=default]:w-[32px] data-[size=sm]:w-[24px] data-[state=checked]:bg-primary data-[state=unchecked]:bg-input dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40',
+          typeof className === 'function' ? className(state) : className
+        )
+      }
       data-size={size}
       data-slot="switch"
       data-testid={testId}
-      nativeButton
-      onCheckedChange={handleCheckedChange}
-      render={renderWithDataState('button')}
+      nativeButton={nativeButton ?? render === undefined}
+      onCheckedChange={onCheckedChange}
+      render={render ?? renderWithDataState('button')}
       {...props}
       {...checkedOverride}
     >

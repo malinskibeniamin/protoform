@@ -419,10 +419,10 @@ const MultiSelectItem = React.forwardRef<HTMLDivElement, MultiSelectItemProps>(f
   const disabled =
     disabledProp === true ||
     (maxCount !== undefined && !selectedValues.includes(value ?? '') && selectedValues.length >= maxCount);
-  const Item = searchable ? ComboboxPrimitive.Item : SelectPrimitive.Item;
+  const OptionPrimitive = searchable ? ComboboxPrimitive.Item : SelectPrimitive.Item;
   const Indicator = searchable ? ComboboxPrimitive.ItemIndicator : SelectPrimitive.ItemIndicator;
   return (
-    <Item
+    <OptionPrimitive
       {...props}
       className={cn(
         'flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm data-disabled:pointer-events-none data-highlighted:bg-accent data-highlighted:text-accent-foreground data-disabled:opacity-50',
@@ -437,7 +437,7 @@ const MultiSelectItem = React.forwardRef<HTMLDivElement, MultiSelectItemProps>(f
       <Indicator className="ml-auto">
         <Check aria-hidden className="size-4" />
       </Indicator>
-    </Item>
+    </OptionPrimitive>
   );
 });
 

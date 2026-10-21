@@ -5,7 +5,7 @@ import React from 'react';
 import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
 const toggleVariants = cva(
-  "inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium text-sm outline-none transition hover:bg-muted hover:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 data-[state=on]:bg-accent data-[state=on]:text-accent-foreground dark:aria-invalid:ring-destructive/40 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  "inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium text-sm outline-none transition hover:bg-muted hover:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 data-[state=on]:bg-accent data-pressed:bg-accent data-[state=on]:text-accent-foreground data-pressed:text-accent-foreground dark:aria-invalid:ring-destructive/40 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
   {
     defaultVariants: {
       size: 'md',
@@ -13,11 +13,13 @@ const toggleVariants = cva(
     },
     variants: {
       size: {
+        default: 'h-9 min-w-9 px-2',
         lg: 'h-10 min-w-10 px-2.5',
         md: 'h-9 min-w-9 px-2',
         sm: 'h-8 min-w-8 px-1.5',
       },
       variant: {
+        default: 'bg-transparent',
         ghost: 'bg-transparent',
         outline: '!border-input border bg-transparent shadow-xs hover:bg-accent hover:text-accent-foreground',
       },
@@ -25,11 +27,7 @@ const toggleVariants = cva(
   }
 );
 
-type ToggleProps = Omit<React.ComponentProps<typeof TogglePrimitive>, 'onPressedChange'> &
-  VariantProps<typeof toggleVariants> &
-  SharedProps & {
-    onPressedChange?: (pressed: boolean) => void;
-  };
+type ToggleProps = React.ComponentProps<typeof TogglePrimitive> & VariantProps<typeof toggleVariants> & SharedProps;
 
 function renderToggleButton(
   props: React.ButtonHTMLAttributes<HTMLButtonElement>,
@@ -45,19 +43,14 @@ function renderToggleButton(
 }
 
 function Toggle({ className, variant, size, testId, onPressedChange, ...props }: ToggleProps) {
-  const handlePressedChange = React.useMemo(() => {
-    if (!onPressedChange) {
-      return;
-    }
-    return (pressed: boolean) => onPressedChange(pressed);
-  }, [onPressedChange]);
-
   return (
     <TogglePrimitive
-      className={cn(toggleVariants({ className, size, variant }))}
+      className={(state) =>
+        cn(toggleVariants({ className: typeof className === 'function' ? className(state) : className, size, variant }))
+      }
       data-slot="toggle"
       data-testid={testId}
-      onPressedChange={handlePressedChange}
+      onPressedChange={onPressedChange}
       render={renderToggleButton}
       {...props}
     />

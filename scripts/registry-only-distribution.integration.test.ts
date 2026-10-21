@@ -48,7 +48,7 @@ describe('registry-only distribution', () => {
     ).toEqual([]);
   });
 
-  test("distributes only Protoform's own license", () => {
+  test('distributes Protoform MIT and the bundled shadcn notices', () => {
     const registry = JSON.parse(readFileSync(resolve(repositoryRoot, 'registry.json'), 'utf8')) as {
       items: RegistryItem[];
     };
@@ -56,7 +56,11 @@ describe('registry-only distribution', () => {
       .flatMap((item) => item.files ?? [])
       .map((file) => file.target ?? '')
       .filter((target) => target.includes('LICENSE') || target.includes('NOTICE'));
-    expect(licenseTargets).toEqual([PROTOFORM_LICENSE_TARGET]);
+    expect(licenseTargets).toEqual([
+      PROTOFORM_LICENSE_TARGET,
+      '~/LICENSES/shadcn-MIT.txt',
+      '~/LICENSES/protoform-shadcn-provenance.md',
+    ]);
   });
 
   test('copies license notices with every installable registry item', () => {

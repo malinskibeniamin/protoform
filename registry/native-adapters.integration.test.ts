@@ -252,7 +252,11 @@ describe('build-time UI adapter registry', () => {
         .map(packageName)
         .filter((name) => !HOST_OWNED_PACKAGES.has(name))
         .map(typesPackageFor)
-        .filter((types) => repoDevDependencies?.[types] !== undefined && !(entry.devDependencies ?? []).includes(types))
+        .filter(
+          (types) =>
+            repoDevDependencies?.[types] !== undefined &&
+            !(entry.devDependencies ?? []).map(packageName).includes(types)
+        )
         .map((types) => `${entry.name} -> ${types}`)
     );
 

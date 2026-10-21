@@ -2,7 +2,7 @@ import { afterEach, expect, rstest, test } from '@rstest/core';
 import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { Combobox } from '.';
+import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList } from '.';
 
 afterEach(cleanup);
 
@@ -66,4 +66,29 @@ test('creates a typed option through the same keyboard selection contract', asyn
   await user.keyboard('{Enter}');
   expect(onChange).toHaveBeenCalledWith('New tag');
   expect(onCreateOption).toHaveBeenCalledWith('New tag');
+});
+
+test('accepts the shadcn compositional API with typed values and change details', async () => {
+  const user = userEvent.setup();
+  const onValueChange = rstest.fn();
+  render(
+    <Combobox items={['Apricot', 'Pear']} onValueChange={onValueChange}>
+      <ComboboxInput aria-label="Fruit" />
+      <ComboboxContent>
+        <ComboboxEmpty>No fruit found</ComboboxEmpty>
+        <ComboboxList>
+          {(fruit: string) => (
+            <ComboboxItem key={fruit} value={fruit}>
+              {fruit}
+            </ComboboxItem>
+          )}
+        </ComboboxList>
+      </ComboboxContent>
+    </Combobox>
+  );
+  const input = screen.getByRole('combobox', { name: 'Fruit' });
+  await user.type(input, 'Apr');
+  await user.click(await screen.findByRole('option', { name: 'Apricot' }));
+  expect(onValueChange).toHaveBeenCalledWith('Apricot', expect.objectContaining({ reason: 'item-press' }));
+  expect(input).toHaveValue('Apricot');
 });

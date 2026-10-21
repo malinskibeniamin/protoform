@@ -825,11 +825,21 @@
       "name": "protoform-shadcn",
       "type": "registry:block",
       "title": "Protoform shadcn defaults",
-      "description": "Optional default UI implementations for greenfield Protoform consumers.",
+      "description": "Official Base UI component catalog adapted for Protoform, with CodeMirror JSON editing and preserved source licenses.",
       "cssVars": {
         "theme": {
           "color-tooltip-detail": "oklch(0.145 0 0)",
-          "color-tooltip-detail-foreground": "rgb(255 255 255)"
+          "color-tooltip-detail-foreground": "rgb(255 255 255)",
+          "color-sidebar": "var(--sidebar, var(--background))",
+          "color-sidebar-foreground": "var(--sidebar-foreground, var(--foreground))",
+          "color-sidebar-primary": "var(--sidebar-primary, var(--primary))",
+          "color-sidebar-primary-foreground": "var(--sidebar-primary-foreground, var(--primary-foreground))",
+          "color-sidebar-accent": "var(--sidebar-accent, var(--accent))",
+          "color-sidebar-accent-foreground": "var(--sidebar-accent-foreground, var(--accent-foreground))",
+          "color-sidebar-border": "var(--sidebar-border, var(--border))",
+          "color-sidebar-ring": "var(--sidebar-ring, var(--ring))",
+          "color-canvas": "Canvas",
+          "color-canvas-text": "CanvasText"
         }
       },
       "registryDependencies": ["@protoform/protoform-react"],
@@ -839,20 +849,32 @@
         "@bufbuild/cel",
         "@bufbuild/protobuf",
         "@bufbuild/protovalidate@^1.3.0",
+        "@codemirror/lang-json",
+        "@codemirror/language",
+        "@codemirror/lint",
+        "@codemirror/view",
         "@connectrpc/connect",
+        "@lezer/highlight",
         "@standard-schema/spec",
         "@tanstack/react-router",
+        "@uiw/react-codemirror",
         "class-variance-authority",
         "clsx",
         "cmdk",
         "date-fns",
         "lucide-react",
         "motion",
-        "prismjs",
         "react-day-picker",
-        "react-simple-code-editor",
         "tailwind-merge",
-        "zod"
+        "zod",
+        "@shadcn/react@0.3.1",
+        "@tanstack/react-table@9.3.1",
+        "embla-carousel-react@8.6.0",
+        "input-otp@1.5.0",
+        "js-cookie@3.0.8",
+        "react-is@19.3.1",
+        "react-resizable-panels@4.14.8",
+        "recharts@3.8.0"
       ],
       "files": [
         {
@@ -894,6 +916,16 @@
           "path": "registry/base-nova/protoform/components/collapsible/index.tsx",
           "type": "registry:component",
           "target": "~/components/ui/collapsible/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/trace/index.tsx",
+          "type": "registry:component",
+          "target": "~/components/ui/trace/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/code-block/index.tsx",
+          "type": "registry:component",
+          "target": "~/components/ui/code-block/index.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/combobox/combobox-utils.ts",
@@ -944,6 +976,11 @@
           "path": "registry/base-nova/protoform/components/json-field/index.tsx",
           "type": "registry:component",
           "target": "~/components/ui/json-field/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/json-field/json-code-editor.tsx",
+          "type": "registry:component",
+          "target": "~/components/ui/json-field/json-code-editor.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/key-value-field/index.tsx",
@@ -1074,9 +1111,204 @@
           "path": "registry/base-nova/protoform/lib/input-utils/index.ts",
           "type": "registry:lib",
           "target": "@lib/input-utils/index.ts"
+        },
+        {
+          "path": "LICENSES/shadcn-MIT.txt",
+          "type": "registry:file",
+          "target": "~/LICENSES/shadcn-MIT.txt"
+        },
+        {
+          "path": "registry/base-nova/protoform/SHADCN_COMPONENTS.md",
+          "type": "registry:file",
+          "target": "~/LICENSES/protoform-shadcn-provenance.md"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/accordion/index.tsx",
+          "type": "registry:ui",
+          "target": "~/components/ui/accordion/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/alert-dialog/index.tsx",
+          "type": "registry:ui",
+          "target": "~/components/ui/alert-dialog/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/aspect-ratio/index.tsx",
+          "type": "registry:ui",
+          "target": "~/components/ui/aspect-ratio/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/attachment/index.tsx",
+          "type": "registry:ui",
+          "target": "~/components/ui/attachment/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/avatar/index.tsx",
+          "type": "registry:ui",
+          "target": "~/components/ui/avatar/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/breadcrumb/index.tsx",
+          "type": "registry:ui",
+          "target": "~/components/ui/breadcrumb/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/bubble/index.tsx",
+          "type": "registry:ui",
+          "target": "~/components/ui/bubble/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/button-group/index.tsx",
+          "type": "registry:ui",
+          "target": "~/components/ui/button-group/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/carousel/index.tsx",
+          "type": "registry:ui",
+          "target": "~/components/ui/carousel/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/chart/index.tsx",
+          "type": "registry:ui",
+          "target": "~/components/ui/chart/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/context-menu/index.tsx",
+          "type": "registry:ui",
+          "target": "~/components/ui/context-menu/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/direction/index.tsx",
+          "type": "registry:ui",
+          "target": "~/components/ui/direction/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/drawer/index.tsx",
+          "type": "registry:ui",
+          "target": "~/components/ui/drawer/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/dropdown-menu/index.tsx",
+          "type": "registry:ui",
+          "target": "~/components/ui/dropdown-menu/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/empty/index.tsx",
+          "type": "registry:ui",
+          "target": "~/components/ui/empty/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/hover-card/index.tsx",
+          "type": "registry:ui",
+          "target": "~/components/ui/hover-card/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/input-otp/index.tsx",
+          "type": "registry:ui",
+          "target": "~/components/ui/input-otp/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/item/index.tsx",
+          "type": "registry:ui",
+          "target": "~/components/ui/item/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/kbd/index.tsx",
+          "type": "registry:ui",
+          "target": "~/components/ui/kbd/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/marker/index.tsx",
+          "type": "registry:ui",
+          "target": "~/components/ui/marker/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/menubar/index.tsx",
+          "type": "registry:ui",
+          "target": "~/components/ui/menubar/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/message/index.tsx",
+          "type": "registry:ui",
+          "target": "~/components/ui/message/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/message-scroller/index.tsx",
+          "type": "registry:ui",
+          "target": "~/components/ui/message-scroller/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/native-select/index.tsx",
+          "type": "registry:ui",
+          "target": "~/components/ui/native-select/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/navigation-menu/index.tsx",
+          "type": "registry:ui",
+          "target": "~/components/ui/navigation-menu/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/pagination/index.tsx",
+          "type": "registry:ui",
+          "target": "~/components/ui/pagination/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/progress/index.tsx",
+          "type": "registry:ui",
+          "target": "~/components/ui/progress/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/questionnaire/index.tsx",
+          "type": "registry:ui",
+          "target": "~/components/ui/questionnaire/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/resizable/index.tsx",
+          "type": "registry:ui",
+          "target": "~/components/ui/resizable/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/scroll-area/index.tsx",
+          "type": "registry:ui",
+          "target": "~/components/ui/scroll-area/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/sheet/index.tsx",
+          "type": "registry:ui",
+          "target": "~/components/ui/sheet/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/sidebar/index.tsx",
+          "type": "registry:ui",
+          "target": "~/components/ui/sidebar/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/skeleton/index.tsx",
+          "type": "registry:ui",
+          "target": "~/components/ui/skeleton/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/table/index.tsx",
+          "type": "registry:ui",
+          "target": "~/components/ui/table/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/hooks/use-mobile.ts",
+          "type": "registry:hook",
+          "target": "~/hooks/use-mobile.ts"
+        },
+        {
+          "path": "registry/base-nova/protoform/demo/ui/date-picker.tsx",
+          "type": "registry:component",
+          "target": "~/components/ui/examples/date-picker.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/demo/ui/data-table.tsx",
+          "type": "registry:component",
+          "target": "~/components/ui/examples/data-table.tsx"
         }
       ],
-      "devDependencies": ["@types/prismjs"]
+      "devDependencies": ["@types/js-cookie@3.0.6"]
     },
     {
       "name": "auto-form-tanstack",
@@ -1295,20 +1527,24 @@
         "@bufbuild/cel",
         "@bufbuild/protobuf",
         "@bufbuild/protovalidate@^1.3.0",
+        "@codemirror/lang-json",
+        "@codemirror/language",
+        "@codemirror/lint",
+        "@codemirror/view",
         "@connectrpc/connect",
         "@hookform/resolvers",
+        "@lezer/highlight",
         "@standard-schema/spec",
         "@tanstack/react-router",
+        "@uiw/react-codemirror",
         "class-variance-authority",
         "clsx",
         "cmdk",
         "date-fns",
         "lucide-react",
         "motion",
-        "prismjs",
         "react-day-picker",
         "react-hook-form@^7.90.0",
-        "react-simple-code-editor",
         "tailwind-merge",
         "zod"
       ],
@@ -1359,8 +1595,7 @@
           "path": "registry/base-nova/protoform/demo/auto-form-protobuf-ui-metadata.tsx",
           "type": "registry:component"
         }
-      ],
-      "devDependencies": ["@types/prismjs"]
+      ]
     },
     {
       "dependencies": ["@bufbuild/protobuf", "react", "react-hook-form@^7.90.0"],

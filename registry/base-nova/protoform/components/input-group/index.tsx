@@ -118,7 +118,7 @@ function InputGroupText({ className, ...props }: React.ComponentProps<'span'>) {
   );
 }
 
-function InputGroupInput({ className, testId, ...props }: Omit<React.ComponentProps<'input'>, 'size'> & SharedProps) {
+function InputGroupInput({ className, testId, ...props }: React.ComponentProps<'input'> & SharedProps) {
   return (
     <div className="flex-1">
       <Input className={className} data-slot="input-group-control" testId={testId} variant="group" {...props} />
