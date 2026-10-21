@@ -27,6 +27,13 @@ incorrect await hints without removing awaits. Bun rejection assertions still aw
 their actual result through `Promise.resolve`, accounting for their void-typed declaration.
 The real CLI failure/interruption and process-lifecycle replay passes all ten cases.
 
+The hosted macOS replay exposed a remaining first-edit race in main's existing Blume patch.
+The HTML disclosure `toggle` event is queued, so loading the module eagerly was insufficient:
+an input could arrive before its listener attached. The same-task real-app regression failed
+with an unchanged generated sample, while a later native fill updated it. The existing patch
+now attaches handlers on connection. Native click/fill/send cases and all 18 sample languages
+remain unchanged; this adds one E2E case, not a wait, retry or runner fork.
+
 ## Application and test inventory
 
 Baseline: `a5333a28ec8b31e1eeb324539f7d95584ba21c04`.

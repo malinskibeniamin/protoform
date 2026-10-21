@@ -141,3 +141,26 @@ test('generates all 18 API sample languages and updates samples from the request
   await expect(request.getByRole('tabpanel')).toContainText('optional-samples');
   await expect(request.getByRole('tabpanel')).toContainText('No key required');
 });
+
+test('retains request edits made before the disclosure toggle task', async ({ page }) => {
+  await page.goto('/docs/reference');
+  await page.getByRole('link').filter({ hasText: 'Create a book' }).first().click();
+  await page.waitForFunction(() => customElements.get('blume-playground') !== undefined);
+
+  await page.locator('blume-playground').evaluate((root) => {
+    const summary = root.querySelector('summary');
+    const body = root.querySelector('textarea');
+    if (!(summary instanceof HTMLElement && body instanceof HTMLTextAreaElement)) {
+      throw new TypeError('Request disclosure and body must be rendered');
+    }
+    summary.click();
+    body.value = '{"bookId":"queued-first-edit"}';
+    body.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+
+  await expect(page.getByRole('textbox', { name: 'Request body' })).toHaveValue('{"bookId":"queued-first-edit"}');
+  const request = page
+    .locator('blume-panel-tabs')
+    .filter({ has: page.getByRole('tablist', { exact: true, name: 'Request' }) });
+  await expect(request.getByRole('tabpanel')).toContainText('queued-first-edit');
+});
