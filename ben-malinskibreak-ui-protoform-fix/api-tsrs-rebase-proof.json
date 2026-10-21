@@ -1,0 +1,18 @@
+{
+  "fromHead": "6a139dfa515a318ae261044973c1cbb07ccef80f",
+  "head": "443ec1638a633ee438554caad7c01b8418d9c652",
+  "fromBase": "b718db1290a83fb7bfc6937a0836bf18aaabad05",
+  "base": "23958c736a2751c8fe4b53baa41895055754d29e",
+  "uiAndApiDiffEmpty": true,
+  "runtimeDependenciesIdentical": true,
+  "changedPaths": [
+    "bun.lock",
+    "docs/ui-toolchain.md",
+    "package.json",
+    "scripts/check-typescript-coverage.ts",
+    "scripts/frontend-quality-policy.integration.test.ts",
+    "scripts/strict-tooling.integration.test.ts"
+  ],
+  "checker": "tsrs@0.18.0-ts7.1.0-dev.20260929",
+  "contracts": "All source/test/docs checks green; deliberately invalid ToggleGroup compiler assertion rejected by TSRS."
+}

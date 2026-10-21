@@ -1,6 +1,6 @@
 # Base UI API parity verification
 
-Candidate: 6a139dfa515a318ae261044973c1cbb07ccef80f. Base: b718db1290a83fb7bfc6937a0836bf18aaabad05. Same branch/PR114, one commit. Source inputs pin shadcn/ui ba1503c64472b82256d9de95e2e62c5901a38e8b; source-copy MIT notices preserved.
+Candidate: 443ec1638a633ee438554caad7c01b8418d9c652. Base: 23958c736a2751c8fe4b53baa41895055754d29e. Same branch/PR114, one commit. Source inputs pin shadcn/ui ba1503c64472b82256d9de95e2e62c5901a38e8b; source-copy MIT notices preserved.
 
 ## Scope
 
@@ -32,7 +32,7 @@ Harness diagnosis logs are retained: initial attempts incorrectly treated a top-
 
 API example: /docs/blume-examples/registry/base-nova/protoform/demo/ui/shadcn-api. Manual use: render button, selection, cancel/recover disclosure, repeated slider keys, named popup/Escape, then resize to320px and inspect readable actions. No page errors; settled document width320. Motion can temporarily exceed the narrow viewport while resizing; width returns to320 when the transition settles.
 
-New-view comparison: actual current base b718db1 reconstructed from git archive, own frozen dependencies/build. Its proposed API demo route returns an actual404; the base video starts in the existing registry docs and navigates to that missing route. Candidate video performs live button/selection/disclosure interactions. This is not a pre-existing matched identical feature.
+New-view comparison: actual current base23958c7 reconstructed from git archive, own frozen dependencies/build. Its proposed API demo route returns an actual404; the base video starts in the existing registry docs and navigates to that missing route. Candidate video performs live button/selection/disclosure interactions. This is not a pre-existing matched identical feature.
 
 Existing catalog, CodeMirror and Code Block/Trace videos remain historical evidence for their stated revisions; final screenshot replay and current CI cover the current candidate. No trace/network instrumentation is added; sample actions are local. Clipboard failures are exercised at the browser boundary, not the system clipboard.
 
@@ -42,4 +42,6 @@ Compiler contracts do not exhaust every possible interaction. Browser coverage i
 
 Independent human review is not claimed. Hosted protections are read separately; no self-approval, owner substitution or merge. Revert the single commit and rebuild copied registry source to undo the code change.
 
-Final type-only follow-up: uncontrolled legacy ToggleGroup string callbacks require type=single, a string value, or a string defaultValue. A negative compiler assertion failed before narrowing and passes after. The full local ci:gate and138-case visual replay ran on runtime revision6e3f5af; final candidate differs only by this type-only migration guard, its compiler test, and documentation. type-only-runtime-proof.json verifies identical emitted JavaScript. Final source/test/docs types, focused toggle tests and native E2E were replayed; hosted full gates are bound to the final head. Final manual capture/video uses the final candidate.
+Historical6a type-only follow-up: uncontrolled legacy ToggleGroup string callbacks require type=single, a string value, or a string defaultValue. A negative compiler assertion failed before narrowing and passes after. The full local ci:gate and138-case visual replay ran on runtime revision6e3f5af; that6a candidate differed only by this type-only migration guard, its compiler test, and documentation. type-only-runtime-proof.json verifies identical emitted JavaScript. Final source/test/docs types, focused toggle tests and native E2E were replayed; hosted full gates are bound to the final head. Final manual capture/video uses the final candidate.
+
+Latest tooling rebase: main23958c7 migrated the checker to TSRS0.18.0-ts7.1.0-dev.20260929. All UI/API source and runtime dependencies remain identical (tsrs-rebase-proof.json). Fresh TSRS source/test/docs checks pass; the deliberately invalid type assertion fails with TS2344. All138 native visual cases and10 acceptance cases pass on443ec16; baseline23958c7 and candidate443ec16 media were recaptured. Previous local ci:gate6e3 and hosted6a gates remain historical receipts, not new-head evidence. Current hosted CI/security/exhaustive runs are bound to443ec16.

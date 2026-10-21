@@ -1,0 +1,3 @@
+beforeScreenshot { width: 320, viewport: 320 }
+afterScreenshot { width: 320, viewport: 320 }
+{"errors":[],"failedRequests":[],"documentWidth":320,"title":{"x":69,"y":1413.5,"width":154,"height":40},"action":{"x":263,"y":1409.5,"width":24,"height":24}}

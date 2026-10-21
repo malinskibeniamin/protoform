@@ -1,0 +1,822 @@
+{
+  "sourceHead": "443ec1638a633ee438554caad7c01b8418d9c652",
+  "artifactBase": "https://raw.githubusercontent.com/malinskibeniamin/protoform/f6be0f7733044f72ecdb7b8a293c3fcfd3693630/ben-malinskibreak-ui-protoform-fix/",
+  "files": [
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-overlays-dark-320-chromium-darwin.png",
+      "artifact": "api-baseline-catalog-overlays-dark-320-chromium-darwin.png",
+      "sha256": "d019804f03be27dc7cc0ba54bdf37875dfb9e8f9811b86b21aa1add4af06ae6c"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-basics-dark-320-firefox-darwin.png",
+      "artifact": "api-baseline-catalog-basics-dark-320-firefox-darwin.png",
+      "sha256": "12732be6245af2fe1ecd9a7f75491e0281026383391a9155abbd80329079aa12"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-messages-light-320-firefox-darwin.png",
+      "artifact": "api-baseline-catalog-messages-light-320-firefox-darwin.png",
+      "sha256": "4956c97593fcd538e2efa52db4985d2af5873fa690b26b721ec8e7462e25e03c"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-recipes-light-1000-webkit-darwin.png",
+      "artifact": "api-baseline-catalog-recipes-light-1000-webkit-darwin.png",
+      "sha256": "61fe9f539ce0f46a6cc1edcb010efe043fd5749b78bb99c8135bdd99d89186af"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-basics-light-1000-firefox-darwin.png",
+      "artifact": "api-baseline-catalog-basics-light-1000-firefox-darwin.png",
+      "sha256": "ed9a90282d3e8efe82a235fa07a1d41060ddb0da2ea31a0ea50e890222d4ea17"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-overlays-dark-320-firefox-darwin.png",
+      "artifact": "api-baseline-catalog-overlays-dark-320-firefox-darwin.png",
+      "sha256": "a8f86f4038894f0f86b8393307aa65a6f3709bb58f8215f32ddada7a46d8d70f"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-recipes-dark-1000-firefox-darwin.png",
+      "artifact": "api-baseline-catalog-recipes-dark-1000-firefox-darwin.png",
+      "sha256": "85d38c5f2c1d40b77452230e26efd0e74ed96d7006072996327d1411c444d406"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-messages-dark-320-chromium-darwin.png",
+      "artifact": "api-baseline-catalog-messages-dark-320-chromium-darwin.png",
+      "sha256": "59789d2c8dc45f63e434aae903b5ae174b3287db771eed09dadf254a0028a6d7"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-overlays-light-320-firefox-darwin.png",
+      "artifact": "api-baseline-catalog-overlays-light-320-firefox-darwin.png",
+      "sha256": "09bc04dac70db6be299fef8226f27bd3348af12d94de6c992425000f2eedeaa8"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-messages-light-320-webkit-darwin.png",
+      "artifact": "api-baseline-catalog-messages-light-320-webkit-darwin.png",
+      "sha256": "1b0366ab1e8f8b94386eb80b04a429500eb5afa01205e723c0e0ac5ece64fef8"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-overlays-dark-1000-chromium-darwin.png",
+      "artifact": "api-baseline-catalog-overlays-dark-1000-chromium-darwin.png",
+      "sha256": "b159246181992c37edfc71ee229be61d5182f058caa8091b4bbe85239f04f50f"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-layout-light-1000-firefox-darwin.png",
+      "artifact": "api-baseline-catalog-layout-light-1000-firefox-darwin.png",
+      "sha256": "536dd921aaf2a9884b2f3ee711348609dbfa11032bdb5dd1b893f86fb39c6185"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-basics-dark-1000-firefox-darwin.png",
+      "artifact": "api-baseline-catalog-basics-dark-1000-firefox-darwin.png",
+      "sha256": "74f104bdeed8d0f7c092b6202fe8dd6ea817506503319c268db064628988611f"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-layout-dark-320-chromium-darwin.png",
+      "artifact": "api-baseline-catalog-layout-dark-320-chromium-darwin.png",
+      "sha256": "24bf7e094dcc8e5022477e36606a2e070a462028b64ed81ce6b26835fcd1925c"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-recipes-dark-320-webkit-darwin.png",
+      "artifact": "api-baseline-catalog-recipes-dark-320-webkit-darwin.png",
+      "sha256": "e5b072ab67e31e2f5ed5a0ceeb9f0555382c92821b3c194568e96a7cbae5e7a7"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-overlays-light-320-chromium-darwin.png",
+      "artifact": "api-baseline-catalog-overlays-light-320-chromium-darwin.png",
+      "sha256": "eae254a3181cc76467f01b65d85584f7763b0cb891c1c1b5ad5b8400b86f16aa"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-layout-light-1000-chromium-darwin.png",
+      "artifact": "api-baseline-catalog-layout-light-1000-chromium-darwin.png",
+      "sha256": "1ca3cfc8ec92c9193f9946de84253fd67e296babca03a00e76e25d9849e798db"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-messages-light-1000-firefox-darwin.png",
+      "artifact": "api-baseline-catalog-messages-light-1000-firefox-darwin.png",
+      "sha256": "2e62a630c311c1b8941e66756625fb43e4158b08475a3c015a4e9c625448eebd"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-recipes-dark-1000-chromium-darwin.png",
+      "artifact": "api-baseline-catalog-recipes-dark-1000-chromium-darwin.png",
+      "sha256": "fe1f76d93e19c0c40bb669a6dd2088c32b0917f832a3e95e097b9f7ea5352563"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-messages-dark-320-webkit-darwin.png",
+      "artifact": "api-baseline-catalog-messages-dark-320-webkit-darwin.png",
+      "sha256": "30a6d5b5766e133544e81bbd194022dcd69492610e458525b8797d403e19253d"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-recipes-dark-320-firefox-darwin.png",
+      "artifact": "api-baseline-catalog-recipes-dark-320-firefox-darwin.png",
+      "sha256": "e494c303ae86f810adcb745a8cd89afe5091efc0a0d21b79338499ff5d7b3d88"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-recipes-light-320-chromium-darwin.png",
+      "artifact": "api-baseline-catalog-recipes-light-320-chromium-darwin.png",
+      "sha256": "2494219229bcfcce8abe582df8ae03f4cfa6a877a5dfbd35ec16ce83017651d4"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-layout-dark-1000-webkit-darwin.png",
+      "artifact": "api-baseline-catalog-layout-dark-1000-webkit-darwin.png",
+      "sha256": "e855a5561effdb965134236a8599f08fc4c147f18f6c556a898561c65bc2c431"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-messages-dark-1000-webkit-darwin.png",
+      "artifact": "api-baseline-catalog-messages-dark-1000-webkit-darwin.png",
+      "sha256": "a1b63988921f973907c4cf5500aad2d54c4a0e45c7dd1f681c59ce5b958e6e41"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-basics-light-1000-webkit-darwin.png",
+      "artifact": "api-baseline-catalog-basics-light-1000-webkit-darwin.png",
+      "sha256": "dc111e6aad1dec92b195252e0f1e59cadb09e26f0c1ac4435aaa156b6f75bbd7"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-recipes-light-1000-chromium-darwin.png",
+      "artifact": "api-baseline-catalog-recipes-light-1000-chromium-darwin.png",
+      "sha256": "e2978780aaebdf796d2c7ffa4dc8db3b079bc4d1562f59d0ebe53ecb52fdfeb2"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-layout-light-320-webkit-darwin.png",
+      "artifact": "api-baseline-catalog-layout-light-320-webkit-darwin.png",
+      "sha256": "efa3a808786da00726d05213bd52cbff71d7e6d176386db70e8a91e3f6423457"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-layout-light-320-firefox-darwin.png",
+      "artifact": "api-baseline-catalog-layout-light-320-firefox-darwin.png",
+      "sha256": "95208df0cddcec39395c0b168717860fc63193a9e78261fe6fe86cd77940fea0"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-basics-dark-320-webkit-darwin.png",
+      "artifact": "api-baseline-catalog-basics-dark-320-webkit-darwin.png",
+      "sha256": "b594d85fdc1fb9564fcc28b01ba20e230aef3f8c627b3e75ea745d475e350db0"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-messages-light-320-chromium-darwin.png",
+      "artifact": "api-baseline-catalog-messages-light-320-chromium-darwin.png",
+      "sha256": "331cce3227fb8c89890e1de435b01c6fe0bc084f681eb0c41089305c8b9486be"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-layout-dark-320-firefox-darwin.png",
+      "artifact": "api-baseline-catalog-layout-dark-320-firefox-darwin.png",
+      "sha256": "af0c83ec65ea734755f55002615cf5327dce936a5f0bf31d2752995776ff8123"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-recipes-light-1000-firefox-darwin.png",
+      "artifact": "api-baseline-catalog-recipes-light-1000-firefox-darwin.png",
+      "sha256": "1310ab68a7db27739a7c4aa51be7d6f06ac2ccb57fc9027b5022eb56baa453d6"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-messages-dark-1000-chromium-darwin.png",
+      "artifact": "api-baseline-catalog-messages-dark-1000-chromium-darwin.png",
+      "sha256": "429fb53510c0c96a79c4fb9ed1df46bb84f7bda7853e04204cb337673a42331e"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-recipes-dark-1000-webkit-darwin.png",
+      "artifact": "api-baseline-catalog-recipes-dark-1000-webkit-darwin.png",
+      "sha256": "eaa28138efca29403b86e9c78111953a39717a3fb9e20b515a8b8778d1edc051"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-basics-dark-320-chromium-darwin.png",
+      "artifact": "api-baseline-catalog-basics-dark-320-chromium-darwin.png",
+      "sha256": "282cce6f95cfec2ea99081b0efcf10d6f2e1cfac73eb89e1e44bc3dfb8d34b14"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-layout-light-320-chromium-darwin.png",
+      "artifact": "api-baseline-catalog-layout-light-320-chromium-darwin.png",
+      "sha256": "0a94eca6b766c9a604d85349e96dd48946c5f64a53779e03be5c5d4f836bd1a8"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-messages-light-1000-chromium-darwin.png",
+      "artifact": "api-baseline-catalog-messages-light-1000-chromium-darwin.png",
+      "sha256": "c3de0fa71818b2ebc485c0140a6d100f539318c9134c00e9043bf903dfc8024f"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-layout-dark-1000-chromium-darwin.png",
+      "artifact": "api-baseline-catalog-layout-dark-1000-chromium-darwin.png",
+      "sha256": "f1e8889ff7aab516671cb095c7d66847739c9c568a3eb481ed5ccd3df73f8eea"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-overlays-light-1000-firefox-darwin.png",
+      "artifact": "api-baseline-catalog-overlays-light-1000-firefox-darwin.png",
+      "sha256": "d2bd0ffa22a50b71ac61e5de843bae2c5a63c69c20b1879b5ea5febf85a884d5"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-layout-dark-1000-firefox-darwin.png",
+      "artifact": "api-baseline-catalog-layout-dark-1000-firefox-darwin.png",
+      "sha256": "12dac03bed8e62327874b244a9ee9c4a313421b6fd6a21f15fc2ed5df0303a52"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-recipes-light-320-webkit-darwin.png",
+      "artifact": "api-baseline-catalog-recipes-light-320-webkit-darwin.png",
+      "sha256": "7b2cd67a58925ff7e5230c154df8e83c31d472cec13985e99b2bdbac0fe50f8b"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-layout-light-1000-webkit-darwin.png",
+      "artifact": "api-baseline-catalog-layout-light-1000-webkit-darwin.png",
+      "sha256": "ffcd2d669682d44dfc0092a16266eabe9a2008e82336093b78200fbfbfed36f3"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-overlays-light-1000-chromium-darwin.png",
+      "artifact": "api-baseline-catalog-overlays-light-1000-chromium-darwin.png",
+      "sha256": "c051f94abb817d44baa4c7f410cb2f43a61ec43c03bf42129c7c269a2f95b602"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-basics-light-320-firefox-darwin.png",
+      "artifact": "api-baseline-catalog-basics-light-320-firefox-darwin.png",
+      "sha256": "fe20b77e95260927250f298d15800886593c4fe4fa1805b923248d32adc41dcd"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-overlays-dark-320-webkit-darwin.png",
+      "artifact": "api-baseline-catalog-overlays-dark-320-webkit-darwin.png",
+      "sha256": "e9aaa001b7f4b6abca37ec254c99977d094d9c39dfc182a30c2e0912d34615b5"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-messages-dark-320-firefox-darwin.png",
+      "artifact": "api-baseline-catalog-messages-dark-320-firefox-darwin.png",
+      "sha256": "3f32b17b5999f8fff75888549f5dae71145b848a22540d1cdd3731e5fb758a14"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-layout-dark-320-webkit-darwin.png",
+      "artifact": "api-baseline-catalog-layout-dark-320-webkit-darwin.png",
+      "sha256": "961b7a7ee3e9c7fe7cc27b39df1ab70f512214174162a8ea8ca014190f5f53b9"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-basics-dark-1000-chromium-darwin.png",
+      "artifact": "api-baseline-catalog-basics-dark-1000-chromium-darwin.png",
+      "sha256": "85aae7fa619e06d2982c8a69f7b939b0e47d2d23681e39b5f46cdb468223511f"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-basics-light-1000-chromium-darwin.png",
+      "artifact": "api-baseline-catalog-basics-light-1000-chromium-darwin.png",
+      "sha256": "949a923a6b4fdefb60a7b3d3739ba7dc8835f544580dc5006479877629427d62"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-basics-light-320-chromium-darwin.png",
+      "artifact": "api-baseline-catalog-basics-light-320-chromium-darwin.png",
+      "sha256": "9ab772342fe83c137a5675cc412d29e7f03ce5ce3a6aa5419b4fa4802272f6b2"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-basics-dark-1000-webkit-darwin.png",
+      "artifact": "api-baseline-catalog-basics-dark-1000-webkit-darwin.png",
+      "sha256": "ef928ebd9ef285f504d038e6252ee65605b53902abe8d45e1cc0538cea743d1c"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-recipes-light-320-firefox-darwin.png",
+      "artifact": "api-baseline-catalog-recipes-light-320-firefox-darwin.png",
+      "sha256": "2c8c67ccfab04258c92edc1da96ecc104043204d0f1a4e1799ba1aa2e08b7bef"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-messages-light-1000-webkit-darwin.png",
+      "artifact": "api-baseline-catalog-messages-light-1000-webkit-darwin.png",
+      "sha256": "a4c280a5f9443d4446a2f210c9f8ddf70b70563054f7292868a7d6995091b53e"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-overlays-dark-1000-firefox-darwin.png",
+      "artifact": "api-baseline-catalog-overlays-dark-1000-firefox-darwin.png",
+      "sha256": "48789d6207c9478a1afac5583618c1692814ad40be797018941546c0fcf1f807"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-overlays-light-320-webkit-darwin.png",
+      "artifact": "api-baseline-catalog-overlays-light-320-webkit-darwin.png",
+      "sha256": "a47657ca311c4fcaabf8f1b6c67090a3d8130bcf4c626683c0c33821e12c8fec"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-overlays-light-1000-webkit-darwin.png",
+      "artifact": "api-baseline-catalog-overlays-light-1000-webkit-darwin.png",
+      "sha256": "8ff4864654e1d5ac8e16bd98827efeffd7fa31e64f3d016e300504a8d8356b66"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-basics-light-320-webkit-darwin.png",
+      "artifact": "api-baseline-catalog-basics-light-320-webkit-darwin.png",
+      "sha256": "73b7b92f223b3d513adbaaa93d70cff6511e869f9fb721ee10dd4a4e908c8e12"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-recipes-dark-320-chromium-darwin.png",
+      "artifact": "api-baseline-catalog-recipes-dark-320-chromium-darwin.png",
+      "sha256": "39425814b8f8986effbbdb809c93ffcf3e2b4574b4c97f9f4270595760a2d15c"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-messages-dark-1000-firefox-darwin.png",
+      "artifact": "api-baseline-catalog-messages-dark-1000-firefox-darwin.png",
+      "sha256": "208d61abb3a6df9306345f91b307c054906cbe58c3da9b424211a0c54e3b30be"
+    },
+    {
+      "path": ".context/shadcn-parity/parity.visual.spec.ts-snapshots/catalog-overlays-dark-1000-webkit-darwin.png",
+      "artifact": "api-baseline-catalog-overlays-dark-1000-webkit-darwin.png",
+      "sha256": "db09384a1c89b6b923bccb4711f659e485dada7eb3d0764917b0627745c78671"
+    },
+    {
+      "path": ".context/bundled-components/bundled-ui.visual.spec.ts-snapshots/bundled-dark-1000-open-webkit-darwin.png",
+      "artifact": "api-baseline-bundled-dark-1000-open-webkit-darwin.png",
+      "sha256": "33256b95fca0b1b3f3819c737ccd6a03a1712afe6b48633d36827499a1039617"
+    },
+    {
+      "path": ".context/bundled-components/bundled-ui.visual.spec.ts-snapshots/bundled-light-320-closed-firefox-darwin.png",
+      "artifact": "api-baseline-bundled-light-320-closed-firefox-darwin.png",
+      "sha256": "bd65a569e1fc2a03025500839a971b2b74eb2d3fb2c4fbb69b8d7cd422adf7bc"
+    },
+    {
+      "path": ".context/bundled-components/bundled-ui.visual.spec.ts-snapshots/bundled-dark-1000-open-firefox-darwin.png",
+      "artifact": "api-baseline-bundled-dark-1000-open-firefox-darwin.png",
+      "sha256": "998de5040da045173dd08ccaf5791ce3334ab5c113ef844fe67e476e42412e34"
+    },
+    {
+      "path": ".context/bundled-components/bundled-ui.visual.spec.ts-snapshots/bundled-dark-320-closed-webkit-darwin.png",
+      "artifact": "api-baseline-bundled-dark-320-closed-webkit-darwin.png",
+      "sha256": "9e722c026a7c439c2e46f01b953320f83e881d3231809435e2f8a737d009ee4e"
+    },
+    {
+      "path": ".context/bundled-components/bundled-ui.visual.spec.ts-snapshots/bundled-dark-1000-closed-chromium-darwin.png",
+      "artifact": "api-baseline-bundled-dark-1000-closed-chromium-darwin.png",
+      "sha256": "c656abcf2c4e89db60f362c1032a94b42775ad0be90a8af07d9b2b6c3afbd898"
+    },
+    {
+      "path": ".context/bundled-components/bundled-ui.visual.spec.ts-snapshots/bundled-dark-320-closed-chromium-darwin.png",
+      "artifact": "api-baseline-bundled-dark-320-closed-chromium-darwin.png",
+      "sha256": "a55266ba37709b7e2fada07e9f0e9d0591aaaba0ce4d1ca8a74963f083ada684"
+    },
+    {
+      "path": ".context/bundled-components/bundled-ui.visual.spec.ts-snapshots/bundled-dark-320-closed-firefox-darwin.png",
+      "artifact": "api-baseline-bundled-dark-320-closed-firefox-darwin.png",
+      "sha256": "5f91e12df254014110423b584a45dd7414b7675cb35c7f15b15caa42718c98d5"
+    },
+    {
+      "path": ".context/bundled-components/bundled-ui.visual.spec.ts-snapshots/bundled-light-320-closed-webkit-darwin.png",
+      "artifact": "api-baseline-bundled-light-320-closed-webkit-darwin.png",
+      "sha256": "4da2c5f28bd280dbe2319db776b898618dd23897bed2b229e38e75886135db28"
+    },
+    {
+      "path": ".context/bundled-components/bundled-ui.visual.spec.ts-snapshots/bundled-light-1000-open-firefox-darwin.png",
+      "artifact": "api-baseline-bundled-light-1000-open-firefox-darwin.png",
+      "sha256": "e530461c6d1d8869558035c07436fabe9ec1c2fbe3fe0373d77897358e01d2fe"
+    },
+    {
+      "path": ".context/bundled-components/bundled-ui.visual.spec.ts-snapshots/bundled-dark-1000-closed-firefox-darwin.png",
+      "artifact": "api-baseline-bundled-dark-1000-closed-firefox-darwin.png",
+      "sha256": "efe295804f62d0fa8950b116d306dd6d32f117a58bbf8c7025879d7421c9817b"
+    },
+    {
+      "path": ".context/bundled-components/bundled-ui.visual.spec.ts-snapshots/bundled-dark-clipboard-error-firefox-darwin.png",
+      "artifact": "api-baseline-bundled-dark-clipboard-error-firefox-darwin.png",
+      "sha256": "06c03b54c4925bef6ddcf1d7948ae51e7e11bcf4c59e857e2b0349b47ef052ed"
+    },
+    {
+      "path": ".context/bundled-components/bundled-ui.visual.spec.ts-snapshots/bundled-dark-320-open-firefox-darwin.png",
+      "artifact": "api-baseline-bundled-dark-320-open-firefox-darwin.png",
+      "sha256": "f880ac7a1064c2189c8cbd17e149de90a1d782a9ed3fefb557713054cbe58294"
+    },
+    {
+      "path": ".context/bundled-components/bundled-ui.visual.spec.ts-snapshots/bundled-dark-1000-closed-webkit-darwin.png",
+      "artifact": "api-baseline-bundled-dark-1000-closed-webkit-darwin.png",
+      "sha256": "ff5345d30684f79417a52ec262a20ce6ffd64dbe52f24449676bd383af4b3b8b"
+    },
+    {
+      "path": ".context/bundled-components/bundled-ui.visual.spec.ts-snapshots/bundled-light-1000-closed-chromium-darwin.png",
+      "artifact": "api-baseline-bundled-light-1000-closed-chromium-darwin.png",
+      "sha256": "82f17bd6cd48e2c08ae2a923d331612094d91a16b545f3f26ca068635c1c9347"
+    },
+    {
+      "path": ".context/bundled-components/bundled-ui.visual.spec.ts-snapshots/bundled-light-1000-closed-webkit-darwin.png",
+      "artifact": "api-baseline-bundled-light-1000-closed-webkit-darwin.png",
+      "sha256": "dac3a3e86783b0e54065ddfb0a0479561eae55c3047911eec5cecdb2ba81dd26"
+    },
+    {
+      "path": ".context/bundled-components/bundled-ui.visual.spec.ts-snapshots/bundled-light-1000-open-webkit-darwin.png",
+      "artifact": "api-baseline-bundled-light-1000-open-webkit-darwin.png",
+      "sha256": "2cfb3962d6208247df18838a3f2fb43f0d9669511d5e7491d20fb9ec5c2667fc"
+    },
+    {
+      "path": ".context/bundled-components/bundled-ui.visual.spec.ts-snapshots/bundled-light-clipboard-error-chromium-darwin.png",
+      "artifact": "api-baseline-bundled-light-clipboard-error-chromium-darwin.png",
+      "sha256": "54a0fec40c08349637cf63e233b318b715858480787f256f021d41b7db2f21f5"
+    },
+    {
+      "path": ".context/bundled-components/bundled-ui.visual.spec.ts-snapshots/bundled-light-clipboard-error-firefox-darwin.png",
+      "artifact": "api-baseline-bundled-light-clipboard-error-firefox-darwin.png",
+      "sha256": "61ffc7898f1095f481f7ca42e71c84b176c4412c9aca53b8bf256b48e2ed18be"
+    },
+    {
+      "path": ".context/bundled-components/bundled-ui.visual.spec.ts-snapshots/bundled-dark-320-open-webkit-darwin.png",
+      "artifact": "api-baseline-bundled-dark-320-open-webkit-darwin.png",
+      "sha256": "d82b732d1ada3b1df57eb2712851c67d543aa3dcca55839964539e2c5c7827ee"
+    },
+    {
+      "path": ".context/bundled-components/bundled-ui.visual.spec.ts-snapshots/bundled-light-320-closed-chromium-darwin.png",
+      "artifact": "api-baseline-bundled-light-320-closed-chromium-darwin.png",
+      "sha256": "92ac500621a09bf9bd5886c0ecb040efa78553dc838ff2b554a5484d5658f808"
+    },
+    {
+      "path": ".context/bundled-components/bundled-ui.visual.spec.ts-snapshots/bundled-light-1000-open-chromium-darwin.png",
+      "artifact": "api-baseline-bundled-light-1000-open-chromium-darwin.png",
+      "sha256": "b73421983e73a2d8a97e7ad4ef646b4cdb7c321d17d98ac4fca014e3fc8882ea"
+    },
+    {
+      "path": ".context/bundled-components/bundled-ui.visual.spec.ts-snapshots/bundled-light-clipboard-error-webkit-darwin.png",
+      "artifact": "api-baseline-bundled-light-clipboard-error-webkit-darwin.png",
+      "sha256": "27a83ccb2a66d73204b5e76a4d76189a6ca88bb8f87ee3c1a326f43ecd8b0094"
+    },
+    {
+      "path": ".context/bundled-components/bundled-ui.visual.spec.ts-snapshots/bundled-dark-clipboard-error-webkit-darwin.png",
+      "artifact": "api-baseline-bundled-dark-clipboard-error-webkit-darwin.png",
+      "sha256": "8b76ada92bfd198b525efa27e618f3da614e9b9466b982d2f6e3f9ce683cbca0"
+    },
+    {
+      "path": ".context/bundled-components/bundled-ui.visual.spec.ts-snapshots/bundled-light-320-open-webkit-darwin.png",
+      "artifact": "api-baseline-bundled-light-320-open-webkit-darwin.png",
+      "sha256": "8324857c71f2f7481eae7674eace2e2f8e2ecc73245ebf1e886b93bc3d332daf"
+    },
+    {
+      "path": ".context/bundled-components/bundled-ui.visual.spec.ts-snapshots/bundled-dark-1000-open-chromium-darwin.png",
+      "artifact": "api-baseline-bundled-dark-1000-open-chromium-darwin.png",
+      "sha256": "0c818da9bb3ff21f0f6d07e2371f84e040a7bd5ad6773168026778d17e7db6b0"
+    },
+    {
+      "path": ".context/bundled-components/bundled-ui.visual.spec.ts-snapshots/bundled-dark-clipboard-error-chromium-darwin.png",
+      "artifact": "api-baseline-bundled-dark-clipboard-error-chromium-darwin.png",
+      "sha256": "736eabc83e712f4944b781f8896de07b36f23796886bf8584354592305846dd4"
+    },
+    {
+      "path": ".context/bundled-components/bundled-ui.visual.spec.ts-snapshots/bundled-dark-320-open-chromium-darwin.png",
+      "artifact": "api-baseline-bundled-dark-320-open-chromium-darwin.png",
+      "sha256": "ed1c2187c5d0e3d9c4ad9d2dc497b5b7f58855d8990b44589143073fdaf99d25"
+    },
+    {
+      "path": ".context/bundled-components/bundled-ui.visual.spec.ts-snapshots/bundled-light-320-open-chromium-darwin.png",
+      "artifact": "api-baseline-bundled-light-320-open-chromium-darwin.png",
+      "sha256": "5749dd27e5634bbb0bec0737a5bb27ecef3e27d1c6c63ae384a53d1a7603f15d"
+    },
+    {
+      "path": ".context/bundled-components/bundled-ui.visual.spec.ts-snapshots/bundled-light-320-open-firefox-darwin.png",
+      "artifact": "api-baseline-bundled-light-320-open-firefox-darwin.png",
+      "sha256": "be2cfd213480a3f065f3a3e6448dd08d510d190a60d34c510d7a2a6b3d7490fa"
+    },
+    {
+      "path": ".context/bundled-components/bundled-ui.visual.spec.ts-snapshots/bundled-light-1000-closed-firefox-darwin.png",
+      "artifact": "api-baseline-bundled-light-1000-closed-firefox-darwin.png",
+      "sha256": "6b89d41fd4fa298d24ca09b6592bb8867555e6b594cd021b1ff6fd5b52b4716b"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/nested-fields-390-webkit-darwin.png",
+      "artifact": "api-baseline-nested-fields-390-webkit-darwin.png",
+      "sha256": "61560f9158b0c7fd24c1e8d346e988b737080857bb091e1ff050cb9c5c6e42a3"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/invalid-json-draft-chromium-darwin.png",
+      "artifact": "api-baseline-invalid-json-draft-chromium-darwin.png",
+      "sha256": "edc9bc79d3051fca10f547a3b43cccd195cba46808a971212c0d21ae19c9955e"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/codemirror-error-light-chromium-darwin.png",
+      "artifact": "api-baseline-codemirror-error-light-chromium-darwin.png",
+      "sha256": "5d627542d4b2bb785b9f093845446560090c03f10aa15e968cadd725b79faeff"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/codemirror-json-fields-chromium-darwin.png",
+      "artifact": "api-baseline-codemirror-json-fields-chromium-darwin.png",
+      "sha256": "6187c35643dd18edd415b9fd3506d4b2de90b551d5338f752a40411b7239ada0"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/nested-fields-320-chromium-darwin.png",
+      "artifact": "api-baseline-nested-fields-320-chromium-darwin.png",
+      "sha256": "11b755e2339ea3619199164061194d60b561d84dcb2e954110d010ee6ae7bb36"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/long-profile-success-webkit-darwin.png",
+      "artifact": "api-baseline-long-profile-success-webkit-darwin.png",
+      "sha256": "78c8b2e6ce8e37ff9b54180696f61548e7345c15d3c4b8e9ea05642565d11782"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/codemirror-mobile-long-value-firefox-darwin.png",
+      "artifact": "api-baseline-codemirror-mobile-long-value-firefox-darwin.png",
+      "sha256": "427d176e2f81d0952b0a9eca35abde5ffdeb3c5fb09eba66179396ca6c2021c2"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/copy-json-light-webkit-darwin.png",
+      "artifact": "api-baseline-copy-json-light-webkit-darwin.png",
+      "sha256": "2b0fb083cc013dc1317df5ea44f652d5532ed455cc2626ec16c5805e8688667d"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/copy-json-dark-chromium-darwin.png",
+      "artifact": "api-baseline-copy-json-dark-chromium-darwin.png",
+      "sha256": "d4f70ec03a318d1a63c8d23afa81f22b83dfe556e3852242bdf80ab82ace01c2"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/invalid-json-draft-webkit-darwin.png",
+      "artifact": "api-baseline-invalid-json-draft-webkit-darwin.png",
+      "sha256": "b701d4dd085eecc9c42e803ee29ec4c8ff10cb1b5bacdc2067037ea3b3843c0f"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/bool-map-1280-chromium-darwin.png",
+      "artifact": "api-baseline-bool-map-1280-chromium-darwin.png",
+      "sha256": "9d2a57c2b19c69ad26ea9ee7030c69693ad7e817a4d76b70cda6e0a9d49bfa92"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/long-profile-success-firefox-darwin.png",
+      "artifact": "api-baseline-long-profile-success-firefox-darwin.png",
+      "sha256": "b25573ce94acaf998114ef38e53f20e17fb87e5340a3b12952480fd88612bebb"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/codemirror-error-dark-firefox-darwin.png",
+      "artifact": "api-baseline-codemirror-error-dark-firefox-darwin.png",
+      "sha256": "76e6e318cd0351a55bd5f7a7eecd951469c0ac49cf4648b21b88d7a81ada54b5"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/nested-fields-320-firefox-darwin.png",
+      "artifact": "api-baseline-nested-fields-320-firefox-darwin.png",
+      "sha256": "0ffb384c0d78c6dbb2c08c0288b88ab12b11cbe3b3a2544fc637fea8083a0965"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/bool-map-1280-webkit-darwin.png",
+      "artifact": "api-baseline-bool-map-1280-webkit-darwin.png",
+      "sha256": "e7f69ad1c3553326ed4a09ad112ebdc72c3c2ad918807c322dd939e776853c9b"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/codemirror-json-fields-firefox-darwin.png",
+      "artifact": "api-baseline-codemirror-json-fields-firefox-darwin.png",
+      "sha256": "42a6bf6fc4a569c9da4bdd864438e77473173e0074726a9dcfa4f640142fed71"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/codemirror-json-fields-webkit-darwin.png",
+      "artifact": "api-baseline-codemirror-json-fields-webkit-darwin.png",
+      "sha256": "5d540172bc2e8bee2e280563d9c96c76bfce43bc0cd238716c9589eabc844e2e"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/codemirror-mobile-long-value-chromium-darwin.png",
+      "artifact": "api-baseline-codemirror-mobile-long-value-chromium-darwin.png",
+      "sha256": "1dc90c9c2067f90d1c6d7bbd98bf5d843de6acc477dae8ee620a0712c5f08641"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/long-environment-success-firefox-darwin.png",
+      "artifact": "api-baseline-long-environment-success-firefox-darwin.png",
+      "sha256": "fb61d5f5b245c85b1b56bd4cf748b657299fd18f9ec3a769631ee5c81f5bf53e"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/bool-map-320-chromium-darwin.png",
+      "artifact": "api-baseline-bool-map-320-chromium-darwin.png",
+      "sha256": "6b3c80dc6467bad989419fffd0a575e65033626574626b5e69e1d4a6a59e279f"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/nested-fields-390-chromium-darwin.png",
+      "artifact": "api-baseline-nested-fields-390-chromium-darwin.png",
+      "sha256": "5a4ae401af2b593ce63c81599caf637d3b5d6f3d4b44bd0aaa467956bacb74eb"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/copy-json-dark-webkit-darwin.png",
+      "artifact": "api-baseline-copy-json-dark-webkit-darwin.png",
+      "sha256": "ea7fd29338c25db5d8c73a52b3b737cc52887e93c502c940e1adf22b67a4dea2"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/collection-root-error-chromium-darwin.png",
+      "artifact": "api-baseline-collection-root-error-chromium-darwin.png",
+      "sha256": "2f7ba0cefdce09cf7790d0481a52dcd9bb1ef8781ed035a30f4e737c660e37ae"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/codemirror-error-dark-chromium-darwin.png",
+      "artifact": "api-baseline-codemirror-error-dark-chromium-darwin.png",
+      "sha256": "397ea76d0993fca2f5a9922b78bdb1a1c2f5be8519a0e09a9c3b666b0f27acc2"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/bool-map-320-webkit-darwin.png",
+      "artifact": "api-baseline-bool-map-320-webkit-darwin.png",
+      "sha256": "47978d1fe19ace47c45c029186d968fb078e6dc9aaa55abd3b07e68fe2812151"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/nested-fields-320-webkit-darwin.png",
+      "artifact": "api-baseline-nested-fields-320-webkit-darwin.png",
+      "sha256": "616a877aad672b52079d11286721d886e896c64a56bcdcafd27ba85492308878"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/bool-map-1280-firefox-darwin.png",
+      "artifact": "api-baseline-bool-map-1280-firefox-darwin.png",
+      "sha256": "6fd78f1729fc4112164a0b74c0f87b8a4f0e0a0d713de84c4e7ae643c43e8dfa"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/nested-fields-390-firefox-darwin.png",
+      "artifact": "api-baseline-nested-fields-390-firefox-darwin.png",
+      "sha256": "b7a857a897a87c0613fbe3f0f98c58eb82728d8935f1124bb4f6eadc483042f4"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/zero-json-editor-firefox-darwin.png",
+      "artifact": "api-baseline-zero-json-editor-firefox-darwin.png",
+      "sha256": "3d1bd5ae0f56ad7dcf943427a30749efa5a0a74dd8d51a8363dc028da7106f1e"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/invalid-json-draft-firefox-darwin.png",
+      "artifact": "api-baseline-invalid-json-draft-firefox-darwin.png",
+      "sha256": "7519f2dc05b1a38548f3d6886d54968a0f597a7f9de2450f64bf89b6d705985e"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/codemirror-error-dark-webkit-darwin.png",
+      "artifact": "api-baseline-codemirror-error-dark-webkit-darwin.png",
+      "sha256": "e8d5e2af3edcf8ce6d513a8679c6797f41b2600db28e33a3b646469bf51b59ce"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/codemirror-error-light-firefox-darwin.png",
+      "artifact": "api-baseline-codemirror-error-light-firefox-darwin.png",
+      "sha256": "fcfaeb7cf02ca34fc8ac2bc297ba8e229a5ba007da480bb244336846dc766bf5"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/codemirror-empty-draft-firefox-darwin.png",
+      "artifact": "api-baseline-codemirror-empty-draft-firefox-darwin.png",
+      "sha256": "a6a1298a1cec0e966fca4b79c2c78b6959f020d78c4da29e74a06cbaf913accb"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/zero-json-editor-chromium-darwin.png",
+      "artifact": "api-baseline-zero-json-editor-chromium-darwin.png",
+      "sha256": "e85fe9981bb918a3a1f0ab1f8bdab1978a27b2b09ecb9545a0efd1dfa9d2641f"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/codemirror-error-light-webkit-darwin.png",
+      "artifact": "api-baseline-codemirror-error-light-webkit-darwin.png",
+      "sha256": "fce766d352d5b674520ac0fcdb95062a9c512a13d9b9e466e74a4e978f3f0f3d"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/copy-json-dark-firefox-darwin.png",
+      "artifact": "api-baseline-copy-json-dark-firefox-darwin.png",
+      "sha256": "8a8b0f34d1f05c9ddde106ca4c087b582e08ca5aa61ad771750d34a3c2e83a56"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/codemirror-empty-draft-chromium-darwin.png",
+      "artifact": "api-baseline-codemirror-empty-draft-chromium-darwin.png",
+      "sha256": "e85c76dc8818db5f05678f975c3fbc47687657a064f01699e68befc0852c73b7"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/collection-root-error-webkit-darwin.png",
+      "artifact": "api-baseline-collection-root-error-webkit-darwin.png",
+      "sha256": "00765ca09f30f3d85d6f4ebdb3e41f27fd5e9fd0cec51a2422ec12f96a7b3703"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/collection-root-error-firefox-darwin.png",
+      "artifact": "api-baseline-collection-root-error-firefox-darwin.png",
+      "sha256": "ee52d8437437163f5704a98c345131362c890271af021d64af5c9c0da3f0e9d4"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/bool-map-320-firefox-darwin.png",
+      "artifact": "api-baseline-bool-map-320-firefox-darwin.png",
+      "sha256": "cc0eeb4f45f8c308d9551cdbf105eb185bbe00e8183324ee778482c0c9f75c16"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/long-environment-success-webkit-darwin.png",
+      "artifact": "api-baseline-long-environment-success-webkit-darwin.png",
+      "sha256": "1994f42f1e7faa268f78d2a28070ff00601d380234071095528dad8b4654daa4"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/zero-json-editor-webkit-darwin.png",
+      "artifact": "api-baseline-zero-json-editor-webkit-darwin.png",
+      "sha256": "38d1e44bf3a55883c169361dd2c027ce75c1df286500f8c4ccf6021f2af7e47e"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/codemirror-empty-draft-webkit-darwin.png",
+      "artifact": "api-baseline-codemirror-empty-draft-webkit-darwin.png",
+      "sha256": "82e2065a6a637a0665101d86ae611e41bf76c990bb3e0da49d77a96ac09e4977"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/copy-json-light-firefox-darwin.png",
+      "artifact": "api-baseline-copy-json-light-firefox-darwin.png",
+      "sha256": "74c1d291fb442edf497d3ad79749e3b38618af470df11b60400d3181393098ec"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/long-profile-success-chromium-darwin.png",
+      "artifact": "api-baseline-long-profile-success-chromium-darwin.png",
+      "sha256": "d8ad42b394f4ebe809d6512f2bd53409c814ade21183ebd73aeea56b76707a33"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/codemirror-mobile-long-value-webkit-darwin.png",
+      "artifact": "api-baseline-codemirror-mobile-long-value-webkit-darwin.png",
+      "sha256": "124785bd129132725e0e3cb4cd24cd5251680c118d2a878b5c08220ace95eb22"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/long-environment-success-chromium-darwin.png",
+      "artifact": "api-baseline-long-environment-success-chromium-darwin.png",
+      "sha256": "63899ea0ede50e34464566492aaad47556d95d7534737ce23974a67cb5708ccb"
+    },
+    {
+      "path": ".context/codemirror/form-resilience.visual.spec.ts-snapshots/copy-json-light-chromium-darwin.png",
+      "artifact": "api-baseline-copy-json-light-chromium-darwin.png",
+      "sha256": "9f646feb55129298efb98cfb170095afc1624ab0cc6f8f660c8afcfab4f6a6f9"
+    },
+    {
+      "path": ".context/shadcn-api/visual/api-firefox.spec.ts-snapshots/api-light-320-open.png",
+      "artifact": "api-baseline-api-firefox-api-light-320-open.png",
+      "sha256": "b8626b2abb25da1da8f8331b56b65277b41246fc01c748267840440c94803c53"
+    },
+    {
+      "path": ".context/shadcn-api/visual/api-firefox.spec.ts-snapshots/api-light-1000-open.png",
+      "artifact": "api-baseline-api-firefox-api-light-1000-open.png",
+      "sha256": "261f7d80cc360562bbd106295cd9dfb181b50768e2cb3fc5b96dc28b3b4230e5"
+    },
+    {
+      "path": ".context/shadcn-api/visual/api-firefox.spec.ts-snapshots/api-dark-1000-open.png",
+      "artifact": "api-baseline-api-firefox-api-dark-1000-open.png",
+      "sha256": "cb7605290bbbf8e606c841c89c4ccff28992c4c2a71e0507ca096514c4ba7e73"
+    },
+    {
+      "path": ".context/shadcn-api/visual/api-firefox.spec.ts-snapshots/api-dark-320-open.png",
+      "artifact": "api-baseline-api-firefox-api-dark-320-open.png",
+      "sha256": "f0c7ed880a57c3159f3d328309e0669888303ecafa09ee5a39e280e954f83067"
+    },
+    {
+      "path": ".context/shadcn-api/visual/api-chromium.spec.ts-snapshots/api-light-320-open.png",
+      "artifact": "api-baseline-api-chromium-api-light-320-open.png",
+      "sha256": "c176f1b919e603d90ec6668bf322630a22beece3a05e7d1506de97165f9d35d4"
+    },
+    {
+      "path": ".context/shadcn-api/visual/api-chromium.spec.ts-snapshots/api-light-1000-open.png",
+      "artifact": "api-baseline-api-chromium-api-light-1000-open.png",
+      "sha256": "8846cc204ad664bdfe6a420a48e7b52b95fd5bdbd6b152ac8a242026a1113405"
+    },
+    {
+      "path": ".context/shadcn-api/visual/api-chromium.spec.ts-snapshots/api-dark-1000-open.png",
+      "artifact": "api-baseline-api-chromium-api-dark-1000-open.png",
+      "sha256": "57d30ab7dfe06def8251b63cd5e7cf14bebdaa4e75e13631bdc73a0d71ff3505"
+    },
+    {
+      "path": ".context/shadcn-api/visual/api-chromium.spec.ts-snapshots/api-dark-320-open.png",
+      "artifact": "api-baseline-api-chromium-api-dark-320-open.png",
+      "sha256": "76ec004e7710829eeea3d7f770388bb378766d3031dd01463a979d4d704b4337"
+    },
+    {
+      "path": ".context/shadcn-api/visual/api-webkit.spec.ts-snapshots/api-light-320-open.png",
+      "artifact": "api-baseline-api-webkit-api-light-320-open.png",
+      "sha256": "95d7bc0ecc80dae8eeeec5f4085a024155ad8704e92de5c4e73ff4446fa3b7f6"
+    },
+    {
+      "path": ".context/shadcn-api/visual/api-webkit.spec.ts-snapshots/api-light-1000-open.png",
+      "artifact": "api-baseline-api-webkit-api-light-1000-open.png",
+      "sha256": "0a1e2abc3540fd2096a4d05161c78d7d961fb17adaf813cf4a111b3745595353"
+    },
+    {
+      "path": ".context/shadcn-api/visual/api-webkit.spec.ts-snapshots/api-dark-1000-open.png",
+      "artifact": "api-baseline-api-webkit-api-dark-1000-open.png",
+      "sha256": "36a9dda456c0c31e76f82a0688889cafe13a3fe9b41e5774c57c63b3e26bce50"
+    },
+    {
+      "path": ".context/shadcn-api/visual/api-webkit.spec.ts-snapshots/api-dark-320-open.png",
+      "artifact": "api-baseline-api-webkit-api-dark-320-open.png",
+      "sha256": "29fae4eda156ead0ad5344610871053510b4cd12cf62b96691fd1e23587745c8"
+    },
+    {
+      "path": ".context/shadcn-api/visual/api-chromium.spec.ts",
+      "artifact": "api-visual-api-chromium.spec.ts",
+      "sha256": "4c863904e399fcbec85d9dcbce8867cbdead91ecbff8cd2738f6cd509327c036"
+    },
+    {
+      "path": ".context/shadcn-api/visual/api-webkit.spec.ts",
+      "artifact": "api-visual-api-webkit.spec.ts",
+      "sha256": "63467c30eeb43687f6288e533df4d3971e91e6966b661eb388faa348cb8a427e"
+    },
+    {
+      "path": ".context/shadcn-api/visual/codemirror-firefox.spec.ts",
+      "artifact": "api-visual-codemirror-firefox.spec.ts",
+      "sha256": "23a83a4d0190ecc54178e700268c0a68b249a263db54079572b198c6940e993f"
+    },
+    {
+      "path": ".context/shadcn-api/visual/codemirror-chromium.spec.ts",
+      "artifact": "api-visual-codemirror-chromium.spec.ts",
+      "sha256": "dc5d05b170e01e8316523f6ac037c5b0cc34d0dbe9d111096bb6c4bf468eb1d4"
+    },
+    {
+      "path": ".context/shadcn-api/visual/codemirror-webkit.spec.ts",
+      "artifact": "api-visual-codemirror-webkit.spec.ts",
+      "sha256": "f23406bbc389ac26cd6988975d43ddaf81fe0d7ec640381ddfa6d103d63fdaa8"
+    },
+    {
+      "path": ".context/shadcn-api/visual/shadcn-parity-firefox.spec.ts",
+      "artifact": "api-visual-shadcn-parity-firefox.spec.ts",
+      "sha256": "49b659a0cafc297acdbca6f62a83909dbf67714faef75fceccb79b230d865f14"
+    },
+    {
+      "path": ".context/shadcn-api/visual/bundled-components-webkit.spec.ts",
+      "artifact": "api-visual-bundled-components-webkit.spec.ts",
+      "sha256": "a093dd6429394633f23aa5f22d71a69e785693a6f1745f53f861cbfea529f379"
+    },
+    {
+      "path": ".context/shadcn-api/visual/bundled-components-firefox.spec.ts",
+      "artifact": "api-visual-bundled-components-firefox.spec.ts",
+      "sha256": "6d830963f8be7eed185e5f0453d44e1b0383af08deabf5ba6f001ae4849f7385"
+    },
+    {
+      "path": ".context/shadcn-api/visual/shadcn-parity-webkit.spec.ts",
+      "artifact": "api-visual-shadcn-parity-webkit.spec.ts",
+      "sha256": "d733de0095d3c9c65759f88f491522bacb8857676a0677d9624fe8d89d194d2d"
+    },
+    {
+      "path": ".context/shadcn-api/visual/api-firefox.spec.ts",
+      "artifact": "api-visual-api-firefox.spec.ts",
+      "sha256": "c3e3c6703b3fa4051ce91ffc8201aaf67bfd5bd364a4356bf9d7f51b359b46c1"
+    },
+    {
+      "path": ".context/shadcn-api/visual/bundled-components-chromium.spec.ts",
+      "artifact": "api-visual-bundled-components-chromium.spec.ts",
+      "sha256": "6f3c84897183e57cca1ec43a75bbe1d19265be21e00ebf62b5a7528a77a60145"
+    },
+    {
+      "path": ".context/shadcn-api/visual/shadcn-parity-chromium.spec.ts",
+      "artifact": "api-visual-shadcn-parity-chromium.spec.ts",
+      "sha256": "f146bd174891dc2d36c297959548f044a5c4f839c6b733f011b883f949627f55"
+    },
+    {
+      "path": ".context/shadcn-api/visual.config.ts",
+      "artifact": "api-visual.config.ts",
+      "sha256": "94376361e2e85d92a17726158f1513a9d5b816374209d7f1fed8fc264bd96cb6"
+    }
+  ],
+  "command": "bun run test:e2e --config .context/shadcn-api/visual.config.ts --reporters verbose"
+}
