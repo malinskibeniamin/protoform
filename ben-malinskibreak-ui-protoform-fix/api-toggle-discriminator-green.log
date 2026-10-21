@@ -1,0 +1,12 @@
+$ node scripts/run-tests.ts integration --reporters verbose registry/base-nova/protoform/components/toggle-group/index.test.tsx
+
+ ✓ [dom] registry/base-nova/protoform/components/toggle-group/index.test.tsx (4) 253ms
+  ✓ supports shadcn multiple selection and cancelable change details (161ms)
+  ✓ keeps the Protoform single-value API for string selections (72ms)
+  ✓ supports standalone shadcn items, render props and native events (18ms)
+  ✓ requires a discriminator for the legacy uncontrolled string callback (1ms)
+
+ Test Files 1 passed
+      Tests 4 passed
+   Duration 2.21s (build 688ms, tests 1.53s)
+

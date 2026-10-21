@@ -1,0 +1,18 @@
+{
+  "base": "b718db1290a83fb7bfc6937a0836bf18aaabad05",
+  "head": "6a139dfa515a318ae261044973c1cbb07ccef80f",
+  "before": {
+    "files": 44,
+    "rawSourceBytes": 295837,
+    "primitiveModules": 27,
+    "catalogEntries": 28
+  },
+  "after": {
+    "files": 86,
+    "rawSourceBytes": 528668
+  },
+  "performanceClaim": false,
+  "upstreamPrimitiveModules": 63,
+  "catalogEntries": 66,
+  "exportContracts": 388
+}

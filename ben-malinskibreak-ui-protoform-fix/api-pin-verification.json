@@ -1,0 +1,257 @@
+{
+  "revision": "ba1503c64472b82256d9de95e2e62c5901a38e8b",
+  "results": [
+    {
+      "name": "accordion",
+      "differences": []
+    },
+    {
+      "name": "alert-dialog",
+      "differences": []
+    },
+    {
+      "name": "alert",
+      "differences": []
+    },
+    {
+      "name": "aspect-ratio",
+      "differences": []
+    },
+    {
+      "name": "badge",
+      "differences": []
+    },
+    {
+      "name": "breadcrumb",
+      "differences": []
+    },
+    {
+      "name": "attachment",
+      "differences": []
+    },
+    {
+      "name": "avatar",
+      "differences": []
+    },
+    {
+      "name": "bubble",
+      "differences": []
+    },
+    {
+      "name": "button",
+      "differences": []
+    },
+    {
+      "name": "button-group",
+      "differences": []
+    },
+    {
+      "name": "calendar",
+      "differences": []
+    },
+    {
+      "name": "card",
+      "differences": []
+    },
+    {
+      "name": "carousel",
+      "differences": []
+    },
+    {
+      "name": "checkbox",
+      "differences": []
+    },
+    {
+      "name": "chart",
+      "differences": []
+    },
+    {
+      "name": "code-block",
+      "differences": []
+    },
+    {
+      "name": "command",
+      "differences": []
+    },
+    {
+      "name": "combobox",
+      "differences": []
+    },
+    {
+      "name": "collapsible",
+      "differences": []
+    },
+    {
+      "name": "context-menu",
+      "differences": []
+    },
+    {
+      "name": "direction",
+      "differences": []
+    },
+    {
+      "name": "dialog",
+      "differences": []
+    },
+    {
+      "name": "drawer",
+      "differences": []
+    },
+    {
+      "name": "dropdown-menu",
+      "differences": []
+    },
+    {
+      "name": "empty",
+      "differences": []
+    },
+    {
+      "name": "hover-card",
+      "differences": []
+    },
+    {
+      "name": "field",
+      "differences": []
+    },
+    {
+      "name": "input",
+      "differences": []
+    },
+    {
+      "name": "input-otp",
+      "differences": []
+    },
+    {
+      "name": "input-group",
+      "differences": []
+    },
+    {
+      "name": "item",
+      "differences": []
+    },
+    {
+      "name": "kbd",
+      "differences": []
+    },
+    {
+      "name": "marker",
+      "differences": []
+    },
+    {
+      "name": "menubar",
+      "differences": []
+    },
+    {
+      "name": "label",
+      "differences": []
+    },
+    {
+      "name": "message",
+      "differences": []
+    },
+    {
+      "name": "message-scroller",
+      "differences": []
+    },
+    {
+      "name": "navigation-menu",
+      "differences": []
+    },
+    {
+      "name": "native-select",
+      "differences": []
+    },
+    {
+      "name": "pagination",
+      "differences": []
+    },
+    {
+      "name": "popover",
+      "differences": []
+    },
+    {
+      "name": "progress",
+      "differences": []
+    },
+    {
+      "name": "questionnaire",
+      "differences": []
+    },
+    {
+      "name": "radio-group",
+      "differences": []
+    },
+    {
+      "name": "resizable",
+      "differences": []
+    },
+    {
+      "name": "select",
+      "differences": []
+    },
+    {
+      "name": "scroll-area",
+      "differences": []
+    },
+    {
+      "name": "separator",
+      "differences": []
+    },
+    {
+      "name": "sheet",
+      "differences": []
+    },
+    {
+      "name": "sidebar",
+      "differences": []
+    },
+    {
+      "name": "skeleton",
+      "differences": []
+    },
+    {
+      "name": "slider",
+      "differences": []
+    },
+    {
+      "name": "spinner",
+      "differences": []
+    },
+    {
+      "name": "switch",
+      "differences": []
+    },
+    {
+      "name": "table",
+      "differences": []
+    },
+    {
+      "name": "tabs",
+      "differences": []
+    },
+    {
+      "name": "textarea",
+      "differences": []
+    },
+    {
+      "name": "toast",
+      "differences": []
+    },
+    {
+      "name": "toggle",
+      "differences": []
+    },
+    {
+      "name": "toggle-group",
+      "differences": []
+    },
+    {
+      "name": "tooltip",
+      "differences": []
+    },
+    {
+      "name": "trace",
+      "differences": []
+    }
+  ]
+}

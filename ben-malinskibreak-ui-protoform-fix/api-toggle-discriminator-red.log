@@ -1,0 +1,2 @@
+$ tsc --noEmit
+registry/base-nova/protoform/components/toggle-group/index.test.tsx(61,66): error TS2554: Expected 1 arguments, but got 0.

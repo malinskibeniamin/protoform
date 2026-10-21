@@ -1,0 +1,19 @@
+$ bun run typecheck
+$ bun run typecheck:coverage && bun run typecheck:source && bun run typecheck:tests && bun run docs:blume:check
+$ bun run scripts/check-typescript-coverage.ts
+Every authored TypeScript file is covered (759 files).
+$ tsc --noEmit
+$ tsc --project tsconfig.tests.json --noEmit
+$ bun run scripts/check-docs-types.ts
+[blume] ◐ Type-checking 170 page(s)
+Result (759 files): 
+- 0 errors
+- 0 warnings
+- 0 hints
+
+[blume] ✔ No type errors.
+BLUME_OPENAPI_LOCAL_SERVER In OpenAPI spec "./openapi.yaml": The spec's server http://127.0.0.1:55012 is a local address, so the reference publishes it as the server Try it sends requests to and the code samples call, which readers can't reach.
+  fix: List the API's public URL in the spec's `servers`, or replace it with an overlay (an action with `target: $.servers[0]` and `update: { url: "https://api.example.com" }`).
+  docs: https://useblume.dev/docs/references/openapi#spec-warnings
+
+1 warning(s)

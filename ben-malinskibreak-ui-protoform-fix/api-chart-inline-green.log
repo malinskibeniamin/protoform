@@ -1,0 +1,21 @@
+$ node scripts/run-tests.ts browser --reporters verbose registry/base-nova/protoform/components/chart/index.browser.test.tsx
+
+start   build started...
+ready   built in 0.66s
+
+info | registry/base-nova/protoform/components/chart/index.browser.test.tsx
+Download the React DevTools for a better development experience: https://react.dev/link/react-devtools
+
+ ✓ registry/base-nova/protoform/components/chart/index.browser.test.tsx (7) 338ms
+  ✓ passes the complete tooltip payload to a custom formatter (316ms)
+  ✓ keeps a numeric zero series label visible (2ms)
+  ✓ scopes dynamic colors without injecting caller stylesheet markup (9ms)
+  ✓ supports the public ChartStyle helper and cleans up replaced colors (1ms)
+  ✓ applies ChartStyle to matching targets mounted later and restores retargeted elements (2ms)
+  ✓ preserves caller inline chart colors over configuration and during cleanup (1ms)
+  ✓ reapplies removed overrides and leaves later caller declarations intact on unmount (5ms)
+
+ Test Files 1 passed
+      Tests 7 passed
+   Duration 1.37s (build 803ms, tests 567ms)
+

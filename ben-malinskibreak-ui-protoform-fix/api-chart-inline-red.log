@@ -1,0 +1,43 @@
+$ node scripts/run-tests.ts browser --reporters verbose registry/base-nova/protoform/components/chart/index.browser.test.tsx
+
+start   build started...
+ready   built in 1.38s
+
+info | registry/base-nova/protoform/components/chart/index.browser.test.tsx
+Download the React DevTools for a better development experience: https://react.dev/link/react-devtools
+
+ ✗ registry/base-nova/protoform/components/chart/index.browser.test.tsx (6) 333ms
+  ✓ passes the complete tooltip payload to a custom formatter (317ms)
+  ✓ keeps a numeric zero series label visible (2ms)
+  ✓ scopes dynamic colors to the chart without injecting stylesheet text (9ms)
+  ✓ supports the public ChartStyle helper and cleans up replaced colors (1ms)
+  ✓ applies ChartStyle to matching targets mounted later and restores retargeted elements (2ms)
+  ✗ preserves caller inline chart colors over configuration and during cleanup (2ms)
+    expected 'red' to be 'blue' // Object.is equality
+
+Summary of all failing tests:
+
+ FAIL  registry/base-nova/protoform/components/chart/index.browser.test.tsx > preserves caller inline chart colors over configuration and during cleanup
+AssertionError: expected 'red' to be 'blue' // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- blue[39m
+[31m+ red[39m
+
+  93 |   );
+  94 |   const target = screen.getByTestId('inline-target');
+> 95 |   expect(target.style.getPropertyValue('--color-requests')).toBe('blue');
+     |                                                            ^
+  96 |   rerender(<><div data-chart="inline-chart" data-testid="inline-target" style={{ '--color-requests': 'green' } as CSSProperties} /><ChartStyle config={{ requests: { color: 'purple' } }} id="inline-chart" /></>);
+  97 |   expect(target.style.getPropertyValue('--color-requests')).toBe('green');
+
+        at registry/base-nova/protoform/components/chart/index.browser.test.tsx:95:60
+
+
+ Test Files 1 failed
+      Tests 1 failed | 5 passed (6)
+   Duration 2.31s (build 1.45s, tests 867ms)
+
+error: script "test:browser" exited with code 1
