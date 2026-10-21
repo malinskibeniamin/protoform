@@ -5,22 +5,24 @@ conformance, browser, registry-consumer and documentation tests.
 
 ## Reviewed versions (2026-10-20)
 
-| Tool              | Version              | Responsibility                                         |
-| ----------------- | -------------------- | ------------------------------------------------------ |
-| Bun               | 1.4.3                | Package manager; pinned across workflows               |
-| Blume             | 2.2.4                | Astro/MDX checking, builds and audits                  |
-| Ultracite         | 8.0.1                | Shared conventions, latest stable at review            |
-| Biome             | 2.5.15               | General linting and source formatting                  |
-| Oxlint            | 1.89.0               | Additional syntax, import, promise and test checks     |
-| oxlint-tsgolint   | 7.0.2004             | Type-aware linting and compiler diagnostics            |
-| Native TypeScript | 7.1.0-dev.20261020.3 | Strict source and test checking                        |
-| Oxfmt             | 0.74.0               | Markdown/YAML formatting, not a competing TS formatter |
-| React Doctor      | 0.9.18               | Full warning-blocking component/design audit           |
-| React Scan        | 0.5.7                | Interactive profiling: `bun run scan:react`            |
+| Tool            | Version                     | Responsibility                                         |
+| --------------- | --------------------------- | ------------------------------------------------------ |
+| Bun             | 1.4.3                       | Package manager; pinned across workflows               |
+| Blume           | 2.2.4                       | Astro/MDX checking, builds and audits                  |
+| Ultracite       | 8.0.1                       | Shared conventions, latest stable at review            |
+| Biome           | 2.5.15                      | General linting and source formatting                  |
+| Oxlint          | 1.89.0                      | Additional syntax, import, promise and test checks     |
+| oxlint-tsgolint | 7.0.2004                    | Type-aware linting and compiler diagnostics            |
+| tsrs            | 0.18.0-ts7.1.0-dev.20260929 | Rust-based strict source and test checking             |
+| Oxfmt           | 0.74.0                      | Markdown/YAML formatting, not a competing TS formatter |
+| React Doctor    | 0.9.18                      | Full warning-blocking component/design audit           |
+| React Scan      | 0.5.7                       | Interactive profiling: `bun run scan:react`            |
 
-TypeScript 7's native compiler still uses the executable name `tsc`. `@typescript/native` is an exact
-alias to the official canary. TypeScript 6 remains for synchronous AST APIs used by tooling, not for
-source/test typechecking.
+Source, test, and authored-file coverage checks use the exactly pinned Rust compiler, `tsrs`.
+This release follows TypeScript 7.1 development, not the Microsoft 7.1 beta. It supports macOS arm64
+and Linux x64/arm64; it does not ship Windows or Intel macOS binaries. TypeScript 6 remains for
+synchronous AST APIs used by tooling, not for source/test typechecking. Blume retains its own
+Astro/MDX checker.
 
 `bun run scan:react` starts an opt-in development server with the installed React Scan module loaded
 before React hydration. Profiling is never injected into builds or previews. The installed CLI's
@@ -64,7 +66,8 @@ required CI checks and review policy changes at the repository-hosting layer.
 
 ## Upstream evidence
 
-- [Native compiler naming](https://github.com/microsoft/typescript-go/blob/main/_packages/native-preview/README.md)
+- [tsrs CLI usage](https://github.com/oxc-project/tsrs/blob/main/docs/USAGE.md)
+- [tsrs compatibility and platform support](https://github.com/oxc-project/tsrs/blob/main/docs/COMPATIBILITY.md)
 - [Oxlint release notes](https://github.com/oxc-project/oxc/releases/tag/oxlint_v1.89.0)
 - [Type-aware Oxlint](https://oxc.rs/docs/guide/usage/linter/type-aware)
 - [Biome conflicting-rule guidance](https://biomejs.dev/guides/upgrade-to-biome-v2/)

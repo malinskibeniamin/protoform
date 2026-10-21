@@ -26,7 +26,7 @@ const sources = authoredFiles().filter((path) => typescriptPathPattern.test(path
 
 const compilerFiles = new Set(
   ['tsconfig.json', 'tsconfig.tests.json'].flatMap((config) =>
-    run('tsc', ['--project', config, '--listFilesOnly', '--pretty', 'false'])
+    run('tsrs', ['--project', config, '--listFilesOnly', '--pretty', 'false'])
       .split('\n')
       .filter(Boolean)
       .map(normalizePath)

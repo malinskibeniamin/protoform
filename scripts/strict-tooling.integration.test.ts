@@ -65,8 +65,6 @@ describe('strict React tooling', () => {
       doctor: expect.stringContaining('react-doctor') as unknown,
       'doctor:strict': 'bun run doctor',
       'scan:react': 'PROTOFORM_REACT_SCAN=1 blume dev --port 55011',
-      'typecheck:source': 'tsc --noEmit',
-      'typecheck:tests': 'tsc --project tsconfig.tests.json --noEmit',
     });
   });
 

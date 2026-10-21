@@ -17,9 +17,10 @@ const testTsconfig = JSON.parse(readFileSync('tsconfig.tests.json', 'utf8')) as 
 const biomeConfig = readFileSync('biome.jsonc', 'utf8');
 
 describe('frontend quality policy', () => {
-  test('uses the native compiler with every practical strictness flag', () => {
-    expect(manifest.devDependencies['@typescript/native']).toBeDefined();
-    expect(manifest.scripts['typecheck:source']).toBe('tsc --noEmit');
+  test('uses the Rust compiler with every practical strictness flag', () => {
+    expect(manifest.devDependencies['tsrs']).toBeDefined();
+    expect(manifest.devDependencies['@typescript/native']).toBeUndefined();
+    expect(manifest.scripts['typecheck:source']).toBe('tsrs --noEmit');
     expect(tsconfig.compilerOptions).toMatchObject({
       allowUnreachableCode: false,
       allowUnusedLabels: false,
@@ -33,7 +34,7 @@ describe('frontend quality policy', () => {
   });
 
   test('typechecks every authored test with the strict project settings', () => {
-    expect(manifest.scripts['typecheck:tests']).toBe('tsc --project tsconfig.tests.json --noEmit');
+    expect(manifest.scripts['typecheck:tests']).toBe('tsrs --project tsconfig.tests.json --noEmit');
     expect(manifest.scripts['typecheck']).toContain('bun run typecheck:tests');
     expect(existsSync('tsconfig.tests.json')).toBe(true);
     expect(testTsconfig.include).toEqual(
