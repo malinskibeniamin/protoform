@@ -3,11 +3,11 @@
 Run `bun run lint:fix` and `bun run type:check` before submitting changes. CI also runs component,
 conformance, browser, registry-consumer and documentation tests.
 
-## Reviewed versions (2026-10-20)
+## Reviewed versions (updated 2026-10-22)
 
 | Tool            | Version                     | Responsibility                                         |
 | --------------- | --------------------------- | ------------------------------------------------------ |
-| Bun             | 1.4.3                       | Package manager; pinned across workflows               |
+| Bun             | 1.4.4                       | Package manager; pinned across workflows               |
 | Blume           | 2.2.4                       | Astro/MDX checking, builds and audits                  |
 | Ultracite       | 8.0.1                       | Shared conventions, latest stable at review            |
 | Biome           | 2.5.15                      | General linting and source formatting                  |
