@@ -3,6 +3,8 @@
 import { Progress as ProgressPrimitive } from '@base-ui/react/progress';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
 
+const ProgressLabelSpan = ProgressPrimitive.Label;
+
 function Progress({ className, children, value, ...props }: ProgressPrimitive.Root.Props) {
   return (
     <ProgressPrimitive.Root
@@ -48,7 +50,7 @@ function ProgressIndicator({ className, ...props }: ProgressPrimitive.Indicator.
 }
 function ProgressLabel({ className, ...props }: ProgressPrimitive.Label.Props) {
   return (
-    <ProgressPrimitive.Label
+    <ProgressLabelSpan
       className={(state) => cn('text-sm font-medium', typeof className === 'function' ? className(state) : className)}
       data-slot="progress-label"
       {...props}

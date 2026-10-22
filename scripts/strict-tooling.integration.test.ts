@@ -53,7 +53,7 @@ describe('strict React tooling', () => {
       '@rsbuild/plugin-react': '2.1.1',
       'react-doctor': '0.9.18',
       'react-scan': '0.5.7',
-      ultracite: '8.0.1',
+      ultracite: '8.0.2',
     });
     expect('babel-plugin-react-compiler' in packageJson.devDependencies).toBe(false);
     expect(packageJson.scripts).toMatchObject({
@@ -108,6 +108,46 @@ export function callDirectly() {
       for (const rule of ['useSimplifiedBooleanReturn', 'noUselessDateGetTime', 'useUnaryMinus', 'noUselessCall']) {
         expect(diagnostics).toContain(`lint/nursery/${rule}`);
       }
+    } finally {
+      rmSync(directory, { recursive: true, force: true });
+    }
+  });
+
+  test('enforces Ultracite label associations for shadcn controls', () => {
+    mkdirSync('.tmp', { recursive: true });
+    const directory = mkdtempSync(resolve('.tmp/ultracite-label-probe-'));
+    const fixture = resolve(directory, 'probe.tsx');
+    const imports = `
+import { Input } from '@/registry/base-nova/protoform/components/input';
+import { Label } from '@/registry/base-nova/protoform/components/label';
+`;
+    const args = ['lint', fixture, '--colors=off', '--vcs-enabled=false'];
+    try {
+      writeFileSync(
+        fixture,
+        `${imports}
+export function Field() {
+  return <><Label>Name</Label><Input aria-label="Name" /></>;
+}
+`
+      );
+      const invalid = spawnSync(resolve('node_modules/.bin/biome'), args, { encoding: 'utf8', timeout: 10_000 });
+      expect(invalid.error).toBeUndefined();
+      expect(invalid.status).toBe(1);
+      expect(invalid.stdout + invalid.stderr).toContain('lint/a11y/noLabelWithoutControl');
+
+      writeFileSync(
+        fixture,
+        `${imports}
+export function Field() {
+  return <Label>Name<Input aria-label="Name" /></Label>;
+}
+`
+      );
+      const valid = spawnSync(resolve('node_modules/.bin/biome'), args, { encoding: 'utf8', timeout: 10_000 });
+      expect(valid.error).toBeUndefined();
+      expect(valid.stdout + valid.stderr).not.toContain('lint/a11y/noLabelWithoutControl');
+      expect(valid.status).toBe(0);
     } finally {
       rmSync(directory, { recursive: true, force: true });
     }
