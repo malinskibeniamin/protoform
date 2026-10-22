@@ -128,7 +128,7 @@ export const TagsValue = ({
   return (
     <span
       className={cn(
-        'm-0.5 inline-flex min-h-6 cursor-pointer items-center gap-1.5 rounded-md bg-muted px-2 py-1 font-medium text-foreground text-sm transition-colors hover:bg-muted',
+        'm-0.5 inline-flex min-h-6 cursor-pointer items-center gap-1.5 rounded-md bg-muted px-2 py-1 text-sm font-medium text-foreground transition-colors hover:bg-muted',
         className
       )}
       data-testid={testId}

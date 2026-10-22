@@ -15,7 +15,7 @@ function Example({ columns }: { columns: number }) {
   );
 }
 
-describe('TabsList equal layout', () => {
+describe('tabsList equal layout', () => {
   test('preserves data attributes for non-string tab values', () => {
     render(
       <Tabs defaultValue>

@@ -22,7 +22,7 @@ function InputGroup({ className, testId, ...props }: React.ComponentProps<'div'>
   return (
     <div
       className={cn(
-        'group/input-group !border-input relative flex w-full rounded-md border shadow-xs outline-none transition dark:bg-input/30',
+        'group/input-group relative flex w-full rounded-md border !border-input shadow-xs transition outline-none dark:bg-input/30',
         'h-9 min-w-0 has-[>textarea]:h-auto',
 
         hasBlockAlign === true ? 'h-auto flex-col items-stretch' : 'items-center',
@@ -47,7 +47,7 @@ function InputGroup({ className, testId, ...props }: React.ComponentProps<'div'>
 }
 
 const inputGroupAddonVariants = cva(
-  "flex h-auto cursor-text select-none items-center gap-2 py-1.5 font-medium text-muted-foreground text-sm group-data-[disabled=true]/input-group:opacity-50 [&>kbd]:rounded-sm [&>svg:not([class*='size-'])]:size-4",
+  "flex h-auto cursor-text items-center gap-2 py-1.5 text-sm font-medium text-muted-foreground select-none group-data-[disabled=true]/input-group:opacity-50 [&>kbd]:rounded-sm [&>svg:not([class*='size-'])]:size-4",
   {
     defaultVariants: {
       align: 'inline-start',
@@ -110,7 +110,7 @@ function InputGroupText({ className, ...props }: React.ComponentProps<'span'>) {
   return (
     <span
       className={cn(
-        "flex items-center gap-2 text-muted-foreground text-sm [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none",
+        "flex items-center gap-2 text-sm text-muted-foreground [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4",
         className
       )}
       {...props}

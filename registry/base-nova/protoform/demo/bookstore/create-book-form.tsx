@@ -86,11 +86,11 @@ export function CreateBookForm({ onCancel, onCreated, parent }: CreateBookFormPr
   return (
     <section aria-labelledby="create-book-title" className="space-y-6">
       <div className="space-y-2">
-        <p className="font-medium text-muted-foreground text-sm">Step {step === 'book' ? '1' : '2'} of 2</p>
-        <h2 className="font-semibold text-2xl" id="create-book-title">
+        <p className="text-sm font-medium text-muted-foreground">Step {step === 'book' ? '1' : '2'} of 2</p>
+        <h2 className="text-2xl font-semibold" id="create-book-title">
           Create a book
         </h2>
-        <p className="text-muted-foreground text-sm">
+        <p className="text-sm text-muted-foreground">
           React Hook Form state, generated Protoform binding, and protobuf CEL validation.
         </p>
       </div>

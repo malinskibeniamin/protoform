@@ -46,7 +46,7 @@ function issuePaths(
   );
 }
 
-describe('Protovalidate scalar rule conformance', () => {
+describe('protovalidate scalar rule conformance', () => {
   test('enforces bool const for true, false, and the implicit default', async () => {
     const schema = createProtoFormSchema(ValidationMatrixSchema);
 
@@ -160,7 +160,7 @@ describe('Protovalidate scalar rule conformance', () => {
   });
 });
 
-describe('Protovalidate collection and Any rule conformance', () => {
+describe('protovalidate collection and Any rule conformance', () => {
   test('enforces repeated min, max, and uniqueness while allowing duplicate messages', async () => {
     const schema = createProtoFormSchema(ValidationMatrixSchema);
     const duplicateMessages = await schema['~standard'].validate({

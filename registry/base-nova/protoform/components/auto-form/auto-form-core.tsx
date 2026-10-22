@@ -165,7 +165,7 @@ function renderModeContent({
     <>
       <AutoFormFields fields={fields}>{children}</AutoFormFields>
       {withSubmit ? (
-        <div className="flex items-center justify-end border-border/60 border-t pt-5" data-slot="auto-form-actions">
+        <div className="flex items-center justify-end border-t border-border/60 pt-5" data-slot="auto-form-actions">
           <SubmitButtonComponent disabled={isSubmitting} testId={buildAutoFormTestId(testIdPrefix, 'submit')}>
             {submitContent}
           </SubmitButtonComponent>
@@ -579,7 +579,7 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
       rootHeaderContent = renderRootHeader(rootHeaderMetadata);
     } else if (hasRootTitle || hasRootDescription) {
       rootHeaderContent = (
-        <header className="space-y-1 border-border/60 border-b pb-4" data-testid={`${testIdPrefix}-root-header`}>
+        <header className="space-y-1 border-b border-border/60 pb-4" data-testid={`${testIdPrefix}-root-header`}>
           {hasRootTitle ? <Heading level={2}>{rootHeaderMetadata.title}</Heading> : null}
           {hasRootDescription ? (
             <Text className="text-muted-foreground" variant="small">

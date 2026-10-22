@@ -5,7 +5,7 @@ function expectCelTrue(expression: string): void {
   expect(run(expression)).toBe(true);
 }
 
-describe('CEL language conformance', () => {
+describe('cel language conformance', () => {
   test('supports CEL syntax, literals, scalar types, operators, and conversions', () => {
     expectCelTrue(`
       true && null == null &&

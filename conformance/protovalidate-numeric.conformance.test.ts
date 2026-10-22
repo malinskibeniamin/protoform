@@ -19,7 +19,7 @@ async function expectInvalid(schema: ReturnType<typeof createProtoFormSchema>, f
   expect(paths(result), `${field} accepted ${String(value)}`).toContainEqual([field]);
 }
 
-describe('Protovalidate numeric rule conformance', () => {
+describe('protovalidate numeric rule conformance', () => {
   test.each(['float', 'double'])(
     'enforces const, comparisons, membership, finite values, and reversed ranges for %s',
     async (kind) => {

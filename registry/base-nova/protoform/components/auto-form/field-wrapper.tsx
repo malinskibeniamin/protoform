@@ -60,7 +60,7 @@ export const ArrayElementWrapper: React.FC<
       className={
         isSeparated
           ? cn('relative', index > 0 && formSpacing.arrayItemSeparator)
-          : 'relative rounded-xl border border-border/70 bg-card @min-[40rem]/autoform:p-5 p-2 text-card-foreground shadow-xs'
+          : 'relative rounded-xl border border-border/70 bg-card p-2 text-card-foreground shadow-xs @min-[40rem]/autoform:p-5'
       }
       data-slot="array-item"
       data-testid={testId}
@@ -68,7 +68,7 @@ export const ArrayElementWrapper: React.FC<
       <Button
         aria-label={removeButtonAriaLabel}
         className={cn(
-          '@min-[40rem]/autoform:absolute @min-[40rem]/autoform:mb-0 mb-2 ml-auto flex',
+          'mb-2 ml-auto flex @min-[40rem]/autoform:absolute @min-[40rem]/autoform:mb-0',
           isSeparated ? cn('right-0', index > 0 ? 'top-4' : 'top-0') : 'top-3 right-3'
         )}
         onClick={onRemove}
@@ -265,7 +265,7 @@ export const FieldWrapper: React.FC<FieldWrapperProps> = ({ label, children, id,
       {...collectionAccessibility}
       className={
         isSplit
-          ? 'grid @min-[32rem]/autoform:grid-cols-[minmax(10rem,0.34fr)_minmax(0,1fr)] items-start gap-x-8 gap-y-2'
+          ? 'grid items-start gap-x-8 gap-y-2 @min-[32rem]/autoform:grid-cols-[minmax(10rem,0.34fr)_minmax(0,1fr)]'
           : undefined
       }
       data-disabled={isDisabled}
@@ -300,7 +300,7 @@ export const FieldWrapper: React.FC<FieldWrapperProps> = ({ label, children, id,
                 </Button>
               </TooltipTrigger>
               <TooltipContent
-                className="max-w-sm text-pretty text-xs"
+                className="max-w-sm text-xs text-pretty"
                 role="tooltip"
                 testId={getAutoFormFieldTestId(testIdPrefix, id, 'help-content')}
               >
@@ -449,7 +449,7 @@ export const ObjectWrapper: React.FC<
     <section
       className={
         isSplit
-          ? 'grid @min-[32rem]/autoform:grid-cols-[minmax(10rem,0.34fr)_minmax(0,1fr)] items-start gap-6 @min-[32rem]/autoform:gap-x-8'
+          ? 'grid items-start gap-6 @min-[32rem]/autoform:grid-cols-[minmax(10rem,0.34fr)_minmax(0,1fr)] @min-[32rem]/autoform:gap-x-8'
           : formSpacing.field
       }
       data-layout={isSplit ? 'split' : 'stacked'}

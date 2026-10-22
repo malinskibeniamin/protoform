@@ -7,7 +7,7 @@ import { useFieldArray } from 'react-hook-form';
 import { AutoFormExampleSchema } from '../../lib/protobuf-provider/gen/auto-form-example_pb.js';
 import { useProtoForm } from './index.js';
 
-describe('React Hook Form lifecycle through useProtoForm', () => {
+describe('react Hook Form lifecycle through useProtoForm', () => {
   test('reset without values keeps the original defaults clean with keepDefaultValues', () => {
     const { result } = renderHook(() => {
       const form = useProtoForm(AutoFormExampleSchema, { defaultValues: { username: 'Ada' } });

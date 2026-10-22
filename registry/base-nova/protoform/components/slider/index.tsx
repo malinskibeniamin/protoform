@@ -36,7 +36,7 @@ function Slider<Value extends number | readonly number[] = number[]>({
     <SliderPrimitive.Root
       className={(state) =>
         cn(
-          'relative flex w-full touch-none select-none items-center data-[orientation=vertical]:h-full data-[orientation=vertical]:min-h-40 data-[orientation=vertical]:w-auto data-[orientation=vertical]:flex-col data-[disabled]:opacity-50',
+          'relative flex w-full touch-none items-center select-none data-[disabled]:opacity-50 data-[orientation=vertical]:h-full data-[orientation=vertical]:min-h-40 data-[orientation=vertical]:w-auto data-[orientation=vertical]:flex-col',
           typeof className === 'function' ? className(state) : className
         )
       }
@@ -49,22 +49,22 @@ function Slider<Value extends number | readonly number[] = number[]>({
       value={value}
       {...props}
     >
-      <SliderPrimitive.Control className="relative flex w-full grow touch-none select-none items-center data-[orientation=vertical]:h-full data-[orientation=vertical]:w-auto data-[orientation=vertical]:flex-col">
+      <SliderPrimitive.Control className="relative flex w-full grow touch-none items-center select-none data-[orientation=vertical]:h-full data-[orientation=vertical]:w-auto data-[orientation=vertical]:flex-col">
         <SliderPrimitive.Track
           className={cn(
-            'relative grow select-none overflow-hidden rounded-full bg-muted data-[orientation=horizontal]:h-1 data-[orientation=vertical]:h-full data-[orientation=horizontal]:w-full data-[orientation=vertical]:w-1'
+            'relative grow overflow-hidden rounded-full bg-muted select-none data-[orientation=horizontal]:h-1 data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-1'
           )}
           data-slot="slider-track"
         >
           <SliderPrimitive.Indicator
-            className="absolute select-none bg-primary data-[orientation=horizontal]:h-full data-[orientation=vertical]:w-full"
+            className="absolute bg-primary select-none data-[orientation=horizontal]:h-full data-[orientation=vertical]:w-full"
             data-slot="slider-range"
           />
         </SliderPrimitive.Track>
         {thumbs.map((thumb) => (
           <SliderPrimitive.Thumb
             aria-label={getThumbLabel(ariaLabel, values.length, thumb.index)}
-            className="relative block size-3 shrink-0 select-none rounded-full border border-ring bg-white ring-ring/50 transition after:absolute after:-inset-2 hover:ring-3 focus-visible:outline-hidden focus-visible:ring-3 active:ring-3 disabled:pointer-events-none disabled:opacity-50"
+            className="relative block size-3 shrink-0 rounded-full border border-ring bg-white ring-ring/50 transition select-none after:absolute after:-inset-2 hover:ring-3 focus-visible:ring-3 focus-visible:outline-hidden active:ring-3 disabled:pointer-events-none disabled:opacity-50"
             data-slot="slider-thumb"
             index={thumb.index}
             key={thumb.key}

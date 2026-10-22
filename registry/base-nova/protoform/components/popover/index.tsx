@@ -137,7 +137,7 @@ function PopoverContent(contentProps: PopoverContentProps) {
               {...separated.native}
               className={(state) =>
                 cn(
-                  '!border-input w-72 rounded-lg border bg-popover p-4 text-popover-foreground shadow-md outline-none',
+                  'w-72 rounded-lg border !border-input bg-popover p-4 text-popover-foreground shadow-md outline-none',
                   typeof className === 'function' ? className(state) : className
                 )
               }

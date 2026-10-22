@@ -62,8 +62,8 @@ function ShadcnApiExample() {
   return (
     <div className="w-full max-w-[min(64rem,calc(100vw-3rem))] space-y-8" data-testid="shadcn-api-example">
       <header className="space-y-2">
-        <h1 className="font-semibold text-2xl">Shadcn APIs, Protoform extensions</h1>
-        <p className="text-muted-foreground text-sm">
+        <h1 className="text-2xl font-semibold">Shadcn APIs, Protoform extensions</h1>
+        <p className="text-sm text-muted-foreground">
           Official Base UI composition and typed callbacks, alongside the existing convenience APIs. All actions stay in
           this demo.
         </p>
@@ -171,7 +171,7 @@ function ShadcnApiExample() {
           <Checkbox checked={cancelChanges} id="cancel-api-changes" onCheckedChange={setCancelChanges} />
           <FieldLabel htmlFor="cancel-api-changes">Cancel selection and disclosure changes</FieldLabel>
         </Field>
-        <p aria-live="polite" className="text-muted-foreground text-sm">
+        <p aria-live="polite" className="text-sm text-muted-foreground">
           Event: {event}. Number: {String(number)}.
         </p>
       </section>

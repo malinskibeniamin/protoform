@@ -12,8 +12,8 @@ import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 const buttonVariants = cva(
   [
     'group/button inline-flex shrink-0 items-center justify-center',
-    'whitespace-nowrap rounded-lg border border-transparent bg-clip-padding font-medium text-sm',
-    'select-none outline-none transition-all',
+    'rounded-lg border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap',
+    'transition-all outline-none select-none',
     'cursor-pointer',
     'data-[slot=help-trigger]:rounded-full data-[slot=help-trigger]:text-muted-foreground data-[slot=help-trigger]:shadow-none data-[slot=help-trigger]:hover:text-foreground',
     'disabled:pointer-events-none disabled:cursor-not-allowed',
@@ -23,7 +23,7 @@ const buttonVariants = cva(
     'dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40',
     'selection:bg-selected selection:text-selected-foreground',
     'active:not-aria-[haspopup]:translate-y-px',
-    '[&_svg:not([class*="size-"])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0',
+    '[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*="size-"])]:size-4',
   ],
   {
     defaultVariants: {
@@ -47,7 +47,7 @@ const buttonVariants = cva(
         default: 'bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 active:bg-primary/80',
         rail: 'rounded-none border-0 bg-transparent shadow-none transition-none hover:bg-transparent hover:after:bg-sidebar-border',
         calendar:
-          'flex aspect-square size-auto w-full min-w-(--cell-size) flex-col gap-1 bg-transparent font-normal text-foreground leading-none hover:bg-muted hover:text-foreground active:bg-muted/80 data-[range-end=true]:rounded-md data-[range-middle=true]:rounded-none data-[range-start=true]:rounded-md data-[range-end=true]:rounded-r-md data-[range-start=true]:rounded-l-md data-[range-end=true]:bg-selected data-[range-middle=true]:bg-accent data-[range-start=true]:bg-selected data-[selected-single=true]:bg-selected data-[range-end=true]:text-selected-foreground data-[range-middle=true]:text-accent-foreground data-[range-start=true]:text-selected-foreground data-[selected-single=true]:text-selected-foreground group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-10 group-data-[focused=true]/day:border-selected group-data-[focused=true]/day:ring-3 group-data-[focused=true]/day:ring-selected/50 dark:hover:text-accent-foreground [&>span]:text-xs [&>span]:opacity-70',
+          'flex aspect-square size-auto w-full min-w-(--cell-size) flex-col gap-1 bg-transparent leading-none font-normal text-foreground group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-10 group-data-[focused=true]/day:border-selected group-data-[focused=true]/day:ring-3 group-data-[focused=true]/day:ring-selected/50 hover:bg-muted hover:text-foreground active:bg-muted/80 data-[range-end=true]:rounded-md data-[range-end=true]:rounded-r-md data-[range-end=true]:bg-selected data-[range-end=true]:text-selected-foreground data-[range-middle=true]:rounded-none data-[range-middle=true]:bg-accent data-[range-middle=true]:text-accent-foreground data-[range-start=true]:rounded-md data-[range-start=true]:rounded-l-md data-[range-start=true]:bg-selected data-[range-start=true]:text-selected-foreground data-[selected-single=true]:bg-selected data-[selected-single=true]:text-selected-foreground dark:hover:text-accent-foreground [&>span]:text-xs [&>span]:opacity-70',
         accent: [
           'bg-primary text-primary-foreground shadow-xs',
           'hover:bg-primary/90',
@@ -61,13 +61,13 @@ const buttonVariants = cva(
           'disabled:text-muted-foreground',
         ],
         'accent-outline': [
-          '!border-primary border bg-transparent text-primary shadow-xs',
+          'border !border-primary bg-transparent text-primary shadow-xs',
           'hover:border-primary/80 hover:bg-primary/10',
           'active:border-primary/70 active:bg-primary/15',
           'disabled:border-border disabled:text-muted-foreground',
         ],
         dashed: [
-          '!border-primary border-2 border-dashed bg-transparent text-primary',
+          'border-2 border-dashed !border-primary bg-transparent text-primary',
           'hover:border-primary/80 hover:bg-primary/5',
           'active:bg-primary/10',
           'disabled:border-border disabled:text-muted-foreground',
@@ -87,7 +87,7 @@ const buttonVariants = cva(
           'disabled:text-muted-foreground',
         ],
         'destructive-outline': [
-          '!border-destructive border bg-transparent text-destructive shadow-xs',
+          'border !border-destructive bg-transparent text-destructive shadow-xs',
           'hover:border-destructive/80 hover:bg-destructive/10',
           'active:border-destructive/70 active:bg-destructive/15',
           'focus-visible:ring-destructive',
@@ -107,7 +107,7 @@ const buttonVariants = cva(
           'disabled:text-muted-foreground',
         ],
         'inverse-outline': [
-          '!border-primary-foreground border bg-transparent text-primary-foreground shadow-xs',
+          'border !border-primary-foreground bg-transparent text-primary-foreground shadow-xs',
           'hover:border-transparent hover:bg-primary-foreground/10',
           'active:border-transparent active:bg-primary-foreground/15',
           'disabled:border-muted-foreground disabled:text-muted-foreground',
@@ -142,7 +142,7 @@ const buttonVariants = cva(
           'disabled:text-muted-foreground',
         ],
         'secondary-outline': [
-          '!border-primary-foreground border text-secondary-foreground shadow-xs',
+          'border !border-primary-foreground text-secondary-foreground shadow-xs',
           'hover:border-ring hover:bg-secondary/50',
           'active:border-ring active:bg-secondary/80',
           'disabled:border-border disabled:text-muted-foreground',

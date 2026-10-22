@@ -48,7 +48,7 @@ function CodeBlockHeader({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       className={cn(
-        'flex min-w-0 shrink-0 flex-wrap items-center gap-2 px-3 pt-3 text-muted-foreground *:has-[>[data-slot=code-block-title]]:min-w-0 group-data-[size=sm]/code-block:px-2.5 group-data-[size=sm]/code-block:pt-2.5 group-data-[variant=destructive]/code-block:text-destructive',
+        'flex min-w-0 shrink-0 flex-wrap items-center gap-2 px-3 pt-3 text-muted-foreground group-data-[size=sm]/code-block:px-2.5 group-data-[size=sm]/code-block:pt-2.5 group-data-[variant=destructive]/code-block:text-destructive *:has-[>[data-slot=code-block-title]]:min-w-0',
         className
       )}
       data-slot="code-block-header"
@@ -61,7 +61,7 @@ function CodeBlockTitle({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       className={cn(
-        "min-w-0 max-w-full truncate font-medium font-sans text-foreground text-sm group-data-[size=sm]/code-block:text-xs group-data-[variant=destructive]/code-block:text-destructive [&_svg:not([class*='size-'])]:size-3.5 [&_svg]:pointer-events-none [&_svg]:me-1.5 [&_svg]:inline-block [&_svg]:align-middle",
+        "max-w-full min-w-0 truncate font-sans text-sm font-medium text-foreground group-data-[size=sm]/code-block:text-xs group-data-[variant=destructive]/code-block:text-destructive [&_svg]:pointer-events-none [&_svg]:me-1.5 [&_svg]:inline-block [&_svg]:align-middle [&_svg:not([class*='size-'])]:size-3.5",
         className
       )}
       data-slot="code-block-title"
@@ -74,7 +74,7 @@ function CodeBlockActions({ className, ...props }: React.ComponentProps<'div'>) 
   return (
     <div
       className={cn(
-        '-my-1 ms-auto -me-1.5 flex max-w-full shrink-0 flex-wrap items-center gap-1 [&:is([data-slot=code-block]>*)]:absolute [&:is([data-slot=code-block]>*)]:end-2 [&:is([data-slot=code-block]>*)]:top-2 [&:is([data-slot=code-block]>*)]:z-10 [&:is([data-slot=code-block]>*)]:m-0 [&:is([data-slot=code-block]>*)]:opacity-0 [&:is([data-slot=code-block]>*)]:pointer-coarse:opacity-100 [&:is([data-slot=code-block]>*)]:transition-opacity [&:is([data-slot=code-block]>*)]:group-focus-within/code-block:opacity-100 [&:is([data-slot=code-block]>*)]:group-hover/code-block:opacity-100 group-data-[size=sm]/code-block:[&:is([data-slot=code-block]>*)]:end-1.5 group-data-[size=sm]/code-block:[&:is([data-slot=code-block]>*)]:top-1.5 [&:is([data-slot=code-block]>*)]:*:[button]:bg-background [&:is([data-slot=code-block]>*)]:*:[button]:ring-1 [&:is([data-slot=code-block]>*)]:*:[button]:ring-foreground/10',
+        '-my-1 ms-auto -me-1.5 flex max-w-full shrink-0 flex-wrap items-center gap-1 [&:is([data-slot=code-block]>*)]:absolute [&:is([data-slot=code-block]>*)]:inset-e-2 [&:is([data-slot=code-block]>*)]:top-2 [&:is([data-slot=code-block]>*)]:z-10 [&:is([data-slot=code-block]>*)]:m-0 [&:is([data-slot=code-block]>*)]:opacity-0 [&:is([data-slot=code-block]>*)]:transition-opacity [&:is([data-slot=code-block]>*)]:group-focus-within/code-block:opacity-100 [&:is([data-slot=code-block]>*)]:group-hover/code-block:opacity-100 group-data-[size=sm]/code-block:[&:is([data-slot=code-block]>*)]:inset-e-1.5 group-data-[size=sm]/code-block:[&:is([data-slot=code-block]>*)]:top-1.5 [&:is([data-slot=code-block]>*)]:pointer-coarse:opacity-100 [&:is([data-slot=code-block]>*)]:*:[button]:bg-background [&:is([data-slot=code-block]>*)]:*:[button]:ring-1 [&:is([data-slot=code-block]>*)]:*:[button]:ring-foreground/10',
         className
       )}
       data-slot="code-block-actions"
@@ -143,7 +143,7 @@ function CodeBlockCopyControl({
         {copied === true ? 'Copied' : ''}
       </span>
       {copyError === true ? (
-        <span className="text-destructive text-xs" role="alert">
+        <span className="text-xs text-destructive" role="alert">
           Could not copy code. Try again.
         </span>
       ) : null}
@@ -176,7 +176,7 @@ function CodeBlockContent({
       ...props,
       onKeyDown,
       className: cn(
-        'data-wrap:wrap-break-word m-0 min-h-0 min-w-0 whitespace-pre p-3 text-start font-mono leading-relaxed outline-none [counter-reset:line_var(--code-line-start)] group-has-data-[slot=code-block-header]/code-block:pt-2 group-has-data-[slot=code-block-footer]/code-block:pb-2 data-wrap:whitespace-pre-wrap group-data-[size=sm]/code-block:p-2.5 group-data-[size=sm]/code-block:group-has-data-[slot=code-block-header]/code-block:pt-1.5',
+        'm-0 min-h-0 min-w-0 p-3 text-start font-mono leading-relaxed whitespace-pre outline-none [counter-reset:line_var(--code-line-start)] group-has-data-[slot=code-block-footer]/code-block:pb-2 group-has-data-[slot=code-block-header]/code-block:pt-2 group-data-[size=sm]/code-block:p-2.5 group-data-[size=sm]/code-block:group-has-data-[slot=code-block-header]/code-block:pt-1.5 data-wrap:wrap-break-word data-wrap:whitespace-pre-wrap',
         className
       ),
       'data-numbered': lineNumbers === true || undefined,
@@ -186,7 +186,7 @@ function CodeBlockContent({
       style: { '--code-line-start': startLine - 1, ...style },
       children: (
         <code
-          className="grid min-h-lh in-data-wrap:min-w-0 min-w-max in-data-numbered:grid-cols-[auto_1fr] content-start"
+          className="grid min-h-lh min-w-max content-start in-data-numbered:grid-cols-[auto_1fr] in-data-wrap:min-w-0"
           data-slot="code-block-code"
         >
           {numberedLines === undefined
@@ -223,10 +223,10 @@ function CodeBlockContent({
         render={content}
         role="region"
       />
-      <ScrollArea.Scrollbar className="flex h-2 touch-none select-none p-0.5" orientation="horizontal">
+      <ScrollArea.Scrollbar className="flex h-2 touch-none p-0.5 select-none" orientation="horizontal">
         <ScrollArea.Thumb className="rounded-full bg-border" />
       </ScrollArea.Scrollbar>
-      <ScrollArea.Scrollbar className="absolute inset-y-0 right-0 flex w-2 touch-none select-none p-0.5">
+      <ScrollArea.Scrollbar className="absolute inset-y-0 right-0 flex w-2 touch-none p-0.5 select-none">
         <ScrollArea.Thumb className="rounded-full bg-border" />
       </ScrollArea.Scrollbar>
       <ScrollArea.Corner />
@@ -235,7 +235,7 @@ function CodeBlockContent({
 }
 
 const codeBlockLineVariants = cva(
-  "relative in-data-numbered:col-span-2 -mx-3 block in-data-numbered:grid min-h-lh in-data-numbered:grid-cols-subgrid in-data-numbered:gap-x-3 px-3 in-data-numbered:[counter-increment:line] before:min-w-6 in-data-numbered:before:select-none before:text-end before:text-muted-foreground in-data-numbered:before:content-[counter(line)] after:absolute after:start-1 after:top-0 after:select-none after:text-muted-foreground group-data-[size=sm]/code-block:-mx-2.5 group-data-[size=sm]/code-block:px-2.5 in-data-numbered:supports-[content:counter(line)_/_'']:before:content-[counter(line)_/_'']",
+  "relative -mx-3 block min-h-lh px-3 group-data-[size=sm]/code-block:-mx-2.5 group-data-[size=sm]/code-block:px-2.5 before:min-w-6 before:text-end before:text-muted-foreground after:absolute after:inset-s-1 after:top-0 after:text-muted-foreground after:select-none in-data-numbered:col-span-2 in-data-numbered:grid in-data-numbered:grid-cols-subgrid in-data-numbered:gap-x-3 in-data-numbered:[counter-increment:line] in-data-numbered:before:content-[counter(line)] in-data-numbered:before:select-none in-data-numbered:supports-[content:counter(line)_/_'']:before:content-[counter(line)_/_'']",
   {
     variants: {
       variant: {

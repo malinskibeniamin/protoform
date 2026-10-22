@@ -24,7 +24,7 @@ function errorsForField(fields: object, fieldName: string): unknown[] {
   return hasErrors(field) ? field.errors : [];
 }
 
-describe('TanStack useProtoForm', () => {
+describe('tanStack useProtoForm', () => {
   test('preserves the native form API and adds protobuf message, mask, and oneof helpers', () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {

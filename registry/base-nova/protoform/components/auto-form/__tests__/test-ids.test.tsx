@@ -69,7 +69,7 @@ const buildValidProtoDefaults = () => ({
   writablePaths: ['profile'],
 });
 
-describe('AutoForm – test IDs', () => {
+describe('autoForm – test IDs', () => {
   test('emits stable field, help, and option test ids for zod forms', async () => {
     const user = userEvent.setup();
     const schema = createMockProvider([

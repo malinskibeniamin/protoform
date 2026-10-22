@@ -5,7 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { AutoForm } from '../index';
 import { createMockProvider } from './test-utils';
 
-describe('AutoForm runtime messages', () => {
+describe('autoForm runtime messages', () => {
   test('formats Protoform-owned submit, collection ARIA, multiselect, and provider empty-state copy through stable message codes', async () => {
     const schema = createMockProvider(
       [

@@ -20,7 +20,9 @@ function lintCodes(source: string, fileName = 'example.ts'): string[] {
       { encoding: 'utf8' }
     );
     expect(result.error).toBeUndefined();
-    return [...new Set(lintReport.parse(JSON.parse(result.stdout)).diagnostics.map(({ code }) => code))].toSorted();
+    return [...new Set(lintReport.parse(JSON.parse(result.stdout)).diagnostics.map(({ code }) => code))].toSorted(
+      (left, right) => (left < right ? -1 : Number(left > right))
+    );
   } finally {
     rmSync(directory, { force: true, recursive: true });
   }

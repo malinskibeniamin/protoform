@@ -93,10 +93,10 @@ export function UpdateBookForm({ book, onCancel, onUpdated }: UpdateBookFormProp
   return (
     <section aria-labelledby="edit-book-title" className="space-y-6">
       <div className="space-y-2">
-        <h2 className="font-semibold text-2xl" id="edit-book-title">
+        <h2 className="text-2xl font-semibold" id="edit-book-title">
           Edit book
         </h2>
-        <p className="text-muted-foreground text-sm">
+        <p className="text-sm text-muted-foreground">
           Protoform derives the update mask. The service checks the book etag.
         </p>
       </div>

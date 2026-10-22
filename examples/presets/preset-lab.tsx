@@ -561,9 +561,9 @@ export function PresetLab() {
                       />
                     ))}
                   </div>
-                  <span className="truncate font-medium text-sm">{activePreset.name}</span>
+                  <span className="truncate text-sm font-medium">{activePreset.name}</span>
                   <span
-                    className="hidden rounded-full border bg-muted/30 px-2 py-0.5 text-muted-foreground text-xs sm:inline-flex"
+                    className="hidden rounded-full border bg-muted/30 px-2 py-0.5 text-xs text-muted-foreground sm:inline-flex"
                     data-slot="preset-compatibility"
                   >
                     Base UI + Nova
@@ -619,7 +619,7 @@ export function PresetLab() {
               <div className="grid min-w-0 md:grid-cols-[11.5rem_minmax(0,1fr)] md:group-data-[fullscreen=true]/workspace:h-full md:group-data-[fullscreen=true]/workspace:min-h-0">
                 <div className="min-w-0 border-b bg-muted/15 p-3 md:border-r md:border-b-0 md:group-data-[fullscreen=true]/workspace:overflow-y-auto">
                   <fieldset className="min-w-0">
-                    <legend className="mb-2 px-1 font-medium text-muted-foreground text-xs">Presets</legend>
+                    <legend className="mb-2 px-1 text-xs font-medium text-muted-foreground">Presets</legend>
                     <div className="grid min-w-0 grid-cols-3 gap-1 md:grid-cols-1">
                       {presetDefinitions.map((preset) => {
                         const active = activePreset.id === preset.id;
@@ -649,7 +649,7 @@ export function PresetLab() {
                   </fieldset>
 
                   <fieldset className="mt-3 border-t pt-3">
-                    <legend className="mb-2 px-1 font-medium text-muted-foreground text-xs">Radius</legend>
+                    <legend className="mb-2 px-1 text-xs font-medium text-muted-foreground">Radius</legend>
                     <div className="flex flex-wrap gap-1">
                       {presetRadii.map((candidate) => (
                         <Button
@@ -716,10 +716,10 @@ export function PresetLab() {
                       <div aria-hidden="true" className="h-1.5 bg-primary" />
                       <header className="flex items-center justify-between gap-3 border-b bg-muted/30 px-5 py-4">
                         <div>
-                          <h3 className="m-0! font-semibold! text-lg!">Create a review</h3>
-                          <p className="m-0! text-muted-foreground text-xs">Live Protoform AutoForm</p>
+                          <h3 className="m-0! text-lg! font-semibold!">Create a review</h3>
+                          <p className="m-0! text-xs text-muted-foreground">Live Protoform AutoForm</p>
                         </div>
-                        <span className="rounded-full border bg-background px-2 py-0.5 text-muted-foreground text-xs">
+                        <span className="rounded-full border bg-background px-2 py-0.5 text-xs text-muted-foreground">
                           {activePreset.name}
                         </span>
                       </header>
@@ -741,10 +741,10 @@ export function PresetLab() {
 
               <footer className="grid gap-3 border-t p-3 sm:px-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
                 <div className="min-w-0">
-                  <p aria-live="polite" className="m-0! text-muted-foreground text-xs" role="status">
+                  <p aria-live="polite" className="m-0! text-xs text-muted-foreground" role="status">
                     {status ?? activePreset.description}
                   </p>
-                  <code className="block break-words text-foreground/70 text-xs">{command}</code>
+                  <code className="block text-xs wrap-break-word text-foreground/70">{command}</code>
                 </div>
 
                 <div className="flex flex-wrap gap-1.5">

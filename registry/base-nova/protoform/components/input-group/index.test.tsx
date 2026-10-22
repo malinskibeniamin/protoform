@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 
 import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from '.';
 
-describe('InputGroupAddon', () => {
+describe('inputGroupAddon', () => {
   test('focuses the input without adding a decorative keyboard stop', async () => {
     const user = userEvent.setup();
     const { container } = render(

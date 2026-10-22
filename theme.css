@@ -178,7 +178,7 @@ pre.blume-source .line::before {
   inline-size: 1.25rem;
   margin-inline-end: 1.25rem;
   color: var(--blume-muted-foreground);
-  text-align: right;
+  text-align: end;
   user-select: none;
   content: counter(line);
   counter-increment: line;

@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { AutoForm } from '..';
 import { createMockProvider } from './test-utils';
 
-describe('AutoForm – regex error augmentation', () => {
+describe('autoForm – regex error augmentation', () => {
   test('appends the configured example only to regex validation errors', async () => {
     const user = userEvent.setup();
     const schema = createMockProvider(

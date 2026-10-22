@@ -40,7 +40,7 @@ type NotificationForm = ProtoFormValues<Notification>;
 type WebhookDeliveryForm = ProtoFormValues<WebhookDelivery>;
 type ExampleForm = ProtoFormShape<typeof AutoFormExampleSchema>;
 
-describe('ProtoFormValues: deeply nested oneof paths resolve without casts', () => {
+describe('protoFormValues: deeply nested oneof paths resolve without casts', () => {
   test('resolves a field through the delivery oneof', () => {
     expectTypeOf<'delivery.value.endpoint'>().toExtend<Path<NotificationForm>>();
   });
@@ -68,7 +68,7 @@ describe('ProtoFormValues: deeply nested oneof paths resolve without casts', () 
   });
 });
 
-describe('ProtoFormShape: the values a protobuf form holds', () => {
+describe('protoFormShape: the values a protobuf form holds', () => {
   test('omits protobuf message internals from form paths', () => {
     expectTypeOf<'$typeName'>().not.toExtend<Path<ExampleForm>>();
     expectTypeOf<'$unknown'>().not.toExtend<Path<ExampleForm>>();

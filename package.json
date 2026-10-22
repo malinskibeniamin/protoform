@@ -152,7 +152,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",
-    "@biomejs/biome": "2.5.15",
+    "@biomejs/biome": "2.6.2",
     "@bufbuild/buf": "^1.74.0",
     "@bufbuild/protoc-gen-es": "^2.16.0",
     "@bufbuild/protoplugin": "^2.16.0",
@@ -202,6 +202,7 @@
     "node": ">=26.0.0"
   },
   "patchedDependencies": {
-    "blume@2.2.4": "patches/blume@2.2.4.patch"
+    "blume@2.2.4": "patches/blume@2.2.4.patch",
+    "ultracite@8.0.1": "patches/ultracite@8.0.1.patch"
   }
 }

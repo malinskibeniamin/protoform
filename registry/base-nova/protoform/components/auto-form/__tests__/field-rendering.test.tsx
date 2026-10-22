@@ -52,7 +52,7 @@ const buildValidProtoDefaults = () => ({
   writablePaths: ['profile'],
 });
 
-describe('AutoForm – field rendering', () => {
+describe('autoForm – field rendering', () => {
   test('selects built-in renderers and anchors root rows and the submit action', () => {
     const schema = createMockProvider(
       [

@@ -5,7 +5,7 @@ export function PreviewFieldWrapper({ children, error, field, id, label }: Field
   return (
     <Field className="gap-2" data-invalid={Boolean(error)} data-layout="stacked">
       <FieldLabel className="gap-1.5" htmlFor={id}>
-        <span className="font-medium text-sm">{label}</span>
+        <span className="text-sm font-medium">{label}</span>
         {field.required ? (
           <span aria-hidden="true" className="text-destructive">
             *

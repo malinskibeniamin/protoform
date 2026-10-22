@@ -6,7 +6,7 @@ import { DemoHub } from './demo-hub';
 const autoFormSource = /AutoForm/u;
 const demoSchemaSource = /getDemoSchema/u;
 
-describe('DemoHub', () => {
+describe('demoHub', () => {
   beforeEach(() => {
     window.history.replaceState(null, '', '/docs/protobuf-examples');
   });

@@ -24,7 +24,7 @@ interface HighlightBounds {
 }
 
 const toggleVariants = cva(
-  "inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium text-sm outline-none transition hover:bg-muted hover:text-muted-foreground focus:outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 data-[state=on]:bg-primary/15 data-[state=on]:text-primary dark:aria-invalid:ring-destructive/40 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  "inline-flex cursor-pointer items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition outline-none hover:bg-muted hover:text-muted-foreground focus:outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 data-[state=on]:bg-primary/15 data-[state=on]:text-primary dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     defaultVariants: {
       size: 'default',
@@ -325,7 +325,7 @@ function LegacyToggleGroup({
           'relative flex items-center justify-center',
           !isHorizontal && 'flex-col',
           !isHorizontal && attached === true && 'items-stretch',
-          variant === 'outline' && '!border-primary-foreground rounded-md border p-0.5',
+          variant === 'outline' && 'rounded-md border !border-primary-foreground p-0.5',
           attached !== true && 'gap-1',
           typeof className === 'function' ? className(state) : className
         )

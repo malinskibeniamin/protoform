@@ -10,7 +10,7 @@ const USERNAME_LABEL = /username/iu;
 
 const usernameProvider = createMockProvider([{ key: 'username', required: true, type: 'string' }]);
 
-describe('AutoForm – onSubmit error handling', () => {
+describe('autoForm – onSubmit error handling', () => {
   test('shows a root error when onSubmit throws or rejects', async () => {
     const user = userEvent.setup();
 

@@ -155,7 +155,7 @@ export function DemoHub({ category }: { category: DemoHubCategory }) {
             <Badge variant="outline">{hub.title}</Badge>
             <Badge variant="secondary">{selectedDemo.engine}</Badge>
           </div>
-          <h2 className="font-semibold text-2xl tracking-tight" id={`${category}-demo-title`}>
+          <h2 className="text-2xl font-semibold tracking-tight" id={`${category}-demo-title`}>
             {selectedDemo.title}
           </h2>
           <p className="text-muted-foreground">{selectedDemo.description}</p>
@@ -172,7 +172,7 @@ export function DemoHub({ category }: { category: DemoHubCategory }) {
             </TabsTrigger>
           </TabsList>
           <TabsContent value="preview">
-            <div className="border-border/60 border-y py-8">
+            <div className="border-y border-border/60 py-8">
               {DemoComponent ? (
                 <Suspense fallback={<ExampleLoading label="Loading selected demo" />}>
                   {createElement(DemoComponent)}
@@ -200,7 +200,7 @@ export function DemoHub({ category }: { category: DemoHubCategory }) {
         </Tabs>
 
         <div className="space-y-2">
-          <h3 className="font-medium text-base">Install this example</h3>
+          <h3 className="text-base font-medium">Install this example</h3>
           <pre className="overflow-x-auto rounded-lg bg-muted p-4 text-sm">
             <code>bunx shadcn@latest add @protoform/{selectedDemo.registryName}</code>
           </pre>

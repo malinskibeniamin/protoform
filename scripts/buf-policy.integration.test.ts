@@ -14,7 +14,7 @@ function runBufBreaking(input: string, against: string) {
   });
 }
 
-describe('Buf policy', () => {
+describe('buf policy', () => {
   test('passes Buf STANDARD including the complete Protovalidate lint rule', () => {
     const result = runBufLint();
 

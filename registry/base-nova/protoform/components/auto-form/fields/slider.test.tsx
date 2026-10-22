@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { AutoForm } from '..';
 import type { SchemaProvider } from '../core-types';
 
-describe('SliderFieldComponent', () => {
+describe('sliderFieldComponent', () => {
   test('labels the range input independently from its number input', () => {
     const provider: SchemaProvider = {
       getDefaultValues: () => ({ replicas: 2 }),

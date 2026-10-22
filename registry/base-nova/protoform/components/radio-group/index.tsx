@@ -105,7 +105,7 @@ function RadioGroupItem({
         cn(
           variant === 'card'
             ? 'flex h-auto min-h-12 w-full items-center justify-between gap-4 rounded-lg border border-border/70 bg-background px-4 py-3 text-left text-foreground ring-offset-background transition hover:border-foreground/30 hover:shadow-xs focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[checked]:border-foreground data-[checked]:bg-muted/30 data-[checked]:shadow-xs'
-            : '!border-input relative flex aspect-square size-4 cursor-pointer items-center justify-center rounded-full border outline-none after:absolute after:-inset-x-3 after:-inset-y-2 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 data-[checked]:border-primary data-[checked]:bg-primary data-[checked]:text-primary-foreground motion-safe:active:scale-95 motion-safe:hover:scale-105 dark:bg-input/30 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40',
+            : 'relative flex aspect-square size-4 cursor-pointer items-center justify-center rounded-full border !border-input outline-none after:absolute after:-inset-x-3 after:-inset-y-2 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 data-[checked]:border-primary data-[checked]:bg-primary data-[checked]:text-primary-foreground motion-safe:hover:scale-105 motion-safe:active:scale-95 dark:bg-input/30 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40',
           typeof className === 'function' ? className(state) : className
         )
       }
@@ -119,7 +119,7 @@ function RadioGroupItem({
         {variant === 'card' ? (
           <span
             aria-hidden="true"
-            className="!border-input flex aspect-square size-5 shrink-0 items-center justify-center rounded-full border text-selected"
+            className="flex aspect-square size-5 shrink-0 items-center justify-center rounded-full border !border-input text-selected"
           >
             <RadioGroupIndicator data-slot="radio-group-item-indicator" transition={transition} />
           </span>

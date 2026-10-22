@@ -10,7 +10,7 @@ const originalExitFullscreen: unknown = Reflect.get(document, 'exitFullscreen');
 const workEmailPattern = /work email/iu;
 const submitPattern = /submit/iu;
 
-describe('PresetLab', () => {
+describe('presetLab', () => {
   beforeEach(() => {
     window.history.replaceState({}, '', '/docs/presets');
     document.documentElement.dataset['theme'] = 'light';

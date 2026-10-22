@@ -108,7 +108,8 @@ function toDateTimeLocalValue(timestamp: MessageShape<typeof TimestampSchema> | 
   const fraction = date.getMilliseconds()
     ? `.${String(date.getMilliseconds()).padStart(3, '0').replace(TRAILING_FRACTION_ZEROES, '')}`
     : '';
-  return `${year}-${month}-${day}T${hours}:${minutes}${date.getSeconds() || fraction ? `:${seconds}${fraction}` : ''}`;
+  const secondsPart = date.getSeconds() !== 0 || fraction !== '' ? [':', seconds, fraction].join('') : '';
+  return `${year}-${month}-${day}T${hours}:${minutes}${secondsPart}`;
 }
 
 function objectHasValues(value: Record<string, unknown>): boolean {
@@ -142,8 +143,64 @@ function isJsonValue(value: unknown): value is JsonValue {
   return isPlainObject(value) && Object.values(value).every(isJsonValue);
 }
 
-function fieldToFormValue(field: DescField, value: unknown): unknown {
+function messageFieldToFormValue(field: Extract<DescField, { fieldKind: 'message' }>, value: unknown): unknown {
   const hasValue = Boolean(value);
+  if (isWrapperDesc(field.message)) {
+    const wrappedScalar = field.message.fields[0]?.scalar;
+    if (wrappedScalar === ScalarType.BYTES) {
+      return value instanceof Uint8Array ? base64Encode(value) : undefined;
+    }
+    if (is64BitScalar(wrappedScalar)) {
+      return typeof value === 'bigint' ? value.toString() : (value ?? undefined);
+    }
+    return value;
+  }
+
+  switch (field.message.typeName) {
+    case TIMESTAMP_TYPE:
+      return toDateTimeLocalValue(value as MessageShape<typeof TimestampSchema> | undefined);
+    case DURATION_TYPE:
+      return hasValue
+        ? toJsonString(DurationSchema, value as MessageShape<typeof DurationSchema>).replaceAll('"', '')
+        : undefined;
+    case FIELD_MASK_TYPE:
+      return isPlainObject(value) && Array.isArray((value as { paths?: unknown[] }).paths)
+        ? (value as { paths: string[] }).paths
+        : undefined;
+    case STRUCT_TYPE:
+      if (isMessage(value, StructSchema)) {
+        return toJson(StructSchema, value);
+      }
+      return isPlainObject(value) && isJsonValue(value) ? structuredClone(value) : undefined;
+    case VALUE_TYPE:
+      if (isMessage(value, ValueSchema)) {
+        return toJson(ValueSchema, value);
+      }
+      return isJsonValue(value) ? structuredClone(value) : undefined;
+    case LIST_VALUE_TYPE:
+      if (isMessage(value, ListValueSchema)) {
+        return toJson(ListValueSchema, value);
+      }
+      return Array.isArray(value) && isJsonValue(value) ? structuredClone(value) : undefined;
+    case ANY_TYPE:
+      return isPlainObject(value)
+        ? {
+            typeUrl:
+              typeof (value as { typeUrl?: unknown }).typeUrl === 'string'
+                ? (value as { typeUrl: string }).typeUrl
+                : '',
+            valueBase64:
+              (value as { value?: unknown }).value instanceof Uint8Array
+                ? base64Encode((value as { value: Uint8Array }).value)
+                : '',
+          }
+        : undefined;
+    default:
+      return hasValue ? messageToFormValues(field.message, value as AnyObject) : undefined;
+  }
+}
+
+function fieldToFormValue(field: DescField, value: unknown): unknown {
   switch (field.fieldKind) {
     case 'scalar': {
       if (field.scalar === ScalarType.BYTES) {
@@ -156,61 +213,8 @@ function fieldToFormValue(field: DescField, value: unknown): unknown {
     }
     case 'enum':
       return value;
-    case 'message': {
-      if (isWrapperDesc(field.message)) {
-        const wrappedScalar = field.message.fields[0]?.scalar;
-        if (wrappedScalar === ScalarType.BYTES) {
-          return value instanceof Uint8Array ? base64Encode(value) : undefined;
-        }
-        if (is64BitScalar(wrappedScalar)) {
-          return typeof value === 'bigint' ? value.toString() : (value ?? undefined);
-        }
-        return value;
-      }
-
-      switch (field.message.typeName) {
-        case TIMESTAMP_TYPE:
-          return toDateTimeLocalValue(value as MessageShape<typeof TimestampSchema> | undefined);
-        case DURATION_TYPE:
-          return hasValue
-            ? toJsonString(DurationSchema, value as MessageShape<typeof DurationSchema>).replaceAll('"', '')
-            : undefined;
-        case FIELD_MASK_TYPE:
-          return isPlainObject(value) && Array.isArray((value as { paths?: unknown[] }).paths)
-            ? (value as { paths: string[] }).paths
-            : undefined;
-        case STRUCT_TYPE:
-          if (isMessage(value, StructSchema)) {
-            return toJson(StructSchema, value);
-          }
-          return isPlainObject(value) && isJsonValue(value) ? structuredClone(value) : undefined;
-        case VALUE_TYPE:
-          if (isMessage(value, ValueSchema)) {
-            return toJson(ValueSchema, value);
-          }
-          return isJsonValue(value) ? structuredClone(value) : undefined;
-        case LIST_VALUE_TYPE:
-          if (isMessage(value, ListValueSchema)) {
-            return toJson(ListValueSchema, value);
-          }
-          return Array.isArray(value) && isJsonValue(value) ? structuredClone(value) : undefined;
-        case ANY_TYPE:
-          return isPlainObject(value)
-            ? {
-                typeUrl:
-                  typeof (value as { typeUrl?: unknown }).typeUrl === 'string'
-                    ? (value as { typeUrl: string }).typeUrl
-                    : '',
-                valueBase64:
-                  (value as { value?: unknown }).value instanceof Uint8Array
-                    ? base64Encode((value as { value: Uint8Array }).value)
-                    : '',
-              }
-            : undefined;
-        default:
-          return hasValue ? messageToFormValues(field.message, value as AnyObject) : undefined;
-      }
-    }
+    case 'message':
+      return messageFieldToFormValue(field, value);
     case 'list':
       return Array.isArray(value) ? value.map((item) => listItemToFormValue(field, item)) : [];
     case 'map': {

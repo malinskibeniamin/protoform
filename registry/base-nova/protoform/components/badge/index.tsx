@@ -40,7 +40,7 @@ const badgeVariants = cva(
         'info-outline': 'border-primary bg-transparent text-primary [a&]:hover:bg-primary/10',
         neutral: 'border-transparent bg-muted text-muted-foreground [a&]:hover:bg-foreground/15',
         'neutral-inverted': 'border-transparent bg-muted [a&]:hover:bg-muted',
-        'neutral-outline': '!border-primary-foreground border [a&]:hover:bg-muted',
+        'neutral-outline': 'border !border-primary-foreground [a&]:hover:bg-muted',
 
         outline: 'border-border text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground',
 
@@ -54,7 +54,7 @@ const badgeVariants = cva(
 
         simple: 'text-secondary-foreground [a&]:hover:bg-muted',
         'simple-inverted': 'text-secondary-foreground [a&]:hover:bg-muted',
-        'simple-outline': '!border-primary-foreground border text-secondary-foreground [a&]:hover:bg-muted',
+        'simple-outline': 'border !border-primary-foreground text-secondary-foreground [a&]:hover:bg-muted',
 
         success: 'border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90',
         'success-inverted': 'border-transparent bg-primary/10 text-primary [a&]:hover:bg-primary/15',

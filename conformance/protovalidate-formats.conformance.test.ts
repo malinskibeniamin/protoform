@@ -37,7 +37,7 @@ function bytes(value: string | readonly number[]): string {
   return base64Encode(typeof value === 'string' ? new TextEncoder().encode(value) : Uint8Array.from(value));
 }
 
-describe('Protovalidate format rule conformance', () => {
+describe('protovalidate format rule conformance', () => {
   test.each([
     ['hostname', 'api.example.com', 'not a host'],
     ['ip', '192.0.2.1', '999.0.2.1'],
@@ -88,7 +88,7 @@ describe('Protovalidate format rule conformance', () => {
   });
 });
 
-describe('Protovalidate well-known-type rule conformance', () => {
+describe('protovalidate well-known-type rule conformance', () => {
   test('enforces duration const, comparisons, ranges, membership, normalization, and malformed input', async () => {
     const schema = createProtoFormSchema(WellKnownRuleMatrixSchema);
 
@@ -134,7 +134,7 @@ describe('Protovalidate well-known-type rule conformance', () => {
   });
 });
 
-describe('Protovalidate control-plane rule conformance', () => {
+describe('protovalidate control-plane rule conformance', () => {
   test('applies IGNORE_ALWAYS and IGNORE_IF_ZERO_VALUE across scalar, message, repeated, and map fields', async () => {
     const schema = createProtoFormSchema(IgnoreRuleMatrixSchema);
     const zeroValues = await schema['~standard'].validate({

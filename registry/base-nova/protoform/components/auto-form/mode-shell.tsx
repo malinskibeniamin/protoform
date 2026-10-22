@@ -2,6 +2,7 @@
 
 import { MotionConfig } from 'motion/react';
 import type React from 'react';
+import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import { formSpacing } from './form-spacing';
 import { buildAutoFormTestId } from './test-ids';
 import type { AutoFormMode, AutoFormSummaryContext } from './types';
@@ -41,7 +42,7 @@ function JsonBlock({ description, jsonText, title }: { title: string; descriptio
       </div>
       <div className="space-y-3 px-5 py-4">
         <div className="flex items-center justify-between gap-3">
-          <Text className="font-medium text-muted-foreground uppercase tracking-widest" variant="small">
+          <Text className="font-medium tracking-widest text-muted-foreground uppercase" variant="small">
             Payload JSON
           </Text>
           <CopyButton content={jsonText} size="sm" variant="outline">
@@ -49,7 +50,9 @@ function JsonBlock({ description, jsonText, title }: { title: string; descriptio
           </CopyButton>
         </div>
         <div className="max-h-[min(60vh,38rem)] overflow-auto rounded-xl bg-muted/35 p-4">
-          <pre className="overflow-auto whitespace-pre-wrap break-words font-mono text-xs leading-5">{jsonText}</pre>
+          <pre className="overflow-auto font-mono text-xs leading-5 wrap-break-word whitespace-pre-wrap">
+            {jsonText}
+          </pre>
         </div>
       </div>
     </div>
@@ -136,7 +139,7 @@ function FormPanel<TNativeForm>({
 
   return (
     <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,24rem),1fr))] gap-6 lg:items-start lg:gap-10">
-      <div className={`min-w-0 lg:pr-2 ${formSpacing.form}`}>{children}</div>
+      <div className={cn('min-w-0 lg:pr-2', formSpacing.form)}>{children}</div>
       <aside
         className="min-w-0 lg:sticky lg:top-6 lg:self-start"
         data-testid={buildAutoFormTestId(testIdPrefix, 'summary')}

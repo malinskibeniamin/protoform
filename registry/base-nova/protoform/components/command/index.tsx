@@ -16,15 +16,15 @@ const commandVariants = cva('flex size-full flex-col overflow-hidden rounded-md 
   variants: {
     size: {
       full: 'w-full',
-      lg: 'min-w-[500px] max-w-2xl',
-      md: 'min-w-[400px] max-w-lg md:min-w-[450px]',
-      sm: 'min-w-[300px] max-w-sm',
+      lg: 'max-w-2xl min-w-[500px]',
+      md: 'max-w-lg min-w-[400px] md:min-w-[450px]',
+      sm: 'max-w-sm min-w-[300px]',
     },
     variant: {
       dialog:
-        '**:data-[slot=command-input-wrapper]:h-12 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:size-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:size-5',
-      'multi-select': '!border-input border px-1 shadow-md',
-      elevated: '!border-input border shadow-md',
+        '**:data-[slot=command-input-wrapper]:h-12 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]]:px-2 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-input-wrapper]_svg]:size-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:size-5',
+      'multi-select': 'border !border-input px-1 shadow-md',
+      elevated: 'border !border-input shadow-md',
       minimal: '',
     },
   },
@@ -95,7 +95,7 @@ function CommandInput({
   ...props
 }: React.ComponentProps<typeof CommandPrimitive.Input> & SharedProps) {
   return (
-    <div className="!border-input flex h-9 items-center gap-2 border-b px-3" data-slot="command-input-wrapper">
+    <div className="flex h-9 items-center gap-2 border-b !border-input px-3" data-slot="command-input-wrapper">
       <SearchIcon className="size-4 shrink-0 opacity-50" />
       <CommandPrimitive.Input
         className={cn(
@@ -118,7 +118,7 @@ function CommandList({
   return (
     <CommandPrimitive.List
       className={cn(
-        'max-h-[300px] scroll-py-1 overflow-y-auto overflow-x-hidden',
+        'max-h-[300px] scroll-py-1 overflow-x-hidden overflow-y-auto',
         variant === 'multi-select' && 'px-0 py-1',
         className
       )}
@@ -140,7 +140,7 @@ function CommandGroup({
   return (
     <CommandPrimitive.Group
       className={cn(
-        'overflow-hidden p-1 text-foreground [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group-heading]]:text-xs',
+        'overflow-hidden p-1 text-foreground [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground',
         className
       )}
       data-slot="command-group"
@@ -168,7 +168,7 @@ function CommandItem({
   return (
     <CommandPrimitive.Item
       className={cn(
-        "relative flex cursor-pointer select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden data-[disabled=true]:pointer-events-none data-[selected=true]:bg-accent data-[disabled=true]:text-muted-foreground data-[selected=true]:text-accent-foreground data-[disabled=true]:opacity-50 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+        "relative flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-[disabled=true]:pointer-events-none data-[disabled=true]:text-muted-foreground data-[disabled=true]:opacity-50 data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className
       )}
       data-slot="command-item"
@@ -182,7 +182,7 @@ function CommandShortcut({ className, children, ...props }: React.ComponentProps
   return (
     <Text
       as="span"
-      className={cn('ml-auto text-muted-foreground text-xs tracking-widest', className)}
+      className={cn('ml-auto text-xs tracking-widest text-muted-foreground', className)}
       data-slot="command-shortcut"
       {...props}
     >
@@ -226,7 +226,7 @@ function CommandSubTrigger({ className, children, inset, ...props }: CommandSubT
     <PopoverAnchor asChild>
       <CommandPrimitive.Item
         className={cn(
-          "relative flex cursor-pointer select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden data-[disabled=true]:pointer-events-none data-[selected=true]:bg-accent data-[disabled=true]:text-muted-foreground data-[selected=true]:text-accent-foreground data-[disabled=true]:opacity-50 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+          "relative flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-[disabled=true]:pointer-events-none data-[disabled=true]:text-muted-foreground data-[disabled=true]:opacity-50 data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
           inset === true && 'pl-8',
           className
         )}

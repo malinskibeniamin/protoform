@@ -26,7 +26,7 @@ export function AutoFormProtobufUiMetadataDemo() {
 
   return (
     <div className="space-y-4">
-      <p className="text-muted-foreground text-sm">
+      <p className="text-sm text-muted-foreground">
         Try toggling support mode on, then move into the support step. The step itself is driven by{' '}
         <code>message_ui</code>, the contact oneof waits on a support tier, and the next button stays blocked until the
         CEL completion rule passes.

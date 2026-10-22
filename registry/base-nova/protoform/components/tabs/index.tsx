@@ -131,7 +131,7 @@ const tabsListVariants = cva('inline-flex h-10 items-center justify-center text-
     variant: {
       default: 'w-fit gap-1 rounded-lg bg-muted p-1',
       line: 'gap-1 bg-transparent',
-      underline: '!border-border relative w-full justify-start rounded-t-xl border-b bg-background py-0 text-current',
+      underline: 'relative w-full justify-start rounded-t-xl border-b !border-border bg-background py-0 text-current',
     },
   },
 });
@@ -316,7 +316,7 @@ const TabsList = React.forwardRef<HTMLDivElement, TabsListProps>(
 TabsList.displayName = 'TabsList';
 
 const tabsTriggerVariants = cva(
-  'z-[1] inline-flex size-full cursor-pointer items-center justify-center whitespace-nowrap rounded-sm font-medium text-sm ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:text-foreground',
+  'z-[1] inline-flex size-full cursor-pointer items-center justify-center rounded-sm text-sm font-medium whitespace-nowrap ring-offset-background transition-all focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 data-[state=active]:text-foreground',
   {
     defaultVariants: {
       variant: 'default',

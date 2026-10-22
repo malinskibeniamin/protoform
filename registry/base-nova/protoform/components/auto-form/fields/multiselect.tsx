@@ -275,12 +275,12 @@ function ProviderResultStatus({
         </Button>
       ) : null}
       {hasProviderError ? (
-        <p className="text-destructive text-sm" role="alert">
+        <p className="text-sm text-destructive" role="alert">
           {formatProtoformMessage(formatMessage, 'auto_form.select.load_error', {}, 'Failed to load options')}
         </p>
       ) : null}
       {staleSelection === 'error' && staleSelections.length > 0 ? (
-        <p className="text-destructive text-sm" role="alert">
+        <p className="text-sm text-destructive" role="alert">
           {formatProtoformMessage(
             formatMessage,
             'auto_form.select.stale',
@@ -301,7 +301,7 @@ function ProviderOptionLabel({ option }: { option: DataProviderOption }) {
       ) : null}
       <span>{option.label}</span>
       {option.description !== undefined && option.description !== '' ? (
-        <span className="text-muted-foreground text-xs">— {option.description}</span>
+        <span className="text-xs text-muted-foreground">— {option.description}</span>
       ) : null}
     </span>
   );

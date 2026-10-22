@@ -7,7 +7,7 @@ import { demoCatalog } from './demo-catalog.js';
 
 const FOCUSED_REQUEST_TEXT = /Edit the focused request/u;
 
-describe('CapabilityDemo', () => {
+describe('capabilityDemo', () => {
   test('renders a focused React Hook Form AIP demo and submits its protobuf value', async () => {
     const user = userEvent.setup();
 

@@ -89,7 +89,7 @@ const buildValidProtoDefaults = () => ({
   writablePaths: ['profile'],
 });
 
-describe('AutoForm – protobuf forms', () => {
+describe('autoForm – protobuf forms', () => {
   test('renders registered descriptions and submits protobuf-shaped output', async () => {
     const user = userEvent.setup();
     const onSubmit = rs.fn<(message: MessageShape<typeof AutoFormExampleSchema>) => void>();

@@ -11,7 +11,7 @@ function Trace({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       className={cn(
-        'flex w-full min-w-0 flex-col gap-2 *:has-[>[data-slot=trace-line]]:flex *:has-[>[data-slot=trace-line]]:w-fit *:has-[>[data-slot=trace-line]]:min-w-0 *:has-[>[data-slot=trace-line]]:max-w-full *:has-[>[data-slot=trace-line]]:rounded-md *:has-[>[data-slot=trace-line]]:text-left *:has-[>[data-slot=trace-line]]:outline-none *:has-[>[data-slot=trace-line]]:focus-visible:ring-3 *:has-[>[data-slot=trace-line]]:focus-visible:ring-ring/50',
+        'flex w-full min-w-0 flex-col gap-2 *:has-[>[data-slot=trace-line]]:flex *:has-[>[data-slot=trace-line]]:w-fit *:has-[>[data-slot=trace-line]]:max-w-full *:has-[>[data-slot=trace-line]]:min-w-0 *:has-[>[data-slot=trace-line]]:rounded-md *:has-[>[data-slot=trace-line]]:text-left *:has-[>[data-slot=trace-line]]:outline-none *:has-[>[data-slot=trace-line]]:focus-visible:ring-3 *:has-[>[data-slot=trace-line]]:focus-visible:ring-ring/50',
         className
       )}
       data-slot="trace"
@@ -30,7 +30,7 @@ function TraceLine({
   return (
     <span
       className={cn(
-        'flex w-fit min-w-0 max-w-full in-[a,button]:cursor-pointer items-center gap-2 in-[a:hover,button:hover]:text-foreground text-muted-foreground text-sm transition-colors data-[status=error]:in-[a:hover,button:hover]:text-destructive data-[status=error]:text-destructive data-[status=pending]:opacity-60 motion-safe:data-[status=running]:*:data-[slot=trace-title]:animate-pulse',
+        'flex w-fit max-w-full min-w-0 items-center gap-2 text-sm text-muted-foreground transition-colors in-[a,button]:cursor-pointer in-[a:hover,button:hover]:text-foreground data-[status=error]:text-destructive data-[status=error]:in-[a:hover,button:hover]:text-destructive data-[status=pending]:opacity-60 motion-safe:data-[status=running]:*:data-[slot=trace-title]:animate-pulse',
         className
       )}
       data-slot="trace-line"
@@ -45,7 +45,7 @@ function TraceIcon({ className, ...props }: React.ComponentProps<'span'>) {
     <span
       aria-hidden="true"
       className={cn(
-        "flex size-4 shrink-0 items-center justify-center transition-transform [&:is([data-slot=trace-title]~*)]:-ml-1 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none",
+        "flex size-4 shrink-0 items-center justify-center transition-transform [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&:is([data-slot=trace-title]~*)]:-ml-1",
         className
       )}
       data-slot="trace-icon"
@@ -100,7 +100,7 @@ function TraceCollapsibleTrigger({
     <CollapsiblePrimitive.Trigger
       className={(state) =>
         cn(
-          'group/trace-collapsible-trigger flex w-fit min-w-0 max-w-full cursor-pointer items-center gap-1 rounded-md text-left text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 [&:has([data-status=error])]:text-destructive',
+          'group/trace-collapsible-trigger flex w-fit max-w-full min-w-0 cursor-pointer items-center gap-1 rounded-md text-left text-muted-foreground transition-colors outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 [&:has([data-status=error])]:text-destructive',
           typeof className === 'function' ? className(state) : className
         )
       }
@@ -120,7 +120,7 @@ function TraceCollapsibleContent({ className, children, ...props }: React.Compon
     <CollapsibleContent className="min-w-0 overflow-hidden" data-slot="trace-collapsible-content" {...props}>
       <div
         className={cn(
-          'wrap-break-word mt-2 mb-1 ml-[calc(--spacing(2)-1px)] min-w-0 border-l pr-1 pl-4 text-muted-foreground leading-relaxed',
+          'mt-2 mb-1 ml-[calc(--spacing(2)-1px)] min-w-0 border-l pr-1 pl-4 leading-relaxed wrap-break-word text-muted-foreground',
           className
         )}
         data-slot="trace-collapsible-content-inner"

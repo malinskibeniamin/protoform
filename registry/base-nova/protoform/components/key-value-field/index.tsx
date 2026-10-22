@@ -81,7 +81,7 @@ function KeyValueError({ message }: { message: string | undefined }) {
   if (message === undefined || message === '') {
     return null;
   }
-  return <p className="text-destructive text-sm">{message}</p>;
+  return <p className="text-sm text-destructive">{message}</p>;
 }
 
 function KeyValueRow({
@@ -121,7 +121,7 @@ function KeyValueRow({
   const keyError = isDuplicate ? 'Duplicate key' : error?.key;
 
   return (
-    <div className="grid @min-[28rem]/key-value:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] grid-cols-[minmax(0,1fr)] items-start gap-2">
+    <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-2 @min-[28rem]/key-value:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]">
       <div className="col-start-1 row-start-1 min-w-0 space-y-1">
         <FieldRenderer
           config={keyFieldProps}
@@ -133,7 +133,7 @@ function KeyValueRow({
         />
         <KeyValueError message={keyError} />
       </div>
-      <div className="@min-[28rem]/key-value:col-start-2 col-start-1 @min-[28rem]/key-value:row-start-1 row-start-2 min-w-0 space-y-1">
+      <div className="col-start-1 row-start-2 min-w-0 space-y-1 @min-[28rem]/key-value:col-start-2 @min-[28rem]/key-value:row-start-1">
         <FieldRenderer
           config={valueFieldProps}
           disabled={disabled}
@@ -146,7 +146,7 @@ function KeyValueRow({
       </div>
       <Button
         aria-label="Delete key-value pair"
-        className="@min-[28rem]/key-value:col-start-3 col-start-1 @min-[28rem]/key-value:row-start-1 row-start-3 justify-self-end"
+        className="col-start-1 row-start-3 justify-self-end @min-[28rem]/key-value:col-start-3 @min-[28rem]/key-value:row-start-1"
         data-testid={hasTestId ? `${testId}-delete-${index}` : undefined}
         disabled={disabled}
         onClick={() => onDelete(index)}
@@ -238,7 +238,7 @@ export function KeyValueField({
       {label || description ? (
         <div className="flex flex-col gap-0.5">
           {label ? <Label>{label}</Label> : null}
-          {description ? <p className="text-muted-foreground text-sm">{description}</p> : null}
+          {description ? <p className="text-sm text-muted-foreground">{description}</p> : null}
         </div>
       ) : null}
       {value.map((pair, index) => (

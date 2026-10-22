@@ -337,7 +337,7 @@ export function compileCelExpression(
       collectUnknownAttributes(result, attributes, new Set());
       if (attributes.size > 0) {
         return {
-          attributes: [...attributes].sort(),
+          attributes: [...attributes].sort((left, right) => (left < right ? -1 : Number(left > right))),
           cost: budget.cost,
           kind: 'unknown',
         };

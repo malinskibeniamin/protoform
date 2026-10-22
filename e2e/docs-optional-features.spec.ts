@@ -66,7 +66,8 @@ for (const locale of ['en', 'zh', 'zh-TW', 'pl']) {
       });
     });
 
-    await page.goto(`/docs/${locale === 'en' ? '' : `${locale}/`}getting-started`);
+    const localePrefix = locale === 'en' ? '' : locale.concat('/');
+    await page.goto(`/docs/${localePrefix}getting-started`);
     await expect(page.locator('html')).toHaveAttribute('lang', locale);
     await expect(page.getByRole('main').getByRole('heading', { level: 1 })).toBeVisible();
     await expect(page.getByRole('button', { name: /Listen to this page/u })).toHaveCount(0);

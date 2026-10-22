@@ -307,7 +307,7 @@ const MultiSelectValue = React.forwardRef<React.ComponentRef<'div'>, MultiSelect
             return el;
           })}
           {renderRemain ? (
-            <span className="py-0.5 text-muted-foreground text-xs leading-4">+{renderRemain}</span>
+            <span className="py-0.5 text-xs leading-4 text-muted-foreground">+{renderRemain}</span>
           ) : null}
         </div>
       </TooltipProvider>
@@ -370,7 +370,7 @@ const MultiSelectContent = React.forwardRef<HTMLDivElement, MultiSelectContentPr
   const popupProps = {
     ...props,
     className: cn(
-      'min-w-(--anchor-width) origin-(--transform-origin) overflow-hidden rounded-lg border bg-popover text-popover-foreground shadow-md transition data-ending-style:scale-95 data-starting-style:scale-95 data-ending-style:opacity-0 data-starting-style:opacity-0 motion-reduce:transition-none',
+      'min-w-(--anchor-width) origin-(--transform-origin) overflow-hidden rounded-lg border bg-popover text-popover-foreground shadow-md transition data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0 motion-reduce:transition-none',
       className
     ),
     'data-testid': testId,
@@ -425,7 +425,7 @@ const MultiSelectItem = React.forwardRef<HTMLDivElement, MultiSelectItemProps>(f
     <OptionPrimitive
       {...props}
       className={cn(
-        'flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm data-disabled:pointer-events-none data-highlighted:bg-accent data-highlighted:text-accent-foreground data-disabled:opacity-50',
+        'flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-accent data-highlighted:text-accent-foreground',
         className
       )}
       data-testid={testId}
@@ -451,7 +451,7 @@ const MultiSelectGroup = React.forwardRef<
   return (
     <Group {...props} data-testid={testId} ref={ref}>
       {heading ? (
-        <PrimitiveGroupLabel className="px-2 py-1.5 font-medium text-muted-foreground text-xs">
+        <PrimitiveGroupLabel className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
           {heading}
         </PrimitiveGroupLabel>
       ) : null}
@@ -476,7 +476,7 @@ const MultiSelectEmpty = React.forwardRef<HTMLDivElement, React.ComponentProps<'
     return empty ? (
       <div
         {...props}
-        className={cn('px-3 py-4 text-center text-muted-foreground text-sm', className)}
+        className={cn('px-3 py-4 text-center text-sm text-muted-foreground', className)}
         ref={ref}
         role="status"
       >
@@ -487,7 +487,7 @@ const MultiSelectEmpty = React.forwardRef<HTMLDivElement, React.ComponentProps<'
   return (
     <ComboboxPrimitive.Empty
       {...props}
-      className={cn('px-3 not-empty:py-4 text-center text-muted-foreground text-sm', className)}
+      className={cn('px-3 text-center text-sm text-muted-foreground not-empty:py-4', className)}
       ref={ref}
     >
       {children}

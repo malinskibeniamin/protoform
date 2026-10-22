@@ -5,7 +5,7 @@ import React from 'react';
 import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
 const alertVariants = cva(
-  'group/alert relative grid w-full grid-cols-[0_minmax(0,1fr)] items-start gap-y-0.5 rounded-lg border px-4 py-3 text-sm has-[>svg]:grid-cols-[calc(var(--spacing)*4)_minmax(0,1fr)] has-[>svg]:gap-x-3 has-data-[slot=alert-action]:pr-18 [&>svg]:size-4 [&>svg]:translate-y-0.5 [&>svg]:text-current',
+  'group/alert relative grid w-full grid-cols-[0_minmax(0,1fr)] items-start gap-y-0.5 rounded-lg border px-4 py-3 text-sm has-data-[slot=alert-action]:pr-18 has-[>svg]:grid-cols-[calc(var(--spacing)*4)_minmax(0,1fr)] has-[>svg]:gap-x-3 [&>svg]:size-4 [&>svg]:translate-y-0.5 [&>svg]:text-current',
   {
     defaultVariants: {
       variant: 'info',
@@ -64,7 +64,7 @@ const AlertDescription = React.forwardRef<HTMLDivElement, React.ComponentProps<'
   ({ className, testId, ...props }, ref) => (
     <div
       className={cn(
-        'wrap-anywhere col-start-2 grid w-full min-w-0 justify-items-start gap-1 text-muted-foreground text-sm [&_p]:leading-relaxed [&_pre]:w-full',
+        'col-start-2 grid w-full min-w-0 justify-items-start gap-1 text-sm wrap-anywhere text-muted-foreground [&_p]:leading-relaxed [&_pre]:w-full',
         className
       )}
       data-slot="alert-description"

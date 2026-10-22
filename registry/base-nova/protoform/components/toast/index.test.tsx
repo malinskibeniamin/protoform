@@ -10,7 +10,7 @@ afterEach(() => {
   act(() => toast.close());
 });
 
-describe('Toaster', () => {
+describe('toaster', () => {
   test('renders and dismisses a toast added through the shared manager', async () => {
     const user = userEvent.setup();
 

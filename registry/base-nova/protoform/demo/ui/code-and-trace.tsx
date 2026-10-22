@@ -49,10 +49,10 @@ function CodeAndTraceExample() {
   const [wrap, setWrap] = useState(false);
 
   return (
-    <div className="w-full min-w-0 max-w-[calc(100dvw-3rem)] space-y-8" data-testid="bundled-ui-example">
+    <div className="w-full max-w-[calc(100dvw-3rem)] min-w-0 space-y-8" data-testid="bundled-ui-example">
       <div className="space-y-2">
-        <h1 className="font-semibold text-2xl">Code blocks and traces</h1>
-        <p className="text-muted-foreground text-sm">
+        <h1 className="text-2xl font-semibold">Code blocks and traces</h1>
+        <p className="text-sm text-muted-foreground">
           Read-only UI samples included in the Protoform shadcn bundle. These traces do not send requests.
         </p>
       </div>

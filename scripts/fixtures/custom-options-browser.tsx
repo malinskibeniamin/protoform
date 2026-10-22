@@ -8,7 +8,7 @@ function App() {
   const [value, setValue] = useState<JSONValue>({ region: '' });
   return (
     <main className="mx-auto max-w-xl space-y-4 p-6">
-      <h1 className="font-semibold text-2xl">Region options</h1>
+      <h1 className="text-2xl font-semibold">Region options</h1>
       <p>Create a region. First attempt fails; retry succeeds.</p>
       <JSONField
         customFields={[

@@ -2,7 +2,7 @@ import { configureReactScan } from './react-scan';
 
 declare const { describe, expect, jest, test }: typeof import('bun:test');
 
-describe('React Scan instrumentation', () => {
+describe('react Scan instrumentation', () => {
   test('loads the installed profiler before React hydration only when opted in', () => {
     const injectScript = jest.fn();
     configureReactScan('dev', true, injectScript);

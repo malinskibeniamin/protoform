@@ -123,7 +123,7 @@ function TooltipContent(contentProps: TooltipContentProps) {
               {...separated.native}
               className={(state) =>
                 cn(
-                  'relative w-fit origin-(--transform-origin) text-balance rounded-md bg-primary px-3 py-1.5 text-primary-foreground text-sm shadow-md',
+                  'relative w-fit origin-(--transform-origin) rounded-md bg-primary px-3 py-1.5 text-sm text-balance text-primary-foreground shadow-md',
                   variant === 'detail' && 'bg-tooltip-detail py-2 text-tooltip-detail-foreground shadow-xl',
                   typeof className === 'function' ? className(state) : className
                 )
@@ -145,7 +145,7 @@ function TooltipContent(contentProps: TooltipContentProps) {
 
               {arrow === true ? (
                 <TooltipPrimitive.Arrow
-                  className="z-50 size-2.5 rotate-45 rounded-xs bg-primary fill-primary data-[side=bottom]:top-0 data-[side=left]:right-0 data-[side=top]:bottom-0 data-[side=right]:left-0 data-[side=left]:translate-x-1/2 data-[side=right]:-translate-x-1/2 data-[side=bottom]:-translate-y-1/2 data-[side=top]:translate-y-1/2"
+                  className="z-50 size-2.5 rotate-45 rounded-xs bg-primary fill-primary data-[side=bottom]:top-0 data-[side=bottom]:-translate-y-1/2 data-[side=left]:right-0 data-[side=left]:translate-x-1/2 data-[side=right]:left-0 data-[side=right]:-translate-x-1/2 data-[side=top]:bottom-0 data-[side=top]:translate-y-1/2"
                   data-slot="tooltip-content-arrow"
                 />
               ) : null}

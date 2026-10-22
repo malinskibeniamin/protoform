@@ -54,7 +54,7 @@ function App() {
   const [submitted, setSubmitted] = useState('');
   return (
     <main className="mx-auto max-w-xl space-y-4 p-6">
-      <h1 className="font-semibold text-2xl">Form reliability</h1>
+      <h1 className="text-2xl font-semibold">Form reliability</h1>
       <p>Keep selections. See every validation error.</p>
       <AutoForm
         dataProviders={{ methods: { useProvider: methodsProvider, staleSelection: 'clear' } }}

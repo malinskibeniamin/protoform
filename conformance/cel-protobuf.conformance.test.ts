@@ -5,7 +5,7 @@ import { describe, expect } from '@rstest/core';
 
 import { CelProtoLanguageMatrixSchema, MatrixStatus } from './gen/protoform/conformance/v1/conformance_pb.js';
 
-describe('CEL protobuf conformance', () => {
+describe('cel protobuf conformance', () => {
   test('evaluates protobuf messages, enums, presence, collections, bytes, and temporal values', () => {
     const message = create(CelProtoLanguageMatrixSchema, {
       child: { name: 'child-primary' },

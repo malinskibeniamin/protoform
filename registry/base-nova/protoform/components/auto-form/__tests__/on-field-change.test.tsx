@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { AutoForm } from '..';
 import { createMockProvider } from './test-utils';
 
-describe('AutoForm – onFieldChange callback', () => {
+describe('autoForm – onFieldChange callback', () => {
   test('calls onFieldChange when a field value changes', async () => {
     const user = userEvent.setup();
     const onFieldChange = rs.fn();

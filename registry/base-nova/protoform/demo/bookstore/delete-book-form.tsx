@@ -31,10 +31,10 @@ export function DeleteBookForm({ book, onCancel, onDeleted }: DeleteBookFormProp
   return (
     <section aria-labelledby="delete-book-title" className="space-y-6">
       <div className="space-y-2">
-        <h2 className="font-semibold text-2xl" id="delete-book-title">
+        <h2 className="text-2xl font-semibold" id="delete-book-title">
           Delete book
         </h2>
-        <p className="text-muted-foreground text-sm">
+        <p className="text-sm text-muted-foreground">
           Delete <strong>{book.displayName}</strong>? AutoForm renders the generated delete request; app-owned copy
           provides the confirmation.
         </p>
@@ -58,7 +58,7 @@ export function DeleteBookForm({ book, onCancel, onDeleted }: DeleteBookFormProp
       <Button onClick={onCancel} type="button" variant="outline">
         Cancel
       </Button>
-      {mutation.error ? <p className="text-destructive text-sm">{mutation.error.message}</p> : null}
+      {mutation.error ? <p className="text-sm text-destructive">{mutation.error.message}</p> : null}
     </section>
   );
 }

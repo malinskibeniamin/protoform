@@ -5,7 +5,7 @@ import type React from 'react';
 import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
 const separatorVariants = cva(
-  'shrink-0 data-[orientation=horizontal]:h-px data-[orientation=vertical]:h-full data-[orientation=horizontal]:w-full data-[orientation=vertical]:w-px',
+  'shrink-0 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px',
   {
     defaultVariants: {
       variant: 'default',
@@ -16,7 +16,7 @@ const separatorVariants = cva(
         item: 'my-2 bg-border',
         sidebar: 'mx-2 w-auto bg-border',
         group:
-          'relative self-stretch bg-border data-horizontal:mx-px data-vertical:my-px data-vertical:h-auto data-horizontal:w-auto',
+          'relative self-stretch bg-border data-horizontal:mx-px data-horizontal:w-auto data-vertical:my-px data-vertical:h-auto',
         strong: 'bg-border',
         subtle: 'bg-border/50',
       },

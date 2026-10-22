@@ -13,7 +13,7 @@ const pathDrawClassName =
   '[stroke-dasharray:1] [stroke-dashoffset:1] opacity-0 transition-[stroke-dashoffset,opacity] duration-200 ease-out data-[visible=true]:[stroke-dashoffset:0] data-[visible=true]:opacity-100 data-[visible=true]:delay-100';
 
 const checkboxVariants = cva(
-  'peer relative flex size-4 shrink-0 cursor-pointer items-center justify-center rounded-sm border outline-none transition-colors after:absolute after:-inset-x-3 after:-inset-y-2 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 motion-safe:active:scale-95 motion-safe:hover:scale-105 dark:bg-input/30 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40',
+  'peer relative flex size-4 shrink-0 cursor-pointer items-center justify-center rounded-sm border transition-colors outline-none after:absolute after:-inset-x-3 after:-inset-y-2 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 motion-safe:hover:scale-105 motion-safe:active:scale-95 dark:bg-input/30 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40',
   {
     defaultVariants: {
       variant: 'primary',
@@ -21,11 +21,11 @@ const checkboxVariants = cva(
     variants: {
       variant: {
         outline:
-          '!border-input data-[state=checked]:border-foreground data-[state=indeterminate]:border-foreground data-[state=checked]:bg-transparent data-[state=indeterminate]:bg-transparent data-[state=checked]:text-foreground data-[state=indeterminate]:text-foreground',
+          '!border-input data-[state=checked]:border-foreground data-[state=checked]:bg-transparent data-[state=checked]:text-foreground data-[state=indeterminate]:border-foreground data-[state=indeterminate]:bg-transparent data-[state=indeterminate]:text-foreground',
         primary:
-          '!border-input data-[state=checked]:border-primary data-[state=indeterminate]:border-primary data-[state=checked]:bg-primary data-[state=indeterminate]:bg-primary data-[state=checked]:text-primary-foreground data-[state=indeterminate]:text-primary-foreground',
+          '!border-input data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground data-[state=indeterminate]:border-primary data-[state=indeterminate]:bg-primary data-[state=indeterminate]:text-primary-foreground',
         secondary:
-          '!border-input data-[state=checked]:border-secondary data-[state=indeterminate]:border-secondary data-[state=checked]:bg-secondary data-[state=indeterminate]:bg-secondary data-[state=checked]:text-primary-foreground data-[state=indeterminate]:text-primary-foreground',
+          '!border-input data-[state=checked]:border-secondary data-[state=checked]:bg-secondary data-[state=checked]:text-primary-foreground data-[state=indeterminate]:border-secondary data-[state=indeterminate]:bg-secondary data-[state=indeterminate]:text-primary-foreground',
       },
     },
   }
@@ -104,7 +104,7 @@ function Checkbox({
             <path
               className={cn(
                 pathDrawClassName,
-                'group-data-indeterminate/indicator:hidden group-data-checked/indicator:opacity-100 group-data-checked/indicator:[stroke-dashoffset:0]'
+                'group-data-checked/indicator:opacity-100 group-data-checked/indicator:[stroke-dashoffset:0] group-data-indeterminate/indicator:hidden'
               )}
               d="M4.5 12.75l6 6 9-13.5"
               pathLength={1}

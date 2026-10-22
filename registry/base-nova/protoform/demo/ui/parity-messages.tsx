@@ -82,7 +82,7 @@ export default function MessageExamples() {
   return (
     <div className="grid min-w-0 gap-6 md:grid-cols-2" data-testid="parity-messages">
       <ParitySection title="Attachment">
-        <p className="text-muted-foreground text-sm">Local presentation state, not an actual upload.</p>
+        <p className="text-sm text-muted-foreground">Local presentation state, not an actual upload.</p>
         <Attachment state={failed === true ? 'error' : 'done'}>
           <AttachmentMedia variant="icon">{failed === true ? <FileTextIcon /> : <CheckIcon />}</AttachmentMedia>
           <AttachmentContent>
@@ -154,7 +154,7 @@ export default function MessageExamples() {
       </ParitySection>
       <div className="min-w-0 md:col-span-2">
         <ParitySection title="Questionnaire">
-          <p className="text-muted-foreground text-sm">
+          <p className="text-sm text-muted-foreground">
             Standalone shadcn questionnaire. Protoform’s existing form adapters are unchanged.
           </p>
           <Questionnaire items={questions} onSubmit={submitAnswers}>

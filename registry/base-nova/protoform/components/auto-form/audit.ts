@@ -39,7 +39,9 @@ export function auditAutoFormConfigurations(targets: readonly AutoFormAuditTarge
 }
 
 function formatSarifReport(report: AutoFormAuditReport): string {
-  const codes = [...new Set(report.diagnostics.map((diagnostic) => diagnostic.code))].sort();
+  const codes = [...new Set(report.diagnostics.map((diagnostic) => diagnostic.code))].sort((left, right) =>
+    left < right ? -1 : Number(left > right)
+  );
   const sarif = {
     $schema: 'https://json.schemastore.org/sarif-2.1.0.json',
     runs: [

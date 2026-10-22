@@ -7,7 +7,7 @@ import { MaskableProfileSchema } from '@/examples/gen/protoform/examples/v1/form
 
 import { AutoForm, type AutoFormSubmitContext } from '..';
 
-describe('AutoForm update masks', () => {
+describe('autoForm update masks', () => {
   test('passes only touched protobuf fields to onSubmit', async () => {
     const user = userEvent.setup();
     const onSubmit = rs.fn<(message: unknown, form: unknown, context: AutoFormSubmitContext) => void>();

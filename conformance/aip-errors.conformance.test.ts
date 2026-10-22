@@ -18,7 +18,7 @@ import {
   grpcCodeLabel,
 } from '../registry/base-nova/protoform/lib/protobuf-provider/index.js';
 
-describe('AIP-193 error lifecycle conformance', () => {
+describe('aip-193 error lifecycle conformance', () => {
   test('labels every canonical non-OK gRPC status code', () => {
     expect(
       [

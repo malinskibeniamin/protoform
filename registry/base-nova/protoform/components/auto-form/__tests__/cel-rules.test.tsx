@@ -35,7 +35,7 @@ const buildProtoUiMetadataDefaults = () => ({
   supportTier: 0,
 });
 
-describe('AutoForm – CEL rules', () => {
+describe('autoForm – CEL rules', () => {
   test('supports proto UI CEL for field visibility and disabled state', async () => {
     const user = userEvent.setup();
 

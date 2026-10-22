@@ -58,7 +58,7 @@ export function CapabilityDemo({ demoId }: { demoId: string }) {
         <Badge variant="primary-inverted">{engineLabels[demo.engine]}</Badge>
         <Badge variant="outline">Live protobuf contract</Badge>
       </div>
-      <p className="text-muted-foreground text-sm">{demo.tryIt}</p>
+      <p className="text-sm text-muted-foreground">{demo.tryIt}</p>
       <AutoForm
         defaultValues={defaultValues}
         formOptions={{ mode: 'onBlur', reValidateMode: 'onChange' }}
@@ -72,7 +72,7 @@ export function CapabilityDemo({ demoId }: { demoId: string }) {
         <Alert role="status" variant="success">
           <AlertTitle>Submitted protobuf value</AlertTitle>
           <AlertDescription>
-            <pre className="max-h-80 max-w-full overflow-auto whitespace-pre-wrap text-xs">{submittedValue}</pre>
+            <pre className="max-h-80 max-w-full overflow-auto text-xs whitespace-pre-wrap">{submittedValue}</pre>
           </AlertDescription>
         </Alert>
       ) : null}

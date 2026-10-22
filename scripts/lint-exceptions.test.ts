@@ -108,3 +108,35 @@ test('does not permit new file-level rule exemptions', () => {
   expect(newLintExceptions('biome.jsonc', weakened, baseline)).toHaveLength(1);
   expect(newLintExceptions('biome.jsonc', baseline, weakened)).toEqual([]);
 });
+
+test('preserves Biome exemptions across nursery promotions without allowing broader scope', () => {
+  const baseline = `{
+    "overrides": [{
+      "includes": ["components/input.tsx"],
+      "linter": { "rules": { "nursery": { "noComponentHookFactories": "off" } } }
+    }]
+  }`;
+  const migrated = baseline.replace('"nursery"', '"correctness"');
+  expect(newLintExceptions('biome.jsonc', migrated, baseline)).toEqual([]);
+  expect(
+    newLintExceptions('biome.jsonc', migrated.replace('components/input.tsx', 'components/**'), baseline)
+  ).toHaveLength(1);
+  expect(
+    newLintExceptions('biome.jsonc', migrated.replace('noComponentHookFactories', 'noJsxNamespace'), baseline)
+  ).toHaveLength(1);
+});
+
+test('limits approved Biome 2.6 false positives to the exact owner and rule', () => {
+  const approved = `{
+    "overrides": [{
+      "includes": ["registry/base-nova/protoform/components/auto-form/renderers/nested.tsx"],
+      "linter": { "rules": { "nursery": { "useReactCompiler": "off" } } }
+    }]
+  }`;
+  const baseline = '{ "overrides": [] }';
+  expect(newLintExceptions('biome.jsonc', approved, baseline)).toEqual([]);
+  expect(newLintExceptions('biome.jsonc', approved.replace('nested.tsx', '*.tsx'), baseline)).toHaveLength(1);
+  expect(
+    newLintExceptions('biome.jsonc', approved.replace('useReactCompiler', 'noFloatingPromises'), baseline)
+  ).toHaveLength(1);
+});

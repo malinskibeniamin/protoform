@@ -62,7 +62,7 @@ export default function LayoutExamples() {
           <SidebarInset className="min-w-0" render={<div />}>
             <div className="space-y-4 p-3">
               <SidebarTrigger />
-              <p className="wrap-break-word text-sm" role="status">
+              <p className="text-sm wrap-break-word" role="status">
                 Selected: {destination}
               </p>
             </div>
@@ -140,7 +140,7 @@ export default function LayoutExamples() {
             <Bar dataKey="total" fill="var(--color-total)" isAnimationActive={false} radius={4} />
           </BarChart>
         </ChartContainer>
-        <p className="text-muted-foreground text-sm">Static sample: 12, 18 and 9 requests.</p>
+        <p className="text-sm text-muted-foreground">Static sample: 12, 18 and 9 requests.</p>
       </ParitySection>
       <div className="md:col-span-2">
         <Button onClick={() => setDestination('Profiles')} type="button" variant="outline">
