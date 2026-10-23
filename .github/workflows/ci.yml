@@ -31,6 +31,10 @@ jobs:
           cache: false
           go-version: 1.26.6
       - run: bun install --frozen-lockfile
+      - name: Install Chromium while preflight checks run
+        id: install-browser
+        background: true
+        run: bunx playwright install --with-deps chromium
       - run: bunx buf lint --error-format=github-actions
       - name: Check protobuf compatibility with pull request target
         if: github.event_name == 'pull_request'
@@ -46,8 +50,39 @@ jobs:
           else
             echo "::notice::Skipping compatibility check because the previous main is unavailable or not an ancestor."
           fi
-      - run: bunx playwright install --with-deps chromium
-      - run: bun run quality:gate
+      - run: bun run security:audit
+      - run: bun run registry:build
+      - run: bun run test:unit
+      - name: Wait for Chromium before browser tests
+        wait: install-browser
+      # Integration lint-policy tests briefly write invalid fixtures into registry/.
+      # Finish them before any repository-wide lint or typecheck can scan them.
+      - run: bun run test:integration
+      # Keep all quality:gate checks. Only the last lane owns consumer fixtures, browser runners,
+      # and the docs build; docs typechecking uses its existing isolated runtime.
+      - parallel:
+          - name: Lint and analyze source
+            run: |
+              bun run check:boundaries
+              bun run readiness:gate
+              bun run lint:no-suppressions
+              bun run lint
+              bun run doctor:strict
+          - name: Typecheck source, tests, and docs
+            run: bun run typecheck
+          - name: Verify registry consumers, forms, and docs build
+            run: |
+              bun run registry:smoke
+              bun run registry:consumer-smoke
+              bun run test:e2e:canary
+              bun run registry:host-browser
+              bun run test:conformance
+              bun run aip:lint
+              bun run test:browser
+              bun run test:e2e
+              bun run docs:blume:translate:check
+              bun run build
+              bun run docs:blume:audit
       - name: Upload runner failure evidence
         if: failure()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -72,9 +107,13 @@ jobs:
         with:
           node-version: 26
       - run: bun install --frozen-lockfile
-      - run: bunx playwright install --with-deps chromium
-      - run: bun run docs:blume:validate
-      - run: bun run docs:blume:translate:check
+      - parallel:
+          - name: Install Chromium
+            run: bunx playwright install --with-deps chromium
+          - name: Validate docs
+            run: bun run docs:blume:validate
+          - name: Check translations
+            run: bun run docs:blume:translate:check
       - name: Build and exercise docs, demos, accessibility, and screenshots
         run: bun run test:e2e
       - run: bun run docs:blume:audit
