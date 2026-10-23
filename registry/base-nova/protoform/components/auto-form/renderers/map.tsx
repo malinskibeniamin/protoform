@@ -14,8 +14,7 @@ import { Button } from '../ui-components';
 import { NestedFieldRenderer } from './nested';
 import { cloneFieldForCompactRow, getRenderedLabel, isComplexCollectionField, useFieldPresentation } from './shared';
 
-const COMPACT_PAIR_GRID =
-  'grid grid-cols-[minmax(0,1fr)] items-start gap-3 [&>button]:col-start-1 [&>button]:row-start-3 [&>button]:justify-self-end @min-[28rem]/collection:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] @min-[28rem]/collection:[&>button]:col-start-3 @min-[28rem]/collection:[&>button]:row-start-1 [&>div]:col-start-1 @min-[28rem]/collection:[&>div]:col-start-auto';
+const COMPACT_PAIR_GRID = 'grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] items-center gap-3';
 const KEY_REMOVE_GRID = 'grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3';
 
 export function MapFieldRenderer({
