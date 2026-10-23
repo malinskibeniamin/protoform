@@ -2,11 +2,59 @@ import './browser-fixture.css';
 
 import { afterEach, expect, rs, test } from '@rstest/core';
 import { cleanup, render, screen, waitFor } from '@testing-library/react';
-import type { CSSProperties } from 'react';
+import { type CSSProperties, Suspense } from 'react';
+import { Bar, BarChart } from 'recharts';
 
-import { ChartContainer, ChartStyle, ChartTooltipContent } from '.';
+import { ChartContainer, ChartLegend, ChartLegendContent, ChartStyle, ChartTooltipContent } from '.';
 
 afterEach(cleanup);
+
+test('uses the new legend position instead of the legacy alignment for content spacing', async () => {
+  const { rerender } = render(
+    <ChartContainer config={{ requests: { label: 'Requests' } }}>
+      <BarChart data={[{ requests: 5 }]}>
+        <Bar dataKey="requests" isAnimationActive={false} />
+        <Suspense fallback={null}>
+          <ChartLegend content={<ChartLegendContent />} position="top" />
+        </Suspense>
+      </BarChart>
+    </ChartContainer>
+  );
+  const legend = (await screen.findByText('Requests')).parentElement;
+  expect(legend).toHaveClass('pb-3');
+  expect(legend).not.toHaveClass('pt-3');
+
+  rerender(
+    <ChartContainer config={{ requests: { label: 'Requests' } }}>
+      <BarChart data={[{ requests: 5 }]}>
+        <Bar dataKey="requests" isAnimationActive={false} />
+        <Suspense fallback={null}>
+          <ChartLegend content={<ChartLegendContent />} position="bottom" />
+        </Suspense>
+      </BarChart>
+    </ChartContainer>
+  );
+  await waitFor(() => expect(legend).toHaveClass('pt-3'));
+  expect(legend).not.toHaveClass('pb-3');
+});
+
+test('uses the resolved vertical layout for a side legend', async () => {
+  render(
+    <ChartContainer config={{ requests: { label: 'Requests' }, responses: { label: 'Responses' } }}>
+      <BarChart data={[{ requests: 5, responses: 3 }]}>
+        <Bar dataKey="requests" isAnimationActive={false} />
+        <Bar dataKey="responses" isAnimationActive={false} />
+        <Suspense fallback={null}>
+          <ChartLegend content={<ChartLegendContent />} position="right" />
+        </Suspense>
+      </BarChart>
+    </ChartContainer>
+  );
+  const legend = (await screen.findByText('Requests')).parentElement;
+  expect(await screen.findByText('Responses')).toBeVisible();
+  expect(legend).toHaveClass('flex-col');
+  expect(legend).not.toHaveClass('pt-3', 'pb-3');
+});
 
 test('passes the complete tooltip payload to a custom formatter', async () => {
   const payload = [{ graphicalItemId: 'requests', name: 'requests', value: 5, payload: { fill: '#111111' } }];

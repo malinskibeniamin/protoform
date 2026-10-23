@@ -343,17 +343,30 @@ function ChartLegendContent({
   hideIcon = false,
   payload,
   verticalAlign = 'bottom',
+  position,
+  layout,
   nameKey,
 }: React.ComponentProps<'div'> & {
   hideIcon?: boolean;
   nameKey?: string;
-} & RechartsPrimitiveDefaultLegendContentProps) {
+  verticalAlign?: 'top' | 'middle' | 'bottom';
+} & Omit<RechartsPrimitiveDefaultLegendContentProps, 'verticalAlign'> &
+  Pick<React.ComponentProps<typeof RechartsPrimitiveLegend>, 'position'>) {
   const config = useChart();
   if (payload === undefined || payload.length === 0) {
     return null;
   }
+  const contentPosition = position ?? (verticalAlign === 'top' ? 'top' : 'bottom');
   return (
-    <div className={cn('flex items-center justify-center gap-4', verticalAlign === 'top' ? 'pb-3' : 'pt-3', className)}>
+    <div
+      className={cn(
+        'flex items-center justify-center gap-4',
+        contentPosition === 'top' && 'pb-3',
+        contentPosition === 'bottom' && 'pt-3',
+        layout === 'vertical' && 'flex-col',
+        className
+      )}
+    >
       {payload.map((item) => {
         if (item.type === 'none') {
           return null;
