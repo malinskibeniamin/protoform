@@ -11,14 +11,14 @@ const RecipeExamples = lazy(() => import('./parity-recipes'));
 export default function ShadcnParityExample() {
   return (
     <div
-      className="mx-auto w-full min-w-0 max-w-[min(64rem,calc(100vw-3rem))] space-y-6 p-4"
+      className="mx-auto w-full max-w-[min(64rem,calc(100vw-3rem))] min-w-0 space-y-6 p-4"
       data-testid="shadcn-parity-example"
     >
       <div className="space-y-2">
-        <h2 className="font-semibold text-2xl" id="parity-heading">
+        <h2 className="text-2xl font-semibold" id="parity-heading">
           Shadcn component catalog
         </h2>
-        <p className="text-muted-foreground text-sm">
+        <p className="text-sm text-muted-foreground">
           Bundled Base UI components and composition examples. Samples are local and do not submit to a backend.
           Protoform’s existing form APIs are unchanged.
         </p>

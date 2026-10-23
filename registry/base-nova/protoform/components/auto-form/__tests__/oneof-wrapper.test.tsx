@@ -43,7 +43,7 @@ const schema = createMockProvider(
   { contact: { case: undefined, value: undefined } }
 );
 
-describe('OneofWrapper', () => {
+describe('oneofWrapper', () => {
   test('replaces the variant picker while Protoform owns selection and variant rendering', async () => {
     const user = userEvent.setup();
     const onSubmit = rs.fn();

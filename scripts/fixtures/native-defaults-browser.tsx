@@ -89,7 +89,7 @@ function Controls({
           Reset record
         </Button>
       </div>
-      <output aria-label="Timestamp payload" className="block break-all text-sm">
+      <output aria-label="Timestamp payload" className="block text-sm break-all">
         {output}
       </output>
     </section>
@@ -124,7 +124,7 @@ if (!root) {
 createRoot(root).render(
   <StrictMode>
     <main className="mx-auto max-w-xl space-y-4 p-6">
-      <h1 className="font-semibold text-2xl">Native timestamp defaults</h1>
+      <h1 className="text-2xl font-semibold">Native timestamp defaults</h1>
       <p>Editable milliseconds. Preserve untouched nanoseconds.</p>
       <V7 />
       <V8 />

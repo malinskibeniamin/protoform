@@ -28,7 +28,7 @@ async function fillProfile(user: ReturnType<typeof userEvent.setup>) {
   await user.type(screen.getByLabelText(emailPattern), 'ada@example.com');
 }
 
-describe('Formik example', () => {
+describe('formik example', () => {
   test('validates with Formik and submits a typed protobuf message', async () => {
     const address = await startServer();
     const user = userEvent.setup();
@@ -57,7 +57,7 @@ describe('Formik example', () => {
   });
 });
 
-describe('Final Form example', () => {
+describe('final Form example', () => {
   test('validates with Final Form and submits a typed protobuf message', async () => {
     const address = await startServer();
     const user = userEvent.setup();

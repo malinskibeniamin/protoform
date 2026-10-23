@@ -46,7 +46,7 @@ function field(schema: ReturnType<typeof parseProtoSchema>, key: string) {
   return match;
 }
 
-describe('Google AIP form conformance', () => {
+describe('google AIP form conformance', () => {
   test('publishes current standard and soft-delete HTTP contracts', () => {
     const contracts = Object.fromEntries(
       Object.entries(LibraryService.method).map(([name, method]) => {

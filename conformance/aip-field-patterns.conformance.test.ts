@@ -26,7 +26,7 @@ async function expectInvalid(values: Record<string, unknown>, path: string): Pro
   );
 }
 
-describe('AIP field pattern conformance', () => {
+describe('aip field pattern conformance', () => {
   test('models AIP-141 quantities with signed numeric fields and units in field names', async () => {
     const parsed = parseProtoSchema(ProvisionCapacityRequestSchema);
 

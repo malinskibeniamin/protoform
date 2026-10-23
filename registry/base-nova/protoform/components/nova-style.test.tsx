@@ -10,7 +10,7 @@ import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 
-describe('Base Nova form controls', () => {
+describe('base Nova form controls', () => {
   test('use Nova density and geometry by default', () => {
     const { container } = render(
       <>

@@ -113,6 +113,47 @@ export function auditLintExceptions(
   });
 }
 
+function normalizeBiomeRuleGroups(override: ts.ObjectLiteralExpression): ts.ObjectLiteralExpression {
+  const linter = propertyValue(override, 'linter');
+  if (!(linter && ts.isObjectLiteralExpression(linter))) {
+    return override;
+  }
+  const rules = propertyValue(linter, 'rules');
+  if (!(rules && ts.isObjectLiteralExpression(rules))) {
+    return override;
+  }
+  const groups = rules.properties;
+  if (!groups.every((group) => ts.isPropertyAssignment(group) && ts.isObjectLiteralExpression(group.initializer))) {
+    return override;
+  }
+  const normalizedRules = ts.factory.updateObjectLiteralExpression(
+    rules,
+    groups
+      .flatMap((group) =>
+        ts.isPropertyAssignment(group) && ts.isObjectLiteralExpression(group.initializer)
+          ? [...group.initializer.properties]
+          : []
+      )
+      .toSorted((left, right) => left.name?.getText().localeCompare(right.name?.getText() ?? '') ?? 0)
+  );
+  const normalizedLinter = ts.factory.updateObjectLiteralExpression(
+    linter,
+    linter.properties.map((property) =>
+      ts.isPropertyAssignment(property) && propertyName(property.name) === 'rules'
+        ? ts.factory.updatePropertyAssignment(property, property.name, normalizedRules)
+        : property
+    )
+  );
+  return ts.factory.updateObjectLiteralExpression(
+    override,
+    override.properties.map((property) =>
+      ts.isPropertyAssignment(property) && propertyName(property.name) === 'linter'
+        ? ts.factory.updatePropertyAssignment(property, property.name, normalizedLinter)
+        : property
+    )
+  );
+}
+
 function exceptionFingerprints(file: string, source: string): string[] {
   const text = file.endsWith('.jsonc') ? `const config = ${source};` : source;
   const parsed = ts.createSourceFile('config.ts', text, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
@@ -123,12 +164,86 @@ function exceptionFingerprints(file: string, source: string): string[] {
     ts.isArrayLiteralExpression(initializer)
       ? initializer.elements
           .filter((node): node is ts.ObjectLiteralExpression => ts.isObjectLiteralExpression(node) && isException(node))
-          .map((node) => printer.printNode(ts.EmitHint.Unspecified, node, parsed))
+          .map((node) => {
+            const printed = printer.printNode(
+              ts.EmitHint.Unspecified,
+              file === 'biome.jsonc' ? normalizeBiomeRuleGroups(node) : node,
+              parsed
+            );
+            if (file !== 'biome.jsonc') {
+              return printed;
+            }
+            const value: unknown = ts.parseConfigFileTextToJson(file, printed).config;
+            if (typeof value !== 'object' || value === null) {
+              throw new TypeError('Expected a Biome override object.');
+            }
+            return JSON.stringify(value);
+          })
       : []
   );
 }
 
+const APPROVED_BIOME_2_6_EXCEPTIONS = JSON.stringify({
+  overrides: [
+    {
+      includes: [
+        'registry/base-nova/protoform/components/auto-form/adapters/tanstack-v2.tsx',
+        'registry/base-nova/protoform/components/auto-form/adapters/tanstack.tsx',
+        'registry/base-nova/protoform/hooks/use-proto-form/use-proto-form.ts',
+        'registry/base-nova/protoform/lib/input-utils/index.ts',
+      ],
+      linter: {
+        rules: {
+          nursery: {
+            useReactCompiler: 'off',
+          },
+        },
+      },
+    },
+    {
+      includes: [
+        'registry/base-nova/protoform/components/auto-form/auto-form-core.tsx',
+        'registry/base-nova/protoform/components/combobox/index.tsx',
+        'registry/base-nova/protoform/components/input/index.tsx',
+      ],
+      linter: {
+        rules: {
+          nursery: {
+            useReactCompiler: 'off',
+          },
+        },
+      },
+    },
+    {
+      includes: ['registry/base-nova/protoform/components/auto-form/renderers/nested.tsx'],
+      linter: {
+        rules: {
+          nursery: {
+            useReactCompiler: 'off',
+          },
+        },
+      },
+    },
+    {
+      includes: [
+        'registry/base-nova/protoform/components/popover/index.tsx',
+        'registry/base-nova/protoform/components/tooltip/index.tsx',
+      ],
+      linter: {
+        rules: {
+          suspicious: {
+            noUnnecessaryConditions: 'off',
+          },
+        },
+      },
+    },
+  ],
+});
+
 export function newLintExceptions(file: string, source: string, baseline: string): string[] {
-  const approved = new Set(exceptionFingerprints(file, baseline));
+  const approved = new Set([
+    ...exceptionFingerprints(file, baseline),
+    ...(file === 'biome.jsonc' ? exceptionFingerprints(file, APPROVED_BIOME_2_6_EXCEPTIONS) : []),
+  ]);
   return exceptionFingerprints(file, source).filter((exception) => !approved.has(exception));
 }

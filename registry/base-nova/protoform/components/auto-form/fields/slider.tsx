@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import type { AutoFormFieldProps } from '../core-types';
 import { getFieldUiConfig } from '../helpers';
 import type { FieldTypeDefinition } from '../registry';
@@ -48,7 +49,7 @@ function SliderFieldComponent({ error, field, id, inputProps, label: fieldLabel 
       />
       <Input
         aria-invalid={Boolean(error)}
-        className={`w-24 ${error !== undefined && error !== '' ? 'border-destructive' : ''}`}
+        className={cn('w-24', error !== undefined && error !== '' && 'border-destructive')}
         disabled={inputProps['disabled']}
         id={id}
         inputMode="decimal"

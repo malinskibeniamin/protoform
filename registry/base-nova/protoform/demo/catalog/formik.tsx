@@ -69,7 +69,7 @@ export function FormikDemo() {
         <Alert role="status" variant="success">
           <AlertTitle>Submitted protobuf value</AlertTitle>
           <AlertDescription>
-            <pre className="whitespace-pre-wrap text-xs">{submittedValue}</pre>
+            <pre className="text-xs whitespace-pre-wrap">{submittedValue}</pre>
           </AlertDescription>
         </Alert>
       ) : null}

@@ -102,6 +102,21 @@ const isSimpleObject = (schema: JSONSchemaType): boolean => {
   return false;
 };
 
+function getStringInputType(format: string | undefined) {
+  switch (format) {
+    case 'email':
+      return 'email';
+    case 'uri':
+      return 'url';
+    case 'date':
+      return 'date';
+    case 'date-time':
+      return 'datetime-local';
+    default:
+      return 'text';
+  }
+}
+
 const getArrayItemDefault = (schema: JSONSchemaType): JSONValue => {
   if ('default' in schema && schema.default !== undefined) {
     return schema.default;
@@ -454,24 +469,7 @@ const JSONField = ({
           );
         }
 
-        let inputType: string;
-        switch (propSchema.format) {
-          case 'email':
-            inputType = 'email';
-            break;
-          case 'uri':
-            inputType = 'url';
-            break;
-          case 'date':
-            inputType = 'date';
-            break;
-          case 'date-time':
-            inputType = 'datetime-local';
-            break;
-          default:
-            inputType = 'text';
-            break;
-        }
+        const inputType = getStringInputType(propSchema.format);
 
         return (
           <Input

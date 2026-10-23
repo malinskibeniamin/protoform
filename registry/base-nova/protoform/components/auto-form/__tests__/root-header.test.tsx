@@ -10,7 +10,7 @@ import { AutoForm } from '..';
 
 const originalOptions = AutoFormExampleSchema.proto.options;
 
-describe('AutoForm root header', () => {
+describe('autoForm root header', () => {
   beforeEach(() => {
     const options = create(MessageOptionsSchema);
     setExtension(

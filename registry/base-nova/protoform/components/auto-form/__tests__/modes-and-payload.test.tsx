@@ -11,7 +11,7 @@ const PAYLOAD_JSON_TEXT = /payload json/iu;
 const COPY_JSON_BUTTON = /copy json/iu;
 const FORMAT_JSON_BUTTON = /format json/iu;
 
-describe('AutoForm – modes and payload', () => {
+describe('autoForm – modes and payload', () => {
   test('supports payloadBuilder and custom summary rendering', async () => {
     const user = userEvent.setup();
     const schema = createMockProvider([

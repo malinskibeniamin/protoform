@@ -30,7 +30,7 @@ function issuePaths(
   );
 }
 
-describe('Protobuf text and streaming conformance', () => {
+describe('protobuf text and streaming conformance', () => {
   test('round-trips form messages through the protobuf text format', () => {
     const parsed = fromText(NumericMatrixSchema, 'enabled: true\nint32_value: -7\n');
     const values = protoToFormValues(NumericMatrixSchema, parsed);
@@ -68,7 +68,7 @@ describe('Protobuf text and streaming conformance', () => {
   });
 });
 
-describe('Protobuf scalar conformance', () => {
+describe('protobuf scalar conformance', () => {
   test('preserves unknown fields when editing a parsed message', () => {
     const originalBytes = toBinary(NumericMatrixSchema, create(NumericMatrixSchema, { int32Value: 1 }));
     const unknownFieldBytes = [0xb8, 0x3e, 0x07];
@@ -210,7 +210,7 @@ describe('Protobuf scalar conformance', () => {
   });
 });
 
-describe('Protobuf collection conformance', () => {
+describe('protobuf collection conformance', () => {
   test('round-trips the repeated scalar, bytes, enum, 64-bit, float, and double matrix', async () => {
     const schema = createProtoFormSchema(CollectionMatrixSchema);
     const result = await schema['~standard'].validate({
@@ -302,7 +302,7 @@ describe('Protobuf collection conformance', () => {
   });
 });
 
-describe('Protobuf presence and well-known-type conformance', () => {
+describe('protobuf presence and well-known-type conformance', () => {
   test('distinguishes explicit presence while documenting implicit scalar loss', async () => {
     const presenceSchema = createProtoFormSchema(PresenceMatrixSchema);
     const numericSchema = createProtoFormSchema(NumericMatrixSchema);

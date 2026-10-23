@@ -58,7 +58,7 @@ export const ChoiceboxItemTitle = ({ className, ...props }: ChoiceboxItemTitlePr
 export type ChoiceboxItemSubtitleProps = HTMLAttributes<HTMLSpanElement>;
 
 export const ChoiceboxItemSubtitle = ({ className, ...props }: ChoiceboxItemSubtitleProps) => (
-  <span className={cn('font-normal text-muted-foreground text-xs', className)} {...props} />
+  <span className={cn('text-xs font-normal text-muted-foreground', className)} {...props} />
 );
 
 export type ChoiceboxItemDescriptionProps = ComponentProps<typeof CardDescription>;

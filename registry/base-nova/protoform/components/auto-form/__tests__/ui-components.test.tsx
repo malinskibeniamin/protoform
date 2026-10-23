@@ -16,7 +16,7 @@ function ConsumerButton({ children, ...props }: React.ComponentProps<'button'>) 
   );
 }
 
-describe('ProtoformUIProvider', () => {
+describe('protoformUIProvider', () => {
   test('shows a missing host control without requiring Alert and recovers when supplied', () => {
     const schema = createMockProvider([{ key: 'title', required: true, type: 'string' }]);
     const { Input: _input, Alert: _alert, ...incomplete } = shadcnUIComponents;

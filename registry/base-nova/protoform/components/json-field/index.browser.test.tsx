@@ -94,7 +94,7 @@ test('cannot discard a malformed nested draft by switching to JSON mode', async 
   expect(screen.getByRole('alert')).toHaveTextContent('Invalid JSON');
 });
 
-describe('JSONField accessibility', () => {
+describe('json field accessibility', () => {
   test('names structured controls by property path, including array entries', () => {
     render(
       <JSONField

@@ -15,7 +15,7 @@ afterEach(async () => {
   closeServer = undefined;
 });
 
-describe('TanStack Form example', () => {
+describe('tanStack Form example', () => {
   test('maps the protobuf Standard Schema issues to fields on submit', async () => {
     const user = userEvent.setup();
 

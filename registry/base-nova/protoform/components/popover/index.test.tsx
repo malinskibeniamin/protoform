@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 
 import { Popover, PopoverAnchor } from '.';
 
-describe('PopoverAnchor', () => {
+describe('popoverAnchor', () => {
   test('supports Base UI render composition without adding a wrapper', () => {
     render(
       <Popover>

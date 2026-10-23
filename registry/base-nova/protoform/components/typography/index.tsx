@@ -6,7 +6,7 @@ import React, { forwardRef } from 'react';
 
 import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
-const headingVariants = cva('font-display font-medium leading-none tracking-tight', {
+const headingVariants = cva('font-display leading-none font-medium tracking-tight', {
   defaultVariants: {
     align: 'left',
     level: 1,
@@ -39,60 +39,60 @@ export const textVariants = cva('font-sans', {
       right: 'text-right',
     },
     variant: {
-      body: 'font-normal text-sm leading-6 tracking-tight',
-      bodyLarge: 'font-normal text-base leading-6 tracking-tight',
-      bodyMedium: 'font-normal text-sm leading-5 tracking-normal',
-      bodySmall: 'font-normal text-xs leading-4 tracking-normal',
-      bodyStrongLarge: 'font-medium text-base leading-6 tracking-tight',
-      bodyStrongMedium: 'font-medium text-sm leading-5 tracking-normal',
-      bodyStrongSmall: 'font-medium text-xs leading-4 tracking-normal',
+      body: 'text-sm leading-6 font-normal tracking-tight',
+      bodyLarge: 'text-base leading-6 font-normal tracking-tight',
+      bodyMedium: 'text-sm leading-5 font-normal tracking-normal',
+      bodySmall: 'text-xs leading-4 font-normal tracking-normal',
+      bodyStrongLarge: 'text-base leading-6 font-medium tracking-tight',
+      bodyStrongMedium: 'text-sm leading-5 font-medium tracking-normal',
+      bodyStrongSmall: 'text-xs leading-4 font-medium tracking-normal',
 
-      bodyStrongXLarge: 'font-medium text-lg leading-7 tracking-tight',
+      bodyStrongXLarge: 'text-lg leading-7 font-medium tracking-tight',
 
-      bodyXLarge: 'font-normal text-lg leading-7 tracking-tight',
+      bodyXLarge: 'text-lg leading-7 font-normal tracking-tight',
 
-      buttonLarge: 'font-semibold text-lg leading-none tracking-tight',
-      buttonMedium: 'font-semibold text-base leading-none tracking-normal',
-      buttonSmall: 'font-semibold text-sm leading-none tracking-normal',
-      buttonXSmall: 'font-semibold text-xs leading-none tracking-tight',
+      buttonLarge: 'text-lg leading-none font-semibold tracking-tight',
+      buttonMedium: 'text-base leading-none font-semibold tracking-normal',
+      buttonSmall: 'text-sm leading-none font-semibold tracking-normal',
+      buttonXSmall: 'text-xs leading-none font-semibold tracking-tight',
 
-      captionMedium: 'font-normal text-xs leading-4 tracking-normal',
-      captionSmall: 'font-normal text-xs leading-4 tracking-normal',
+      captionMedium: 'text-xs leading-4 font-normal tracking-normal',
+      captionSmall: 'text-xs leading-4 font-normal tracking-normal',
 
-      captionStrongMedium: 'font-medium text-xs leading-4 tracking-normal',
-      captionStrongSmall: 'font-medium text-xs leading-4 tracking-normal',
-      label: 'font-semibold text-sm leading-5 tracking-normal',
+      captionStrongMedium: 'text-xs leading-4 font-medium tracking-normal',
+      captionStrongSmall: 'text-xs leading-4 font-medium tracking-normal',
+      label: 'text-sm leading-5 font-semibold tracking-normal',
 
-      labelLarge: 'font-normal text-lg leading-6 tracking-normal',
-      labelMedium: 'font-normal text-base leading-6 tracking-tight',
-      labelSmall: 'font-normal text-sm leading-5 tracking-normal',
+      labelLarge: 'text-lg leading-6 font-normal tracking-normal',
+      labelMedium: 'text-base leading-6 font-normal tracking-tight',
+      labelSmall: 'text-sm leading-5 font-normal tracking-normal',
 
-      labelStrongLarge: 'font-semibold text-lg leading-6 tracking-tight',
-      labelStrongMedium: 'font-semibold text-base leading-6 tracking-tight',
-      labelStrongSmall: 'font-semibold text-sm leading-5 tracking-normal',
-      labelStrongXSmall: 'font-semibold text-xs leading-4 tracking-normal',
-      labelXSmall: 'font-normal text-xs leading-4 tracking-normal',
-      large: 'font-normal text-base leading-7 tracking-tight',
-      lead: 'font-normal text-lg text-muted-foreground leading-7 tracking-tight',
-      muted: 'font-normal text-muted-foreground text-sm leading-5 tracking-normal',
+      labelStrongLarge: 'text-lg leading-6 font-semibold tracking-tight',
+      labelStrongMedium: 'text-base leading-6 font-semibold tracking-tight',
+      labelStrongSmall: 'text-sm leading-5 font-semibold tracking-normal',
+      labelStrongXSmall: 'text-xs leading-4 font-semibold tracking-normal',
+      labelXSmall: 'text-xs leading-4 font-normal tracking-normal',
+      large: 'text-base leading-7 font-normal tracking-tight',
+      lead: 'text-lg leading-7 font-normal tracking-tight text-muted-foreground',
+      muted: 'text-sm leading-5 font-normal tracking-normal text-muted-foreground',
 
-      numberLarge: 'font-normal text-lg tabular-nums leading-6 tracking-normal',
-      numberMedium: 'font-normal text-base tabular-nums leading-6 tracking-normal',
-      numberSmall: 'font-normal text-sm tabular-nums leading-5 tracking-normal',
+      numberLarge: 'text-lg leading-6 font-normal tracking-normal tabular-nums',
+      numberMedium: 'text-base leading-6 font-normal tracking-normal tabular-nums',
+      numberSmall: 'text-sm leading-5 font-normal tracking-normal tabular-nums',
 
-      numberStrongLarge: 'font-medium text-lg tabular-nums leading-6 tracking-normal',
-      numberStrongMedium: 'font-medium text-base tabular-nums leading-6 tracking-normal',
-      numberStrongSmall: 'font-medium text-sm tabular-nums leading-5 tracking-normal',
-      numberStrongXSmall: 'font-medium text-xs tabular-nums leading-4 tracking-normal',
-      numberXSmall: 'font-normal text-xs tabular-nums leading-4 tracking-normal',
-      small: 'font-normal text-xs leading-5 tracking-normal',
+      numberStrongLarge: 'text-lg leading-6 font-medium tracking-normal tabular-nums',
+      numberStrongMedium: 'text-base leading-6 font-medium tracking-normal tabular-nums',
+      numberStrongSmall: 'text-sm leading-5 font-medium tracking-normal tabular-nums',
+      numberStrongXSmall: 'text-xs leading-4 font-medium tracking-normal tabular-nums',
+      numberXSmall: 'text-xs leading-4 font-normal tracking-normal tabular-nums',
+      small: 'text-xs leading-5 font-normal tracking-normal',
 
-      titleLarge: 'font-display font-medium text-4xl leading-10 tracking-tight',
-      titleMedium: 'font-display font-medium text-2xl leading-8 tracking-tight',
-      titleMediumSemibold: 'font-display font-semibold text-2xl leading-8 tracking-tight',
-      titleSmall: 'font-display font-medium text-xl leading-7 tracking-tight',
-      titleXSmall: 'font-display font-medium text-lg leading-6 tracking-tight',
-      xLarge: 'font-display font-medium text-lg leading-6 tracking-tight',
+      titleLarge: 'font-display text-4xl leading-10 font-medium tracking-tight',
+      titleMedium: 'font-display text-2xl leading-8 font-medium tracking-tight',
+      titleMediumSemibold: 'font-display text-2xl leading-8 font-semibold tracking-tight',
+      titleSmall: 'font-display text-xl leading-7 font-medium tracking-tight',
+      titleXSmall: 'font-display text-lg leading-6 font-medium tracking-tight',
+      xLarge: 'font-display text-lg leading-6 font-medium tracking-tight',
     },
   },
 });
@@ -198,7 +198,7 @@ interface InlineCodeProps extends React.HTMLAttributes<HTMLElement>, SharedProps
 export function InlineCode({ className, children, testId, ...props }: InlineCodeProps) {
   return (
     <code
-      className={cn('relative rounded bg-muted px-1 py-0.5 font-mono font-semibold text-sm', className)}
+      className={cn('relative rounded bg-muted px-1 py-0.5 font-mono text-sm font-semibold', className)}
       data-testid={testId}
       {...props}
     >

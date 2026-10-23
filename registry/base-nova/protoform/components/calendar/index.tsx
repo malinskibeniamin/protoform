@@ -95,33 +95,33 @@ function Calendar({
         classNames={{
           button_next: cn(
             buttonVariants({ variant: buttonVariant }),
-            'size-(--cell-size) select-none p-0 aria-disabled:opacity-50',
+            'size-(--cell-size) p-0 select-none aria-disabled:opacity-50',
             defaultClassNames.button_next
           ),
           button_previous: cn(
             buttonVariants({ variant: buttonVariant }),
-            'size-(--cell-size) select-none p-0 aria-disabled:opacity-50',
+            'size-(--cell-size) p-0 select-none aria-disabled:opacity-50',
             defaultClassNames.button_previous
           ),
           caption_label: cn(
-            'select-none font-medium',
+            'font-medium select-none',
             captionLayout === 'label'
               ? 'text-sm'
               : 'flex h-8 items-center gap-1 rounded-md pr-1 pl-2 text-sm [&>svg]:size-3.5 [&>svg]:text-muted-foreground',
             defaultClassNames.caption_label
           ),
           day: cn(
-            'group/day relative aspect-square size-full select-none p-0 text-center [&:first-child[data-selected=true]_button]:rounded-l-md [&:last-child[data-selected=true]_button]:rounded-r-md',
+            'group/day relative aspect-square size-full p-0 text-center select-none [&:first-child[data-selected=true]_button]:rounded-l-md [&:last-child[data-selected=true]_button]:rounded-r-md',
             defaultClassNames.day
           ),
           disabled: cn('text-muted-foreground opacity-50', defaultClassNames.disabled),
           dropdown: cn('absolute inset-0 opacity-0', defaultClassNames.dropdown),
           dropdown_root: cn(
-            '!border-input relative rounded-md border shadow-xs has-focus:border-ring has-focus:ring-3 has-focus:ring-ring/50',
+            'relative rounded-md border !border-input shadow-xs has-focus:border-ring has-focus:ring-3 has-focus:ring-ring/50',
             defaultClassNames.dropdown_root
           ),
           dropdowns: cn(
-            'flex h-(--cell-size) w-full items-center justify-center gap-1.5 font-medium text-sm',
+            'flex h-(--cell-size) w-full items-center justify-center gap-1.5 text-sm font-medium',
             defaultClassNames.dropdowns
           ),
           hidden: cn('invisible', defaultClassNames.hidden),
@@ -142,10 +142,10 @@ function Calendar({
             defaultClassNames.today
           ),
           week: cn('mt-2 flex w-full', defaultClassNames.week),
-          week_number: cn('select-none text-muted-foreground text-xs', defaultClassNames.week_number),
+          week_number: cn('text-xs text-muted-foreground select-none', defaultClassNames.week_number),
           week_number_header: cn('w-(--cell-size) select-none', defaultClassNames.week_number_header),
           weekday: cn(
-            'flex-1 select-none rounded-md font-normal text-muted-foreground text-xs',
+            'flex-1 rounded-md text-xs font-normal text-muted-foreground select-none',
             defaultClassNames.weekday
           ),
           weekdays: cn('flex', defaultClassNames.weekdays),

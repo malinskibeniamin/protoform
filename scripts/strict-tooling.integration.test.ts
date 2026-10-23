@@ -1,4 +1,5 @@
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { describe, expect } from '@rstest/core';
@@ -46,13 +47,13 @@ function parseJsonc(value: string, label: string): unknown {
 describe('strict React tooling', () => {
   test('pins the latest analysis toolchain and exposes strict entrypoints', () => {
     expect(packageJson.devDependencies).toMatchObject({
-      '@biomejs/biome': '2.5.15',
+      '@biomejs/biome': '2.6.2',
       '@shadcn/lint': '0.2.3',
       oxlint: '1.89.0',
       '@rsbuild/plugin-react': '2.1.1',
       'react-doctor': '0.9.18',
       'react-scan': '0.5.7',
-      ultracite: '8.0.1',
+      ultracite: '8.0.2',
     });
     expect('babel-plugin-react-compiler' in packageJson.devDependencies).toBe(false);
     expect(packageJson.scripts).toMatchObject({
@@ -66,6 +67,90 @@ describe('strict React tooling', () => {
       'doctor:strict': 'bun run doctor',
       'scan:react': 'PROTOFORM_REACT_SCAN=1 blume dev --port 55011',
     });
+  });
+
+  test('rejects unsafe and redundant patterns with the configured Biome 2.6 rules', () => {
+    mkdirSync('.tmp', { recursive: true });
+    const directory = mkdtempSync(resolve('.tmp/biome-rule-probe-'));
+    const fixture = resolve(directory, 'probe.ts');
+    try {
+      writeFileSync(
+        fixture,
+        `
+export function isPositive(value: number) {
+  if (value > 0) {
+    return true;
+  }
+  return false;
+}
+export function copyDate(value: Date) {
+  return new Date(value.getTime());
+}
+export function invert(value: number) {
+  return value * -1;
+}
+export function callDirectly() {
+  return isPositive.call(null, 1);
+}
+`
+      );
+      const result = spawnSync(
+        resolve('node_modules/.bin/biome'),
+        ['lint', fixture, '--colors=off', '--vcs-enabled=false'],
+        {
+          encoding: 'utf8',
+        }
+      );
+
+      expect(result.error).toBeUndefined();
+      expect(result.status).toBe(1);
+      const diagnostics = result.stdout + result.stderr;
+      for (const rule of ['useSimplifiedBooleanReturn', 'noUselessDateGetTime', 'useUnaryMinus', 'noUselessCall']) {
+        expect(diagnostics).toContain(`lint/nursery/${rule}`);
+      }
+    } finally {
+      rmSync(directory, { recursive: true, force: true });
+    }
+  });
+
+  test('enforces Ultracite label associations for shadcn controls', () => {
+    mkdirSync('.tmp', { recursive: true });
+    const directory = mkdtempSync(resolve('.tmp/ultracite-label-probe-'));
+    const fixture = resolve(directory, 'probe.tsx');
+    const imports = `
+import { Input } from '@/registry/base-nova/protoform/components/input';
+import { Label } from '@/registry/base-nova/protoform/components/label';
+`;
+    const args = ['lint', fixture, '--colors=off', '--vcs-enabled=false'];
+    try {
+      writeFileSync(
+        fixture,
+        `${imports}
+export function Field() {
+  return <><Label>Name</Label><Input aria-label="Name" /></>;
+}
+`
+      );
+      const invalid = spawnSync(resolve('node_modules/.bin/biome'), args, { encoding: 'utf8', timeout: 10_000 });
+      expect(invalid.error).toBeUndefined();
+      expect(invalid.status).toBe(1);
+      expect(invalid.stdout + invalid.stderr).toContain('lint/a11y/noLabelWithoutControl');
+
+      writeFileSync(
+        fixture,
+        `${imports}
+export function Field() {
+  return <Label>Name<Input aria-label="Name" /></Label>;
+}
+`
+      );
+      const valid = spawnSync(resolve('node_modules/.bin/biome'), args, { encoding: 'utf8', timeout: 10_000 });
+      expect(valid.error).toBeUndefined();
+      expect(valid.stdout + valid.stderr).not.toContain('lint/a11y/noLabelWithoutControl');
+      expect(valid.status).toBe(0);
+    } finally {
+      rmSync(directory, { recursive: true, force: true });
+    }
   });
 
   test('explicitly configures every stable and nursery Biome rule', async () => {
@@ -117,8 +202,8 @@ describe('strict React tooling', () => {
             : getJsonObject(ruleConfig, `Biome rule configuration in group ${groupIndex}`)['level']
         )
     );
-    expect(configuredSeverities.filter((severity) => severity === 'error')).toHaveLength(504);
-    expect(configuredSeverities.filter((severity) => severity === 'off')).toHaveLength(53);
+    expect(configuredSeverities.filter((severity) => severity === 'error')).toHaveLength(550);
+    expect(configuredSeverities.filter((severity) => severity === 'off')).toHaveLength(57);
 
     expect(configuredRuleGroups).toMatchObject({
       a11y: {
@@ -135,6 +220,7 @@ describe('strict React tooling', () => {
         },
         noImplicitCoercions: 'error',
         noUselessUndefined: 'error',
+        noPlaywrightUselessAwait: 'error',
       },
       correctness: {
         noNodejsModules: 'error',
@@ -151,40 +237,28 @@ describe('strict React tooling', () => {
           },
         },
         noUndeclaredDependencies: 'error',
+        noComponentHookFactories: 'error',
+        noJsxNamespace: 'error',
+        noPlaywrightMissingAwait: 'error',
+        useReactAsyncServerFunction: 'error',
       },
       nursery: {
         noAstroConflictingSetDirectives: 'error',
         noBaseToString: 'error',
-        noComponentHookFactories: 'error',
         noFloatingPromises: 'error',
-        noIdenticalTestTitle: 'error',
         noJsonUnsafeValues: 'error',
-        noJsxLeakedDollar: 'error',
-        noJsxNamespace: 'error',
         noMeaninglessVoidOperator: 'error',
         noMisplacedListElements: 'error',
         noMisleadingReturnType: 'error',
         noMisusedPromises: 'error',
         noObsoleteTags: 'error',
-        noPlaywrightElementHandle: 'error',
-        noPlaywrightEval: 'error',
-        noPlaywrightForceOption: 'error',
-        noPlaywrightMissingAwait: 'error',
-        noPlaywrightNetworkidle: 'error',
-        noPlaywrightPagePause: 'error',
-        noPlaywrightUselessAwait: 'error',
-        noPlaywrightWaitForNavigation: 'error',
-        noPlaywrightWaitForSelector: 'error',
-        noPlaywrightWaitForTimeout: 'error',
         noReactObjectTypeAsDefaultProp: 'error',
-        noReactStringRefs: 'error',
         noReturnInFinally: 'error',
         noSelfImport: 'error',
         noSvelteAtDebugTags: 'error',
         noSvelteExportLet: 'error',
         noTailwindRawColors: 'error',
         noUnsafePlusOperands: 'error',
-        noUntrustedLicenses: 'error',
         noUselessTypeConversion: 'error',
         noVueUndeclaredDirectives: 'error',
         useAwaitThenable: 'error',
@@ -193,24 +267,16 @@ describe('strict React tooling', () => {
           options: { style: 'declaration', allowArrowFunctions: true },
         },
         useConsistentObjectKeys: 'error',
-        useConsistentTestIt: {
-          level: 'error',
-          options: { function: 'test', withinDescribe: 'test' },
-        },
         useDisposables: 'error',
         useExhaustiveSwitchCases: 'error',
         useIncludes: 'error',
         useLogicalProperties: 'error',
         usePromiseRejectErrors: 'error',
-        useReactAsyncServerFunction: 'error',
         useReactCompiler: 'error',
         useRegexpExec: 'error',
         useStringStartsEndsWith: 'error',
         useStrictBooleanExpressions: 'error',
         useSvelteKitRuneImports: 'error',
-        useTestHooksInOrder: 'error',
-        useTestHooksOnTop: 'error',
-        useUnicodeRegex: 'error',
         useValidTestTitle: 'error',
       },
       performance: {
@@ -223,6 +289,16 @@ describe('strict React tooling', () => {
         },
       },
       style: {
+        noPlaywrightElementHandle: 'error',
+        noPlaywrightEval: 'error',
+        noPlaywrightWaitForSelector: 'error',
+        useConsistentTestIt: {
+          level: 'error',
+          options: { function: 'test', withinDescribe: 'test' },
+        },
+        useTestHooksInOrder: 'error',
+        useTestHooksOnTop: 'error',
+        useUnicodeRegex: 'error',
         noCommonJs: 'error',
         noDefaultExport: 'error',
         noExcessiveClassesPerFile: 'error',
@@ -251,6 +327,15 @@ describe('strict React tooling', () => {
         useSingleVarDeclarator: 'error',
       },
       suspicious: {
+        noIdenticalTestTitle: 'error',
+        noJsxLeakedDollar: 'error',
+        noPlaywrightForceOption: 'error',
+        noPlaywrightNetworkidle: 'error',
+        noPlaywrightPagePause: 'error',
+        noPlaywrightWaitForNavigation: 'error',
+        noPlaywrightWaitForTimeout: 'error',
+        noReactStringRefs: 'error',
+        noUntrustedLicenses: 'error',
         noForIn: 'error',
         noReactForwardRef: 'error',
         noUndeclaredEnvVars: 'error',
@@ -324,7 +409,11 @@ describe('strict React tooling', () => {
         .map((file) => ({ file, rules: override.rules }))
     );
     expect(nonComponentOverrides.every(({ file }) => !GLOB_SYNTAX.test(file))).toBe(true);
-    expect([...new Set(nonComponentOverrides.map(({ file }) => file))].toSorted()).toEqual([
+    expect(
+      [...new Set(nonComponentOverrides.map(({ file }) => file))].toSorted((left, right) =>
+        left < right ? -1 : Number(left > right)
+      )
+    ).toEqual([
       'examples/basic/basic-form.tsx',
       'examples/catalog/demo-hub.tsx',
       'examples/presets/preset-lab.tsx',

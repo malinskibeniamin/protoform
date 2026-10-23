@@ -3,6 +3,7 @@
 import { TrashIcon } from 'lucide-react';
 import React from 'react';
 import { formatProtoformMessage } from '@/registry/base-nova/protoform/lib/core/messages';
+import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import { useAutoFormRenderContext, useAutoFormRuntimeContext } from '../context';
 import type { ParsedField } from '../core-types';
 import { type AutoFormArrayController, useAutoFormEngine } from '../engine';
@@ -121,7 +122,7 @@ export function ArrayFieldRenderer({
                 if (compactItemField && useCompactRows) {
                   return (
                     <div
-                      className={index > 0 ? `${COMPACT_ROW_GRID} ${formSpacing.arrayItemSeparator}` : COMPACT_ROW_GRID}
+                      className={cn(COMPACT_ROW_GRID, index > 0 && formSpacing.arrayItemSeparator)}
                       data-testid={rowTestId}
                       key={item.key}
                     >

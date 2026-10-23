@@ -11,7 +11,7 @@ const steps = [
   { id: 'review', title: 'Review' },
 ];
 
-describe('AutoForm stepper', () => {
+describe('autoForm stepper', () => {
   test('renders an adaptive horizontal row by default and a vertical rail through the stepper config', () => {
     const schema = createMockProvider([{ key: 'name', required: true, type: 'string' }]);
     const fiveSteps = [

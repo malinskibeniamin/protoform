@@ -59,6 +59,9 @@
       "trailingCommas": "none"
     }
   },
+  // Markdown and YAML formatting remains owned by Oxfmt.
+  "markdown": { "formatter": { "enabled": false } },
+  "yaml": { "formatter": { "enabled": false } },
   "css": {
     "formatter": {
       "lineEnding": "lf",
@@ -173,7 +176,14 @@
         "useRegexLiterals": "error",
         "useSimpleNumberKeys": "error",
         "useSimplifiedLogicExpression": "error",
-        "useWhile": "error"
+        "useWhile": "error",
+        "noExcessiveNestedCallbacks": "error",
+        "noExcessiveSelectorClasses": "error",
+        "noPlaywrightUselessAwait": "error",
+        "noUnnecessaryTemplateExpression": "error",
+        "useArraySome": "error",
+        "useMathMinMax": "error",
+        "useRegexpTest": "error"
       },
       "correctness": {
         "noBeforeInteractiveScriptOutsideDocument": "error",
@@ -287,9 +297,76 @@
         "useVueValidVOnce": "error",
         "useVueValidVPre": "error",
         "useVueValidVText": "error",
-        "useYield": "error"
+        "useYield": "error",
+        "noComponentHookFactories": "error",
+        "noDuplicateFieldDefinitionNames": "error",
+        "noJsxNamespace": "error",
+        "noPlaywrightMissingAwait": "error",
+        "noReactNativeRawText": "off",
+        "noVueImportCompilerMacros": "off",
+        "noVueRefAsOperand": "off",
+        "noVueVOnNumberValues": "off",
+        "usePlaywrightValidDescribeCallback": "off",
+        "useQwikLoaderLocation": "off",
+        "useReactAsyncServerFunction": "error",
+        "useReactNativePlatformComponents": "off",
+        "useVueValidVFor": "off"
       },
       "nursery": {
+        "noAccidentalBitwiseOperators": "error",
+        "noArgumentsCallerOrCallee": "error",
+        "noDoubleComparison": "error",
+        "noDuplicateMapKeys": "error",
+        // The existing cognitive-complexity and function-line limits bound complexity without a new ten-statement policy.
+        "noExcessiveStatementsPerFunction": "off",
+        "noInvalidThis": "error",
+        "noNestedSwitch": "error",
+        "noNestedTemplateLiterals": "error",
+        "noObjectConstructor": "error",
+        "noOctal": "error",
+        // Browser code already forbids process globals; Node CLI entrypoints exit deliberately.
+        "noProcessExit": "off",
+        "noPromiseExecutorReturn": "error",
+        "noSvelteAddEventListener": "error",
+        "noSvelteClassDirective": "error",
+        "noSvelteInspect": "error",
+        "noSvelteObjectInTextMustaches": "error",
+        "noSvelteUselessDerivedBy": "error",
+        "noTailwindLegacyUtilities": "error",
+        // Registry components intentionally expose className for host-owned styling and variants.
+        "noTailwindRestyledComponents": "off",
+        "noUnsafeUnaryMinus": "error",
+        "noUselessAssignment": "error",
+        "noUselessCall": "error",
+        "noUselessDateGetTime": "error",
+        "noVueBooleanDefault": "error",
+        "noVueLifecycleAfterAwait": "error",
+        "noVueRequiredPropWithDefault": "error",
+        "noVueRootVIf": "error",
+        "noVueShadowNativeEvents": "error",
+        "noVueVHtml": "error",
+        "noVueVText": "error",
+        "noZeroFractions": "error",
+        "useBigintLiterals": "error",
+        "useCapitalizedConstructors": "error",
+        // There are no Vue or Svelte block-language contracts to configure in this React/Astro project.
+        "useConsistentBlockLang": "off",
+        "useConsistentHeadingLevel": "error",
+        "useConsistentJsonFileRead": "error",
+        "useFencedCodeLanguage": "error",
+        "useLowercaseTestTitle": "error",
+        "useMatchingFunctionName": "error",
+        "useNamedFunction": "error",
+        "useSimplifiedBooleanReturn": "error",
+        "useSingleTopLevelHeading": "error",
+        "useSvelteKitResolve": "error",
+        "useSvelteReactiveClasses": "error",
+        "useSvelteShorthandDirective": "error",
+        "useTailwindStaticClassStrings": "error",
+        "useTopLevelHeading": "error",
+        "useUnaryMinus": "error",
+        "useVueConsistentEventHyphenation": "error",
+        "useVueMatchingComponentFileName": "error",
         "noAstroConflictingSetDirectives": "error",
         "noAstroSetHtmlDirective": "error",
         "noBunModules": "error",
@@ -311,28 +388,12 @@
         "useReactNamingConvention": "off",
         "useVueBaseImport": "error",
         "noBaseToString": "error",
-        "noComponentHookFactories": "error",
-        "noConditionalExpect": "off",
-        "noDrizzleDeleteWithoutWhere": "off",
-        "noDrizzleUpdateWithoutWhere": "off",
-        "noDuplicateFieldDefinitionNames": "error",
-        "noDuplicateSelectors": "error",
-        "noEmptyObjectKeys": "error",
-        "noExcessiveNestedCallbacks": "error",
-        "noExcessiveSelectorClasses": "error",
         "noExtendNative": "error",
         "noFloatingPromises": "error",
-        "noIdenticalTestTitle": "error",
         "noImpliedEval": "error",
-        // Dynamic component geometry and theme previews require runtime values; deleting
-        // their inline styles is an unsafe fix that breaks layout and visual state.
-        "noInlineStyles": "off",
         "noInvalidPropertyInitValue": "error",
         "noJsRestrictedProperties": "error",
         "noJsonUnsafeValues": "error",
-        "noJsxLeakedDollar": "error",
-        "noJsxNamespace": "error",
-        "noLoopFunc": "error",
         "noMeaninglessVoidOperator": "error",
         "noMisplacedListElements": "error",
         "noMisleadingReturnType": "error",
@@ -340,21 +401,7 @@
         "noNegationInEqualityCheck": "error",
         "noNonScalableViewport": "error",
         "noObsoleteTags": "error",
-        "noPlaywrightElementHandle": "error",
-        "noPlaywrightEval": "error",
-        "noPlaywrightForceOption": "error",
-        "noPlaywrightMissingAwait": "error",
-        "noPlaywrightNetworkidle": "error",
-        "noPlaywrightPagePause": "error",
-        "noPlaywrightUselessAwait": "error",
-        "noPlaywrightWaitForNavigation": "error",
-        "noPlaywrightWaitForSelector": "error",
-        "noPlaywrightWaitForTimeout": "error",
-        "noReactNativeDeepImports": "off",
-        "noReactNativeLiteralColors": "off",
-        "noReactNativeRawText": "off",
         "noReactObjectTypeAsDefaultProp": "error",
-        "noReactStringRefs": "error",
         "noRestrictedDependencies": "error",
         "noReturnInFinally": "error",
         "noSelfImport": "error",
@@ -364,26 +411,16 @@
         "noSvelteUnnecessaryStateWrap": "off",
         "noTailwindArbitraryValue": "off",
         "noTailwindRawColors": "error",
-        "noTopLevelLiterals": "error",
         "noUndeclaredClasses": "off",
-        "noUnnecessaryTemplateExpression": "error",
         "noUnsafePlusOperands": "error",
         // Type assertions are audited by strict TypeScript checks; this experimental rule
         // reports hundreds of verified boundary narrowings and generated-data adapters.
         "noUnsafeTypeAssertion": "off",
-        "noUntrustedLicenses": "error",
         "noUnusedClasses": "off",
         "noUselessTypeConversion": "error",
-        "noVueImportCompilerMacros": "off",
-        "noVueRefAsOperand": "off",
         "noVueUndeclaredDirectives": "error",
-        "noVueVOnNumberValues": "off",
-        "useArraySome": "error",
         "useAstroClientOnlyDirectiveValue": "off",
         "useAwaitThenable": "error",
-        // Protoform intentionally supports fullscreen and user-select behavior beyond the
-        // rule's configured Baseline target.
-        "useBaseline": "off",
         "useConsistentFunctionStyle": {
           "level": "error",
           "options": {
@@ -392,31 +429,15 @@
           }
         },
         "useConsistentObjectKeys": "error",
-        "useConsistentTestIt": {
-          "level": "error",
-          "options": {
-            "function": "test",
-            "withinDescribe": "test"
-          }
-        },
         "useControlLabel": "error",
         "useDisposables": "error",
-        "useDomNodeTextContent": "error",
-        "useDomQuerySelector": "error",
         "useExhaustiveSwitchCases": "error",
-        "useExpect": "off",
         // Inference remains part of the public TypeScript contract; requiring annotations on
         // every local and callback would add thousands of redundant declarations.
         "useExplicitReturnType": "off",
         "useExplicitType": "off",
-        "useIframeSandbox": "error",
-        "useImportsFirst": "error",
         "useIncludes": "error",
         "useLogicalProperties": "error",
-        "useMathMinMax": "error",
-        // Positional groups are required by compact protocol and validation expressions where
-        // introducing names would add no safer access path.
-        "useNamedCaptureGroup": "off",
         "useNamedLayer": "error",
         "useNullishCoalescing": {
           "level": "error",
@@ -424,39 +445,20 @@
             "ignorePrimitives": true
           }
         },
-        "usePlaywrightValidDescribeCallback": "off",
         "usePromiseRejectErrors": "error",
-        "useQwikLoaderLocation": "off",
-        "useReactAsyncServerFunction": "error",
         "useReactCompiler": "error",
         "useReactFunctionComponentDefinition": "off",
-        "useReactNativePlatformComponents": "off",
-        "useReduceTypeParameter": "error",
         "useRegexpExec": "error",
-        "useRegexpTest": "error",
-        "useScopedStyles": "off",
-        "useSortedClasses": {
-          "fix": "safe",
-          "level": "error",
-          "options": {
-            "attributes": ["className"],
-            "functions": ["clsx", "cva", "tw", "twMerge", "cn", "twJoin", "tv"]
-          }
-        },
         "useStrictBooleanExpressions": "error",
         "useStringStartsEndsWith": "error",
         "useSvelteKitRuneImports": "error",
         "useSvelteRequireEachKey": "off",
         "useTailwindShorthandClasses": "error",
-        "useTestHooksInOrder": "error",
-        "useTestHooksOnTop": "error",
-        "useThisInClassMethods": "error",
-        "useUnicodeRegex": "error",
         "useValidTestTitle": "error",
-        "useVarsOnTop": "error",
-        "useVueConsistentDefinePropsDeclaration": "off",
-        "useVueNextTickPromise": "off",
-        "useVueValidVFor": "off"
+        "useTailwindSortedClasses": {
+          "fix": "safe",
+          "level": "error"
+        }
       },
       "performance": {
         "noAccumulatingSpread": "error",
@@ -474,7 +476,8 @@
         "useGoogleFontPreconnect": "error",
         "useSolidForComponent": "off",
         "useTopLevelRegex": "error",
-        "useVueVapor": "error"
+        "useVueVapor": "error",
+        "useDomNodeTextContent": "error"
       },
       "security": {
         "noBlankTarget": "error",
@@ -487,7 +490,8 @@
           "options": {
             "entropyThreshold": 80
           }
-        }
+        },
+        "useIframeSandbox": "error"
       },
       "style": {
         "noCommonJs": "error",
@@ -621,7 +625,35 @@
         "useVueConsistentVOnStyle": "error",
         "useVueDefineMacrosOrder": "error",
         "useVueHyphenatedAttributes": "error",
-        "useVueMultiWordComponentNames": "error"
+        "useVueMultiWordComponentNames": "error",
+        // Dynamic component geometry and theme previews require runtime values; deleting
+        // their inline styles is an unsafe fix that breaks layout and visual state.
+        "noInlineStyles": "off",
+        "noPlaywrightElementHandle": "error",
+        "noPlaywrightEval": "error",
+        "noPlaywrightWaitForSelector": "error",
+        "noReactNativeLiteralColors": "off",
+        "noTopLevelLiterals": "error",
+        "useConsistentTestIt": {
+          "level": "error",
+          "options": {
+            "function": "test",
+            "withinDescribe": "test"
+          }
+        },
+        "useDomQuerySelector": "error",
+        "useImportsFirst": "error",
+        // Positional groups are required by compact protocol and validation expressions where
+        // introducing names would add no safer access path.
+        "useNamedCaptureGroup": "off",
+        "useReduceTypeParameter": "error",
+        "useTestHooksInOrder": "error",
+        "useTestHooksOnTop": "error",
+        "useThisInClassMethods": "error",
+        "useUnicodeRegex": "error",
+        "useVarsOnTop": "error",
+        "useVueConsistentDefinePropsDeclaration": "off",
+        "useVueNextTickPromise": "off"
       },
       "suspicious": {
         "noAlert": "error",
@@ -743,11 +775,88 @@
         "useNumberToFixedDigitsArgument": "error",
         "useRequiredScripts": "error",
         "useStaticResponseMethods": "error",
-        "useStrictMode": "error"
+        "useStrictMode": "error",
+        "noConditionalExpect": "off",
+        "noDrizzleDeleteWithoutWhere": "off",
+        "noDrizzleUpdateWithoutWhere": "off",
+        "noDuplicateSelectors": "error",
+        "noEmptyObjectKeys": "error",
+        "noIdenticalTestTitle": "error",
+        "noJsxLeakedDollar": "error",
+        "noLoopFunc": "error",
+        "noPlaywrightForceOption": "error",
+        "noPlaywrightNetworkidle": "error",
+        "noPlaywrightPagePause": "error",
+        "noPlaywrightWaitForNavigation": "error",
+        "noPlaywrightWaitForTimeout": "error",
+        "noReactNativeDeepImports": "off",
+        "noReactStringRefs": "error",
+        "noUntrustedLicenses": "error",
+        // Protoform intentionally supports fullscreen and user-select behavior beyond the
+        // rule's configured Baseline target.
+        "useBaseline": "off",
+        "useExpect": "off",
+        "useScopedStyles": "off"
       }
     }
   },
   "overrides": [
+    // Biome 2.6 ignores these hooks' existing use no memo directives and flags their deliberate ref boundaries.
+    {
+      "includes": [
+        "registry/base-nova/protoform/components/auto-form/adapters/tanstack-v2.tsx",
+        "registry/base-nova/protoform/components/auto-form/adapters/tanstack.tsx",
+        "registry/base-nova/protoform/hooks/use-proto-form/use-proto-form.ts",
+        "registry/base-nova/protoform/lib/input-utils/index.ts"
+      ],
+      "linter": {
+        "rules": {
+          "nursery": {
+            "useReactCompiler": "off"
+          }
+        }
+      }
+    },
+    // Biome 2.6 treats controlled-input and form-engine synchronization effects as compiler failures; the real compiler remains fail-fast in every React test suite.
+    {
+      "includes": [
+        "registry/base-nova/protoform/components/auto-form/auto-form-core.tsx",
+        "registry/base-nova/protoform/components/combobox/index.tsx",
+        "registry/base-nova/protoform/components/input/index.tsx"
+      ],
+      "linter": {
+        "rules": {
+          "nursery": {
+            "useReactCompiler": "off"
+          }
+        }
+      }
+    },
+    // The renderer comes from a stable React context; no component is created during render.
+    {
+      "includes": ["registry/base-nova/protoform/components/auto-form/renderers/nested.tsx"],
+      "linter": {
+        "rules": {
+          "nursery": {
+            "useReactCompiler": "off"
+          }
+        }
+      }
+    },
+    // Biome 2.6 loses Base UI's imported Side union and incorrectly marks supported positioning cases unreachable.
+    {
+      "includes": [
+        "registry/base-nova/protoform/components/popover/index.tsx",
+        "registry/base-nova/protoform/components/tooltip/index.tsx"
+      ],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noUnnecessaryConditions": "off"
+          }
+        }
+      }
+    },
     {
       // The highlighter escapes checked-in source files and returns trusted build-time markup,
       // never user-supplied HTML. The directive is required to render syntax-highlighted code.
@@ -765,7 +874,8 @@
       "includes": ["registry/base-nova/protoform/demo/catalog/**"],
       "linter": {
         "rules": {
-          "nursery": {
+          "nursery": {},
+          "style": {
             "useImportsFirst": "off"
           }
         }
@@ -823,7 +933,8 @@
       "includes": ["registry/base-nova/protoform/components/auto-form/cel-runtime.ts"],
       "linter": {
         "rules": {
-          "nursery": {
+          "nursery": {},
+          "complexity": {
             "useMathMinMax": "off"
           }
         }
@@ -834,7 +945,8 @@
       "includes": ["rstest.shared.setup.ts"],
       "linter": {
         "rules": {
-          "nursery": {
+          "nursery": {},
+          "style": {
             "useThisInClassMethods": "off"
           }
         }
@@ -987,7 +1099,8 @@
       ],
       "linter": {
         "rules": {
-          "nursery": {
+          "nursery": {},
+          "correctness": {
             "noComponentHookFactories": "off"
           }
         }
@@ -1353,5 +1466,11 @@
         }
       }
     }
-  ]
+  ],
+  "tailwind": {
+    "stylesheet": "./theme.css",
+    "attributes": ["class", "className"],
+    "mergeFunctions": ["clsx", "tw", "twMerge", "cn", "twJoin"],
+    "variantFunctions": ["cva", "tv"]
+  }
 }

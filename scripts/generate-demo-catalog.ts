@@ -485,7 +485,9 @@ function generateRegistryRuntime(): string[] {
     write(target, readFileSync(join(root, 'conformance/gen', file), 'utf8'));
   }
 
-  const schemaKeys = [...new Set(demoCatalog.map((demo) => demo.schemaKey))].toSorted();
+  const schemaKeys = [...new Set(demoCatalog.map((demo) => demo.schemaKey))].toSorted((left, right) =>
+    left < right ? -1 : Number(left > right)
+  );
   const schemaType = `export type DemoSchemaKey =\n${schemaKeys
     .map((key) => `  | ${JSON.stringify(key)}`)
     .join('\n')};`;

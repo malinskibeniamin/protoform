@@ -3,7 +3,7 @@ import type { ReadinessRequirement } from '../../readiness/profile.js';
 export function RequirementDetail({ requirement }: { requirement: ReadinessRequirement }) {
   if (requirement.status === 'verified' || requirement.status === 'optional') {
     return (
-      <p className="m-0 text-muted-foreground text-xs">
+      <p className="m-0 text-xs text-muted-foreground">
         Evidence: <code className="break-all">{requirement.evidence.file}</code> · {requirement.evidence.testName}
       </p>
     );
@@ -25,5 +25,5 @@ export function RequirementDetail({ requirement }: { requirement: ReadinessRequi
       </div>
     );
   }
-  return <p className="m-0 text-muted-foreground text-sm">{requirement.rationale}</p>;
+  return <p className="m-0 text-sm text-muted-foreground">{requirement.rationale}</p>;
 }

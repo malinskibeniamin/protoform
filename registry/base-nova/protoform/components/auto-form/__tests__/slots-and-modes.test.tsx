@@ -16,7 +16,7 @@ const schema = createMockProvider([
   { key: 'email', required: true, type: 'string' },
 ]);
 
-describe('AutoForm slots', () => {
+describe('autoForm slots', () => {
   test('places slot content around fields without empty rows or key warnings', () => {
     const consoleError = rs.spyOn(console, 'error').mockImplementation(() => undefined);
     const { container } = render(
@@ -49,7 +49,7 @@ describe('AutoForm slots', () => {
   });
 });
 
-describe('AutoForm modes', () => {
+describe('autoForm modes', () => {
   test('follows a changed defaultMode and falls back when the current mode is removed', () => {
     const { rerender } = render(<AutoForm defaultMode="advanced" modes={['advanced', 'json']} schema={schema} />);
     expect(screen.getByRole('tab', { name: ADVANCED_TAB })).toHaveAttribute('aria-selected', 'true');

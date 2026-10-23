@@ -152,7 +152,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",
-    "@biomejs/biome": "2.5.15",
+    "@biomejs/biome": "2.6.2",
     "@bufbuild/buf": "^1.74.0",
     "@bufbuild/protoc-gen-es": "^2.16.0",
     "@bufbuild/protoplugin": "^2.16.0",
@@ -193,7 +193,7 @@
     "tsrs": "0.18.0-ts7.1.0-dev.20260929",
     "tw-animate-css": "1.4.0",
     "typescript": "npm:@typescript/typescript6@^6.0.2",
-    "ultracite": "8.0.1",
+    "ultracite": "8.0.2",
     "undici": "8.12.2"
   },
   "packageManager": "bun@1.4.4",
@@ -202,6 +202,7 @@
     "node": ">=26.0.0"
   },
   "patchedDependencies": {
-    "blume@2.2.4": "patches/blume@2.2.4.patch"
+    "blume@2.2.4": "patches/blume@2.2.4.patch",
+    "ultracite@8.0.2": "patches/ultracite@8.0.2.patch"
   }
 }

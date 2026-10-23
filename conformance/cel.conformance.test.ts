@@ -35,7 +35,7 @@ function paths(
   );
 }
 
-describe('CEL validation conformance', () => {
+describe('cel validation conformance', () => {
   test('resolves transitive imported and nested enum symbols through Standard Schema', async () => {
     const schema = createProtoFormSchema(TransitiveCelConsumerSchema);
 

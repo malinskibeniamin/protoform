@@ -275,14 +275,13 @@ export function createEmptyFieldValue(field: ParsedField | undefined): unknown {
     case 'fieldMask':
       return [];
     case 'json':
-      switch (protoData?.jsonKind) {
-        case 'listValue':
-          return [];
-        case 'any':
-          return { typeUrl: '', valueBase64: '' };
-        default:
-          return {};
+      if (protoData?.jsonKind === 'listValue') {
+        return [];
       }
+      if (protoData?.jsonKind === 'any') {
+        return { typeUrl: '', valueBase64: '' };
+      }
+      return {};
     case 'array':
       return [];
     case 'map':

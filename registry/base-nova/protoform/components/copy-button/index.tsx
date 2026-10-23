@@ -8,7 +8,7 @@ import React from 'react';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
 
 const buttonVariants = cva(
-  "inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium text-sm outline-none transition-all focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  "inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     defaultVariants: {
       size: 'md',
@@ -26,7 +26,7 @@ const buttonVariants = cva(
           'bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:bg-destructive/60 dark:focus-visible:ring-destructive/40',
         ghost: 'hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50',
         outline:
-          '!border-border border bg-background text-foreground shadow-xs hover:border-ring hover:bg-primary/10 active:border-ring active:bg-primary/15 disabled:border-border disabled:text-muted-foreground',
+          'border !border-border bg-background text-foreground shadow-xs hover:border-ring hover:bg-primary/10 active:border-ring active:bg-primary/15 disabled:border-border disabled:text-muted-foreground',
         primary: 'bg-secondary text-primary-foreground shadow-xs hover:bg-secondary/80',
         secondary: 'bg-primary text-primary-foreground shadow-xs hover:bg-primary/90',
       },

@@ -84,7 +84,7 @@ const SelectTrigger = React.forwardRef<
     <SelectPrimitive.Trigger
       className={(state) =>
         cn(
-          "!border-input flex w-full cursor-pointer select-none items-center justify-between gap-1.5 whitespace-nowrap border bg-transparent py-2 pr-2 pl-2.5 text-sm outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 data-[size=default]:h-8 data-[size=lg]:h-9 data-[size=sm]:h-7 data-[placeholder]:text-muted-foreground *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-1.5 dark:bg-input/30 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 dark:hover:bg-input/50 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0",
+          "flex w-full cursor-pointer items-center justify-between gap-1.5 border !border-input bg-transparent py-2 pr-2 pl-2.5 text-sm whitespace-nowrap transition-colors outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 data-[placeholder]:text-muted-foreground data-[size=default]:h-8 data-[size=lg]:h-9 data-[size=sm]:h-7 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-1.5 dark:bg-input/30 dark:hover:bg-input/50 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground",
           positionClasses,
           typeof className === 'function' ? className(state) : className
         )
@@ -147,9 +147,9 @@ const SelectContent = React.forwardRef<React.ComponentRef<typeof SelectPrimitive
           <SelectPrimitive.Popup
             className={(state) =>
               cn(
-                'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 relative z-50 max-h-(--available-height) min-w-36 origin-(--transform-origin) overflow-hidden rounded-lg bg-popover text-popover-foreground shadow-md ring-1 ring-foreground/10 data-[state=closed]:animate-out data-[state=open]:animate-in',
+                'relative z-50 max-h-(--available-height) min-w-36 origin-(--transform-origin) overflow-hidden rounded-lg bg-popover text-popover-foreground shadow-md ring-1 ring-foreground/10 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
                 position === 'popper' &&
-                  'data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=bottom]:translate-y-1 data-[side=top]:-translate-y-1',
+                  'data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1',
                 typeof className === 'function' ? className(state) : className
               )
             }
@@ -162,7 +162,7 @@ const SelectContent = React.forwardRef<React.ComponentRef<typeof SelectPrimitive
             <SelectScrollUpButton />
             <SelectPrimitive.List
               className={cn(
-                'max-h-(--available-height) w-full overflow-y-auto overflow-x-hidden p-1',
+                'max-h-(--available-height) w-full overflow-x-hidden overflow-y-auto p-1',
                 position === 'popper' && 'min-w-[var(--anchor-width)] scroll-my-1'
               )}
             >
@@ -184,7 +184,7 @@ const SelectLabel = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SelectPrimitive.GroupLabel
     className={(state) =>
-      cn('px-2 py-1.5 text-muted-foreground text-xs', typeof className === 'function' ? className(state) : className)
+      cn('px-2 py-1.5 text-xs text-muted-foreground', typeof className === 'function' ? className(state) : className)
     }
     data-slot="select-label"
     ref={ref}
@@ -201,7 +201,7 @@ const SelectItem = React.forwardRef<
   <SelectPrimitive.Item
     className={(state) =>
       cn(
-        "relative flex w-full cursor-pointer select-none items-center gap-1.5 rounded-md py-1 pr-8 pl-1.5 text-sm outline-hidden *:last:flex *:last:items-center *:last:gap-2 focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0",
+        "relative flex w-full cursor-pointer items-center gap-1.5 rounded-md py-1 pr-8 pl-1.5 text-sm outline-hidden select-none *:last:flex *:last:items-center *:last:gap-2 focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground",
         typeof className === 'function' ? className(state) : className
       )
     }

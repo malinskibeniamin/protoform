@@ -36,7 +36,7 @@ function nameFieldRoot() {
   return screen.getByRole('textbox', { name: /Name/u }).closest('[data-layout]');
 }
 
-describe('AutoForm appearance', () => {
+describe('autoForm appearance', () => {
   test('keeps the split layout, divided sections, and card array items by default', () => {
     const { container } = render(<AutoForm schema={profile} />);
 

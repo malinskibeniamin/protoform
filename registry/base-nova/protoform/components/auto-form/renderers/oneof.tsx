@@ -28,7 +28,7 @@ function SelectedOneofField({
     if (field.type === 'object' && (!field.schema || field.schema.length === 0)) {
       return (
         <div className="rounded-lg border border-dashed bg-muted/30 px-4 py-3">
-          <p className="text-muted-foreground text-sm">
+          <p className="text-sm text-muted-foreground">
             {getLabel(field)} selected. No additional configuration needed.
           </p>
         </div>

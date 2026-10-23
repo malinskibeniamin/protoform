@@ -8,10 +8,10 @@ const Label = React.forwardRef<
 >(({ className, variant, testId, ...props }, ref) => (
   <label
     className={cn(
-      'select-none font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-50 group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50',
-      variant === 'strong' && 'font-sans font-semibold leading-5 tracking-normal',
+      'text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50',
+      variant === 'strong' && 'font-sans leading-5 font-semibold tracking-normal',
       variant === 'field' &&
-        'group/field-label peer/field-label flex w-fit gap-2 leading-snug has-[>[data-slot=field]]:w-full has-[>[data-slot=field]]:flex-col has-[>[data-slot=field]]:rounded-md has-[>[data-slot=field]]:border has-data-[state=checked]:border-primary has-data-[state=checked]:bg-primary/5 group-data-[disabled=true]/field:opacity-50 dark:has-data-[state=checked]:bg-primary/10 [&>*]:data-[slot=field]:p-4',
+        'group/field-label peer/field-label flex w-fit gap-2 leading-snug group-data-[disabled=true]/field:opacity-50 has-data-[state=checked]:border-primary has-data-[state=checked]:bg-primary/5 has-[>[data-slot=field]]:w-full has-[>[data-slot=field]]:flex-col has-[>[data-slot=field]]:rounded-md has-[>[data-slot=field]]:border dark:has-data-[state=checked]:bg-primary/10 [&>*]:data-[slot=field]:p-4',
       className
     )}
     data-slot="label"

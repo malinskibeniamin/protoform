@@ -113,7 +113,8 @@ test('publishes complete search assets for every configured language', async ({ 
 for (const locale of ['en', 'zh', 'zh-TW', 'pl']) {
   for (const hub of demoHubs) {
     test(`serves machine-readable ${hub.slug} for ${locale}`, async ({ request }) => {
-      const route = `/docs/${locale === 'en' ? '' : `${locale}/`}${hub.slug}`;
+      const localePrefix = locale === 'en' ? '' : locale.concat('/');
+      const route = `/docs/${localePrefix}${hub.slug}`;
       const response = await request.get(`/api/docs/pages${route}.json`);
       expect(response.ok()).toBe(true);
       const page = z

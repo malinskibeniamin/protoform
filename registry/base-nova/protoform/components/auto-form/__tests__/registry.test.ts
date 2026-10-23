@@ -23,7 +23,7 @@ const stubContext = (identity = 'test test'): FieldMatchContext => ({
   maxLength: 0,
 });
 
-describe('FieldTypeRegistry', () => {
+describe('fieldTypeRegistry', () => {
   test('accumulates literal field names through chained registration', () => {
     const registry = new FieldTypeRegistry()
       .register({ component: MockComponent, match: () => true, name: 'alpha', priority: 1 })

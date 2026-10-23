@@ -6,7 +6,7 @@ import { Heading, Text } from '@/components/ui/typography';
 import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
 const cardVariants = cva(
-  'flex min-w-0 flex-col rounded-lg border border-border border-solid bg-card text-card-foreground',
+  'flex min-w-0 flex-col rounded-lg border border-solid border-border bg-card text-card-foreground',
   {
     defaultVariants: {
       size: 'md',
@@ -23,7 +23,7 @@ const cardVariants = cva(
       },
       variant: {
         choice:
-          'group-data-[state=checked]:!border-selected rounded-md border-2 border-solid p-4 shadow-none transition-all hover:shadow-lg',
+          'rounded-md border-2 border-solid p-4 shadow-none transition-all group-data-[state=checked]:!border-selected hover:shadow-lg',
         elevated: 'shadow-lg',
         ghost: 'border-0 bg-transparent shadow-none dark:bg-transparent',
         outlined: 'border-1',
@@ -149,7 +149,7 @@ const CardDescription = React.forwardRef<HTMLDivElement, React.ComponentProps<'d
 
     return (
       <div
-        className={cn('text-muted-foreground text-sm', className)}
+        className={cn('text-sm text-muted-foreground', className)}
         data-slot="card-description"
         data-testid={testId}
         ref={ref}
@@ -185,7 +185,7 @@ const cardContentVariants = cva('', {
   variants: {
     variant: {
       'selection-indicator':
-        '!border-input group-data-[state=checked]:!border-selected flex aspect-square size-4 shrink-0 items-center justify-center rounded-full border p-0 text-selected shadow-xs outline-none transition focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:bg-input/30 dark:aria-invalid:ring-destructive/40',
+        'flex aspect-square size-4 shrink-0 items-center justify-center rounded-full border !border-input p-0 text-selected shadow-xs transition outline-none group-data-[state=checked]:!border-selected focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:bg-input/30 dark:aria-invalid:ring-destructive/40',
     },
     padding: {
       lg: 'px-8',

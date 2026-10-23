@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 
 import { describe, expect } from '@rstest/core';
 
-describe('Protoform registry style', () => {
+describe('protoform registry style', () => {
   test('targets the Base UI Nova style', () => {
     const config = JSON.parse(readFileSync('components.json', 'utf8')) as {
       style?: string;

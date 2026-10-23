@@ -14,7 +14,7 @@ import {
 import { Editions2024LocalSchema, Editions2024MatrixSchema } from './gen/protoform/conformance/v1/editions_2024_pb.js';
 import { EditionStateSchema, EditionsMatrixSchema } from './gen/protoform/conformance/v1/editions_pb.js';
 
-describe('Protobuf Editions conformance', () => {
+describe('protobuf Editions conformance', () => {
   test('supports Edition 2024 visibility and option-only imports', async () => {
     expect(Editions2024MatrixSchema.file.edition).toBe(Edition.EDITION_2024);
     expect(Editions2024MatrixSchema.file.proto.options?.features?.defaultSymbolVisibility).toBe(

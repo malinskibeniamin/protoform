@@ -304,7 +304,7 @@ function SelectFieldFromProviderResult({
         value={currentValue ?? ''}
       />
       {provider.staleSelection === 'error' && staleSelections.length > 0 ? (
-        <p className="text-destructive text-sm" role="alert">
+        <p className="text-sm text-destructive" role="alert">
           {formatProtoformMessage(
             formatMessage,
             'auto_form.select.stale',
@@ -347,7 +347,7 @@ function ProviderOptionLabel({ option }: { option: DataProviderOption }) {
   return (
     <span className="flex items-center justify-between gap-3">
       {labelWithIcon}
-      <span className="text-muted-foreground text-xs">{option.description}</span>
+      <span className="text-xs text-muted-foreground">{option.description}</span>
     </span>
   );
 }

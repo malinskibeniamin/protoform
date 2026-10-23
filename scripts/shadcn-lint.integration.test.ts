@@ -80,8 +80,12 @@ test.each(cases)('shadcn lint $name', ({ prefix, rules, source }) => {
     expect(result.stderr).toBe('');
     expect(result.status).toBe(rules.length > 0 ? 1 : 0);
     const report = lintReport.parse(JSON.parse(result.stdout));
-    expect([...new Set(report.diagnostics.map((diagnostic) => diagnostic.code))].toSorted()).toEqual(
-      rules.map((rule) => `shadcn(${rule})`).toSorted()
+    expect(
+      [...new Set(report.diagnostics.map((diagnostic) => diagnostic.code))].toSorted((left, right) =>
+        left < right ? -1 : Number(left > right)
+      )
+    ).toEqual(
+      rules.map((rule) => `shadcn(${rule})`).toSorted((left, right) => (left < right ? -1 : Number(left > right)))
     );
   } finally {
     rmSync(directory, { force: true, recursive: true });

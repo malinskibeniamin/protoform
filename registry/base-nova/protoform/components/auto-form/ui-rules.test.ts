@@ -8,7 +8,7 @@ const readyRule = {
   message: 'Ready state is required.',
 };
 
-describe('AutoForm UI CEL profile', () => {
+describe('autoForm UI CEL profile', () => {
   test('exposes only form and current-field values and fails closed for malformed, unknown, erroring, and non-boolean rules', () => {
     expect(
       evaluateUiRules([readyRule], {

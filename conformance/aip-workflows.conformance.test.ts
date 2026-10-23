@@ -42,7 +42,7 @@ async function issues(schema: DescMessage, values: Record<string, unknown>) {
   return (await createProtoFormSchema(schema)['~standard'].validate(values)).issues;
 }
 
-describe('AIP workflow form conformance', () => {
+describe('aip workflow form conformance', () => {
   test('models AIP-152 Job configuration and Run request forms', () => {
     expect(getProtoResourceMetadata(WriteBookJobSchema)).toMatchObject({
       patterns: ['publishers/{publisher}/writeBookJobs/{write_book_job}'],

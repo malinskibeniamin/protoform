@@ -2,7 +2,7 @@ import { describe, expect } from '@rstest/core';
 
 import { compileCelExpression } from '../registry/base-nova/protoform/components/auto-form/cel-runtime.js';
 
-describe('CEL guarded runtime conformance', () => {
+describe('cel guarded runtime conformance', () => {
   test('propagates partial unknown attributes separately from evaluation errors', () => {
     const evaluate = compileCelExpression("form.enabled && form.restricted_region == 'eu-central1'", {
       unknownAttributes: ['form.restricted_region'],

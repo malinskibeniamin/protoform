@@ -113,16 +113,16 @@ export function ReadinessDashboard() {
       <section className="overflow-hidden rounded-xl border bg-card p-6 shadow-sm">
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(16rem,0.65fr)] lg:items-end">
           <div>
-            <p className="mb-2 font-medium text-muted-foreground text-sm uppercase tracking-wide">
+            <p className="mb-2 text-sm font-medium tracking-wide text-muted-foreground uppercase">
               Production Readiness Profile v{readinessProfile.version}
             </p>
             <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2">
-              <p className="m-0 font-semibold text-5xl tracking-tight">{summary.percentage}%</p>
+              <p className="m-0 text-5xl font-semibold tracking-tight">{summary.percentage}%</p>
               <Badge variant={summary.profileComplete ? 'success' : 'warning-inverted'}>
                 Profile complete: {summary.profileComplete ? 'yes' : 'not yet'}
               </Badge>
             </div>
-            <p className="mt-3 mb-0 text-muted-foreground text-sm">
+            <p className="mt-3 mb-0 text-sm text-muted-foreground">
               {summary.verified} of {summary.applicable} applicable checks verified.{' '}
               {summary.deferred + summary.unsupported} open checks count against readiness. {summary.excluded} excluded
               checks stay visible but do not affect the percentage.
@@ -186,7 +186,7 @@ export function ReadinessDashboard() {
                     >
                       <span
                         aria-hidden="true"
-                        className="absolute inset-0 rounded-xs bg-muted-foreground/10 hover:bg-muted-foreground/25 active:bg-muted-foreground/25 data-[status=deferred]:bg-readiness-deferred data-[status=external]:bg-muted-foreground/25 data-[status=missing]:bg-readiness-missing data-[status=optional]:bg-readiness-verified/50 data-[status=out-of-target]:bg-muted-foreground/15 data-[status=unsupported]:bg-readiness-unsupported data-[status=verified]:bg-readiness-verified data-[status=deferred]:active:bg-readiness-deferred-hover data-[status=external]:active:bg-muted-foreground/40 data-[status=missing]:active:bg-readiness-missing-hover data-[status=optional]:active:bg-readiness-verified/65 data-[status=out-of-target]:active:bg-muted-foreground/30 data-[status=unsupported]:active:bg-readiness-unsupported-hover data-[status=verified]:active:bg-readiness-verified-hover data-[status=deferred]:hover:bg-readiness-deferred-hover data-[status=external]:hover:bg-muted-foreground/40 data-[status=missing]:hover:bg-readiness-missing-hover data-[status=optional]:hover:bg-readiness-verified/65 data-[status=out-of-target]:hover:bg-muted-foreground/30 data-[status=unsupported]:hover:bg-readiness-unsupported-hover data-[status=verified]:hover:bg-readiness-verified-hover"
+                        className="absolute inset-0 rounded-xs bg-muted-foreground/10 hover:bg-muted-foreground/25 active:bg-muted-foreground/25 data-[status=deferred]:bg-readiness-deferred data-[status=deferred]:hover:bg-readiness-deferred-hover data-[status=deferred]:active:bg-readiness-deferred-hover data-[status=external]:bg-muted-foreground/25 data-[status=external]:hover:bg-muted-foreground/40 data-[status=external]:active:bg-muted-foreground/40 data-[status=missing]:bg-readiness-missing data-[status=missing]:hover:bg-readiness-missing-hover data-[status=missing]:active:bg-readiness-missing-hover data-[status=optional]:bg-readiness-verified/50 data-[status=optional]:hover:bg-readiness-verified/65 data-[status=optional]:active:bg-readiness-verified/65 data-[status=out-of-target]:bg-muted-foreground/15 data-[status=out-of-target]:hover:bg-muted-foreground/30 data-[status=out-of-target]:active:bg-muted-foreground/30 data-[status=unsupported]:bg-readiness-unsupported data-[status=unsupported]:hover:bg-readiness-unsupported-hover data-[status=unsupported]:active:bg-readiness-unsupported-hover data-[status=verified]:bg-readiness-verified data-[status=verified]:hover:bg-readiness-verified-hover data-[status=verified]:active:bg-readiness-verified-hover"
                         data-status={requirement.status}
                       />
                     </Button>
@@ -212,7 +212,7 @@ export function ReadinessDashboard() {
       </section>
 
       <section aria-labelledby="category-readiness-heading">
-        <h2 className="mb-4 font-semibold text-2xl" id="category-readiness-heading">
+        <h2 className="mb-4 text-2xl font-semibold" id="category-readiness-heading">
           Readiness by area
         </h2>
         <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,18rem),1fr))] gap-4">
@@ -222,9 +222,9 @@ export function ReadinessDashboard() {
             );
             return (
               <article className="min-w-0 rounded-lg border bg-card p-5" key={category.id}>
-                <h3 className="m-0 break-words font-semibold text-base">{category.title}</h3>
-                <p className="mt-3 mb-0 font-semibold text-xl tracking-tight">{categorySummary.percentage}%</p>
-                <p className="mt-1 mb-4 text-muted-foreground text-xs">
+                <h3 className="m-0 text-base font-semibold wrap-break-word">{category.title}</h3>
+                <p className="mt-3 mb-0 text-xl font-semibold tracking-tight">{categorySummary.percentage}%</p>
+                <p className="mt-1 mb-4 text-xs text-muted-foreground">
                   {categorySummary.verified}/{categorySummary.applicable} verified
                 </p>
                 <div
@@ -249,10 +249,10 @@ export function ReadinessDashboard() {
       <section aria-labelledby="capability-ledger-heading">
         <div className="mb-4 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <h2 className="m-0 font-semibold text-2xl" id="capability-ledger-heading">
+            <h2 className="m-0 text-2xl font-semibold" id="capability-ledger-heading">
               Capability ledger
             </h2>
-            <p aria-live="polite" className="mt-1 mb-0 text-muted-foreground text-sm">
+            <p aria-live="polite" className="mt-1 mb-0 text-sm text-muted-foreground">
               {`Showing ${visibleStart}–${visibleEnd} of ${filteredRequirements.length} matching checks. ${readinessRequirements.length} profile checks total.`}
             </p>
           </div>
@@ -294,7 +294,7 @@ export function ReadinessDashboard() {
         </div>
 
         {filteredRequirements.length === 0 ? (
-          <p className="rounded-lg border bg-card p-6 text-muted-foreground text-sm">
+          <p className="rounded-lg border bg-card p-6 text-sm text-muted-foreground">
             No readiness checks match these filters.
           </p>
         ) : (
@@ -309,11 +309,11 @@ export function ReadinessDashboard() {
               return (
                 <section aria-labelledby={`readiness-${category.id}`} key={category.id}>
                   <div className="mb-3 flex flex-wrap items-baseline justify-between gap-3 border-b pb-2">
-                    <h3 className="m-0 font-semibold text-xl" id={`readiness-${category.id}`}>
+                    <h3 className="m-0 text-xl font-semibold" id={`readiness-${category.id}`}>
                       {category.title}
                     </h3>
                     <a
-                      className="text-muted-foreground text-xs underline underline-offset-4"
+                      className="text-xs text-muted-foreground underline underline-offset-4"
                       href={category.sourceUrl}
                       rel="noreferrer"
                       target="_blank"
@@ -326,8 +326,8 @@ export function ReadinessDashboard() {
                       <li className="rounded-lg border bg-card p-4" key={requirement.id}>
                         <div className="flex flex-wrap items-start justify-between gap-3">
                           <div>
-                            <p className="m-0 break-all font-mono text-muted-foreground text-xs">{requirement.id}</p>
-                            <h4 className="mt-1 mb-0 font-semibold text-base">
+                            <p className="m-0 font-mono text-xs break-all text-muted-foreground">{requirement.id}</p>
+                            <h4 className="mt-1 mb-0 text-base font-semibold">
                               {requirement.sourceUrl ? (
                                 <a
                                   className="underline underline-offset-4"
@@ -348,7 +348,7 @@ export function ReadinessDashboard() {
                           </div>
                         </div>
                         {requirement.description ? (
-                          <p className="mt-3 mb-2 text-muted-foreground text-sm">{requirement.description}</p>
+                          <p className="mt-3 mb-2 text-sm text-muted-foreground">{requirement.description}</p>
                         ) : null}
                         <div className="mt-3">
                           <RequirementDetail requirement={requirement} />
@@ -373,7 +373,7 @@ export function ReadinessDashboard() {
             >
               Previous
             </Button>
-            <span aria-current="page" className="text-muted-foreground text-sm">
+            <span aria-current="page" className="text-sm text-muted-foreground">
               {`Page ${page} of ${pageCount}`}
             </span>
             <Button

@@ -7,7 +7,7 @@ const manifest = JSON.parse(readFileSync(new URL('../package.json', import.meta.
 const runner = readFileSync(new URL('check-api-linter.ts', import.meta.url), 'utf8');
 const ciWorkflow = readFileSync(new URL('../.github/workflows/ci.yml', import.meta.url), 'utf8');
 
-describe('Google API Linter gate', () => {
+describe('google API Linter gate', () => {
   test('pins the linter and verifies the AIP service contract in CI and release gates', () => {
     expect(manifest.scripts['aip:lint']).toBe('bun run scripts/check-api-linter.ts');
     expect(manifest.scripts['ci:gate']).toContain('bun run aip:lint');

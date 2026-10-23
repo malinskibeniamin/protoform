@@ -11,7 +11,7 @@ function NestedCustomComponent() {
   return <div data-testid="nested-custom-rendered">Nested custom</div>;
 }
 
-describe('AutoForm – fieldRegistry prop wiring', () => {
+describe('autoForm – fieldRegistry prop wiring', () => {
   test('uses a custom fieldRegistry to resolve field components', () => {
     const customRegistry = defaultRegistry.clone().register({
       component: GreetingCustomComponent,

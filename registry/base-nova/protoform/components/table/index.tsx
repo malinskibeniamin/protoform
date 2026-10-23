@@ -37,7 +37,7 @@ function Table({ className, ...props }: React.ComponentProps<'table'>) {
         <table className={cn('w-full caption-bottom text-sm', className)} data-slot="table" {...props} />
       </ScrollAreaPrimitive.Viewport>
       <ScrollAreaPrimitive.Scrollbar
-        className="absolute inset-x-0 bottom-0 flex h-2 touch-none select-none p-px"
+        className="absolute inset-x-0 bottom-0 flex h-2 touch-none p-px select-none"
         orientation="horizontal"
       >
         <ScrollAreaPrimitive.Thumb className="relative flex-1 rounded-full bg-border" />
@@ -76,7 +76,7 @@ function TableHead({ className, ...props }: React.ComponentProps<'th'>) {
   return (
     <th
       className={cn(
-        'h-10 whitespace-nowrap px-2 text-left align-middle font-medium text-foreground [&:has([role=checkbox])]:pr-0',
+        'h-10 px-2 text-left align-middle font-medium whitespace-nowrap text-foreground [&:has([role=checkbox])]:pr-0',
         className
       )}
       data-slot="table-head"
@@ -87,7 +87,7 @@ function TableHead({ className, ...props }: React.ComponentProps<'th'>) {
 function TableCell({ className, ...props }: React.ComponentProps<'td'>) {
   return (
     <td
-      className={cn('whitespace-nowrap p-2 align-middle [&:has([role=checkbox])]:pr-0', className)}
+      className={cn('p-2 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0', className)}
       data-slot="table-cell"
       {...props}
     />
@@ -95,7 +95,7 @@ function TableCell({ className, ...props }: React.ComponentProps<'td'>) {
 }
 function TableCaption({ className, ...props }: React.ComponentProps<'caption'>) {
   return (
-    <caption className={cn('mt-4 text-muted-foreground text-sm', className)} data-slot="table-caption" {...props} />
+    <caption className={cn('mt-4 text-sm text-muted-foreground', className)} data-slot="table-caption" {...props} />
   );
 }
 

@@ -13,7 +13,7 @@ function render(children: React.ReactNode) {
   );
 }
 
-describe('FormLayout', () => {
+describe('formLayout', () => {
   test('renders a form element with the form-spacing token and forwards native form props', () => {
     const handler = () => undefined;
     render(
@@ -28,7 +28,7 @@ describe('FormLayout', () => {
   });
 });
 
-describe('FormSection', () => {
+describe('formSection', () => {
   test('renders nested heading levels and the header description, required marker, and optional divider only when needed', () => {
     render(
       <FormLayout testId="form">
@@ -68,7 +68,7 @@ describe('FormSection', () => {
   });
 });
 
-describe('FormField', () => {
+describe('formField', () => {
   test('renders label, control, and help text, replaces help with the error, and renders no trailing text without either', () => {
     render(
       <FormField helpText="Your full name" htmlFor="name" label="Name" testId="field">
@@ -101,7 +101,7 @@ describe('FormField', () => {
   });
 });
 
-describe('FormSubmit', () => {
+describe('formSubmit', () => {
   test('renders a submit-typed button that defaults to "Submit"', () => {
     const { rerender } = render(<FormSubmit testId="submit">Save</FormSubmit>);
     const button = screen.getByTestId('submit');

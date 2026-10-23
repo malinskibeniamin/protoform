@@ -48,7 +48,7 @@ export function CatalogFormDemo({
           </dl>
         </fieldset>
       ) : null}
-      <p className="text-muted-foreground text-sm">{description}</p>
+      <p className="text-sm text-muted-foreground">{description}</p>
       <AutoForm
         defaultValues={defaultValues}
         formOptions={{ mode: 'onBlur', reValidateMode: 'onChange' }}
@@ -61,7 +61,7 @@ export function CatalogFormDemo({
         <Alert role="status" variant="success">
           <AlertTitle>Submitted protobuf value</AlertTitle>
           <AlertDescription>
-            <pre className="max-h-80 max-w-full overflow-auto whitespace-pre-wrap text-xs">{submittedValue}</pre>
+            <pre className="max-h-80 max-w-full overflow-auto text-xs whitespace-pre-wrap">{submittedValue}</pre>
           </AlertDescription>
         </Alert>
       ) : null}

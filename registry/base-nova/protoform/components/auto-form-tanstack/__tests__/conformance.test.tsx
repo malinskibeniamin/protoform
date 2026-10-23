@@ -9,7 +9,7 @@ import { AddressSchema } from '@/registry/base-nova/protoform/lib/protobuf-provi
 import type { SchemaProvider } from '../../auto-form/core-types';
 import { AutoForm, type AutoFormSubmitContext, type TanStackAutoFormApi } from '..';
 
-describe('TanStack AutoForm conformance', () => {
+describe('tanStack AutoForm conformance', () => {
   test('keeps the native form API while rendering and submitting provider output', async () => {
     const user = userEvent.setup();
     const onSubmit = rs.fn();

@@ -29,7 +29,7 @@ const components = {
   Textarea: ConsumerTextarea,
 };
 
-describe('AutoForm accessible errors', () => {
+describe('autoForm accessible errors', () => {
   test.each([
     { tags: ['forms', 'one', 'two', 'three'], message: 'must contain no more than 3 item(s)' },
     { tags: ['forms', 'forms'], message: 'repeated value must contain unique items' },

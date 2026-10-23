@@ -38,7 +38,7 @@ export function AutoFormProtobufValidationDemo() {
 
   return (
     <div className="space-y-4">
-      <p className="text-muted-foreground text-sm">
+      <p className="text-sm text-muted-foreground">
         This demo starts intentionally broken so you can see field-level errors, required oneof feedback, and the
         message-level threshold rule in action.
       </p>
@@ -52,7 +52,7 @@ export function AutoFormProtobufValidationDemo() {
         withSubmit
       />
       {submitted === true ? (
-        <p className="rounded-md border border-primary/30 bg-primary/10 p-3 text-primary text-sm">
+        <p className="rounded-md border border-primary/30 bg-primary/10 p-3 text-sm text-primary">
           Nice — everything validated and the protobuf form submitted.
         </p>
       ) : null}

@@ -25,7 +25,7 @@ export function ComplexReviewSummary({ payload }: { payload: unknown }) {
           Credentials are always redacted from this preview.
         </Text>
       </div>
-      <pre className="max-h-[min(60vh,38rem)] overflow-auto whitespace-pre-wrap break-words rounded-xl bg-muted/35 p-4 font-mono text-xs leading-5">
+      <pre className="max-h-[min(60vh,38rem)] overflow-auto rounded-xl bg-muted/35 p-4 font-mono text-xs leading-5 wrap-break-word whitespace-pre-wrap">
         {JSON.stringify(redactCredentials(payload), null, 2)}
       </pre>
     </div>

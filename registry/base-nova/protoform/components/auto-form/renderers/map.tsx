@@ -3,6 +3,7 @@
 import { TrashIcon } from 'lucide-react';
 import type React from 'react';
 import { formatProtoformMessage } from '@/registry/base-nova/protoform/lib/core/messages';
+import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import { useAutoFormRenderContext, useAutoFormRuntimeContext } from '../context';
 import type { ParsedField } from '../core-types';
 import { useAutoFormEngine } from '../engine';
@@ -78,7 +79,7 @@ export function MapFieldRenderer({
               if (compactKeyField && compactValueField && !valueIsComplex) {
                 return (
                   <div
-                    className={index > 0 ? `${COMPACT_PAIR_GRID} ${formSpacing.arrayItemSeparator}` : COMPACT_PAIR_GRID}
+                    className={cn(COMPACT_PAIR_GRID, index > 0 && formSpacing.arrayItemSeparator)}
                     data-testid={rowTestId}
                     key={item.key}
                   >
@@ -109,11 +110,7 @@ export function MapFieldRenderer({
 
               return (
                 <div
-                  className={
-                    index > 0
-                      ? `${formSpacing.collectionRow} ${formSpacing.arrayItemSeparator}`
-                      : formSpacing.collectionRow
-                  }
+                  className={cn(formSpacing.collectionRow, index > 0 && formSpacing.arrayItemSeparator)}
                   data-testid={rowTestId}
                   key={item.key}
                 >

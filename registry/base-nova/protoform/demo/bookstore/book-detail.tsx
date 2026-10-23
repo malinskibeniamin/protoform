@@ -44,16 +44,16 @@ export function BookDetail({
         Back to books
       </Button>
       <div className="space-y-2">
-        <h2 className="font-semibold text-3xl" id="book-detail-title">
+        <h2 className="text-3xl font-semibold" id="book-detail-title">
           {book.displayName}
         </h2>
-        <p className="font-mono text-muted-foreground text-sm">{book.isbn}</p>
+        <p className="font-mono text-sm text-muted-foreground">{book.isbn}</p>
         <p className="text-sm">{book.note || 'No note yet.'}</p>
       </div>
       <dl className="grid gap-3 rounded-lg border p-4 text-sm sm:grid-cols-2">
         <div>
           <dt className="text-muted-foreground">Resource name</dt>
-          <dd className="break-all font-mono">{book.name}</dd>
+          <dd className="font-mono break-all">{book.name}</dd>
         </div>
         <div>
           <dt className="text-muted-foreground">Etag</dt>

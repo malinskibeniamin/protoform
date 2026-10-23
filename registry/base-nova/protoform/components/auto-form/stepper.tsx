@@ -69,8 +69,8 @@ function StepMarker({ index, isComplete, isCurrent }: { index: number; isComplet
       aria-hidden="true"
       className={
         isCurrent || isComplete
-          ? 'flex size-7 shrink-0 items-center justify-center rounded-full bg-primary font-semibold text-primary-foreground text-xs'
-          : 'flex size-7 shrink-0 items-center justify-center rounded-full border border-border bg-background font-semibold text-muted-foreground text-xs'
+          ? 'flex size-7 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground'
+          : 'flex size-7 shrink-0 items-center justify-center rounded-full border border-border bg-background text-xs font-semibold text-muted-foreground'
       }
       data-slot="step-marker"
     >
@@ -143,8 +143,8 @@ export function AutoFormStepIndicator({
                   aria-hidden="true"
                   className={
                     isCurrent
-                      ? 'min-w-0 pt-1 pb-5 font-semibold text-sm'
-                      : 'min-w-0 pt-1 pb-5 text-muted-foreground text-sm'
+                      ? 'min-w-0 pt-1 pb-5 text-sm font-semibold'
+                      : 'min-w-0 pt-1 pb-5 text-sm text-muted-foreground'
                   }
                   data-slot="step-label"
                 >
@@ -164,14 +164,14 @@ export function AutoFormStepIndicator({
               <span className="sr-only">
                 {step.title}, {getStepStatusLabel(formatMessage, isCurrent, isComplete)}
               </span>
-              <span className="flex @min-[30rem]:w-16 @min-[64rem]:w-auto min-w-0 shrink-0 @min-[64rem]:flex-row flex-col items-center @min-[64rem]:gap-2 gap-1.5">
+              <span className="flex min-w-0 shrink-0 flex-col items-center gap-1.5 @min-[30rem]:w-16 @min-[64rem]:w-auto @min-[64rem]:flex-row @min-[64rem]:gap-2">
                 <StepMarker index={index} isComplete={isComplete} isCurrent={isCurrent} />
                 <span
                   aria-hidden="true"
                   className={
                     isCurrent
-                      ? '@min-[30rem]:block hidden @min-[64rem]:w-auto w-full @min-[64rem]:max-w-32 truncate @min-[64rem]:text-left text-center font-semibold @min-[64rem]:text-sm text-xs'
-                      : '@min-[30rem]:block hidden @min-[64rem]:w-auto w-full @min-[64rem]:max-w-32 truncate @min-[64rem]:text-left text-center @min-[64rem]:text-sm text-muted-foreground text-xs'
+                      ? 'hidden w-full truncate text-center text-xs font-semibold @min-[30rem]:block @min-[64rem]:w-auto @min-[64rem]:max-w-32 @min-[64rem]:text-left @min-[64rem]:text-sm'
+                      : 'hidden w-full truncate text-center text-xs text-muted-foreground @min-[30rem]:block @min-[64rem]:w-auto @min-[64rem]:max-w-32 @min-[64rem]:text-left @min-[64rem]:text-sm'
                   }
                   data-slot="step-label"
                 >
@@ -234,7 +234,7 @@ export function AutoFormStepPanel({
         <AutoFormStepIndicator currentIndex={currentIndex} orientation={orientation} steps={steps} />
         <section
           aria-labelledby={`autoform-step-${step.id}`}
-          className="grid items-start gap-6 border-border/60 border-y py-7 sm:grid-cols-[minmax(10rem,0.34fr)_minmax(0,1fr)] sm:gap-x-8"
+          className="grid items-start gap-6 border-y border-border/60 py-7 sm:grid-cols-[minmax(10rem,0.34fr)_minmax(0,1fr)] sm:gap-x-8"
           data-layout="split"
         >
           <header className="space-y-1">
@@ -253,7 +253,7 @@ export function AutoFormStepPanel({
         </section>
       </div>
       <div
-        className="sticky bottom-0 z-10 -mx-2 flex flex-wrap items-center justify-between gap-3 border-border/60 border-t bg-background/95 px-2 py-4 backdrop-blur supports-[backdrop-filter]:bg-background/85"
+        className="sticky bottom-0 z-10 -mx-2 flex flex-wrap items-center justify-between gap-3 border-t border-border/60 bg-background/95 px-2 py-4 backdrop-blur supports-[backdrop-filter]:bg-background/85"
         data-slot="auto-form-actions"
       >
         {currentIndex > 0 ? (

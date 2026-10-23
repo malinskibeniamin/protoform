@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 
 import DeeplyNestedFormExample from './deeply-nested-form.js';
 
-describe('DeeplyNestedFormExample', () => {
+describe('deeplyNestedFormExample', () => {
   test('renders a six-level protobuf contract from one AutoForm', () => {
     render(<DeeplyNestedFormExample />);
 

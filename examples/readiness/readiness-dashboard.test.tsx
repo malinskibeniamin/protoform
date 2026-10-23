@@ -5,7 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { getReadinessSummary, readinessRequirements } from '../../readiness/profile.js';
 import { ReadinessDashboard } from './readiness-dashboard.js';
 
-describe('ReadinessDashboard', () => {
+describe('readinessDashboard', () => {
   test('paginates the capability ledger 25 checks at a time', async () => {
     const user = userEvent.setup();
     render(<ReadinessDashboard />);

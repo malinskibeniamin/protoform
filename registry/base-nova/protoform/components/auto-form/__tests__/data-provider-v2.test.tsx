@@ -56,7 +56,7 @@ function EmptyRegionsProvider({ children }: DataProviderProps) {
   return children({ emptyState: <a href="/regions/new">Create a region</a>, options: [] });
 }
 
-describe('AutoForm data providers v2', () => {
+describe('autoForm data providers v2', () => {
   test('keeps provider-ranked matches whose labels do not contain the typed query', async () => {
     const user = userEvent.setup();
     const onSubmit = rs.fn();

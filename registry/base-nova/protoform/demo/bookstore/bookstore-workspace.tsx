@@ -62,7 +62,7 @@ export function BookstoreWorkspace({ onReset, parent }: { onReset: () => void; p
     );
   } else if (list.data.books.length === 0) {
     listContent = (
-      <p className="rounded-lg border border-dashed p-6 text-muted-foreground text-sm">No books match this filter.</p>
+      <p className="rounded-lg border border-dashed p-6 text-sm text-muted-foreground">No books match this filter.</p>
     );
   } else {
     listContent = (
@@ -72,7 +72,7 @@ export function BookstoreWorkspace({ onReset, parent }: { onReset: () => void; p
             <CardHeader>
               <CardTitle level={3}>
                 <Button
-                  className="h-auto justify-start whitespace-normal text-left"
+                  className="h-auto justify-start text-left whitespace-normal"
                   onClick={() => openBook(book.name)}
                   type="button"
                   variant="link"
@@ -83,7 +83,7 @@ export function BookstoreWorkspace({ onReset, parent }: { onReset: () => void; p
               <CardDescription>{book.isbn}</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="line-clamp-2 text-muted-foreground text-sm">{book.note || 'No note yet.'}</p>
+              <p className="line-clamp-2 text-sm text-muted-foreground">{book.note || 'No note yet.'}</p>
             </CardContent>
           </Card>
         ))}
@@ -100,8 +100,8 @@ export function BookstoreWorkspace({ onReset, parent }: { onReset: () => void; p
             <Badge variant="outline">Generated bindings</Badge>
             <Badge variant="outline">Visitor-isolated state</Badge>
           </div>
-          <h1 className="font-semibold text-3xl">Protoform library</h1>
-          <p className="max-w-2xl text-muted-foreground text-sm">
+          <h1 className="text-3xl font-semibold">Protoform library</h1>
+          <p className="max-w-2xl text-sm text-muted-foreground">
             Create with an RHF stepper, edit with a field mask and etag, and confirm deletion through AutoForm.
           </p>
         </div>
@@ -114,10 +114,10 @@ export function BookstoreWorkspace({ onReset, parent }: { onReset: () => void; p
         <section aria-labelledby="book-list-title" className="space-y-5">
           <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
             <div>
-              <h2 className="font-semibold text-2xl" id="book-list-title">
+              <h2 className="text-2xl font-semibold" id="book-list-title">
                 Books
               </h2>
-              <p className="text-muted-foreground text-sm">Live ListBooks results from your temporary library.</p>
+              <p className="text-sm text-muted-foreground">Live ListBooks results from your temporary library.</p>
             </div>
             <Button onClick={() => setView('create')} type="button">
               Create book

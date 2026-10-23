@@ -9,7 +9,7 @@ const OPTIONAL_NOTE_LABEL = /optional note/iu;
 const REQUIRED_HIDDEN_LABEL = /required hidden/iu;
 const OPTIONAL_PROMOTED_LABEL = /optional promoted/iu;
 
-describe('AutoForm – simple/advanced field classification', () => {
+describe('autoForm – simple/advanced field classification', () => {
   test('simple mode shows required fields, honors customData.advanced, and advanced mode reveals the rest', async () => {
     const user = userEvent.setup();
     const schema = createMockProvider([

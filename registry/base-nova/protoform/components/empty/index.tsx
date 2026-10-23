@@ -7,7 +7,7 @@ function Empty({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       className={cn(
-        'flex w-full min-w-0 flex-1 flex-col items-center justify-center gap-4 text-balance rounded-xl border-dashed p-6 text-center',
+        'flex w-full min-w-0 flex-1 flex-col items-center justify-center gap-4 rounded-xl border-dashed p-6 text-center text-balance',
         className
       )}
       data-slot="empty"
@@ -56,7 +56,7 @@ function EmptyMedia({
 function EmptyTitle({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
-      className={cn('font-display font-medium text-sm tracking-tight', className)}
+      className={cn('font-display text-sm font-medium tracking-tight', className)}
       data-slot="empty-title"
       {...props}
     />
@@ -66,7 +66,7 @@ function EmptyDescription({ className, ...props }: React.ComponentProps<'p'>) {
   return (
     <div
       className={cn(
-        'text-muted-foreground text-sm/relaxed [&>a:hover]:text-primary [&>a]:underline [&>a]:underline-offset-4',
+        'text-sm/relaxed text-muted-foreground [&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-primary',
         className
       )}
       data-slot="empty-description"
@@ -77,7 +77,7 @@ function EmptyDescription({ className, ...props }: React.ComponentProps<'p'>) {
 function EmptyContent({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
-      className={cn('flex w-full min-w-0 max-w-sm flex-col items-center gap-2.5 text-balance text-sm', className)}
+      className={cn('flex w-full max-w-sm min-w-0 flex-col items-center gap-2.5 text-sm text-balance', className)}
       data-slot="empty-content"
       {...props}
     />

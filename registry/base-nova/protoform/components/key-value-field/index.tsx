@@ -1,12 +1,11 @@
 'use client';
 
 import { Plus, X } from 'lucide-react';
-import { type ReactNode, useRef } from 'react';
+import { type ReactNode, useId, useRef } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Combobox, type ComboboxProps } from '@/components/ui/combobox';
 import { Input, type InputProps } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { findDuplicateIndices, useInputListFocus } from '@/registry/base-nova/protoform/lib/input-utils';
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
@@ -81,7 +80,7 @@ function KeyValueError({ message }: { message: string | undefined }) {
   if (message === undefined || message === '') {
     return null;
   }
-  return <p className="text-destructive text-sm">{message}</p>;
+  return <p className="text-sm text-destructive">{message}</p>;
 }
 
 function KeyValueRow({
@@ -121,7 +120,7 @@ function KeyValueRow({
   const keyError = isDuplicate ? 'Duplicate key' : error?.key;
 
   return (
-    <div className="grid @min-[28rem]/key-value:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] grid-cols-[minmax(0,1fr)] items-start gap-2">
+    <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-2 @min-[28rem]/key-value:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]">
       <div className="col-start-1 row-start-1 min-w-0 space-y-1">
         <FieldRenderer
           config={keyFieldProps}
@@ -133,7 +132,7 @@ function KeyValueRow({
         />
         <KeyValueError message={keyError} />
       </div>
-      <div className="@min-[28rem]/key-value:col-start-2 col-start-1 @min-[28rem]/key-value:row-start-1 row-start-2 min-w-0 space-y-1">
+      <div className="col-start-1 row-start-2 min-w-0 space-y-1 @min-[28rem]/key-value:col-start-2 @min-[28rem]/key-value:row-start-1">
         <FieldRenderer
           config={valueFieldProps}
           disabled={disabled}
@@ -146,7 +145,7 @@ function KeyValueRow({
       </div>
       <Button
         aria-label="Delete key-value pair"
-        className="@min-[28rem]/key-value:col-start-3 col-start-1 @min-[28rem]/key-value:row-start-1 row-start-3 justify-self-end"
+        className="col-start-1 row-start-3 justify-self-end @min-[28rem]/key-value:col-start-3 @min-[28rem]/key-value:row-start-1"
         data-testid={hasTestId ? `${testId}-delete-${index}` : undefined}
         disabled={disabled}
         onClick={() => onDelete(index)}
@@ -189,7 +188,9 @@ export function KeyValueField({
   maxItems,
   testId,
 }: KeyValueFieldProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const labelId = useId();
+  const descriptionId = `${labelId}-description`;
+  const containerRef = useRef<HTMLFieldSetElement>(null);
   const { onAdd, onRemove } = useInputListFocus(containerRef);
 
   const duplicateIndices = findDuplicateIndices(value, (pair) => pair.key);
@@ -229,7 +230,9 @@ export function KeyValueField({
   };
 
   return (
-    <div
+    <fieldset
+      aria-describedby={description ? descriptionId : undefined}
+      aria-labelledby={label ? labelId : undefined}
       className="@container/key-value flex min-w-0 flex-col gap-2"
       data-slot="key-value-field"
       data-testid={testId}
@@ -237,8 +240,16 @@ export function KeyValueField({
     >
       {label || description ? (
         <div className="flex flex-col gap-0.5">
-          {label ? <Label>{label}</Label> : null}
-          {description ? <p className="text-muted-foreground text-sm">{description}</p> : null}
+          {label ? (
+            <span className="text-sm leading-none font-medium select-none" id={labelId}>
+              {label}
+            </span>
+          ) : null}
+          {description ? (
+            <p className="text-sm text-muted-foreground" id={descriptionId}>
+              {description}
+            </p>
+          ) : null}
         </div>
       ) : null}
       {value.map((pair, index) => (
@@ -274,6 +285,6 @@ export function KeyValueField({
           {addButtonLabel}
         </Button>
       ) : null}
-    </div>
+    </fieldset>
   );
 }

@@ -6,7 +6,7 @@ import KitchenSinkFormExample from './kitchen-sink-form.js';
 
 const ORGANIZATION_SLUG_LABEL = /organization slug/iu;
 
-describe('KitchenSinkFormExample', () => {
+describe('kitchenSinkFormExample', () => {
   test('presents the large contract as a linear source-owned shadcn flow', async () => {
     const user = userEvent.setup();
 

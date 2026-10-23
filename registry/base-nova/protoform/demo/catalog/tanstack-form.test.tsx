@@ -11,7 +11,7 @@ afterEach(() => {
   rs.restoreAllMocks();
 });
 
-describe('TanStack Form registry demo', () => {
+describe('tanStack Form registry demo', () => {
   test.each([
     {
       label: 'a detailed',

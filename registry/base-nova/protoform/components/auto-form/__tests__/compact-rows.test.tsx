@@ -22,7 +22,7 @@ if (!HTMLElement.prototype.releasePointerCapture) {
   });
 }
 
-describe('AutoForm – compact array row rendering', () => {
+describe('autoForm – compact array row rendering', () => {
   test('compact array rows suppress item labels and remove the selected item', async () => {
     const user = userEvent.setup();
     const schema = createMockProvider([

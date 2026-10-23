@@ -38,7 +38,7 @@ function makeField(partial: Partial<ParsedField> = {}): ParsedField {
   };
 }
 
-describe('ObjectWrapper', () => {
+describe('objectWrapper', () => {
   test('toggles a collapsible section through the Protoform button', async () => {
     const user = userEvent.setup();
     render(
@@ -128,7 +128,7 @@ describe('ObjectWrapper', () => {
   });
 });
 
-describe('FieldWrapper', () => {
+describe('fieldWrapper', () => {
   test('preserves caller descriptions and isolates error links between fields', () => {
     const renderFields = (error?: string) =>
       withAutoFormContext(
@@ -195,7 +195,7 @@ describe('FieldWrapper', () => {
   });
 });
 
-describe('ArrayWrapper', () => {
+describe('arrayWrapper', () => {
   test('renders with the field-spacing token and an add button, and contains complex items in native cards', () => {
     const { unmount } = render(
       withAutoFormContext(

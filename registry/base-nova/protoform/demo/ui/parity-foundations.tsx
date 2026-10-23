@@ -60,7 +60,7 @@ export function FoundationExamples() {
         )}
       </ParitySection>
       <ParitySection title="Skeleton">
-        <p className="text-muted-foreground text-sm">Placeholder preview, not an active request.</p>
+        <p className="text-sm text-muted-foreground">Placeholder preview, not an active request.</p>
         <div aria-hidden="true" className="space-y-3">
           <Skeleton className="h-5 w-1/3" />
           <Skeleton className="h-8 w-full" />

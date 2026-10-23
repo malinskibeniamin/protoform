@@ -26,7 +26,7 @@ afterEach(() => {
   });
 });
 
-describe('DiagramMaximizer', () => {
+describe('diagramMaximizer', () => {
   test('gives an unlabeled Mermaid fallback a readable dialog title', async () => {
     const user = userEvent.setup();
     const diagram = appendDiagram();
