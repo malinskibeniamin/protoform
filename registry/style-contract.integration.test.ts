@@ -37,6 +37,11 @@ describe('protoform registry style', () => {
         target: '~/LICENSES/shadcn-MIT.txt',
         type: 'registry:file',
       },
+      {
+        path: 'LICENSES/shadcn-MIT.txt',
+        target: '~/LICENSES/shadcn-MIT.txt',
+        type: 'registry:file',
+      },
     ]);
   });
 

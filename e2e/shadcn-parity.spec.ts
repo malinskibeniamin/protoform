@@ -17,6 +17,26 @@ test.afterEach(() => {
   expect(pageErrors).toEqual([]);
 });
 
+test('defaults to TanStack Charts and keeps Recharts as an explicit fallback', async ({ page }) => {
+  await page.getByRole('tab', { name: 'Layout', exact: true }).click();
+  const backend = page.getByRole('combobox', { name: 'Chart backend' });
+  await expect(backend).toContainText('TanStack Charts');
+  const chart = page.getByRole('img', { name: 'Sample requests by day', exact: true });
+  await chart.focus();
+  await page.keyboard.press('Home');
+  await page.keyboard.press('ArrowRight');
+  await expect(page.getByRole('status', { name: /Tue/u })).toContainText('18');
+  await page.keyboard.press('Escape');
+  await backend.click();
+  await page.getByRole('option', { name: 'Recharts fallback', exact: true }).click();
+  await expect(chart).toBeVisible();
+  await expect(backend).toContainText('Recharts fallback');
+  await backend.click();
+  await page.getByRole('option', { name: 'TanStack Charts (recommended)', exact: true }).click();
+  await expect(chart).toBeVisible();
+  await expect(page.getByText('Static sample: 12, 18 and 9 requests.', { exact: true })).toBeVisible();
+});
+
 test('catalog basics support local creation and validated entry @cross-browser', async ({ page }) => {
   const list = page.getByRole('tablist', { name: 'Component categories' });
   expect((await list.boundingBox())?.height).toBeLessThan(100);

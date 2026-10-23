@@ -4,7 +4,7 @@ import { basename, dirname, join } from 'node:path';
 import { rstest } from '@rstest/core';
 import { test as base, expect } from '@rstest/playwright';
 import type { Locator, Page } from 'playwright';
-import { docsContextOptions } from './e2e-context';
+import { docsBaseURL, docsContextOptions } from './e2e-context';
 import { matchScreenshot, screenshotPlatform } from './e2e-screenshots';
 
 export const test = base.extend({ browserName: 'chromium' });
@@ -13,7 +13,7 @@ export function withLocale(locale: string) {
   return test.extend({
     playwright: {
       contextOptions: { ...docsContextOptions, locale },
-      requestOptions: { baseURL: 'http://127.0.0.1:55013' },
+      requestOptions: { baseURL: docsBaseURL },
       trace: 'retain-on-failure',
     },
   });

@@ -1,12 +1,16 @@
-import { useState } from 'react';
-import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
+import { barY, defineChart } from '@tanstack/charts';
+import { scaleBand } from '@tanstack/charts/scales/band';
+import { scaleLinear } from '@tanstack/charts/scales/linear';
+import { tooltip } from '@tanstack/charts/tooltip';
+import { lazy, Suspense, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { Field } from '@/components/ui/field';
+import { TanStackChart } from '@/components/ui/chart-tanstack';
+import { Field, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   Sidebar,
   SidebarContent,
@@ -28,11 +32,20 @@ const requests = [
   { day: 'Tue', total: 18 },
   { day: 'Wed', total: 9 },
 ];
-const chartConfig = { total: { label: 'Requests', color: 'var(--primary)' } };
+const RechartsFallback = lazy(() => import('./recharts-fallback'));
+const requestsChart = defineChart({
+  marks: [barY(requests, { x: 'day', y: 'total', fill: 'var(--primary)' })],
+  scales: {
+    x: { scale: () => scaleBand().padding(0.2) },
+    y: { scale: scaleLinear, zero: true, nice: true, grid: true, axis: { label: 'Requests' } },
+  },
+  tooltip,
+});
 const logEntries = Array.from({ length: 20 }, (_, index) => `Event ${index + 1}: sample request validated`);
 
 export default function LayoutExamples() {
   const [destination, setDestination] = useState('Profiles');
+  const [backend, setBackend] = useState<'tanstack' | 'recharts'>('tanstack');
   return (
     <div className="grid min-w-0 gap-6 md:grid-cols-2" data-testid="parity-layout">
       <ParitySection title="Sidebar">
@@ -132,14 +145,36 @@ export default function LayoutExamples() {
         </Carousel>
       </ParitySection>
       <ParitySection title="Chart">
-        <ChartContainer aria-label="Sample requests by day" className="min-h-48 w-full" config={chartConfig} role="img">
-          <BarChart accessibilityLayer data={requests}>
-            <CartesianGrid vertical={false} />
-            <XAxis axisLine={false} dataKey="day" tickLine={false} />
-            <ChartTooltip content={<ChartTooltipContent />} cursor={false} />
-            <Bar dataKey="total" fill="var(--color-total)" isAnimationActive={false} radius={4} />
-          </BarChart>
-        </ChartContainer>
+        <Field>
+          <FieldLabel htmlFor="chart-backend">Chart backend</FieldLabel>
+          <Select
+            items={[
+              { value: 'tanstack', label: 'TanStack Charts (recommended)' },
+              { value: 'recharts', label: 'Recharts fallback' },
+            ]}
+            onValueChange={(value) => {
+              if (value === 'tanstack' || value === 'recharts') {
+                setBackend(value);
+              }
+            }}
+            value={backend}
+          >
+            <SelectTrigger aria-label="Chart backend" id="chart-backend">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="tanstack">TanStack Charts (recommended)</SelectItem>
+              <SelectItem value="recharts">Recharts fallback</SelectItem>
+            </SelectContent>
+          </Select>
+        </Field>
+        {backend === 'tanstack' ? (
+          <TanStackChart ariaLabel="Sample requests by day" definition={requestsChart} height={220} />
+        ) : (
+          <Suspense fallback={<p role="status">Loading Recharts fallback…</p>}>
+            <RechartsFallback data={requests} />
+          </Suspense>
+        )}
         <p className="text-sm text-muted-foreground">Static sample: 12, 18 and 9 requests.</p>
       </ParitySection>
       <div className="md:col-span-2">

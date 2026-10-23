@@ -126,6 +126,30 @@ function uiImports(path: string): string[] {
 }
 
 describe('build-time UI adapter registry', () => {
+  test('offers the complete TanStack UI bundle without installing Recharts', () => {
+    const tanstack = item('protoform-shadcn-tanstack');
+    const recharts = item('protoform-shadcn');
+    const chartPath = 'registry/base-nova/protoform/components/chart/index.tsx';
+    const tanstackPath = 'registry/base-nova/protoform/components/chart-tanstack/index.tsx';
+    expect(filePaths(tanstack)).toEqual(
+      expect.arrayContaining(
+        filePaths(recharts).filter(
+          (path) => path !== chartPath && path !== 'registry/base-nova/protoform/SHADCN_COMPONENTS.md'
+        )
+      )
+    );
+    expect(filePaths(tanstack)).toContain('registry/base-nova/protoform/SHADCN_TANSTACK_COMPONENTS.md');
+    expect(filePaths(tanstack)).toContain(tanstackPath);
+    expect(closureFilePaths('protoform-shadcn-tanstack')).not.toContain(chartPath);
+    const packages = [...dependencyClosure('protoform-shadcn-tanstack')].flatMap(
+      (name) => item(name).dependencies?.map(packageName) ?? []
+    );
+    expect(packages).toContain('@tanstack/charts');
+    expect(packages).not.toContain('recharts');
+    expect(filePaths(recharts)).toContain(chartPath);
+    expect(filePaths(recharts)).not.toContain(tanstackPath);
+  });
+
   test.each(['auto-form-core', 'hook-runtime', 'protobuf-provider', 'protoform-examples', 'protoform-shadcn'])(
     '%s requires the native-rule Protovalidate release',
     (name) => {
