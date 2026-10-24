@@ -32,7 +32,7 @@ export function MapFieldRenderer({
   const fullPath = path.join('.');
   const keyField = field.schema?.[0];
   const valueField = field.schema?.[1];
-  const error = getFieldErrorMessage(errors, path);
+  const error = getFieldErrorMessage(errors, path, true);
   const label = getRenderedLabel(field);
   const { isDisabled, isVisible, renderField } = useFieldPresentation(field, path, inheritedDisabled);
   const FieldWrapperComponent = field.fieldConfig?.fieldWrapper ?? uiComponents.FieldWrapper;

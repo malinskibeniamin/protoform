@@ -139,7 +139,7 @@ function FormPanel<TNativeForm>({
 
   return (
     <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,24rem),1fr))] gap-6 lg:items-start lg:gap-10">
-      <div className={cn('min-w-0 lg:pr-2', formSpacing.form)}>{children}</div>
+      <div className={cn('@container/autoform min-w-0 lg:pr-2', formSpacing.form)}>{children}</div>
       <aside
         className="min-w-0 lg:sticky lg:top-6 lg:self-start"
         data-testid={buildAutoFormTestId(testIdPrefix, 'summary')}

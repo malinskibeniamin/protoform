@@ -60,7 +60,7 @@ export const ArrayElementWrapper: React.FC<
       className={
         isSeparated
           ? cn('relative', index > 0 && formSpacing.arrayItemSeparator)
-          : 'relative rounded-xl border border-border/70 bg-card p-2 text-card-foreground shadow-xs @min-[40rem]/autoform:p-5'
+          : 'relative rounded-xl border border-border/70 bg-card p-2 text-card-foreground shadow-xs @min-[40rem]/collection:p-5'
       }
       data-slot="array-item"
       data-testid={testId}
@@ -68,7 +68,7 @@ export const ArrayElementWrapper: React.FC<
       <Button
         aria-label={removeButtonAriaLabel}
         className={cn(
-          'mb-2 ml-auto flex @min-[40rem]/autoform:absolute @min-[40rem]/autoform:mb-0',
+          'mb-2 ml-auto flex @min-[40rem]/collection:absolute @min-[40rem]/collection:mb-0',
           isSeparated ? cn('right-0', index > 0 ? 'top-4' : 'top-0') : 'top-3 right-3'
         )}
         onClick={onRemove}
@@ -79,7 +79,7 @@ export const ArrayElementWrapper: React.FC<
       >
         <TrashIcon className="size-4" />
       </Button>
-      <div className={cn('min-w-0', isSeparated ? '@min-[40rem]/autoform:pr-10' : '@min-[40rem]/autoform:pr-8')}>
+      <div className={cn('min-w-0', isSeparated ? '@min-[40rem]/collection:pr-10' : '@min-[40rem]/collection:pr-8')}>
         {children}
       </div>
     </div>
@@ -375,7 +375,10 @@ function CollapsibleObjectSection({
 
   return (
     <Collapsible onOpenChange={setIsOpen} open={isOpen}>
-      <section className={cn(formSpacing.field, showDivider && formSpacing.sectionDivider)} data-testid={testId}>
+      <section
+        className={cn('@container/section', formSpacing.field, showDivider && formSpacing.sectionDivider)}
+        data-testid={testId}
+      >
         <CollapsibleTrigger asChild>
           <Button className="h-auto w-full justify-between text-left" type="button" variant="ghost">
             <div className={formSpacing.sectionHeader}>
@@ -449,8 +452,8 @@ export const ObjectWrapper: React.FC<
     <section
       className={
         isSplit
-          ? 'grid items-start gap-6 @min-[32rem]/autoform:grid-cols-[minmax(10rem,0.34fr)_minmax(0,1fr)] @min-[32rem]/autoform:gap-x-8'
-          : formSpacing.field
+          ? '@container/section grid items-start gap-6 @min-[32rem]/autoform:grid-cols-[minmax(10rem,0.34fr)_minmax(0,1fr)] @min-[32rem]/autoform:gap-x-8'
+          : cn('@container/section', formSpacing.field)
       }
       data-layout={isSplit ? 'split' : 'stacked'}
       data-testid={testId}
