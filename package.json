@@ -90,6 +90,9 @@
     "@tailwindcss/typography": {
       "postcss-selector-parser": "7.1.6"
     },
+    "@vercel/cli-config": {
+      "zod": "4.6.7"
+    },
     "@vercel/routing-utils": {
       "path-to-regexp": "6.3.0"
     },
@@ -180,7 +183,7 @@
     "astro": "7.4.0",
     "dom-accessibility-api": "0.7.1",
     "expect-type": "1.4.0",
-    "happy-dom": "21.0.3",
+    "happy-dom": "21.0.4",
     "oxfmt": "0.74.0",
     "oxlint": "1.89.0",
     "oxlint-tsgolint": "7.0.2004",
