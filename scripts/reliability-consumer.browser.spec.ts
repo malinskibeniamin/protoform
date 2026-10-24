@@ -102,3 +102,37 @@ for (const version of ['v7', 'v8']) {
     expect(errors).toEqual([]);
   });
 }
+
+for (const { formWidth, gap } of [
+  { formWidth: 320, gap: 12 },
+  { formWidth: 900, gap: 16 },
+]) {
+  test(`installed indented sections keep fields ${gap}px from their divider in a ${formWidth}px form`, async ({
+    page,
+  }) => {
+    const errors: string[] = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    await page.goto(`${reliabilityBaseURL}/indented-sections.html`);
+    await page.locator('form').evaluate((form, width) => {
+      form.style.width = `${width}px`;
+    }, formWidth);
+    const dividerGaps = await Promise.all(
+      ['Model', 'Endpoint'].map((name) =>
+        page.getByRole('textbox', { name }).evaluate((control) => {
+          let divider = control.parentElement;
+          while (divider && Number.parseFloat(getComputedStyle(divider).borderLeftWidth) < 2) {
+            divider = divider.parentElement;
+          }
+          if (!divider) {
+            throw new Error('Expected the field inside an indented section');
+          }
+          const ruleEdge =
+            divider.getBoundingClientRect().left + Number.parseFloat(getComputedStyle(divider).borderLeftWidth);
+          return Math.round(control.getBoundingClientRect().left - ruleEdge);
+        })
+      )
+    );
+    expect(dividerGaps, 'Section and oneof fields keep the same gap from their divider').toEqual([gap, gap]);
+    expect(errors).toEqual([]);
+  });
+}

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import { useAutoFormRenderContext, useAutoFormRuntimeContext } from '../context';
 import type { OneofVariant, OneofWrapperProps, ParsedField } from '../core-types';
 import { useAutoFormEngine } from '../engine';
@@ -324,7 +325,7 @@ export function OneofWrapper(props: OneofWrapperProps) {
   const FieldWrapperComponent = field.fieldConfig?.fieldWrapper ?? uiComponents.FieldWrapper;
   return (
     <FieldWrapperComponent error={props.error} field={field} id={props.id} label={props.label}>
-      <div className={formSpacing.oneofStack}>
+      <div className={cn('@container/section', formSpacing.oneofStack)}>
         {soleVariant ? <OptionalSoleVariant {...props} variant={soleVariant} /> : <VariantSelect {...props} />}
         {selected ? <VariantBody>{renderVariant(withoutHeading(selected))}</VariantBody> : null}
       </div>
