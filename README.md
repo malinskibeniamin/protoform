@@ -233,3 +233,7 @@ changes repository visibility.
 
 [MIT](LICENSE). See [third-party notices](THIRD_PARTY_NOTICES.md) for code under additional
 compatible licenses.
+
+### Experimental JavaScript rules
+
+[`protoform-quickjs`](docs/QUICKJS.md) adds opt-in, experimental JavaScript presentation rules for reviewed procedural policies. CEL remains the default for ordinary conditional fields. Existing forms do not load QuickJS. See the [order review example](examples/quickjs/README.md) and [runtime limits](docs/QUICKJS.md#execution-and-failure-boundary) before adopting it.

@@ -17,3 +17,5 @@
 - **Host AutoForm entrypoint**: The protobuf-driven form renderer with an explicit UI component map and no bundled primitive implementations.
 - **Legacy UI bundle**: The opt-in demonstration UI, separate from the theme-independent host installation.
 - **Chart backend**: The library and native chart-definition API used to render a UI chart, independent of the form engine and protobuf renderer.
+- **Rule snapshot**: A copied, JSON-safe subset of form values explicitly selected by the host for a QuickJS rule. It is not a protobuf message or the submission payload.
+- **Rule field catalog**: The schema-derived top-level presentation targets, independent of value presence or exposure. Guest metadata contains only each target's form type and required flag, not provider-private data.

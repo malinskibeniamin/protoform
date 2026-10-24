@@ -25,6 +25,7 @@ source snapshots.
 - Source-copy `protoc-gen-protoform` generator.
 - Conformance, accessibility, browser, performance, security, and consumer-installation evidence.
 - Complete bookstore RPC example, static documentation site, and source registry.
+- Experimental, opt-in QuickJS form bindings with schema-derived presentation targets, explicit value exposure, nested read-only snapshots, safe field metadata, and a separate 32 MiB WASM-memory cap. CEL remains the default for conditional fields; form-shaped protobuf conversion stays provider-owned.
 
 ### Changed
 

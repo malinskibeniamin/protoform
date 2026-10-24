@@ -3899,6 +3899,51 @@
       "registryDependencies": ["@protoform/protoform-demo-runtime"],
       "title": "Untrusted input hardening",
       "type": "registry:example"
+    },
+    {
+      "name": "protoform-quickjs",
+      "type": "registry:lib",
+      "title": "Protoform QuickJS rules (experimental)",
+      "description": "Experimental, opt-in worker-isolated presentation rules for reviewed JavaScript. CEL remains the default for conditional fields.",
+      "registryDependencies": ["@protoform/protoform-foundation"],
+      "dependencies": ["quickjs-emscripten@0.32.0"],
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/lib/quickjs/bindings.ts",
+          "type": "registry:lib",
+          "target": "@lib/quickjs/bindings.ts"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/quickjs/client.ts",
+          "type": "registry:lib",
+          "target": "@lib/quickjs/client.ts"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/quickjs/contract.ts",
+          "type": "registry:lib",
+          "target": "@lib/quickjs/contract.ts"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/quickjs/evaluator.ts",
+          "type": "registry:lib",
+          "target": "@lib/quickjs/evaluator.ts"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/quickjs/worker.ts",
+          "type": "registry:lib",
+          "target": "@lib/quickjs/worker.ts"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/quickjs/presentation.ts",
+          "type": "registry:lib",
+          "target": "@lib/quickjs/presentation.ts"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/quickjs/controller.ts",
+          "type": "registry:lib",
+          "target": "@lib/quickjs/controller.ts"
+        }
+      ]
     }
   ]
 }

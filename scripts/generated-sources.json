@@ -138,6 +138,7 @@
   "public/r/protoform-examples.json",
   "public/r/protoform-foundation.json",
   "public/r/protoform-license.json",
+  "public/r/protoform-quickjs.json",
   "public/r/protoform-react.json",
   "public/r/protoform-shadcn-host.json",
   "public/r/protoform-shadcn-tanstack.json",
