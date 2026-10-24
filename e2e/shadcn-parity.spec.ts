@@ -71,6 +71,9 @@ test('catalog overlays allow cancellation, recovery and keyboard actions @cross-
   await page.getByRole('button', { name: 'Restore sample' }).click();
   await page.getByRole('button', { name: 'Advanced validation', exact: true }).click();
   await expect(page.getByText('Validation remains owned by your form schema.')).toBeVisible();
+  await page.getByRole('region', { name: 'Advanced validation', exact: true }).evaluate(async (panel) => {
+    await Promise.all(panel.getAnimations({ subtree: true }).map((animation) => animation.finished));
+  });
   await exerciseOverlay(page, 'Open field sheet', 'Field details', 'Close field sheet');
   await exerciseOverlay(page, 'Open form drawer', 'Form preview', 'Close form drawer');
   const actions = page.getByRole('button', { name: 'Schema actions', exact: true });

@@ -232,7 +232,7 @@ export function getRootErrorMessage(rootError: unknown): string | undefined {
   return undefined;
 }
 
-export function getFieldErrorMessage(errors: unknown, path: string[]): string | undefined {
+export function getFieldErrorMessage(errors: unknown, path: string[], collection = false): string | undefined {
   const nestedError = getPathInObject(errors as Record<string, unknown>, path);
   if (nestedError === null || typeof nestedError !== 'object') {
     return;
@@ -240,6 +240,9 @@ export function getFieldErrorMessage(errors: unknown, path: string[]): string | 
   const message: unknown = Reflect.get(nestedError, 'message');
   if (typeof message === 'string') {
     return message;
+  }
+  if (!collection) {
+    return;
   }
   const root: unknown = Reflect.get(nestedError, 'root');
   const rootMessage: unknown = root !== null && typeof root === 'object' ? Reflect.get(root, 'message') : undefined;

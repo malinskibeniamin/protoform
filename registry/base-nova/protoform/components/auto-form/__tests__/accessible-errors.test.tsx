@@ -144,3 +144,17 @@ test('keeps every same-field error and links selection controls to their errors'
   expect(multi).toHaveAttribute('aria-invalid', 'true');
   expect(multi).toHaveAccessibleDescription('Choose more options');
 });
+
+test('does not promote a nested field named root to an object error', async () => {
+  const user = userEvent.setup();
+  const schema = createMockProvider(
+    [{ key: 'settings', type: 'object', required: false, schema: [{ key: 'root', type: 'string', required: false }] }],
+    { settings: { root: '' } },
+    () => ({ success: false, errors: [{ path: ['settings', 'root'], message: 'Root is required' }] })
+  );
+  render(<AutoForm schema={schema} testId="root-field" withSubmit />);
+  await user.click(screen.getByRole('button', { name: 'Submit' }));
+  expect(await screen.findByRole('textbox', { name: 'Root' })).toHaveAccessibleDescription('Root is required');
+  expect(screen.getAllByText('Root is required')).toHaveLength(1);
+  expect(screen.queryByTestId('root-field-field-settings-error')).not.toBeInTheDocument();
+});
