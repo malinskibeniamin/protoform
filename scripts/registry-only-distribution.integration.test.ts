@@ -56,7 +56,7 @@ describe('registry-only distribution', () => {
       .flatMap((item) => item.files ?? [])
       .map((file) => file.target ?? '')
       .filter((target) => target.includes('LICENSE') || target.includes('NOTICE'));
-    expect(licenseTargets).toEqual([
+    expect([...new Set(licenseTargets)]).toEqual([
       PROTOFORM_LICENSE_TARGET,
       '~/LICENSES/shadcn-MIT.txt',
       '~/LICENSES/protoform-shadcn-provenance.md',

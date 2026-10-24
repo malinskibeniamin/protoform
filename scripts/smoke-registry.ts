@@ -21,6 +21,7 @@ const expectedItems = [
   'auto-form-core',
   'protoform-react',
   'protoform-shadcn',
+  'protoform-shadcn-tanstack',
   'protoform-shadcn-host',
   'auto-form-react-hook-form-v8',
   'auto-form-tanstack',

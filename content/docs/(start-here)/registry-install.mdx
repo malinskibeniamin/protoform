@@ -30,7 +30,10 @@ bunx shadcn@latest add @protoform/protoform-core
 # AutoForm renderer: uses your components.json ui alias
 bunx shadcn@latest add @protoform/protoform-react
 
-# Optional default shadcn UI implementations for greenfield apps
+# Recommended full UI bundle for new apps: TanStack Charts, without Recharts
+bunx shadcn@latest add @protoform/protoform-shadcn-tanstack
+
+# Recharts fallback: preserves the existing JSX chart API
 bunx shadcn@latest add @protoform/protoform-shadcn
 
 # Experimental React Hook Form v8 beta hook
@@ -63,23 +66,24 @@ bunx shadcn@latest add @protoform/bookstore
 
 ## Registry layers
 
-| Item | Use when | Includes |
-| --- | --- | --- |
-| `hook-runtime` | You are maintaining a form hook adapter | Focused protobuf conversion, validation, field-mask, and Connect error internals |
-| `protoform-core` | You already have a shadcn form UI and want protobuf validation | `useProtoForm`, ProtoValidate resolver, oneof helpers, Connect/gRPC error mapping |
-| `protobuf-provider` | You need AutoForm schema parsing or AIP workflows | Complete schema/UI parser, annotations, AIP metadata, and workflows |
-| `use-proto-form-v8` | You are evaluating React Hook Form v8 beta | Separate v8-native hook pinned to `8.0.0-beta.4` |
-| `use-proto-form-tanstack` | You already use TanStack Form | Native TanStack API plus protobuf messages, update masks, oneofs, and server errors |
-| `protoform-react` | You want schema-generated fields with the default engine | Shared renderer plus the React Hook Form adapter |
-| `protoform-shadcn` | You want greenfield UI defaults | `protoform-react` plus optional shadcn implementations installed under `components/ui` |
-| `auto-form-react-hook-form-v8` | You are evaluating generated fields on React Hook Form v8 beta | Separate v8-native AutoForm adapter and shared renderer |
-| `auto-form-tanstack` | You want schema-generated fields with TanStack Form | Shared renderer plus the TanStack Form adapter |
-| `use-proto-form-tanstack-v2` | You are evaluating TanStack Form v2 alpha | Separate v2-native hook pinned to `2.0.0-alpha.2` |
-| `auto-form-tanstack-v2` | You are evaluating generated fields on TanStack Form v2 alpha | Separate v2-native AutoForm adapter and shared renderer |
-| `auto-form-core` | You are maintaining an engine adapter | Engine-neutral renderer installed by both AutoForm items |
-| `protoform` | You want the default product surface | Core, React renderer, and default shadcn UI implementations |
-| `protoform-examples` | You want reference demos | generated example schemas and demo components |
-| `bookstore` | You want one complete RPC story | five methods, generated bindings, forms, and the temporary service |
+| Item                           | Use when                                                       | Includes                                                                                      |
+| ------------------------------ | -------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `hook-runtime`                 | You are maintaining a form hook adapter                        | Focused protobuf conversion, validation, field-mask, and Connect error internals              |
+| `protoform-core`               | You already have a shadcn form UI and want protobuf validation | `useProtoForm`, ProtoValidate resolver, oneof helpers, Connect/gRPC error mapping             |
+| `protobuf-provider`            | You need AutoForm schema parsing or AIP workflows              | Complete schema/UI parser, annotations, AIP metadata, and workflows                           |
+| `use-proto-form-v8`            | You are evaluating React Hook Form v8 beta                     | Separate v8-native hook pinned to `8.0.0-beta.4`                                              |
+| `use-proto-form-tanstack`      | You already use TanStack Form                                  | Native TanStack API plus protobuf messages, update masks, oneofs, and server errors           |
+| `protoform-react`              | You want schema-generated fields with the default engine       | Shared renderer plus the React Hook Form adapter                                              |
+| `protoform-shadcn-tanstack`    | You want the recommended full UI bundle for a new app          | `protoform-react`, the shared UI controls, and native TanStack Charts; no Recharts dependency |
+| `protoform-shadcn`             | You need the existing Recharts chart API as a fallback         | `protoform-react` plus the same UI controls and the original Recharts component               |
+| `auto-form-react-hook-form-v8` | You are evaluating generated fields on React Hook Form v8 beta | Separate v8-native AutoForm adapter and shared renderer                                       |
+| `auto-form-tanstack`           | You want schema-generated fields with TanStack Form            | Shared renderer plus the TanStack Form adapter                                                |
+| `use-proto-form-tanstack-v2`   | You are evaluating TanStack Form v2 alpha                      | Separate v2-native hook pinned to `2.0.0-alpha.2`                                             |
+| `auto-form-tanstack-v2`        | You are evaluating generated fields on TanStack Form v2 alpha  | Separate v2-native AutoForm adapter and shared renderer                                       |
+| `auto-form-core`               | You are maintaining an engine adapter                          | Engine-neutral renderer installed by both AutoForm items                                      |
+| `protoform`                    | You want the default host-owned product surface                | Core and React renderer; your app supplies the UI controls                                    |
+| `protoform-examples`           | You want reference demos                                       | generated example schemas and demo components                                                 |
+| `bookstore`                    | You want one complete RPC story                                | five methods, generated bindings, forms, and the temporary service                            |
 
 ## Why split it?
 
@@ -90,10 +94,61 @@ schema/UI metadata parsing, or Protoform's generated validation/UI descriptor mo
 `ui` alias in `components.json`. Mature applications can point that alias at a canonical
 `components/ui/*` facade made of direct re-exports or thin compatibility adapters.
 
-`protoform-shadcn` is the optional default implementation for greenfield applications. It installs
+`protoform-shadcn-tanstack` is the recommended optional UI implementation for greenfield applications.
+`protoform-shadcn` remains available as the Recharts fallback. Both install
 the UI modules under `components/ui` without making them part of the React renderer. Per-form
 `AutoFormUIComponents` overrides remain focused on the form, field wrappers, submit button,
 collection wrappers, and errors rather than injecting every primitive at runtime.
+
+## Choose a chart backend
+
+Prefer **TanStack Charts** for new charts. Its native chart-definition API is separate from
+TanStack Form: choosing a chart backend does not change your form engine.
+
+```tsx title="components/requests-chart.tsx"
+import { barY, defineChart } from "@tanstack/charts";
+import { scaleBand } from "@tanstack/charts/scales/band";
+import { scaleLinear } from "@tanstack/charts/scales/linear";
+import { tooltip } from "@tanstack/charts/tooltip";
+import { TanStackChart } from "@/components/ui/chart-tanstack";
+
+const requests = [
+  { day: "Mon", total: 12 },
+  { day: "Tue", total: 18 },
+  { day: "Wed", total: 9 },
+];
+const definition = defineChart({
+  marks: [barY(requests, { x: "day", y: "total" })],
+  scales: {
+    x: { scale: () => scaleBand().padding(0.2) },
+    y: { scale: scaleLinear, zero: true, axis: { label: "Requests" } },
+  },
+  tooltip,
+});
+
+export function RequestsChart() {
+  return (
+    <>
+      <TanStackChart ariaLabel="Sample requests by day" definition={definition} height={240} />
+      <p>Static sample: 12 requests on Monday, 18 on Tuesday, and 9 on Wednesday.</p>
+    </>
+  );
+}
+```
+
+The wrapper loads the React SVG adapter lazily, forwards native typed callbacks, and maps the
+chart palette to your `--chart-1` through `--chart-6` tokens. Give each chart a meaningful
+`ariaLabel` and retain a summary or table for exact values. Definitions own scales, keyboard
+interaction, tooltips, and data; the wrapper does not translate Recharts JSX.
+
+Use the explicit `protoform-shadcn` fallback when you need `ChartContainer`, `ChartTooltip`,
+and Recharts children. Existing consumers keep their imports and behavior. This is an install-time
+choice, not automatic error recovery between chart libraries. Choose one full UI bundle for a new
+app; installing the TanStack bundle does not require installing the Recharts bundle first.
+
+When switching an existing app, review your copied chart source and package dependencies yourself.
+The installer does not delete the old `components/ui/chart` files or remove an existing Recharts
+dependency. The no-Recharts guarantee applies to a clean TanStack-only install.
 
 ## Pin a source snapshot
 

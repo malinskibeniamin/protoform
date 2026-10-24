@@ -16,3 +16,4 @@
 
 - **Host AutoForm entrypoint**: The protobuf-driven form renderer with an explicit UI component map and no bundled primitive implementations.
 - **Legacy UI bundle**: The opt-in demonstration UI, separate from the theme-independent host installation.
+- **Chart backend**: The library and native chart-definition API used to render a UI chart, independent of the form engine and protobuf renderer.

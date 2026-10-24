@@ -1,5 +1,6 @@
 #!/usr/bin/env bun
 
+import { existsSync } from 'node:fs';
 import { access, cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { createServer } from 'node:http';
 import { extname, join, resolve as resolvePath } from 'node:path';
@@ -12,9 +13,11 @@ const root = resolvePath(fileURLToPath(new URL('..', import.meta.url)));
 const fixture = join(root, '.tmp', 'consumer-fixture');
 const hostFixture = join(root, '.tmp', 'host-consumer-fixture');
 const coreFixture = join(root, '.tmp', 'core-consumer-fixture');
+const tanstackFixture = join(root, '.tmp', 'tanstack-consumer-fixture');
 const publicDir = join(root, 'public');
 const leadingSlashes = /^\/+/u;
 const registryOrigin = 'http://127.0.0.1:48741';
+const rechartsPackage = /\brecharts@/u;
 
 const contentTypes: Record<string, string> = {
   '.css': 'text/css; charset=utf-8',
@@ -456,14 +459,56 @@ async function assertHostInstalled() {
   );
 }
 
+async function assertTanStackInstalled() {
+  await $`bun install --cwd ${tanstackFixture}`;
+  await $`bunx --no-install shadcn add @protoform/protoform-shadcn-tanstack --cwd ${tanstackFixture} --yes --overwrite`;
+  const graph = await $`bun pm --cwd ${tanstackFixture} ls --all`.quiet().text();
+  if (rechartsPackage.test(graph)) {
+    throw new Error('TanStack-only consumer resolved Recharts');
+  }
+  if (existsSync(join(tanstackFixture, 'components/ui/chart/index.tsx'))) {
+    throw new Error('TanStack-only consumer installed the Recharts component');
+  }
+  await access(join(tanstackFixture, 'components/ui/chart-tanstack/index.tsx'));
+  await Promise.all(
+    shadcnCatalog.components
+      .filter((entry) => entry.name !== 'chart')
+      .map((component) => access(join(tanstackFixture, component.installPath)))
+  );
+  const chartSource = await readFile(join(root, 'scripts/fixtures/tanstack-chart-browser.tsx'), 'utf8');
+  await writeFile(
+    join(tanstackFixture, 'chart-browser.tsx'),
+    chartSource.replaceAll('@/components/ui/', './components/ui/')
+  );
+  await $`bun add --cwd ${tanstackFixture} tailwindcss@4.3.3 @tailwindcss/vite@4.3.3`;
+  const theme = await readFile(join(root, 'scripts/fixtures/host-theme.css'), 'utf8');
+  await writeFile(
+    join(tanstackFixture, 'app/globals.css'),
+    `${theme}\n@source "../components";\n@source "../chart-browser.tsx";\n:root { --chart-1: rgb(147 51 234); }\n`
+  );
+  await writeFile(
+    join(tanstackFixture, 'index.html'),
+    '<html lang="en"><head><meta name="viewport" content="width=device-width, initial-scale=1" /><title>TanStack chart consumer</title><link rel="stylesheet" href="/app/globals.css" /></head><body><div id="root"></div><script type="module" src="/chart-browser.tsx"></script></body></html>'
+  );
+  await writeFile(
+    join(tanstackFixture, 'vite.config.mjs'),
+    `import react from '@vitejs/plugin-react'; import tailwindcss from '@tailwindcss/vite'; export default { plugins: [react(), tailwindcss()], resolve: { alias: { '@': ${JSON.stringify(tanstackFixture)} } } };`
+  );
+  await $`bun run --cwd ${tanstackFixture} typecheck`;
+  console.log(`Full TanStack UI consumer installed and typechecked without Recharts: ${tanstackFixture}`);
+}
+
 await createFixture();
 await rm(coreFixture, { force: true, recursive: true });
 await cp(fixture, coreFixture, { recursive: true });
+await rm(tanstackFixture, { force: true, recursive: true });
+await cp(fixture, tanstackFixture, { recursive: true });
 const server = await servePublic();
 try {
   await rm(hostFixture, { force: true, recursive: true });
   await assertHostInstalled();
   if (!process.argv.includes('--host-only')) {
+    await assertTanStackInstalled();
     await $`bun install --cwd ${coreFixture}`;
     await $`bunx --no-install shadcn add @protoform/protoform-core --cwd ${coreFixture} --yes --overwrite`;
     await assertCoreInstalled();

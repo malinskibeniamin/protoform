@@ -10,7 +10,11 @@ export default defineConfig({
   ].map(({ name, viewport }) => ({
     name,
     env: { PROTOFORM_SCREENSHOT_PROJECT: name, PROTOFORM_SCREENSHOT_STYLE: 'consumer' },
-    include: ['scripts/host-consumer.browser.spec.ts', 'scripts/reliability-consumer.browser.spec.ts'],
+    include: [
+      'scripts/host-consumer.browser.spec.ts',
+      'scripts/reliability-consumer.browser.spec.ts',
+      'scripts/chart-consumer.browser.spec.ts',
+    ],
     extends: definePlaywrightConfig({
       contextOptions: { baseURL: hostBaseURL, viewport, locale: 'en-US', timezoneId: 'UTC' },
     }),

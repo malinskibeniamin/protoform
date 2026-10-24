@@ -52,11 +52,11 @@ try {
     }
   }
   if (needsServers) {
-    const { hostBaseURL, reliabilityBaseURL } = await import('./e2e-context.ts');
+    const { docsBaseURL, hostBaseURL, reliabilityBaseURL, tanstackBaseURL } = await import('./e2e-context.ts');
     close = await startTestServers(
       suite === 'e2e'
         ? [
-            { command: 'bun', args: ['run', 'docs:blume:e2e'], url: 'http://127.0.0.1:55013/docs', timeout: 120_000 },
+            { command: 'bun', args: ['run', 'docs:blume:e2e'], url: `${docsBaseURL}/docs`, timeout: 120_000 },
             { command: 'bun', args: ['run', 'examples:server'], url: 'http://127.0.0.1:55012/health', timeout: 60_000 },
           ]
         : [
@@ -72,6 +72,13 @@ try {
               args: ['x', '--no-install', 'vite', '--host', '127.0.0.1', '--port', new URL(reliabilityBaseURL).port],
               cwd: '.tmp/consumer-fixture',
               url: reliabilityBaseURL,
+              timeout: 60_000,
+            },
+            {
+              command: 'bun',
+              args: ['x', '--no-install', 'vite', '--host', '127.0.0.1', '--port', new URL(tanstackBaseURL).port],
+              cwd: '.tmp/tanstack-consumer-fixture',
+              url: tanstackBaseURL,
               timeout: 60_000,
             },
           ],
