@@ -14,17 +14,30 @@ import {
 } from '@/registry/base-nova/protoform/lib/protobuf-provider/humanize-validation-error.js';
 import { createDescriptorAwareStandardSchema } from '@/registry/base-nova/protoform/lib/protobuf-provider/validation-schema.js';
 
-export interface ProtoResolverOptions<Desc extends DescMessage = DescMessage> {
+export interface ProtoResolverOptions<Desc extends DescMessage = DescMessage, TRaw extends boolean = false> {
   getSourceMessage?: () => MessageShape<Desc> | undefined;
   getValidationMask?: (values: FormValues) => FieldMask | undefined;
+  raw?: TRaw;
 }
 
 export function createProtoResolver<Desc extends DescMessage>(
   desc: Desc,
+  options: ProtoFormOptions | undefined,
+  source: MessageShape<Desc> | undefined,
+  protoResolverOptions: ProtoResolverOptions<Desc, true> & { raw: true }
+): Resolver<FormValues, unknown, FormValues>;
+export function createProtoResolver<Desc extends DescMessage>(
+  desc: Desc,
+  options?: ProtoFormOptions,
+  source?: MessageShape<Desc>,
+  protoResolverOptions?: ProtoResolverOptions<Desc>
+): Resolver<FormValues, unknown, MessageValidType<Desc>>;
+export function createProtoResolver<Desc extends DescMessage>(
+  desc: Desc,
   options: ProtoFormOptions = {},
   source?: MessageShape<Desc>,
-  protoResolverOptions: ProtoResolverOptions<Desc> = {}
-): Resolver<FormValues, unknown, MessageValidType<Desc>> {
+  protoResolverOptions: ProtoResolverOptions<Desc, boolean> = {}
+): Resolver<FormValues, unknown, FormValues> {
   const standardSchema = createDescriptorAwareStandardSchema(desc, options);
 
   return async (values, _context, resolverOptions) => {
@@ -45,7 +58,7 @@ export function createProtoResolver<Desc extends DescMessage>(
       }
       return {
         errors: {},
-        values: validationResult.value,
+        values: protoResolverOptions.raw === true ? values : validationResult.value,
       };
     }
 

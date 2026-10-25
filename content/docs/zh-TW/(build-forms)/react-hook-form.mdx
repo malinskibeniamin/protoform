@@ -52,6 +52,69 @@ export function SignupForm() {
 回傳值是完整的 `UseFormReturn`，因此仍可使用既有的 `Controller`、`useFieldArray`、
 `watch`、`reset`、resolver 選項，以及較少見的 React Hook Form 模式。
 
+## 使用原生 Form 元件提交
+
+從 React Hook Form 匯入 [`Form`](https://react-hook-form.com/docs/useform/form)，不要使用 UI
+函式庫中作為 `FormProvider` 別名的 `Form`。傳入 `form.control`，由元件驗證、編碼表單值並送出請求：
+
+```tsx
+import { Form } from "react-hook-form";
+import { Button } from "@/components/ui/button";
+import { Field, FieldError } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { useProtoForm } from "@/hooks/use-proto-form";
+import { SignupRequestSchema } from "@/gen/example/v1/signup_pb";
+
+export function SignupForm() {
+  const form = useProtoForm(SignupRequestSchema, {
+    defaultValues: { email: "", displayName: "" },
+  });
+  const { errors, isSubmitting, isSubmitSuccessful } = form.formState;
+
+  return (
+    <Form control={form.control} action="/api/signup" encType="application/json">
+      <Field data-invalid={Boolean(errors.displayName)}>
+        <Input
+          aria-label="Display name"
+          aria-invalid={Boolean(errors.displayName)}
+          {...form.register("displayName")}
+        />
+        {errors.displayName ? <FieldError errors={[errors.displayName]} /> : null}
+      </Field>
+      <Field data-invalid={Boolean(errors.email)}>
+        <Input
+          aria-label="Email"
+          aria-invalid={Boolean(errors.email)}
+          type="email"
+          {...form.register("email")}
+        />
+        {errors.email ? <FieldError errors={[errors.email]} /> : null}
+      </Field>
+      {errors.root?.["server"] ? <p role="alert">Could not create the account. Try again.</p> : null}
+      {isSubmitSuccessful ? <p role="status">Account created.</p> : null}
+      <Button type="submit" disabled={isSubmitting}>Create account</Button>
+    </Form>
+  );
+}
+```
+
+`useProtoForm` 驗證 protobuf 約束，但提供給 `Form.onSubmit({ data, formData, formDataJson })` 和
+`handleSubmit(values)` 的是**表單值**。64 位元整數保持為字串，位元組保持為 base64，JSON 中
+不會包含 protobuf 中繼資料或 `BigInt`。需要 protobuf 訊息時，呼叫 `form.createMessage(data)`。
+AutoForm 自己的 `onSubmit` 回呼仍然接收 protobuf 訊息。
+
+依照 React Hook Form 文件使用 `headers`、`method`、`validateStatus`、`onSuccess` 和 `onError`。
+省略 `encType` 時會送出 `FormData`；函式形式的 action 也接收 `FormData`。請求錯誤儲存在
+`formState.errors.root.server`，驗證錯誤則保留在對應欄位上。也可以透過 `FormProvider` 提供
+control，而不必明確傳入。
+
+只選擇一個請求送出方：傳入 `action`，或省略它並在 `onSubmit` 中送出請求。對於 ConnectRPC、
+自訂 protobuf JSON 序列化、重試或取消，請優先使用 `handleSubmit`、
+`form.createMessage(values)` 和既有傳輸層。原生 `Form` 的編碼不等於 Protobuf JSON 對應。
+
+直接使用 `createProtoResolver` 時，預設輸出仍然是 protobuf 訊息。使用原生 `Form` 序列化前，
+透過 `createProtoResolver(schema, {}, undefined, { raw: true })` 選擇表單值輸出。
+
 ## 驗證部分編輯
 
 更新表單有時會省略伺服器仍會保留的欄位值，例如唯寫憑證。啟用 `modified-fields`
@@ -113,6 +176,38 @@ export function SignupForm() {
 
 `formOptions` 會傳遞給 `useForm`。`onFormInit`、`onFieldChange` 和 `onSubmit` 會接收
 原生 React Hook Form 實例。Protoform 加入產生式渲染，同時保留你已熟悉的 API。
+
+## 透過 action 提交 AutoForm
+
+穩定版 React Hook Form AutoForm 入口也支援透過具型別的 `formProps` 傳入原生提交選項：
+
+```tsx
+<AutoForm
+  schema={SignupRequestSchema}
+  formProps={{
+    action: "/api/signup",
+    encType: "application/json",
+    method: "post",
+    onSuccess: ({ response }) => console.log(response.status),
+    onError: ({ response, error }) => console.error(response?.status, error),
+  }}
+  withSubmit
+/>
+```
+
+提供 `formProps` 後，AutoForm 使用 React Hook Form 的 `Form` 提交生命週期，同時保留版面配置、
+自訂表單包裝元件、欄位錯誤和提交按鈕。`control`、`children` 和無介面的 `render` 仍由 AutoForm
+管理。`id` 和 `aria-label` 等其他表單屬性仍會傳遞到實際表單元素。
+
+頂層 `onSubmit(message, form, context)` 保持 protobuf 契約，並在請求之前執行。接著，選用的
+`formProps.onSubmit({ data, formData, formDataJson })` 接收表單值。驗證失敗或頂層回呼拒絕時不會
+執行 action。請求錯誤會顯示在 AutoForm 的根層級提示中，也可以透過
+`form.formState.errors.root.server` 讀取。再次提交會清除這些錯誤並重試。提交按鈕在原生請求結束
+之前保持停用。
+
+函式形式的 action 接收 `FormData`，與原生 `Form` 一致。使用 action 時，自訂 resolver 必須回傳
+可安全序列化的輸出。除非確實需要兩次請求，否則不要再在頂層回呼中送出請求。對於 protobuf
+傳輸或請求取消，省略 `action`，並在自己的回呼中管理請求。其他表單引擎和實驗性 v8 入口保持不變。
 
 ## 實驗性功能：React Hook Form v8 beta
 

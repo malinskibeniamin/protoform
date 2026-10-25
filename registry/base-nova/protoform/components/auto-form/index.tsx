@@ -41,6 +41,7 @@ export type {
 export type { AutoFormEngineHandle } from './engine';
 export { defaultRegistry } from './fields';
 export { defaultClassifyField } from './helpers';
+export type { AutoFormSubmissionProps } from './host';
 export type { AutoFormAppearance } from './layout-context';
 export { type FieldMatchContext, type FieldTypeDefinition, FieldTypeRegistry } from './registry';
 export { shadcnUIComponents } from './shadcn-ui-components';

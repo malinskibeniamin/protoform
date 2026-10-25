@@ -4,6 +4,7 @@ import type React from 'react';
 import type { Resolver, UseFormProps, UseFormReturn } from 'react-hook-form';
 import { createProtoResolver } from '@/registry/base-nova/protoform/hooks/use-proto-form';
 import { ReactHookFormEngine } from './adapters/react-hook-form';
+import { type AutoFormSubmissionProps, ReactHookFormSubmission } from './adapters/react-hook-form-submission';
 import { AutoFormCore } from './auto-form-core';
 import { isProtoMessageDescriptor, isProtoProvider } from './proto';
 import { protoConversionOptionsFromFieldConfig } from './schema';
@@ -12,16 +13,18 @@ import type { ProtoformUIComponentMap } from './ui-component-map';
 
 type FormValues = Record<string, unknown>;
 
-export type AutoFormProps<
-  T extends FormValues = FormValues,
-  TCustomFieldType extends string = never,
-> = BaseAutoFormProps<
-  T,
-  UseFormReturn<FormValues, unknown, T>,
-  UseFormProps<FormValues, unknown, T>,
-  Resolver<FormValues, unknown, T>,
-  TCustomFieldType
-> & { components: ProtoformUIComponentMap };
+export type AutoFormProps<T extends FormValues = FormValues, TCustomFieldType extends string = never> = Omit<
+  BaseAutoFormProps<
+    T,
+    UseFormReturn<FormValues, unknown, T>,
+    UseFormProps<FormValues, unknown, T>,
+    Resolver<FormValues, unknown, T>,
+    TCustomFieldType
+  >,
+  'formProps'
+> & { components: ProtoformUIComponentMap; formProps?: AutoFormSubmissionProps };
+
+export type { AutoFormSubmissionProps } from './adapters/react-hook-form-submission';
 
 function toHookFormMode(mode: AutoFormValidationMode): 'onBlur' | 'onChange' | 'onSubmit' {
   switch (mode) {
@@ -39,7 +42,13 @@ function toHookFormMode(mode: AutoFormValidationMode): 'onBlur' | 'onChange' | '
 export function AutoForm<T extends FormValues = FormValues, TCustomFieldType extends string = never>(
   props: AutoFormProps<T, TCustomFieldType>
 ): React.ReactNode;
-export function AutoForm({ components, formOptions, resolver, ...props }: AutoFormProps<FormValues, string>) {
+export function AutoForm({
+  components,
+  formOptions,
+  formProps,
+  resolver,
+  ...props
+}: AutoFormProps<FormValues, string>) {
   let protoDescriptor = isProtoMessageDescriptor(props.schema) ? props.schema : undefined;
   if (!protoDescriptor && isProtoProvider(props.schema)) {
     protoDescriptor = props.schema.getMessageDescriptor();
@@ -48,8 +57,16 @@ export function AutoForm({ components, formOptions, resolver, ...props }: AutoFo
     ...protoConversionOptionsFromFieldConfig(props.fieldConfig),
     formatMessage: props.formatMessage,
   };
-  const resolvedResolver =
-    resolver ?? (protoDescriptor ? createProtoResolver(protoDescriptor, conversionOptions) : undefined);
+  let resolvedResolver = resolver;
+  if (!resolvedResolver && protoDescriptor) {
+    resolvedResolver = formProps
+      ? createProtoResolver(protoDescriptor, conversionOptions, undefined, { raw: true })
+      : createProtoResolver(protoDescriptor, conversionOptions);
+  }
+  const htmlFormProps = { ...formProps };
+  for (const name of ['action', 'encType', 'headers', 'method', 'onError', 'onSubmit', 'onSuccess', 'validateStatus']) {
+    Reflect.deleteProperty(htmlFormProps, name);
+  }
   const engineOptions: UseFormProps<FormValues, unknown, FormValues> = {
     ...formOptions,
     ...(props.validationMode
@@ -68,6 +85,7 @@ export function AutoForm({ components, formOptions, resolver, ...props }: AutoFo
     <AutoFormCore<FormValues, UseFormReturn<FormValues, unknown, FormValues>, string>
       {...props}
       components={components}
+      formProps={htmlFormProps}
       renderEngine={({ children, defaultValues, values }) => (
         <ReactHookFormEngine<FormValues>
           defaultValues={defaultValues}
@@ -79,6 +97,9 @@ export function AutoForm({ components, formOptions, resolver, ...props }: AutoFo
           {children}
         </ReactHookFormEngine>
       )}
+      renderForm={
+        formProps ? (renderProps) => <ReactHookFormSubmission {...renderProps} options={formProps} /> : undefined
+      }
     />
   );
 }

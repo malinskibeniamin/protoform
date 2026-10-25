@@ -1,11 +1,15 @@
-import type { DescMessage } from '@bufbuild/protobuf';
+import type { DescMessage, MessageValidType } from '@bufbuild/protobuf';
 import { expectTypeOf } from 'expect-type';
-import type { Control, Path } from 'react-hook-form';
+import type { Control, Path, Resolver } from 'react-hook-form';
 import type { Control as ControlV8 } from 'react-hook-form-v8';
-import type { UseProtoFormReturn } from '../../hooks/use-proto-form/index.js';
+import {
+  createProtoResolver,
+  type ProtoResolverOptions,
+  type UseProtoFormReturn,
+} from '../../hooks/use-proto-form/index.js';
 import type { UseProtoFormReturn as UseProtoFormV8Return } from '../../hooks/use-proto-form-v8/index.js';
 import type { ProtoFormShape, ProtoFormValues } from './form-values.js';
-import type { AutoFormExampleSchema } from './gen/auto-form-example_pb.js';
+import { AutoFormExampleSchema } from './gen/auto-form-example_pb.js';
 import type { protoToFormValues } from './hook-runtime.js';
 
 declare const { describe, test }: typeof import('bun:test');
@@ -92,6 +96,19 @@ describe('protoFormShape: the values a protobuf form holds', () => {
     expectTypeOf<UseProtoFormReturn<typeof AutoFormExampleSchema>['control']>().toEqualTypeOf<Control<ExampleForm>>();
     expectTypeOf<UseProtoFormV8Return<typeof AutoFormExampleSchema>['control']>().toEqualTypeOf<
       ControlV8<ExampleForm>
+    >();
+  });
+
+  test('infers form-value output only when the resolver explicitly selects raw values', () => {
+    const resolver = createProtoResolver(AutoFormExampleSchema, {}, undefined, { raw: true });
+    expectTypeOf(resolver).toEqualTypeOf<Resolver<Record<string, unknown>, unknown, Record<string, unknown>>>();
+  });
+
+  test('keeps protobuf output for existing typed resolver options', () => {
+    const options: ProtoResolverOptions<typeof AutoFormExampleSchema> = {};
+    const resolver = createProtoResolver(AutoFormExampleSchema, {}, undefined, options);
+    expectTypeOf(resolver).toEqualTypeOf<
+      Resolver<Record<string, unknown>, unknown, MessageValidType<typeof AutoFormExampleSchema>>
     >();
   });
 });

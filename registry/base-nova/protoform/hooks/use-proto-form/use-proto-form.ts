@@ -120,6 +120,7 @@ export function useProtoForm<Desc extends DescMessage>(
     mode,
     resolver: createProtoResolver(schema, conversionOptions, undefined, {
       getSourceMessage: () => sourceMessage.current,
+      raw: true,
       ...(validationScope === 'modified-fields'
         ? {
             getValidationMask: (values) =>

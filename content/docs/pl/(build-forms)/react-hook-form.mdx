@@ -53,6 +53,73 @@ export function SignupForm() {
 Zwracana wartość to kompletny obiekt `UseFormReturn`, dzięki czemu istniejące `Controller`, `useFieldArray`,
 `watch`, `reset`, opcje resolvera i mniej typowe wzorce React Hook Form pozostają dostępne.
 
+## Przesyłanie przez natywny komponent Form
+
+Zaimportuj [`Form` z React Hook Form](https://react-hook-form.com/docs/useform/form), a nie alias
+`FormProvider` z biblioteki interfejsu. Przekaż `form.control`, aby komponent walidował i kodował
+wartości formularza oraz wykonywał żądanie:
+
+```tsx
+import { Form } from "react-hook-form";
+import { Button } from "@/components/ui/button";
+import { Field, FieldError } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { useProtoForm } from "@/hooks/use-proto-form";
+import { SignupRequestSchema } from "@/gen/example/v1/signup_pb";
+
+export function SignupForm() {
+  const form = useProtoForm(SignupRequestSchema, {
+    defaultValues: { email: "", displayName: "" },
+  });
+  const { errors, isSubmitting, isSubmitSuccessful } = form.formState;
+
+  return (
+    <Form control={form.control} action="/api/signup" encType="application/json">
+      <Field data-invalid={Boolean(errors.displayName)}>
+        <Input
+          aria-label="Display name"
+          aria-invalid={Boolean(errors.displayName)}
+          {...form.register("displayName")}
+        />
+        {errors.displayName ? <FieldError errors={[errors.displayName]} /> : null}
+      </Field>
+      <Field data-invalid={Boolean(errors.email)}>
+        <Input
+          aria-label="Email"
+          aria-invalid={Boolean(errors.email)}
+          type="email"
+          {...form.register("email")}
+        />
+        {errors.email ? <FieldError errors={[errors.email]} /> : null}
+      </Field>
+      {errors.root?.["server"] ? <p role="alert">Could not create the account. Try again.</p> : null}
+      {isSubmitSuccessful ? <p role="status">Account created.</p> : null}
+      <Button type="submit" disabled={isSubmitting}>Create account</Button>
+    </Form>
+  );
+}
+```
+
+`useProtoForm` sprawdza ograniczenia protobuf, ale przekazuje **wartości formularza** zarówno do
+`Form.onSubmit({ data, formData, formDataJson })`, jak i `handleSubmit(values)`. Liczby 64-bitowe
+pozostają tekstem, a bajty danymi base64. JSON nie zawiera metadanych protobuf ani wartości `BigInt`.
+Wywołaj `form.createMessage(data)`, gdy potrzebujesz komunikatu protobuf. AutoForm nadal przekazuje
+komunikaty protobuf do własnego `onSubmit`.
+
+Opcje `headers`, `method`, `validateStatus`, `onSuccess` i `onError` działają zgodnie z dokumentacją
+React Hook Form. Bez `encType` wysyłane są dane `FormData`; akcje funkcyjne również otrzymują
+`FormData`. Błędy żądań trafiają do `formState.errors.root.server`, a błędy walidacji pozostają przy
+polach. Zamiast jawnie przekazywać kontroler, możesz udostępnić go przez `FormProvider`.
+
+Wybierz jednego właściciela żądania: przekaż `action` albo pomiń tę opcję i wyślij żądanie w
+`onSubmit`. Dla ConnectRPC, własnej serializacji protobuf do JSON, ponowień lub anulowania preferuj
+`handleSubmit` oraz `form.createMessage(values)` z dotychczasowym transportem. Kodowanie natywnego
+`Form` nie jest mapowaniem Protobuf JSON.
+
+Przy bezpośrednim użyciu `createProtoResolver` wynik domyślnie pozostaje komunikatem protobuf.
+Przed użyciem natywnej serializacji `Form` wybierz wartości formularza przez
+`createProtoResolver(schema, {}, undefined, { raw: true })`.
+
 ## Walidacja częściowych edycji
 
 Formularze aktualizacji czasem pomijają wartość pola, którą serwer zachowa, na przykład poświadczenie
@@ -118,6 +185,42 @@ export function SignupForm() {
 `formOptions` jest przekazywane do `useForm`. Funkcje `onFormInit`, `onFieldChange` i `onSubmit` otrzymują
 natywną instancję React Hook Form. Protoform dodaje generowane renderowanie bez zastępowania interfejsu API, który
 już znasz.
+
+## Przesyłanie AutoForm przez action
+
+Stabilny komponent AutoForm oparty na React Hook Form przyjmuje też natywne opcje przesyłania
+przez typowane `formProps`:
+
+```tsx
+<AutoForm
+  schema={SignupRequestSchema}
+  formProps={{
+    action: "/api/signup",
+    encType: "application/json",
+    method: "post",
+    onSuccess: ({ response }) => console.log(response.status),
+    onError: ({ response, error }) => console.error(response?.status, error),
+  }}
+  withSubmit
+/>
+```
+
+Przekazanie `formProps` włącza cykl przesyłania komponentu `Form` z React Hook Form, zachowując
+układ AutoForm, własny komponent opakowujący formularz, błędy pól i przycisk wysyłania. AutoForm
+nadal zarządza `control`, `children` oraz bezinterfejsowym `render`. Pozostałe atrybuty, takie jak
+`id` i `aria-label`, trafiają do wyrenderowanego formularza.
+
+Główny `onSubmit(message, form, context)` zachowuje kontrakt protobuf i wykonuje się przed żądaniem.
+Następnie opcjonalny `formProps.onSubmit({ data, formData, formDataJson })` otrzymuje wartości
+formularza. Błąd walidacji lub odrzucenie głównego wywołania zwrotnego blokuje akcję. Błędy żądań
+są widoczne w głównym alercie AutoForm oraz w `form.formState.errors.root.server`. Kolejne wysłanie
+usuwa te błędy i ponawia żądanie. Przycisk pozostaje wyłączony do zakończenia natywnego żądania.
+
+Akcje funkcyjne otrzymują `FormData`, tak jak w natywnym `Form`. Własne resolvery używane z akcją
+muszą zwracać dane nadające się do serializacji. Nie wysyłaj dodatkowego żądania w głównym
+wywołaniu zwrotnym, chyba że celowo potrzebujesz dwóch żądań. Dla transportów protobuf lub
+anulowania żądań pomiń `action` i zarządzaj wysyłaniem w swoim wywołaniu zwrotnym. Inne mechanizmy
+formularzy oraz eksperymentalny komponent v8 pozostają bez zmian.
 
 ## Eksperymentalne: React Hook Form v8 beta
 
