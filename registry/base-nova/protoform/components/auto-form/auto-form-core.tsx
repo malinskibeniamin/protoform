@@ -90,6 +90,13 @@ export type AutoFormEngineRender = (props: {
   values?: Record<string, unknown> | undefined;
 }) => React.ReactNode;
 
+export interface AutoFormFormRenderProps {
+  children: React.ReactNode;
+  FormComponent: React.ComponentType<React.ComponentProps<'form'> & { testId?: string | undefined }>;
+  formProps: React.ComponentProps<'form'> & { testId?: string | undefined };
+  onSubmit: (values: Record<string, unknown>) => Promise<boolean>;
+}
+
 export type AutoFormCoreProps<
   T extends Record<string, unknown>,
   TNativeForm,
@@ -97,6 +104,7 @@ export type AutoFormCoreProps<
 > = Omit<AutoFormProps<T, TNativeForm, never, never, TCustomFieldType>, 'components' | 'formOptions' | 'resolver'> & {
   components: ProtoformUIComponentMap;
   renderEngine: AutoFormEngineRender;
+  renderForm?: ((props: AutoFormFormRenderProps) => React.ReactNode) | undefined;
 };
 
 function renderModeContent({
@@ -233,6 +241,7 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
   validationMode = 'submit',
   revalidationMode = 'change',
   appearance,
+  renderForm,
 }: AutoFormContentProps<T, TNativeForm, TCustomFieldType>) {
   const testIdPrefix = resolveAutoFormTestIdPrefix(testId);
   const submitController = React.useRef<AbortController | undefined>(undefined);
@@ -381,7 +390,7 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
       const context = getSubmitContext(controller.signal);
       await engine.runNativeSubmit?.();
       if (controller.signal.aborted) {
-        return;
+        return false;
       }
       const validatedProtoMessage = resolvedSchema.protoDesc
         ? resolveProtoSourceMessage(resolvedSchema.protoDesc, values)
@@ -399,19 +408,21 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
       if (!controller.signal.aborted) {
         routeToFirstStepError();
       }
+      return !controller.signal.aborted;
     } catch (error) {
       if (!controller.signal.aborted) {
         engine.setRootError(error instanceof Error ? error.message : 'Submission failed.');
       }
+      return false;
     }
   }
 
   async function handleSubmit(submittedValues: Record<string, unknown>) {
     if (submissionInFlight.current) {
-      return;
+      return false;
     }
     submissionInFlight.current = true;
-    await runSubmission(submittedValues).finally(() => {
+    return await runSubmission(submittedValues).finally(() => {
       submissionInFlight.current = false;
     });
   }
@@ -422,20 +433,19 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
     engine.clearErrors(['root', PROTO_FORM_ROOT_ERROR_KEY]);
 
     if (engine.validatesSchema) {
-      await submitValidatedValues(submittedValues as T, controller);
-      return;
+      return await submitValidatedValues(submittedValues as T, controller);
     }
 
     const validationResult = await validateWithProvider(submittedValues, controller.signal);
     if (controller.signal.aborted) {
-      return;
+      return false;
     }
     if (!validationResult.success) {
       engine.setValidationErrors(validationResult.errors);
       routeToFirstStepError();
-      return;
+      return false;
     }
-    await submitValidatedValues(validationResult.data as T, controller);
+    return await submitValidatedValues(validationResult.data as T, controller);
   }
 
   function handleStepBack() {
@@ -569,6 +579,39 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
       ? (Reflect.get(formProps, 'onBlurCapture') as React.FocusEventHandler<HTMLFormElement>)
       : undefined;
 
+  function renderFormContent(content: React.ReactNode) {
+    const elementProps = {
+      ...formProps,
+      onBlurCapture: (event: React.FocusEvent<HTMLFormElement>) => {
+        formOnBlurCapture?.(event);
+        if (activeValidationMode() === 'blur') {
+          runLifecycleValidation(engine.getValues()).catch((error: unknown) => {
+            engine.setRootError(error instanceof Error ? error.message : 'Validation failed.');
+          });
+        }
+      },
+      testId: testIdPrefix,
+    };
+    if (renderForm) {
+      return renderForm({
+        children: content,
+        FormComponent: mergedUiComponents.Form,
+        formProps: elementProps,
+        onSubmit: handleSubmit,
+      });
+    }
+    return (
+      <mergedUiComponents.Form
+        {...elementProps}
+        onSubmit={engine.handleSubmit(async (submittedValues) => {
+          await handleSubmit(submittedValues);
+        })}
+      >
+        {content}
+      </mergedUiComponents.Form>
+    );
+  }
+
   const hasRootTitle = Boolean(rootHeaderMetadata.title);
   const hasRootDescription = Boolean(rootHeaderMetadata.description);
   const hasRootError = Boolean(engine.rootError);
@@ -607,50 +650,45 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
           payloadBuilder={payloadBuilder}
           payloadParser={payloadParser}
           payloadSchema={payloadSchema}
-          renderContent={(bag) => (
-            <mergedUiComponents.Form
-              {...formProps}
-              onBlurCapture={(event) => {
-                formOnBlurCapture?.(event);
-                if (activeValidationMode() === 'blur') {
-                  runLifecycleValidation(engine.getValues()).catch((error: unknown) => {
-                    engine.setRootError(error instanceof Error ? error.message : 'Validation failed.');
-                  });
-                }
-              }}
-              onSubmit={engine.handleSubmit(handleSubmit)}
-              testId={testIdPrefix}
-            >
-              {hasRootError ? (
-                <Alert variant="destructive">
-                  <AlertTitle>
-                    {formatProtoformMessage(formatMessage, 'auto_form.validation_failed', {}, 'Form validation failed')}
-                  </AlertTitle>
-                  <AlertDescription className="whitespace-pre-wrap">{engine.rootError}</AlertDescription>
-                </Alert>
-              ) : null}
+          renderContent={(bag) =>
+            renderFormContent(
+              <>
+                {hasRootError ? (
+                  <Alert variant="destructive">
+                    <AlertTitle>
+                      {formatProtoformMessage(
+                        formatMessage,
+                        'auto_form.validation_failed',
+                        {},
+                        'Form validation failed'
+                      )}
+                    </AlertTitle>
+                    <AlertDescription className="whitespace-pre-wrap">{engine.rootError}</AlertDescription>
+                  </Alert>
+                ) : null}
 
-              {rootHeaderContent}
+                {rootHeaderContent}
 
-              <AutoFormModeShell
-                bestEffort={bag.payloadState.bestEffort}
-                jsonEditorError={bag.jsonEditorError}
-                jsonText={bag.jsonEditorText}
-                mode={mode}
-                modes={availableModes}
-                onFormatJson={bag.handleFormatJson}
-                onJsonTextChange={bag.handleJsonTextChange}
-                onModeChange={setMode}
-                onResetJson={bag.handleResetJson}
-                payload={bag.payloadState.payload}
-                renderFormMode={renderFormForMode}
-                renderSummary={renderSummary}
-                showSummary={showSummary && (!stepper || currentStepIndex === stepper.steps.length - 1)}
-                summaryContext={bag.summaryContext}
-                testIdPrefix={testIdPrefix}
-              />
-            </mergedUiComponents.Form>
-          )}
+                <AutoFormModeShell
+                  bestEffort={bag.payloadState.bestEffort}
+                  jsonEditorError={bag.jsonEditorError}
+                  jsonText={bag.jsonEditorText}
+                  mode={mode}
+                  modes={availableModes}
+                  onFormatJson={bag.handleFormatJson}
+                  onJsonTextChange={bag.handleJsonTextChange}
+                  onModeChange={setMode}
+                  onResetJson={bag.handleResetJson}
+                  payload={bag.payloadState.payload}
+                  renderFormMode={renderFormForMode}
+                  renderSummary={renderSummary}
+                  showSummary={showSummary && (!stepper || currentStepIndex === stepper.steps.length - 1)}
+                  summaryContext={bag.summaryContext}
+                  testIdPrefix={testIdPrefix}
+                />
+              </>
+            )
+          }
           resolvedSchema={resolvedSchema}
           simpleFields={simpleFields}
           testIdPrefix={testIdPrefix}

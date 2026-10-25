@@ -815,6 +815,11 @@
           "target": "@components/auto-form/adapters/react-hook-form.tsx"
         },
         {
+          "path": "registry/base-nova/protoform/components/auto-form/adapters/react-hook-form-submission.tsx",
+          "type": "registry:component",
+          "target": "@components/auto-form/adapters/react-hook-form-submission.tsx"
+        },
+        {
           "path": "registry/base-nova/protoform/components/auto-form/host.tsx",
           "type": "registry:component",
           "target": "@components/auto-form/host.tsx"

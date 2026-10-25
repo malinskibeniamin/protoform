@@ -53,6 +53,69 @@ export function SignupForm() {
 返回值是完整的 `UseFormReturn`，因此现有的 `Controller`、`useFieldArray`、
 `watch`、`reset`、resolver 选项以及不常见的 React Hook Form 模式仍然可用。
 
+## 使用原生 Form 组件提交
+
+从 React Hook Form 导入 [`Form`](https://react-hook-form.com/docs/useform/form)，不要使用 UI
+库中作为 `FormProvider` 别名的 `Form`。传入 `form.control`，由组件验证、编码表单值并发送请求：
+
+```tsx
+import { Form } from "react-hook-form";
+import { Button } from "@/components/ui/button";
+import { Field, FieldError } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { useProtoForm } from "@/hooks/use-proto-form";
+import { SignupRequestSchema } from "@/gen/example/v1/signup_pb";
+
+export function SignupForm() {
+  const form = useProtoForm(SignupRequestSchema, {
+    defaultValues: { email: "", displayName: "" },
+  });
+  const { errors, isSubmitting, isSubmitSuccessful } = form.formState;
+
+  return (
+    <Form control={form.control} action="/api/signup" encType="application/json">
+      <Field data-invalid={Boolean(errors.displayName)}>
+        <Input
+          aria-label="Display name"
+          aria-invalid={Boolean(errors.displayName)}
+          {...form.register("displayName")}
+        />
+        {errors.displayName ? <FieldError errors={[errors.displayName]} /> : null}
+      </Field>
+      <Field data-invalid={Boolean(errors.email)}>
+        <Input
+          aria-label="Email"
+          aria-invalid={Boolean(errors.email)}
+          type="email"
+          {...form.register("email")}
+        />
+        {errors.email ? <FieldError errors={[errors.email]} /> : null}
+      </Field>
+      {errors.root?.["server"] ? <p role="alert">Could not create the account. Try again.</p> : null}
+      {isSubmitSuccessful ? <p role="status">Account created.</p> : null}
+      <Button type="submit" disabled={isSubmitting}>Create account</Button>
+    </Form>
+  );
+}
+```
+
+`useProtoForm` 验证 protobuf 约束，但向 `Form.onSubmit({ data, formData, formDataJson })` 和
+`handleSubmit(values)` 提供的是**表单值**。64 位整数保持为字符串，字节保持为 base64，JSON 中
+不会包含 protobuf 元数据或 `BigInt`。需要 protobuf 消息时，调用 `form.createMessage(data)`。
+AutoForm 自己的 `onSubmit` 回调仍然接收 protobuf 消息。
+
+按照 React Hook Form 文档使用 `headers`、`method`、`validateStatus`、`onSuccess` 和 `onError`。
+省略 `encType` 时发送 `FormData`；函数形式的 action 也接收 `FormData`。请求错误存储在
+`formState.errors.root.server`，验证错误则保留在对应字段上。也可以通过 `FormProvider` 提供
+control，而不必显式传入。
+
+只选择一个请求发送方：传入 `action`，或省略它并在 `onSubmit` 中发送请求。对于 ConnectRPC、
+自定义 protobuf JSON 序列化、重试或取消，请优先使用 `handleSubmit`、
+`form.createMessage(values)` 和现有传输层。原生 `Form` 的编码不等于 Protobuf JSON 映射。
+
+直接使用 `createProtoResolver` 时，默认输出仍然是 protobuf 消息。使用原生 `Form` 序列化前，
+通过 `createProtoResolver(schema, {}, undefined, { raw: true })` 选择表单值输出。
+
 ## 验证部分编辑
 
 更新表单有时会省略服务器仍会保留的字段值，例如只写凭据。启用 `modified-fields`
@@ -114,6 +177,38 @@ export function SignupForm() {
 
 `formOptions` 会传递给 `useForm`。`onFormInit`、`onFieldChange` 和 `onSubmit` 接收
 原生 React Hook Form 实例。Protoform 在不替换你已熟悉 API 的前提下，增加了生成式渲染。
+
+## 通过 action 提交 AutoForm
+
+稳定版 React Hook Form AutoForm 入口也支持通过类型化的 `formProps` 传入原生提交选项：
+
+```tsx
+<AutoForm
+  schema={SignupRequestSchema}
+  formProps={{
+    action: "/api/signup",
+    encType: "application/json",
+    method: "post",
+    onSuccess: ({ response }) => console.log(response.status),
+    onError: ({ response, error }) => console.error(response?.status, error),
+  }}
+  withSubmit
+/>
+```
+
+提供 `formProps` 后，AutoForm 使用 React Hook Form 的 `Form` 提交生命周期，同时保留布局、
+自定义表单包装组件、字段错误和提交按钮。`control`、`children` 和无界面的 `render` 仍由 AutoForm
+管理。`id` 和 `aria-label` 等其他表单属性仍会传递到实际表单元素。
+
+顶层 `onSubmit(message, form, context)` 保持 protobuf 契约，并在请求之前执行。随后，可选的
+`formProps.onSubmit({ data, formData, formDataJson })` 接收表单值。验证失败或顶层回调拒绝时不会
+执行 action。请求错误显示在 AutoForm 的根级提示中，也可以通过
+`form.formState.errors.root.server` 读取。再次提交会清除这些错误并重试。提交按钮在原生请求结束
+之前保持禁用。
+
+函数形式的 action 接收 `FormData`，与原生 `Form` 一致。使用 action 时，自定义 resolver 必须返回
+可安全序列化的输出。除非确实需要两次请求，否则不要再在顶层回调中发送请求。对于 protobuf
+传输或请求取消，省略 `action`，并在自己的回调中管理请求。其他表单引擎和实验性 v8 入口保持不变。
 
 ## 实验性功能：React Hook Form v8 beta
 

@@ -8,6 +8,7 @@
 - **Mutation request composer**: A pure descriptor-driven operation that wraps resource form output and standard mutation controls in a typed protobuf request. It never performs the RPC.
 - **Audit target**: A named AutoForm schema and its declared configuration, renderers, and providers that can be inspected without rendering the form.
 - **Form values**: Adapter-neutral values used by form engines. They intentionally omit protobuf runtime metadata and unknown wire fields.
+- **Form submission values**: Validated form values supplied by the stable `useProtoForm` hook to React Hook Form's submission APIs. They retain form representations, such as string-valued 64-bit integers and base64 bytes. Creating a protobuf message remains an explicit `createMessage` operation; AutoForm's protobuf submission contract is separate.
 - **Edit baseline**: The accepted field state at the start of an edit session or after a reset. Native protobuf defaults are normalized into form values; resetting to another native message also replaces the edit source used to preserve unknown wire fields.
 - **Modification intent**: A field the user intentionally changed after the edit baseline. The intent remains even when the current value equals the baseline again.
 - **Partial-edit validation**: Validation that reports field issues only for modification intent while retaining message-level issues that cannot be attributed safely.
