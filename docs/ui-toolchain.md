@@ -38,6 +38,19 @@ This trades deferred initialization for working controls; remove the patch
 when upstream makes initialization synchronous or exposes a real loading/readiness state.
 The pinned package integrity in `bun.lock` owns provenance; upstream license files are unchanged.
 
+The version-scoped `deepmerge@^4` override installs the exact npm alias
+`@stackline/deepmerge@1.1.0` for Ultracite, shadcn and `@shadcn/registry`.
+It replaces the prototype-poisoning behavior in CVE-2026-93753 without changing the audit
+policy or adding an advisory exception. Formik's separate deepmerge 2.x remains unchanged.
+The fork has no runtime dependencies and preserves the default callable CommonJS/ESM API,
+recursive configuration merging, custom array merging and `merge.all`.
+`scripts/deepmerge.integration.test.ts` exercises the dependency resolved by each tooling
+consumer, hostile input in both merge positions, and ordinary configuration behavior.
+Remove the override when those consumers resolve an upstream release with the same fix;
+rerun the security audit, regressions and registry consumer checks first.
+See the [fork's release and compatibility notes](https://github.com/alexandroit/stackline-deepmerge/releases/tag/v1.1.0)
+and [Bun's version-scoped override semantics](https://bun.com/docs/pm/overrides#version-scoped-overrides).
+
 ## Formatting and edit hooks
 
 Biome owns JavaScript, TypeScript, JSON and CSS/SCSS formatting. Oxfmt owns Astro,
