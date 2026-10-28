@@ -4,7 +4,7 @@ import { useAutoFormRuntimeContext } from '../context';
 import type { ParsedField } from '../core-types';
 import { getFieldHints } from '../core-types';
 import { getLabel, getPathInObject } from '../field-utils';
-import { getFieldUiConfig, resolveRenderFieldType } from '../helpers';
+import { getFieldUiConfig, isRecord, resolveRenderFieldType } from '../helpers';
 import type { DeprecatedFieldPolicy } from '../types';
 
 export function isDeprecatedField(field: ParsedField): boolean {
@@ -65,8 +65,9 @@ export function cloneFieldForCompactRow(field: ParsedField): ParsedField {
   const label = getLabel(field);
 
   const existingCustomData = (field.fieldConfig?.customData ?? {}) as Record<string, unknown>;
-  const existingUi = (existingCustomData['ui'] ?? {}) as Record<string, unknown>;
-  const placeholder = field.fieldConfig?.inputProps?.['placeholder'] as string | undefined;
+  const existingUi = isRecord(existingCustomData['ui']) ? existingCustomData['ui'] : {};
+  const value = field.fieldConfig?.inputProps?.['placeholder'];
+  const placeholder = typeof value === 'string' ? value : undefined;
   const fallbackPlaceholder = field.type === 'select' || field.type === 'boolean' ? undefined : label;
 
   return {

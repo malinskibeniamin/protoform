@@ -2,7 +2,7 @@
 
 import { createConnectQueryKey, useMutation, useTransport } from '@connectrpc/connect-query';
 import { useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { ErrorMessage } from 'react-hook-form';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -21,6 +21,10 @@ interface UpdateBookFormProps {
 }
 
 export function UpdateBookForm({ book, onCancel, onUpdated }: UpdateBookFormProps) {
+  const editBookTitleId = useId();
+  const updateBookTitleId = useId();
+  const updateBookNoteId = useId();
+
   const queryClient = useQueryClient();
   const transport = useTransport();
   const mutation = useMutation(LibraryService.method.updateBook);
@@ -91,9 +95,9 @@ export function UpdateBookForm({ book, onCancel, onUpdated }: UpdateBookFormProp
   } = form.register('displayName');
   const { name: note, onBlur: handleNoteBlur, onChange: handleNoteChange, ref: noteRef } = form.register('note');
   return (
-    <section aria-labelledby="edit-book-title" className="space-y-6">
+    <section aria-labelledby={editBookTitleId} className="space-y-6">
       <div className="space-y-2">
-        <h2 className="text-2xl font-semibold" id="edit-book-title">
+        <h2 className="text-2xl font-semibold" id={editBookTitleId}>
           Edit book
         </h2>
         <p className="text-sm text-muted-foreground">
@@ -102,10 +106,10 @@ export function UpdateBookForm({ book, onCancel, onUpdated }: UpdateBookFormProp
       </div>
       <form className="space-y-5" onSubmit={form.handleSubmit(submitUpdate, handleInvalid)}>
         <Field data-invalid={Boolean(titleError)}>
-          <FieldLabel htmlFor="update-book-title">Title</FieldLabel>
+          <FieldLabel htmlFor={updateBookTitleId}>Title</FieldLabel>
           <Input
             aria-invalid={Boolean(titleError)}
-            id="update-book-title"
+            id={updateBookTitleId}
             name={displayName}
             onBlur={handleDisplayNameBlur}
             onChange={handleDisplayNameChange}
@@ -114,9 +118,9 @@ export function UpdateBookForm({ book, onCancel, onUpdated }: UpdateBookFormProp
           <ErrorMessage as={FieldError} control={form.control} name="displayName" />
         </Field>
         <Field>
-          <FieldLabel htmlFor="update-book-note">Note</FieldLabel>
+          <FieldLabel htmlFor={updateBookNoteId}>Note</FieldLabel>
           <Textarea
-            id="update-book-note"
+            id={updateBookNoteId}
             name={note}
             onBlur={handleNoteBlur}
             onChange={handleNoteChange}

@@ -22,12 +22,19 @@ import { createLibraryService, formExamplesService } from './service.js';
 declare const { describe, expect, test }: typeof import('bun:test');
 
 async function expectConnectCode(action: () => unknown, code: Code): Promise<void> {
+  await Promise.resolve(expect(Promise.resolve().then(action)).rejects.toMatchObject({ code }));
+}
+
+function captureConnectError(action: () => unknown): ConnectError {
   try {
-    await action();
-    throw new Error(`Expected Connect error ${code}.`);
+    action();
   } catch (error) {
-    expect(ConnectError.from(error).code).toBe(code);
+    if (error instanceof ConnectError) {
+      return error;
+    }
+    throw error;
   }
+  throw new Error('Expected the request to fail with a Connect error.');
 }
 
 describe('form example service', () => {
@@ -56,19 +63,17 @@ describe('form example service', () => {
       replicas: 3,
     });
 
-    try {
+    const error = captureConnectError(() => {
       formExamplesService.submitComplexForm(request);
-      throw new Error('Expected the request to fail.');
-    } catch (error) {
-      expect(error).toBeInstanceOf(ConnectError);
-      const connectError = ConnectError.from(error);
-      expect(connectError.findDetails(BadRequestSchema)[0]?.fieldViolations).toMatchObject([
-        {
-          description: 'Choose a different project id.',
-          field: 'project_id',
-        },
-      ]);
-    }
+    });
+    expect(error).toBeInstanceOf(ConnectError);
+    const connectError = ConnectError.from(error);
+    expect(connectError.findDetails(BadRequestSchema)[0]?.fieldViolations).toMatchObject([
+      {
+        description: 'Choose a different project id.',
+        field: 'project_id',
+      },
+    ]);
   });
 });
 
@@ -184,7 +189,7 @@ describe('library demo service', () => {
     if (!book) {
       throw new Error('Expected a seeded book.');
     }
-    try {
+    const error = captureConnectError(() => {
       service.updateBook(
         create(UpdateBookRequestSchema, {
           book: create(BookSchema, {
@@ -195,10 +200,8 @@ describe('library demo service', () => {
           updateMask: { paths: ['isbn'] },
         })
       );
-      throw new Error('Expected the immutable update to fail.');
-    } catch (error) {
-      expect(ConnectError.from(error).code).toBe(Code.InvalidArgument);
-    }
+    });
+    expect(ConnectError.from(error).code).toBe(Code.InvalidArgument);
   });
 
   test('uses current AIP lifecycle error codes for soft deletion', async () => {

@@ -109,6 +109,44 @@ test('does not permit new file-level rule exemptions', () => {
   expect(newLintExceptions('biome.jsonc', baseline, weakened)).toEqual([]);
 });
 
+test('allows bounded adoption of a previously disabled rule without weakening any protected rule', () => {
+  const baseline = '{ "rules": { "typescript/no-unsafe-type-assertion": "off", "no-eval": "error" } }';
+  const adopted = `{
+    "rules": { "typescript/no-unsafe-type-assertion": "error", "no-eval": "error" },
+    "overrides": [{ "files": ["lib/generic-adapter.ts"], "rules": { "typescript/no-unsafe-type-assertion": "off" } }]
+  }`;
+  expect(newLintExceptions('.oxlintrc.jsonc', adopted, baseline)).toEqual([]);
+  expect(newLintExceptions('.oxlintrc.jsonc', adopted, baseline.replace('"off"', '"error"'))).toHaveLength(1);
+  expect(
+    newLintExceptions(
+      '.oxlintrc.jsonc',
+      adopted.replace(
+        '"rules": { "typescript/no-unsafe-type-assertion": "off" }',
+        '"rules": { "typescript/no-unsafe-type-assertion": "off", "no-eval": "off" }'
+      ),
+      baseline
+    )
+  ).toHaveLength(1);
+});
+
+test.each(['off', 'warn', 'info'])('rejects changing an enforced global rule to %s', (level) => {
+  const baseline = '{ "rules": { "no-eval": "error" } }';
+  const weakened = `{ "rules": { "no-eval": "${level}" } }`;
+  expect(newLintExceptions('.oxlintrc.jsonc', weakened, baseline)).toHaveLength(1);
+});
+
+test('permits narrowing an existing waiver but rejects new rules and widened selectors', () => {
+  const baseline = `{
+    "overrides": [{ "files": ["lib/adapter.ts", "lib/other.ts"], "rules": { "no-eval": "off", "no-console": "off" } }]
+  }`;
+  const narrowed = '{ "overrides": [{ "files": ["lib/adapter.ts"], "rules": { "no-console": "off" } }] }';
+  expect(newLintExceptions('.oxlintrc.jsonc', narrowed, baseline)).toEqual([]);
+  expect(newLintExceptions('.oxlintrc.jsonc', narrowed.replace('no-console', 'no-debugger'), baseline)).toHaveLength(1);
+  expect(newLintExceptions('.oxlintrc.jsonc', narrowed.replace('lib/adapter.ts', 'lib/*.ts'), baseline)).toHaveLength(
+    1
+  );
+});
+
 test('preserves Biome exemptions across nursery promotions without allowing broader scope', () => {
   const baseline = `{
     "overrides": [{
@@ -139,4 +177,16 @@ test('limits approved Biome 2.6 false positives to the exact owner and rule', ()
   expect(
     newLintExceptions('biome.jsonc', approved.replace('useReactCompiler', 'noFloatingPromises'), baseline)
   ).toHaveLength(1);
+});
+
+test('does not use global adoption to weaken a previously strict scoped rule', () => {
+  const baseline = JSON.stringify({
+    rules: { 'typescript/no-unsafe-type-assertion': 'off' },
+    overrides: [{ files: ['lib/adapter.ts'], rules: { 'typescript/no-unsafe-type-assertion': 'error' } }],
+  });
+  const weakened = JSON.stringify({
+    rules: { 'typescript/no-unsafe-type-assertion': 'error' },
+    overrides: [{ files: ['lib/adapter.ts'], rules: { 'typescript/no-unsafe-type-assertion': 'off' } }],
+  });
+  expect(newLintExceptions('.oxlintrc.jsonc', weakened, baseline)).toHaveLength(1);
 });

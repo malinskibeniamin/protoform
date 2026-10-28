@@ -37,11 +37,12 @@ function isBreakingViolation(value: unknown): value is BreakingViolation {
   if (!(typeof value === 'object' && value !== null)) {
     return false;
   }
-  const candidate = value as Record<string, unknown>;
   return (
-    typeof candidate['message'] === 'string' &&
-    typeof candidate['type'] === 'string' &&
-    (candidate['path'] === undefined || typeof candidate['path'] === 'string')
+    'message' in value &&
+    typeof value.message === 'string' &&
+    'type' in value &&
+    typeof value.type === 'string' &&
+    (!('path' in value) || value.path === undefined || typeof value.path === 'string')
   );
 }
 
@@ -88,7 +89,7 @@ function parseViolations(output: string): BreakingViolation[] {
     .trim()
     .split('\n')
     .filter(Boolean)
-    .map((line) => JSON.parse(line) as unknown)
+    .map((line): unknown => JSON.parse(line))
     .map((value) => {
       if (!isBreakingViolation(value)) {
         throw new Error('Buf returned an invalid breaking-change violation.');

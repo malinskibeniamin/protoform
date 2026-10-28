@@ -78,12 +78,14 @@ describe('cel validation conformance', () => {
     });
   });
 
-  test('does not expose CEL runtime failures through ProtoProvider', () => {
+  test('blocks a CEL runtime failure safely and recovers for valid input', () => {
     const provider = new ProtoProvider(InvalidCelRuntimeSchema);
 
-    expect(provider.validateSchema({ value: 0 })).toMatchObject({
-      success: true,
+    expect(provider.validateSchema({ value: 0 })).toEqual({
+      errors: [{ message: 'Validation could not be completed.', path: [] }],
+      success: false,
     });
+    expect(provider.validateSchema({ value: 1 })).toMatchObject({ success: true, data: { value: 1 } });
   });
 
   test('preserves a field boolean CEL rule id, message, and form path', async () => {
@@ -167,18 +169,12 @@ describe('cel validation conformance', () => {
     ['wrong result type', InvalidCelTypeSchema, 1],
     ['unknown field', InvalidCelUnknownSchema, 1],
     ['evaluation error', InvalidCelRuntimeSchema, 0],
-  ] as const)(
-    'does not expose a CEL runtime failure for %s as a form validation issue',
-    async (_name, schema, value) => {
-      const result = await createProtoFormSchema(schema)['~standard'].validate({
-        value,
-      });
+  ] as const)('fails closed with a safe root issue for %s', async (_name, schema, value) => {
+    const result = await createProtoFormSchema(schema)['~standard'].validate({
+      value,
+    });
 
-      expect(result.issues).toBeUndefined();
-      if (!('value' in result)) {
-        throw new Error(`Expected ${_name} to produce valid form values.`);
-      }
-      expect(result.value).toMatchObject({ value });
-    }
-  );
+    expect(result.issues).toEqual([{ message: 'Validation could not be completed.', path: [] }]);
+    expect(result).not.toHaveProperty('value');
+  });
 });

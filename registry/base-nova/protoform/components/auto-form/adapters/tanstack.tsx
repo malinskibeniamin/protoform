@@ -167,8 +167,8 @@ function setErrorAtPath(target: Record<string, unknown>, path: string[], message
       return;
     }
     const existing = current[segment];
-    if (existing && typeof existing === 'object' && !Array.isArray(existing)) {
-      current = existing as Record<string, unknown>;
+    if (isValueRecord(existing)) {
+      current = existing;
       continue;
     }
     const nested: Record<string, unknown> = {};
@@ -197,8 +197,8 @@ function setDirtyAtPath(target: Record<string, unknown>, path: string[]) {
       return;
     }
     const existing = current[segment];
-    if (existing && typeof existing === 'object' && !Array.isArray(existing)) {
-      current = existing as Record<string, unknown>;
+    if (isValueRecord(existing)) {
+      current = existing;
     } else {
       const nested: Record<string, unknown> = {};
       current[segment] = nested;
@@ -237,13 +237,16 @@ function formValuesEqual(left: unknown, right: unknown): boolean {
     return left.size === right.size && [...left].every((value) => right.has(value));
   }
 
-  const leftRecord = left as Record<string, unknown>;
-  const rightRecord = right as Record<string, unknown>;
+  const leftRecord = left;
+  const rightRecord = right;
   const leftKeys = Object.keys(leftRecord);
   const rightKeys = Object.keys(rightRecord);
   return (
     leftKeys.length === rightKeys.length &&
-    leftKeys.every((key) => Object.hasOwn(rightRecord, key) && formValuesEqual(leftRecord[key], rightRecord[key]))
+    leftKeys.every(
+      (key) =>
+        Object.hasOwn(rightRecord, key) && formValuesEqual(Reflect.get(leftRecord, key), Reflect.get(rightRecord, key))
+    )
   );
 }
 
@@ -415,4 +418,8 @@ export function TanStackEngine({ children, defaultValues, formOptions, values, o
       <AutoFormEngineProvider engine={engine}>{children(engine)}</AutoFormEngineProvider>
     </TanStackEngineContext.Provider>
   );
+}
+
+function isValueRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
 }

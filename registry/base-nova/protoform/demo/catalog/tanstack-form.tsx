@@ -3,7 +3,7 @@
 
 export const client = 'only';
 
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -25,6 +25,7 @@ function errorMessage(error: unknown): string | undefined {
 }
 
 export function TanstackFormDemo() {
+  const emailId = useId();
   const [submittedValue, setSubmittedValue] = useState<string>();
   const [submissionError, setSubmissionError] = useState<string>();
   const form = useProtoForm(EmailContractSchema, {
@@ -58,12 +59,12 @@ export function TanstackFormDemo() {
             const invalid = messages.length > 0;
             return (
               <Field data-invalid={invalid}>
-                <FieldLabel htmlFor={field.name} required>
+                <FieldLabel htmlFor={emailId} required>
                   Email
                 </FieldLabel>
                 <Input
                   aria-invalid={invalid || undefined}
-                  id={field.name}
+                  id={emailId}
                   name={field.name}
                   onBlur={field.handleBlur}
                   onChange={(event) => field.handleChange(event.target.value)}

@@ -1,14 +1,15 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { describe, expect } from '@rstest/core';
+import { z } from 'zod';
 
 const repositoryDirectory = new URL('../', import.meta.url);
 const bunVersion = '1.4.4';
 
 describe('static docs and registry hosting', () => {
   test('builds one Cloudflare Pages artifact containing docs and registry JSON', () => {
-    const manifest = JSON.parse(readFileSync(new URL('package.json', repositoryDirectory), 'utf8')) as {
-      scripts?: Record<string, string>;
-    };
+    const manifest = z
+      .looseObject({ scripts: z.record(z.string(), z.string()).optional() })
+      .parse(JSON.parse(readFileSync(new URL('package.json', repositoryDirectory), 'utf8')));
     const config = readFileSync(new URL('blume.config.ts', repositoryDirectory), 'utf8');
     const deploymentGuide = readFileSync(
       new URL('content/docs/(production)/deployment.mdx', repositoryDirectory),
@@ -45,10 +46,12 @@ describe('static docs and registry hosting', () => {
   });
 
   test('pins the Bun toolchain consistently', () => {
-    const manifest = JSON.parse(readFileSync(new URL('package.json', repositoryDirectory), 'utf8')) as {
-      devDependencies?: Record<string, string>;
-      packageManager?: string;
-    };
+    const manifest = z
+      .looseObject({
+        devDependencies: z.record(z.string(), z.string()).optional(),
+        packageManager: z.string().optional(),
+      })
+      .parse(JSON.parse(readFileSync(new URL('package.json', repositoryDirectory), 'utf8')));
     const contributingGuide = readFileSync(new URL('CONTRIBUTING.md', repositoryDirectory), 'utf8');
     const pinnedFiles = [
       '.github/workflows/ci.yml',

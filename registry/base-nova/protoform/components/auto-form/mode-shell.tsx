@@ -231,8 +231,8 @@ export function AutoFormModeShell<TNativeForm>({
     <MotionConfig reducedMotion="always">
       <Tabs
         onValueChange={(value) => {
-          if (value !== null) {
-            onModeChange(value as AutoFormMode);
+          if (value === 'simple' || value === 'advanced' || value === 'json') {
+            onModeChange(value);
           }
         }}
         testId={buildAutoFormTestId(testIdPrefix, 'tabs')}

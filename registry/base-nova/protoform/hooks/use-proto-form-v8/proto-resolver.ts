@@ -19,19 +19,31 @@ type ProtoResolver<Desc extends DescMessage> = (
   currentSource?: MessageShape<Desc>
 ) => ReturnType<Resolver<FormValues, unknown, MessageValidType<Desc>>>;
 
-function validateFieldNatively(ref: HTMLInputElement, path: string, errors: Record<string, FieldError>) {
+function validateFieldNatively(
+  ref: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement,
+  path: string,
+  errors: Record<string, FieldError>
+) {
   if (!('reportValidity' in ref)) {
     return;
   }
-  const error = get(errors, path) as FieldError | undefined;
-  ref.setCustomValidity(error?.message ?? '');
+  const error: unknown = get(errors, path);
+  const message =
+    error !== null && typeof error === 'object' && 'message' in error && typeof error.message === 'string'
+      ? error.message
+      : '';
+  ref.setCustomValidity(message);
   ref.reportValidity();
 }
 
 function validateFieldsNatively(errors: Record<string, FieldError>, options: ResolverOptions<FormValues>) {
   for (const [path, field] of Object.entries(options.fields)) {
-    if (field?.ref && 'reportValidity' in field.ref) {
-      validateFieldNatively(field.ref as HTMLInputElement, path, errors);
+    if (
+      field?.ref instanceof HTMLInputElement ||
+      field?.ref instanceof HTMLTextAreaElement ||
+      field?.ref instanceof HTMLSelectElement
+    ) {
+      validateFieldNatively(field.ref, path, errors);
       continue;
     }
     for (const ref of field?.refs ?? []) {
@@ -54,9 +66,11 @@ function toNestErrors(
   }
   const nestedErrors: FieldErrors<FormValues> = {};
   for (const path of Object.keys(flatErrors)) {
-    const field = get(options.fields, path) as ResolverOptions<FormValues>['fields'][string] | undefined;
+    const field: unknown = get(options.fields, path);
+    const ref: unknown = field !== null && typeof field === 'object' ? Reflect.get(field, 'ref') : undefined;
+    const refs: unknown = field !== null && typeof field === 'object' ? Reflect.get(field, 'refs') : undefined;
     const error = Object.assign(flatErrors[path] ?? {}, {
-      ref: field?.refs?.[0] ?? field?.ref,
+      ref: firstRef(refs) ?? ref,
     });
     if (isFieldArrayRoot(options.names ?? Object.keys(flatErrors), path)) {
       const current: unknown = get(nestedErrors, path);
@@ -150,4 +164,8 @@ export function createProtoResolver<Desc extends DescMessage>(
       values: {},
     };
   };
+}
+
+function firstRef(refs: unknown): unknown {
+  return Array.isArray(refs) ? refs[0] : undefined;
 }

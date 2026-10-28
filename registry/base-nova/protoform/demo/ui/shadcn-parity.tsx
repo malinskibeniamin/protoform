@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useId } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { FoundationExamples } from './parity-foundations';
 import { OverlayExamples } from './parity-overlays';
@@ -9,13 +9,15 @@ const MessageExamples = lazy(() => import('./parity-messages'));
 const RecipeExamples = lazy(() => import('./parity-recipes'));
 
 export default function ShadcnParityExample() {
+  const parityHeadingId = useId();
+
   return (
     <div
       className="mx-auto w-full max-w-[min(64rem,calc(100vw-3rem))] min-w-0 space-y-6 p-4"
       data-testid="shadcn-parity-example"
     >
       <div className="space-y-2">
-        <h2 className="text-2xl font-semibold" id="parity-heading">
+        <h2 className="text-2xl font-semibold" id={parityHeadingId}>
           Shadcn component catalog
         </h2>
         <p className="text-sm text-muted-foreground">
@@ -42,7 +44,7 @@ export default function ShadcnParityExample() {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="basics">
-          <FoundationExamples />
+          <FoundationExamples headingId={parityHeadingId} />
         </TabsContent>
         <TabsContent value="overlays">
           <OverlayExamples />

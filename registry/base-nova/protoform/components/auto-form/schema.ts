@@ -1,6 +1,6 @@
 import type { Message } from '@bufbuild/protobuf';
 import type { ProtoConversionOptions } from '@/registry/base-nova/protoform/lib/protobuf-provider';
-import type { ParsedField, SchemaProvider } from './core-types';
+import type { ParsedField, SchemaProvider, SchemaValidation } from './core-types';
 import { sortFieldsByOrder } from './field-utils';
 import { isProtoMessageDescriptor, isProtoProvider, ProtoProvider } from './proto';
 import type { AutoFormSchemaInput, FieldConfigMap, FieldTypes, RenderFieldConfig, ResolvedSchema } from './types';
@@ -10,11 +10,11 @@ function isSchemaProvider(value: unknown): value is SchemaProvider<Record<string
     value !== null &&
     typeof value === 'object' &&
     'parseSchema' in value &&
-    typeof (value as SchemaProvider<Record<string, unknown>>).parseSchema === 'function' &&
+    typeof value.parseSchema === 'function' &&
     'validateSchema' in value &&
-    typeof (value as SchemaProvider<Record<string, unknown>>).validateSchema === 'function' &&
+    typeof value.validateSchema === 'function' &&
     'getDefaultValues' in value &&
-    typeof (value as SchemaProvider<Record<string, unknown>>).getDefaultValues === 'function'
+    typeof value.getDefaultValues === 'function'
   );
 }
 
@@ -113,4 +113,26 @@ export function mergeFieldOverrides<TCustom extends string = never>(
       } as ParsedField<FieldTypes<TCustom>>;
     })
   );
+}
+
+export type ValidatedFormValues =
+  | { success: true; data: Record<string, unknown> }
+  | Extract<SchemaValidation, { success: false }>;
+
+export function normalizeSchemaValidation(result: SchemaValidation): ValidatedFormValues {
+  if (!result.success) {
+    return result;
+  }
+  const { data } = result;
+  if (isFormValues(data)) {
+    return { data, success: true };
+  }
+  return {
+    errors: [{ message: 'Validation returned invalid form values.', path: [] }],
+    success: false,
+  };
+}
+
+function isFormValues(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
 }

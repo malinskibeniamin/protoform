@@ -5,6 +5,7 @@ import { useRender } from '@base-ui/react/use-render';
 import { cva, type VariantProps } from 'class-variance-authority';
 import Cookies from 'js-cookie';
 import { PanelLeftIcon } from 'lucide-react';
+import type { CSSProperties } from 'react';
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,6 +22,15 @@ const SIDEBAR_WIDTH = '16rem';
 const SIDEBAR_WIDTH_MOBILE = '18rem';
 const SIDEBAR_WIDTH_ICON = '3rem';
 const SIDEBAR_KEYBOARD_SHORTCUT = 'b';
+
+const mobileStyle: CSSProperties & Record<`--${string}`, string | number | undefined> = {
+  '--sidebar-width': SIDEBAR_WIDTH_MOBILE,
+};
+
+const skeletonStyle: CSSProperties & Record<`--${string}`, string | number | undefined> = {
+  '--skeleton-width': '70%',
+};
+
 interface SidebarContextProps {
   isMobile: boolean;
   open: boolean;
@@ -106,18 +116,17 @@ function SidebarProvider({
     ...(openProp === undefined ? {} : { open: openProp }),
     ...(setOpenProp === undefined ? {} : { onOpenChange: setOpenProp }),
   });
+  const sidebarStyle: CSSProperties & Record<`--${string}`, string | number | undefined> = {
+    '--sidebar-width': SIDEBAR_WIDTH,
+    '--sidebar-width-icon': SIDEBAR_WIDTH_ICON,
+    ...style,
+  };
   return (
     <SidebarContext.Provider value={contextValue}>
       <div
         className={cn('group/sidebar-wrapper flex min-h-svh w-full has-data-[variant=inset]:bg-sidebar', className)}
         data-slot="sidebar-wrapper"
-        style={
-          {
-            '--sidebar-width': SIDEBAR_WIDTH,
-            '--sidebar-width-icon': SIDEBAR_WIDTH_ICON,
-            ...style,
-          } as React.CSSProperties
-        }
+        style={sidebarStyle}
         {...props}
       >
         {children}
@@ -161,11 +170,7 @@ function Sidebar({
           dir={dir}
           showCloseButton={false}
           side={side}
-          style={
-            {
-              '--sidebar-width': SIDEBAR_WIDTH_MOBILE,
-            } as React.CSSProperties
-          }
+          style={mobileStyle}
           variant="sidebar"
         >
           <SheetHeader className="sr-only">
@@ -550,11 +555,7 @@ function SidebarMenuSkeleton({
       <Skeleton
         className="h-4 max-w-(--skeleton-width) flex-1"
         data-sidebar="menu-skeleton-text"
-        style={
-          {
-            '--skeleton-width': '70%',
-          } as React.CSSProperties
-        }
+        style={skeletonStyle}
       />
     </div>
   );

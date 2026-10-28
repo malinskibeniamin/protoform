@@ -8,7 +8,7 @@ import {
 import { usedTypes } from '@bufbuild/protobuf/reflect';
 import { createValidator, RuntimeError, type ValidatorOptions, type Violation } from '@bufbuild/protovalidate';
 import type { StandardSchemaV1 } from '../core/index.js';
-import type { ProtoformMessageFormatter } from '../core/messages.js';
+import { formatProtoformMessage, type ProtoformMessageFormatter } from '../core/messages.js';
 import { humanizeValidationError } from './humanize-validation-error.js';
 
 function violationToIssue(violation: Violation, formatter?: ProtoformMessageFormatter): StandardSchemaV1.Issue {
@@ -77,7 +77,16 @@ export function createDescriptorAwareStandardSchema<Desc extends DescMessage>(
           case 'error':
             if (result.error instanceof RuntimeError) {
               return {
-                value: result.message as MessageValidType<Desc>,
+                issues: [
+                  {
+                    message: formatProtoformMessage(
+                      formatMessage,
+                      'auto_form.validation_failed',
+                      {},
+                      'Validation could not be completed.'
+                    ),
+                  },
+                ],
               };
             }
             return { issues: [{ message: result.error.message }] };

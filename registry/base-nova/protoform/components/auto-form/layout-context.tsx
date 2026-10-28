@@ -11,11 +11,16 @@ export function FormDepthProvider({ depth, children }: { depth: number; children
 }
 
 export function headingLevelForDepth(depth: number): 2 | 3 | 4 | 5 {
-  const level = 2 + depth;
-  if (level > 5) {
-    return 5;
+  if (depth < 1 || Number.isNaN(depth)) {
+    return 2;
   }
-  return level as 2 | 3 | 4 | 5;
+  if (depth < 2) {
+    return 3;
+  }
+  if (depth < 3) {
+    return 4;
+  }
+  return 5;
 }
 
 export interface AutoFormAppearance {

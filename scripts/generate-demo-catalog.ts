@@ -1,6 +1,7 @@
 import { execFileSync } from 'node:child_process';
 import { mkdirSync, readdirSync, readFileSync, unlinkSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
+import { z } from 'zod';
 
 import { type DemoCatalogEntry, demoCatalog } from '../examples/catalog/demo-catalog.js';
 import { demoHubs, demosForHub } from '../examples/catalog/demo-docs.js';
@@ -118,7 +119,7 @@ function tanStackRegistryWrapper(): string {
 export const client = 'only';
 
 import { formatSubmittedValue } from '@/registry/base-nova/protoform/demo/runtime/format-submitted-value';
-import { useState } from 'react';
+import { useId, useState } from 'react';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
@@ -140,6 +141,7 @@ function errorMessage(error: unknown): string | undefined {
 }
 
 export function TanstackFormDemo() {
+  const emailId = useId();
   const [submittedValue, setSubmittedValue] = useState<string>();
   const [submissionError, setSubmissionError] = useState<string>();
   const form = useProtoForm(EmailContractSchema, {
@@ -171,10 +173,10 @@ export function TanstackFormDemo() {
             const invalid = messages.length > 0;
             return (
               <Field data-invalid={invalid}>
-                <FieldLabel htmlFor={field.name} required>Email</FieldLabel>
+                <FieldLabel htmlFor={emailId} required>Email</FieldLabel>
                 <Input
                   aria-invalid={invalid || undefined}
-                  id={field.name}
+                  id={emailId}
                   name={field.name}
                   onBlur={field.handleBlur}
                   onChange={(event) => field.handleChange(event.target.value)}
@@ -218,7 +220,7 @@ import { createFormikValidator } from '../../lib/core/form-library-adapters';
 import { createProtoFormSchema } from '../../lib/protobuf-provider';
 import { formatSubmittedValue } from '@/registry/base-nova/protoform/demo/runtime/format-submitted-value';
 import { Formik } from "formik";
-import { useState } from 'react';
+import { useId, useState } from 'react';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
@@ -235,6 +237,7 @@ const schema = createProtoFormSchema<EmailValues, typeof EmailContractSchema>(Em
 const validate = createFormikValidator(schema);
 
 export function FormikDemo() {
+  const emailId = useId();
   const [submittedValue, setSubmittedValue] = useState<string>();
 
   return (
@@ -255,10 +258,10 @@ export function FormikDemo() {
           return (
             <form className="space-y-6" onSubmit={handleSubmit}>
               <Field data-invalid={Boolean(message)}>
-                <FieldLabel htmlFor="formik-email" required>Email</FieldLabel>
+                <FieldLabel htmlFor={emailId} required>Email</FieldLabel>
                 <Input
                   aria-invalid={Boolean(message) || undefined}
-                  id="formik-email"
+                  id={emailId}
                   name="email"
                   onBlur={handleBlur}
                   onChange={handleChange}
@@ -295,7 +298,7 @@ export const client = 'only';
 import { createFinalFormValidator } from '../../lib/core/form-library-adapters';
 import { createProtoFormSchema } from '../../lib/protobuf-provider';
 import { formatSubmittedValue } from '@/registry/base-nova/protoform/demo/runtime/format-submitted-value';
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { Field as FinalField, Form as FinalForm } from "react-final-form";
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -313,6 +316,7 @@ const schema = createProtoFormSchema<EmailValues, typeof EmailContractSchema>(Em
 const validate = createFinalFormValidator(schema);
 
 export function FinalFormDemo() {
+  const emailId = useId();
   const [submittedValue, setSubmittedValue] = useState<string>();
 
   return (
@@ -342,10 +346,10 @@ export function FinalFormDemo() {
                 const message = (meta.touched || meta.submitFailed) && typeof meta.error === 'string' ? meta.error : undefined;
                 return (
                   <Field data-invalid={Boolean(message)}>
-                    <FieldLabel htmlFor="final-form-email" required>Email</FieldLabel>
+                    <FieldLabel htmlFor={emailId} required>Email</FieldLabel>
                     <Input
                       aria-invalid={Boolean(message) || undefined}
-                      id="final-form-email"
+                      id={emailId}
                       name={name}
                       onBlur={handleBlur}
                       onChange={handleChange}
@@ -512,9 +516,11 @@ function generateRegistry(): void {
 
   const runtimeFiles = generateRegistryRuntime();
   const registryPath = join(root, 'registry.json');
-  const registry = JSON.parse(readFileSync(registryPath, 'utf8')) as {
-    items: Array<Record<string, unknown> & { name: string }>;
-  };
+  const registry = z
+    .looseObject({
+      items: z.array(z.intersection(z.record(z.string(), z.unknown()), z.looseObject({ name: z.string() }))),
+    })
+    .parse(JSON.parse(readFileSync(registryPath, 'utf8')));
   const generatedNames = new Set(['protoform-demo-runtime', ...demoCatalog.map((demo) => demo.registryName)]);
   const items = registry.items.filter((item) => {
     if (generatedNames.has(item.name)) {

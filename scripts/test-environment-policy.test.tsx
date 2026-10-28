@@ -3,6 +3,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { createServer } from 'node:http';
 import { describe, expect } from '@rstest/core';
 import type { Window as HappyDOMWindow } from 'happy-dom';
+import { z } from 'zod';
 
 declare const window: HappyDOMWindow;
 
@@ -62,10 +63,12 @@ describe('simulated DOM test environment', () => {
       expect(readFileSync(new URL(config, repositoryDirectory), 'utf8')).toContain("name: 'happy-dom'");
     }
 
-    const manifest = JSON.parse(readFileSync(new URL('package.json', repositoryDirectory), 'utf8')) as {
-      devDependencies?: Record<string, string>;
-      scripts?: Record<string, string>;
-    };
+    const manifest = z
+      .looseObject({
+        devDependencies: z.record(z.string(), z.string()).optional(),
+        scripts: z.record(z.string(), z.string()).optional(),
+      })
+      .parse(JSON.parse(readFileSync(new URL('package.json', repositoryDirectory), 'utf8')));
 
     expect(manifest.devDependencies?.['@rstest/browser']).toBe('0.12.4');
     expect(manifest.devDependencies?.['@rstest/browser-react']).toBe('0.12.4');

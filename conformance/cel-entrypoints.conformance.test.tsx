@@ -45,18 +45,24 @@ describe('descriptor-aware CEL entrypoints', () => {
     });
   });
 
-  test('does not expose CEL runtime failures through useProtoForm', async () => {
+  test('blocks CEL runtime failures safely through useProtoForm and recovers', async () => {
     const form = renderHook(() =>
       useProtoForm(InvalidCelRuntimeSchema, {
         defaultValues: create(InvalidCelRuntimeSchema, { value: 0 }),
       })
     );
-    let result = false;
+    let result = true;
 
     await act(async () => {
       result = await form.result.current.trigger();
     });
 
+    expect(result).toBe(false);
+    expect(form.result.current.formState.errors.root?.message).toBe('Validation could not be completed.');
+    await act(async () => {
+      form.result.current.setValue('value', 1);
+      result = await form.result.current.trigger();
+    });
     expect(result).toBe(true);
     expect(form.result.current.formState.errors).toEqual({});
   });
@@ -103,7 +109,7 @@ describe('descriptor-aware CEL entrypoints', () => {
     expect(onSubmit).not.toHaveBeenCalled();
   });
 
-  test('does not render CEL runtime failures through AutoForm', async () => {
+  test('blocks CEL runtime failures safely through AutoForm and recovers', async () => {
     const user = userEvent.setup();
     const onSubmit = rs.fn();
     render(
@@ -118,7 +124,14 @@ describe('descriptor-aware CEL entrypoints', () => {
 
     await user.click(screen.getByRole('button', { name: SUBMIT_BUTTON }));
 
+    await waitFor(() => expect(screen.getByText('Validation could not be completed.')).toBeInTheDocument());
+    expect(onSubmit).not.toHaveBeenCalled();
+    const input = screen.getByRole('spinbutton', { name: 'Value' });
+    await user.clear(input);
+    await user.type(input, '1');
+    await user.click(screen.getByRole('button', { name: SUBMIT_BUTTON }));
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
+    expect(onSubmit.mock.calls[0]?.[0]).toMatchObject({ value: 1 });
     expect(screen.queryByText('int divide by zero')).not.toBeInTheDocument();
   });
 });

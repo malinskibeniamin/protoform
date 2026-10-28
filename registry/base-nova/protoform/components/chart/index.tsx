@@ -1,6 +1,7 @@
 'use client';
 
 import { useRender } from '@base-ui/react/use-render';
+import type { CSSProperties } from 'react';
 import React from 'react';
 import type {
   ResponsiveContainer as RechartsContainerType,
@@ -207,6 +208,10 @@ function ChartIndicator({
   if (hidden === true) {
     return null;
   }
+  const indicatorStyle: CSSProperties & Record<`--${string}`, string | number | undefined> = {
+    '--color-bg': color,
+    '--color-border': color,
+  };
   return (
     <div
       aria-hidden="true"
@@ -216,12 +221,7 @@ function ChartIndicator({
         'w-0 border-2 border-dashed bg-transparent': indicator === 'dashed',
         'my-0.5': nested && indicator === 'dashed',
       })}
-      style={
-        {
-          '--color-bg': color,
-          '--color-border': color,
-        } as React.CSSProperties
-      }
+      style={indicatorStyle}
     />
   );
 }
@@ -373,6 +373,9 @@ function ChartLegendContent({
         }
         const key = String(nameKey ?? item.dataKey ?? 'value');
         const itemConfig = getPayloadConfigFromPayload(config, item, key);
+        const legendStyle: CSSProperties & Record<`--${string}`, string | number | undefined> = {
+          '--legend-color': item.color,
+        };
         return (
           <div
             className={cn('flex items-center gap-1.5 [&>svg]:size-3 [&>svg]:text-muted-foreground')}
@@ -381,14 +384,7 @@ function ChartLegendContent({
             {itemConfig?.icon && hideIcon !== true ? (
               <itemConfig.icon />
             ) : (
-              <div
-                className="size-2 shrink-0 rounded-xs bg-(--legend-color)"
-                style={
-                  {
-                    '--legend-color': item.color,
-                  } as React.CSSProperties
-                }
-              />
+              <div className="size-2 shrink-0 rounded-xs bg-(--legend-color)" style={legendStyle} />
             )}
             {itemConfig?.label}
           </div>
@@ -412,14 +408,12 @@ function getPayloadConfigFromPayload(config: ChartConfig, payload: unknown, key:
       ? payload.payload
       : undefined;
   let configLabelKey: string = key;
-  if (key in payload && typeof payload[key as keyof typeof payload] === 'string') {
-    configLabelKey = payload[key as keyof typeof payload];
-  } else if (
-    payloadPayload &&
-    key in payloadPayload &&
-    typeof payloadPayload[key as keyof typeof payloadPayload] === 'string'
-  ) {
-    configLabelKey = payloadPayload[key as keyof typeof payloadPayload];
+  const value: unknown = key in payload ? Reflect.get(payload, key) : undefined;
+  const nestedValue: unknown = payloadPayload && key in payloadPayload ? Reflect.get(payloadPayload, key) : undefined;
+  if (typeof value === 'string') {
+    configLabelKey = value;
+  } else if (typeof nestedValue === 'string') {
+    configLabelKey = nestedValue;
   }
   return configLabelKey in config ? config[configLabelKey] : config[key];
 }

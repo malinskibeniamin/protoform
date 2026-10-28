@@ -29,6 +29,13 @@ describe('sortFieldsByOrder', () => {
 });
 
 describe('getLabel', () => {
+  test('normalizes numeric labels without returning non-string renderables', () => {
+    const field: ParsedField = { key: 'firstName', required: false, type: 'string' };
+    expect(getLabel({ ...field, fieldConfig: { label: 0 } })).toBe('0');
+    expect(getLabel({ ...field, description: 42 })).toBe('42');
+    expect(getLabel({ ...field, fieldConfig: { label: true } })).toBe('First Name');
+  });
+
   test('prefers fieldConfig.label, then description, then the beautified key, and returns empty string for numeric keys', () => {
     const field: ParsedField = { key: 'firstName', required: false, type: 'string' };
     expect(getLabel({ ...field, description: 'Field description', fieldConfig: { label: 'Custom Label' } })).toBe(
@@ -42,11 +49,22 @@ describe('getLabel', () => {
 
 describe('getPathInObject', () => {
   test('traverses nested paths and returns undefined through missing, null, or undefined segments', () => {
-    const obj = { a: { b: { c: 'deep' } }, n: null, u: undefined } as unknown as Record<string, unknown>;
+    const obj = { a: { b: { c: 'deep' } }, n: null, u: undefined };
     expect(getPathInObject(obj, [])).toBe(obj);
     expect(getPathInObject(obj, ['a', 'b', 'c'])).toBe('deep');
     expect(getPathInObject(obj, ['a', 'missing'])).toBeUndefined();
     expect(getPathInObject(obj, ['n', 'b'])).toBeUndefined();
     expect(getPathInObject(obj, ['u', 'b'])).toBeUndefined();
+  });
+
+  test('reads own data and array entries without traversing prototypes or boxed primitives', () => {
+    const record = { own: 'visible' };
+    Object.setPrototypeOf(record, { inherited: 'hidden' });
+    const values = { record, rows: [{ name: 'Ada' }], text: 'secret' };
+    expect(getPathInObject(values, ['record', 'own'])).toBe('visible');
+    expect(getPathInObject(values, ['rows', '0', 'name'])).toBe('Ada');
+    expect(getPathInObject(values, ['record', 'inherited'])).toBeUndefined();
+    expect(getPathInObject(values, ['record', '__proto__'])).toBeUndefined();
+    expect(getPathInObject(values, ['text', '0'])).toBeUndefined();
   });
 });

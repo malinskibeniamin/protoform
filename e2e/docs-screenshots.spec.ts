@@ -1,6 +1,7 @@
 import { mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import { beforeAll, expect } from '@rstest/playwright';
+import type { Page } from 'playwright';
 import { test } from '../scripts/e2e-test';
 
 const screenshotDir = 'artifacts/screenshots';
@@ -568,10 +569,14 @@ test('keeps the bookstore demo readable inside the docs column', async ({ page }
   await expect(source).toContainText('syntax = "proto3"');
   const sourceBox = await source.boundingBox();
   expect(sourceBox?.x).toBeGreaterThan((headingBox?.x ?? 0) + 200);
-  const sourceColors = await source.evaluate((element) => ({
-    background: getComputedStyle(element.parentElement as HTMLElement).backgroundColor,
-    foreground: getComputedStyle(element.querySelector('code') as HTMLElement).color,
-  }));
+  const sourceColors = await source.evaluate((element) => {
+    const parent = element.parentElement;
+    const code = element.querySelector('code');
+    if (!(parent && code)) {
+      throw new Error('Expected a source panel with highlighted code.');
+    }
+    return { background: getComputedStyle(parent).backgroundColor, foreground: getComputedStyle(code).color };
+  });
   expect(sourceColors.foreground).not.toBe(sourceColors.background);
 });
 
@@ -695,25 +700,22 @@ test('keeps readiness areas readable with enlarged text', async ({ page }) => {
 });
 
 for (const pageInfo of pages) {
-  test(`hydrates and renders docs screenshot: ${pageInfo.name}`, async ({ browserName, page }) => {
-    const consoleErrors: string[] = [];
-    page.on('console', (message) => {
-      if (message.type() === 'error') {
-        consoleErrors.push(message.text());
-      }
-    });
-    await page.goto(pageInfo.path);
-    await expect(page.locator('h1', { hasText: pageInfo.heading }).first()).toBeVisible();
-    if (pageInfo.diagram === true) {
+  const scenarioChecks: Array<(page: Page) => Promise<void>> = [];
+  if (pageInfo.diagram === true) {
+    scenarioChecks.push(async (page) => {
       await expect(page.locator('blume-mermaid svg').first()).toBeVisible();
       await expect(page.locator('pre', { hasText: 'flowchart TD' })).toHaveCount(0);
-    }
-    if (pageInfo.name === 'bare-bones-form') {
+    });
+  }
+  if (pageInfo.name === 'bare-bones-form') {
+    scenarioChecks.push(async (page) => {
       await page.getByRole('textbox', { name: 'Name' }).fill('Ada');
       await page.getByRole('button', { name: 'Submit' }).click();
       await expect(page.getByRole('status')).toContainText('Submitted: Ada');
-    }
-    if (pageInfo.name === 'two-step-form') {
+    });
+  }
+  if (pageInfo.name === 'two-step-form') {
+    scenarioChecks.push(async (page) => {
       await expect(page.getByText('Step 1 of 2')).toBeVisible();
       await page.getByRole('textbox', { name: 'Name' }).fill('Ada');
       await page.getByRole('button', { name: 'Continue' }).click();
@@ -721,44 +723,56 @@ for (const pageInfo of pages) {
       await page.getByRole('textbox', { name: 'Email' }).fill('ada@example.com');
       await page.getByRole('button', { name: 'Submit' }).click();
       await expect(page.getByRole('status')).toContainText('Submitted: Ada, ada@example.com');
-    }
-    if (pageInfo.name === 'cel-re2-form') {
+    });
+  }
+  if (pageInfo.name === 'cel-re2-form') {
+    scenarioChecks.push(async (page) => {
       await page.getByRole('textbox', { name: 'Project ID' }).fill('Not valid');
       await page.getByRole('button', { name: 'Submit' }).click();
       await expect(
         page.getByRole('alert').filter({ hasText: 'Use lowercase letters, digits, and hyphens.' })
       ).toBeVisible();
-    }
-    if (pageInfo.name === 'oneof-form') {
+    });
+  }
+  if (pageInfo.name === 'oneof-form') {
+    scenarioChecks.push(async (page) => {
       await page.getByRole('combobox', { name: 'Contact' }).click();
       await page.getByRole('option', { name: 'Phone' }).click();
       await page.getByRole('textbox', { name: 'Phone' }).fill('+442079460000');
       await expect(page.getByRole('textbox', { name: 'Email' })).toHaveCount(0);
       await page.getByRole('button', { name: 'Submit' }).click();
       await expect(page.getByRole('status')).toContainText('Submitted phone: +442079460000');
-    }
-    if (pageInfo.name === 'server-error-form') {
+    });
+  }
+  if (pageInfo.name === 'server-error-form') {
+    scenarioChecks.push(async (page) => {
       await page.getByRole('textbox', { name: 'Display Name' }).fill('Ada Lovelace');
       const email = page.getByRole('textbox', { name: 'Email' });
       await email.fill('ada@blocked.example');
       await page.getByRole('button', { name: 'Submit' }).click();
       await expect(page.getByText('Use an email address from an approved domain.')).toBeVisible();
       await expect(email).toHaveAttribute('aria-invalid', 'true');
-    }
-    if (pageInfo.name === 'aip-resource-form') {
+    });
+  }
+  if (pageInfo.name === 'aip-resource-form') {
+    scenarioChecks.push(async (page) => {
       const displayName = page.getByRole('textbox', { name: 'Display Name' });
       await displayName.fill('Grace Hopper');
       await page.getByRole('textbox', { name: 'Biography' }).fill('Compiler pioneer');
       await page.getByRole('button', { name: 'Submit' }).click();
       await expect(page.getByRole('status')).toContainText('Update mask: display_name, biography');
-    }
-    if (pageInfo.name === 'complex-example') {
+    });
+  }
+  if (pageInfo.name === 'complex-example') {
+    scenarioChecks.push(async (page) => {
       const projectId = page.getByRole('textbox', { name: 'Project ID' });
       await expect(projectId).toBeVisible();
       await expect(page.getByLabel('Region')).toHaveCount(0);
       expect((await projectId.boundingBox())?.width).toBeGreaterThanOrEqual(200);
-    }
-    if (pageInfo.name === 'kitchen-sink') {
+    });
+  }
+  if (pageInfo.name === 'kitchen-sink') {
+    scenarioChecks.push(async (page) => {
       await expect(
         page.getByRole('heading', {
           name: 'Production deployment kitchen sink',
@@ -766,8 +780,10 @@ for (const pageInfo of pages) {
       ).toBeVisible();
       await expect(page.getByRole('navigation', { name: 'Form progress' })).toBeVisible();
       await expect(page.getByText('Step 1 of 5')).toBeVisible();
-    }
-    if (pageInfo.name === 'deeply-nested') {
+    });
+  }
+  if (pageInfo.name === 'deeply-nested') {
+    scenarioChecks.push(async (page) => {
       await expect(
         page.getByRole('heading', {
           name: 'Configure a platform blueprint',
@@ -778,21 +794,29 @@ for (const pageInfo of pages) {
       await expect(page.getByRole('heading', { name: 'Route 1' })).toBeVisible();
       await expect(page.getByRole('heading', { name: 'Value' })).toHaveCount(0);
       await expect(page.getByRole('button', { name: 'Add Routes' })).toBeVisible();
-    }
-    if (pageInfo.name === 'tanstack-form') {
+    });
+  }
+  if (pageInfo.name === 'tanstack-form') {
+    scenarioChecks.push(async (page) => {
       await expect(page.getByRole('textbox', { name: 'Display name' })).toBeVisible();
       await page.getByRole('button', { name: 'Create profile' }).click();
       await expect(page.getByText('Enter a value.')).toHaveCount(2);
-    }
-    if (pageInfo.name === 'formik') {
+    });
+  }
+  if (pageInfo.name === 'formik') {
+    scenarioChecks.push(async (page) => {
       await expect(page.getByRole('textbox', { name: 'Display name' })).toBeVisible();
       await expect(page.getByRole('status', { name: 'Loading Formik example' })).toHaveCount(0);
-    }
-    if (pageInfo.name === 'final-form') {
+    });
+  }
+  if (pageInfo.name === 'final-form') {
+    scenarioChecks.push(async (page) => {
       await expect(page.getByRole('textbox', { name: 'Display name' })).toBeVisible();
       await expect(page.getByRole('status', { name: 'Loading Final Form example' })).toHaveCount(0);
-    }
-    if (pageInfo.name === 'production-readiness') {
+    });
+  }
+  if (pageInfo.name === 'production-readiness') {
+    scenarioChecks.push(async (page) => {
       await expect(page.getByRole('progressbar', { name: 'Overall readiness' })).toBeVisible();
       await expect(page.getByText('100%', { exact: true }).first()).toBeVisible();
       await expect(
@@ -810,7 +834,21 @@ for (const pageInfo of pages) {
       await page.getByPlaceholder('Search checks').fill('Service and RPC descriptors');
       await expect(proto2Groups).toHaveCount(0);
       await expect(ledger.getByRole('heading', { name: 'Service and RPC descriptors' })).toBeVisible();
+    });
+  }
+  test(`hydrates and renders docs screenshot: ${pageInfo.name}`, async ({ browserName, page }) => {
+    const consoleErrors: string[] = [];
+    page.on('console', (message) => {
+      if (message.type() === 'error') {
+        consoleErrors.push(message.text());
+      }
+    });
+    await page.goto(pageInfo.path);
+    await expect(page.locator('h1', { hasText: pageInfo.heading }).first()).toBeVisible();
+    for (const check of scenarioChecks) {
+      await check(page);
     }
+
     await page.screenshot({
       fullPage: true,
       path: join(screenshotDir, `${browserName}-${pageInfo.name}.png`),

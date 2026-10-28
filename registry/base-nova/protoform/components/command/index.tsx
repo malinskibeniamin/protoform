@@ -63,12 +63,10 @@ function CommandDialog({
   showOverlay = true,
   container,
   className,
+  onOpenAutoFocus,
   ...props
 }: CommandDialogProps) {
-  const onOpenAutoFocus: unknown = Reflect.get(props, 'onOpenAutoFocus');
-  Reflect.deleteProperty(props, 'onOpenAutoFocus');
-  const openAutoFocusProps =
-    typeof onOpenAutoFocus === 'function' ? { onOpenAutoFocus: onOpenAutoFocus as (event: Event) => void } : undefined;
+  const openAutoFocusProps = typeof onOpenAutoFocus === 'function' ? { onOpenAutoFocus } : undefined;
 
   return (
     <Dialog {...props}>

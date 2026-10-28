@@ -1,18 +1,29 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect } from '@rstest/core';
 import ts from 'typescript';
+import { z } from 'zod';
 
 interface RegistryItem {
-  dependencies?: string[];
-  devDependencies?: string[];
-  files?: Array<{ path: string; target?: string }>;
+  dependencies?: string[] | undefined;
+  devDependencies?: string[] | undefined;
+  files?: Array<{ path: string; target?: string | undefined }> | undefined;
   name: string;
-  registryDependencies?: string[];
+  registryDependencies?: string[] | undefined;
 }
 
-const registry = JSON.parse(readFileSync('registry.json', 'utf8')) as {
-  items: RegistryItem[];
-};
+const registry = z
+  .looseObject({
+    items: z.array(
+      z.looseObject({
+        dependencies: z.array(z.string()).optional(),
+        devDependencies: z.array(z.string()).optional(),
+        files: z.array(z.looseObject({ path: z.string(), target: z.string().optional() })).optional(),
+        name: z.string(),
+        registryDependencies: z.array(z.string()).optional(),
+      })
+    ),
+  })
+  .parse(JSON.parse(readFileSync('registry.json', 'utf8')));
 
 const HOST_OWNED_PACKAGES = new Set(['react', 'react-dom']);
 
@@ -268,9 +279,9 @@ describe('build-time UI adapter registry', () => {
   });
 
   test('installs the type packages its runtime dependencies need', () => {
-    const repoDevDependencies = (
-      JSON.parse(readFileSync('package.json', 'utf8')) as { devDependencies?: Record<string, string> }
-    ).devDependencies;
+    const repoDevDependencies = z
+      .looseObject({ devDependencies: z.record(z.string(), z.string()).optional() })
+      .parse(JSON.parse(readFileSync('package.json', 'utf8'))).devDependencies;
     const missing = registry.items.flatMap((entry) =>
       (entry.dependencies ?? [])
         .map(packageName)

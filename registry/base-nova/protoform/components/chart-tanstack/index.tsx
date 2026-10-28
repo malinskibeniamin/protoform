@@ -2,7 +2,8 @@
 
 import type { ChartValue } from '@tanstack/charts';
 import type { ChartProps } from '@tanstack/charts/react';
-import { type CSSProperties, lazy, Suspense } from 'react';
+import type { CSSProperties } from 'react';
+import { lazy, Suspense } from 'react';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
 
 const ChartModule = lazy(() => import('./chart-module').then((module) => ({ default: module.ChartModule })));
@@ -20,6 +21,12 @@ export function TanStackChart<
 >({ className, ...props }: TanStackChartProps<TDatum, TXValue, TYValue>) {
   const defaultHeight = props.aspectRatio === undefined ? 320 : undefined;
   const loadingHeight = props.height ?? defaultHeight;
+  const loadingStyle: CSSProperties & Record<`--${string}`, string | number | undefined> = {
+    '--chart-loading-width': props.width === undefined ? '100%' : `${props.width}px`,
+    '--chart-loading-height': loadingHeight === undefined ? undefined : `${loadingHeight}px`,
+    '--chart-loading-aspect-ratio': props.aspectRatio,
+    ...props.style,
+  };
   return (
     <Suspense
       fallback={
@@ -30,14 +37,7 @@ export function TanStackChart<
             className
           )}
           role="status"
-          style={
-            {
-              '--chart-loading-width': props.width === undefined ? '100%' : `${props.width}px`,
-              '--chart-loading-height': loadingHeight === undefined ? undefined : `${loadingHeight}px`,
-              '--chart-loading-aspect-ratio': props.aspectRatio,
-              ...props.style,
-            } as CSSProperties
-          }
+          style={loadingStyle}
         >
           Loading chart…
         </div>

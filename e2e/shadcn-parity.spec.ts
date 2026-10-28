@@ -153,6 +153,24 @@ test('composition recipes filter, select, paginate and recover @cross-browser', 
 });
 
 for (const name of ['Basics', 'Overlays', 'Layout', 'Messages', 'Recipes']) {
+  let checkScenario: (page: Page) => Promise<void> = () => Promise.resolve();
+  if (name === 'Recipes') {
+    checkScenario = async (page) => {
+      const tableViewport = page.getByRole('region', { name: 'Sample records', exact: true });
+      await tableViewport.focus();
+      await page.keyboard.press('ArrowRight');
+      await expect.poll(() => tableViewport.evaluate((element) => element.scrollLeft)).toBeGreaterThan(0);
+    };
+  }
+  if (name === 'Messages') {
+    checkScenario = async (page) => {
+      const message = page.getByText('The schema passed its sample validation.', { exact: true });
+      expect((await message.boundingBox())?.width).toBeGreaterThan(150);
+      const event = page.getByText('Sample event 1: request validated.', { exact: true });
+      await event.scrollIntoViewIfNeeded();
+      await expect(event).toBeVisible();
+    };
+  }
   test(`catalog ${name} fits narrow viewports with accessible controls @cross-browser`, async ({ page }) => {
     await page.setViewportSize({ width: 320, height: 844 });
     await page.getByRole('tab', { name, exact: true }).click();
@@ -178,19 +196,8 @@ for (const name of ['Basics', 'Overlays', 'Layout', 'Messages', 'Recipes']) {
       )
       .toBe(1);
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
-    if (name === 'Recipes') {
-      const tableViewport = page.getByRole('region', { name: 'Sample records', exact: true });
-      await tableViewport.focus();
-      await page.keyboard.press('ArrowRight');
-      await expect.poll(() => tableViewport.evaluate((element) => element.scrollLeft)).toBeGreaterThan(0);
-    }
-    if (name === 'Messages') {
-      const message = page.getByText('The schema passed its sample validation.', { exact: true });
-      expect((await message.boundingBox())?.width).toBeGreaterThan(150);
-      const event = page.getByText('Sample event 1: request validated.', { exact: true });
-      await event.scrollIntoViewIfNeeded();
-      await expect(event).toBeVisible();
-    }
+    await checkScenario(page);
+
     const result = await new AxeBuilder({ page }).include('[data-testid="shadcn-parity-example"]').analyze();
     expect(result.violations).toEqual([]);
   });

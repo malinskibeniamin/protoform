@@ -373,7 +373,7 @@ const JSONField = ({
             ) {
               return customFieldConfig.options[0]?.value ?? '';
             }
-            return currentValue as string;
+            return typeof currentValue === 'string' ? currentValue : '';
           })();
 
           return (
@@ -409,10 +409,15 @@ const JSONField = ({
           );
         }
 
-        if (propSchema.oneOf?.every((option) => typeof option.const === 'string' && typeof option.title === 'string')) {
+        if (
+          propSchema.oneOf?.every(
+            (option): option is typeof option & { const: string; title: string } =>
+              typeof option.const === 'string' && typeof option.title === 'string'
+          )
+        ) {
           const oneOfOptions: ComboboxOption[] = propSchema.oneOf.map((option) => ({
-            label: option.title as string,
-            value: option.const as string,
+            label: option.title,
+            value: option.const,
           }));
 
           return (

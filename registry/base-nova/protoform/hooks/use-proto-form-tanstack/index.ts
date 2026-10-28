@@ -121,8 +121,8 @@ function setDirtyPath(target: Record<string, unknown>, path: string) {
       return;
     }
     const existing = current[segment];
-    if (typeof existing === 'object' && existing !== null && !Array.isArray(existing)) {
-      current = existing as Record<string, unknown>;
+    if (isValueRecord(existing)) {
+      current = existing;
     } else {
       const next: Record<string, unknown> = {};
       current[segment] = next;
@@ -297,8 +297,9 @@ export function useProtoForm<
         `setOneofValue("${path}"): target is not a oneof field. Expected { case, value } shape. Use setFieldValue() for regular fields.`
       );
     }
-    const previous = current as { case?: string } | undefined;
-    if (previous?.case !== undefined && previous?.case !== '' && previous.case !== oneofCase) {
+    const previousCase =
+      current !== null && typeof current === 'object' && 'case' in current ? current.case : undefined;
+    if (previousCase !== undefined && previousCase !== '' && previousCase !== oneofCase) {
       setDynamicFieldValue(path, { case: undefined, value: undefined });
     }
     setDynamicFieldValue(path, { case: oneofCase, value }, { dontUpdateMeta: false, ...updateOptions });
@@ -354,8 +355,8 @@ function setNestedMessage(target: Record<string, unknown>, path: string[], messa
       return;
     }
     const existing = current[segment];
-    if (existing && typeof existing === 'object' && !Array.isArray(existing)) {
-      current = existing as Record<string, unknown>;
+    if (isValueRecord(existing)) {
+      current = existing;
     } else {
       const nested: Record<string, unknown> = {};
       current[segment] = nested;
@@ -375,4 +376,8 @@ function stripPrefix(field: string, prefixes: readonly string[]): string {
     }
   }
   return field;
+}
+
+function isValueRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
 }

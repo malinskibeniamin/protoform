@@ -1,22 +1,28 @@
 import { readFileSync } from 'node:fs';
-
 import { describe, expect } from '@rstest/core';
+import { z } from 'zod';
 
 describe('protoform registry style', () => {
   test('targets the Base UI Nova style', () => {
-    const config = JSON.parse(readFileSync('components.json', 'utf8')) as {
-      style?: string;
-    };
+    const config = z
+      .looseObject({ style: z.string().optional() })
+      .parse(JSON.parse(readFileSync('components.json', 'utf8')));
 
     expect(config.style).toBe('base-nova');
   });
 
   test('publishes runtime source and the documented proto contract', () => {
-    const registry = JSON.parse(readFileSync('registry.json', 'utf8')) as {
-      items: Array<{
-        files?: Array<{ path: string; target?: string; type: string }>;
-      }>;
-    };
+    const registry = z
+      .looseObject({
+        items: z.array(
+          z.looseObject({
+            files: z
+              .array(z.looseObject({ path: z.string(), target: z.string().optional(), type: z.string() }))
+              .optional(),
+          })
+        ),
+      })
+      .parse(JSON.parse(readFileSync('registry.json', 'utf8')));
     const files = registry.items.flatMap((item) => item.files ?? []);
     const externalFiles = files.filter((file) => !file.path.startsWith('registry/base-nova/protoform/'));
 
@@ -46,10 +52,9 @@ describe('protoform registry style', () => {
   });
 
   test('points shadcn at the actual non-RSC stylesheet', () => {
-    const config = JSON.parse(readFileSync('components.json', 'utf8')) as {
-      rsc?: boolean;
-      tailwind?: { css?: string };
-    };
+    const config = z
+      .looseObject({ rsc: z.boolean().optional(), tailwind: z.looseObject({ css: z.string().optional() }).optional() })
+      .parse(JSON.parse(readFileSync('components.json', 'utf8')));
 
     expect(config.rsc).toBe(false);
     expect(config.tailwind?.css).toBe('theme.css');

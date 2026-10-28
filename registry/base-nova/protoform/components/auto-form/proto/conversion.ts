@@ -33,10 +33,6 @@ export function isProtoMapEntries(value: unknown): value is ProtoMapFormEntry[] 
   return Array.isArray(value);
 }
 
-function isProtoMessageShape(value: unknown): boolean {
-  return value !== null && typeof value === 'object' && '$typeName' in (value as Record<string, unknown>);
-}
-
 export function resolveProtoSourceMessage<Desc extends DescMessage>(
   desc: Desc,
   ...candidates: unknown[]
@@ -52,8 +48,8 @@ export function normalizeProtoInitialValues(
     return;
   }
 
-  if (isProtoMessageShape(values)) {
-    return protoToFormValues(desc, values as never);
+  if (isMessage(values, desc)) {
+    return protoToFormValues(desc, values);
   }
 
   return values;

@@ -1,7 +1,7 @@
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { resolve } from 'node:path';
-
 import { describe, expect } from '@rstest/core';
+import { z } from 'zod';
 
 const repositoryRoot = resolve(import.meta.dirname, '..');
 const MIT_LICENSE_PATTERN = /^MIT License/u;
@@ -14,9 +14,9 @@ const PROTOFORM_LICENSE_DEPENDENCY = '@protoform/protoform-license';
 const PROTOFORM_LICENSE_TARGET = '~/LICENSES/protoform-MIT.txt';
 
 interface RegistryItem {
-  files?: Array<{ path: string; target?: string; type: string }>;
+  files?: Array<{ path: string; target?: string | undefined; type: string }> | undefined;
   name: string;
-  registryDependencies?: string[];
+  registryDependencies?: string[] | undefined;
   type: string;
 }
 
@@ -29,11 +29,13 @@ function sourceFiles(path: string): string[] {
 
 describe('registry-only distribution', () => {
   test('ships Protoform under MIT without private package workspaces', () => {
-    const manifest = JSON.parse(readFileSync(resolve(repositoryRoot, 'package.json'), 'utf8')) as {
-      dependencies?: Record<string, string>;
-      scripts?: Record<string, string>;
-      workspaces?: string[];
-    };
+    const manifest = z
+      .looseObject({
+        dependencies: z.record(z.string(), z.string()).optional(),
+        scripts: z.record(z.string(), z.string()).optional(),
+        workspaces: z.array(z.string()).optional(),
+      })
+      .parse(JSON.parse(readFileSync(resolve(repositoryRoot, 'package.json'), 'utf8')));
 
     expect(readFileSync(resolve(repositoryRoot, 'LICENSE'), 'utf8')).toMatch(MIT_LICENSE_PATTERN);
     expect(manifest.workspaces).toBeUndefined();
@@ -49,9 +51,20 @@ describe('registry-only distribution', () => {
   });
 
   test('distributes Protoform MIT and the bundled shadcn notices', () => {
-    const registry = JSON.parse(readFileSync(resolve(repositoryRoot, 'registry.json'), 'utf8')) as {
-      items: RegistryItem[];
-    };
+    const registry = z
+      .looseObject({
+        items: z.array(
+          z.looseObject({
+            files: z
+              .array(z.looseObject({ path: z.string(), target: z.string().optional(), type: z.string() }))
+              .optional(),
+            name: z.string(),
+            registryDependencies: z.array(z.string()).optional(),
+            type: z.string(),
+          })
+        ),
+      })
+      .parse(JSON.parse(readFileSync(resolve(repositoryRoot, 'registry.json'), 'utf8')));
     const licenseTargets = registry.items
       .flatMap((item) => item.files ?? [])
       .map((file) => file.target ?? '')
@@ -64,9 +77,20 @@ describe('registry-only distribution', () => {
   });
 
   test('copies license notices with every installable registry item', () => {
-    const registry = JSON.parse(readFileSync(resolve(repositoryRoot, 'registry.json'), 'utf8')) as {
-      items: RegistryItem[];
-    };
+    const registry = z
+      .looseObject({
+        items: z.array(
+          z.looseObject({
+            files: z
+              .array(z.looseObject({ path: z.string(), target: z.string().optional(), type: z.string() }))
+              .optional(),
+            name: z.string(),
+            registryDependencies: z.array(z.string()).optional(),
+            type: z.string(),
+          })
+        ),
+      })
+      .parse(JSON.parse(readFileSync(resolve(repositoryRoot, 'registry.json'), 'utf8')));
     const itemsByName = new Map(registry.items.map((item) => [item.name, item]));
     const license = itemsByName.get('protoform-license');
 
@@ -160,13 +184,17 @@ describe('registry-only distribution', () => {
   });
 
   test('keeps the source generator explicit and runnable', () => {
-    const registry = JSON.parse(readFileSync(resolve(repositoryRoot, 'registry.json'), 'utf8')) as {
-      items: Array<{
-        files?: Array<{ target?: string }>;
-        name: string;
-        registryDependencies?: string[];
-      }>;
-    };
+    const registry = z
+      .looseObject({
+        items: z.array(
+          z.looseObject({
+            files: z.array(z.looseObject({ target: z.string().optional() })).optional(),
+            name: z.string(),
+            registryDependencies: z.array(z.string()).optional(),
+          })
+        ),
+      })
+      .parse(JSON.parse(readFileSync(resolve(repositoryRoot, 'registry.json'), 'utf8')));
     const generator = registry.items.find((item) => item.name === 'protoc-gen-protoform');
     const protoform = registry.items.find((item) => item.name === 'protoform');
 

@@ -1,5 +1,6 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { describe, expect } from '@rstest/core';
+import { z } from 'zod';
 
 import { demoCatalog } from '../examples/catalog/demo-catalog.js';
 import { demoHubCategoryFor, demoRedirects, getDemoHub } from '../examples/catalog/demo-docs.js';
@@ -112,10 +113,8 @@ describe('live demo catalog', () => {
       'tanstack-form': 'use-proto-form-tanstack',
     } as const;
 
-    for (const demo of demoCatalog) {
-      if (demo.category !== 'interop') {
-        continue;
-      }
+    const interopDemos = demoCatalog.filter((entry) => entry.category === 'interop');
+    for (const demo of interopDemos) {
       const source = read(`registry/base-nova/protoform/demo/catalog/${demo.slug}.tsx`);
       const expectedImport = Object.entries(interopImports).find(([engine]) => engine === demo.engine)?.[1];
       if (!expectedImport) {
@@ -137,11 +136,13 @@ describe('live demo catalog', () => {
       const source = read(`registry/base-nova/protoform/demo/catalog/${demo.slug}.tsx`);
 
       expect(source, demo.id).not.toContain('RegistryCapabilityDemo');
-      if (demo.engine === 'react-hook-form') {
-        expect(source, demo.id).toContain('<CatalogFormDemo');
-        expect(source, demo.id).toContain('schemaKey=');
-        expect(source, demo.id).toContain('/demo/runtime/catalog-form-demo');
-      }
+    }
+    const nativeDemos = demoCatalog.filter((entry) => entry.engine === 'react-hook-form');
+    for (const demo of nativeDemos) {
+      const source = read(`registry/base-nova/protoform/demo/catalog/${demo.slug}.tsx`);
+      expect(source, demo.id).toContain('<CatalogFormDemo');
+      expect(source, demo.id).toContain('schemaKey=');
+      expect(source, demo.id).toContain('/demo/runtime/catalog-form-demo');
     }
   });
 
@@ -151,15 +152,16 @@ describe('live demo catalog', () => {
     expect(runtime).toContain('formatSubmittedValue(');
     for (const demo of demoCatalog) {
       const source = read(`registry/base-nova/protoform/demo/catalog/${demo.slug}.tsx`);
-
-      if (demo.engine !== 'react-hook-form') {
-        expect(source, demo.id).toMatch(
-          /from ["']@\/registry\/base-nova\/protoform\/demo\/runtime\/format-submitted-value["']/u
-        );
-        expect(source, demo.id).toContain('formatSubmittedValue(');
-      }
       expect(source, demo.id).not.toContain('function formatSubmittedValue');
       expect(source, demo.id).not.toContain('JSON.stringify(');
+    }
+    const interopDemos = demoCatalog.filter((entry) => entry.engine !== 'react-hook-form');
+    for (const demo of interopDemos) {
+      const source = read(`registry/base-nova/protoform/demo/catalog/${demo.slug}.tsx`);
+      expect(source, demo.id).toMatch(
+        /from ["']@\/registry\/base-nova\/protoform\/demo\/runtime\/format-submitted-value["']/u
+      );
+      expect(source, demo.id).toContain('formatSubmittedValue(');
     }
   });
 
@@ -193,13 +195,17 @@ describe('live demo catalog', () => {
   });
 
   test('makes every demo independently installable from the registry', () => {
-    const registry = JSON.parse(read('registry.json')) as {
-      items: Array<{
-        files?: Array<{ target?: string }>;
-        name: string;
-        registryDependencies?: string[];
-      }>;
-    };
+    const registry = z
+      .looseObject({
+        items: z.array(
+          z.looseObject({
+            files: z.array(z.looseObject({ target: z.string().optional() })).optional(),
+            name: z.string(),
+            registryDependencies: z.array(z.string()).optional(),
+          })
+        ),
+      })
+      .parse(JSON.parse(read('registry.json')));
     const registryItems = new Map(registry.items.map((item) => [item.name, item]));
 
     for (const demo of demoCatalog) {
@@ -211,26 +217,27 @@ describe('live demo catalog', () => {
   });
 
   test('keeps generated demo descriptors synchronized in the full generation pipeline', () => {
-    const manifest = JSON.parse(read('package.json')) as {
-      scripts: Record<string, string>;
-    };
-    const registry = JSON.parse(read('registry.json')) as {
-      items: Array<{
-        files?: Array<{ path: string }>;
-        name: string;
-      }>;
-    };
+    const manifest = z
+      .looseObject({ scripts: z.record(z.string(), z.string()) })
+      .parse(JSON.parse(read('package.json')));
+    const registry = z
+      .looseObject({
+        items: z.array(
+          z.looseObject({ files: z.array(z.looseObject({ path: z.string() })).optional(), name: z.string() })
+        ),
+      })
+      .parse(JSON.parse(read('registry.json')));
     const runtimePrefix = 'registry/base-nova/protoform/demo/runtime/gen/';
     const runtime = registry.items.find((item) => item.name === 'protoform-demo-runtime');
 
     expect(manifest.scripts['proto:generate']).toContain('bun run demos:generate && bun run registry:build');
     expect(runtime).toBeDefined();
-    for (const file of runtime?.files ?? []) {
-      if (file.path.startsWith(runtimePrefix)) {
-        expect(read(file.path).trim(), file.path).toBe(
-          read(`conformance/gen/${file.path.slice(runtimePrefix.length)}`).trim()
-        );
-      }
+    const generatedFiles = (runtime?.files ?? []).filter((file) => file.path.startsWith(runtimePrefix));
+    expect(generatedFiles.length).toBeGreaterThan(0);
+    for (const file of generatedFiles) {
+      expect(read(file.path).trim(), file.path).toBe(
+        read(`conformance/gen/${file.path.slice(runtimePrefix.length)}`).trim()
+      );
     }
   });
 });

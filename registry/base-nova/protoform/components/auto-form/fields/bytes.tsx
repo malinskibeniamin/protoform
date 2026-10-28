@@ -22,7 +22,7 @@ function BytesFieldComponent({ error, field, id, inputProps }: AutoFormFieldProp
       placeholder={placeholder !== undefined && placeholder !== '' ? placeholder : 'Base64 payload'}
       resize="vertical"
       testId={testIds.control}
-      value={(inputProps['value'] as string | undefined) ?? ''}
+      value={typeof inputProps['value'] === 'string' ? inputProps['value'] : ''}
     />
   );
 }

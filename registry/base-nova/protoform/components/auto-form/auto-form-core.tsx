@@ -12,7 +12,6 @@ import {
   preserveProtoMessageSource,
 } from '@/registry/base-nova/protoform/lib/protobuf-provider';
 import { type AutoFormDiagnostic, inspectAutoFormConfiguration } from './configuration';
-import type { SchemaValidation } from './core-types';
 import type { AutoFormEngine } from './engine';
 import {
   ArrayElementWrapper,
@@ -40,8 +39,10 @@ import { AutoFormRuntimeProvider } from './runtime-provider';
 import {
   mergeFieldOverrides,
   normalizeProtoInitialValues,
+  normalizeSchemaValidation,
   protoConversionOptionsFromFieldConfig,
   resolveSchema,
+  type ValidatedFormValues,
 } from './schema';
 import { AutoFormStepPanel, fieldsForStep, initialStepIndex, validateSteps } from './stepper';
 import { buildAutoFormTestId, resolveAutoFormTestIdPrefix } from './test-ids';
@@ -86,7 +87,7 @@ export const ShadcnAutoFormFieldComponents = AutoFormFieldComponentRegistry;
 export type AutoFormEngineRender = (props: {
   children: (engine: AutoFormEngine) => React.ReactNode;
   defaultValues: Record<string, unknown>;
-  validateSchema: (values: Record<string, unknown>, signal: AbortSignal) => Promise<SchemaValidation>;
+  validateSchema: (values: Record<string, unknown>, signal: AbortSignal) => Promise<ValidatedFormValues>;
   values?: Record<string, unknown> | undefined;
 }) => React.ReactNode;
 
@@ -290,9 +291,9 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
   async function validateWithProvider(
     submittedValues: Record<string, unknown>,
     signal: AbortSignal
-  ): Promise<SchemaValidation> {
+  ): Promise<ValidatedFormValues> {
     try {
-      return await Promise.resolve(resolvedSchema.provider.validateSchema(submittedValues, { signal }));
+      return normalizeSchemaValidation(await resolvedSchema.provider.validateSchema(submittedValues, { signal }));
     } catch (error) {
       return {
         errors: [
@@ -735,7 +736,7 @@ function AutoFormCoreInner<T extends Record<string, unknown>, TNativeForm, TCust
     defaultValues: initialDefaultValues,
     validateSchema: async (submittedValues, signal) => {
       try {
-        return await Promise.resolve(resolvedSchema.provider.validateSchema(submittedValues, { signal }));
+        return normalizeSchemaValidation(await resolvedSchema.provider.validateSchema(submittedValues, { signal }));
       } catch (error) {
         return {
           errors: [

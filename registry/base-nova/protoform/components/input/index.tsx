@@ -2,8 +2,8 @@
 
 import { cva, type VariantProps } from 'class-variance-authority';
 import { Eye, EyeOff, Minus, Plus } from 'lucide-react';
+import type { CSSProperties } from 'react';
 import React, { createContext, useEffect, useState } from 'react';
-
 import { Button } from '@/components/ui/button';
 import { useFieldContext } from '@/components/ui/field';
 import { useGroup } from '@/components/ui/group';
@@ -69,30 +69,35 @@ function useInputState(value: InputProps['value'], defaultValue: InputProps['def
   return { setShowPassword, setValue: setInternalValue, showPassword, value: internalValue };
 }
 
-function createChangeEvent(newValue: string): React.ChangeEvent<HTMLInputElement> {
-  return {
-    target: { value: newValue },
-  } as React.ChangeEvent<HTMLInputElement>;
+function dispatchInputChange(input: HTMLInputElement | null, newValue: string): void {
+  if (!input) {
+    return;
+  }
+  const descriptor = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value');
+  if (!descriptor?.set) {
+    throw new Error('The input does not expose a native value setter.');
+  }
+  descriptor.set.call(input, newValue);
+  input.dispatchEvent(new Event('input', { bubbles: true }));
 }
 
 function useNumberInputHandlers(
   value: string,
   setValue: React.Dispatch<React.SetStateAction<string>>,
   step: number,
+  inputRef: React.RefObject<HTMLInputElement | null>,
   onChange?: React.ChangeEventHandler<HTMLInputElement>
 ) {
   const increment = () => {
     const currentValue = Number.parseFloat(value) || 0;
     const newValue = (currentValue + step).toString();
-    setValue(newValue);
-    onChange?.(createChangeEvent(newValue));
+    dispatchInputChange(inputRef.current, newValue);
   };
 
   const decrement = () => {
     const currentValue = Number.parseFloat(value) || 0;
     const newValue = (currentValue - step).toString();
-    setValue(newValue);
-    onChange?.(createChangeEvent(newValue));
+    dispatchInputChange(inputRef.current, newValue);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -245,6 +250,14 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     },
     ref
   ) => {
+    const inputRef = React.useRef<HTMLInputElement>(null);
+    React.useImperativeHandle(ref, () => {
+      const input = inputRef.current;
+      if (!input) {
+        throw new Error('The input ref is not attached.');
+      }
+      return input;
+    }, []);
     const { size, nativeSize } = getInputSizes(requestedSize);
     const { value, setValue, showPassword, setShowPassword } = useInputState(props.value, defaultValue);
     const fieldCtx = useFieldContext();
@@ -262,7 +275,13 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const { position: groupPosition, attached: groupAttached } = useGroup();
     const attached = groupAttached || isPasswordInput;
 
-    const { increment, decrement, handleInputChange } = useNumberInputHandlers(value, setValue, step, props.onChange);
+    const { increment, decrement, handleInputChange } = useNumberInputHandlers(
+      value,
+      setValue,
+      step,
+      inputRef,
+      props.onChange
+    );
 
     const controlsDisabled = props.disabled || readOnly;
 
@@ -272,6 +291,10 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
     const inputValueProps = getInputValueProps(isNumberInput, value, props.value, defaultValue);
 
+    const adornmentStyle: CSSProperties & Record<`--${string}`, string | number | undefined> = {
+      '--input-start-padding': `${(startWidth ?? 0) + 16}px`,
+      '--input-end-padding': `${(endWidth ?? 0) + 16}px`,
+    };
     const inputElement = (
       <input
         {...props}
@@ -291,15 +314,10 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         data-testid={testId}
         onChange={isNumberInput ? handleInputChange : props.onChange}
         readOnly={readOnly}
-        ref={ref}
+        ref={inputRef}
         size={nativeSize}
         step={isNumberInput ? step : undefined}
-        style={
-          {
-            '--input-start-padding': `${(startWidth ?? 0) + 16}px`,
-            '--input-end-padding': `${(endWidth ?? 0) + 16}px`,
-          } as React.CSSProperties
-        }
+        style={adornmentStyle}
         type={inputType}
         {...inputValueProps}
       />

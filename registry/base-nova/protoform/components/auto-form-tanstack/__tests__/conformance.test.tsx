@@ -61,7 +61,7 @@ describe('tanStack AutoForm conformance', () => {
 
     await user.click(screen.getByRole('button', { name: /add tags/iu }));
     const inputs = screen.getAllByRole('textbox');
-    await user.type(inputs[1] as HTMLInputElement, 'second');
+    await user.type(requireInput(inputs[1]), 'second');
     await user.click(screen.getByRole('button', { name: 'Submit' }));
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
@@ -303,3 +303,10 @@ describe('tanStack AutoForm conformance', () => {
     expect(onSubmit.mock.calls[1]?.[2].updateMask?.paths).toEqual([]);
   });
 });
+
+function requireInput(value: unknown): HTMLInputElement {
+  if (!(value instanceof HTMLInputElement)) {
+    throw new TypeError('Expected an input element.');
+  }
+  return value;
+}

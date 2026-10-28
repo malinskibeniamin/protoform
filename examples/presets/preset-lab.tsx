@@ -1,7 +1,8 @@
 'use client';
 
 import { CheckIcon, CopyIcon, ExternalLinkIcon, Maximize2Icon, Minimize2Icon, MoonIcon, SunIcon } from 'lucide-react';
-import { type CSSProperties, useEffect, useRef, useState } from 'react';
+import type { CSSProperties } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { AutoForm } from '@/registry/base-nova/protoform/components/auto-form';
 import type {
@@ -463,6 +464,8 @@ function useWorkspaceFullscreen(setStatus: (message: string) => void) {
 }
 
 export function PresetLab() {
+  const presetWorkspaceHeadingId = useId();
+
   const [initialSelection] = useState(readInitialSelection);
   const [activePreset, setActivePreset] = useState(initialSelection.preset);
   const [radius, setRadius] = useState(initialSelection.radius);
@@ -530,6 +533,37 @@ export function PresetLab() {
     }
   }
 
+  const previewStyle: CSSProperties & Record<`--${string}`, string | number | undefined> = {
+    '--accent': previewVariables['--accent'],
+    '--accent-foreground': previewVariables['--accent-foreground'],
+    '--background': previewVariables['--background'],
+    '--border': previewVariables['--border'],
+    '--card': previewVariables['--card'],
+    '--card-foreground': previewVariables['--card-foreground'],
+    '--destructive': previewVariables['--destructive'],
+    '--foreground': previewVariables['--foreground'],
+    '--input': previewVariables['--input'],
+    '--muted': previewVariables['--muted'],
+    '--muted-foreground': previewVariables['--muted-foreground'],
+    '--popover': previewVariables['--popover'],
+    '--popover-foreground': previewVariables['--popover-foreground'],
+    '--primary': previewVariables['--primary'],
+    '--primary-foreground': previewVariables['--primary-foreground'],
+    '--ring': previewVariables['--ring'],
+    '--secondary': previewVariables['--secondary'],
+    '--secondary-foreground': previewVariables['--secondary-foreground'],
+    '--radius': radiusValue,
+    '--radius-xs': `calc(${radiusValue} - 6px)`,
+    '--radius-sm': `calc(${radiusValue} - 4px)`,
+    '--radius-md': `calc(${radiusValue} - 2px)`,
+    '--radius-lg': radiusValue,
+    '--radius-xl': `calc(${radiusValue} + 4px)`,
+    '--radius-2xl': `calc(${radiusValue} + 8px)`,
+    '--selected': previewVariables['--primary'],
+    '--selected-foreground': previewVariables['--primary-foreground'],
+    '--selection': previewVariables['--primary'],
+    '--selection-foreground': previewVariables['--primary-foreground'],
+  };
   return (
     <div className="not-prose" data-testid="preset-lab">
       <div ref={inlineHostRef} />
@@ -542,7 +576,7 @@ export function PresetLab() {
               isFullscreen={isFullscreen}
               workspaceRef={workspaceRef}
             >
-              <h2 className="sr-only" id="preset-workspace-heading">
+              <h2 className="sr-only" id={presetWorkspaceHeadingId}>
                 Protoform preset workspace
               </h2>
 
@@ -553,13 +587,18 @@ export function PresetLab() {
                       ['primary', previewVariables['--primary']],
                       ['accent', previewVariables['--accent']],
                       ['muted', previewVariables['--muted']],
-                    ].map(([name, color]) => (
-                      <span
-                        className="size-5 rounded-full border-2 border-background bg-(--swatch-color)"
-                        key={name}
-                        style={{ '--swatch-color': color } as CSSProperties}
-                      />
-                    ))}
+                    ].map(([name, color]) => {
+                      const swatchStyle: CSSProperties & Record<`--${string}`, string | number | undefined> = {
+                        '--swatch-color': color,
+                      };
+                      return (
+                        <span
+                          className="size-5 rounded-full border-2 border-background bg-(--swatch-color)"
+                          key={name}
+                          style={swatchStyle}
+                        />
+                      );
+                    })}
                   </div>
                   <span className="truncate text-sm font-medium">{activePreset.name}</span>
                   <span
@@ -625,6 +664,9 @@ export function PresetLab() {
                         const active = activePreset.id === preset.id;
                         const variables = mode === 'dark' ? preset.dark : preset.light;
 
+                        const accentSwatchStyle: CSSProperties & Record<`--${string}`, string | number | undefined> = {
+                          '--swatch-color': variables['--primary'],
+                        };
                         return (
                           <Button
                             aria-label={`Choose ${preset.name} preset`}
@@ -638,7 +680,7 @@ export function PresetLab() {
                             <span
                               aria-hidden="true"
                               className="size-3.5 rounded-full border border-foreground/10 bg-(--swatch-color)"
-                              style={{ '--swatch-color': variables['--primary'] } as CSSProperties}
+                              style={accentSwatchStyle}
                             />
                             {preset.name}
                             {active ? <CheckIcon aria-hidden="true" className="ml-auto hidden md:block" /> : null}
@@ -677,39 +719,7 @@ export function PresetLab() {
                   )}
                   data-preset-id={activePreset.id}
                   data-testid="preset-preview"
-                  style={
-                    {
-                      '--accent': previewVariables['--accent'],
-                      '--accent-foreground': previewVariables['--accent-foreground'],
-                      '--background': previewVariables['--background'],
-                      '--border': previewVariables['--border'],
-                      '--card': previewVariables['--card'],
-                      '--card-foreground': previewVariables['--card-foreground'],
-                      '--destructive': previewVariables['--destructive'],
-                      '--foreground': previewVariables['--foreground'],
-                      '--input': previewVariables['--input'],
-                      '--muted': previewVariables['--muted'],
-                      '--muted-foreground': previewVariables['--muted-foreground'],
-                      '--popover': previewVariables['--popover'],
-                      '--popover-foreground': previewVariables['--popover-foreground'],
-                      '--primary': previewVariables['--primary'],
-                      '--primary-foreground': previewVariables['--primary-foreground'],
-                      '--ring': previewVariables['--ring'],
-                      '--secondary': previewVariables['--secondary'],
-                      '--secondary-foreground': previewVariables['--secondary-foreground'],
-                      '--radius': radiusValue,
-                      '--radius-xs': `calc(${radiusValue} - 6px)`,
-                      '--radius-sm': `calc(${radiusValue} - 4px)`,
-                      '--radius-md': `calc(${radiusValue} - 2px)`,
-                      '--radius-lg': radiusValue,
-                      '--radius-xl': `calc(${radiusValue} + 4px)`,
-                      '--radius-2xl': `calc(${radiusValue} + 8px)`,
-                      '--selected': previewVariables['--primary'],
-                      '--selected-foreground': previewVariables['--primary-foreground'],
-                      '--selection': previewVariables['--primary'],
-                      '--selection-foreground': previewVariables['--primary-foreground'],
-                    } as CSSProperties
-                  }
+                  style={previewStyle}
                 >
                   <div className="flex min-h-[34rem] items-center justify-center p-4 sm:p-8 md:group-data-[fullscreen=true]/workspace:h-full md:group-data-[fullscreen=true]/workspace:min-h-0 md:group-data-[fullscreen=true]/workspace:items-start">
                     <div className="w-full max-w-3xl overflow-hidden rounded-2xl border bg-background shadow-sm">

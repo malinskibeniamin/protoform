@@ -88,6 +88,35 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
 
+function requireMessage<Desc extends DescMessage>(value: unknown, desc: Desc): MessageShape<Desc> {
+  if (!isMessage(value, desc)) {
+    throw new TypeError(`Expected a ${desc.typeName} message.`);
+  }
+  return value;
+}
+
+function requireMessageFields(value: unknown): AnyObject {
+  if (!isPlainObject(value)) {
+    throw new TypeError('Expected protobuf message fields to be an object.');
+  }
+  return value;
+}
+
+function readOneofSelection(value: unknown): { case: string; value: unknown } | undefined {
+  if (value === undefined || value === null) {
+    return;
+  }
+  const selection = requireMessageFields(value);
+  const selectedCase = selection['case'];
+  if (selectedCase === undefined || selectedCase === '') {
+    return;
+  }
+  if (typeof selectedCase !== 'string') {
+    throw new TypeError('Expected a known oneof case.');
+  }
+  return { case: selectedCase, value: selection['value'] };
+}
+
 function toDateTimeLocalValue(timestamp: MessageShape<typeof TimestampSchema> | undefined): string | undefined {
   if (!timestamp) {
     return;
@@ -143,6 +172,13 @@ function isJsonValue(value: unknown): value is JsonValue {
   return isPlainObject(value) && Object.values(value).every(isJsonValue);
 }
 
+function requireJsonValue(value: unknown): JsonValue {
+  if (!isJsonValue(value)) {
+    throw new TypeError('Expected a JSON-compatible value.');
+  }
+  return value;
+}
+
 function messageFieldToFormValue(field: Extract<DescField, { fieldKind: 'message' }>, value: unknown): unknown {
   const hasValue = Boolean(value);
   if (isWrapperDesc(field.message)) {
@@ -158,15 +194,28 @@ function messageFieldToFormValue(field: Extract<DescField, { fieldKind: 'message
 
   switch (field.message.typeName) {
     case TIMESTAMP_TYPE:
-      return toDateTimeLocalValue(value as MessageShape<typeof TimestampSchema> | undefined);
+      return value === undefined || value === null
+        ? undefined
+        : toDateTimeLocalValue(requireMessage(value, TimestampSchema));
     case DURATION_TYPE:
       return hasValue
-        ? toJsonString(DurationSchema, value as MessageShape<typeof DurationSchema>).replaceAll('"', '')
+        ? toJsonString(DurationSchema, requireMessage(value, DurationSchema)).replaceAll('"', '')
         : undefined;
-    case FIELD_MASK_TYPE:
-      return isPlainObject(value) && Array.isArray((value as { paths?: unknown[] }).paths)
-        ? (value as { paths: string[] }).paths
-        : undefined;
+    case FIELD_MASK_TYPE: {
+      if (value === undefined || value === null) {
+        return;
+      }
+      if (
+        !(
+          isPlainObject(value) &&
+          Array.isArray(value['paths']) &&
+          value['paths'].every((path): path is string => typeof path === 'string')
+        )
+      ) {
+        throw new TypeError('Expected FieldMask paths to contain only strings.');
+      }
+      return value['paths'];
+    }
     case STRUCT_TYPE:
       if (isMessage(value, StructSchema)) {
         return toJson(StructSchema, value);
@@ -185,18 +234,12 @@ function messageFieldToFormValue(field: Extract<DescField, { fieldKind: 'message
     case ANY_TYPE:
       return isPlainObject(value)
         ? {
-            typeUrl:
-              typeof (value as { typeUrl?: unknown }).typeUrl === 'string'
-                ? (value as { typeUrl: string }).typeUrl
-                : '',
-            valueBase64:
-              (value as { value?: unknown }).value instanceof Uint8Array
-                ? base64Encode((value as { value: Uint8Array }).value)
-                : '',
+            typeUrl: typeof value['typeUrl'] === 'string' ? value['typeUrl'] : '',
+            valueBase64: value['value'] instanceof Uint8Array ? base64Encode(value['value']) : '',
           }
         : undefined;
     default:
-      return hasValue ? messageToFormValues(field.message, value as AnyObject) : undefined;
+      return hasValue ? messageToFormValues(field.message, requireMessageFields(value)) : undefined;
   }
 }
 
@@ -240,7 +283,7 @@ function listItemToFormValue(field: ListField, value: unknown): unknown {
     if (isWrapperDesc(field.message)) {
       return value;
     }
-    return messageToFormValues(field.message, value as AnyObject);
+    return messageToFormValues(field.message, requireMessageFields(value));
   }
 
   if (field.listKind === 'scalar' && field.scalar === ScalarType.BYTES) {
@@ -260,7 +303,7 @@ function mapValueToFormValue(field: MapField, value: unknown): unknown {
     if (isWrapperDesc(field.message)) {
       return value;
     }
-    return messageToFormValues(field.message, value as AnyObject);
+    return messageToFormValues(field.message, requireMessageFields(value));
   }
 
   if (field.mapKind === 'scalar' && field.scalar === ScalarType.BYTES) {
@@ -289,13 +332,16 @@ function messageToFormValues(desc: DescMessage, value: AnyObject): Record<string
 
   for (const member of desc.members) {
     if (member.kind === 'oneof') {
-      const oneofValue = value[member.localName] as { case?: string; value?: unknown } | undefined;
-      if (!(oneofValue?.case !== undefined && oneofValue?.case !== '')) {
+      const oneofValue = readOneofSelection(value[member.localName]);
+      if (!oneofValue) {
         result[member.localName] = { case: undefined, value: undefined };
         continue;
       }
 
       const activeField = member.fields.find((field) => field.localName === oneofValue.case);
+      if (!activeField) {
+        throw new TypeError(`Unknown oneof case: ${oneofValue.case}.`);
+      }
       result[member.localName] = {
         case: oneofValue.case,
         value: activeField ? fieldToFormValue(activeField, oneofValue.value) : oneofValue.value,
@@ -448,11 +494,11 @@ function normalizeMessageFieldValue(
           }
         : undefined;
     case STRUCT_TYPE:
-      return value === undefined ? undefined : fromJson(StructSchema, (value ?? {}) as JsonValue);
+      return value === undefined ? undefined : fromJson(StructSchema, requireJsonValue(value ?? {}));
     case VALUE_TYPE:
-      return value === undefined ? undefined : fromJson(ValueSchema, value as JsonValue);
+      return value === undefined ? undefined : fromJson(ValueSchema, requireJsonValue(value));
     case LIST_VALUE_TYPE:
-      return value === undefined ? undefined : fromJson(ListValueSchema, value as JsonValue);
+      return value === undefined ? undefined : fromJson(ListValueSchema, requireJsonValue(value));
     case ANY_TYPE: {
       const anyValue = isPlainObject(value) ? (value as ProtoAnyFormValue) : undefined;
       if (
@@ -595,14 +641,14 @@ function messageToProtoInit(
 
   for (const member of desc.members) {
     if (member.kind === 'oneof') {
-      const oneofValue = value[member.localName] as { case?: string; value?: unknown } | undefined;
-      if (!(oneofValue?.case !== undefined && oneofValue?.case !== '')) {
+      const oneofValue = readOneofSelection(value[member.localName]);
+      if (!oneofValue) {
         continue;
       }
 
       const activeField = member.fields.find((field) => field.localName === oneofValue.case);
       if (!activeField) {
-        continue;
+        throw new TypeError(`Unknown oneof case: ${oneofValue.case}.`);
       }
 
       result[member.localName] = {
@@ -640,7 +686,10 @@ function knownMessageValuesEqual(
   right: AnyObject,
   preserveTimestampPrecision: boolean
 ): boolean {
-  if (toJsonString(desc, left as never) === toJsonString(desc, right as never)) {
+  if (!(isMessage(left, desc) && isMessage(right, desc))) {
+    return false;
+  }
+  if (toJsonString(desc, left) === toJsonString(desc, right)) {
     return true;
   }
   if (!(preserveTimestampPrecision && isMessage(left, desc))) {
@@ -648,7 +697,7 @@ function knownMessageValuesEqual(
   }
   const comparable = clone(desc, left);
   preserveMessageUnknownFields(desc, comparable, right, true);
-  return toJsonString(desc, comparable) === toJsonString(desc, right as never);
+  return toJsonString(desc, comparable) === toJsonString(desc, right);
 }
 
 function preserveRepeatedMessageUnknownFields(
@@ -843,7 +892,7 @@ export function protoPayloadToFormValues<Desc extends DescMessage>(
   payload: unknown
 ): FormValues | undefined {
   try {
-    const message = fromJson(desc, (payload ?? {}) as JsonValue);
+    const message = fromJson(desc, requireJsonValue(payload ?? {}));
     return protoToFormValues(desc, message);
   } catch {
     return undefined;
@@ -897,10 +946,12 @@ function normalizeIssuePath(
       const nextSegment = issue.path[index + 1];
       const mapKey =
         typeof nextSegment === 'object' && nextSegment && 'key' in nextSegment ? nextSegment.key : nextSegment;
-      const mapEntries = Array.isArray(values[matchedField.localName])
-        ? (values[matchedField.localName] as ProtoMapFormEntry[])
-        : [];
-      const mapIndex = typeof mapKey === 'string' ? mapEntries.findIndex((entry) => entry.key === mapKey) : -1;
+      const candidateEntries = values[matchedField.localName];
+      const mapEntries: unknown[] = Array.isArray(candidateEntries) ? candidateEntries : [];
+      const mapIndex =
+        typeof mapKey === 'string'
+          ? mapEntries.findIndex((entry) => isPlainObject(entry) && entry['key'] === mapKey)
+          : -1;
 
       if (mapIndex !== -1 && issue.path.length > index + 2 && matchedField.mapKind === 'message') {
         normalizedPath.push(mapIndex, 'value');
@@ -1011,6 +1062,11 @@ function getScalarConversionIssue(field: ScalarField, value: unknown): string | 
 function getMessageConversionIssue(field: MessageField, value: unknown): string | undefined {
   if (value === undefined || value === null || value === '') {
     return;
+  }
+  if (field.message.typeName === FIELD_MASK_TYPE) {
+    return Array.isArray(value) && value.every((path) => typeof path === 'string' && path.trim() !== '')
+      ? undefined
+      : 'Enter field paths as non-empty strings.';
   }
   if (field.message.typeName === TIMESTAMP_TYPE) {
     return typeof value === 'string' && !Number.isNaN(new Date(value).getTime())
@@ -1125,13 +1181,20 @@ function getFormConversionIssues(
   return desc.members.flatMap((member) => {
     if (member.kind === 'oneof') {
       const selection = values[member.localName];
+      if (selection === undefined || selection === null) {
+        return [];
+      }
+      const issue = [{ message: 'Choose a known oneof case.', path: [...path, member.localName] }];
       if (!isPlainObject(selection)) {
+        return issue;
+      }
+      if (selection['case'] === undefined || selection['case'] === '') {
         return [];
       }
       const selected = member.fields.find((field) => field.localName === selection['case']);
       return selected
         ? getFieldConversionIssues(selected, selection['value'], [...path, member.localName, 'value'])
-        : [];
+        : issue;
     }
     return getFieldConversionIssues(member, values[member.localName], [...path, member.localName]);
   });

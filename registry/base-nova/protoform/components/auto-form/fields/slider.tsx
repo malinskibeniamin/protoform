@@ -82,11 +82,16 @@ export const sliderFieldDefinition: FieldTypeDefinition = {
     if (!(customData && typeof customData === 'object')) {
       return false;
     }
-    const bag = customData as { control?: unknown; ui?: { control?: unknown } };
-    if (bag.control === 'slider') {
+    const bag = customData;
+    if (bag['control'] === 'slider') {
       return true;
     }
-    if (bag.ui && typeof bag.ui === 'object' && bag.ui.control === 'slider') {
+    if (
+      typeof bag['ui'] === 'object' &&
+      bag['ui'] !== null &&
+      'control' in bag['ui'] &&
+      bag['ui'].control === 'slider'
+    ) {
       return true;
     }
     return false;

@@ -4,7 +4,7 @@
 export const client = 'only';
 
 import { Formik } from 'formik';
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -23,6 +23,7 @@ const schema = createProtoFormSchema<EmailValues, typeof EmailContractSchema>(Em
 const validate = createFormikValidator(schema);
 
 export function FormikDemo() {
+  const emailId = useId();
   const [submittedValue, setSubmittedValue] = useState<string>();
 
   return (
@@ -43,12 +44,12 @@ export function FormikDemo() {
           return (
             <form className="space-y-6" onSubmit={handleSubmit}>
               <Field data-invalid={Boolean(message)}>
-                <FieldLabel htmlFor="formik-email" required>
+                <FieldLabel htmlFor={emailId} required>
                   Email
                 </FieldLabel>
                 <Input
                   aria-invalid={Boolean(message) || undefined}
-                  id="formik-email"
+                  id={emailId}
                   name="email"
                   onBlur={handleBlur}
                   onChange={handleChange}

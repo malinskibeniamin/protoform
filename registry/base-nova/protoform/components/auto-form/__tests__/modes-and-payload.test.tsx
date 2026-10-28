@@ -1,6 +1,7 @@
 import { describe, expect } from '@rstest/core';
 import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { z } from 'zod';
 import { AutoForm } from '..';
 import { createMockProvider } from './test-utils';
 
@@ -36,7 +37,9 @@ describe('autoForm – modes and payload', () => {
           },
         })}
         renderSummary={(payload) => {
-          const request = payload as { request?: { mode?: string; team?: string } };
+          const request = z
+            .object({ request: z.object({ mode: z.string().optional(), team: z.string().optional() }).optional() })
+            .parse(payload);
           return <div>{`Custom summary: ${request.request?.team} (${request.request?.mode})`}</div>;
         }}
         schema={schema}
@@ -81,9 +84,17 @@ describe('autoForm – modes and payload', () => {
           },
         })}
         payloadParser={(payload) => {
-          const { request } = payload as {
-            request?: { owner?: { email?: string }; rollout?: { mode?: string }; team?: string };
-          };
+          const { request } = z
+            .object({
+              request: z
+                .object({
+                  owner: z.object({ email: z.string().optional() }).optional(),
+                  rollout: z.object({ mode: z.string().optional() }).optional(),
+                  team: z.string().optional(),
+                })
+                .optional(),
+            })
+            .parse(payload);
 
           return {
             enableDryRun: request?.rollout?.mode === 'dry-run',

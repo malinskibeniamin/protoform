@@ -1,6 +1,7 @@
 import { spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { describe, expect } from '@rstest/core';
+import { z } from 'zod';
 
 function runBufLint(input = '.') {
   return spawnSync('bunx', ['buf', 'lint', input, '--error-format=json'], {
@@ -29,7 +30,7 @@ describe('buf policy', () => {
       .trim()
       .split('\n')
       .filter(Boolean)
-      .map((line) => JSON.parse(line) as { type: string });
+      .map((line) => z.looseObject({ type: z.string() }).parse(JSON.parse(line)));
 
     expect(result.status).not.toBe(0);
     expect(violations.length).toBeGreaterThan(0);
@@ -52,15 +53,15 @@ describe('buf policy', () => {
       .trim()
       .split('\n')
       .filter(Boolean)
-      .map((line) => JSON.parse(line) as { type: string });
+      .map((line) => z.looseObject({ type: z.string() }).parse(JSON.parse(line)));
 
     expect(result.status).not.toBe(0);
     expect(violations.map((violation) => violation.type)).toContain('FIELD_SAME_TYPE');
 
     const workflow = readFileSync('.github/workflows/ci.yml', 'utf8');
-    const manifest = JSON.parse(readFileSync('package.json', 'utf8')) as {
-      scripts?: Record<string, string>;
-    };
+    const manifest = z
+      .looseObject({ scripts: z.record(z.string(), z.string()).optional() })
+      .parse(JSON.parse(readFileSync('package.json', 'utf8')));
 
     expect(manifest.scripts?.['proto:breaking']).toBe('bun run scripts/check-proto-breaking.ts');
     expect(workflow).toContain('fetch-depth: 0');

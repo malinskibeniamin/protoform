@@ -1,6 +1,8 @@
 'use client';
 
-import React from 'react';
+import type { CSSProperties } from 'react';
+
+import React, { useId } from 'react';
 import { Badge } from '@/registry/base-nova/protoform/components/badge';
 import { Button } from '@/registry/base-nova/protoform/components/button';
 import { Field, FieldLabel } from '@/registry/base-nova/protoform/components/field';
@@ -77,6 +79,11 @@ function requirementExplanation(requirement: ReadinessRequirement): string {
 }
 
 export function ReadinessDashboard() {
+  const categoryIdPrefix = useId();
+  const categoryReadinessHeadingId = useId();
+  const capabilityLedgerHeadingId = useId();
+  const readinessSearchId = useId();
+
   const [page, setPage] = React.useState(1);
   const [query, setQuery] = React.useState('');
   const [status, setStatus] = React.useState<StatusFilter>(() =>
@@ -108,6 +115,12 @@ export function ReadinessDashboard() {
   const visibleStart = filteredRequirements.length === 0 ? 0 : pageStart + 1;
   const visibleEnd = Math.min(pageStart + PAGE_SIZE, filteredRequirements.length);
 
+  const overallStyle: CSSProperties & Record<`--${string}`, string | number | undefined> = {
+    '--readiness-width': `${summary.percentage}%`,
+  };
+  const requiredStyle: CSSProperties & Record<`--${string}`, string | number | undefined> = {
+    '--readiness-width': `${requiredSummary.percentage}%`,
+  };
   return (
     <div className="not-prose my-8 space-y-8">
       <section className="overflow-hidden rounded-xl border bg-card p-6 shadow-sm">
@@ -142,10 +155,7 @@ export function ReadinessDashboard() {
               className="h-3 overflow-hidden rounded-full bg-muted"
               role="progressbar"
             >
-              <div
-                className="h-full w-(--readiness-width) rounded-full bg-primary"
-                style={{ '--readiness-width': `${summary.percentage}%` } as React.CSSProperties}
-              />
+              <div className="h-full w-(--readiness-width) rounded-full bg-primary" style={overallStyle} />
             </div>
             <div className="flex items-center justify-between gap-4 text-sm">
               <span>Required profile</span>
@@ -159,10 +169,7 @@ export function ReadinessDashboard() {
               className="h-2 overflow-hidden rounded-full bg-muted"
               role="progressbar"
             >
-              <div
-                className="h-full w-(--readiness-width) rounded-full bg-primary/70"
-                style={{ '--readiness-width': `${requiredSummary.percentage}%` } as React.CSSProperties}
-              />
+              <div className="h-full w-(--readiness-width) rounded-full bg-primary/70" style={requiredStyle} />
             </div>
           </div>
         </div>
@@ -211,8 +218,8 @@ export function ReadinessDashboard() {
         </TooltipProvider>
       </section>
 
-      <section aria-labelledby="category-readiness-heading">
-        <h2 className="mb-4 text-2xl font-semibold" id="category-readiness-heading">
+      <section aria-labelledby={categoryReadinessHeadingId}>
+        <h2 className="mb-4 text-2xl font-semibold" id={categoryReadinessHeadingId}>
           Readiness by area
         </h2>
         <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,18rem),1fr))] gap-4">
@@ -220,6 +227,9 @@ export function ReadinessDashboard() {
             const categorySummary = getReadinessSummary(
               readinessRequirements.filter((requirement) => requirement.category === category.id)
             );
+            const categoryStyle: CSSProperties & Record<`--${string}`, string | number | undefined> = {
+              '--readiness-width': `${categorySummary.percentage}%`,
+            };
             return (
               <article className="min-w-0 rounded-lg border bg-card p-5" key={category.id}>
                 <h3 className="m-0 text-base font-semibold wrap-break-word">{category.title}</h3>
@@ -235,10 +245,7 @@ export function ReadinessDashboard() {
                   className="h-1.5 overflow-hidden rounded-full bg-muted"
                   role="progressbar"
                 >
-                  <div
-                    className="h-full w-(--readiness-width) rounded-full bg-primary"
-                    style={{ '--readiness-width': `${categorySummary.percentage}%` } as React.CSSProperties}
-                  />
+                  <div className="h-full w-(--readiness-width) rounded-full bg-primary" style={categoryStyle} />
                 </div>
               </article>
             );
@@ -246,10 +253,10 @@ export function ReadinessDashboard() {
         </div>
       </section>
 
-      <section aria-labelledby="capability-ledger-heading">
+      <section aria-labelledby={capabilityLedgerHeadingId}>
         <div className="mb-4 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <h2 className="m-0 text-2xl font-semibold" id="capability-ledger-heading">
+            <h2 className="m-0 text-2xl font-semibold" id={capabilityLedgerHeadingId}>
               Capability ledger
             </h2>
             <p aria-live="polite" className="mt-1 mb-0 text-sm text-muted-foreground">
@@ -258,11 +265,11 @@ export function ReadinessDashboard() {
           </div>
           <div className="grid gap-3 sm:grid-cols-[minmax(14rem,1fr)_auto]">
             <Field>
-              <FieldLabel className="sr-only" htmlFor="readiness-search">
+              <FieldLabel className="sr-only" htmlFor={readinessSearchId}>
                 Search readiness checks
               </FieldLabel>
               <Input
-                id="readiness-search"
+                id={readinessSearchId}
                 onChange={(event) => {
                   setPage(1);
                   setQuery(event.target.value);
@@ -307,9 +314,9 @@ export function ReadinessDashboard() {
                 return null;
               }
               return (
-                <section aria-labelledby={`readiness-${category.id}`} key={category.id}>
+                <section aria-labelledby={`${categoryIdPrefix}-${category.id}`} key={category.id}>
                   <div className="mb-3 flex flex-wrap items-baseline justify-between gap-3 border-b pb-2">
-                    <h3 className="m-0 text-xl font-semibold" id={`readiness-${category.id}`}>
+                    <h3 className="m-0 text-xl font-semibold" id={`${categoryIdPrefix}-${category.id}`}>
                       {category.title}
                     </h3>
                     <a

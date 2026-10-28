@@ -3,7 +3,7 @@
 Run `bun run lint:fix` and `bun run type:check` before submitting changes. CI also runs component,
 conformance, browser, registry-consumer and documentation tests.
 
-## Reviewed versions (updated 2026-10-28)
+## Reviewed versions (updated 2026-10-29)
 
 | Tool            | Version                     | Responsibility                                     |
 | --------------- | --------------------------- | -------------------------------------------------- |
@@ -71,7 +71,7 @@ plus a valid edit that formats only its target. Run it with
 ## Rule decisions and coverage
 
 `lint:rules` compares installed Biome, Oxlint, shadcn and React Doctor catalogs with explicit decisions.
-New or removed rules fail until reviewed. Biome has 571 rules enabled as errors out of
+New or removed rules fail until reviewed. Biome has 574 rules enabled as errors out of
 640 explicit decisions. The React, Astro, Playwright, TanStack and type-aware presets match
 this project's dependencies. React Native, Drizzle, Vue and Svelte presets are not installed.
 `.oxlintrc.jsonc` records all 872 Oxlint decisions,
@@ -90,8 +90,45 @@ minimum animation durations add noise here. The loop-expression rule rejects rea
 nullish fallbacks, and `Iterator.zip` is not available in the project's Node 26 runtime.
 Other disabled additions target frameworks the project does not use.
 
-Existing compatibility/false-positive file exemptions remain visible; `lint:exceptions` forbids new
-or changed exemptions against `origin/main`. This upgrade adds no file-level exemption.
+### Release hardening
+
+Additional compatible checks now enforce:
+
+- `promise/always-return`: return intermediate promise results. `ignoreLastCallback: true`
+  permits terminal side effects; it does not exempt returned multi-statement callbacks.
+- `typescript/return-await`: `error-handling-correctness-only` prevents promises escaping
+  `try`/`catch` without imposing an opposite return style elsewhere.
+- `typescript/no-unsafe-type-assertion`: prefer runtime guards, validated JSON, discriminated
+  unions and typed CSS-variable objects instead of narrowing casts.
+- `noConditionalExpect` and `useExpect`: tests must execute assertions. Assertion helpers use
+  `expect.hasAssertions()`; fixture-specific assertions are selected before test registration.
+- `useAstroClientOnlyDirectiveValue`: client-only islands name their renderer.
+- `useUniqueElementIds`: production components use instance-specific IDs. Isolated tests may
+  exercise explicit IDs. `ChartContainer` and `ChartStyle` are excluded because their `id`
+  scopes `data-chart`, not a DOM ID.
+- `noExplicitAny` remains an error in inherited test-file overrides, not only production code.
+
+The assertion rule has four scoped override groups naming 18 exact integration files in
+`.oxlintrc.jsonc`, not directories or tests. These bridge runtime protobuf descriptors to Buf
+conditional types, dynamic native form-library paths, erased React-context generics, custom
+control names/ReactNode metadata, and Base UI render/ref/Motion contracts. Other unsafe-value
+checks remain active in those files. Changes to these contracts need the hook, adapter,
+conversion, preservation, registry and consumer suites; disabling the rule does not validate
+external data. `scripts/release-hardening.test.ts` runs the installed linters on bad and valid
+fixtures, including rejection of unsafe assignments inside an assertion-exempt bridge.
+
+Runtime regressions found during adoption are covered directly: numeric step controls deliver
+real change events and preserve ref attachment; repeated demo forms keep labels isolated;
+malformed oneofs and FieldMasks are rejected rather than discarded. CEL runtime failures now
+block validation with a safe root error instead of returning success. Providers cannot submit
+primitive or array success values; all four form engines exercise rejection and recovery.
+Applications that depended on fail-open CEL behavior must correct their expressions.
+
+Existing compatibility/false-positive exemptions remain visible. `lint:exceptions` compares all
+four lint configs against `origin/main`, including Oxlint. It rejects global error downgrades and
+new or broadened waivers for protected rules. It permits narrowing existing waivers and bounded
+adoption of a previously globally disabled rule, provided that rule had no scoped baseline policy.
+The approved Biome 2.6 false-positive owners remain explicit and separately bounded.
 
 Ordinary lint/fix commands reject compiler, linter, formatter and React Doctor suppression comments.
 The scanner parses comments, including those after interpolated templates, rather than rejecting

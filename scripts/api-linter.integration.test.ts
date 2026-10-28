@@ -1,9 +1,10 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect } from '@rstest/core';
+import { z } from 'zod';
 
-const manifest = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')) as {
-  scripts: Record<string, string>;
-};
+const manifest = z
+  .looseObject({ scripts: z.record(z.string(), z.string()) })
+  .parse(JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')));
 const runner = readFileSync(new URL('check-api-linter.ts', import.meta.url), 'utf8');
 const ciWorkflow = readFileSync(new URL('../.github/workflows/ci.yml', import.meta.url), 'utf8');
 

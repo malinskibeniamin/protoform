@@ -1,7 +1,7 @@
 'use client';
 
 import { skipToken, useQuery } from '@connectrpc/connect-query';
-import { type ReactNode, useState } from 'react';
+import { type ReactNode, useId, useState } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -17,6 +17,9 @@ import { UpdateBookForm } from './update-book-form';
 type View = 'create' | 'delete' | 'detail' | 'edit' | 'list';
 
 export function BookstoreWorkspace({ onReset, parent }: { onReset: () => void; parent: string }) {
+  const bookListTitleId = useId();
+  const bookFilterId = useId();
+
   const [view, setView] = useState<View>('list');
   const [selectedName, setSelectedName] = useState<string>();
   const [filter, setFilter] = useState('');
@@ -111,10 +114,10 @@ export function BookstoreWorkspace({ onReset, parent }: { onReset: () => void; p
       </header>
 
       {view === 'list' ? (
-        <section aria-labelledby="book-list-title" className="space-y-5">
+        <section aria-labelledby={bookListTitleId} className="space-y-5">
           <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
             <div>
-              <h2 className="text-2xl font-semibold" id="book-list-title">
+              <h2 className="text-2xl font-semibold" id={bookListTitleId}>
                 Books
               </h2>
               <p className="text-sm text-muted-foreground">Live ListBooks results from your temporary library.</p>
@@ -124,9 +127,9 @@ export function BookstoreWorkspace({ onReset, parent }: { onReset: () => void; p
             </Button>
           </div>
           <Field className="max-w-md">
-            <FieldLabel htmlFor="book-filter">Filter books</FieldLabel>
+            <FieldLabel htmlFor={bookFilterId}>Filter books</FieldLabel>
             <Input
-              id="book-filter"
+              id={bookFilterId}
               onChange={(event) => setFilter(event.target.value)}
               placeholder="Title or ISBN"
               type="search"

@@ -29,7 +29,7 @@ function getJsonObject(value: unknown, label: string): JsonObject {
     throw new Error(`Expected ${label} to be an object.`);
   }
 
-  return value as JsonObject;
+  return Object.fromEntries(Object.entries(value));
 }
 
 function parseJson(value: string, label: string): unknown {
@@ -247,8 +247,8 @@ export function Field() {
             : getJsonObject(ruleConfig, `Biome rule configuration in group ${groupIndex}`)['level']
         )
     );
-    expect(configuredSeverities.filter((severity) => severity === 'error')).toHaveLength(571);
-    expect(configuredSeverities.filter((severity) => severity === 'off')).toHaveLength(69);
+    expect(configuredSeverities.filter((severity) => severity === 'error')).toHaveLength(574);
+    expect(configuredSeverities.filter((severity) => severity === 'off')).toHaveLength(66);
 
     expect(configuredRuleGroups).toMatchObject({
       a11y: {

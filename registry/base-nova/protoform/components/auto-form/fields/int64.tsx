@@ -20,7 +20,7 @@ function Int64FieldComponent({ error, field, id, inputProps }: AutoFormFieldProp
       onChange={(event) => inputProps['onValueChange'](event.target.value)}
       placeholder={getFieldUiConfig(field).placeholder}
       testId={testIds.control}
-      value={(inputProps['value'] as string | undefined) ?? ''}
+      value={typeof inputProps['value'] === 'string' ? inputProps['value'] : ''}
     />
   );
 }

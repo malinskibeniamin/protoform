@@ -11,7 +11,10 @@ export function ExpandedDiagramPreview({ target }: { target: HTMLElement }) {
         return;
       }
 
-      const clone = target.cloneNode(true) as HTMLElement;
+      const clone = target.cloneNode(true);
+      if (!(clone instanceof HTMLElement)) {
+        throw new TypeError('Expected an HTML diagram preview.');
+      }
       Reflect.deleteProperty(clone.dataset, 'diagramEnhanced');
       for (const controls of clone.querySelectorAll('[data-diagram-controls]')) {
         controls.remove();

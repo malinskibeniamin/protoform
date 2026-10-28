@@ -6,8 +6,8 @@ import { ToggleGroup as ToggleGroupPrimitive } from '@base-ui/react/toggle-group
 import { useRender } from '@base-ui/react/use-render';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { AnimatePresence, type HTMLMotionProps, motion, type Transition } from 'motion/react';
+import type { CSSProperties } from 'react';
 import React from 'react';
-
 import type { GroupContextValue, GroupPosition } from '@/components/ui/group';
 import { splitMotionProps } from '@/registry/base-nova/protoform/lib/base-ui-compat';
 import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
@@ -156,6 +156,9 @@ function OfficialToggleGroup({
     size,
     variant,
   };
+  const gapStyle: CSSProperties & Record<`--${string}`, string | number | undefined> = {
+    '--toggle-gap': `${spacing * 0.25}rem`,
+  };
   return (
     <ToggleGroupPrimitive
       {...props}
@@ -170,7 +173,7 @@ function OfficialToggleGroup({
       data-spacing={spacing}
       data-testid={testId}
       orientation={orientation}
-      render={render ?? <div style={{ '--toggle-gap': `${spacing * 0.25}rem` } as React.CSSProperties} />}
+      render={render ?? <div style={gapStyle} />}
       style={style}
     >
       <ToggleGroupItemContext {...context}>{children}</ToggleGroupItemContext>
@@ -178,11 +181,20 @@ function OfficialToggleGroup({
   );
 }
 
+function isLegacyToggleGroupProps(props: ToggleGroupProps): props is LegacyToggleGroupProps {
+  return (
+    props.type === 'single' ||
+    props.type === 'multiple' ||
+    typeof props.value === 'string' ||
+    typeof props.defaultValue === 'string'
+  );
+}
+
 function ToggleGroup(props: ToggleGroupProps) {
-  if (props.type !== undefined || typeof props.value === 'string' || typeof props.defaultValue === 'string') {
-    return <LegacyToggleGroup {...(props as LegacyToggleGroupProps)} />;
+  if (isLegacyToggleGroupProps(props)) {
+    return <LegacyToggleGroup {...props} />;
   }
-  return <OfficialToggleGroup {...(props as ShadcnToggleGroupProps)} />;
+  return <OfficialToggleGroup {...props} />;
 }
 
 function toValueArray(v: string | string[] | undefined): string[] | undefined {
@@ -221,12 +233,15 @@ function LegacyToggleGroup({
 
   const handleValueChange = React.useCallback(
     (groupValue: unknown[]) => {
+      if (!groupValue.every((entry): entry is string => typeof entry === 'string')) {
+        throw new TypeError('Legacy toggle values must be strings.');
+      }
       if (isMultiple) {
-        onValueChange?.(groupValue as string[]);
+        onValueChange?.(groupValue);
         return;
       }
-      const next = (groupValue[0] as string | undefined) ?? '';
-      setInternalActive(next || undefined);
+      const next = groupValue[0] ?? '';
+      setInternalActive(next === '' ? undefined : next);
       onValueChange?.(next);
     },
     [isMultiple, onValueChange]
@@ -309,7 +324,11 @@ function LegacyToggleGroup({
 
   const activeIndex = hasActiveValue
     ? childrenArray.findIndex(
-        (child) => React.isValidElement(child) && (child.props as { value?: unknown }).value === activeValue
+        (child) =>
+          React.isValidElement(child) &&
+          typeof child.props === 'object' &&
+          child.props !== null &&
+          Reflect.get(child.props, 'value') === activeValue
       )
     : -1;
   const highlightPositionClasses = getPositionClasses(

@@ -2,6 +2,7 @@
 
 import { Check } from 'lucide-react';
 import type React from 'react';
+import type { CSSProperties } from 'react';
 import {
   formatProtoformMessage,
   type ProtoformMessageFormatter,
@@ -89,6 +90,9 @@ export function AutoFormStepIndicator({
   orientation: AutoFormStepperOrientation;
 }) {
   const { formatMessage } = useAutoFormRuntimeContext();
+  const horizontalStyle: CSSProperties & Record<`--${string}`, string | number> = {
+    '--step-columns': `repeat(${steps.length}, minmax(0, 1fr))`,
+  };
   const progressParams = { current: currentIndex + 1, total: steps.length };
 
   return (
@@ -108,11 +112,7 @@ export function AutoFormStepIndicator({
       <ol
         className={orientation === 'vertical' ? 'flex flex-col' : 'grid grid-cols-(--step-columns) gap-0'}
         data-layout={orientation === 'horizontal' ? 'adaptive-horizontal' : undefined}
-        style={
-          orientation === 'horizontal'
-            ? ({ '--step-columns': `repeat(${steps.length}, minmax(0, 1fr))` } as React.CSSProperties)
-            : undefined
-        }
+        style={orientation === 'horizontal' ? horizontalStyle : undefined}
       >
         {steps.map((step, index) => {
           const isCurrent = index === currentIndex;

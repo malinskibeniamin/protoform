@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { describe, expect } from '@rstest/core';
+import { z } from 'zod';
 
 import {
   getReadinessSummary,
@@ -121,9 +122,9 @@ describe('readiness scoring', () => {
         .map((requirement) => requirement.id)
     ).toEqual([]);
     const workflow = readFileSync('.github/workflows/ci.yml', 'utf8');
-    const manifest = JSON.parse(readFileSync('package.json', 'utf8')) as {
-      scripts?: Record<string, string>;
-    };
+    const manifest = z
+      .looseObject({ scripts: z.record(z.string(), z.string()).optional() })
+      .parse(JSON.parse(readFileSync('package.json', 'utf8')));
     expect(workflow).toContain('bun run readiness:gate');
     expect(manifest.scripts?.['ci:gate']).toContain('bun run readiness:gate');
     expect(manifest.scripts?.['quality:gate']).toContain('bun run readiness:gate');
@@ -295,9 +296,9 @@ describe('readiness scoring', () => {
   });
 
   test('pins the upstream ranges that define the profile denominator', () => {
-    const manifest = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')) as {
-      dependencies?: Record<string, string>;
-    };
+    const manifest = z
+      .looseObject({ dependencies: z.record(z.string(), z.string()).optional() })
+      .parse(JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')));
 
     expect(readinessProfile.version).toBe(3);
     expect(readinessProfile.reviewedAt).toMatch(ISO_DATE_PATTERN);

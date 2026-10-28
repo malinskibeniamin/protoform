@@ -469,7 +469,7 @@
         "noUnusedClasses": "off",
         "noUselessTypeConversion": "error",
         "noVueUndeclaredDirectives": "error",
-        "useAstroClientOnlyDirectiveValue": "off",
+        "useAstroClientOnlyDirectiveValue": "error",
         "useAwaitThenable": "error",
         "useConsistentFunctionStyle": {
           "level": "error",
@@ -826,7 +826,7 @@
         "useRequiredScripts": "error",
         "useStaticResponseMethods": "error",
         "useStrictMode": "error",
-        "noConditionalExpect": "off",
+        "noConditionalExpect": "error",
         "noDrizzleDeleteWithoutWhere": "off",
         "noDrizzleUpdateWithoutWhere": "off",
         "noDuplicateSelectors": "error",
@@ -845,12 +845,32 @@
         // Protoform intentionally supports fullscreen and user-select behavior beyond the
         // rule's configured Baseline target.
         "useBaseline": "off",
-        "useExpect": "off",
+        "useExpect": "error",
         "useScopedStyles": "error"
       }
     }
   },
   "overrides": [
+    {
+      // Reusable production components must not hard-code DOM IDs. Isolated test
+      // fixtures intentionally exercise explicit label/control and duplicate-ID contracts.
+      "includes": [
+        "**",
+        "!**/*.{test,spec,test-d,spec-d}.{ts,tsx,js,jsx,mts,cts,mjs,cjs}",
+        "!**/__tests__/**",
+        "!**/__browser__/**"
+      ],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "useUniqueElementIds": {
+              "level": "error",
+              "options": { "excludedComponents": ["ChartContainer", "ChartStyle"] }
+            }
+          }
+        }
+      }
+    },
     {
       // Preserve strict empty-pattern checks instead of inheriting Playwright's fixture exception.
       "includes": ["**/*.{test,spec}.{ts,tsx,js,jsx,mts,cts,mjs,cjs}"],
@@ -1221,6 +1241,7 @@
             "noExcessiveLinesPerFile": "off"
           },
           "suspicious": {
+            "noExplicitAny": "error",
             "noMisplacedAssertion": "off"
           }
         }

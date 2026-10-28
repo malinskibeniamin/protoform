@@ -1,8 +1,9 @@
+import type { CSSProperties } from 'react';
 import './browser-fixture.css';
 
 import { afterEach, expect, rs, test } from '@rstest/core';
 import { cleanup, render, screen, waitFor } from '@testing-library/react';
-import { type CSSProperties, Suspense } from 'react';
+import { Suspense } from 'react';
 import { Bar, BarChart } from 'recharts';
 
 import { ChartContainer, ChartLegend, ChartLegendContent, ChartStyle, ChartTooltipContent } from '.';
@@ -134,8 +135,12 @@ test('applies ChartStyle to matching targets mounted later and restores retarget
 });
 
 test('preserves caller inline chart colors over configuration and during cleanup', () => {
-  const initialStyle = { '--color-requests': 'var(--primary)' } as CSSProperties;
-  const updatedStyle = { '--color-requests': 'var(--muted-foreground)' } as CSSProperties;
+  const initialStyle: CSSProperties & Record<`--${string}`, string | number | undefined> = {
+    '--color-requests': 'var(--primary)',
+  };
+  const updatedStyle: CSSProperties & Record<`--${string}`, string | number | undefined> = {
+    '--color-requests': 'var(--muted-foreground)',
+  };
   const { rerender, unmount } = render(
     <>
       <div data-chart="inline-chart" data-testid="inline-target" style={initialStyle} />

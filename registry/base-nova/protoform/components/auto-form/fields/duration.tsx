@@ -21,7 +21,7 @@ function DurationFieldComponent({ error, field, id, inputProps }: AutoFormFieldP
       onChange={(event) => inputProps['onValueChange'](event.target.value)}
       placeholder={placeholder !== undefined && placeholder !== '' ? placeholder : '300s'}
       testId={testIds.control}
-      value={(inputProps['value'] as string | undefined) ?? ''}
+      value={typeof inputProps['value'] === 'string' ? inputProps['value'] : ''}
     />
   );
 }

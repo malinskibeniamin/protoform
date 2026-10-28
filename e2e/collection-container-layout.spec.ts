@@ -1,7 +1,24 @@
 import { expect } from '@rstest/playwright';
+import type { Locator } from 'playwright';
 import { test } from '../scripts/e2e-test';
 
-for (const fieldWidth of [532, 900]) {
+type Box = NonNullable<Awaited<ReturnType<Locator['boundingBox']>>>;
+
+for (const { fieldWidth, checkLayout } of [
+  {
+    fieldWidth: 532,
+    checkLayout: (remove: Box, heading: Box) => {
+      expect(remove.y + remove.height).toBeLessThanOrEqual(heading.y + heading.height * 0.06);
+    },
+  },
+  {
+    fieldWidth: 900,
+    checkLayout: (remove: Box, heading: Box) => {
+      expect(remove.x).toBeGreaterThan(heading.x + heading.width);
+      expect(remove.y).toBeLessThan(heading.y + heading.height);
+    },
+  },
+]) {
   test(`sizes collection chrome to its ${fieldWidth}px field inside a 900px form`, async ({ page }) => {
     await page.setViewportSize({ width: 1400, height: 900 });
     await page.goto('/docs/blume-examples/registry/base-nova/protoform/demo/catalog/protobuf-nested-collections');
@@ -24,12 +41,7 @@ for (const fieldWidth of [532, 900]) {
     if (!(removeBox && headingBox)) {
       throw new Error('Collection heading and remove action must be visible');
     }
-    if (fieldWidth === 532) {
-      expect(removeBox.y + removeBox.height).toBeLessThanOrEqual(headingBox.y + headingBox.height * 0.06);
-    } else {
-      expect(removeBox.x).toBeGreaterThan(headingBox.x + headingBox.width);
-      expect(removeBox.y).toBeLessThan(headingBox.y + headingBox.height);
-    }
+    checkLayout(removeBox, headingBox);
     await input.fill('regional-routing');
     await page.getByTestId('autoform-field-children-add').click();
     await expect(page.getByTestId('autoform-field-children-row-1')).toBeVisible();

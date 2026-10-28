@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import process from 'node:process';
+import { z } from 'zod';
 
 export function expectedReleaseTag(version: string): string {
   return `v${version}`;
@@ -15,7 +16,9 @@ export function verifyReleaseTag(tag: string | undefined, version: string): void
 }
 
 if (import.meta.main) {
-  const manifest = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')) as { version: string };
+  const manifest = z
+    .looseObject({ version: z.string() })
+    .parse(JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')));
   verifyReleaseTag(process.env['GITHUB_REF_NAME'], manifest.version);
   console.info(`Release tag ${process.env['GITHUB_REF_NAME']} matches package.json.`);
 }

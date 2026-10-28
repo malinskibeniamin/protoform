@@ -3,7 +3,7 @@
 import { create } from '@bufbuild/protobuf';
 import { createConnectQueryKey, useMutation, useTransport } from '@connectrpc/connect-query';
 import { useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { ErrorMessage } from 'react-hook-form';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -28,6 +28,13 @@ const bookIdInputPattern = String.raw`[a-z][a-z0-9\-]{2,62}[a-z0-9]`;
 const BOOK_ID_PATTERN = /^[a-z][a-z0-9-]{2,62}[a-z0-9]$/u;
 
 export function CreateBookForm({ onCancel, onCreated, parent }: CreateBookFormProps) {
+  const createBookTitleId = useId();
+  const createBookTitleInputId = useId();
+  const createBookIsbnId = useId();
+  const createBookIsbnHelpId = useId();
+  const createBookIdId = useId();
+  const createBookNoteId = useId();
+
   const [step, setStep] = useState<'book' | 'publishing'>('book');
   const [bookId, setBookId] = useState('');
   const queryClient = useQueryClient();
@@ -84,10 +91,10 @@ export function CreateBookForm({ onCancel, onCreated, parent }: CreateBookFormPr
   const { name: note, onBlur: handleNoteBlur, onChange: handleNoteChange, ref: noteRef } = form.register('note');
 
   return (
-    <section aria-labelledby="create-book-title" className="space-y-6">
+    <section aria-labelledby={createBookTitleId} className="space-y-6">
       <div className="space-y-2">
         <p className="text-sm font-medium text-muted-foreground">Step {step === 'book' ? '1' : '2'} of 2</p>
-        <h2 className="text-2xl font-semibold" id="create-book-title">
+        <h2 className="text-2xl font-semibold" id={createBookTitleId}>
           Create a book
         </h2>
         <p className="text-sm text-muted-foreground">
@@ -98,10 +105,10 @@ export function CreateBookForm({ onCancel, onCreated, parent }: CreateBookFormPr
       {step === 'book' ? (
         <div className="space-y-5">
           <Field data-invalid={Boolean(titleError)}>
-            <FieldLabel htmlFor="create-book-title-input">Title</FieldLabel>
+            <FieldLabel htmlFor={createBookTitleInputId}>Title</FieldLabel>
             <Input
               aria-invalid={Boolean(titleError)}
-              id="create-book-title-input"
+              id={createBookTitleInputId}
               name={displayName}
               onBlur={handleDisplayNameBlur}
               onChange={handleDisplayNameChange}
@@ -110,11 +117,11 @@ export function CreateBookForm({ onCancel, onCreated, parent }: CreateBookFormPr
             <ErrorMessage as={FieldError} control={form.control} name="displayName" />
           </Field>
           <Field data-invalid={Boolean(isbnError)}>
-            <FieldLabel htmlFor="create-book-isbn">ISBN-13</FieldLabel>
+            <FieldLabel htmlFor={createBookIsbnId}>ISBN-13</FieldLabel>
             <Input
-              aria-describedby={isbnError ? undefined : 'create-book-isbn-help'}
+              aria-describedby={isbnError ? undefined : createBookIsbnHelpId}
               aria-invalid={Boolean(isbnError)}
-              id="create-book-isbn"
+              id={createBookIsbnId}
               inputMode="numeric"
               name={isbn}
               onBlur={handleIsbnBlur}
@@ -124,7 +131,7 @@ export function CreateBookForm({ onCancel, onCreated, parent }: CreateBookFormPr
             />
             <ErrorMessage as={FieldError} control={form.control} name="isbn" />
             {!isbnError && (
-              <FieldDescription id="create-book-isbn-help">
+              <FieldDescription id={createBookIsbnHelpId}>
                 Thirteen digits. The check digit is verified by the CEL rule in the proto.
               </FieldDescription>
             )}
@@ -141,10 +148,10 @@ export function CreateBookForm({ onCancel, onCreated, parent }: CreateBookFormPr
       ) : (
         <form className="space-y-5" onSubmit={form.handleSubmit(submitBook)}>
           <Field data-invalid={bookIdInvalid}>
-            <FieldLabel htmlFor="create-book-id">Book id</FieldLabel>
+            <FieldLabel htmlFor={createBookIdId}>Book id</FieldLabel>
             <Input
               aria-invalid={bookIdInvalid}
-              id="create-book-id"
+              id={createBookIdId}
               onChange={(event) => setBookId(event.target.value)}
               pattern={bookIdInputPattern}
               required
@@ -153,9 +160,9 @@ export function CreateBookForm({ onCancel, onCreated, parent }: CreateBookFormPr
             {bookIdInvalid ? <FieldError>Use lowercase letters, numbers, and hyphens.</FieldError> : null}
           </Field>
           <Field>
-            <FieldLabel htmlFor="create-book-note">Note</FieldLabel>
+            <FieldLabel htmlFor={createBookNoteId}>Note</FieldLabel>
             <Textarea
-              id="create-book-note"
+              id={createBookNoteId}
               name={note}
               onBlur={handleNoteBlur}
               onChange={handleNoteChange}
