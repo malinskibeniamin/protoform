@@ -13,5 +13,15 @@
     "dist/**",
     "public/r/**",
     ".tmp/**"
+  ],
+  "astro": true,
+  "overrides": [
+    {
+      "files": ["**/*.astro"],
+      "options": {
+        "singleQuote": true,
+        "trailingComma": "es5"
+      }
+    }
   ]
 }

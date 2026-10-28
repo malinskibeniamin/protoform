@@ -1,8 +1,8 @@
-import { compileCelExpression } from './cel-runtime';
+import { type CompiledCelExpression, compileCelExpression } from './cel-runtime';
 import type { AutoFormUiRule } from './types';
 
 const CEL_CACHE_MAX_SIZE = 256;
-const compiledRuleCache = new Map<string, ReturnType<typeof compileCelExpression>>();
+const compiledRuleCache = new Map<string, CompiledCelExpression>();
 
 function getCompiledRule(expression: string) {
   const cached = compiledRuleCache.get(expression);

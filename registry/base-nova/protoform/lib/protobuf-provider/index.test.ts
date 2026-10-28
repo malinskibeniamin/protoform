@@ -13,9 +13,11 @@ import {
   protoToFormValues,
 } from '.';
 import {
+  AccessTier,
   type AutoFormExample,
   AutoFormExampleSchema,
   AutoFormUiMetadataExampleSchema,
+  CountryCode,
 } from './gen/auto-form-example_pb';
 
 declare const { describe, expect, test }: typeof import('bun:test');
@@ -128,7 +130,7 @@ describe('protobuf-provider', () => {
 
   test('converts protobuf messages into form values, supplies defaults, and round-trips optional, wrapper, and JSON-backed fields', () => {
     const message = create(AutoFormExampleSchema, {
-      accessTier: 3,
+      accessTier: AccessTier.ADMIN,
       avatarBytes: new Uint8Array([1, 2, 3, 4]),
       bio: 'A protobuf-backed form with Buf reflection and Protovalidate.',
       createdAt: {
@@ -145,7 +147,7 @@ describe('protobuf-provider', () => {
       officeLocations: {
         hq: {
           city: 'San Francisco',
-          country: 1,
+          country: CountryCode.US,
           lineOne: '500 Harbor Way',
           postalCode: '94107',
           state: 'CA',
@@ -163,7 +165,7 @@ describe('protobuf-provider', () => {
       resourceId: '123e4567-e89b-12d3-a456-426614174000',
       shippingAddress: {
         city: 'San Francisco',
-        country: 1,
+        country: CountryCode.US,
         lineOne: '500 Harbor Way',
         postalCode: '94107',
         state: 'CA',

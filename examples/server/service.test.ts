@@ -3,7 +3,6 @@ import { create } from '@bufbuild/protobuf';
 import { Code, ConnectError } from '@connectrpc/connect';
 import {
   BookSchema,
-  BookState,
   CreateBookRequestSchema,
   DeleteBookRequestSchema,
   ExpungeBookRequestSchema,
@@ -12,7 +11,12 @@ import {
   UndeleteBookRequestSchema,
   UpdateBookRequestSchema,
 } from '../../conformance/gen/protoform/conformance/v1/aip_pb.js';
-import { SubmitBasicFormRequestSchema, SubmitComplexFormRequestSchema } from '../gen/protoform/examples/v1/forms_pb.js';
+import { BookState } from '../../registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_pb.js';
+import {
+  CloudProvider,
+  SubmitBasicFormRequestSchema,
+  SubmitComplexFormRequestSchema,
+} from '../gen/protoform/examples/v1/forms_pb.js';
 import { createLibraryService, formExamplesService } from './service.js';
 
 declare const { describe, expect, test }: typeof import('bun:test');
@@ -47,7 +51,7 @@ describe('form example service', () => {
       approvalTicket: 'OPS-42',
       ownerEmail: 'owner@example.com',
       projectId: 'taken-project',
-      provider: 1,
+      provider: CloudProvider.AWS,
       region: 'eu-west1',
       replicas: 3,
     });

@@ -34,7 +34,10 @@ test('publishes every permanent legacy redirect without losing its fragment', as
 });
 
 for (const hub of demoHubs) {
-  for (const redirect of demoRedirects.filter((candidate) => candidate.to.startsWith(`/${hub.slug}#`))) {
+  for (const redirect of demoRedirects) {
+    if (!redirect.to.startsWith(`/${hub.slug}#`)) {
+      continue;
+    }
     test(`opens legacy demo ${redirect.from}`, async ({ page }) => {
       const fragment = new URL(redirect.to, 'https://protoform.pages.dev').hash.slice(1);
       const demo = demoCatalog.find((candidate) => candidate.slug === fragment);

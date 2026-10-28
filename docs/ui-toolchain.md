@@ -3,20 +3,20 @@
 Run `bun run lint:fix` and `bun run type:check` before submitting changes. CI also runs component,
 conformance, browser, registry-consumer and documentation tests.
 
-## Reviewed versions (updated 2026-10-22)
+## Reviewed versions (updated 2026-10-28)
 
-| Tool            | Version                     | Responsibility                                         |
-| --------------- | --------------------------- | ------------------------------------------------------ |
-| Bun             | 1.4.4                       | Package manager; pinned across workflows               |
-| Blume           | 2.2.4                       | Astro/MDX checking, builds and audits                  |
-| Ultracite       | 8.0.1                       | Shared conventions, latest stable at review            |
-| Biome           | 2.5.15                      | General linting and source formatting                  |
-| Oxlint          | 1.89.0                      | Additional syntax, import, promise and test checks     |
-| oxlint-tsgolint | 7.0.2004                    | Type-aware linting and compiler diagnostics            |
-| tsrs            | 0.18.0-ts7.1.0-dev.20260929 | Rust-based strict source and test checking             |
-| Oxfmt           | 0.74.0                      | Markdown/YAML formatting, not a competing TS formatter |
-| React Doctor    | 0.9.18                      | Full warning-blocking component/design audit           |
-| React Scan      | 0.5.7                       | Interactive profiling: `bun run scan:react`            |
+| Tool            | Version                     | Responsibility                                     |
+| --------------- | --------------------------- | -------------------------------------------------- |
+| Bun             | 1.4.4                       | Package manager; pinned across workflows           |
+| Blume           | 2.2.4                       | Astro/MDX checking, builds and audits              |
+| Ultracite       | 8.1.0                       | Shared conventions and safe edit hooks             |
+| Biome           | 2.6.3                       | General linting and source formatting              |
+| Oxlint          | 1.90.0                      | Additional syntax, import, promise and test checks |
+| oxlint-tsgolint | 7.0.2005                    | Type-aware linting and compiler diagnostics        |
+| tsrs            | 0.18.0-ts7.1.0-dev.20260929 | Rust-based strict source and test checking         |
+| Oxfmt           | 0.75.0                      | Astro/Markdown/YAML formatting                     |
+| React Doctor    | 0.9.18                      | Full warning-blocking component/design audit       |
+| React Scan      | 0.5.7                       | Interactive profiling: `bun run scan:react`        |
 
 Source, test, and authored-file coverage checks use the exactly pinned Rust compiler, `tsrs`.
 This release follows TypeScript 7.1 development, not the Microsoft 7.1 beta. It supports macOS arm64
@@ -38,10 +38,30 @@ This trades deferred initialization for working controls; remove the patch
 when upstream makes initialization synchronous or exposes a real loading/readiness state.
 The pinned package integrity in `bun.lock` owns provenance; upstream license files are unchanged.
 
+## Formatting and edit hooks
+
+Biome owns JavaScript, TypeScript, JSON and CSS/SCSS formatting. Oxfmt owns Astro,
+Markdown and YAML; Biome still lints those languages. Markdown formatting stays off in
+Biome because its upstream whitespace bug can change rendered text. MDX stays with Blume.
+`bun run lint:fix` runs both formatters before the read-only lint gate.
+
+Oxfmt's `astro: true` requires the pinned `@astrojs/compiler-rs` development dependency.
+Astro-only overrides preserve this project's single quotes and trailing-comma convention.
+The project uses Astro 7, so it does not need the Astro 6 whitespace compatibility option.
+Ultracite 8.1 replaces the local 8.0.2 Tailwind compatibility patch.
+
+`ultracite fix --hook` leaves files unchanged when stdin has no readable edit path.
+The hook integration suite exercises missing, unknown, invalid and unreadable payloads,
+plus a valid edit that formats only its target. Run it with
+`node scripts/run-tests.ts integration scripts/ultracite-hooks.integration.test.ts`.
+
 ## Rule decisions and coverage
 
 `lint:rules` compares installed Biome, Oxlint, shadcn and React Doctor catalogs with explicit decisions.
-New or removed rules fail until reviewed. `.oxlintrc.jsonc` records all 871 Oxlint decisions,
+New or removed rules fail until reviewed. Biome has 571 rules enabled as errors out of
+640 explicit decisions. The React, Astro, Playwright, TanStack and type-aware presets match
+this project's dependencies. React Native, Drizzle, Vue and Svelte presets are not installed.
+`.oxlintrc.jsonc` records all 872 Oxlint decisions,
 including nursery rules. Duplicate conventions have one owner: Oxlint's Boolean-cast fixer, for
 example, conflicts with Biome's strict mixed-union conditions.
 `prefer-return-this-type` is not safe for generic builders: an intersection silently erased the
@@ -49,6 +69,14 @@ field registry's accumulated literal names. A compiler-contract regression prote
 
 Framework-specific checks, opposite conventions, manual-memoization requirements and reflective
 generic APIs cannot all be enforced simultaneously. Inapplicable checks remain explicitly off.
+The 2.6.3 review enables 19 of its 33 new rules, including Boolean sort comparators,
+unsafe returns and TanStack Query rest destructuring. Two existing applicable rules also
+become errors: Playwright describe callbacks and scoped Astro styles. Positional Playwright
+selectors remain valid for ordered collection tests; underscore conventions and mandatory
+minimum animation durations add noise here. The loop-expression rule rejects readable
+nullish fallbacks, and `Iterator.zip` is not available in the project's Node 26 runtime.
+Other disabled additions target frameworks the project does not use.
+
 Existing compatibility/false-positive file exemptions remain visible; `lint:exceptions` forbids new
 or changed exemptions against `origin/main`. This upgrade adds no file-level exemption.
 
@@ -56,7 +84,10 @@ Ordinary lint/fix commands reject compiler, linter, formatter and React Doctor s
 The scanner parses comments, including those after interpolated templates, rather than rejecting
 strings that merely document directives. Alternate/nested quality configs are rejected.
 
-`lint:coverage` verifies actual Biome/Oxlint file discovery; `typecheck:coverage` verifies native
+`lint:coverage` verifies actual Biome/Oxlint file discovery, including Markdown, YAML and SCSS.
+The authored `buf.gen.*.yaml` configs are explicitly included after Ultracite's generated-file
+ignore; their names do not make them generated outputs.
+`typecheck:coverage` verifies native
 compiler programs, including tests and JavaScript. Only exact reviewed outputs in
 `scripts/generated-sources.json` are exempt from source ownership. A new `gen/escape.ts` or
 `escape_pb.ts` is not exempt. MDX uses Blume's parser/typechecker/build/audit, not Oxfmt's different grammar.
@@ -68,7 +99,11 @@ required CI checks and review policy changes at the repository-hosting layer.
 
 - [tsrs CLI usage](https://github.com/oxc-project/tsrs/blob/main/docs/USAGE.md)
 - [tsrs compatibility and platform support](https://github.com/oxc-project/tsrs/blob/main/docs/COMPATIBILITY.md)
-- [Oxlint release notes](https://github.com/oxc-project/oxc/releases/tag/oxlint_v1.89.0)
+- [Ultracite 8.1 release notes](https://github.com/haydenbleasel/ultracite/pull/857)
+- [Ultracite upgrade guide](https://www.ultracite.ai/docs/upgrade)
+- [Biome 2.6.3 release notes](https://biomejs.dev/internals/changelog/version/2-6-3/)
+- [Oxfmt Astro configuration](https://www.ultracite.ai/docs/configuration#formatting-astro-files-oxfmt)
+- [Oxlint release notes](https://github.com/oxc-project/oxc/releases/tag/oxlint_v1.90.0)
 - [Type-aware Oxlint](https://oxc.rs/docs/guide/usage/linter/type-aware)
 - [Biome conflicting-rule guidance](https://biomejs.dev/guides/upgrade-to-biome-v2/)
 - [Blume release notes](https://github.com/haydenbleasel/blume/releases/tag/blume%402.2.4)

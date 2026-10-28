@@ -18,6 +18,8 @@
     "registry/base-nova/protoform/lib/protobuf-v1-bridge/**"
   ],
   "rules": {
+    // Reject assigning values from unrelated enum types.
+    "typescript/no-unsafe-enum-assignment": "error",
     // Reviewed: enforce as an error, including nursery checks.
     "accessor-pairs": "error",
     // Reviewed: enforce as an error, including nursery checks.

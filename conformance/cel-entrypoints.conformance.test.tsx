@@ -7,6 +7,8 @@ import { AutoForm } from '../registry/base-nova/protoform/components/auto-form/i
 import { useProtoForm } from '../registry/base-nova/protoform/hooks/use-proto-form/index.js';
 import { InvalidCelRuntimeSchema } from './gen/protoform/conformance/v1/expected_failures_pb.js';
 import { TransitiveCelConsumerSchema } from './gen/protoform/conformance/v1/transitive_cel_pb.js';
+import { DeploymentPolicy_Environment } from './gen/protoform/fixtures/deployment/v1/policy_pb.js';
+import { ReleaseTrack } from './gen/protoform/fixtures/shared/v1/release_pb.js';
 
 const SUBMIT_BUTTON = /submit/iu;
 
@@ -15,14 +17,14 @@ describe('descriptor-aware CEL entrypoints', () => {
     const valid = renderHook(() =>
       useProtoForm(TransitiveCelConsumerSchema, {
         defaultValues: create(TransitiveCelConsumerSchema, {
-          deployment: { environment: 20, releaseTrack: 7 },
+          deployment: { environment: DeploymentPolicy_Environment.PRODUCTION, releaseTrack: ReleaseTrack.STABLE },
         }),
       })
     );
     const invalid = renderHook(() =>
       useProtoForm(TransitiveCelConsumerSchema, {
         defaultValues: create(TransitiveCelConsumerSchema, {
-          deployment: { environment: 10, releaseTrack: 9 },
+          deployment: { environment: DeploymentPolicy_Environment.STAGING, releaseTrack: ReleaseTrack.PREVIEW },
         }),
       })
     );

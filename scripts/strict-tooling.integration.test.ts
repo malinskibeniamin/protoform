@@ -47,13 +47,16 @@ function parseJsonc(value: string, label: string): unknown {
 describe('strict React tooling', () => {
   test('pins the latest analysis toolchain and exposes strict entrypoints', () => {
     expect(packageJson.devDependencies).toMatchObject({
-      '@biomejs/biome': '2.6.2',
+      '@biomejs/biome': '2.6.3',
       '@shadcn/lint': '0.2.3',
-      oxlint: '1.89.0',
+      oxlint: '1.90.0',
+      oxfmt: '0.75.0',
+      'oxlint-tsgolint': '7.0.2005',
+      '@astrojs/compiler-rs': '0.5.2',
       '@rsbuild/plugin-react': '2.1.1',
       'react-doctor': '0.9.18',
       'react-scan': '0.5.7',
-      ultracite: '8.0.2',
+      ultracite: '8.1.0',
     });
     expect('babel-plugin-react-compiler' in packageJson.devDependencies).toBe(false);
     expect(packageJson.scripts).toMatchObject({
@@ -72,7 +75,7 @@ describe('strict React tooling', () => {
   test('rejects unsafe and redundant patterns with the configured Biome 2.6 rules', () => {
     mkdirSync('.tmp', { recursive: true });
     const directory = mkdtempSync(resolve('.tmp/biome-rule-probe-'));
-    const fixture = resolve(directory, 'probe.ts');
+    const fixture = resolve(directory, 'probe.test.ts');
     try {
       writeFileSync(
         fixture,
@@ -92,11 +95,15 @@ export function invert(value: number) {
 export function callDirectly() {
   return isPositive.call(null, 1);
 }
+export function order(values: number[]) {
+  return values.toSorted((left, right) => left > right);
+}
+const {} = {};
 `
       );
       const result = spawnSync(
         resolve('node_modules/.bin/biome'),
-        ['lint', fixture, '--colors=off', '--vcs-enabled=false'],
+        ['lint', fixture, '--colors=off', '--vcs-enabled=false', '--max-diagnostics=none'],
         {
           encoding: 'utf8',
         }
@@ -105,9 +112,28 @@ export function callDirectly() {
       expect(result.error).toBeUndefined();
       expect(result.status).toBe(1);
       const diagnostics = result.stdout + result.stderr;
-      for (const rule of ['useSimplifiedBooleanReturn', 'noUselessDateGetTime', 'useUnaryMinus', 'noUselessCall']) {
+      for (const rule of [
+        'useSimplifiedBooleanReturn',
+        'noUselessDateGetTime',
+        'useUnaryMinus',
+        'noUselessCall',
+        'noBooleanSortComparator',
+      ]) {
         expect(diagnostics).toContain(`lint/nursery/${rule}`);
       }
+      expect(diagnostics).toContain('lint/correctness/noEmptyPattern');
+
+      writeFileSync(
+        fixture,
+        'export function order(values: number[]) { return values.toSorted((left, right) => left - right); }\n'
+      );
+      const valid = spawnSync(
+        resolve('node_modules/.bin/biome'),
+        ['lint', fixture, '--only=nursery/noBooleanSortComparator', '--vcs-enabled=false'],
+        { encoding: 'utf8', timeout: 10_000 }
+      );
+      expect(valid.error).toBeUndefined();
+      expect(valid.status).toBe(0);
     } finally {
       rmSync(directory, { recursive: true, force: true });
     }
@@ -151,6 +177,25 @@ export function Field() {
     } finally {
       rmSync(directory, { recursive: true, force: true });
     }
+  });
+
+  test('formats Astro templates with Oxfmt and remains idempotent', () => {
+    const formatter = resolve('node_modules/.bin/oxfmt');
+    const args = ['--stdin-filepath', 'probe.astro'];
+    const result = spawnSync(formatter, args, {
+      input: '<main><h1>Protoform</h1></main>',
+      encoding: 'utf8',
+      timeout: 10_000,
+    });
+
+    expect(result.error).toBeUndefined();
+    expect(result.status).toBe(0);
+    expect(result.stdout).toBe('<main>\n  <h1>Protoform</h1>\n</main>\n');
+
+    const repeated = spawnSync(formatter, args, { input: result.stdout, encoding: 'utf8', timeout: 10_000 });
+    expect(repeated.error).toBeUndefined();
+    expect(repeated.status).toBe(0);
+    expect(repeated.stdout).toBe(result.stdout);
   });
 
   test('explicitly configures every stable and nursery Biome rule', async () => {
@@ -202,8 +247,8 @@ export function Field() {
             : getJsonObject(ruleConfig, `Biome rule configuration in group ${groupIndex}`)['level']
         )
     );
-    expect(configuredSeverities.filter((severity) => severity === 'error')).toHaveLength(550);
-    expect(configuredSeverities.filter((severity) => severity === 'off')).toHaveLength(57);
+    expect(configuredSeverities.filter((severity) => severity === 'error')).toHaveLength(571);
+    expect(configuredSeverities.filter((severity) => severity === 'off')).toHaveLength(69);
 
     expect(configuredRuleGroups).toMatchObject({
       a11y: {

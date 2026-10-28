@@ -4,6 +4,7 @@
     "ultracite/biome/core",
     "ultracite/biome/react",
     "ultracite/biome/astro",
+    "ultracite/biome/playwright",
     "ultracite/biome/type-aware",
     "ultracite/biome/tanstack"
   ],
@@ -28,7 +29,9 @@
       "!!examples/gen",
       "!!registry/**/gen",
       "!!registry/**/__golden__",
-      "!!registry/base-nova/protoform/lib/protobuf-v1-bridge"
+      "!!registry/base-nova/protoform/lib/protobuf-v1-bridge",
+      // These are authored generator configs, not outputs matching Ultracite's *.gen.* ignore.
+      "buf.gen.*.yaml"
     ]
   },
   "formatter": {
@@ -306,13 +309,60 @@
         "noVueImportCompilerMacros": "off",
         "noVueRefAsOperand": "off",
         "noVueVOnNumberValues": "off",
-        "usePlaywrightValidDescribeCallback": "off",
+        "usePlaywrightValidDescribeCallback": "error",
         "useQwikLoaderLocation": "off",
         "useReactAsyncServerFunction": "error",
         "useReactNativePlatformComponents": "off",
         "useVueValidVFor": "off"
       },
       "nursery": {
+        "noArraySortForMinMax": "error",
+        "noBooleanSortComparator": "error",
+        // Underscores are intentional for ignored parameters and protobuf/runtime metadata.
+        "noDanglingUnderscore": "off",
+        "noEagerArrayMethodsInLoops": "error",
+        "noNewRequire": "error",
+        "noObsoleteAttributes": "error",
+        "noPathConcat": "error",
+        // Ordered collection editors and screenshots intentionally select items by position.
+        "noPlaywrightNthMethods": "off",
+        "noSelfNestedLayer": "error",
+        // No product-wide minimum duration; reduced-motion and instant transitions remain valid.
+        "noShortTimeValues": "off",
+        // Svelte is not used.
+        "noSvelteInternal": "off",
+        "noTanstackQueryRestDestructuring": "error",
+        // Simple nullish fallbacks and indexed schema fields are readable loop inputs.
+        "noUnreadableForOfExpression": "off",
+        "noUnsafeReturn": "error",
+        "noUselessSplice": "error",
+        // Vue is not used.
+        "noVueUnusedEmitDeclarations": "off",
+        // Vue is not used.
+        "noVueVTextVHtmlOnComponent": "off",
+        // Vue is not used.
+        "noVueWatchAfterAwait": "off",
+        "noZeroLengthUnit": "error",
+        "useBlockStatementOverIife": "error",
+        "useConsistentLightnessNotation": { "level": "error", "options": { "notation": "number" } },
+        "useConsistentUnicodeBom": "error",
+        "useExpectToContain": "error",
+        // Do not require an experimental runtime API in source-copy browser consumers.
+        "useIteratorZip": "off",
+        "useMathAbs": "error",
+        "useMathTrunc": "error",
+        "usePackageJsonValidCpu": "error",
+        "usePackageJsonValidEngines": "error",
+        // React Native is not used.
+        "useReactNativeValidPlatformColors": "off",
+        // Vue is not used.
+        "useVueComponentIs": "off",
+        // Vue is not used.
+        "useVueToggleInsideTransition": "off",
+        // Vue is not used.
+        "useVueTypedRef": "off",
+        // Vue is not used.
+        "useVueVOnExact": "off",
         "noAccidentalBitwiseOperators": "error",
         "noArgumentsCallerOrCallee": "error",
         "noDoubleComparison": "error",
@@ -796,11 +846,21 @@
         // rule's configured Baseline target.
         "useBaseline": "off",
         "useExpect": "off",
-        "useScopedStyles": "off"
+        "useScopedStyles": "error"
       }
     }
   },
   "overrides": [
+    {
+      // Preserve strict empty-pattern checks instead of inheriting Playwright's fixture exception.
+      "includes": ["**/*.{test,spec}.{ts,tsx,js,jsx,mts,cts,mjs,cjs}"],
+      "linter": { "rules": { "correctness": { "noEmptyPattern": "error" } } }
+    },
+    {
+      // Oxfmt owns Astro formatting; Biome continues to lint these templates.
+      "includes": ["**/*.astro"],
+      "formatter": { "enabled": false }
+    },
     // Biome 2.6 ignores these hooks' existing use no memo directives and flags their deliberate ref boundaries.
     {
       "includes": [

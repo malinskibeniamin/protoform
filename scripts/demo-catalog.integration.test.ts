@@ -112,7 +112,10 @@ describe('live demo catalog', () => {
       'tanstack-form': 'use-proto-form-tanstack',
     } as const;
 
-    for (const demo of demoCatalog.filter((candidate) => candidate.category === 'interop')) {
+    for (const demo of demoCatalog) {
+      if (demo.category !== 'interop') {
+        continue;
+      }
       const source = read(`registry/base-nova/protoform/demo/catalog/${demo.slug}.tsx`);
       const expectedImport = Object.entries(interopImports).find(([engine]) => engine === demo.engine)?.[1];
       if (!expectedImport) {

@@ -1,6 +1,7 @@
 import { create } from '@bufbuild/protobuf';
 import {
   CollectionMatrixSchema,
+  MatrixStatus,
   PresenceMatrixSchema,
 } from '../../../../../conformance/gen/protoform/conformance/v1/conformance_pb';
 import type { ParsedSchema } from '../core/field-model';
@@ -43,7 +44,7 @@ test('passes normalized protobuf collections, enum numbers, bytes, and lossless 
     flags: [false, true],
     identifiers: [9_007_199_254_740_993n],
     int64Keys: { '9007199254740993': 'primary' },
-    statuses: [1, 2],
+    statuses: [MatrixStatus.ACTIVE, MatrixStatus.PAUSED],
   });
   const request = createQuickJsFormRequest({
     rule: {

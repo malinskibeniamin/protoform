@@ -137,8 +137,10 @@ function checkModule(module: StableProtoModule, against: string, directory: stri
 
   const violations = parseViolations(`${result.stdout}${result.stderr}`);
   const unwaived = violations.filter((violation) => !isWaived(violation, module.waivers));
-  for (const violation of violations.filter((item) => isWaived(item, module.waivers))) {
-    console.info(`Accepted pre-1.0 protobuf migration in ${module.path}: ${violation.message}`);
+  for (const violation of violations) {
+    if (isWaived(violation, module.waivers)) {
+      console.info(`Accepted pre-1.0 protobuf migration in ${module.path}: ${violation.message}`);
+    }
   }
   if (unwaived.length > 0) {
     throw new Error(unwaived.map((violation) => `${module.path}: ${violation.type}: ${violation.message}`).join('\n'));
