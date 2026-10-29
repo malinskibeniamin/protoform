@@ -1,6 +1,7 @@
 import { execFileSync, spawnSync } from 'node:child_process';
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
+import { createRequire } from 'node:module';
 import { resolve } from 'node:path';
 import { describe, expect } from '@rstest/core';
 
@@ -45,6 +46,25 @@ function parseJsonc(value: string, label: string): unknown {
 }
 
 describe('strict React tooling', () => {
+  test('resolves Rspack 2.3 and matching native bindings through Rstest', async () => {
+    const requireFromProject = createRequire(resolve('package.json'));
+    const requireFromRstest = createRequire(requireFromProject.resolve('@rstest/core'));
+    const requireFromRsbuild = createRequire(requireFromRstest.resolve('@rsbuild/core'));
+    const rspackPath = requireFromRsbuild.resolve('@rspack/core/package.json');
+    const requireFromRspack = createRequire(rspackPath);
+
+    const packagePaths = [rspackPath, requireFromRspack.resolve('@rspack/binding/package.json')];
+    const installedPackages = await Promise.all(
+      packagePaths.map(async (packagePath) =>
+        getJsonObject(parseJson(await readFile(packagePath, 'utf8'), packagePath), packagePath)
+      )
+    );
+
+    for (const installedPackage of installedPackages) {
+      expect(installedPackage['version']).toBe('2.3.0');
+    }
+  });
+
   test('pins the latest analysis toolchain and exposes strict entrypoints', () => {
     expect(packageJson.devDependencies).toMatchObject({
       '@biomejs/biome': '2.6.4',
