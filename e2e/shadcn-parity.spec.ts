@@ -8,7 +8,9 @@ const route = '/docs/blume-examples/registry/base-nova/protoform/demo/ui/shadcn-
 
 test.beforeEach(async ({ page }) => {
   pageErrors.length = 0;
-  page.on('pageerror', (error) => pageErrors.push(error.message));
+  page.on('pageerror', (error) => {
+    pageErrors.push(error.message);
+  });
   await page.goto(route);
   await expect(page.getByTestId('shadcn-parity-example')).toBeVisible();
 });

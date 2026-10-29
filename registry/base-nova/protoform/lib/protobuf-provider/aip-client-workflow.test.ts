@@ -43,7 +43,9 @@ describe('runProtoOperation', () => {
     );
 
     const result = await runProtoOperation({
-      onProgress: (current) => updates.push(current.done),
+      onProgress: (current) => {
+        updates.push(current.done);
+      },
       poll,
       sleep: async () => undefined,
       start: async () => operation('operations/123'),

@@ -39,7 +39,6 @@ import {
   type ListField,
   type MapField,
   type MessageField,
-  type ScalarField,
   STRUCT_TYPE,
   TIMESTAMP_TYPE,
   tracksPresence,
@@ -1018,11 +1017,11 @@ const SIGNED_64_MIN = -9_223_372_036_854_775_808n;
 const SIGNED_64_MAX = 9_223_372_036_854_775_807n;
 const UNSIGNED_64_MAX = 18_446_744_073_709_551_615n;
 
-function getScalarConversionIssue(field: ScalarField, value: unknown): string | undefined {
-  if (value === undefined || value === null || value === '') {
+function getScalarConversionIssue(scalar: ScalarType | undefined, value: unknown): string | undefined {
+  if (scalar === undefined || value === undefined || value === null || value === '') {
     return;
   }
-  if (SIGNED_32_SCALARS.includes(field.scalar)) {
+  if (SIGNED_32_SCALARS.includes(scalar)) {
     const numericValue = normalizeNumberValue(value);
     if (
       numericValue === undefined ||
@@ -1033,7 +1032,7 @@ function getScalarConversionIssue(field: ScalarField, value: unknown): string | 
       return 'Enter a signed 32-bit integer.';
     }
   }
-  if (UNSIGNED_32_SCALARS.includes(field.scalar)) {
+  if (UNSIGNED_32_SCALARS.includes(scalar)) {
     const numericValue = normalizeNumberValue(value);
     if (
       numericValue === undefined ||
@@ -1044,13 +1043,13 @@ function getScalarConversionIssue(field: ScalarField, value: unknown): string | 
       return 'Enter an unsigned 32-bit integer.';
     }
   }
-  if (SIGNED_64_SCALARS.includes(field.scalar)) {
+  if (SIGNED_64_SCALARS.includes(scalar)) {
     const bigintValue = normalizeBigIntValue(value);
     if (bigintValue === undefined || bigintValue < SIGNED_64_MIN || bigintValue > SIGNED_64_MAX) {
       return 'Enter a signed 64-bit integer.';
     }
   }
-  if (!UNSIGNED_64_SCALARS.includes(field.scalar)) {
+  if (!UNSIGNED_64_SCALARS.includes(scalar)) {
     return;
   }
   const bigintValue = normalizeBigIntValue(value);
@@ -1121,20 +1120,14 @@ function getFieldConversionIssues(
   let message: string | undefined;
   switch (field.fieldKind) {
     case 'scalar':
-      message = getScalarConversionIssue(field, value);
+      message = getScalarConversionIssue(field.scalar, value);
       break;
     case 'enum':
       break;
     case 'message':
       if (isWrapperDesc(field.message)) {
-        return getFieldConversionIssues(
-          cloneField(field, {
-            fieldKind: 'scalar',
-            scalar: field.message.fields[0]?.scalar,
-          }),
-          value,
-          path
-        );
+        message = getScalarConversionIssue(field.message.fields[0]?.scalar, value);
+        break;
       }
       message = getMessageConversionIssue(field, value);
       if (!PROTO_JSON_FALLBACK_TYPES.includes(field.message.typeName) && isPlainObject(value)) {

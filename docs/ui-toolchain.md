@@ -10,7 +10,7 @@ conformance, browser, registry-consumer and documentation tests.
 | Bun             | 1.4.4                       | Package manager; pinned across workflows           |
 | Blume           | 2.2.4                       | Astro/MDX checking, builds and audits              |
 | Ultracite       | 8.1.0                       | Shared conventions and safe edit hooks             |
-| Biome           | 2.6.3                       | General linting and source formatting              |
+| Biome           | 2.6.4                       | General linting and source formatting              |
 | Oxlint          | 1.90.0                      | Additional syntax, import, promise and test checks |
 | oxlint-tsgolint | 7.0.2005                    | Type-aware linting and compiler diagnostics        |
 | tsrs            | 0.18.0-ts7.1.0-dev.20260929 | Rust-based strict source and test checking         |
@@ -51,6 +51,14 @@ rerun the security audit, regressions and registry consumer checks first.
 See the [fork's release and compatibility notes](https://github.com/alexandroit/stackline-deepmerge/releases/tag/v1.1.0)
 and [Bun's version-scoped override semantics](https://bun.com/docs/pm/overrides#version-scoped-overrides).
 
+The 2.6.4 verification also refreshed three existing transitive resolutions to their smallest
+fixed releases: `@hono/node-server` 2.1.3, `seroval` 1.6.11 and `systeminformation` 5.33.16.
+These remediate nine audit advisories without adding dependencies, overrides or audit exceptions.
+All remain within their parents' existing ranges; Seroval stays on 1.6 to avoid unrelated 1.7
+streaming API changes. See the [static-path advisory](https://github.com/advisories/GHSA-rmxm-3fg6-px4f),
+[Seroval injection advisory](https://github.com/advisories/GHSA-f86p-h4j2-7qgj) and
+[systeminformation command-injection advisory](https://github.com/advisories/GHSA-3f7j-7jwc-fxfj).
+
 ## Formatting and edit hooks
 
 Biome owns JavaScript, TypeScript, JSON and CSS/SCSS formatting. Oxfmt owns Astro,
@@ -71,8 +79,8 @@ plus a valid edit that formats only its target. Run it with
 ## Rule decisions and coverage
 
 `lint:rules` compares installed Biome, Oxlint, shadcn and React Doctor catalogs with explicit decisions.
-New or removed rules fail until reviewed. Biome has 574 rules enabled as errors out of
-640 explicit decisions. The React, Astro, Playwright, TanStack and type-aware presets match
+New or removed rules fail until reviewed. Biome has 579 rules globally enabled as errors out of
+670 explicit decisions. The React, Astro, Playwright, TanStack and type-aware presets match
 this project's dependencies. React Native, Drizzle, Vue and Svelte presets are not installed.
 `.oxlintrc.jsonc` records all 872 Oxlint decisions,
 including nursery rules. Duplicate conventions have one owner: Oxlint's Boolean-cast fixer, for
@@ -89,6 +97,32 @@ selectors remain valid for ordered collection tests; underscore conventions and 
 minimum animation durations add noise here. The loop-expression rule rejects readable
 nullish fallbacks, and `Iterator.zip` is not available in the project's Node 26 runtime.
 Other disabled additions target frameworks the project does not use.
+
+### Biome 2.6.4 additions
+
+The installed schema adds 30 rule decisions. Six gain error-level enforcement; recursion is production-scoped:
+
+| Rule                    | Reason                                                                         |
+| ----------------------- | ------------------------------------------------------------------------------ |
+| `noConsoleSpaces`       | Avoid doubled separators in multi-argument console output.                     |
+| `noMagicArrayFlatDepth` | Name non-default flattening depths; no explanatory comment is required.        |
+| `noReturnArrayPush`     | Do not accidentally return an array length from a collector or callback.       |
+| `noUselessRecursion`    | Use iterative production traversal where self-calls add avoidable stack depth. |
+| `noYamlBooleanKeys`     | Quote boolean-looking mapping keys so they remain strings.                     |
+| `useWhileLoopCondition` | Put a loop's leading break condition in its header.                            |
+
+The 22 new Vue/Svelte checks remain off because this project uses neither framework.
+`noNull` remains off: JSON, protobuf values, React refs and absent UI output legitimately use
+`null`; replacing it with `undefined` changes contracts. IIFE readability stays with Oxlint: Biome's `noUnreadableIife` fixer expands arrow returns
+that the required `arrow-body-style` fixer immediately collapses. An executable probe preserves the existing Oxlint diagnostic and verifies that accepted
+named factories are stable across repeated formatter/fixer passes. `noUselessRecursion` is enabled in `registry/`, `examples/`
+and `components/`, not test-only screenshot polling, which must remain sequential under
+its existing await-in-loop ban. No previously enforced rule was weakened.
+Oxfmt still owns Markdown formatting, even with Biome's Markdown fixes, so formatters do not compete.
+
+Adoption replaces needless wrapper-validation recursion.
+CEL cause traversal now preserves original diagnostics for deep or cyclic error collections
+instead of replacing them with a stack-overflow error. Public evaluator regressions cover both.
 
 ### Release hardening
 
@@ -151,6 +185,7 @@ required CI checks and review policy changes at the repository-hosting layer.
 - [tsrs compatibility and platform support](https://github.com/oxc-project/tsrs/blob/main/docs/COMPATIBILITY.md)
 - [Ultracite 8.1 release notes](https://github.com/haydenbleasel/ultracite/pull/857)
 - [Ultracite upgrade guide](https://www.ultracite.ai/docs/upgrade)
+- [Biome 2.6.4 release notes](https://github.com/biomejs/biome/releases/tag/%40biomejs%2Fbiome%402.6.4)
 - [Biome 2.6.3 release notes](https://biomejs.dev/internals/changelog/version/2-6-3/)
 - [Oxfmt Astro configuration](https://www.ultracite.ai/docs/configuration#formatting-astro-files-oxfmt)
 - [Oxlint release notes](https://github.com/oxc-project/oxc/releases/tag/oxlint_v1.90.0)

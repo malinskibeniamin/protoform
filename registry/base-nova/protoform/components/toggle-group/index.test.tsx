@@ -43,7 +43,9 @@ test('supports standalone shadcn items, render props and native events', async (
   render(
     <ToggleGroupItem
       aria-label="Standalone emphasis"
-      onAnimationStart={(event) => animations.push(event.type)}
+      onAnimationStart={(event) => {
+        animations.push(event.type);
+      }}
       onPressedChange={onPressedChange}
     >
       Emphasis

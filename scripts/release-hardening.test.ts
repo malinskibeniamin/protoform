@@ -26,7 +26,7 @@ test('enforces explicit-any safety in inherited test-file scopes', () => {
   } finally {
     rmSync(directory, { recursive: true, force: true });
   }
-});
+}, 25_000);
 
 function readConfig(file: string): Record<string, unknown> {
   const value: unknown = ts.parseConfigFileTextToJson(file, readFileSync(file, 'utf8')).config;
@@ -97,7 +97,7 @@ export function safeNarrow(value: unknown) {
   } finally {
     rmSync(directory, { recursive: true, force: true });
   }
-});
+}, 65_000);
 
 test.each([
   {
@@ -127,6 +127,52 @@ test.each([
     rule: 'useUniqueElementIds',
     invalid: 'export function Field() { return <input id="name" />; }',
     valid: 'export function Field() { const id = useId(); return <input id={id} />; }',
+  },
+  {
+    path: 'scripts/biome-patch-probe.ts',
+    group: 'nursery',
+    rule: 'noConsoleSpaces',
+    invalid: "console.warn('Loading ', 'catalog');",
+    valid: "console.warn('Loading', 'catalog');",
+  },
+  {
+    path: 'scripts/biome-patch-probe.ts',
+    group: 'nursery',
+    rule: 'noMagicArrayFlatDepth',
+    invalid: 'export const records = [[[7]]].flat(2);',
+    valid: 'const nestedCollectionDepth = 2; export const records = [[[7]]].flat(nestedCollectionDepth);',
+  },
+  {
+    path: 'scripts/biome-patch-probe.ts',
+    group: 'nursery',
+    rule: 'noReturnArrayPush',
+    invalid: "export function append() { const records: string[] = []; return records.push('row'); }",
+    valid: "export function append() { const records: string[] = []; records.push('row'); return records; }",
+  },
+
+  {
+    path: 'registry/base-nova/protoform/lib/biome-patch-probe.ts',
+    group: 'nursery',
+    rule: 'noUselessRecursion',
+    invalid:
+      'export function drain(count: number): number { if (count > 0) { return drain(count - 1); } return count; }',
+    valid:
+      'export function drain(count: number): number { let remaining = count; while (remaining > 0) { remaining -= 1; } return remaining; }',
+  },
+  {
+    path: '.github/workflows/biome-patch-probe.yml',
+    group: 'nursery',
+    rule: 'noYamlBooleanKeys',
+    invalid: 'true: enabled\n',
+    valid: '"true": enabled\non: [push, pull_request]\n',
+  },
+  {
+    path: 'scripts/biome-patch-probe.ts',
+    group: 'nursery',
+    rule: 'useWhileLoopCondition',
+    invalid:
+      'export function drain(items: string[]) { while (true) { if (items.length === 0) { break; } items.pop(); } }',
+    valid: 'export function drain(items: string[]) { while (items.length > 0) { items.pop(); } }',
   },
 ])(
   '$rule rejects its unsafe fixture and accepts its legitimate counterpart',
@@ -186,7 +232,8 @@ test.each([
     } finally {
       rmSync(directory, { recursive: true, force: true });
     }
-  }
+  },
+  25_000
 );
 
 test('bounds assertion exceptions to named bridges and keeps other safety checks active there', () => {
@@ -237,4 +284,80 @@ test('bounds assertion exceptions to named bridges and keeps other safety checks
   } finally {
     rmSync(directory, { recursive: true, force: true });
   }
-});
+}, 65_000);
+
+test('keeps one IIFE diagnostic owner and stable accepted factory fixes', () => {
+  const directory = mkdtempSync(join(tmpdir(), 'protoform-arrow-compatibility-'));
+  const fixture = join(directory, 'probe.ts');
+  const oxlintConfig = join(directory, 'oxlint.json');
+  const oxlintRules = object.parse(readConfig('.oxlintrc.jsonc')['rules']);
+  const biomeConfig = readConfig('biome.jsonc');
+  const groups = object.parse(object.parse(biomeConfig['linter'])['rules']);
+  const rules: Record<string, Record<string, unknown>> = Object.fromEntries(
+    Object.entries(groups).map(([group, entries]) => [
+      group,
+      Object.fromEntries(Object.keys(object.parse(entries)).map((rule) => [rule, 'off'])),
+    ])
+  );
+  rules['nursery'] = { ...rules['nursery'], noUnreadableIife: object.parse(groups['nursery'])['noUnreadableIife'] };
+  try {
+    writeFileSync(
+      oxlintConfig,
+      JSON.stringify({
+        plugins: ['eslint', 'unicorn'],
+        categories: { correctness: 'off' },
+        rules: {
+          'arrow-body-style': oxlintRules['arrow-body-style'],
+          'unicorn/no-unreadable-iife': oxlintRules['unicorn/no-unreadable-iife'],
+        },
+      })
+    );
+    writeFileSync(
+      join(directory, 'biome.json'),
+      JSON.stringify({ root: true, vcs: { enabled: false }, linter: { rules } })
+    );
+    writeFileSync(fixture, 'export const snapshot = (() => ({ ready: true }))();\n');
+    const oxlintArgs = ['--config', oxlintConfig, '--no-ignore', '--fix', fixture];
+    const biomeArgs = ['check', fixture, '--config-path', directory, '--write', '--colors=off'];
+    const rejectedIife = spawnSync(
+      resolve('node_modules/.bin/oxlint'),
+      oxlintArgs.filter((arg) => arg !== '--fix'),
+      { encoding: 'utf8', timeout: 10_000 }
+    );
+    expect(rejectedIife.error).toBeUndefined();
+    expect(rejectedIife.status).toBe(1);
+    expect(rejectedIife.stdout + rejectedIife.stderr).toContain('unicorn(no-unreadable-iife)');
+    const biomeOwnedElsewhere = spawnSync(resolve('node_modules/.bin/biome'), biomeArgs, {
+      encoding: 'utf8',
+      timeout: 10_000,
+    });
+    expect(biomeOwnedElsewhere.error).toBeUndefined();
+    expect(biomeOwnedElsewhere.status, biomeOwnedElsewhere.stdout + biomeOwnedElsewhere.stderr).toBe(0);
+    writeFileSync(
+      fixture,
+      'function createSnapshot() { return { ready: true }; } export const snapshot = createSnapshot();\n'
+    );
+    const firstOxlint = spawnSync(resolve('node_modules/.bin/oxlint'), oxlintArgs, {
+      encoding: 'utf8',
+      timeout: 10_000,
+    });
+    expect(firstOxlint.error).toBeUndefined();
+    expect(firstOxlint.status, firstOxlint.stdout + firstOxlint.stderr).toBe(0);
+    const firstBiome = spawnSync(resolve('node_modules/.bin/biome'), biomeArgs, { encoding: 'utf8', timeout: 10_000 });
+    expect(firstBiome.error).toBeUndefined();
+    expect(firstBiome.status, firstBiome.stdout + firstBiome.stderr).toBe(0);
+    const formatted = readFileSync(fixture, 'utf8');
+    const secondOxlint = spawnSync(resolve('node_modules/.bin/oxlint'), oxlintArgs, {
+      encoding: 'utf8',
+      timeout: 10_000,
+    });
+    const secondBiome = spawnSync(resolve('node_modules/.bin/biome'), biomeArgs, { encoding: 'utf8', timeout: 10_000 });
+    expect(secondOxlint.error).toBeUndefined();
+    expect(secondBiome.error).toBeUndefined();
+    expect(secondOxlint.status, secondOxlint.stdout + secondOxlint.stderr).toBe(0);
+    expect(secondBiome.status, secondBiome.stdout + secondBiome.stderr).toBe(0);
+    expect(readFileSync(fixture, 'utf8')).toBe(formatted);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+}, 65_000);

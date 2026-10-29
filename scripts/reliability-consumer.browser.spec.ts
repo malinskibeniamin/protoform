@@ -4,7 +4,9 @@ import { test } from './e2e-test';
 
 test('installed custom options show creation failures and recover after retry', async ({ page }) => {
   const errors: string[] = [];
-  page.on('pageerror', (error) => errors.push(error.message));
+  page.on('pageerror', (error) => {
+    errors.push(error.message);
+  });
   await page.goto(`${reliabilityBaseURL}/custom-options.html`);
   const input = page.getByRole('combobox');
   await input.fill('new');
@@ -27,7 +29,9 @@ test('installed custom options show creation failures and recover after retry', 
 
 test('installed controls retain paginated selections and announce every error', async ({ page }) => {
   const errors: string[] = [];
-  page.on('pageerror', (error) => errors.push(error.message));
+  page.on('pageerror', (error) => {
+    errors.push(error.message);
+  });
   await page.goto(`${reliabilityBaseURL}/`);
   const title = page.getByRole('textbox', { name: /Title/u });
   const methods = page.getByRole('button', { name: 'Multi-select trigger' });
@@ -79,7 +83,9 @@ test('installed controls retain paginated selections and announce every error', 
 for (const version of ['v7', 'v8']) {
   test(`installed ${version} native defaults retain untouched precision after reset`, async ({ page }) => {
     const errors: string[] = [];
-    page.on('pageerror', (error) => errors.push(error.message));
+    page.on('pageerror', (error) => {
+      errors.push(error.message);
+    });
     await page.goto(`${reliabilityBaseURL}/native.html`);
     const section = page.getByRole('region', { name: `${version} timestamp` });
     const input = section.getByLabel('Created at');
@@ -111,7 +117,9 @@ for (const { formWidth, gap } of [
     page,
   }) => {
     const errors: string[] = [];
-    page.on('pageerror', (error) => errors.push(error.message));
+    page.on('pageerror', (error) => {
+      errors.push(error.message);
+    });
     await page.goto(`${reliabilityBaseURL}/indented-sections.html`);
     await page.locator('form').evaluate((form, width) => {
       form.style.width = `${width}px`;

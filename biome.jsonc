@@ -316,6 +316,41 @@
         "useVueValidVFor": "off"
       },
       "nursery": {
+        // Biome 2.6.4: compatible checks for this project; named flat depths avoid requiring comments.
+        "noConsoleSpaces": "error",
+        "noMagicArrayFlatDepth": "error",
+        "noReturnArrayPush": "error",
+        // Oxlint owns IIFE readability; Biome's fix conflicts with mandatory implicit arrow returns.
+        "noUnreadableIife": "off",
+        // Enforced in production trees below; test utilities also obey the await-in-loop ban.
+        "noUselessRecursion": "off",
+        "noYamlBooleanKeys": "error",
+        "useWhileLoopCondition": "error",
+        // React refs, JSON values, and protobuf contracts require null; replacing it would change APIs.
+        "noNull": "off",
+        // Vue and Svelte are not project runtimes. Review explicitly if those frameworks are introduced.
+        "noVueComputedPropertiesInData": "off",
+        "noVueDeprecatedDeleteSet": "off",
+        "noVueDeprecatedListeners": "off",
+        "noVueDeprecatedRouterLinkTagProp": "off",
+        "noVueDeprecatedScopeAttribute": "off",
+        "noVueMultipleSlotArgs": "off",
+        "noVueMutatingProps": "off",
+        "noVueSideEffectsInComputed": "off",
+        "noVueUnusedRefs": "off",
+        "useSvelteEventDispatcherTypes": "off",
+        "useVueDefineOptions": "off",
+        "useVueDefinePropsDestructuring": "off",
+        "useVueTemplateRef": "off",
+        "useVueTypedProps": "off",
+        "useVueVModel": "off",
+        "useVueValidDefineEmits": "off",
+        "useVueValidDefineProps": "off",
+        "useVueValidVIs": "off",
+        "useVueValidVMemo": "off",
+        "useVueValidVModel": "off",
+        "useVueValidVShow": "off",
+        "useVueValidVSlot": "off",
         "noArraySortForMinMax": "error",
         "noBooleanSortComparator": "error",
         // Underscores are intentional for ignored parameters and protobuf/runtime metadata.
@@ -851,6 +886,12 @@
     }
   },
   "overrides": [
+    {
+      // Production recursion must not add avoidable call-stack depth. Test-only screenshot
+      // polling remains sequential without weakening its existing await-in-loop rule.
+      "includes": ["registry/**", "examples/**", "components/**"],
+      "linter": { "rules": { "nursery": { "noUselessRecursion": "error" } } }
+    },
     {
       // Reusable production components must not hard-code DOM IDs. Isolated test
       // fixtures intentionally exercise explicit label/control and duplicate-ID contracts.

@@ -229,43 +229,41 @@ function instrumentCost(expr: CelExpr, nextExpressionId: () => bigint): void {
   };
 }
 
-function collectUnknownAttributes(value: unknown, attributes: Set<string>, visited: Set<object>): void {
-  if (Array.isArray(value)) {
-    for (const item of value) {
-      collectUnknownAttributes(item, attributes, visited);
+function* errorCauseNodes(value: unknown): Generator<object> {
+  const pending: unknown[] = [value];
+  const visited = new Set<object>();
+  while (pending.length > 0) {
+    const current = pending.pop();
+    if (typeof current !== 'object' || current === null || visited.has(current)) {
+      continue;
     }
-    return;
+    visited.add(current);
+    yield current;
+    if (Array.isArray(current)) {
+      for (let index = current.length - 1; index >= 0; index -= 1) {
+        pending.push(current[index]);
+      }
+    } else if (isCelError(current)) {
+      pending.push(current.cause);
+    }
   }
-  if (!isCelError(value) || visited.has(value)) {
-    return;
-  }
-
-  visited.add(value);
-  if (value.message.startsWith(UNKNOWN_ERROR_PREFIX)) {
-    attributes.add(value.message.slice(UNKNOWN_ERROR_PREFIX.length));
-  }
-  collectUnknownAttributes(value.cause, attributes, visited);
 }
 
-function findCostLimitError(value: unknown, visited = new Set<object>()): CelCostLimitError | undefined {
-  if (value instanceof CelCostLimitError) {
-    return value;
-  }
-  if (Array.isArray(value)) {
-    for (const item of value) {
-      const found = findCostLimitError(item, visited);
-      if (found) {
-        return found;
-      }
+function collectUnknownAttributes(value: unknown, attributes: Set<string>): void {
+  for (const current of errorCauseNodes(value)) {
+    if (isCelError(current) && current.message.startsWith(UNKNOWN_ERROR_PREFIX)) {
+      attributes.add(current.message.slice(UNKNOWN_ERROR_PREFIX.length));
     }
-    return undefined;
   }
-  if (!isCelError(value) || visited.has(value)) {
-    return undefined;
-  }
+}
 
-  visited.add(value);
-  return findCostLimitError(value.cause, visited);
+function findCostLimitError(value: unknown): CelCostLimitError | undefined {
+  for (const current of errorCauseNodes(value)) {
+    if (current instanceof CelCostLimitError) {
+      return current;
+    }
+  }
+  return undefined;
 }
 
 function validateMaxCost(value: number): number {
@@ -334,7 +332,7 @@ export function compileCelExpression(
       }
 
       const attributes = new Set<string>();
-      collectUnknownAttributes(result, attributes, new Set());
+      collectUnknownAttributes(result, attributes);
       if (attributes.size > 0) {
         return {
           attributes: [...attributes].sort((left, right) => (left < right ? -1 : Number(left > right))),

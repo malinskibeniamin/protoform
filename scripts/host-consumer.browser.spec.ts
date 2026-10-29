@@ -3,7 +3,9 @@ import { test } from './e2e-test';
 
 test('host primitives submit, report errors, and recover without a theme dependency', async ({ page }) => {
   const uncaughtErrors: string[] = [];
-  page.on('pageerror', (error) => uncaughtErrors.push(error.message));
+  page.on('pageerror', (error) => {
+    uncaughtErrors.push(error.message);
+  });
   await page.goto('/');
   const input = page.getByRole('textbox', { name: /Title\s*\*/u });
   const choice = page.getByRole('combobox', { exact: true, name: 'Choice' });

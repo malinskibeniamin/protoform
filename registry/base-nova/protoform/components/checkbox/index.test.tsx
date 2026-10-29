@@ -22,7 +22,9 @@ test('honors canceled changes, native events and Base UI state classes', async (
     React.createElement(Checkbox, {
       'aria-label': 'Consent',
       className: (state) => (state.checked ? 'selected' : 'unselected'),
-      onAnimationStart: (event) => animationEvents.push(event.type),
+      onAnimationStart: (event) => {
+        animationEvents.push(event.type);
+      },
       onCheckedChange: (checked, details) => {
         onChange(checked);
         details.cancel();

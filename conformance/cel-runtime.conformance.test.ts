@@ -1,8 +1,33 @@
+import { celError } from '@bufbuild/cel';
 import { describe, expect } from '@rstest/core';
 
 import { compileCelExpression } from '../registry/base-nova/protoform/components/auto-form/cel-runtime.js';
 
 describe('cel guarded runtime conformance', () => {
+  for (const shape of ['deep', 'cyclic']) {
+    test(`preserves the original diagnostic for ${shape} cause collections`, () => {
+      const causes: unknown[] = [];
+      const failure = celError(causes);
+      failure.message = 'Original validation failure';
+      if (shape === 'deep') {
+        let current = causes;
+        for (let depth = 0; depth < 20_000; depth += 1) {
+          const nested: unknown[] = [];
+          current.push(nested);
+          current = nested;
+        }
+      } else {
+        causes.push(causes);
+      }
+      const result = compileCelExpression('failure')({ failure });
+      expect(result.kind).toBe('error');
+      if (result.kind !== 'error') {
+        throw new Error('Expected a diagnostic, not successful evaluation.');
+      }
+      expect(result.error.message).toBe('Original validation failure');
+    });
+  }
+
   test('propagates partial unknown attributes separately from evaluation errors', () => {
     const evaluate = compileCelExpression("form.enabled && form.restricted_region == 'eu-central1'", {
       unknownAttributes: ['form.restricted_region'],

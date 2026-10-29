@@ -160,7 +160,7 @@
   "devDependencies": {
     "@astrojs/compiler-rs": "0.5.2",
     "@axe-core/playwright": "^4.14.0",
-    "@biomejs/biome": "2.6.3",
+    "@biomejs/biome": "2.6.4",
     "@bufbuild/buf": "^1.74.0",
     "@bufbuild/protoc-gen-es": "^2.16.0",
     "@bufbuild/protoplugin": "^2.16.0",
