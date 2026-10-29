@@ -26,7 +26,11 @@ function CurrencyFieldComponent({ error, field, id, inputProps }: AutoFormFieldP
         onChange={(event) => inputProps['onValueChange'](event.target.value)}
         placeholder={getFieldUiConfig(field).placeholder}
         testId={testIds.controlPart('input')}
-        value={(inputProps['value'] as string | number | undefined)?.toString() ?? ''}
+        value={
+          typeof inputProps['value'] === 'string' || typeof inputProps['value'] === 'number'
+            ? String(inputProps['value'])
+            : ''
+        }
       />
     </InputGroup>
   );

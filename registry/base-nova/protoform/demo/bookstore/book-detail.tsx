@@ -1,5 +1,6 @@
 'use client';
 
+import { useId } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import type { Book } from '@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_pb';
@@ -21,6 +22,8 @@ export function BookDetail({
   onEdit: () => void;
   onRetry: () => void;
 }) {
+  const bookDetailTitleId = useId();
+
   if (isPending) {
     return <p aria-live="polite">Loading book…</p>;
   }
@@ -39,12 +42,12 @@ export function BookDetail({
   }
 
   return (
-    <section aria-labelledby="book-detail-title" className="space-y-6">
+    <section aria-labelledby={bookDetailTitleId} className="space-y-6">
       <Button onClick={onBack} type="button" variant="ghost">
         Back to books
       </Button>
       <div className="space-y-2">
-        <h2 className="text-3xl font-semibold" id="book-detail-title">
+        <h2 className="text-3xl font-semibold" id={bookDetailTitleId}>
           {book.displayName}
         </h2>
         <p className="font-mono text-sm text-muted-foreground">{book.isbn}</p>

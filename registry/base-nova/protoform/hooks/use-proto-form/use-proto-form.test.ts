@@ -95,7 +95,7 @@ describe('useProtoForm', () => {
     });
 
     await act(async () => {
-      result.current.setValue('username' as never, 'valid_user' as never);
+      result.current.setValue('username', 'valid_user');
       await result.current.trigger();
     });
 

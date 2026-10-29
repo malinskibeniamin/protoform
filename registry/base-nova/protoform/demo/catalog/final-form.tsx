@@ -3,7 +3,7 @@
 
 export const client = 'only';
 
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { Field as FinalField, Form as FinalForm } from 'react-final-form';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
@@ -23,6 +23,7 @@ const schema = createProtoFormSchema<EmailValues, typeof EmailContractSchema>(Em
 const validate = createFinalFormValidator(schema);
 
 export function FinalFormDemo() {
+  const emailId = useId();
   const [submittedValue, setSubmittedValue] = useState<string>();
 
   return (
@@ -47,12 +48,12 @@ export function FinalFormDemo() {
                   (meta.touched || meta.submitFailed) && typeof meta.error === 'string' ? meta.error : undefined;
                 return (
                   <Field data-invalid={Boolean(message)}>
-                    <FieldLabel htmlFor="final-form-email" required>
+                    <FieldLabel htmlFor={emailId} required>
                       Email
                     </FieldLabel>
                     <Input
                       aria-invalid={Boolean(message) || undefined}
-                      id="final-form-email"
+                      id={emailId}
                       name={name}
                       onBlur={handleBlur}
                       onChange={handleChange}

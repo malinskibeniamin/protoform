@@ -58,9 +58,19 @@ export function OneofFieldRenderer({
   const { deprecatedFields, evaluateRules, testIdPrefix } = useAutoFormRuntimeContext();
   const form = useAutoFormEngine();
   const fullPath = path.join('.');
-  const oneofValue = (getPathInObject(form.values, path) as { case?: string; value?: unknown } | undefined) ?? {
-    case: undefined,
-    value: undefined,
+  const currentValue = getPathInObject(form.values, path);
+  const oneofValue = {
+    case:
+      currentValue !== null &&
+      typeof currentValue === 'object' &&
+      'case' in currentValue &&
+      typeof currentValue.case === 'string'
+        ? currentValue.case
+        : undefined,
+    value:
+      currentValue !== null && typeof currentValue === 'object' && 'value' in currentValue
+        ? currentValue.value
+        : undefined,
   };
   const error = getFieldErrorMessage(form.errors, path);
   const label = getRenderedLabel(field);

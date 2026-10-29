@@ -3,11 +3,20 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type React from 'react';
 import { Input as BundledInput } from '@/components/ui/input';
-
 import { AutoFormContext, type AutoFormContextValue } from '../context';
 import type { ParsedField } from '../core-types';
-import { ArrayElementWrapper, ArrayWrapper, FieldWrapper, Form, ObjectWrapper } from '../field-wrapper';
+import {
+  ArrayElementWrapper,
+  ArrayWrapper,
+  ErrorMessage,
+  FieldWrapper,
+  Form,
+  ObjectWrapper,
+  SubmitButton,
+} from '../field-wrapper';
+import { AutoFormFieldComponentRegistry } from '../fields';
 import { formSpacing } from '../form-spacing';
+import { OneofWrapper } from '../renderers/oneof';
 import { shadcnUIComponents } from '../shadcn-ui-components';
 import { Input, ProtoformUIProvider } from '../ui-components';
 
@@ -15,11 +24,20 @@ function withAutoFormContext(children: React.ReactNode) {
   const value: AutoFormContextValue = {
     deprecatedFields: 'show',
     evaluateRules: () => true,
-    formComponents: {} as AutoFormContextValue['formComponents'],
+    formComponents: AutoFormFieldComponentRegistry,
     formValues: {},
     getFieldUiConfig: () => ({}),
     testIdPrefix: 'test',
-    uiComponents: {} as AutoFormContextValue['uiComponents'],
+    uiComponents: {
+      ArrayElementWrapper,
+      ArrayWrapper,
+      ErrorMessage,
+      FieldWrapper,
+      Form,
+      ObjectWrapper,
+      OneofWrapper,
+      SubmitButton,
+    },
   };
   return (
     <ProtoformUIProvider components={shadcnUIComponents}>
@@ -112,7 +130,7 @@ describe('objectWrapper', () => {
         </Form>
       )
     );
-    const firstChild = (testId: string) => screen.getByTestId(testId).firstElementChild as HTMLElement;
+    const firstChild = (testId: string) => screen.getByTestId(testId).firstElementChild;
 
     expect(screen.getByText('Outer').tagName).toBe('H2');
     expect(screen.getByText('Inner').tagName).toBe('H3');
@@ -120,11 +138,11 @@ describe('objectWrapper', () => {
     expect(screen.getByTestId('inner')).toHaveAttribute('data-layout', 'stacked');
 
     expect(screen.getByTestId('form').className).toContain(formSpacing.form);
-    expect((screen.getByTestId('body-child').parentElement as HTMLElement).className).toContain(formSpacing.field);
-    expect(firstChild('labelled').className).toContain('border-b');
-    expect(firstChild('unlabelled').className).not.toContain('border-b');
+    expect(screen.getByTestId('body-child').parentElement?.className).toContain(formSpacing.field);
+    expect(firstChild('labelled')?.className).toContain('border-b');
+    expect(firstChild('unlabelled')?.className).not.toContain('border-b');
     expect(screen.getByText('No Rule')).toBeVisible();
-    expect(firstChild('undivided').className).not.toContain('border-b');
+    expect(firstChild('undivided')?.className).not.toContain('border-b');
   });
 });
 

@@ -187,7 +187,7 @@ const TabsList = React.forwardRef<HTMLDivElement, TabsListProps>(
         return;
       }
       const activeTab = list.querySelector<HTMLElement>('[data-slot="tabs-trigger"][data-state="active"]');
-      const nextOrientation = (list.dataset['orientation'] as 'horizontal' | 'vertical' | null) ?? 'horizontal';
+      const nextOrientation = list.dataset['orientation'] === 'vertical' ? 'vertical' : 'horizontal';
       setOrientation((prev) => (prev === nextOrientation ? prev : nextOrientation));
 
       if (!activeTab) {

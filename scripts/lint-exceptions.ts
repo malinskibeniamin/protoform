@@ -154,32 +154,144 @@ function normalizeBiomeRuleGroups(override: ts.ObjectLiteralExpression): ts.Obje
   );
 }
 
-function exceptionFingerprints(file: string, source: string): string[] {
+function ruleLevel(node: ts.Expression): string | undefined {
+  if (ts.isStringLiteral(node)) {
+    return node.text;
+  }
+  if (ts.isArrayLiteralExpression(node)) {
+    const [first] = node.elements;
+    return first && ts.isStringLiteral(first) ? first.text : undefined;
+  }
+  if (ts.isObjectLiteralExpression(node)) {
+    const level = propertyValue(node, 'level');
+    return level && ts.isStringLiteral(level) ? level.text : undefined;
+  }
+  return undefined;
+}
+
+function rulePolicies(file: string, config: ts.ObjectLiteralExpression): Map<string, string> {
+  const linter = file === 'biome.jsonc' ? propertyValue(config, 'linter') : config;
+  const rules = linter && ts.isObjectLiteralExpression(linter) ? propertyValue(linter, 'rules') : undefined;
+  if (rules && ts.isArrayLiteralExpression(rules)) {
+    return new Map(rules.elements.filter(ts.isStringLiteral).map((rule) => [rule.text, 'off']));
+  }
+  if (!(rules && ts.isObjectLiteralExpression(rules))) {
+    return new Map<string, string>();
+  }
+  const entries =
+    file === 'biome.jsonc'
+      ? rules.properties.flatMap((group) =>
+          ts.isPropertyAssignment(group) && ts.isObjectLiteralExpression(group.initializer)
+            ? [...group.initializer.properties]
+            : []
+        )
+      : rules.properties;
+  return new Map(
+    entries.flatMap((entry) => {
+      if (!ts.isPropertyAssignment(entry)) {
+        return [];
+      }
+      const name = propertyName(entry.name);
+      const level = ruleLevel(entry.initializer);
+      return name !== undefined && level !== undefined ? [[name, level]] : [];
+    })
+  );
+}
+
+function configPolicies(file: string, source: string): Map<string, string> {
+  const text = file.endsWith('.jsonc') ? `const config = ${source};` : source;
+  const parsed = ts.createSourceFile('config.ts', text, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+  let root: ts.ObjectLiteralExpression | undefined;
+  function visit(node: ts.Node): void {
+    if (root) {
+      return;
+    }
+    if (ts.isObjectLiteralExpression(node)) {
+      root = node;
+    } else {
+      ts.forEachChild(node, visit);
+    }
+  }
+  visit(parsed);
+  return root ? rulePolicies(file, root) : new Map<string, string>();
+}
+
+interface ExceptionPolicy {
+  fingerprint: string;
+  rules: Map<string, string>;
+  selectors: string[];
+}
+
+function exceptionFingerprint(file: string, node: ts.ObjectLiteralExpression, parsed: ts.SourceFile): string {
+  const printed = ts
+    .createPrinter({ removeComments: true })
+    .printNode(ts.EmitHint.Unspecified, file === 'biome.jsonc' ? normalizeBiomeRuleGroups(node) : node, parsed);
+  if (file !== 'biome.jsonc') {
+    return printed;
+  }
+  const value: unknown = ts.parseConfigFileTextToJson(file, printed).config;
+  if (typeof value !== 'object' || value === null) {
+    throw new TypeError('Expected a Biome override object.');
+  }
+  return JSON.stringify(value);
+}
+
+function literalSelectors(node: ts.ObjectLiteralExpression): string[] {
+  const selectors = propertyValue(node, 'includes') ?? propertyValue(node, 'files');
+  return selectors && ts.isArrayLiteralExpression(selectors)
+    ? selectors.elements.filter(ts.isStringLiteral).map((entry) => entry.text)
+    : [];
+}
+
+function exceptionPolicies(file: string, source: string, onlyWeak = true): ExceptionPolicy[] {
   const text = file.endsWith('.jsonc') ? `const config = ${source};` : source;
   const parsed = ts.createSourceFile('config.ts', text, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
   const assignments: ts.PropertyAssignment[] = [];
   collectOverrideArrays(parsed, assignments);
-  const printer = ts.createPrinter({ removeComments: true });
   return assignments.flatMap(({ initializer }) =>
     ts.isArrayLiteralExpression(initializer)
       ? initializer.elements
-          .filter((node): node is ts.ObjectLiteralExpression => ts.isObjectLiteralExpression(node) && isException(node))
-          .map((node) => {
-            const printed = printer.printNode(
-              ts.EmitHint.Unspecified,
-              file === 'biome.jsonc' ? normalizeBiomeRuleGroups(node) : node,
-              parsed
-            );
-            if (file !== 'biome.jsonc') {
-              return printed;
-            }
-            const value: unknown = ts.parseConfigFileTextToJson(file, printed).config;
-            if (typeof value !== 'object' || value === null) {
-              throw new TypeError('Expected a Biome override object.');
-            }
-            return JSON.stringify(value);
-          })
+          .filter(
+            (node): node is ts.ObjectLiteralExpression =>
+              ts.isObjectLiteralExpression(node) && (!onlyWeak || isException(node))
+          )
+          .map((node) => ({
+            fingerprint: exceptionFingerprint(file, node, parsed),
+            selectors: literalSelectors(node),
+            rules: new Map(
+              [...rulePolicies(file, node)].filter(([, level]) => !onlyWeak || WEAKER_SEVERITIES.has(level))
+            ),
+          }))
       : []
+  );
+}
+
+function scopeIsContained(candidate: readonly string[], previous: readonly string[]): boolean {
+  const positive = previous.filter((selector) => !selector.startsWith('!'));
+  const negative = previous.filter((selector) => selector.startsWith('!'));
+  return (
+    negative.every((selector) => candidate.includes(selector)) &&
+    candidate
+      .filter((selector) => !selector.startsWith('!'))
+      .every(
+        (selector) =>
+          positive.includes(selector) ||
+          (!GLOB_SYNTAX.test(selector) && positive.some((pattern) => matchesGlob(selector, pattern)))
+      )
+  );
+}
+
+function ownerCoversRule(candidate: ExceptionPolicy, owner: ExceptionPolicy, rule: string, level: string): boolean {
+  const severity = new Map([
+    ['off', 0],
+    ['info', 1],
+    ['warn', 2],
+  ]);
+  const previousLevel = owner.rules.get(rule);
+  return (
+    previousLevel !== undefined &&
+    (severity.get(level) ?? -1) >= (severity.get(previousLevel) ?? -1) &&
+    scopeIsContained(candidate.selectors, owner.selectors)
   );
 }
 
@@ -241,9 +353,39 @@ const APPROVED_BIOME_2_6_EXCEPTIONS = JSON.stringify({
 });
 
 export function newLintExceptions(file: string, source: string, baseline: string): string[] {
-  const approved = new Set([
-    ...exceptionFingerprints(file, baseline),
-    ...(file === 'biome.jsonc' ? exceptionFingerprints(file, APPROVED_BIOME_2_6_EXCEPTIONS) : []),
-  ]);
-  return exceptionFingerprints(file, source).filter((exception) => !approved.has(exception));
+  const previous = exceptionPolicies(file, baseline);
+  const previouslyScopedRules = new Set(
+    exceptionPolicies(file, baseline, false).flatMap((scope) => [...scope.rules.keys()])
+  );
+  const approved = file === 'biome.jsonc' ? exceptionPolicies(file, APPROVED_BIOME_2_6_EXCEPTIONS) : [];
+  const owners = [...previous, ...approved];
+  const fingerprints = new Set(owners.map((entry) => entry.fingerprint));
+  const before = configPolicies(file, baseline);
+  const after = configPolicies(file, source);
+  const weakenedGlobals = [...before]
+    .filter(([rule, level]) => level === 'error' && after.has(rule) && after.get(rule) !== 'error')
+    .map(([rule]) => `Global rule ${rule} was weakened from error to ${after.get(rule)}.`);
+  function isWeakening(candidate: ExceptionPolicy): boolean {
+    if (fingerprints.has(candidate.fingerprint)) {
+      return false;
+    }
+    if (candidate.rules.size === 0 || !candidate.selectors.some((selector) => !selector.startsWith('!'))) {
+      return true;
+    }
+    for (const [rule, level] of candidate.rules) {
+      const adoptedRule =
+        before.get(rule) === 'off' &&
+        after.get(rule) === 'error' &&
+        level === 'off' &&
+        !previouslyScopedRules.has(rule);
+      if (!(adoptedRule || owners.some((owner) => ownerCoversRule(candidate, owner, rule, level)))) {
+        return true;
+      }
+    }
+    return false;
+  }
+  const weakenedScopes = exceptionPolicies(file, source)
+    .filter(isWeakening)
+    .map((entry) => entry.fingerprint);
+  return [...weakenedGlobals, ...weakenedScopes];
 }

@@ -5,7 +5,7 @@ import { type FieldMatchContext, type FieldTypeDefinition, FieldTypeRegistry } f
 
 declare const { describe, expect, test }: typeof import('bun:test');
 
-const MockComponent = (() => null) as unknown as React.ComponentType<AutoFormFieldProps>;
+const MockComponent: React.ComponentType<AutoFormFieldProps> = () => null;
 
 function makeDef(
   name: string,

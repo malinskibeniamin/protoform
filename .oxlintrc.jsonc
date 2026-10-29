@@ -18,6 +18,8 @@
     "registry/base-nova/protoform/lib/protobuf-v1-bridge/**"
   ],
   "rules": {
+    // Reject assigning values from unrelated enum types.
+    "typescript/no-unsafe-enum-assignment": "error",
     // Reviewed: enforce as an error, including nursery checks.
     "accessor-pairs": "error",
     // Reviewed: enforce as an error, including nursery checks.
@@ -829,8 +831,8 @@
     "oxc/only-used-in-recursion": "error",
     // Reviewed: enforce as an error, including nursery checks.
     "oxc/uninvoked-array-callback": "error",
-    // Reviewed promise/always-return: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
-    "promise/always-return": "off",
+    // Preserve intermediate promise-chain returns while allowing terminal side effects.
+    "promise/always-return": ["error", { "ignoreLastCallback": true }],
     // Reviewed promise/avoid-new: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
     "promise/avoid-new": "off",
     // Reviewed promise/catch-or-return: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
@@ -1192,8 +1194,8 @@
     "typescript/no-unsafe-member-access": "error",
     // Reviewed: enforce as an error, including nursery checks.
     "typescript/no-unsafe-return": "error",
-    // Descriptor-driven protobuf and form adapters need checked generic type refinements not expressible by this rule. Unsafe any flows remain errors.
-    "typescript/no-unsafe-type-assertion": "off",
+    // Validate unknown values instead of asserting narrower runtime types.
+    "typescript/no-unsafe-type-assertion": "error",
     // Reviewed: enforce as an error, including nursery checks.
     "typescript/no-unsafe-unary-minus": "error",
     // Reviewed: enforce as an error, including nursery checks.
@@ -1263,8 +1265,8 @@
         "allowNever": true
       }
     ],
-    // Reviewed typescript/return-await: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
-    "typescript/return-await": "off",
+    // Require await only where it changes catch/finally control flow, not ordinary return style.
+    "typescript/return-await": ["error", "error-handling-correctness-only"],
     // Truthiness is deliberate for optional form values, empty strings and React nodes; Biome enforces explicit lengths and coercions.
     "typescript/strict-boolean-expressions": "off",
     // Conflicts with expression callbacks accepted by React and the form libraries; promises are checked independently.
@@ -1798,5 +1800,55 @@
     "vue/valid-define-props": "off",
     // vue is not the UI runtime/test framework. React/Astro/Rstest/Playwright checks own this surface.
     "vue/valid-next-tick": "off"
-  }
+  },
+  "overrides": [
+    // Descriptor-derived form paths and native library generic APIs cannot be proven from runtime descriptors. Covered by hook and all-engine conformance suites.
+    {
+      "files": [
+        "registry/base-nova/protoform/hooks/use-proto-form/use-proto-form.ts",
+        "registry/base-nova/protoform/hooks/use-proto-form-v8/use-proto-form.ts",
+        "registry/base-nova/protoform/hooks/use-proto-form-tanstack/index.ts",
+        "registry/base-nova/protoform/hooks/use-proto-form-tanstack-v2/index.ts",
+        "registry/base-nova/protoform/components/auto-form/adapters/react-hook-form.tsx",
+        "registry/base-nova/protoform/components/auto-form/adapters/react-hook-form-v8.tsx",
+        "registry/base-nova/protoform/components/auto-form/adapters/tanstack-v2.tsx"
+      ],
+      "rules": {
+        "typescript/no-unsafe-type-assertion": "off"
+      }
+    },
+    // React context erases caller generics; custom control names and ReactNode metadata are host contracts. Provider output is runtime-checked before submission. Covered by schema, registry, modes, slots, payload, and untrusted-input tests.
+    {
+      "files": [
+        "registry/base-nova/protoform/components/auto-form/auto-form-core.tsx",
+        "registry/base-nova/protoform/components/auto-form/runtime-provider.tsx",
+        "registry/base-nova/protoform/components/auto-form/schema.ts",
+        "registry/base-nova/protoform/components/auto-form/registry.ts",
+        "registry/base-nova/protoform/components/auto-form/helpers.ts"
+      ],
+      "rules": {
+        "typescript/no-unsafe-type-assertion": "off"
+      }
+    },
+    // Buf conditional message shapes, validation brands, and synthesized descriptors require descriptor-to-type bridges. Runtime wire values are checked separately. Covered by conversion, preservation, mutation-request, and CEL conformance tests.
+    {
+      "files": [
+        "registry/base-nova/protoform/lib/protobuf-provider/hook-runtime.ts",
+        "registry/base-nova/protoform/lib/protobuf-provider/provider.ts",
+        "registry/base-nova/protoform/lib/protobuf-provider/mutation-request.ts",
+        "registry/base-nova/protoform/lib/protobuf-provider/descriptor-utils.ts",
+        "registry/base-nova/protoform/components/auto-form/cel-runtime.ts"
+      ],
+      "rules": {
+        "typescript/no-unsafe-type-assertion": "off"
+      }
+    },
+    // Base UI render/ref/event and Motion prop unions are generic compatibility contracts. Covered by Slot composition and component browser tests.
+    {
+      "files": ["registry/base-nova/protoform/lib/base-ui-compat/index.tsx"],
+      "rules": {
+        "typescript/no-unsafe-type-assertion": "off"
+      }
+    }
+  ]
 }

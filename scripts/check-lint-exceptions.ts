@@ -14,14 +14,13 @@ const paths = execFileSync('git', ['ls-files', '-z', '--cached', '--others', '--
   .filter((file) => file.length > 0 && existsSync(resolve(cwd, file)));
 const diagnostics = LINT_CONFIGS.flatMap((file) => {
   const source = readFileSync(resolve(cwd, file), 'utf8');
-  const baseline =
-    file === '.oxlintrc.jsonc' ? '{}' : execFileSync('git', ['show', `origin/main:${file}`], { cwd, encoding: 'utf8' });
+  const baseline = execFileSync('git', ['show', `origin/main:${file}`], { cwd, encoding: 'utf8' });
   return [
     ...auditLintExceptions(file, source, paths),
     ...newLintExceptions(file, source, baseline).map(() => ({
       file,
       line: 1,
-      message: 'New or broadened rule exemptions are forbidden. Fix the source instead.',
+      message: 'An enforced rule gained or broadened an exemption. Fix the source instead.',
     })),
   ];
 });

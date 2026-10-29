@@ -5,7 +5,9 @@ const route = '/docs/blume-examples/registry/base-nova/protoform/demo/ui/shadcn-
 
 test('composes shadcn APIs and cancels selection without losing the current value', async ({ page }) => {
   const errors: string[] = [];
-  page.on('pageerror', (error) => errors.push(error.message));
+  page.on('pageerror', (error) => {
+    errors.push(error.message);
+  });
   await page.goto(route);
   const action = page.getByRole('button', { name: 'Rendered action', exact: true });
   await action.focus();

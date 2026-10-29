@@ -20,7 +20,7 @@ function TextareaFieldComponent({ error, field, id, inputProps }: AutoFormFieldP
       placeholder={getFieldUiConfig(field).placeholder}
       resize="vertical"
       testId={testIds.control}
-      value={(inputProps['value'] as string | undefined) ?? ''}
+      value={typeof inputProps['value'] === 'string' ? inputProps['value'] : ''}
     />
   );
 }

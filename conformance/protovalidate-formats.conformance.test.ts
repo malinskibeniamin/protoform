@@ -90,6 +90,7 @@ describe('protovalidate format rule conformance', () => {
 
 describe('protovalidate well-known-type rule conformance', () => {
   test('enforces duration const, comparisons, ranges, membership, normalization, and malformed input', async () => {
+    expect.hasAssertions();
     const schema = createProtoFormSchema(WellKnownRuleMatrixSchema);
 
     await expectValid(schema, 'exactDuration', '5s');
@@ -106,6 +107,7 @@ describe('protovalidate well-known-type rule conformance', () => {
   });
 
   test('enforces FieldMask const, allow, deny, and subpath semantics', async () => {
+    expect.hasAssertions();
     const schema = createProtoFormSchema(WellKnownRuleMatrixSchema);
 
     await expectValid(schema, 'exactMask', ['display_name']);
@@ -116,6 +118,7 @@ describe('protovalidate well-known-type rule conformance', () => {
   });
 
   test('enforces timestamp const, comparisons, reversed and now-relative ranges, timezone normalization, and malformed input', async () => {
+    expect.hasAssertions();
     const schema = createProtoFormSchema(WellKnownRuleMatrixSchema);
     const now = Date.now();
 

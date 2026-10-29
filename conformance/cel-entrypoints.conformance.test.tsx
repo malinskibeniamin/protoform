@@ -7,6 +7,8 @@ import { AutoForm } from '../registry/base-nova/protoform/components/auto-form/i
 import { useProtoForm } from '../registry/base-nova/protoform/hooks/use-proto-form/index.js';
 import { InvalidCelRuntimeSchema } from './gen/protoform/conformance/v1/expected_failures_pb.js';
 import { TransitiveCelConsumerSchema } from './gen/protoform/conformance/v1/transitive_cel_pb.js';
+import { DeploymentPolicy_Environment } from './gen/protoform/fixtures/deployment/v1/policy_pb.js';
+import { ReleaseTrack } from './gen/protoform/fixtures/shared/v1/release_pb.js';
 
 const SUBMIT_BUTTON = /submit/iu;
 
@@ -15,14 +17,14 @@ describe('descriptor-aware CEL entrypoints', () => {
     const valid = renderHook(() =>
       useProtoForm(TransitiveCelConsumerSchema, {
         defaultValues: create(TransitiveCelConsumerSchema, {
-          deployment: { environment: 20, releaseTrack: 7 },
+          deployment: { environment: DeploymentPolicy_Environment.PRODUCTION, releaseTrack: ReleaseTrack.STABLE },
         }),
       })
     );
     const invalid = renderHook(() =>
       useProtoForm(TransitiveCelConsumerSchema, {
         defaultValues: create(TransitiveCelConsumerSchema, {
-          deployment: { environment: 10, releaseTrack: 9 },
+          deployment: { environment: DeploymentPolicy_Environment.STAGING, releaseTrack: ReleaseTrack.PREVIEW },
         }),
       })
     );
@@ -43,18 +45,24 @@ describe('descriptor-aware CEL entrypoints', () => {
     });
   });
 
-  test('does not expose CEL runtime failures through useProtoForm', async () => {
+  test('blocks CEL runtime failures safely through useProtoForm and recovers', async () => {
     const form = renderHook(() =>
       useProtoForm(InvalidCelRuntimeSchema, {
         defaultValues: create(InvalidCelRuntimeSchema, { value: 0 }),
       })
     );
-    let result = false;
+    let result = true;
 
     await act(async () => {
       result = await form.result.current.trigger();
     });
 
+    expect(result).toBe(false);
+    expect(form.result.current.formState.errors.root?.message).toBe('Validation could not be completed.');
+    await act(async () => {
+      form.result.current.setValue('value', 1);
+      result = await form.result.current.trigger();
+    });
     expect(result).toBe(true);
     expect(form.result.current.formState.errors).toEqual({});
   });
@@ -101,7 +109,7 @@ describe('descriptor-aware CEL entrypoints', () => {
     expect(onSubmit).not.toHaveBeenCalled();
   });
 
-  test('does not render CEL runtime failures through AutoForm', async () => {
+  test('blocks CEL runtime failures safely through AutoForm and recovers', async () => {
     const user = userEvent.setup();
     const onSubmit = rs.fn();
     render(
@@ -116,7 +124,14 @@ describe('descriptor-aware CEL entrypoints', () => {
 
     await user.click(screen.getByRole('button', { name: SUBMIT_BUTTON }));
 
+    await waitFor(() => expect(screen.getByText('Validation could not be completed.')).toBeInTheDocument());
+    expect(onSubmit).not.toHaveBeenCalled();
+    const input = screen.getByRole('spinbutton', { name: 'Value' });
+    await user.clear(input);
+    await user.type(input, '1');
+    await user.click(screen.getByRole('button', { name: SUBMIT_BUTTON }));
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
+    expect(onSubmit.mock.calls[0]?.[0]).toMatchObject({ value: 1 });
     expect(screen.queryByText('int divide by zero')).not.toBeInTheDocument();
   });
 });

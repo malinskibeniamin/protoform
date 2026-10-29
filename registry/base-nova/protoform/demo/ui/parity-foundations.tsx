@@ -1,6 +1,6 @@
 import { REGEXP_ONLY_DIGITS } from 'input-otp';
 import { CheckIcon, FileTextIcon, FolderIcon } from 'lucide-react';
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Avatar, AvatarBadge, AvatarFallback, AvatarGroup, AvatarGroupCount } from '@/components/ui/avatar';
 import {
@@ -25,7 +25,10 @@ import { Progress, ProgressLabel, ProgressValue } from '@/components/ui/progress
 import { Skeleton } from '@/components/ui/skeleton';
 import { ParitySection } from './parity-shared';
 
-export function FoundationExamples() {
+export function FoundationExamples({ headingId }: { headingId: string }) {
+  const parityFormatId = useId();
+  const parityCodeId = useId();
+
   const [created, setCreated] = useState(false);
   const [progress, setProgress] = useState(25);
   const [format, setFormat] = useState('json');
@@ -85,8 +88,8 @@ export function FoundationExamples() {
         </Button>
       </ParitySection>
       <ParitySection title="Native select">
-        <Label htmlFor="parity-format">Serialization format</Label>
-        <NativeSelect id="parity-format" onChange={(event) => setFormat(event.currentTarget.value)} value={format}>
+        <Label htmlFor={parityFormatId}>Serialization format</Label>
+        <NativeSelect id={parityFormatId} onChange={(event) => setFormat(event.currentTarget.value)} value={format}>
           <NativeSelectOption value="json">JSON</NativeSelectOption>
           <NativeSelectOption value="protobuf">Protobuf</NativeSelectOption>
         </NativeSelect>
@@ -96,8 +99,8 @@ export function FoundationExamples() {
         </NativeSelect>
       </ParitySection>
       <ParitySection title="Input OTP">
-        <Label htmlFor="parity-code">Verification code</Label>
-        <InputOTP id="parity-code" maxLength={6} onChange={setCode} pattern={REGEXP_ONLY_DIGITS} value={code}>
+        <Label htmlFor={parityCodeId}>Verification code</Label>
+        <InputOTP id={parityCodeId} maxLength={6} onChange={setCode} pattern={REGEXP_ONLY_DIGITS} value={code}>
           <InputOTPGroup>
             <InputOTPSlot index={0} />
             <InputOTPSlot index={1} />
@@ -181,7 +184,7 @@ export function FoundationExamples() {
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="#parity-heading">Components</BreadcrumbLink>
+              <BreadcrumbLink href={`#${headingId}`}>Components</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>

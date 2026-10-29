@@ -4,7 +4,10 @@ import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-libra
 import userEvent from '@testing-library/user-event';
 
 import '@/registry/base-nova/protoform/lib/protobuf-provider/auto-form-example-annotations';
-import { AddressSchema } from '@/registry/base-nova/protoform/lib/protobuf-provider/gen/auto-form-example_pb';
+import {
+  AddressSchema,
+  CountryCode,
+} from '@/registry/base-nova/protoform/lib/protobuf-provider/gen/auto-form-example_pb';
 
 import type { SchemaProvider } from '../../auto-form/core-types';
 import { AutoForm, type AutoFormSubmitContext, type TanStackAutoFormApi } from '..';
@@ -58,7 +61,7 @@ describe('tanStack AutoForm conformance', () => {
 
     await user.click(screen.getByRole('button', { name: /add tags/iu }));
     const inputs = screen.getAllByRole('textbox');
-    await user.type(inputs[1] as HTMLInputElement, 'second');
+    await user.type(requireInput(inputs[1]), 'second');
     await user.click(screen.getByRole('button', { name: 'Submit' }));
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
@@ -269,7 +272,7 @@ describe('tanStack AutoForm conformance', () => {
     );
     const knownSource = create(AddressSchema, {
       city: 'Warsaw',
-      country: 4,
+      country: CountryCode.PL,
       lineOne: '1 Main Street',
       postalCode: '00-001',
       state: 'Mazowieckie',
@@ -300,3 +303,10 @@ describe('tanStack AutoForm conformance', () => {
     expect(onSubmit.mock.calls[1]?.[2].updateMask?.paths).toEqual([]);
   });
 });
+
+function requireInput(value: unknown): HTMLInputElement {
+  if (!(value instanceof HTMLInputElement)) {
+    throw new TypeError('Expected an input element.');
+  }
+  return value;
+}

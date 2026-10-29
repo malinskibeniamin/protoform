@@ -37,11 +37,12 @@ function isBreakingViolation(value: unknown): value is BreakingViolation {
   if (!(typeof value === 'object' && value !== null)) {
     return false;
   }
-  const candidate = value as Record<string, unknown>;
   return (
-    typeof candidate['message'] === 'string' &&
-    typeof candidate['type'] === 'string' &&
-    (candidate['path'] === undefined || typeof candidate['path'] === 'string')
+    'message' in value &&
+    typeof value.message === 'string' &&
+    'type' in value &&
+    typeof value.type === 'string' &&
+    (!('path' in value) || value.path === undefined || typeof value.path === 'string')
   );
 }
 
@@ -88,7 +89,7 @@ function parseViolations(output: string): BreakingViolation[] {
     .trim()
     .split('\n')
     .filter(Boolean)
-    .map((line) => JSON.parse(line) as unknown)
+    .map((line): unknown => JSON.parse(line))
     .map((value) => {
       if (!isBreakingViolation(value)) {
         throw new Error('Buf returned an invalid breaking-change violation.');
@@ -137,8 +138,10 @@ function checkModule(module: StableProtoModule, against: string, directory: stri
 
   const violations = parseViolations(`${result.stdout}${result.stderr}`);
   const unwaived = violations.filter((violation) => !isWaived(violation, module.waivers));
-  for (const violation of violations.filter((item) => isWaived(item, module.waivers))) {
-    console.info(`Accepted pre-1.0 protobuf migration in ${module.path}: ${violation.message}`);
+  for (const violation of violations) {
+    if (isWaived(violation, module.waivers)) {
+      console.info(`Accepted pre-1.0 protobuf migration in ${module.path}: ${violation.message}`);
+    }
   }
   if (unwaived.length > 0) {
     throw new Error(unwaived.map((violation) => `${module.path}: ${violation.type}: ${violation.message}`).join('\n'));

@@ -48,7 +48,12 @@ function beautifyLabel(label: string): string {
 }
 
 export function getLabel(field: ParsedField): string {
-  return (field.fieldConfig?.label as string) || (field.description as string) || beautifyLabel(field.key);
+  for (const label of [field.fieldConfig?.label, field.description]) {
+    if (typeof label === 'number' || (typeof label === 'string' && label !== '')) {
+      return String(label);
+    }
+  }
+  return beautifyLabel(field.key);
 }
 
 export function sortFieldsByOrder<TFieldType extends string = string>(
@@ -65,10 +70,10 @@ export function sortFieldsByOrder<TFieldType extends string = string>(
 export function getPathInObject(obj: Record<string, unknown>, path: string[]): unknown {
   let current: unknown = obj;
   for (const key of path) {
-    if (current === undefined || current === null) {
+    if (typeof current !== 'object' || current === null || !Object.hasOwn(current, key)) {
       return;
     }
-    current = (current as Record<string, unknown>)[key];
+    current = Reflect.get(current, key);
   }
   return current;
 }

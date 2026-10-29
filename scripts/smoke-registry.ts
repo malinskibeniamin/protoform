@@ -32,9 +32,9 @@ const expectedItems = [
   'protoform-demo-runtime',
   ...demoCatalog.map((demo) => demo.registryName),
 ];
-const registry = JSON.parse(readFileSync('public/r/registry.json', 'utf8')) as {
-  items?: { name: string }[];
-};
+const registry = z
+  .looseObject({ items: z.array(z.looseObject({ name: z.string() })).optional() })
+  .parse(JSON.parse(readFileSync('public/r/registry.json', 'utf8')));
 const names = new Set((registry.items ?? []).map((item) => item.name));
 
 for (const name of expectedItems) {
@@ -45,12 +45,14 @@ for (const name of expectedItems) {
   if (!existsSync(path)) {
     throw new Error(`registry item file is missing: ${path}`);
   }
-  const item = JSON.parse(readFileSync(path, 'utf8')) as {
-    dependencies?: string[];
-    files?: { path: string }[];
-    name?: string;
-    registryDependencies?: string[];
-  };
+  const item = z
+    .looseObject({
+      dependencies: z.array(z.string()).optional(),
+      files: z.array(z.looseObject({ path: z.string() })).optional(),
+      name: z.string().optional(),
+      registryDependencies: z.array(z.string()).optional(),
+    })
+    .parse(JSON.parse(readFileSync(path, 'utf8')));
   for (const dependency of item.dependencies ?? []) {
     if (
       (dependency === 'react-hook-form' || dependency.startsWith('react-hook-form@')) &&
@@ -67,9 +69,9 @@ for (const name of expectedItems) {
   }
 }
 
-const hook = JSON.parse(readFileSync('public/r/use-proto-form.json', 'utf8')) as {
-  files: { path: string }[];
-};
+const hook = z
+  .looseObject({ files: z.array(z.looseObject({ path: z.string() })) })
+  .parse(JSON.parse(readFileSync('public/r/use-proto-form.json', 'utf8')));
 if (!hook.files.some((file) => file.path.endsWith('hooks/use-proto-form/index.ts'))) {
   throw new Error('use-proto-form registry item must include the hook entrypoint');
 }
@@ -77,9 +79,11 @@ if (hook.files.some((file) => file.path.includes('/components/auto-form/'))) {
   throw new Error('use-proto-form registry item must not install AutoForm components');
 }
 
-const license = JSON.parse(readFileSync('public/r/protoform-license.json', 'utf8')) as {
-  files?: Array<{ content?: string; target?: string }>;
-};
+const license = z
+  .looseObject({
+    files: z.array(z.looseObject({ content: z.string().optional(), target: z.string().optional() })).optional(),
+  })
+  .parse(JSON.parse(readFileSync('public/r/protoform-license.json', 'utf8')));
 const expectedNotices = [['~/LICENSES/protoform-MIT.txt', 'LICENSE']] as const;
 for (const [target, source] of expectedNotices) {
   if (!license.files?.some((file) => file.target === target && file.content === readFileSync(source, 'utf8'))) {
@@ -135,10 +139,9 @@ if (
   throw new Error('auto-form-react-hook-form-v8 must install the shared core, v8 hook, and pinned v8 alias');
 }
 
-const tanstackAutoForm = JSON.parse(readFileSync('public/r/auto-form-tanstack.json', 'utf8')) as {
-  dependencies?: string[];
-  registryDependencies?: string[];
-};
+const tanstackAutoForm = z
+  .looseObject({ dependencies: z.array(z.string()).optional(), registryDependencies: z.array(z.string()).optional() })
+  .parse(JSON.parse(readFileSync('public/r/auto-form-tanstack.json', 'utf8')));
 if (
   !(
     tanstackAutoForm.registryDependencies?.includes('@protoform/auto-form-core') &&
@@ -152,13 +155,12 @@ if (tanstackAutoForm.dependencies?.includes('react-hook-form')) {
 }
 
 const tanstackV2Alias = '@tanstack/react-form-v2@npm:@tanstack/react-form@2.0.0-alpha.2';
-const tanstackV2Hook = JSON.parse(readFileSync('public/r/use-proto-form-tanstack-v2.json', 'utf8')) as {
-  dependencies?: string[];
-};
-const tanstackV2AutoForm = JSON.parse(readFileSync('public/r/auto-form-tanstack-v2.json', 'utf8')) as {
-  dependencies?: string[];
-  registryDependencies?: string[];
-};
+const tanstackV2Hook = z
+  .looseObject({ dependencies: z.array(z.string()).optional() })
+  .parse(JSON.parse(readFileSync('public/r/use-proto-form-tanstack-v2.json', 'utf8')));
+const tanstackV2AutoForm = z
+  .looseObject({ dependencies: z.array(z.string()).optional(), registryDependencies: z.array(z.string()).optional() })
+  .parse(JSON.parse(readFileSync('public/r/auto-form-tanstack-v2.json', 'utf8')));
 if (!tanstackV2Hook.dependencies?.includes(tanstackV2Alias)) {
   throw new Error('use-proto-form-tanstack-v2 must install the pinned v2 alias');
 }

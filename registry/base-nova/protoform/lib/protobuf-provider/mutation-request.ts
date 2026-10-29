@@ -65,10 +65,11 @@ function resourceField(method: DescMethodUnary): DescField {
   const candidates = method.input.fields.filter(
     (field) => field.fieldKind === 'message' && field.message.typeName !== 'google.protobuf.FieldMask'
   );
-  if (candidates.length !== 1) {
+  const [candidate] = candidates;
+  if (candidates.length !== 1 || !candidate) {
     throw new TypeError(`${method.name} does not expose an unambiguous resource body field.`);
   }
-  return candidates[0] as DescField;
+  return candidate;
 }
 
 function assignOptional(

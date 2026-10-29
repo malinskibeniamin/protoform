@@ -27,7 +27,13 @@ test('forwards native animation events rather than Motion animation definitions'
   const events: string[] = [];
   render(
     <Collapsible defaultOpen>
-      <CollapsibleContent onAnimationStart={(event) => events.push(event.type)}>Animated output</CollapsibleContent>
+      <CollapsibleContent
+        onAnimationStart={(event) => {
+          events.push(event.type);
+        }}
+      >
+        Animated output
+      </CollapsibleContent>
     </Collapsible>
   );
   fireEvent.animationStart(screen.getByText('Animated output'));

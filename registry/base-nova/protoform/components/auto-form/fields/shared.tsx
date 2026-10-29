@@ -5,7 +5,7 @@ import React from 'react';
 
 import { useAutoFormRuntimeContext } from '../context';
 import type { AutoFormFieldProps } from '../core-types';
-import { getFieldUiConfig, NUMERIC_OPTION_PATTERN } from '../helpers';
+import { getFieldUiConfig, isRecord, NUMERIC_OPTION_PATTERN } from '../helpers';
 import { getAutoFormChoiceTestId, getAutoFormFieldTestId } from '../test-ids';
 import type { AutoFormOptionGroup, AutoFormOptionItem } from '../types';
 import { Input, InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from '../ui-components';
@@ -226,12 +226,12 @@ export function readDataProviderId(field: AutoFormFieldProps['field'] | undefine
   if (!(customData && typeof customData === 'object')) {
     return;
   }
-  const bag = customData as { dataProvider?: unknown; ui?: { dataProvider?: unknown } };
-  if (typeof bag.dataProvider === 'string') {
-    return bag.dataProvider;
+  if (typeof customData['dataProvider'] === 'string') {
+    return customData['dataProvider'];
   }
-  if (bag.ui && typeof bag.ui === 'object' && typeof bag.ui.dataProvider === 'string') {
-    return bag.ui.dataProvider;
+  const { ui } = customData;
+  if (isRecord(ui) && typeof ui['dataProvider'] === 'string') {
+    return ui['dataProvider'];
   }
   return undefined;
 }

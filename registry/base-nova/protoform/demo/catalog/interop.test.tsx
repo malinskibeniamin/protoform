@@ -13,6 +13,27 @@ describe.each([
   ['Formik', FormikDemo],
   ['Final Form', FinalFormDemo],
 ] as const)('%s registry demo', (engine, Demo) => {
+  test('keeps labels and input state independent across multiple mounted instances', async () => {
+    const user = userEvent.setup();
+    render(
+      <>
+        <Demo />
+        <Demo />
+      </>
+    );
+    const [first, second] = screen.getAllByRole('textbox', { name: 'Email' });
+    const [, secondLabel] = screen.getAllByText('Email', { selector: 'label' });
+    if (!(first && second && secondLabel)) {
+      throw new Error('Expected two labeled email controls.');
+    }
+    expect(first.id).not.toBe(second.id);
+    await user.click(secondLabel);
+    expect(second).toHaveFocus();
+    await user.type(second, 'second@example.com');
+    expect(first).toHaveValue('');
+    expect(second).toHaveValue('second@example.com');
+  });
+
   test('validates and submits a typed protobuf value', async () => {
     const user = userEvent.setup();
     render(<Demo />);

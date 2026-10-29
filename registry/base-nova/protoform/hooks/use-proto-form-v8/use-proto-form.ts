@@ -138,8 +138,9 @@ export function useProtoForm<Desc extends DescMessage>(
           'Expected { case, value } shape. Use setValue() for regular fields.'
       );
     }
-    const prev = current as { case?: string; value?: unknown } | undefined;
-    if (prev?.case !== undefined && prev?.case !== '' && prev.case !== oneofCase) {
+    const previousCase =
+      current !== null && typeof current === 'object' && 'case' in current ? current.case : undefined;
+    if (previousCase !== undefined && previousCase !== '' && previousCase !== oneofCase) {
       form.setValue(path as Path<ProtoFormShape<Desc>>, { case: '', value: {} } as never);
     }
     form.setValue(path as Path<ProtoFormShape<Desc>>, { case: oneofCase, value } as never, {
@@ -153,10 +154,10 @@ export function useProtoForm<Desc extends DescMessage>(
     const segments = path.split('.');
     let current: unknown = formErrors;
     for (const segment of segments) {
-      if (current === undefined || current === null) {
+      if (current === null || typeof current !== 'object') {
         return;
       }
-      current = (current as Record<string, unknown>)[segment];
+      current = Reflect.get(current, segment);
     }
     return current as NestedErrors<T> | undefined;
   };
@@ -223,7 +224,7 @@ export function useProtoFormDefaults<Desc extends DescMessage>(
   schema: Desc,
   init?: MessageInitShape<Desc>
 ): MessageShape<Desc> {
-  return create(schema, init ?? ({} as MessageInitShape<Desc>));
+  return create(schema, init);
 }
 
 function restoreDefaultSection<Desc extends DescMessage>(

@@ -234,30 +234,21 @@ describe('source-message preservation', () => {
     const sourceMap = requireRecord(sourceRecord['nestedByKey'], 'source map');
     const sourceChoice = requireRecord(sourceRecord['choice'], 'source choice');
     const values = protoToFormValues(RootSchema, source);
-    const children = values['children'] as Record<string, unknown>[];
-    const entries = values['nestedByKey'] as Array<{
-      key: string;
-      value: Record<string, unknown>;
-    }>;
-    const choice = values['choice'] as {
-      case: string;
-      value: Record<string, unknown>;
-    };
+    const children = requireArray(values['children'], 'form children');
+    const entries = requireArray(values['nestedByKey'], 'form map entries');
+    const choice = requireRecord(values['choice'], 'form choice');
 
     requireRecord(values['nested'], 'nested form value')['label'] = 'edited nested';
-    requireElement(children, 0, 'child form value')['label'] = 'edited first';
-    requireElement(entries, 0, 'map form entry').value['label'] = 'edited map first';
-    choice.value['label'] = 'edited choice';
+    requireRecord(requireElement(children, 0, 'child form value'), 'child value')['label'] = 'edited first';
+    requireRecord(requireRecord(requireElement(entries, 0, 'map form entry'), 'map entry')['value'], 'map value')[
+      'label'
+    ] = 'edited map first';
+    requireRecord(choice['value'], 'choice value')['label'] = 'edited choice';
 
-    const edited = formValuesToProto(RootSchema, values, source) as Record<string, unknown>;
-    const editedChildren = edited['children'] as Array<{
-      $unknown?: unknown;
-    }>;
-    const editedMap = edited['nestedByKey'] as Record<string, { $unknown?: unknown }>;
-    const editedChoice = edited['choice'] as {
-      case: string;
-      value: { $unknown?: unknown };
-    };
+    const edited = requireRecord(formValuesToProto(RootSchema, values, source), 'edited message');
+    const editedChildren = requireArray(edited['children'], 'edited children');
+    const editedMap = requireRecord(edited['nestedByKey'], 'edited map');
+    const editedChoice = requireRecord(edited['choice'], 'edited choice');
 
     expect(edited['$unknown']).toEqual(source.$unknown);
     expect(unknownFields(edited['nested'], 'edited nested message')).toEqual(
@@ -269,7 +260,7 @@ describe('source-message preservation', () => {
     expect(unknownFields(editedMap['first'], 'edited first map value')).toEqual(
       unknownFields(sourceMap['first'], 'source first map value')
     );
-    expect(unknownFields(editedChoice.value, 'edited choice value')).toEqual(
+    expect(unknownFields(editedChoice['value'], 'edited choice value')).toEqual(
       unknownFields(sourceChoice['value'], 'source choice value')
     );
   });
@@ -280,22 +271,17 @@ describe('source-message preservation', () => {
     const sourceChildren = requireArray(sourceRecord['children'], 'source children');
     const sourceMap = requireRecord(sourceRecord['nestedByKey'], 'source map');
     const values = protoToFormValues(RootSchema, source);
-    const children = values['children'] as Record<string, unknown>[];
-    const entries = values['nestedByKey'] as Array<{
-      key: string;
-      value: Record<string, unknown>;
-    }>;
+    const children = requireArray(values['children'], 'form children');
+    const entries = requireArray(values['nestedByKey'], 'form map entries');
 
     values['nested'] = undefined;
     values['children'] = [requireElement(children, 1, 'second child form value')];
-    values['nestedByKey'] = entries.filter((entry) => entry.key === 'second');
+    values['nestedByKey'] = entries.filter((entry) => requireRecord(entry, 'map entry')['key'] === 'second');
     values['choice'] = { case: 'textChoice', value: 'replacement' };
 
-    const edited = formValuesToProto(RootSchema, values, source) as Record<string, unknown>;
-    const editedChildren = edited['children'] as Array<{
-      $unknown?: unknown;
-    }>;
-    const editedMap = edited['nestedByKey'] as Record<string, { $unknown?: unknown }>;
+    const edited = requireRecord(formValuesToProto(RootSchema, values, source), 'edited message');
+    const editedChildren = requireArray(edited['children'], 'edited children');
+    const editedMap = requireRecord(edited['nestedByKey'], 'edited map');
 
     expect(edited['nested']).toBeUndefined();
     expect(editedChildren).toHaveLength(1);

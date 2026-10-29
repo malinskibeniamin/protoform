@@ -7,6 +7,7 @@ function expectCelTrue(expression: string): void {
 
 describe('cel language conformance', () => {
   test('supports CEL syntax, literals, scalar types, operators, and conversions', () => {
+    expect.hasAssertions();
     expectCelTrue(`
       true && null == null &&
       1 + 2 * 3 == 7 &&
@@ -21,6 +22,7 @@ describe('cel language conformance', () => {
   });
 
   test('supports lists, maps, and every standard comprehension macro', () => {
+    expect.hasAssertions();
     expectCelTrue(`
       [1, 2, 3].all(value, value > 0) &&
       [1, 2, 3].exists(value, value == 2) &&
@@ -33,6 +35,7 @@ describe('cel language conformance', () => {
   });
 
   test('supports string and bytes operations', () => {
+    expect.hasAssertions();
     expectCelTrue(`
       'protoform'.startsWith('proto') &&
       'protoform'.endsWith('form') &&
@@ -49,6 +52,7 @@ describe('cel language conformance', () => {
   });
 
   test('supports timestamp and duration construction, comparison, and arithmetic', () => {
+    expect.hasAssertions();
     expectCelTrue(`
       duration('90s') > duration('60s') &&
       timestamp('2025-01-01T00:00:00Z') + duration('3600s') ==
@@ -73,6 +77,7 @@ describe('cel language conformance', () => {
   });
 
   test('meets the CEL minimum expression nesting and repetition limits', () => {
+    expect.hasAssertions();
     expectCelTrue(Array.from({ length: 32 }, () => 'true').join(' && '));
 
     const nested = `${'int('.repeat(12)}1${')'.repeat(12)} == 1`;

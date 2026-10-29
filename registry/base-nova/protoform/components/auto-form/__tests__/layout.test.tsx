@@ -59,8 +59,8 @@ describe('formSection', () => {
     const titled = screen.getByTestId('titled');
     expect(screen.getByText('AWS credentials and region.')).toBeVisible();
     expect(titled.textContent).toContain('*');
-    expect((titled.firstElementChild as HTMLElement).className).toContain('border-b');
-    expect((screen.getByTestId('undivided').firstElementChild as HTMLElement).className).not.toContain('border-b');
+    expect(titled.firstElementChild?.className).toContain('border-b');
+    expect(screen.getByTestId('undivided').firstElementChild?.className).not.toContain('border-b');
 
     const untitled = screen.getByTestId('untitled');
     expect(untitled.querySelector('h2, h3, h4, h5')).toBeNull();

@@ -2,7 +2,7 @@ import { spawnSync } from 'node:child_process';
 import { stripVTControlCharacters } from 'node:util';
 import { authoredFiles } from './source-files';
 
-const biomeExtension = /\.(?:[cm]?[jt]sx?|astro|css|graphql|html|jsonc?)$/u;
+const biomeExtension = /\.(?:[cm]?[jt]sx?|astro|s?css|graphql|html|jsonc?|md|ya?ml)$/u;
 const oxlintExtension = /\.(?:[cm]?[jt]sx?|astro)$/u;
 const processedFilePattern = /^\s*- (.+)$/gmu;
 

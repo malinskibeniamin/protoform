@@ -71,11 +71,12 @@ describe('autoForm – compact array row rendering', () => {
       ],
       {},
       (values) => {
-        const tags = values['tags'] as string[] | undefined;
+        const { tags } = values;
         const errors: { path: (string | number)[]; message: string }[] = [];
-        if (tags) {
+        if (Array.isArray(tags)) {
           for (let i = 0; i < tags.length; i += 1) {
-            if ((tags[i] ?? '').length < 2) {
+            const tag: unknown = tags[i];
+            if (typeof tag !== 'string' || tag.length < 2) {
               errors.push({ message: 'Too short', path: ['tags', i] });
             }
           }

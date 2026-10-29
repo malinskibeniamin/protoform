@@ -6,7 +6,7 @@ import type { ParsedField } from '../core-types';
 import { defaultRegistry } from '../fields';
 import { getFieldUiConfig, resolveRenderFieldType } from '../helpers';
 import { buildFieldMatchContext, type FieldTypeRegistry } from '../registry';
-import type { AutoFormSlotProps } from '../slot';
+import { AutoFormSlot, type AutoFormSlotProps } from '../slot';
 import { ArrayFieldRenderer } from './array';
 import { ControlledFieldRenderer } from './controlled';
 import { MapFieldRenderer } from './map';
@@ -106,8 +106,8 @@ function extractSlots(children: React.ReactNode): {
   const other: { content: React.ReactNode; key: React.Key }[] = [];
 
   for (const child of React.Children.toArray(children)) {
-    if (React.isValidElement(child) && (child.type as { displayName?: string }).displayName === 'AutoFormSlot') {
-      const props = child.props as AutoFormSlotProps;
+    if (React.isValidElement<AutoFormSlotProps>(child) && child.type === AutoFormSlot) {
+      const { props } = child;
       slots.push({
         after: props.after,
         before: props.before,

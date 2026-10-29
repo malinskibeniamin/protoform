@@ -5,7 +5,9 @@ import { test } from './e2e-test';
 
 test('installed TanStack charts select, update, clear, and recover without Recharts', async ({ page }) => {
   const errors: string[] = [];
-  page.on('pageerror', (error) => errors.push(error.message));
+  page.on('pageerror', (error) => {
+    errors.push(error.message);
+  });
   await page.goto(tanstackBaseURL);
   const chart = page.getByRole('img', { name: 'Daily sample requests', exact: true });
   await expect(chart.locator('rect')).toHaveCount(3);

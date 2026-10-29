@@ -8,7 +8,9 @@ import { createMockProvider } from './test-utils';
 describe('autoForm diagnostic callback', () => {
   test('delivers configuration diagnostics and schema resolution causes without a logging dependency', async () => {
     const diagnostics: AutoFormDiagnostic[] = [];
-    const onDiagnostic = (diagnostic: AutoFormDiagnostic) => diagnostics.push(diagnostic);
+    const onDiagnostic = (diagnostic: AutoFormDiagnostic) => {
+      diagnostics.push(diagnostic);
+    };
     const schema = createMockProvider([
       {
         fieldConfig: { customData: { dataProvider: 'regions' } },

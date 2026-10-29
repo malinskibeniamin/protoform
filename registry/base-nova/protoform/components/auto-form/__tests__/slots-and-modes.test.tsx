@@ -41,8 +41,8 @@ describe('autoForm slots', () => {
     expect(rows).toHaveLength(4);
     expect(rows[0]).toHaveTextContent('Top slot');
     expect(rows[1]).toHaveTextContent('Plain child');
-    expect(within(rows[2] as HTMLElement).getByText('After name')).toBeInTheDocument();
-    expect(within(rows[3] as HTMLElement).getByText('Before email')).toBeInTheDocument();
+    expect(within(requireRow(rows[2])).getByText('After name')).toBeInTheDocument();
+    expect(within(requireRow(rows[3])).getByText('Before email')).toBeInTheDocument();
     expect(rows[2]?.textContent?.indexOf('After name')).toBeGreaterThan(0);
     expect(rows[3]?.textContent?.indexOf('Before email')).toBe(0);
     expect(consoleError).not.toHaveBeenCalled();
@@ -62,3 +62,10 @@ describe('autoForm modes', () => {
     expect(screen.queryByRole('tab', { name: JSON_TAB })).not.toBeInTheDocument();
   });
 });
+
+function requireRow(value: Element | undefined): HTMLElement {
+  if (!(value instanceof HTMLElement)) {
+    throw new TypeError('Expected a form row.');
+  }
+  return value;
+}

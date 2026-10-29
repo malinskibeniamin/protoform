@@ -48,7 +48,7 @@ describe('experimental React Hook Form v8 AutoForm conformance', () => {
 
     await user.click(screen.getByRole('button', { name: /add tags/iu }));
     const inputs = screen.getAllByRole('textbox');
-    await user.type(inputs[1] as HTMLInputElement, 'second');
+    await user.type(requireInput(inputs[1]), 'second');
 
     const [firstRemoveButton] = screen.getAllByRole('button', { name: /remove item/iu });
     if (!firstRemoveButton) {
@@ -105,4 +105,11 @@ function createNameSchema(
     }),
     validateSchema,
   };
+}
+
+function requireInput(value: unknown): HTMLInputElement {
+  if (!(value instanceof HTMLInputElement)) {
+    throw new TypeError('Expected an input element.');
+  }
+  return value;
 }

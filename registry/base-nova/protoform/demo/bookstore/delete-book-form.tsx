@@ -2,6 +2,7 @@
 
 import { create } from '@bufbuild/protobuf';
 import { useMutation } from '@connectrpc/connect-query';
+import { useId } from 'react';
 import { Button } from '@/components/ui/button';
 import { AutoForm } from '@/registry/base-nova/protoform/components/auto-form';
 import { DeleteBookRequestFormBinding } from '@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_form';
@@ -21,6 +22,8 @@ interface DeleteBookFormProps {
 const deleteUiComponents = { SubmitButton: DeleteSubmitButton };
 
 export function DeleteBookForm({ book, onCancel, onDeleted }: DeleteBookFormProps) {
+  const deleteBookTitleId = useId();
+
   const mutation = useMutation(LibraryService.method.deleteBook);
 
   async function deleteBook() {
@@ -29,9 +32,9 @@ export function DeleteBookForm({ book, onCancel, onDeleted }: DeleteBookFormProp
   }
 
   return (
-    <section aria-labelledby="delete-book-title" className="space-y-6">
+    <section aria-labelledby={deleteBookTitleId} className="space-y-6">
       <div className="space-y-2">
-        <h2 className="text-2xl font-semibold" id="delete-book-title">
+        <h2 className="text-2xl font-semibold" id={deleteBookTitleId}>
           Delete book
         </h2>
         <p className="text-sm text-muted-foreground">

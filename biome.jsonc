@@ -4,6 +4,7 @@
     "ultracite/biome/core",
     "ultracite/biome/react",
     "ultracite/biome/astro",
+    "ultracite/biome/playwright",
     "ultracite/biome/type-aware",
     "ultracite/biome/tanstack"
   ],
@@ -28,7 +29,9 @@
       "!!examples/gen",
       "!!registry/**/gen",
       "!!registry/**/__golden__",
-      "!!registry/base-nova/protoform/lib/protobuf-v1-bridge"
+      "!!registry/base-nova/protoform/lib/protobuf-v1-bridge",
+      // These are authored generator configs, not outputs matching Ultracite's *.gen.* ignore.
+      "buf.gen.*.yaml"
     ]
   },
   "formatter": {
@@ -306,13 +309,95 @@
         "noVueImportCompilerMacros": "off",
         "noVueRefAsOperand": "off",
         "noVueVOnNumberValues": "off",
-        "usePlaywrightValidDescribeCallback": "off",
+        "usePlaywrightValidDescribeCallback": "error",
         "useQwikLoaderLocation": "off",
         "useReactAsyncServerFunction": "error",
         "useReactNativePlatformComponents": "off",
         "useVueValidVFor": "off"
       },
       "nursery": {
+        // Biome 2.6.4: compatible checks for this project; named flat depths avoid requiring comments.
+        "noConsoleSpaces": "error",
+        "noMagicArrayFlatDepth": "error",
+        "noReturnArrayPush": "error",
+        // Oxlint owns IIFE readability; Biome's fix conflicts with mandatory implicit arrow returns.
+        "noUnreadableIife": "off",
+        // Enforced in production trees below; test utilities also obey the await-in-loop ban.
+        "noUselessRecursion": "off",
+        "noYamlBooleanKeys": "error",
+        "useWhileLoopCondition": "error",
+        // React refs, JSON values, and protobuf contracts require null; replacing it would change APIs.
+        "noNull": "off",
+        // Vue and Svelte are not project runtimes. Review explicitly if those frameworks are introduced.
+        "noVueComputedPropertiesInData": "off",
+        "noVueDeprecatedDeleteSet": "off",
+        "noVueDeprecatedListeners": "off",
+        "noVueDeprecatedRouterLinkTagProp": "off",
+        "noVueDeprecatedScopeAttribute": "off",
+        "noVueMultipleSlotArgs": "off",
+        "noVueMutatingProps": "off",
+        "noVueSideEffectsInComputed": "off",
+        "noVueUnusedRefs": "off",
+        "useSvelteEventDispatcherTypes": "off",
+        "useVueDefineOptions": "off",
+        "useVueDefinePropsDestructuring": "off",
+        "useVueTemplateRef": "off",
+        "useVueTypedProps": "off",
+        "useVueVModel": "off",
+        "useVueValidDefineEmits": "off",
+        "useVueValidDefineProps": "off",
+        "useVueValidVIs": "off",
+        "useVueValidVMemo": "off",
+        "useVueValidVModel": "off",
+        "useVueValidVShow": "off",
+        "useVueValidVSlot": "off",
+        "noArraySortForMinMax": "error",
+        "noBooleanSortComparator": "error",
+        // Underscores are intentional for ignored parameters and protobuf/runtime metadata.
+        "noDanglingUnderscore": "off",
+        "noEagerArrayMethodsInLoops": "error",
+        "noNewRequire": "error",
+        "noObsoleteAttributes": "error",
+        "noPathConcat": "error",
+        // Ordered collection editors and screenshots intentionally select items by position.
+        "noPlaywrightNthMethods": "off",
+        "noSelfNestedLayer": "error",
+        // No product-wide minimum duration; reduced-motion and instant transitions remain valid.
+        "noShortTimeValues": "off",
+        // Svelte is not used.
+        "noSvelteInternal": "off",
+        "noTanstackQueryRestDestructuring": "error",
+        // Simple nullish fallbacks and indexed schema fields are readable loop inputs.
+        "noUnreadableForOfExpression": "off",
+        "noUnsafeReturn": "error",
+        "noUselessSplice": "error",
+        // Vue is not used.
+        "noVueUnusedEmitDeclarations": "off",
+        // Vue is not used.
+        "noVueVTextVHtmlOnComponent": "off",
+        // Vue is not used.
+        "noVueWatchAfterAwait": "off",
+        "noZeroLengthUnit": "error",
+        "useBlockStatementOverIife": "error",
+        "useConsistentLightnessNotation": { "level": "error", "options": { "notation": "number" } },
+        "useConsistentUnicodeBom": "error",
+        "useExpectToContain": "error",
+        // Do not require an experimental runtime API in source-copy browser consumers.
+        "useIteratorZip": "off",
+        "useMathAbs": "error",
+        "useMathTrunc": "error",
+        "usePackageJsonValidCpu": "error",
+        "usePackageJsonValidEngines": "error",
+        // React Native is not used.
+        "useReactNativeValidPlatformColors": "off",
+        // Vue is not used.
+        "useVueComponentIs": "off",
+        // Vue is not used.
+        "useVueToggleInsideTransition": "off",
+        // Vue is not used.
+        "useVueTypedRef": "off",
+        // Vue is not used.
+        "useVueVOnExact": "off",
         "noAccidentalBitwiseOperators": "error",
         "noArgumentsCallerOrCallee": "error",
         "noDoubleComparison": "error",
@@ -419,7 +504,7 @@
         "noUnusedClasses": "off",
         "noUselessTypeConversion": "error",
         "noVueUndeclaredDirectives": "error",
-        "useAstroClientOnlyDirectiveValue": "off",
+        "useAstroClientOnlyDirectiveValue": "error",
         "useAwaitThenable": "error",
         "useConsistentFunctionStyle": {
           "level": "error",
@@ -776,7 +861,7 @@
         "useRequiredScripts": "error",
         "useStaticResponseMethods": "error",
         "useStrictMode": "error",
-        "noConditionalExpect": "off",
+        "noConditionalExpect": "error",
         "noDrizzleDeleteWithoutWhere": "off",
         "noDrizzleUpdateWithoutWhere": "off",
         "noDuplicateSelectors": "error",
@@ -795,12 +880,48 @@
         // Protoform intentionally supports fullscreen and user-select behavior beyond the
         // rule's configured Baseline target.
         "useBaseline": "off",
-        "useExpect": "off",
-        "useScopedStyles": "off"
+        "useExpect": "error",
+        "useScopedStyles": "error"
       }
     }
   },
   "overrides": [
+    {
+      // Production recursion must not add avoidable call-stack depth. Test-only screenshot
+      // polling remains sequential without weakening its existing await-in-loop rule.
+      "includes": ["registry/**", "examples/**", "components/**"],
+      "linter": { "rules": { "nursery": { "noUselessRecursion": "error" } } }
+    },
+    {
+      // Reusable production components must not hard-code DOM IDs. Isolated test
+      // fixtures intentionally exercise explicit label/control and duplicate-ID contracts.
+      "includes": [
+        "**",
+        "!**/*.{test,spec,test-d,spec-d}.{ts,tsx,js,jsx,mts,cts,mjs,cjs}",
+        "!**/__tests__/**",
+        "!**/__browser__/**"
+      ],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "useUniqueElementIds": {
+              "level": "error",
+              "options": { "excludedComponents": ["ChartContainer", "ChartStyle"] }
+            }
+          }
+        }
+      }
+    },
+    {
+      // Preserve strict empty-pattern checks instead of inheriting Playwright's fixture exception.
+      "includes": ["**/*.{test,spec}.{ts,tsx,js,jsx,mts,cts,mjs,cjs}"],
+      "linter": { "rules": { "correctness": { "noEmptyPattern": "error" } } }
+    },
+    {
+      // Oxfmt owns Astro formatting; Biome continues to lint these templates.
+      "includes": ["**/*.astro"],
+      "formatter": { "enabled": false }
+    },
     // Biome 2.6 ignores these hooks' existing use no memo directives and flags their deliberate ref boundaries.
     {
       "includes": [
@@ -1161,6 +1282,7 @@
             "noExcessiveLinesPerFile": "off"
           },
           "suspicious": {
+            "noExplicitAny": "error",
             "noMisplacedAssertion": "off"
           }
         }

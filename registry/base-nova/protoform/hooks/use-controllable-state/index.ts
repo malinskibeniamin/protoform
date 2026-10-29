@@ -29,9 +29,9 @@ export function useControllableState<T>({
 
   const setValue: SetStateFn<T> = (nextValue) => {
     if (isControlled) {
-      const newValue = isFunction(nextValue) ? nextValue(prop) : nextValue;
+      const newValue = isStateUpdater(nextValue) ? nextValue(prop) : nextValue;
       if (newValue !== prop) {
-        onChangeRef.current?.(newValue as T);
+        onChangeRef.current?.(newValue);
       }
     } else {
       setUncontrolledProp(nextValue);
@@ -67,6 +67,6 @@ function useUncontrolledState<T>({
   return [value, setValue, onChangeRef];
 }
 
-function isFunction(value: unknown): value is (...args: unknown[]) => unknown {
+function isStateUpdater<T>(value: React.SetStateAction<T>): value is (previous: T) => T {
   return typeof value === 'function';
 }

@@ -2,7 +2,7 @@ import { barY, defineChart } from '@tanstack/charts';
 import { scaleBand } from '@tanstack/charts/scales/band';
 import { scaleLinear } from '@tanstack/charts/scales/linear';
 import { tooltip } from '@tanstack/charts/tooltip';
-import { lazy, Suspense, useState } from 'react';
+import { lazy, Suspense, useId, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { TanStackChart } from '@/components/ui/chart-tanstack';
@@ -44,6 +44,8 @@ const requestsChart = defineChart({
 const logEntries = Array.from({ length: 20 }, (_, index) => `Event ${index + 1}: sample request validated`);
 
 export default function LayoutExamples() {
+  const chartBackendId = useId();
+
   const [destination, setDestination] = useState('Profiles');
   const [backend, setBackend] = useState<'tanstack' | 'recharts'>('tanstack');
   return (
@@ -146,7 +148,7 @@ export default function LayoutExamples() {
       </ParitySection>
       <ParitySection title="Chart">
         <Field>
-          <FieldLabel htmlFor="chart-backend">Chart backend</FieldLabel>
+          <FieldLabel htmlFor={chartBackendId}>Chart backend</FieldLabel>
           <Select
             items={[
               { value: 'tanstack', label: 'TanStack Charts (recommended)' },
@@ -159,7 +161,7 @@ export default function LayoutExamples() {
             }}
             value={backend}
           >
-            <SelectTrigger aria-label="Chart backend" id="chart-backend">
+            <SelectTrigger aria-label="Chart backend" id={chartBackendId}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>

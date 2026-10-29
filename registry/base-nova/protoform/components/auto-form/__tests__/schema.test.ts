@@ -22,9 +22,15 @@ describe('resolveSchema', () => {
     });
   });
   test('throws for unsupported input types', () => {
-    expect(() => resolveSchema('not a schema' as never)).toThrow('Unsupported AutoForm schema input');
-    expect(() => resolveSchema(42 as never)).toThrow('Unsupported');
-    expect(() => resolveSchema({ random: 'object' } as never)).toThrow('Unsupported');
+    expect(() => {
+      Reflect.apply(resolveSchema, undefined, ['not a schema']);
+    }).toThrow('Unsupported AutoForm schema input');
+    expect(() => {
+      Reflect.apply(resolveSchema, undefined, [42]);
+    }).toThrow('Unsupported');
+    expect(() => {
+      Reflect.apply(resolveSchema, undefined, [{ random: 'object' }]);
+    }).toThrow('Unsupported');
   });
 
   test('resolves a SchemaProvider and a proto descriptor', () => {

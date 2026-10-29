@@ -18,6 +18,10 @@ export function isRecord(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
 
+function isStringRecord(value: unknown): value is Record<string, string> {
+  return isRecord(value) && Object.values(value).every((entry) => typeof entry === 'string');
+}
+
 function toUiRules(value: unknown): AutoFormUiRule[] | undefined {
   if (!Array.isArray(value)) {
     return;
@@ -146,9 +150,7 @@ export function getFieldUiConfig<TFieldType extends string = string>(
         example: typeof customData['example'] === 'string' ? customData['example'] : undefined,
         help: typeof customData['help'] === 'string' ? customData['help'] : undefined,
         optionGroups: toOptionGroups(customData['optionGroups']),
-        optionLabels: isRecord(customData['optionLabels'])
-          ? (customData['optionLabels'] as Record<string, string>)
-          : undefined,
+        optionLabels: isStringRecord(customData['optionLabels']) ? customData['optionLabels'] : undefined,
         placeholder: typeof customData['placeholder'] === 'string' ? customData['placeholder'] : undefined,
         summaryLabel: typeof customData['summaryLabel'] === 'string' ? customData['summaryLabel'] : undefined,
         visibleWhen: toUiRules(customData['visibleWhen']),
@@ -166,9 +168,7 @@ export function getFieldUiConfig<TFieldType extends string = string>(
           example: typeof nestedUi['example'] === 'string' ? nestedUi['example'] : undefined,
           help: typeof nestedUi['help'] === 'string' ? nestedUi['help'] : undefined,
           optionGroups: toOptionGroups(nestedUi['optionGroups']),
-          optionLabels: isRecord(nestedUi['optionLabels'])
-            ? (nestedUi['optionLabels'] as Record<string, string>)
-            : undefined,
+          optionLabels: isStringRecord(nestedUi['optionLabels']) ? nestedUi['optionLabels'] : undefined,
           placeholder: typeof nestedUi['placeholder'] === 'string' ? nestedUi['placeholder'] : undefined,
           summaryLabel: typeof nestedUi['summaryLabel'] === 'string' ? nestedUi['summaryLabel'] : undefined,
           visibleWhen: toUiRules(nestedUi['visibleWhen']),
@@ -218,22 +218,22 @@ export function getRootErrorMessage(rootError: unknown): string | undefined {
     return rootError;
   }
 
-  if (typeof rootError === 'object') {
-    const errorRecord = rootError as Record<string, unknown>;
-    if (typeof errorRecord['message'] === 'string') {
-      return errorRecord['message'];
+  if (typeof rootError === 'object' && rootError !== null) {
+    const message: unknown = Reflect.get(rootError, 'message');
+    if (typeof message === 'string') {
+      return message;
     }
 
-    return Object.values(errorRecord)
+    return Object.values(rootError)
       .map((value) => getRootErrorMessage(value))
-      .filter((message): message is string => Boolean(message))
+      .filter((entry): entry is string => Boolean(entry))
       .join('\n');
   }
   return undefined;
 }
 
 export function getFieldErrorMessage(errors: unknown, path: string[], collection = false): string | undefined {
-  const nestedError = getPathInObject(errors as Record<string, unknown>, path);
+  const nestedError = isRecord(errors) ? getPathInObject(errors, path) : undefined;
   if (nestedError === null || typeof nestedError !== 'object') {
     return;
   }
@@ -462,12 +462,12 @@ export function getFieldDocsUrl(field: ParsedField): string | undefined {
   if (!(customData && typeof customData === 'object')) {
     return;
   }
-  const bag = customData as { docsUrl?: unknown; ui?: { docsUrl?: unknown } };
-  if (typeof bag.docsUrl === 'string' && bag.docsUrl !== '') {
-    return bag.docsUrl;
+  if (typeof customData['docsUrl'] === 'string' && customData['docsUrl'] !== '') {
+    return customData['docsUrl'];
   }
-  if (bag.ui && typeof bag.ui === 'object' && typeof bag.ui.docsUrl === 'string' && bag.ui.docsUrl !== '') {
-    return bag.ui.docsUrl;
+  const { ui } = customData;
+  if (isRecord(ui) && typeof ui['docsUrl'] === 'string' && ui['docsUrl'] !== '') {
+    return ui['docsUrl'];
   }
   return undefined;
 }

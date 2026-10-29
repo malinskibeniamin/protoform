@@ -14,7 +14,7 @@ import {
 import React from 'react';
 import { useMemoizedArray } from '@/registry/base-nova/protoform/lib/input-utils';
 import { dirtyFieldsFromValues } from '@/registry/base-nova/protoform/lib/protobuf-provider';
-import type { SchemaValidation, SchemaValidationError } from '../core-types';
+import type { SchemaValidationError } from '../core-types';
 import {
   type AutoFormArrayController,
   type AutoFormEngine,
@@ -23,6 +23,7 @@ import {
   errorMessages,
   useDirtyStateNotification,
 } from '../engine';
+import type { ValidatedFormValues } from '../schema';
 import type { AutoFormRevalidationMode, AutoFormValidationMode } from '../types';
 
 type FormValues = Record<string, unknown>;
@@ -229,8 +230,8 @@ function setErrorAtPath(target: Record<string, unknown>, path: string[], message
       return;
     }
     const existing = current[segment];
-    if (existing && typeof existing === 'object' && !Array.isArray(existing)) {
-      current = existing as Record<string, unknown>;
+    if (isValueRecord(existing)) {
+      current = existing;
       continue;
     }
     const nested: Record<string, unknown> = {};
@@ -263,7 +264,7 @@ export interface TanStackV2EngineProps {
   formOptions?: TanStackFormV2Options | undefined;
   onDirtyChange?: ((isDirty: boolean) => void) | undefined;
   revalidationMode?: AutoFormRevalidationMode | undefined;
-  validateSchema: (values: FormValues, signal: AbortSignal) => Promise<SchemaValidation>;
+  validateSchema: (values: FormValues, signal: AbortSignal) => Promise<ValidatedFormValues>;
   validationMode?: AutoFormValidationMode | undefined;
   values?: FormValues | undefined;
 }
@@ -298,7 +299,7 @@ export function TanStackV2Engine({
         return;
       }
       if (result.success) {
-        validatedValuesRef.current = result.data as FormValues;
+        validatedValuesRef.current = result.data;
         setValidationErrors([]);
         return;
       }
@@ -484,4 +485,8 @@ export function TanStackV2Engine({
       <AutoFormEngineProvider engine={engine}>{children(engine)}</AutoFormEngineProvider>
     </TanStackV2EngineContext.Provider>
   );
+}
+
+function isValueRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
 }

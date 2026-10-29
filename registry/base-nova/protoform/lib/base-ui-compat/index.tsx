@@ -241,14 +241,14 @@ function composeRefs<T>(...refs: Array<React.Ref<T> | undefined>): React.RefCall
       if (typeof ref === 'function') {
         ref(value);
       } else {
-        (ref as React.RefObject<T>).current = value;
+        ref.current = value;
       }
     }
   };
 }
 
 function getElementRef(element: React.ReactElement): React.Ref<unknown> | undefined {
-  const refFromProps: unknown = Reflect.get(element.props as object, 'ref');
+  const refFromProps: unknown = Reflect.get(element.props ?? {}, 'ref');
   if (refFromProps !== undefined) {
     return refFromProps as React.Ref<unknown>;
   }
@@ -306,7 +306,7 @@ const SlotClone = React.forwardRef<HTMLElement, SlotCloneProps>(function renderS
   }
 
   const element = children as SlotElement;
-  const childProps = element.props as object;
+  const childProps = element.props ?? {};
   const merged = mergeSlotProps(slotProps, childProps);
   const childRef = getElementRef(element) as React.Ref<HTMLElement> | undefined;
   merged['ref'] = forwardedRef ? composeRefs(forwardedRef, childRef) : childRef;
@@ -329,8 +329,12 @@ function isSlottable(child: React.ReactNode): child is React.ReactElement<{ chil
   if (!React.isValidElement(child)) {
     return false;
   }
-  const type = child.type as { __slottableId?: symbol } | string;
-  return typeof type !== 'string' && type.__slottableId === SLOTTABLE_IDENTIFIER;
+  const componentType: unknown = child.type;
+  return (
+    (typeof componentType === 'function' || (typeof componentType === 'object' && componentType !== null)) &&
+    '__slottableId' in componentType &&
+    componentType.__slottableId === SLOTTABLE_IDENTIFIER
+  );
 }
 
 export const Slot = React.forwardRef<HTMLElement, SlotProps>(function renderSlot(props, forwardedRef) {

@@ -1,5 +1,6 @@
-import { create, fromBinary, toBinary } from '@bufbuild/protobuf';
+import { create, fromBinary, isMessage, toBinary } from '@bufbuild/protobuf';
 import { FieldOptionsSchema } from '@bufbuild/protobuf/wkt';
+import { z } from 'zod';
 
 import './auto-form-example-annotations';
 
@@ -13,9 +14,10 @@ import {
   protoToFormValues,
 } from '.';
 import {
-  type AutoFormExample,
+  AccessTier,
   AutoFormExampleSchema,
   AutoFormUiMetadataExampleSchema,
+  CountryCode,
 } from './gen/auto-form-example_pb';
 
 declare const { describe, expect, test }: typeof import('bun:test');
@@ -128,7 +130,7 @@ describe('protobuf-provider', () => {
 
   test('converts protobuf messages into form values, supplies defaults, and round-trips optional, wrapper, and JSON-backed fields', () => {
     const message = create(AutoFormExampleSchema, {
-      accessTier: 3,
+      accessTier: AccessTier.ADMIN,
       avatarBytes: new Uint8Array([1, 2, 3, 4]),
       bio: 'A protobuf-backed form with Buf reflection and Protovalidate.',
       createdAt: {
@@ -145,7 +147,7 @@ describe('protobuf-provider', () => {
       officeLocations: {
         hq: {
           city: 'San Francisco',
-          country: 1,
+          country: CountryCode.US,
           lineOne: '500 Harbor Way',
           postalCode: '94107',
           state: 'CA',
@@ -163,7 +165,7 @@ describe('protobuf-provider', () => {
       resourceId: '123e4567-e89b-12d3-a456-426614174000',
       shippingAddress: {
         city: 'San Francisco',
-        country: 1,
+        country: CountryCode.US,
         lineOne: '500 Harbor Way',
         postalCode: '94107',
         state: 'CA',
@@ -227,7 +229,10 @@ describe('protobuf-provider', () => {
       throw new Error('Expected optional and JSON-backed protobuf fields to validate.');
     }
 
-    const data = validationResult.data as Record<string, unknown>;
+    const { data } = validationResult;
+    if (!isMessage(data, AutoFormExampleSchema)) {
+      throw new Error('Expected a validated protobuf message.');
+    }
     expect(data['$typeName']).toBe('protoform.v1.AutoFormExample');
     expect(data['employeeNumber']).toBe(4001n);
     expect(data['labels']).toEqual({ team: 'frontend' });
@@ -236,10 +241,7 @@ describe('protobuf-provider', () => {
       value: 'forms@protoform.com',
     });
 
-    const roundTrippedValues = protoToFormValues(
-      AutoFormExampleSchema,
-      validationResult.data as AutoFormExample | undefined
-    );
+    const roundTrippedValues = protoToFormValues(AutoFormExampleSchema, data);
 
     expect(roundTrippedValues).toEqual<unknown>(
       expect.objectContaining({
@@ -283,13 +285,16 @@ describe('protobuf-provider', () => {
         fields: {},
         names: [],
         shouldUseNativeValidation: false,
-      } as never
+      }
     );
 
-    const officeLocationsErrors = result.errors['officeLocations'] as
-      | Array<{ value?: { city?: { message?: string } } }>
-      | undefined;
-    const rootError = result.errors.root as { message?: string } | undefined;
+    const officeLocationsErrors = z
+      .array(
+        z.object({ value: z.object({ city: z.object({ message: z.string().optional() }).optional() }).optional() })
+      )
+      .optional()
+      .parse(result.errors['officeLocations']);
+    const rootError = result.errors.root;
     const formRootError = result.errors[PROTO_FORM_ROOT_ERROR_KEY];
 
     expect(result.values).toEqual({});
@@ -310,7 +315,7 @@ describe('protobuf-provider', () => {
       fields: {},
       names: [],
       shouldUseNativeValidation: false,
-    } as never);
+    });
 
     expect(resultForEdit.values).toMatchObject({
       $unknown: source.$unknown,

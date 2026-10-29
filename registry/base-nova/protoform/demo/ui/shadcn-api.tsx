@@ -1,7 +1,7 @@
 'use client';
 
 import { RotateCcwIcon } from 'lucide-react';
-import { useState } from 'react';
+import { useId, useState } from 'react';
 
 import { Alert, AlertAction, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
@@ -46,6 +46,8 @@ const numericItems = [
 ];
 
 function ShadcnApiExample() {
+  const cancelApiChangesId = useId();
+
   const [fruit, setFruit] = useState<string | null>(null);
   const [tags, setTags] = useState<string[]>([]);
   const [number, setNumber] = useState<number | null>(1);
@@ -168,8 +170,8 @@ function ShadcnApiExample() {
           </Select>
         </Field>
         <Field orientation="horizontal">
-          <Checkbox checked={cancelChanges} id="cancel-api-changes" onCheckedChange={setCancelChanges} />
-          <FieldLabel htmlFor="cancel-api-changes">Cancel selection and disclosure changes</FieldLabel>
+          <Checkbox checked={cancelChanges} id={cancelApiChangesId} onCheckedChange={setCancelChanges} />
+          <FieldLabel htmlFor={cancelApiChangesId}>Cancel selection and disclosure changes</FieldLabel>
         </Field>
         <p aria-live="polite" className="text-sm text-muted-foreground">
           Event: {event}. Number: {String(number)}.

@@ -20,7 +20,10 @@ describe('inputGroupAddon', () => {
     expect(addon).not.toHaveAttribute('role');
     expect(addon).not.toHaveAttribute('tabindex');
 
-    await user.click(addon as HTMLElement);
+    if (!(addon instanceof HTMLElement)) {
+      throw new TypeError('Expected an HTML input addon.');
+    }
+    await user.click(addon);
     expect(screen.getByRole('textbox', { name: 'Email' })).toHaveFocus();
   });
 });

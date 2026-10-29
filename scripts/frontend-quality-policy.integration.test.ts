@@ -1,19 +1,17 @@
 import { spawnSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { describe, expect } from '@rstest/core';
+import { z } from 'zod';
 
-const manifest = JSON.parse(readFileSync('package.json', 'utf8')) as {
-  devDependencies: Record<string, string>;
-  scripts: Record<string, string>;
-};
-const tsconfig = JSON.parse(readFileSync('tsconfig.json', 'utf8')) as {
-  compilerOptions: Record<string, unknown>;
-  exclude?: string[];
-};
-const testTsconfig = JSON.parse(readFileSync('tsconfig.tests.json', 'utf8')) as {
-  exclude?: string[];
-  include?: string[];
-};
+const manifest = z
+  .looseObject({ devDependencies: z.record(z.string(), z.string()), scripts: z.record(z.string(), z.string()) })
+  .parse(JSON.parse(readFileSync('package.json', 'utf8')));
+const tsconfig = z
+  .looseObject({ compilerOptions: z.record(z.string(), z.unknown()), exclude: z.array(z.string()).optional() })
+  .parse(JSON.parse(readFileSync('tsconfig.json', 'utf8')));
+const testTsconfig = z
+  .looseObject({ exclude: z.array(z.string()).optional(), include: z.array(z.string()).optional() })
+  .parse(JSON.parse(readFileSync('tsconfig.tests.json', 'utf8')));
 const biomeConfig = readFileSync('biome.jsonc', 'utf8');
 
 describe('frontend quality policy', () => {

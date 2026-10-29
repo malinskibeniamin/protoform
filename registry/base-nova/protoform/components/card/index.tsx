@@ -47,33 +47,17 @@ type AnimatedCardProps = BaseCardProps & Omit<MotionProps, keyof BaseCardProps> 
 
 export type CardProps = StaticCardProps | AnimatedCardProps;
 
-const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ className, size, variant, testId, animated = false, ...props }, ref) => {
-    const cardClassName = cn(cardVariants({ size, variant }), className);
+const Card = React.forwardRef<HTMLDivElement, CardProps>(({ className, size, variant, testId, ...props }, ref) => {
+  const cardClassName = cn(cardVariants({ size, variant }), className);
 
-    if (animated === true) {
-      return (
-        <motion.div
-          className={cardClassName}
-          data-slot="card"
-          data-testid={testId}
-          ref={ref}
-          {...(props as Omit<AnimatedCardProps, 'animated' | 'className' | 'size' | 'variant' | 'testId'>)}
-        />
-      );
-    }
-
-    return (
-      <div
-        className={cardClassName}
-        data-slot="card"
-        data-testid={testId}
-        ref={ref}
-        {...(props as Omit<StaticCardProps, 'animated' | 'className' | 'size' | 'variant' | 'testId'>)}
-      />
-    );
+  if (props.animated === true) {
+    const { animated: _animated, ...motionProps } = props;
+    return <motion.div className={cardClassName} data-slot="card" data-testid={testId} ref={ref} {...motionProps} />;
   }
-);
+
+  const { animated: _animated, ...staticProps } = props;
+  return <div className={cardClassName} data-slot="card" data-testid={testId} ref={ref} {...staticProps} />;
+});
 
 Card.displayName = 'Card';
 
