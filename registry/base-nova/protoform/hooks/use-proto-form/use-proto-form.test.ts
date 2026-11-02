@@ -1,5 +1,5 @@
 import { create, fromBinary, toBinary, toJson } from '@bufbuild/protobuf';
-import { describe, expect } from '@rstest/core';
+import { describe, expect, rs } from '@rstest/core';
 import { renderHook, waitFor } from '@testing-library/react';
 import { act } from 'react';
 
@@ -419,4 +419,37 @@ describe('useProtoForm — getNestedErrors', () => {
       expect(errors).toBeDefined();
     });
   });
+});
+
+describe('unknown oneof edit sources', () => {
+  for (const baseline of ['native', 'async', 'reset', 'reset callback']) {
+    test(`${baseline} defaults report ambiguous selections through the normal submit resolver`, async () => {
+      const known = create(AutoFormExampleSchema, { username: 'valid_user' });
+      const source = fromBinary(
+        AutoFormExampleSchema,
+        Uint8Array.from([...toBinary(AutoFormExampleSchema, known), 0xfa, 0xf0, 0x04, 0])
+      );
+      const onSubmit = rs.fn();
+      const initial = baseline === 'reset' ? known : source;
+      const suppliedDefaults = baseline === 'async' ? () => Promise.resolve(source) : initial;
+      const { result } = renderHook(() => useProtoForm(AutoFormExampleSchema, { defaultValues: suppliedDefaults }));
+      expect(result.current.formState.errors.root).toBeUndefined();
+      await waitFor(() => expect(result.current.getValues('username')).toBe('valid_user'));
+      await act(async () => {
+        if (baseline === 'reset') {
+          result.current.reset(source);
+        }
+        if (baseline === 'reset callback') {
+          result.current.reset((values) => ({ ...values, username: 'reset_user' }));
+        }
+        result.current.setOneofValue('preferredContact', 'preferredEmail', 'forms@example.com', {
+          shouldValidate: false,
+        });
+        await result.current.handleSubmit(onSubmit)();
+      });
+      await waitFor(() => expect(result.current.formState.errors.root?.message).toContain('unknown wire fields'));
+      expect(onSubmit).not.toHaveBeenCalled();
+      expect(() => result.current.createMessage()).toThrow(/unknown wire fields/u);
+    });
+  }
 });

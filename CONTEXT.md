@@ -1,6 +1,7 @@
 # Protoform domain glossary
 
 - **Edit source message**: The protobuf message loaded for an update form. Unknown wire fields on this message remain attached to the same surviving message nodes when edited form values are converted back to protobuf.
+- **Unrecognized oneof edit**: A transition from no recognized source selection to a known option while that same message contains unknown wire fields. The stored selection cannot be distinguished from a future oneof member, so conversion rejects the edit instead of forwarding potentially competing selections. Unrelated edits and known-selection switches retain their existing source-preservation behavior.
 - **Configuration diagnostic**: A deterministic, schema-agnostic pre-render finding that identifies an AutoForm configuration defect by code and schema path.
 - **Runtime message**: Protoform-owned user-facing text identified by a stable code, interpolation parameters, and an English fallback. Hosts may translate it without replacing schema-authored or server-authored text.
 - **Provider request**: The field context supplied to a data provider, including search text, pagination cursor, selected values, declared dependency values, and a cancellation signal. The provider resolves options but does not own form state.

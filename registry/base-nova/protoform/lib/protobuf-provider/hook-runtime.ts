@@ -815,9 +815,22 @@ function preserveMessageUnknownFields(
       target.nanos = source.nanos;
     }
   }
-  const hasUnknownFields = Boolean(source['$unknown']);
+  const sourceUnknownFields = source['$unknown'];
+  if (Array.isArray(sourceUnknownFields) && sourceUnknownFields.length > 0) {
+    const ambiguousOneof = desc.oneofs.find(
+      (oneof) =>
+        readOneofSelection(source[oneof.localName]) === undefined &&
+        readOneofSelection(target[oneof.localName]) !== undefined
+    );
+    if (ambiguousOneof) {
+      throw new TypeError(
+        `The stored ${ambiguousOneof.name} oneof may select an option in unknown wire fields. Load an updated schema before selecting an option.`
+      );
+    }
+  }
+  const hasUnknownFields = Boolean(sourceUnknownFields);
   if (hasUnknownFields) {
-    target['$unknown'] = structuredClone(source['$unknown']);
+    target['$unknown'] = structuredClone(sourceUnknownFields);
   }
 
   for (const member of desc.members) {
