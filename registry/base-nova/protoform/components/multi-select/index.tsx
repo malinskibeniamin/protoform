@@ -7,7 +7,7 @@ import React from 'react';
 
 import { Input } from '@/components/ui/input';
 import { TagsValue } from '@/components/ui/tags';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useControllableState } from '@/registry/base-nova/protoform/hooks/use-controllable-state';
 import { usePortalContainer } from '@/registry/base-nova/protoform/hooks/use-portal-container';
 import {
@@ -243,74 +243,70 @@ const MultiSelectValue = React.forwardRef<React.ComponentRef<'div'>, MultiSelect
     }
 
     return (
-      <TooltipProvider>
-        <div
-          className={cn('flex flex-1 flex-wrap items-center gap-1 overflow-hidden', className)}
-          {...props}
-          ref={forwardRef}
-        >
-          {renderItems.map((itemValue) => {
-            const item = findMultiSelectOption(options, itemValue) ?? itemCache.get(itemValue);
+      <div
+        className={cn('flex flex-1 flex-wrap items-center gap-1 overflow-hidden', className)}
+        {...props}
+        ref={forwardRef}
+      >
+        {renderItems.map((itemValue) => {
+          const item = findMultiSelectOption(options, itemValue) ?? itemCache.get(itemValue);
 
-            const content = item?.label ?? itemValue;
+          const content = item?.label ?? itemValue;
 
-            const child =
-              maxItemLength !== undefined &&
-              maxItemLength !== 0 &&
-              typeof content === 'string' &&
-              content.length > maxItemLength
-                ? `${content.slice(0, maxItemLength)}...`
-                : content;
+          const child =
+            maxItemLength !== undefined &&
+            maxItemLength !== 0 &&
+            typeof content === 'string' &&
+            content.length > maxItemLength
+              ? `${content.slice(0, maxItemLength)}...`
+              : content;
 
-            const shouldShowTooltip =
-              maxItemLength !== undefined &&
-              maxItemLength !== 0 &&
-              typeof content === 'string' &&
-              content.length > maxItemLength;
+          const shouldShowTooltip =
+            maxItemLength !== undefined &&
+            maxItemLength !== 0 &&
+            typeof content === 'string' &&
+            content.length > maxItemLength;
 
-            const el = (
-              <TagsValue
-                key={itemValue}
-                {...(disabled
-                  ? {}
-                  : {
-                      onRemove: () => {
-                        if (!item) {
-                          return;
-                        }
+          const el = (
+            <TagsValue
+              key={itemValue}
+              {...(disabled
+                ? {}
+                : {
+                    onRemove: () => {
+                      if (!item) {
+                        return;
+                      }
 
-                        onDeselect(itemValue, item);
-                      },
-                    })}
-                testId={
-                  item?.selectedTestId ??
-                  (testId !== undefined && testId !== '' ? `${testId}-selected-${itemValue}` : undefined)
-                }
-              >
-                {child}
-              </TagsValue>
+                      onDeselect(itemValue, item);
+                    },
+                  })}
+              testId={
+                item?.selectedTestId ??
+                (testId !== undefined && testId !== '' ? `${testId}-selected-${itemValue}` : undefined)
+              }
+            >
+              {child}
+            </TagsValue>
+          );
+
+          if (shouldShowTooltip) {
+            return (
+              <Tooltip key={itemValue}>
+                <TooltipTrigger asChild>
+                  <span className="inline-flex">{el}</span>
+                </TooltipTrigger>
+                <TooltipContent align="start" className="z-[51]" side="bottom">
+                  {content}
+                </TooltipContent>
+              </Tooltip>
             );
+          }
 
-            if (shouldShowTooltip) {
-              return (
-                <Tooltip key={itemValue}>
-                  <TooltipTrigger asChild>
-                    <span className="inline-flex">{el}</span>
-                  </TooltipTrigger>
-                  <TooltipContent align="start" className="z-[51]" side="bottom">
-                    {content}
-                  </TooltipContent>
-                </Tooltip>
-              );
-            }
-
-            return el;
-          })}
-          {renderRemain ? (
-            <span className="py-0.5 text-xs leading-4 text-muted-foreground">+{renderRemain}</span>
-          ) : null}
-        </div>
-      </TooltipProvider>
+          return el;
+        })}
+        {renderRemain ? <span className="py-0.5 text-xs leading-4 text-muted-foreground">+{renderRemain}</span> : null}
+      </div>
     );
   }
 );

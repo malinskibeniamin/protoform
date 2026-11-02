@@ -56,15 +56,7 @@ import type {
   ResolvedSchema,
 } from './types';
 import type { ProtoformUIComponentMap } from './ui-component-map';
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-  Heading,
-  ProtoformUIProvider,
-  Text,
-  TooltipProvider,
-} from './ui-components';
+import { Alert, AlertDescription, AlertTitle, Heading, ProtoformUIProvider, Text } from './ui-components';
 import { normalizeModes, resolveInitialMode } from './utils/modes';
 
 const DEFAULT_FORM_PROPS = {};
@@ -637,67 +629,60 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
 
   return (
     <AutoFormAppearanceProvider appearance={appearance}>
-      <TooltipProvider delayDuration={150} skipDelayDuration={0}>
-        <AutoFormRuntimeProvider<TNativeForm>
-          advancedFields={advancedFields}
-          conversionOptions={conversionOptions}
-          dataProviders={dataProviders}
-          deprecatedFields={deprecatedFields}
-          fieldRegistry={fieldRegistry}
-          formatMessage={formatMessage}
-          formComponents={mergedFormComponents}
-          mode={mode}
-          onFieldChange={onFieldChange}
-          payloadBuilder={payloadBuilder}
-          payloadParser={payloadParser}
-          payloadSchema={payloadSchema}
-          renderContent={(bag) =>
-            renderFormContent(
-              <>
-                {hasRootError ? (
-                  <Alert variant="destructive">
-                    <AlertTitle>
-                      {formatProtoformMessage(
-                        formatMessage,
-                        'auto_form.validation_failed',
-                        {},
-                        'Form validation failed'
-                      )}
-                    </AlertTitle>
-                    <AlertDescription className="whitespace-pre-wrap">{engine.rootError}</AlertDescription>
-                  </Alert>
-                ) : null}
+      <AutoFormRuntimeProvider<TNativeForm>
+        advancedFields={advancedFields}
+        conversionOptions={conversionOptions}
+        dataProviders={dataProviders}
+        deprecatedFields={deprecatedFields}
+        fieldRegistry={fieldRegistry}
+        formatMessage={formatMessage}
+        formComponents={mergedFormComponents}
+        mode={mode}
+        onFieldChange={onFieldChange}
+        payloadBuilder={payloadBuilder}
+        payloadParser={payloadParser}
+        payloadSchema={payloadSchema}
+        renderContent={(bag) =>
+          renderFormContent(
+            <>
+              {hasRootError ? (
+                <Alert variant="destructive">
+                  <AlertTitle>
+                    {formatProtoformMessage(formatMessage, 'auto_form.validation_failed', {}, 'Form validation failed')}
+                  </AlertTitle>
+                  <AlertDescription className="whitespace-pre-wrap">{engine.rootError}</AlertDescription>
+                </Alert>
+              ) : null}
 
-                {rootHeaderContent}
+              {rootHeaderContent}
 
-                <AutoFormModeShell
-                  bestEffort={bag.payloadState.bestEffort}
-                  jsonEditorError={bag.jsonEditorError}
-                  jsonText={bag.jsonEditorText}
-                  mode={mode}
-                  modes={availableModes}
-                  onFormatJson={bag.handleFormatJson}
-                  onJsonTextChange={bag.handleJsonTextChange}
-                  onModeChange={setMode}
-                  onResetJson={bag.handleResetJson}
-                  payload={bag.payloadState.payload}
-                  renderFormMode={renderFormForMode}
-                  renderSummary={renderSummary}
-                  showSummary={showSummary && (!stepper || currentStepIndex === stepper.steps.length - 1)}
-                  summaryContext={bag.summaryContext}
-                  testIdPrefix={testIdPrefix}
-                />
-              </>
-            )
-          }
-          resolvedSchema={resolvedSchema}
-          simpleFields={simpleFields}
-          testIdPrefix={testIdPrefix}
-          uiComponents={mergedUiComponents}
-        >
-          {null}
-        </AutoFormRuntimeProvider>
-      </TooltipProvider>
+              <AutoFormModeShell
+                bestEffort={bag.payloadState.bestEffort}
+                jsonEditorError={bag.jsonEditorError}
+                jsonText={bag.jsonEditorText}
+                mode={mode}
+                modes={availableModes}
+                onFormatJson={bag.handleFormatJson}
+                onJsonTextChange={bag.handleJsonTextChange}
+                onModeChange={setMode}
+                onResetJson={bag.handleResetJson}
+                payload={bag.payloadState.payload}
+                renderFormMode={renderFormForMode}
+                renderSummary={renderSummary}
+                showSummary={showSummary && (!stepper || currentStepIndex === stepper.steps.length - 1)}
+                summaryContext={bag.summaryContext}
+                testIdPrefix={testIdPrefix}
+              />
+            </>
+          )
+        }
+        resolvedSchema={resolvedSchema}
+        simpleFields={simpleFields}
+        testIdPrefix={testIdPrefix}
+        uiComponents={mergedUiComponents}
+      >
+        {null}
+      </AutoFormRuntimeProvider>
     </AutoFormAppearanceProvider>
   );
 }

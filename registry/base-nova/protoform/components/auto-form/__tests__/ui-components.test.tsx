@@ -17,6 +17,15 @@ function ConsumerButton({ children, ...props }: React.ComponentProps<'button'>) 
 }
 
 describe('protoformUIProvider', () => {
+  test('renders a minimal host form without a tooltip provider registration', () => {
+    const schema = createMockProvider([{ key: 'title', required: true, type: 'string' }]);
+    const { TooltipProvider: _tooltipProvider, ...components } = shadcnUIComponents;
+    render(<AutoForm components={components} modes={['simple']} schema={schema} showSummary={false} />);
+
+    expect(screen.getByRole('textbox', { name: 'Title *' })).toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
   test('shows a missing host control without requiring Alert and recovers when supplied', () => {
     const schema = createMockProvider([{ key: 'title', required: true, type: 'string' }]);
     const { Input: _input, Alert: _alert, ...incomplete } = shadcnUIComponents;

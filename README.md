@@ -92,6 +92,36 @@ A missing control produces an actionable error naming it; supplying an updated m
 form. For a minimal text form, use `modes={["simple"]}` and `showSummary={false}` to avoid requiring
 tabs and summary controls.
 
+### Tooltip timing
+
+Keep AutoForm and adjacent controls under the same application-level tooltip provider so hover
+warm-up crosses form boundaries. AutoForm and the bundled multi-select do not create their own
+tooltip providers or override host timing. The `TooltipProvider` component-map entry remains
+available for custom renderers, but AutoForm itself does not require it.
+
+For Radix-style shadcn tooltips, configure the provider at your application root, for example:
+
+```tsx
+import { TooltipProvider } from "@/design-system/ui/tooltip";
+
+<TooltipProvider delayDuration={150} skipDelayDuration={400}>
+  <App />
+</TooltipProvider>;
+```
+
+Use your provider's own API: [Radix](https://www.radix-ui.com/primitives/docs/components/tooltip)
+uses `delayDuration` and `skipDelayDuration`;
+[Base UI](https://base-ui.com/react/components/tooltip) uses `delay` and `timeout`.
+When updating an existing install, move any relied-on form-local timing to this host provider.
+Radix tooltips require a provider; Base UI without one uses its standalone defaults and does not
+share hover warm-up.
+
+The bundled `TooltipContent` uses shadcn's CSS popup animation: text, background, and arrow
+animate together, with no text-only spring. Keep `@import "tw-animate-css";` in your app's
+stylesheet. Reduced-motion preferences disable the animation. The `detail` variant keeps
+readiness guidance instant. Motion is owned by these variants, not the former Motion
+`transition` prop.
+
 ### Existing consumers
 
 - For a new full UI install, prefer `bunx shadcn@latest add @protoform/protoform-shadcn-tanstack`.
