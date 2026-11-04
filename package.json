@@ -100,8 +100,10 @@
       "path-to-regexp": "6.3.0"
     },
     "deepmerge@^4": "npm:@stackline/deepmerge@1.1.0",
+    "glob": "14.0.3",
     "katex": "0.18.7",
     "lodash-es": "4.18.1",
+    "minimatch": "11.0.4",
     "router": {
       "path-to-regexp": "8.4.0"
     },
