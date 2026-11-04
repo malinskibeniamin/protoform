@@ -106,6 +106,30 @@ describe('useProtoForm', () => {
 });
 
 describe('useProtoForm — update mask', () => {
+  test('preserves message clearing when a sibling is edited afterward', async () => {
+    const { result } = renderHook(() =>
+      useProtoForm(AutoFormExampleSchema, {
+        defaultValues: defaults({
+          primaryEmail: 'old@example.com',
+          shippingAddress: { city: 'Warsaw', lineOne: '1 Main Street' },
+        }),
+      })
+    );
+
+    act(() => {
+      result.current.setValue('shippingAddress', undefined, { shouldDirty: true });
+    });
+    act(() => {
+      result.current.setValue('primaryEmail', 'new@example.com', { shouldDirty: true });
+    });
+
+    await waitFor(() => {
+      expect(result.current.createUpdateMask().paths).toEqual(['primary_email', 'shipping_address']);
+    });
+    expect(result.current.createMessage().shippingAddress).toBeUndefined();
+    expect(result.current.createMessage().primaryEmail).toBe('new@example.com');
+  });
+
   test('derives the mask from fields changed through react-hook-form', async () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
@@ -212,7 +236,7 @@ describe('useProtoForm — createMessage', () => {
     expect(message.age).toBe(25);
   });
 
-  test('strips stale protobuf metadata from RHF internal state', () => {
+  test('strips stale protobuf metadata from RHF internal state', async () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: defaults({
@@ -222,8 +246,9 @@ describe('useProtoForm — createMessage', () => {
       })
     );
 
-    act(() => {
+    await act(async () => {
       result.current.setOneofValue('preferredContact', 'preferredPhone', '+1555');
+      await result.current.trigger();
     });
 
     const message = result.current.createMessage();
@@ -329,7 +354,7 @@ describe('useProtoForm — oneof fields', () => {
     expect(message.preferredContact.case).toBeUndefined();
   });
 
-  test('setOneofValue switches oneof branch without casts', () => {
+  test('setOneofValue switches oneof branch without casts', async () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: defaults({
@@ -338,8 +363,9 @@ describe('useProtoForm — oneof fields', () => {
       })
     );
 
-    act(() => {
+    await act(async () => {
       result.current.setOneofValue('preferredContact', 'preferredPhone', '+1234567890');
+      await result.current.trigger();
     });
 
     const message = result.current.createMessage();

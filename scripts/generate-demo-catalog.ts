@@ -547,7 +547,7 @@ function generateRegistry(): void {
 
   items.push(
     {
-      dependencies: ['@bufbuild/protobuf', 'react', 'react-hook-form@^7.90.0'],
+      dependencies: ['@bufbuild/protobuf', 'react', 'react-hook-form@^7.91.0'],
       description: 'Shared fixture descriptors and generated compatibility contracts for focused Protoform demos.',
       files: runtimeFiles.map((path) => ({
         path,

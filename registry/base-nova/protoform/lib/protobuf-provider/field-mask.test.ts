@@ -39,6 +39,7 @@ describe('createUpdateMask', () => {
           case: 'preferredPhone',
           value: '+48123456789',
         },
+        shippingAddress: { postalCode: '00-001' },
       }
     );
 
@@ -67,6 +68,23 @@ describe('createUpdateMask', () => {
     );
 
     expect(maskWithAipFields.paths).toEqual(['display_name']);
+  });
+
+  test.each([undefined, null])('masks a cleared message as a whole when its current value is %s', (shippingAddress) => {
+    const mask = createUpdateMask(
+      AutoFormExampleSchema,
+      {
+        primaryEmail: true,
+        shippingAddress: { city: true, postalCode: true },
+      },
+      { primaryEmail: 'new@example.com', shippingAddress },
+      {
+        primaryEmail: 'old@example.com',
+        shippingAddress: { city: 'Warsaw', postalCode: '00-001' },
+      }
+    );
+
+    expect(mask.paths).toEqual(['primary_email', 'shipping_address']);
   });
 
   test('masks the cleared initial oneof branch and nested dirty leaves in the active branch', () => {
