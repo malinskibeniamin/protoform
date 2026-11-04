@@ -42,7 +42,7 @@
         "@connectrpc/connect",
         "@connectrpc/connect-query",
         "@tanstack/react-query",
-        "react-hook-form@^7.90.0"
+        "react-hook-form@^7.91.0"
       ],
       "files": [
         {
@@ -339,7 +339,7 @@
       "type": "registry:hook",
       "title": "useProtoForm",
       "description": "React Hook Form adapter for ProtoValidate ES, CEL rules, protobuf defaults, oneofs, and Connect/gRPC field violations.",
-      "dependencies": ["@bufbuild/protobuf", "@connectrpc/connect", "@hookform/resolvers", "react-hook-form@^7.90.0"],
+      "dependencies": ["@bufbuild/protobuf", "@connectrpc/connect", "@hookform/resolvers", "react-hook-form@^7.91.0"],
       "files": [
         {
           "path": "registry/base-nova/protoform/hooks/use-proto-form/index.ts",
@@ -807,7 +807,7 @@
       "title": "Protoform React",
       "description": "React Hook Form AutoForm renderer and field logic using a consumer-owned shadcn-compatible component map.",
       "registryDependencies": ["@protoform/auto-form-core", "@protoform/protoform-core"],
-      "dependencies": ["react-hook-form@^7.90.0"],
+      "dependencies": ["react-hook-form@^7.91.0"],
       "files": [
         {
           "path": "registry/base-nova/protoform/components/auto-form/adapters/react-hook-form.tsx",
@@ -2042,7 +2042,7 @@
         "lucide-react",
         "motion",
         "react-day-picker",
-        "react-hook-form@^7.90.0",
+        "react-hook-form@^7.91.0",
         "tailwind-merge",
         "zod"
       ],
@@ -2141,7 +2141,7 @@
       ]
     },
     {
-      "dependencies": ["@bufbuild/protobuf", "react", "react-hook-form@^7.90.0"],
+      "dependencies": ["@bufbuild/protobuf", "react", "react-hook-form@^7.91.0"],
       "description": "Shared fixture descriptors and generated compatibility contracts for focused Protoform demos.",
       "files": [
         {

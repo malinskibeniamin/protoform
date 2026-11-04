@@ -10,6 +10,7 @@
 - **Form values**: Adapter-neutral values used by form engines. They intentionally omit protobuf runtime metadata and unknown wire fields.
 - **Form submission values**: Validated form values supplied by the stable `useProtoForm` hook to React Hook Form's submission APIs. They retain form representations, such as string-valued 64-bit integers and base64 bytes. Creating a protobuf message remains an explicit `createMessage` operation; AutoForm's protobuf submission contract is separate.
 - **Edit baseline**: The accepted field state at the start of an edit session or after a reset. Native protobuf defaults are normalized into form values; resetting to another native message also replaces the edit source used to preserve unknown wire fields.
+- **Cleared message**: A dirty singular protobuf message whose current form value is absent (`undefined` or `null`). Its update mask names the message field, not its former children; edits within a present message keep their leaf paths.
 - **Modification intent**: A field the user intentionally changed after the edit baseline. The intent remains even when the current value equals the baseline again.
 - **Partial-edit validation**: Validation that reports field issues only for modification intent while retaining message-level issues that cannot be attributed safely.
 - **UI component map**: The host-owned controls used by Protoform renderers. Only controls exercised by a form need registration; implementations and their theme remain consumer-owned.

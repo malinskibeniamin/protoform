@@ -184,7 +184,7 @@ function collectFieldPaths(
   if (dirtyValue === true || field.fieldKind === 'list' || field.fieldKind === 'map') {
     return [path];
   }
-  if (field.fieldKind !== 'message' || !isRecord(dirtyValue)) {
+  if (field.fieldKind !== 'message' || !isRecord(dirtyValue) || currentValue === undefined || currentValue === null) {
     return [path];
   }
 

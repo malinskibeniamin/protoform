@@ -56,9 +56,9 @@ for (const name of expectedItems) {
   for (const dependency of item.dependencies ?? []) {
     if (
       (dependency === 'react-hook-form' || dependency.startsWith('react-hook-form@')) &&
-      dependency !== 'react-hook-form@^7.90.0'
+      dependency !== 'react-hook-form@^7.91.0'
     ) {
-      throw new Error(`${path} must require react-hook-form@^7.90.0 so consumers receive the lifecycle fixes`);
+      throw new Error(`${path} must require react-hook-form@^7.91.0 so consumers receive the lifecycle fixes`);
     }
   }
   if (item.name !== name) {

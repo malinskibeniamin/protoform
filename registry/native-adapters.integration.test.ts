@@ -355,7 +355,7 @@ describe('native form adapter registry entries', () => {
     const reactHookForm = item('protoform-react');
 
     expect(reactHookForm.registryDependencies).toEqual(['@protoform/auto-form-core', '@protoform/protoform-core']);
-    expect(reactHookForm.dependencies).toContain('react-hook-form@^7.90.0');
+    expect(reactHookForm.dependencies).toContain('react-hook-form@^7.91.0');
     expect(filePaths(reactHookForm)).toContain(
       'registry/base-nova/protoform/components/auto-form/adapters/react-hook-form.tsx'
     );
