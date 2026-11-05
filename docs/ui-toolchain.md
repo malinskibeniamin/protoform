@@ -3,12 +3,12 @@
 Run `bun run lint:fix` and `bun run type:check` before submitting changes. CI also runs component,
 conformance, browser, registry-consumer and documentation tests.
 
-## Reviewed versions (updated 2026-10-29)
+## Reviewed versions (updated 2026-11-05)
 
 | Tool            | Version                     | Responsibility                                     |
 | --------------- | --------------------------- | -------------------------------------------------- |
 | Bun             | 1.4.4                       | Package manager; pinned across workflows           |
-| Blume           | 2.2.4                       | Astro/MDX checking, builds and audits              |
+| Blume           | 2.2.6                       | Astro/MDX checking, builds and audits              |
 | Ultracite       | 8.1.0                       | Shared conventions and safe edit hooks             |
 | Biome           | 2.6.4                       | General linting and source formatting              |
 | Oxlint          | 1.90.0                      | Additional syntax, import, promise and test checks |
@@ -28,7 +28,7 @@ Astro/MDX checker.
 before React hydration. Profiling is never injected into builds or previews. The installed CLI's
 `init` command replaces the older URL-based command; no unpinned CDN script is used.
 
-Blume 2.2.4 has a Bun-managed patch in `patches/blume@2.2.4.patch`: load the OpenAPI request
+Blume 2.2.6 has a Bun-managed patch in `patches/blume@2.2.6.patch`: load the OpenAPI request
 module before defining its custom element. Its new lazy import lost early edits and Send clicks
 while the already-visible controls were unwired. The existing fast-edit/send browser regressions
 failed before this patch. Handlers attach when the element connects, not on the queued disclosure
@@ -37,6 +37,19 @@ opens and edits in one event-loop task and checks the generated sample without a
 This trades deferred initialization for working controls; remove the patch
 when upstream makes initialization synchronous or exposes a real loading/readiness state.
 The pinned package integrity in `bun.lock` owns provenance; upstream license files are unchanged.
+
+The 2.2.6 upgrade retains that patch: the same-task first-edit regression still fails
+against the unpatched release. Blume's declaration exports and localized reference labels,
+Astro's build/router fixes, Connect's cancellation cleanup and Rstest's Happy DOM 21
+prebundling apply without local opt-ins. Resolver 7's breaking TypeBox migration does not
+affect Protoform, which only uses `toNestErrors` and `validateFieldsNatively`.
+
+Pixelmatch 8 uses OKLab/HyAB color differences and improved transparency detection. The
+screenshot comparator keeps `threshold: 0.2`, anti-alias filtering and zero differing-pixel
+acceptance; it does not opt into masks or windowed counts. A transparent-white regression
+now detects a change missed by version 7. No screenshot reference is regenerated.
+The registry source pins `react-resizable-panels@4.16.1` for copied consumers too, including
+its pointer-coordinate corrections under CSS zoom/scale; new Workspace APIs remain unused.
 
 The version-scoped `deepmerge@^4` override installs the exact npm alias
 `@stackline/deepmerge@1.1.0` for Ultracite, shadcn and `@shadcn/registry`.
@@ -191,5 +204,5 @@ required CI checks and review policy changes at the repository-hosting layer.
 - [Oxlint release notes](https://github.com/oxc-project/oxc/releases/tag/oxlint_v1.90.0)
 - [Type-aware Oxlint](https://oxc.rs/docs/guide/usage/linter/type-aware)
 - [Biome conflicting-rule guidance](https://biomejs.dev/guides/upgrade-to-biome-v2/)
-- [Blume release notes](https://github.com/haydenbleasel/blume/releases/tag/blume%402.2.4)
+- [Blume release notes](https://github.com/haydenbleasel/blume/releases/tag/blume%402.2.6)
 - [React Scan installation](https://github.com/aidenybai/react-scan#manual-installation)

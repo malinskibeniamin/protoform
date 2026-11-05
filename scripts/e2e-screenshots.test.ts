@@ -18,6 +18,15 @@ test('requires identical screenshot dimensions and zero differing pixels at the 
   expect(() => compareScreenshotBuffers(image(4, 4), image(5, 4))).toThrow('dimensions');
 });
 
+test('detects white-pixel opacity changes without relaxing the color threshold', () => {
+  const transparent = new PNG({ width: 1, height: 1 });
+  const translucent = new PNG({ width: 1, height: 1 });
+  transparent.data.set([255, 255, 255, 0]);
+  translucent.data.set([255, 255, 255, 60]);
+
+  expect(compareScreenshotBuffers(PNG.sync.write(transparent), PNG.sync.write(translucent)).differentPixels).toBe(1);
+});
+
 test('selects only the explicitly requested native OS and architecture reference', () => {
   const host = { platform: 'darwin', release: '25.6.0', architecture: 'arm64' } as const;
   expect(screenshotPlatform(host)).toBe('darwin');

@@ -58,7 +58,7 @@ describe('simulated DOM test environment', () => {
     }
   });
 
-  test('uses Rstest 0.12.4 with happy-dom and no Vitest wiring', () => {
+  test('uses Rstest 0.12.5 with happy-dom and no Vitest wiring', () => {
     for (const config of domConfigs) {
       expect(readFileSync(new URL(config, repositoryDirectory), 'utf8')).toContain("name: 'happy-dom'");
     }
@@ -70,12 +70,12 @@ describe('simulated DOM test environment', () => {
       })
       .parse(JSON.parse(readFileSync(new URL('package.json', repositoryDirectory), 'utf8')));
 
-    expect(manifest.devDependencies?.['@rstest/browser']).toBe('0.12.4');
-    expect(manifest.devDependencies?.['@rstest/browser-react']).toBe('0.12.4');
-    expect(manifest.devDependencies?.['@rstest/core']).toBe('0.12.4');
+    expect(manifest.devDependencies?.['@rstest/browser']).toBe('0.12.5');
+    expect(manifest.devDependencies?.['@rstest/browser-react']).toBe('0.12.5');
+    expect(manifest.devDependencies?.['@rstest/core']).toBe('0.12.5');
     expect(manifest.devDependencies?.['happy-dom']).toBeDefined();
-    expect(manifest.devDependencies?.['undici']).toBe('8.12.2');
-    expect(manifest.devDependencies?.['@rstest/playwright']).toBe('0.12.4');
+    expect(manifest.devDependencies?.['undici']).toBe('8.12.3');
+    expect(manifest.devDependencies?.['@rstest/playwright']).toBe('0.12.5');
     expect(manifest.devDependencies?.['@playwright/test']).toBeUndefined();
     expect(manifest.scripts?.['test:unit']).toBe('bun test --parallel=4');
     expect(manifest.scripts?.['test:unit:ci']).toBe('bun test --parallel=1 --dots');
