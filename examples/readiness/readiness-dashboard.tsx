@@ -198,13 +198,7 @@ export function ReadinessDashboard() {
                       />
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent
-                    arrow={false}
-                    className="max-w-xs text-pretty"
-                    role="tooltip"
-                    transition={{ duration: 0 }}
-                    variant="detail"
-                  >
+                  <TooltipContent arrow={false} className="max-w-xs text-pretty" role="tooltip" variant="detail">
                     <span className="block font-semibold">{requirement.title}</span>
                     <span className="mt-1 block text-xs">
                       {statusLabel(requirement.status)} · {requirement.level}
