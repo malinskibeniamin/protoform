@@ -1,18 +1,26 @@
 diff --git a/src/components/openapi/Playground.astro b/src/components/openapi/Playground.astro
-index d8b5f35..917df4c 100644
+index d77021c58766a6aa6a87194dd15d779bfbae5420..c2186f5e61fb293ae4f5392d69db5c5ef393b817 100644
 --- a/src/components/openapi/Playground.astro
 +++ b/src/components/openapi/Playground.astro
-@@ -7,9 +6,0 @@ import { paramKey, type PlaygroundModel } from "./request.ts";
--/**
+@@ -9,12 +9,8 @@ import { paramKey, type PlaygroundModel } from "./request.ts";
+ import { referenceStrings } from "./strings.ts";
+ 
+ /**
 - * The interactive "Try it" panel for one operation. Everything is
 - * server-rendered — a native collapsed `<details>` with plain labelled
 - * inputs, keyboard-operable with zero JS — and the client module only loads
 - * when the reader first opens it (see the loader script at the foot of this
 - * file). The request model the client consumes is embedded as JSON so the
 - * lazy chunk needs no data fetch.
-- */
--
-@@ -301,5 +292,2 @@ const CHECKBOX_ROW =
++ * The interactive "Try it" panel for one operation. Controls are wired when
++ * the custom element connects so the first edit or Send click is not lost.
+  */
+ 
+ interface Props {
+@@ -331,31 +327,11 @@ const CHECKBOX_ROW =
+ </blume-playground>
+ 
+ <script>
 -  // Hydration waits for intent: a collapsed <details> can only fire its first
 -  // `toggle` by opening, so the one-shot listener imports the client module —
 -  // a separate chunk readers who never try a request never download — and
@@ -20,7 +28,8 @@ index d8b5f35..917df4c 100644
 -  // so that module stays import-safe under the test runner.
 +  import { initPlayground } from "./playground-client.ts";
 +
-@@ -308,18 +296 @@ const CHECKBOX_ROW =
+   class BlumePlayground extends HTMLElement {
+     connectedCallback() {
 -      const details = this.querySelector<HTMLDetailsElement>(
 -        "details[data-playground]"
 -      );
@@ -40,3 +49,6 @@ index d8b5f35..917df4c 100644
 -      }
 -      details.addEventListener("toggle", init, { once: true });
 +      initPlayground(this);
+     }
+   }
+ 

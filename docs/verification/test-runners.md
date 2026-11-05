@@ -69,7 +69,7 @@ rstest.host-registry.config.ts -> desktop/mobile installed consumers
 rstest.canary.config.ts     -> native E2E compatibility regression cases
 ```
 
-- Rstest packages are pinned to `0.12.4`. Happy DOM remains `21.0.3`; this baseline
+- Rstest packages are pinned to `0.12.5`. Happy DOM remains `21.0.4`; this baseline
   already used Happy DOM and had no direct JSDOM or Vitest dependency.
 - Direct `@playwright/test` imports/dependency/configurations are removed.
   `playwright@1.64.1` remains as the browser automation engine, not the test runner.
