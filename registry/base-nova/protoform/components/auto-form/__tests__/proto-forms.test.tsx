@@ -133,6 +133,26 @@ describe('autoForm – protobuf forms', () => {
     expect(submittedValue.writablePaths?.paths).toEqual(['profile']);
   }, 10_000);
 
+  test('shows the root compatibility error instead of submitting over an unrecognized stored branch', async () => {
+    const user = userEvent.setup();
+    const onSubmit = rs.fn();
+    const known = formValuesToProto(AutoFormExampleSchema, {
+      ...buildValidProtoDefaults(),
+      preferredContact: { case: undefined },
+    });
+    const source = fromBinary(
+      AutoFormExampleSchema,
+      Uint8Array.from([...toBinary(AutoFormExampleSchema, known), 0xfa, 0xf0, 0x04, 0])
+    );
+    render(<AutoForm defaultValues={source} onSubmit={onSubmit} schema={AutoFormExampleSchema} withSubmit />);
+    await user.click(screen.getByRole('combobox', { name: PREFERRED_CONTACT_LABEL }));
+    await user.click(await screen.findByRole('option', { name: PREFERRED_PHONE_LABEL }));
+    await user.type(await screen.findByLabelText(PREFERRED_PHONE_LABEL), '+14155550123');
+    await user.click(screen.getByRole('button', { name: SUBMIT_BUTTON }));
+    await waitFor(() => expect(screen.getByText(/unknown wire fields/u)).toBeVisible());
+    expect(onSubmit).not.toHaveBeenCalled();
+  });
+
   test('hydrates and preserves the edit source message through the React Hook Form adapter', async () => {
     const user = userEvent.setup();
     const onSubmit = rs.fn<(message: MessageShape<typeof AutoFormExampleSchema>) => void>();

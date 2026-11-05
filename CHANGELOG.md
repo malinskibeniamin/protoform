@@ -43,6 +43,8 @@ source snapshots.
 
 ### Fixed
 
+- Reject selecting a known oneof option when an edit source has unknown wire fields and no recognized selection, instead of forwarding a potentially competing future branch. Known-selection switches and unrelated edits retain their existing behavior.
+
 - Nested, repeated, map-value, and active-oneof conversion validation rejects duplicate map keys and overflowing integers before coercion.
 - React Hook Form v7/v8 native defaults and async defaults normalize well-known types; reset adopts the new message’s unknown fields.
 - Timestamp defaults retain seconds and nanoseconds on untouched round trips.
