@@ -226,7 +226,7 @@ function LegacyCombobox({
   const canCreate =
     Boolean(creatable) &&
     query.trim() !== '' &&
-    !options.some((option) => option.value === query || option.label === query);
+    options.every((option) => option.value !== query && option.label !== query);
   const createOption: ComboboxOption | undefined = canCreate ? { label: query, value: query } : undefined;
   const items = ComboboxPrimitive.createItems(createOption ? [...options, createOption] : options, {
     getLabel: (option) => option.label,

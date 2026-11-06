@@ -28,7 +28,7 @@ function KeyValueFieldComponent({ field, id, inputProps }: AutoFormFieldProps) {
     valueRenderType === 'select' || valueRenderType === 'combobox' || valueRenderType === 'radio'
       ? {
           mode: 'combobox' as const,
-          options: (valueField?.options || []).map(([value, optionLabel]) => ({ label: optionLabel, value })),
+          options: (valueField?.options ?? []).map(([value, optionLabel]) => ({ label: optionLabel, value })),
           placeholder,
         }
       : {
@@ -75,7 +75,12 @@ function isSimpleKeyValueLikeObject(
 
   const keyField = field.schema.find((candidate) => candidate.key === 'key');
   const valueField = field.schema.find((candidate) => candidate.key === 'value');
-  return Boolean(keyField && valueField && isKeyValueScalarField(keyField) && isKeyValueScalarField(valueField));
+  return (
+    keyField !== undefined &&
+    valueField !== undefined &&
+    isKeyValueScalarField(keyField) &&
+    isKeyValueScalarField(valueField)
+  );
 }
 
 export const keyValueFieldDefinition: FieldTypeDefinition = {

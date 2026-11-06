@@ -15,7 +15,7 @@ function parseOptions(rawOptions: { key: string; value: string }[]): ProtoformPl
     throw new Error('runtime_import can only be specified once');
   }
   const unknown = rawOptions.find((option) => option.key !== 'runtime_import');
-  if (unknown) {
+  if (unknown !== undefined) {
     throw new Error(`unknown option ${unknown.key}`);
   }
   return {

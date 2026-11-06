@@ -531,7 +531,7 @@ function renderMultiSelectOptions(list: MultiSelectOption[], visibleValues?: Set
       return <MultiSelectSeparator key={option.key} />;
     }
     if ('children' in option) {
-      if (visibleValues && !flattenMultiSelectOptions(option.children).some((item) => visibleValues.has(item.value))) {
+      if (visibleValues && flattenMultiSelectOptions(option.children).every((item) => !visibleValues.has(item.value))) {
         return null;
       }
       const children = renderMultiSelectOptions(option.children, visibleValues);

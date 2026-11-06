@@ -33,7 +33,7 @@ function walk(current: DescMessage, segments: readonly string[]): string[] | nul
       return null;
     }
     const branch = resolved.oneof.fields.find((candidate) => candidate.name === branchName);
-    if (!branch) {
+    if (branch === undefined) {
       return null;
     }
     const tail = walkInto(branch, afterBranch);
@@ -86,7 +86,7 @@ function findMember(message: DescMessage, protoName: string): Resolved | undefin
         return { kind: 'oneof', oneof: member };
       }
       const field = member.fields.find((candidate) => candidate.name === protoName);
-      if (field) {
+      if (field !== undefined) {
         return { field, kind: 'field' };
       }
     } else if (member.name === protoName) {

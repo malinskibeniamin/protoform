@@ -79,7 +79,7 @@ function seoDescription(description: string): string {
     .map((suffix) => `${description}${suffix}`)
     .find((candidate) => candidate.length >= 110 && candidate.length <= 160);
 
-  if (!expanded) {
+  if (expanded === undefined) {
     throw new Error(`Could not create a 110–160 character SEO description from: ${description}`);
   }
 
@@ -527,13 +527,15 @@ function generateRegistry(): void {
       return false;
     }
     const files: unknown[] = Array.isArray(item['files']) ? item['files'] : [];
-    return !files.some(
+    return files.every(
       (file) =>
-        typeof file === 'object' &&
-        file !== null &&
-        'path' in file &&
-        typeof file.path === 'string' &&
-        file.path.includes('/protoform/demo/catalog/')
+        !(
+          typeof file === 'object' &&
+          file !== null &&
+          'path' in file &&
+          typeof file.path === 'string' &&
+          file.path.includes('/protoform/demo/catalog/')
+        )
     );
   });
   const umbrella = items.find((item) => item.name === 'protoform-examples');

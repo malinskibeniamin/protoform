@@ -140,7 +140,7 @@ const SelectContent = React.forwardRef<React.ComponentRef<typeof SelectPrimitive
           align={align}
           alignItemWithTrigger={alignItemWithTrigger}
           alignOffset={alignOffset}
-          className="z-50 max-h-[var(--available-height)]"
+          className="z-50 max-h-(--available-height)"
           side={side}
           sideOffset={sideOffset}
         >
@@ -163,7 +163,7 @@ const SelectContent = React.forwardRef<React.ComponentRef<typeof SelectPrimitive
             <SelectPrimitive.List
               className={cn(
                 'max-h-(--available-height) w-full overflow-x-hidden overflow-y-auto p-1',
-                position === 'popper' && 'min-w-[var(--anchor-width)] scroll-my-1'
+                position === 'popper' && 'min-w-(--anchor-width) scroll-my-1'
               )}
             >
               {children}

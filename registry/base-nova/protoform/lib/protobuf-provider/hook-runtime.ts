@@ -338,12 +338,12 @@ function messageToFormValues(desc: DescMessage, value: AnyObject): Record<string
       }
 
       const activeField = member.fields.find((field) => field.localName === oneofValue.case);
-      if (!activeField) {
+      if (activeField === undefined) {
         throw new TypeError(`Unknown oneof case: ${oneofValue.case}.`);
       }
       result[member.localName] = {
         case: oneofValue.case,
-        value: activeField ? fieldToFormValue(activeField, oneofValue.value) : oneofValue.value,
+        value: activeField === undefined ? oneofValue.value : fieldToFormValue(activeField, oneofValue.value),
       };
       continue;
     }
@@ -646,7 +646,7 @@ function messageToProtoInit(
       }
 
       const activeField = member.fields.find((field) => field.localName === oneofValue.case);
-      if (!activeField) {
+      if (activeField === undefined) {
         throw new TypeError(`Unknown oneof case: ${oneofValue.case}.`);
       }
 
@@ -822,7 +822,7 @@ function preserveMessageUnknownFields(
         readOneofSelection(source[oneof.localName]) === undefined &&
         readOneofSelection(target[oneof.localName]) !== undefined
     );
-    if (ambiguousOneof) {
+    if (ambiguousOneof !== undefined) {
       throw new TypeError(
         `The stored ${ambiguousOneof.name} oneof may select an option in unknown wire fields. Load an updated schema before selecting an option.`
       );
@@ -845,7 +845,7 @@ function preserveMessageUnknownFields(
         continue;
       }
       const activeField = member.fields.find((field) => field.localName === targetCase);
-      if (activeField) {
+      if (activeField !== undefined) {
         preserveFieldUnknownFields(activeField, targetOneof['value'], sourceOneof['value'], preserveTimestampPrecision);
       }
       continue;
@@ -940,7 +940,7 @@ function normalizeIssuePath(
     const matchedField: DescField | undefined = currentDesc.field[key];
     const oneof = currentDesc.oneofs.find((candidate) => candidate.localName === key);
 
-    if (oneof) {
+    if (oneof !== undefined) {
       normalizedPath.push(oneof.localName);
       currentDesc = undefined;
       continue;

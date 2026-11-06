@@ -292,7 +292,7 @@ const JSONField = ({
     const invalidEditor = Array.from(containerRef.current?.querySelectorAll('textarea') ?? []).find(
       (textarea) => !textarea.checkValidity()
     );
-    if (invalidEditor) {
+    if (invalidEditor !== undefined) {
       invalidEditor.reportValidity();
       return;
     }
@@ -365,7 +365,7 @@ const JSONField = ({
     switch (fieldType) {
       case 'string': {
         const customFieldConfig = customFields.find((field) => field.fieldName === propertyName);
-        if (customFieldConfig) {
+        if (customFieldConfig !== undefined) {
           const effectiveValue = (() => {
             if (
               customFieldConfig.options.length === 1 &&
@@ -413,7 +413,7 @@ const JSONField = ({
           propSchema.oneOf?.every(
             (option): option is typeof option & { const: string; title: string } =>
               typeof option.const === 'string' && typeof option.title === 'string'
-          )
+          ) === true
         ) {
           const oneOfOptions: ComboboxOption[] = propSchema.oneOf.map((option) => ({
             label: option.title,

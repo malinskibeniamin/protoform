@@ -9,17 +9,82 @@ declare const { expect, test }: typeof import('bun:test');
 
 const object = z.record(z.string(), z.unknown());
 
+function copyBiomeConfiguration(directory: string): void {
+  writeFileSync(join(directory, 'biome.jsonc'), readFileSync('biome.jsonc', 'utf8'));
+  writeFileSync(join(directory, 'theme.css'), readFileSync('theme.css', 'utf8'));
+  symlinkSync(resolve('node_modules'), join(directory, 'node_modules'), 'dir');
+}
+
 test('enforces explicit-any safety in inherited test-file scopes', () => {
-  mkdirSync('.tmp', { recursive: true });
-  const directory = mkdtempSync(resolve('.tmp/release-test-types-'));
-  const fixture = join(directory, 'probe.test.ts');
-  const args = ['lint', fixture, '--vcs-enabled=false', '--colors=off', '--max-diagnostics=none'];
+  const directory = mkdtempSync(join(tmpdir(), 'protoform-release-test-types-'));
+  const fixture = join(directory, '.tmp/release-test-types-probe/probe.test.ts');
+  const args = [
+    'lint',
+    fixture,
+    '--config-path',
+    directory,
+    '--vcs-enabled=false',
+    '--colors=off',
+    '--max-diagnostics=none',
+  ];
   try {
+    mkdirSync(dirname(fixture), { recursive: true });
+    copyBiomeConfiguration(directory);
     writeFileSync(fixture, 'export function unsafe(value: any) { return typeof value; }\n');
     const invalid = spawnSync(resolve('node_modules/.bin/biome'), args, { encoding: 'utf8', timeout: 10_000 });
     expect(invalid.error).toBeUndefined();
     expect(invalid.stdout + invalid.stderr).toContain('lint/suspicious/noExplicitAny');
     writeFileSync(fixture, 'export function safe(value: unknown) { return typeof value; }\n');
+    const valid = spawnSync(resolve('node_modules/.bin/biome'), args, { encoding: 'utf8', timeout: 10_000 });
+    expect(valid.error).toBeUndefined();
+    expect(valid.status, valid.stdout + valid.stderr).toBe(0);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+}, 25_000);
+
+test('keeps enabled and disabled nursery rules distinct beyond 256 entries', () => {
+  const directory = mkdtempSync(join(tmpdir(), 'protoform-biome-rule-selection-'));
+  const fixture = join(directory, '.tmp/biome-rule-selection-probe/probe.ts');
+  const args = [
+    'lint',
+    fixture,
+    '--config-path',
+    directory,
+    '--vcs-enabled=false',
+    '--colors=off',
+    '--max-diagnostics=none',
+  ];
+  try {
+    mkdirSync(dirname(fixture), { recursive: true });
+    copyBiomeConfiguration(directory);
+    writeFileSync(
+      fixture,
+      `export function absent(): null { return null; }
+export const precision = (42).toFixed(101);
+export function drain(items: string[]) {
+  while (true) {
+    if (items.length === 0) { break; }
+    items.pop();
+  }
+}
+`
+    );
+    const invalid = spawnSync(resolve('node_modules/.bin/biome'), args, { encoding: 'utf8', timeout: 10_000 });
+    expect(invalid.error).toBeUndefined();
+    expect(invalid.status).toBe(1);
+    expect(invalid.stdout + invalid.stderr).toContain('lint/nursery/noNumberArgumentOutOfRange');
+    expect(invalid.stdout + invalid.stderr).toContain('lint/nursery/useWhileLoopCondition');
+    expect(invalid.stdout + invalid.stderr).not.toContain('lint/nursery/noNull');
+    writeFileSync(
+      fixture,
+      `export function absent(): null { return null; }
+export const precision = (42).toFixed(2);
+export function drain(items: string[]) {
+  while (items.length > 0) { items.pop(); }
+}
+`
+    );
     const valid = spawnSync(resolve('node_modules/.bin/biome'), args, { encoding: 'utf8', timeout: 10_000 });
     expect(valid.error).toBeUndefined();
     expect(valid.status, valid.stdout + valid.stderr).toBe(0);
@@ -127,6 +192,23 @@ test.each([
     rule: 'useUniqueElementIds',
     invalid: 'export function Field() { return <input id="name" />; }',
     valid: 'export function Field() { const id = useId(); return <input id={id} />; }',
+  },
+  {
+    path: 'scripts/biome-patch-probe.ts',
+    group: 'nursery',
+    rule: 'noDynamicDelete',
+    invalid: 'export function remove(record: Record<string, string>, key: string) { delete record[key]; }',
+    valid:
+      'export function remove(record: Record<string, string>, key: string) { Reflect.deleteProperty(record, key); }',
+  },
+  {
+    path: 'scripts/biome-patch-probe.ts',
+    group: 'nursery',
+    rule: 'noExcessiveNestedBlocks',
+    invalid:
+      'export function accepts(a: boolean, b: boolean, c: boolean, d: boolean, e: boolean) { if (a) { if (b) { if (c) { if (d) { if (e) { return true; } } } } } return false; }',
+    valid:
+      'export function accepts(a: boolean, b: boolean, c: boolean, d: boolean, e: boolean) { return a && b && c && d && e; }',
   },
   {
     path: 'scripts/biome-patch-probe.ts',

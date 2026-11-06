@@ -74,7 +74,7 @@ function inspectSelectors(override: ts.ObjectLiteralExpression, sourcePaths: rea
   const negative = patterns.filter((pattern) => pattern.startsWith('!')).map((pattern) => pattern.slice(1));
   const matches = sourcePaths.some(
     (path) =>
-      positive.some((pattern) => matchesGlob(path, pattern)) && !negative.some((pattern) => matchesGlob(path, pattern))
+      positive.some((pattern) => matchesGlob(path, pattern)) && negative.every((pattern) => !matchesGlob(path, pattern))
   );
   if (!matches && (positive.length === 0 || positive.some((pattern) => GLOB_SYNTAX.test(pattern)))) {
     messages.push('Exception scope matches no source files. Remove or correct its selectors.');
@@ -123,7 +123,7 @@ function normalizeBiomeRuleGroups(override: ts.ObjectLiteralExpression): ts.Obje
     return override;
   }
   const groups = rules.properties;
-  if (!groups.every((group) => ts.isPropertyAssignment(group) && ts.isObjectLiteralExpression(group.initializer))) {
+  if (groups.some((group) => !(ts.isPropertyAssignment(group) && ts.isObjectLiteralExpression(group.initializer)))) {
     return override;
   }
   const normalizedRules = ts.factory.updateObjectLiteralExpression(
@@ -369,7 +369,7 @@ export function newLintExceptions(file: string, source: string, baseline: string
     if (fingerprints.has(candidate.fingerprint)) {
       return false;
     }
-    if (candidate.rules.size === 0 || !candidate.selectors.some((selector) => !selector.startsWith('!'))) {
+    if (candidate.rules.size === 0 || candidate.selectors.every((selector) => selector.startsWith('!'))) {
       return true;
     }
     for (const [rule, level] of candidate.rules) {

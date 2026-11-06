@@ -66,7 +66,7 @@ function resourceField(method: DescMethodUnary): DescField {
     (field) => field.fieldKind === 'message' && field.message.typeName !== 'google.protobuf.FieldMask'
   );
   const [candidate] = candidates;
-  if (candidates.length !== 1 || !candidate) {
+  if (candidates.length !== 1 || candidate === undefined) {
     throw new TypeError(`${method.name} does not expose an unambiguous resource body field.`);
   }
   return candidate;

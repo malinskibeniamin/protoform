@@ -67,7 +67,7 @@ describe('strict React tooling', () => {
 
   test('pins the latest analysis toolchain and exposes strict entrypoints', () => {
     expect(packageJson.devDependencies).toMatchObject({
-      '@biomejs/biome': '2.6.4',
+      '@biomejs/biome': '2.6.6',
       '@shadcn/lint': '0.2.3',
       oxlint: '1.90.0',
       oxfmt: '0.75.0',
@@ -267,8 +267,8 @@ export function Field() {
             : getJsonObject(ruleConfig, `Biome rule configuration in group ${groupIndex}`)['level']
         )
     );
-    expect(configuredSeverities.filter((severity) => severity === 'error')).toHaveLength(579);
-    expect(configuredSeverities.filter((severity) => severity === 'off')).toHaveLength(91);
+    expect(configuredSeverities.filter((severity) => severity === 'error')).toHaveLength(613);
+    expect(configuredSeverities.filter((severity) => severity === 'off')).toHaveLength(154);
 
     expect(configuredRuleGroups).toMatchObject({
       a11y: {
