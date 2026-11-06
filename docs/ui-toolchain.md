@@ -3,14 +3,14 @@
 Run `bun run lint:fix` and `bun run type:check` before submitting changes. CI also runs component,
 conformance, browser, registry-consumer and documentation tests.
 
-## Reviewed versions (updated 2026-11-05)
+## Reviewed versions (updated 2026-11-06)
 
 | Tool            | Version                     | Responsibility                                     |
 | --------------- | --------------------------- | -------------------------------------------------- |
 | Bun             | 1.4.4                       | Package manager; pinned across workflows           |
 | Blume           | 2.2.6                       | Astro/MDX checking, builds and audits              |
 | Ultracite       | 8.1.0                       | Shared conventions and safe edit hooks             |
-| Biome           | 2.6.4                       | General linting and source formatting              |
+| Biome           | 2.6.6                       | General linting and source formatting              |
 | Oxlint          | 1.90.0                      | Additional syntax, import, promise and test checks |
 | oxlint-tsgolint | 7.0.2005                    | Type-aware linting and compiler diagnostics        |
 | tsrs            | 0.18.0-ts7.1.0-dev.20260929 | Rust-based strict source and test checking         |
@@ -92,8 +92,8 @@ plus a valid edit that formats only its target. Run it with
 ## Rule decisions and coverage
 
 `lint:rules` compares installed Biome, Oxlint, shadcn and React Doctor catalogs with explicit decisions.
-New or removed rules fail until reviewed. Biome has 579 rules globally enabled as errors out of
-670 explicit decisions. The React, Astro, Playwright, TanStack and type-aware presets match
+New or removed rules fail until reviewed. Biome has 611 rules globally enabled as errors out of
+767 explicit decisions. The React, Astro, Playwright, TanStack and type-aware presets match
 this project's dependencies. React Native, Drizzle, Vue and Svelte presets are not installed.
 `.oxlintrc.jsonc` records all 872 Oxlint decisions,
 including nursery rules. Duplicate conventions have one owner: Oxlint's Boolean-cast fixer, for
@@ -136,6 +136,26 @@ Oxfmt still owns Markdown formatting, even with Biome's Markdown fixes, so forma
 Adoption replaces needless wrapper-validation recursion.
 CEL cause traversal now preserves original diagnostics for deep or cyclic error collections
 instead of replacing them with a stack-overflow error. Public evaluator regressions cover both.
+
+### Biome 2.6.5–2.6.6 additions
+
+Biome 2.6.6 fixes rule selection in groups exceeding 256 entries. The nursery group now
+has 281 explicit decisions. The upgrade reviews all 97 additions since 2.6.4 and enables
+32 as errors, including invalid numeric arguments, constant comparisons, event/Promise
+misuse, Playwright browser-scope references, stable Query clients and Tailwind v4 variable
+shorthand. The full-config regression rejects invalid numeric precision while continuing
+to accept intentional `null` values.
+
+The 60 new Vue, Svelte and Next.js checks stay off because those runtimes are not used.
+Five other additions remain off: `noDynamicDelete` conflicts with descriptor-driven record
+editing; `noMapSpread` conflicts with immutable per-item copies and Oxlint's spread convention;
+`noSyncMethods` rejects intentional CLI/test setup; `noExcessiveNestedBlocks` adds a separate
+depth policy to existing complexity limits; `usePackageJsonCpu` would unnecessarily restrict
+architecture-independent source consumers. No previously enforced rule is weakened.
+
+Source adoption makes nullable conditions explicit without changing empty-string fallbacks,
+uses equivalent array predicates and Tailwind shorthand, and annotates the sequential server
+startup reducer's Promise accumulator. Registry copies are regenerated from authored source.
 
 ### Release hardening
 
@@ -193,6 +213,9 @@ These checks prevent accidental bypasses, not malicious edits to the gates thems
 required CI checks and review policy changes at the repository-hosting layer.
 
 ## Upstream evidence
+
+- [Biome 2.6.6 release notes](https://github.com/biomejs/biome/releases/tag/%40biomejs%2Fbiome%402.6.6)
+- [Biome 2.6.5 release notes](https://github.com/biomejs/biome/releases/tag/%40biomejs%2Fbiome%402.6.5)
 
 - [tsrs CLI usage](https://github.com/oxc-project/tsrs/blob/main/docs/USAGE.md)
 - [tsrs compatibility and platform support](https://github.com/oxc-project/tsrs/blob/main/docs/COMPATIBILITY.md)

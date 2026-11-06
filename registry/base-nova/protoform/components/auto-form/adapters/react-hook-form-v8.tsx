@@ -99,7 +99,7 @@ function applyValidationErrors<T extends FormValues>(
   let shouldFocus = true;
   for (const [path, messages] of messagesByPath) {
     const [message, ...additionalMessages] = messages;
-    if (!message) {
+    if (!(message !== undefined && message !== '')) {
       continue;
     }
     form.setError(

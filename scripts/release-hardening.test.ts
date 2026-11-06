@@ -28,6 +28,33 @@ test('enforces explicit-any safety in inherited test-file scopes', () => {
   }
 }, 25_000);
 
+test('keeps enabled and disabled nursery rules distinct beyond 256 entries', () => {
+  mkdirSync('.tmp', { recursive: true });
+  const directory = mkdtempSync(resolve('.tmp/biome-rule-selection-'));
+  const fixture = join(directory, 'probe.ts');
+  const args = ['lint', fixture, '--vcs-enabled=false', '--colors=off', '--max-diagnostics=none'];
+  try {
+    writeFileSync(
+      fixture,
+      'export function absent(): null { return null; } export const precision = (42).toFixed(101);\n'
+    );
+    const invalid = spawnSync(resolve('node_modules/.bin/biome'), args, { encoding: 'utf8', timeout: 10_000 });
+    expect(invalid.error).toBeUndefined();
+    expect(invalid.status).toBe(1);
+    expect(invalid.stdout + invalid.stderr).toContain('lint/nursery/noNumberArgumentOutOfRange');
+    expect(invalid.stdout + invalid.stderr).not.toContain('lint/nursery/noNull');
+    writeFileSync(
+      fixture,
+      'export function absent(): null { return null; } export const precision = (42).toFixed(2);\n'
+    );
+    const valid = spawnSync(resolve('node_modules/.bin/biome'), args, { encoding: 'utf8', timeout: 10_000 });
+    expect(valid.error).toBeUndefined();
+    expect(valid.status, valid.stdout + valid.stderr).toBe(0);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+}, 25_000);
+
 function readConfig(file: string): Record<string, unknown> {
   const value: unknown = ts.parseConfigFileTextToJson(file, readFileSync(file, 'utf8')).config;
   return object.parse(value);

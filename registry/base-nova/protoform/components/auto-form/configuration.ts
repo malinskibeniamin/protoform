@@ -225,8 +225,7 @@ export function inspectAutoFormConfiguration<
     if (
       fieldStep !== undefined &&
       fieldStep !== '' &&
-      stepper &&
-      !stepper.steps.some((step) => step.id === fieldStep)
+      stepper?.steps?.every((step) => step.id !== fieldStep) === true
     ) {
       diagnostics.push({
         code: 'invalid-step-configuration',

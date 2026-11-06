@@ -28,7 +28,7 @@ if (!config) {
 }
 const needsServers =
   (suite === 'e2e' || suite === 'host' || suite === 'quickjs') &&
-  !args.some((arg) => ['--help', '-h', 'list'].includes(arg));
+  args.every((arg) => !['--help', '-h', 'list'].includes(arg));
 if (args.includes('--update') || args.includes('-u')) {
   process.env['PROTOFORM_UPDATE_SCREENSHOTS'] = 'true';
 }

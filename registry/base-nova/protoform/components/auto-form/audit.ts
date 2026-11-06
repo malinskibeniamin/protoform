@@ -48,7 +48,7 @@ function formatSarifReport(report: AutoFormAuditReport): string {
       {
         results: report.diagnostics.map((diagnostic) => ({
           level: diagnostic.severity,
-          ...(diagnostic.source
+          ...(diagnostic.source !== undefined && diagnostic.source !== ''
             ? {
                 locations: [
                   {

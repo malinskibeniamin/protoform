@@ -318,7 +318,12 @@ function isSimpleKeyValueLikeObject(field: ParsedField | undefined): boolean {
 
   const keyField = field.schema.find((candidate) => candidate.key === 'key');
   const valueField = field.schema.find((candidate) => candidate.key === 'value');
-  return Boolean(keyField && valueField && isKeyValueScalarField(keyField) && isKeyValueScalarField(valueField));
+  return (
+    keyField !== undefined &&
+    valueField !== undefined &&
+    isKeyValueScalarField(keyField) &&
+    isKeyValueScalarField(valueField)
+  );
 }
 
 export function resolveRenderFieldType<TFieldType extends string = string>(
@@ -731,7 +736,10 @@ function normalizeCollectionScalar(value: string, field: ParsedField | undefined
   if (renderType === 'int64') {
     return value;
   }
-  if (renderType === 'select' && field.options?.every(([optionValue]) => NUMERIC_OPTION_PATTERN.test(optionValue))) {
+  if (
+    renderType === 'select' &&
+    field.options?.every(([optionValue]) => NUMERIC_OPTION_PATTERN.test(optionValue)) === true
+  ) {
     return value === '' ? undefined : Number(value);
   }
   return value;

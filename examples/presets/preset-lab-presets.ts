@@ -240,7 +240,7 @@ export function findSupportedPreset(code: string): { preset: PresetDefinition; r
   );
   const radius = presetRadii.find((candidate) => candidate.value === config.radius)?.value;
 
-  if (!(preset && radius) || buildPresetCode(preset, radius) !== code) {
+  if (!(preset !== undefined && radius) || buildPresetCode(preset, radius) !== code) {
     return;
   }
 

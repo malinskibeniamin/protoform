@@ -72,7 +72,7 @@ for (const name of expectedItems) {
 const hook = z
   .looseObject({ files: z.array(z.looseObject({ path: z.string() })) })
   .parse(JSON.parse(readFileSync('public/r/use-proto-form.json', 'utf8')));
-if (!hook.files.some((file) => file.path.endsWith('hooks/use-proto-form/index.ts'))) {
+if (hook.files.every((file) => !file.path.endsWith('hooks/use-proto-form/index.ts'))) {
   throw new Error('use-proto-form registry item must include the hook entrypoint');
 }
 if (hook.files.some((file) => file.path.includes('/components/auto-form/'))) {

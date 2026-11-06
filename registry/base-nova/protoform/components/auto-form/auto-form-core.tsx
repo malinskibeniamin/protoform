@@ -363,7 +363,7 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
     const firstErrorField = fieldsForStep(advancedFields, stepper.steps, targetStep?.id ?? '').find((field) =>
       engine.getFieldInvalid(field.key)
     );
-    if (firstErrorField) {
+    if (firstErrorField !== undefined) {
       engine.focus(firstErrorField.key);
     }
   }
@@ -461,7 +461,7 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
         setCurrentStepIndex((index) => Math.min(stepper.steps.length - 1, index + 1));
       } else {
         const firstInvalid = fieldNames.find(engine.getFieldInvalid);
-        if (firstInvalid) {
+        if (firstInvalid !== undefined && firstInvalid !== '') {
           engine.focus(firstInvalid);
         }
       }
@@ -482,7 +482,7 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
     if (currentErrors.length > 0) {
       engine.setValidationErrors(currentErrors);
       const firstFieldError = currentErrors.find((error) => error.path.length > 0);
-      if (firstFieldError) {
+      if (firstFieldError !== undefined) {
         engine.focus(firstFieldError.path.join('.'));
       }
       return;

@@ -12,7 +12,7 @@ export const resolveLabel = (options: readonly ComboboxOption[], value: string):
 };
 
 export const groupOptions = (options: readonly ComboboxOption[]): GroupedOptions[] | undefined => {
-  if (!options.some((option) => option.group)) {
+  if (options.every((option) => !option.group)) {
     return;
   }
 

@@ -107,7 +107,7 @@ export async function startTestServers(servers: TestServer[], signal?: AbortSign
     await Promise.all(children.map(stop));
   };
   try {
-    await servers.reduce<Promise<void>>(async (previous, server) => {
+    await servers.reduce<Promise<void>>(async (previous: Promise<void>, server) => {
       await previous;
       if ((await isReady(server.url)) === true) {
         throw new Error(`Refusing to reuse an existing test server at ${server.url}`);

@@ -289,7 +289,9 @@ function SimpleCommand({
       <CommandList>
         <CommandEmpty>{emptyMessage}</CommandEmpty>
         {groups.map((group, groupIndex) => (
-          <React.Fragment key={group.heading || `group-${groupIndex}`}>
+          <React.Fragment
+            key={group.heading !== undefined && group.heading !== '' ? group.heading : `group-${groupIndex}`}
+          >
             {groupIndex > 0 && <CommandSeparator />}
             <CommandGroup heading={group.heading}>
               {group.items.map((item) => (
@@ -300,7 +302,9 @@ function SimpleCommand({
                 >
                   {item.icon}
                   <Text as="span">{item.label}</Text>
-                  {item.shortcut ? <CommandShortcut>{item.shortcut}</CommandShortcut> : null}
+                  {item.shortcut !== undefined && item.shortcut !== '' ? (
+                    <CommandShortcut>{item.shortcut}</CommandShortcut>
+                  ) : null}
                 </CommandItem>
               ))}
             </CommandGroup>

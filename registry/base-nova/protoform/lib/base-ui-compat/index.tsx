@@ -342,7 +342,7 @@ export const Slot = React.forwardRef<HTMLElement, SlotProps>(function renderSlot
   const childrenArray = React.Children.toArray(children);
   const slottable = childrenArray.find(isSlottable);
 
-  if (slottable) {
+  if (slottable !== undefined) {
     const target = slottable.props.children;
     const siblings = childrenArray.map((child) => {
       if (child !== slottable) {

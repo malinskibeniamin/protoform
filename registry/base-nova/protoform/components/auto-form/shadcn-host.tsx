@@ -88,7 +88,7 @@ function HostSelect({ children, disabled, items, onValueChange, value }: Protofo
           throw new TypeError('Invalid Protoform selection');
         }
       }}
-      value={value === null && items && !items.some((item) => item.value === null) ? '' : JSON.stringify(value)}
+      value={value === null && items && items.every((item) => item.value !== null) ? '' : JSON.stringify(value)}
     >
       {children}
     </Select>
