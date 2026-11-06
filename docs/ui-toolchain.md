@@ -92,7 +92,7 @@ plus a valid edit that formats only its target. Run it with
 ## Rule decisions and coverage
 
 `lint:rules` compares installed Biome, Oxlint, shadcn and React Doctor catalogs with explicit decisions.
-New or removed rules fail until reviewed. Biome has 611 rules globally enabled as errors out of
+New or removed rules fail until reviewed. Biome has 613 rules globally enabled as errors out of
 767 explicit decisions. The React, Astro, Playwright, TanStack and type-aware presets match
 this project's dependencies. React Native, Drizzle, Vue and Svelte presets are not installed.
 `.oxlintrc.jsonc` records all 872 Oxlint decisions,
@@ -141,16 +141,17 @@ instead of replacing them with a stack-overflow error. Public evaluator regressi
 
 Biome 2.6.6 fixes rule selection in groups exceeding 256 entries. The nursery group now
 has 281 explicit decisions. The upgrade reviews all 97 additions since 2.6.4 and enables
-32 as errors, including invalid numeric arguments, constant comparisons, event/Promise
+34 as errors, including invalid numeric arguments, constant comparisons, event/Promise
 misuse, Playwright browser-scope references, stable Query clients and Tailwind v4 variable
-shorthand. The full-config regression rejects invalid numeric precision while continuing
-to accept intentional `null` values.
+shorthand. Dynamic-delete checks align with the existing Oxlint rule; excessive nesting is
+bounded at four blocks. Both checks accept the current source without exemptions.
+The full-config regression exercises a rule beyond index 255 as well as invalid numeric
+precision, while continuing to accept intentional `null` values.
 
 The 60 new Vue, Svelte and Next.js checks stay off because those runtimes are not used.
-Five other additions remain off: `noDynamicDelete` conflicts with descriptor-driven record
-editing; `noMapSpread` conflicts with immutable per-item copies and Oxlint's spread convention;
-`noSyncMethods` rejects intentional CLI/test setup; `noExcessiveNestedBlocks` adds a separate
-depth policy to existing complexity limits; `usePackageJsonCpu` would unnecessarily restrict
+Three other additions remain off: `noMapSpread` can replace immutable per-item copies with
+an unsafe `Object.assign` fix that mutates the original objects;
+`noSyncMethods` rejects intentional CLI/test setup; `usePackageJsonCpu` would unnecessarily restrict
 architecture-independent source consumers. No previously enforced rule is weakened.
 
 Source adoption makes nullable conditions explicit without changing empty-string fallbacks,

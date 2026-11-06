@@ -267,8 +267,8 @@ export function Field() {
             : getJsonObject(ruleConfig, `Biome rule configuration in group ${groupIndex}`)['level']
         )
     );
-    expect(configuredSeverities.filter((severity) => severity === 'error')).toHaveLength(611);
-    expect(configuredSeverities.filter((severity) => severity === 'off')).toHaveLength(156);
+    expect(configuredSeverities.filter((severity) => severity === 'error')).toHaveLength(613);
+    expect(configuredSeverities.filter((severity) => severity === 'off')).toHaveLength(154);
 
     expect(configuredRuleGroups).toMatchObject({
       a11y: {

@@ -321,14 +321,12 @@
         "noAwaitInPromiseMethods": "error",
         "noChainedComparison": "error",
         "noConstantComparisons": "error",
-        // Protobuf and form-state records require deletion by dynamic field name.
-        "noDynamicDelete": "off",
+        "noDynamicDelete": "error",
         "noErasingOperation": "error",
-        // Existing cognitive-complexity and function-size rules own complexity, not a new block-depth limit.
-        "noExcessiveNestedBlocks": "off",
+        "noExcessiveNestedBlocks": "error",
         "noInvalidRemoveEventListener": "error",
         "noLateEventControl": "error",
-        // Immutable per-item copies preserve record semantics; Oxlint owns object-spread conventions.
+        // Immutable map results must not mutate the original objects through Object.assign.
         "noMapSpread": "off",
         "noMismatchedMapKey": "error",
         "noMissingScssInterpolation": "error",
