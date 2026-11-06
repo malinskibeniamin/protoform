@@ -1,8 +1,7 @@
 import React from 'react';
-
+import { getFieldHints } from '@/registry/base-nova/protoform/lib/core/field-model';
 import { useAutoFormRuntimeContext } from '../context';
 import type { ParsedField } from '../core-types';
-import { getFieldHints } from '../core-types';
 import { getLabel, getPathInObject } from '../field-utils';
 import { getFieldUiConfig, isRecord, resolveRenderFieldType } from '../helpers';
 import type { DeprecatedFieldPolicy } from '../types';

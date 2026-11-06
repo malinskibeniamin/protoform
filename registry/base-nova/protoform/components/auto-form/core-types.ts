@@ -2,6 +2,7 @@ import type React from 'react';
 import type { ReactNode } from 'react';
 import type { FieldWrapperProps, ParsedField, UiRenderable } from '@/registry/base-nova/protoform/lib/form-types';
 
+export { getFieldHints } from '@/registry/base-nova/protoform/lib/core/field-model';
 export type {
   FieldConfig,
   FieldWrapperProps,
@@ -14,8 +15,6 @@ export type {
   SchemaValidationError,
   UiRenderable,
 } from '@/registry/base-nova/protoform/lib/form-types';
-
-export { getFieldHints } from '@/registry/base-nova/protoform/lib/form-types';
 
 export interface ObjectWrapperProps {
   children: ReactNode;

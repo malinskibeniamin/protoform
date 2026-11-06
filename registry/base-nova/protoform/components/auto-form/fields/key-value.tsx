@@ -1,5 +1,6 @@
 'use client';
 
+import { getProtoFieldCustomData } from '@/registry/base-nova/protoform/lib/protobuf-provider/provider';
 import type { AutoFormFieldProps } from '../core-types';
 import {
   denormalizeKeyValueEntries,
@@ -7,7 +8,6 @@ import {
   normalizeKeyValueEntries,
   resolveRenderFieldType,
 } from '../helpers';
-import { getProtoFieldCustomData } from '../proto';
 import type { FieldTypeDefinition } from '../registry';
 import { KeyValueField } from '../ui-components';
 import { useFieldTestIds } from './shared';
