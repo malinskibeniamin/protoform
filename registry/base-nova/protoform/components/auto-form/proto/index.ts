@@ -6,7 +6,7 @@ export {
   isProtoProvider,
   PROTO_FORM_ROOT_ERROR_KEY,
   ProtoProvider,
-} from '@/registry/base-nova/protoform/lib/protobuf-provider';
+} from '@/registry/base-nova/protoform/lib/protobuf-provider/provider';
 export {
   getProtoJsonSchema,
   isProtoMapEntries,

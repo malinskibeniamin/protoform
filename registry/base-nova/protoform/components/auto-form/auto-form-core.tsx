@@ -6,11 +6,15 @@ import {
   formatProtoformMessage,
   type ProtoformMessageFormatter,
 } from '@/registry/base-nova/protoform/lib/core/messages';
+import { createUpdateMask } from '@/registry/base-nova/protoform/lib/protobuf-provider/field-mask';
 import {
-  createUpdateMask,
   formValuesToProto,
+  getProtoMessageUiConfig,
+  isProtoMessageDescriptor,
+  isProtoProvider,
+  PROTO_FORM_ROOT_ERROR_KEY,
   preserveProtoMessageSource,
-} from '@/registry/base-nova/protoform/lib/protobuf-provider';
+} from '@/registry/base-nova/protoform/lib/protobuf-provider/provider';
 import { type AutoFormDiagnostic, inspectAutoFormConfiguration } from './configuration';
 import type { AutoFormEngine } from './engine';
 import {
@@ -26,13 +30,7 @@ import { AutoFormFieldComponentRegistry } from './fields';
 import { deriveSimpleFields } from './helpers';
 import { AutoFormAppearanceProvider } from './layout-context';
 import { AutoFormModeShell } from './mode-shell';
-import {
-  getProtoMessageUiConfig,
-  isProtoMessageDescriptor,
-  isProtoProvider,
-  PROTO_FORM_ROOT_ERROR_KEY,
-  resolveProtoSourceMessage,
-} from './proto';
+import { resolveProtoSourceMessage } from './proto/conversion';
 import { AutoFormFields } from './renderers';
 import { OneofWrapper } from './renderers/oneof';
 import { AutoFormRuntimeProvider } from './runtime-provider';

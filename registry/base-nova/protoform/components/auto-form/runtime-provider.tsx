@@ -16,7 +16,7 @@ import type {
 import type { DataProviderRegistry } from './data-providers';
 import { type AutoFormEngine, useAutoFormEngine } from './engine';
 import { getFieldUiConfig, isRecord, isValidationSuccess } from './helpers';
-import { protoFormValuesToPayload, protoPayloadToFormValues } from './proto';
+import { protoFormValuesToPayload, protoPayloadToFormValues } from './proto/conversion';
 import type { FieldTypeRegistry } from './registry';
 import type {
   AutoFormMode,

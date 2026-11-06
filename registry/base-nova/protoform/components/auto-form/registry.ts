@@ -1,8 +1,7 @@
 import type React from 'react';
-
+import { getProtoFieldCustomData } from '@/registry/base-nova/protoform/lib/protobuf-provider/provider';
 import type { AutoFormFieldProps, ParsedField } from './core-types';
 import { getLabel } from './field-utils';
-import { getProtoFieldCustomData } from './proto';
 
 export interface FieldTypeDefinition<TName extends string = string> {
   component: React.ComponentType<AutoFormFieldProps>;

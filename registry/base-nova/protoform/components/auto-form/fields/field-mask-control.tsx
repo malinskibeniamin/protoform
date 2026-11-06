@@ -1,8 +1,8 @@
 'use client';
 
+import { getProtoFieldCustomData } from '@/registry/base-nova/protoform/lib/protobuf-provider/provider';
 import type { AutoFormFieldProps } from '../core-types';
 import { FIELD_MASK_PATH_SPLIT_PATTERN, getFieldUiConfig } from '../helpers';
-import { getProtoFieldCustomData } from '../proto';
 import type { FieldTypeDefinition } from '../registry';
 import { Text, Textarea } from '../ui-components';
 import { useFieldTestIds } from './shared';
