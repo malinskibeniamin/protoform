@@ -13,7 +13,7 @@ import {
 } from '@tanstack/react-form-v2';
 import React from 'react';
 import { useMemoizedArray } from '@/registry/base-nova/protoform/lib/input-utils';
-import { dirtyFieldsFromValues } from '@/registry/base-nova/protoform/lib/protobuf-provider';
+import { dirtyFieldsFromValues } from '@/registry/base-nova/protoform/lib/protobuf-provider/field-mask';
 import type { SchemaValidationError } from '../core-types';
 import {
   type AutoFormArrayController,

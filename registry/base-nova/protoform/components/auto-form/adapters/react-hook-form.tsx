@@ -12,6 +12,7 @@ import {
   useFormContext,
   useWatch,
 } from 'react-hook-form';
+import { PROTO_FORM_ROOT_ERROR_KEY } from '@/registry/base-nova/protoform/lib/protobuf-provider/provider';
 import {
   type AutoFormArrayController,
   type AutoFormEngine,
@@ -21,7 +22,6 @@ import {
 } from '../engine';
 import { getPathInObject } from '../field-utils';
 import { getRootErrorMessage } from '../helpers';
-import { PROTO_FORM_ROOT_ERROR_KEY } from '../proto';
 
 type FormValues = Record<string, unknown>;
 

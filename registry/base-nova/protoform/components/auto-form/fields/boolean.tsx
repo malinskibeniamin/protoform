@@ -1,8 +1,8 @@
 'use client';
 
+import { getProtoFieldCustomData } from '@/registry/base-nova/protoform/lib/protobuf-provider/provider';
 import type { AutoFormFieldProps } from '../core-types';
 import { CONSENT_FIELD_PATTERN } from '../helpers';
-import { getProtoFieldCustomData } from '../proto';
 import type { FieldTypeDefinition } from '../registry';
 import {
   Checkbox,

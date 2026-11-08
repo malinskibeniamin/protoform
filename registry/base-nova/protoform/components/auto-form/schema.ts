@@ -1,8 +1,12 @@
 import type { Message } from '@bufbuild/protobuf';
 import type { ProtoConversionOptions } from '@/registry/base-nova/protoform/lib/protobuf-provider';
+import {
+  isProtoMessageDescriptor,
+  isProtoProvider,
+  ProtoProvider,
+} from '@/registry/base-nova/protoform/lib/protobuf-provider/provider';
 import type { ParsedField, SchemaProvider, SchemaValidation } from './core-types';
 import { sortFieldsByOrder } from './field-utils';
-import { isProtoMessageDescriptor, isProtoProvider, ProtoProvider } from './proto';
 import type { AutoFormSchemaInput, FieldConfigMap, FieldTypes, RenderFieldConfig, ResolvedSchema } from './types';
 
 function isSchemaProvider(value: unknown): value is SchemaProvider<Record<string, unknown>> {
@@ -18,7 +22,7 @@ function isSchemaProvider(value: unknown): value is SchemaProvider<Record<string
   );
 }
 
-export { normalizeProtoInitialValues } from './proto';
+export { normalizeProtoInitialValues } from './proto/conversion';
 
 export function resolveSchema<T extends Record<string, unknown>>(
   schemaInput: AutoFormSchemaInput<T>,

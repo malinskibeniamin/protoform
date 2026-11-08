@@ -1,3 +1,4 @@
+import { registerProtoAnnotations } from './annotations.js';
 import {
   AddressSchema,
   AutoFormExampleSchema,
@@ -6,7 +7,7 @@ import {
   NestedSettingSchema,
   ProfileSettingsSchema,
 } from './gen/auto-form-example_pb.js';
-import { type ProtoAnnotations, registerProtoAnnotations } from './index.js';
+import type { ProtoAnnotations } from './index.js';
 
 export const autoFormExampleAnnotations = {
   fields: {

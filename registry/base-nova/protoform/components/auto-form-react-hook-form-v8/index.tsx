@@ -2,10 +2,13 @@
 
 import type React from 'react';
 import type { Resolver, UseFormProps, UseFormReturn } from 'react-hook-form-v8';
-import { createProtoResolver } from '@/registry/base-nova/protoform/hooks/use-proto-form-v8';
+import { createProtoResolver } from '@/registry/base-nova/protoform/hooks/use-proto-form-v8/proto-resolver';
+import {
+  isProtoMessageDescriptor,
+  isProtoProvider,
+} from '@/registry/base-nova/protoform/lib/protobuf-provider/provider';
 import { ReactHookFormEngine } from '../auto-form/adapters/react-hook-form-v8';
 import { AutoFormCore } from '../auto-form/auto-form-core';
-import { isProtoMessageDescriptor, isProtoProvider } from '../auto-form/proto';
 import { protoConversionOptionsFromFieldConfig } from '../auto-form/schema';
 import { shadcnUIComponents } from '../auto-form/shadcn-ui-components';
 import type { AutoFormValidationMode, AutoFormProps as BaseAutoFormProps } from '../auto-form/types';

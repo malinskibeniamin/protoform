@@ -39,6 +39,16 @@ const SUBMIT_BUTTON = /submit/iu;
 const FIELD_ERROR_TEXT = /must be at least 3 characters/iu;
 const MESSAGE_ERROR_TEXT = /minimum threshold must be less than or equal to maximum threshold/iu;
 
+const hideOtherFields = (...visibleFields: string[]) =>
+  Object.fromEntries(
+    AutoFormExampleSchema.members
+      .filter((member) => !visibleFields.includes(member.localName))
+      .map((member) => [member.localName, { customData: { hidden: true } }])
+  );
+
+const contactFieldConfig = hideOtherFields('preferredContact');
+const sourceFieldConfig = hideOtherFields('username', 'employeeNumber');
+
 const buildValidProtoDefaults = () => ({
   accessTier: 3,
   age: 34,
@@ -144,13 +154,23 @@ describe('autoForm – protobuf forms', () => {
       AutoFormExampleSchema,
       Uint8Array.from([...toBinary(AutoFormExampleSchema, known), 0xfa, 0xf0, 0x04, 0])
     );
-    render(<AutoForm defaultValues={source} onSubmit={onSubmit} schema={AutoFormExampleSchema} withSubmit />);
+    render(
+      <AutoForm
+        defaultValues={source}
+        fieldConfig={contactFieldConfig}
+        onSubmit={onSubmit}
+        schema={AutoFormExampleSchema}
+        withSubmit
+      />
+    );
     await user.click(screen.getByRole('combobox', { name: PREFERRED_CONTACT_LABEL }));
     await user.click(await screen.findByRole('option', { name: PREFERRED_PHONE_LABEL }));
     await user.type(await screen.findByLabelText(PREFERRED_PHONE_LABEL), '+14155550123');
     await user.click(screen.getByRole('button', { name: SUBMIT_BUTTON }));
-    await waitFor(() => expect(screen.getByText(/unknown wire fields/u)).toBeVisible());
-    expect(onSubmit).not.toHaveBeenCalled();
+    await waitFor(() => {
+      expect(onSubmit).not.toHaveBeenCalled();
+      expect(screen.getByText(/unknown wire fields/u)).toBeVisible();
+    });
   });
 
   test('hydrates and preserves the edit source message through the React Hook Form adapter', async () => {
@@ -174,7 +194,13 @@ describe('autoForm – protobuf forms', () => {
     );
 
     const { unmount } = render(
-      <AutoForm defaultValues={source} onSubmit={onSubmit} schema={AutoFormExampleSchema} withSubmit />
+      <AutoForm
+        defaultValues={source}
+        fieldConfig={sourceFieldConfig}
+        onSubmit={onSubmit}
+        schema={AutoFormExampleSchema}
+        withSubmit
+      />
     );
     expect(screen.getByDisplayValue('protoform_admin')).toBeVisible();
     expect(screen.getByDisplayValue('4001')).toBeVisible();
@@ -197,6 +223,7 @@ describe('autoForm – protobuf forms', () => {
     render(
       <AutoForm
         defaultValues={source}
+        fieldConfig={sourceFieldConfig}
         onSubmit={onSubmit}
         resolver={async (values) => ({
           errors: {},

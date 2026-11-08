@@ -20,7 +20,7 @@ export type {
   SchemaValidationError,
   UiRule,
 } from '../core';
-export { getFieldHints } from '../core';
+export { getFieldHints } from '../core/field-model';
 
 export type UiRenderable = Renderable | ReactNode;
 

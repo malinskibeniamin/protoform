@@ -3,4 +3,4 @@ export {
   humanizeValidationError,
   isGenericValidationMessage,
   SERVER_FIELD_ERROR_FALLBACK,
-} from '../protobuf-provider';
+} from '../protobuf-provider/humanize-validation-error';
