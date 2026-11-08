@@ -61,22 +61,22 @@ describe('strict React tooling', () => {
     );
 
     for (const installedPackage of installedPackages) {
-      expect(installedPackage['version']).toBe('2.3.0');
+      expect(installedPackage['version']).toBe('2.3.1');
     }
   });
 
   test('pins the latest analysis toolchain and exposes strict entrypoints', () => {
     expect(packageJson.devDependencies).toMatchObject({
       '@biomejs/biome': '2.6.6',
-      '@shadcn/lint': '0.2.3',
-      oxlint: '1.90.0',
-      oxfmt: '0.75.0',
-      'oxlint-tsgolint': '7.0.2005',
+      '@shadcn/lint': '0.2.5',
+      oxlint: '1.92.0',
+      oxfmt: '0.77.0',
+      'oxlint-tsgolint': '7.0.2006',
       '@astrojs/compiler-rs': '0.5.2',
       '@rsbuild/plugin-react': '2.1.1',
-      'react-doctor': '0.9.18',
+      'react-doctor': '0.9.22',
       'react-scan': '0.5.7',
-      ultracite: '8.1.0',
+      ultracite: '8.1.1',
     });
     expect('babel-plugin-react-compiler' in packageJson.devDependencies).toBe(false);
     expect(packageJson.scripts).toMatchObject({

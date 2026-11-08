@@ -13,13 +13,13 @@ describe('google API Linter gate', () => {
     expect(manifest.scripts['aip:lint']).toBe('bun run scripts/check-api-linter.ts');
     expect(manifest.scripts['ci:gate']).toContain('bun run aip:lint');
     expect(manifest.scripts['quality:gate']).toContain('bun run aip:lint');
-    expect(runner).toContain('github.com/googleapis/api-linter/v2/cmd/api-linter@v2.3.1');
-    expect(runner).toContain("const GO_TOOLCHAIN = 'go1.26.6'");
+    expect(runner).toContain('github.com/googleapis/api-linter/v2/cmd/api-linter@v2.4.1');
+    expect(runner).toContain("const GO_TOOLCHAIN = 'go1.27.3'");
     expect(runner).toContain('`GOTOOLCHAIN=');
     for (const aip of [127, 131, 132, 133, 134, 135, 164, 203]) {
       expect(runner).toContain(`core::0${aip}`);
     }
     expect(ciWorkflow).toContain('actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e');
-    expect(ciWorkflow).toContain('go-version: 1.26.6');
+    expect(ciWorkflow).toContain('go-version: 1.27.3');
   });
 });
