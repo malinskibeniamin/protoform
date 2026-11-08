@@ -679,6 +679,10 @@ export function formValuesToProtoInit<Desc extends DescMessage>(
   return messageToProtoInit(desc, values, options, []) as MessageInitShape<Desc>;
 }
 
+export class ProtoEditCompatibilityError extends TypeError {
+  override name = 'ProtoEditCompatibilityError';
+}
+
 function knownMessageValuesEqual(
   desc: DescMessage,
   left: AnyObject,
@@ -695,7 +699,14 @@ function knownMessageValuesEqual(
     return false;
   }
   const comparable = clone(desc, left);
-  preserveMessageUnknownFields(desc, comparable, right, true);
+  try {
+    preserveMessageUnknownFields(desc, comparable, right, true);
+  } catch (error) {
+    if (error instanceof ProtoEditCompatibilityError) {
+      return false;
+    }
+    throw error;
+  }
   return toJsonString(desc, comparable) === toJsonString(desc, right);
 }
 
@@ -823,7 +834,7 @@ function preserveMessageUnknownFields(
         readOneofSelection(target[oneof.localName]) !== undefined
     );
     if (ambiguousOneof !== undefined) {
-      throw new TypeError(
+      throw new ProtoEditCompatibilityError(
         `The stored ${ambiguousOneof.name} oneof may select an option in unknown wire fields. Load an updated schema before selecting an option.`
       );
     }
