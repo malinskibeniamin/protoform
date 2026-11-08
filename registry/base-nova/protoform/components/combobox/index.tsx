@@ -258,7 +258,7 @@ function LegacyCombobox({
       }}
       onValueChange={(nextValue) => {
         onChange(nextValue === value ? '' : (nextValue ?? ''));
-        if (createOption && nextValue === createOption.value) {
+        if (nextValue === createOption?.value) {
           onCreateOption?.(nextValue);
         }
       }}

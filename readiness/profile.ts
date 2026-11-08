@@ -79,8 +79,8 @@ export interface ReadinessCategory {
 
 export const readinessProfile = {
   dependencyRanges: {
-    '@bufbuild/cel': '^0.6.1',
-    '@bufbuild/protobuf': '^2.16.0',
+    '@bufbuild/cel': '^0.6.2',
+    '@bufbuild/protobuf': '^2.17.0',
     '@bufbuild/protovalidate': '^1.3.0',
     '@standard-schema/spec': '^1.1.0',
     '@tanstack/react-form': '^1.33.5',
@@ -1227,9 +1227,9 @@ const aipRequirements: readonly ReadinessRequirement[] = [
   aipVerified(
     182,
     'External software dependencies',
-    'scripts/registry-only-distribution.integration.test.ts',
-    'ships Protoform under MIT without private package workspaces',
-    'Every external runtime dependency is declared by a public source-copy registry item.',
+    'scripts/host-consumer.browser.spec.ts',
+    'host primitives submit, report errors, and recover without a theme dependency',
+    'An installed source-copy consumer runs with host-supplied primitives and public runtime dependencies.',
     'reviewing'
   ),
   aipVerified(
@@ -1468,8 +1468,8 @@ const productionRequirements: readonly ReadinessRequirement[] = [
     'production',
     'production.browser-workflows',
     'Chromium end-to-end workflows',
-    'scripts/browser-matrix.integration.test.ts',
-    'runs the end-to-end form suite in Chromium through Rstest'
+    'e2e/demo-catalog.spec.ts',
+    'publishes focused feature and AIP catalogs with working live forms'
   ),
   verified(
     'production',
@@ -1503,8 +1503,8 @@ const productionRequirements: readonly ReadinessRequirement[] = [
     'production',
     'production.registry-dependencies',
     'Registry dependency contract',
-    'scripts/registry-only-distribution.integration.test.ts',
-    'ships Protoform under MIT without private package workspaces'
+    'scripts/host-consumer.browser.spec.ts',
+    'host primitives submit, report errors, and recover without a theme dependency'
   ),
   verified(
     'production',

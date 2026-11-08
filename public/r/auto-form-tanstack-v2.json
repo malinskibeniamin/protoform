@@ -4,7 +4,7 @@
   "title": "Experimental Protoform AutoForm for TanStack Form v2",
   "description": "Experimental AutoForm adapter for the TanStack Form v2 alpha with native atoms, validator arrays, ArrayField state, and submit validation errors.",
   "dependencies": [
-    "@tanstack/react-form-v2@npm:@tanstack/react-form@2.0.0-alpha.2",
+    "@tanstack/react-form-v2@npm:@tanstack/react-form@2.0.0-alpha.3",
     "zod"
   ],
   "registryDependencies": [
