@@ -29,6 +29,7 @@ export {
   type PreconditionViolation,
   type QuotaViolation,
 } from './format-error.js';
+export { ProtoEditCompatibilityError } from './hook-runtime.js';
 export {
   humanizeServerFieldError,
   humanizeValidationError,

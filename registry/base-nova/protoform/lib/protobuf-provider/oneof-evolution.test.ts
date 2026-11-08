@@ -6,6 +6,7 @@ import {
   FieldDescriptorProto_Type as Type,
 } from '@bufbuild/protobuf/wkt';
 import { preserveProtoMessageSource, validateFormValuesAgainstProtoSchema } from './hook-runtime.js';
+import { ProtoEditCompatibilityError } from './index.js';
 import { formValuesToProto, protoToFormValues } from './provider.js';
 import { createDescriptorAwareStandardSchema } from './validation-schema.js';
 
@@ -96,7 +97,7 @@ describe('oneof schema evolution', () => {
       test(`${convert.name} rejects selecting ${selection.case}=${JSON.stringify(selection.value)} over an unrecognized stored branch`, () => {
         const source = readOld({ selection: { case: 'futureText', value: 'stored' } });
         expect(protoToFormValues(oldSchema, source)['selection']).toEqual({ case: undefined, value: undefined });
-        expect(() => convert.run(source, selection)).toThrow(/unknown wire fields/u);
+        expect(() => convert.run(source, selection)).toThrow(ProtoEditCompatibilityError);
         expect(protoToFormValues(newSchema, fromBinary(newSchema, toBinary(oldSchema, source)))['selection']).toEqual({
           case: 'futureText',
           value: 'stored',
@@ -133,6 +134,35 @@ const oldEnvelope = evolutionSchema(false, 'Envelope');
 const newEnvelope = evolutionSchema(true, 'Envelope');
 const futureChild = create(newSchema, { selection: { case: 'futureText', value: 'stored' } });
 const selectedChild = { label: '', selection: selected };
+
+for (const operation of ['delete', 'reorder'] as const) {
+  test(`${operation} does not validate an unrelated repeated-message candidate as an edit`, () => {
+    const source = fromBinary(
+      oldEnvelope,
+      toBinary(newEnvelope, create(newEnvelope, { items: [futureChild, selectedChild] }))
+    );
+    const values = protoToFormValues(oldEnvelope, source);
+    const { items } = values;
+    if (!Array.isArray(items)) {
+      throw new TypeError('Expected repeated message values');
+    }
+    if (operation === 'delete') {
+      items.shift();
+    } else {
+      items.reverse();
+    }
+    const edited = formValuesToProto(oldEnvelope, values, source);
+    const decoded = protoToFormValues(newEnvelope, fromBinary(newEnvelope, toBinary(oldEnvelope, edited)));
+    expect(decoded['items']).toEqual(
+      operation === 'delete'
+        ? [{ ...selectedChild, futureNote: '' }]
+        : [
+            { ...selectedChild, futureNote: '' },
+            { label: '', futureNote: '', selection: { case: 'futureText', value: 'stored' } },
+          ]
+    );
+  });
+}
 
 for (const container of [
   { name: 'singular', initial: { nested: futureChild }, edited: { nested: selectedChild } },
