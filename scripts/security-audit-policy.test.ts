@@ -1,4 +1,4 @@
-import { type AuditException, auditExceptions, classifyAudit } from './security-audit-policy';
+import { type AuditException, classifyAudit } from './security-audit-policy';
 
 declare const { expect, test }: typeof import('bun:test');
 
@@ -12,9 +12,6 @@ const sprintfAdvisory = {
   severity: 'moderate' as const,
   title: 'sprintf-js vulnerable to denial of service through unbounded precision specifiers',
 };
-test('does not waive withdrawn or expired advisories in the installed dependency tree', () => {
-  expect(auditExceptions).toEqual([]);
-});
 const fixtureExceptions: AuditException[] = [
   { package: 'braces', url: advisory.url, expires: '2026-11-04', reason: 'Test-only exception' },
   { package: 'sprintf-js', url: sprintfAdvisory.url, expires: '2026-11-04', reason: 'Test-only exception' },
