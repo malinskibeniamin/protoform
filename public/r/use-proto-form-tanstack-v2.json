@@ -2,10 +2,10 @@
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "use-proto-form-tanstack-v2",
   "title": "Experimental useProtoForm for TanStack Form v2",
-  "description": "Experimental TanStack Form v2 alpha adapter with the native atom, validator-array, and schema-output APIs plus protobuf messages, update masks, and oneofs.",
+  "description": "Experimental TanStack Form v2 alpha adapter with the native atom, validator-array, and validator-output APIs plus protobuf messages, update masks, and oneofs.",
   "dependencies": [
     "@bufbuild/protobuf",
-    "@tanstack/react-form-v2@npm:@tanstack/react-form@2.0.0-alpha.2"
+    "@tanstack/react-form-v2@npm:@tanstack/react-form@2.0.0-alpha.3"
   ],
   "registryDependencies": [
     "@protoform/hook-runtime"

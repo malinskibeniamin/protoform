@@ -69,11 +69,12 @@ describe('experimental TanStack Form v2 useProtoForm', () => {
     expect(result.current.state.isInvalid).toBe(true);
 
     const onValidSubmit =
-      rs.fn<(result: { schemaOutputs: readonly [MessageShape<typeof AutoFormExampleSchema>] }) => void>();
+      rs.fn<(result: { validatorOutputs: readonly [undefined, MessageShape<typeof AutoFormExampleSchema>] }) => void>();
     const { result: valid } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: buildValidProtoFormValues(),
         onSubmit: onValidSubmit,
+        validators: [{ run: () => undefined, triggers: [] }],
       })
     );
 
@@ -86,9 +87,11 @@ describe('experimental TanStack Form v2 useProtoForm', () => {
     if (!call) {
       throw new Error('Expected native form submission');
     }
-    const [{ schemaOutputs }] = call;
-    expect(schemaOutputs[0].$typeName).toBe('protoform.v1.AutoFormExample');
-    expect(schemaOutputs[0].username).toBe('protoform_admin');
+    const [{ validatorOutputs }] = call;
+    expect(validatorOutputs).toHaveLength(2);
+    expect(validatorOutputs[0]).toBeUndefined();
+    expect(validatorOutputs[1].$typeName).toBe('protoform.v1.AutoFormExample');
+    expect(validatorOutputs[1].username).toBe('protoform_admin');
 
     const onSubmitNative = rs.fn();
     const nativeValidator = rs.fn(() => ({

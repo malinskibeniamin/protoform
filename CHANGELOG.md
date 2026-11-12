@@ -31,7 +31,9 @@ source snapshots.
 
 - AutoForm core, its runtime provider, object sections, and string inputs compile under React Compiler without `"use no memo"`.
 - The bookstore demo shows field errors with React Hook Form's built-in `ErrorMessage` bound to `control`, so it no longer installs `@hookform/error-message`.
-- The experimental React Hook Form v8 items install `8.0.0-beta.4`.
+- Stable React Hook Form items require `7.92.0`; the tested resolver version is `7.0.6`.
+- The experimental React Hook Form v8 items install `8.0.0-beta.5`.
+- Experimental TanStack Form v2 items install `2.0.0-alpha.3`; native submit callbacks use `validatorOutputs` instead of `schemaOutputs`.
 - Installed source uses single quotes, ES5 trailing commas, and 120-column lines, and carries no comments or license headers.
 - `protoToFormValues` returns `ProtoFormShape<Desc>` instead of `Record<string, unknown>`.
 - `FlattenProtoOneofs` is removed. It described the raw message, not the normalized form values; use `ProtoFormShape`.
@@ -76,6 +78,6 @@ source snapshots.
 - React 19.2 or later within major version 19.
 - Protobuf-ES 2.13 or later within major version 2.
 - Protovalidate 1.2 or later within major version 1.
-- React Hook Form 7.81 or TanStack Form 1.33, according to the installed adapter. The bookstore demo needs React Hook Form 7.88 or later.
+- React Hook Form 7.92 or TanStack Form 1.33, according to the installed adapter.
 
 Release date is set when the verified `v1.0.0` tag is created.

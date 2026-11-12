@@ -166,7 +166,7 @@ hatches remain TanStack Form-owned.
 ## Experimental: TanStack Form v2 alpha
 
 TanStack Form v2 support is a separate, opt-in path. It does not replace the stable v1 items above.
-The registry currently pins `2.0.0-alpha.2` through a package alias, so both generations can be
+The registry currently pins `2.0.0-alpha.3` through a package alias, so both generations can be
 evaluated in one application. Review the upstream [v2 announcement](https://tanstack.com/blog/announcing-tanstack-form-v2-alpha)
 and [migration guide](https://tanstack.com/form/alpha/docs/migrate-from-v1) before adopting it.
 
@@ -178,7 +178,7 @@ bunx shadcn@latest add @protoform/use-proto-form-tanstack-v2
 
 The v2 adapter follows the v2 contract rather than emulating v1: validators and listeners are arrays,
 the form exposes `form.atom`, fields expose `field.value` and `field.errors` directly, and a successful
-Standard Schema validator contributes its protobuf message to `schemaOutputs`.
+Standard Schema validator contributes its protobuf message to `validatorOutputs`.
 
 ```tsx
 import { Button } from "@/components/ui/button";
@@ -199,8 +199,8 @@ export function ExperimentalSignupForm() {
         triggers: ["change"],
       },
     ],
-    onSubmit: async ({ createValidationError, schemaOutputs }) => {
-      const message = schemaOutputs.at(-1);
+    onSubmit: async ({ createValidationError, validatorOutputs }) => {
+      const message = validatorOutputs.at(-1);
       const result = await client.signup(message);
       if (!result.ok) {
         return createValidationError({
@@ -242,8 +242,8 @@ export function ExperimentalSignupForm() {
 }
 ```
 
-The protobuf validator is appended after caller validators. With no caller schema validators, the
-typed protobuf message is `schemaOutputs[0]`; otherwise read the final output as shown above. The hook
+The protobuf validator is appended after caller validators. With no caller validators, the
+typed protobuf message is `validatorOutputs[0]`; otherwise read the final output as shown above. The hook
 also adds `createMessage`, `createUpdateMask`, and `setOneofValue`. Use v2's native
 `createValidationError` return for submit-time server errors.
 

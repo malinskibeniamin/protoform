@@ -56,9 +56,9 @@ for (const name of expectedItems) {
   for (const dependency of item.dependencies ?? []) {
     if (
       (dependency === 'react-hook-form' || dependency.startsWith('react-hook-form@')) &&
-      dependency !== 'react-hook-form@^7.91.0'
+      dependency !== 'react-hook-form@^7.92.0'
     ) {
-      throw new Error(`${path} must require react-hook-form@^7.91.0 so consumers receive the lifecycle fixes`);
+      throw new Error(`${path} must require react-hook-form@^7.92.0 so consumers receive the lifecycle fixes`);
     }
   }
   if (item.name !== name) {
@@ -115,7 +115,7 @@ if (
   throw new Error('protoform-shadcn must install optional defaults through the configured ui alias');
 }
 
-const reactHookFormV8Alias = 'react-hook-form-v8@npm:react-hook-form@8.0.0-beta.4';
+const reactHookFormV8Alias = 'react-hook-form-v8@npm:react-hook-form@8.0.0-beta.5';
 const reactHookFormV8Hook = dependencyItemSchema.parse(
   JSON.parse(readFileSync('public/r/use-proto-form-v8.json', 'utf8'))
 );
@@ -154,7 +154,7 @@ if (tanstackAutoForm.dependencies?.includes('react-hook-form')) {
   throw new Error('auto-form-tanstack must not install React Hook Form');
 }
 
-const tanstackV2Alias = '@tanstack/react-form-v2@npm:@tanstack/react-form@2.0.0-alpha.2';
+const tanstackV2Alias = '@tanstack/react-form-v2@npm:@tanstack/react-form@2.0.0-alpha.3';
 const tanstackV2Hook = z
   .looseObject({ dependencies: z.array(z.string()).optional() })
   .parse(JSON.parse(readFileSync('public/r/use-proto-form-tanstack-v2.json', 'utf8')));
