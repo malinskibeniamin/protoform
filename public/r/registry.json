@@ -42,7 +42,7 @@
         "@connectrpc/connect",
         "@connectrpc/connect-query",
         "@tanstack/react-query",
-        "react-hook-form@^7.91.0"
+        "react-hook-form@^7.92.0"
       ],
       "files": [
         {
@@ -339,7 +339,7 @@
       "type": "registry:hook",
       "title": "useProtoForm",
       "description": "React Hook Form adapter for ProtoValidate ES, CEL rules, protobuf defaults, oneofs, and Connect/gRPC field violations.",
-      "dependencies": ["@bufbuild/protobuf", "@connectrpc/connect", "@hookform/resolvers", "react-hook-form@^7.91.0"],
+      "dependencies": ["@bufbuild/protobuf", "@connectrpc/connect", "@hookform/resolvers", "react-hook-form@^7.92.0"],
       "files": [
         {
           "path": "registry/base-nova/protoform/hooks/use-proto-form/index.ts",
@@ -396,7 +396,7 @@
       "dependencies": [
         "@bufbuild/protobuf",
         "@connectrpc/connect",
-        "react-hook-form-v8@npm:react-hook-form@8.0.0-beta.4"
+        "react-hook-form-v8@npm:react-hook-form@8.0.0-beta.5"
       ],
       "files": [
         {
@@ -426,8 +426,8 @@
       "name": "use-proto-form-tanstack-v2",
       "type": "registry:hook",
       "title": "Experimental useProtoForm for TanStack Form v2",
-      "description": "Experimental TanStack Form v2 alpha adapter with the native atom, validator-array, and schema-output APIs plus protobuf messages, update masks, and oneofs.",
-      "dependencies": ["@bufbuild/protobuf", "@tanstack/react-form-v2@npm:@tanstack/react-form@2.0.0-alpha.2"],
+      "description": "Experimental TanStack Form v2 alpha adapter with the native atom, validator-array, and validator-output APIs plus protobuf messages, update masks, and oneofs.",
+      "dependencies": ["@bufbuild/protobuf", "@tanstack/react-form-v2@npm:@tanstack/react-form@2.0.0-alpha.3"],
       "files": [
         {
           "path": "registry/base-nova/protoform/hooks/use-proto-form-tanstack-v2/index.ts",
@@ -807,7 +807,7 @@
       "title": "Protoform React",
       "description": "React Hook Form AutoForm renderer and field logic using a consumer-owned shadcn-compatible component map.",
       "registryDependencies": ["@protoform/auto-form-core", "@protoform/protoform-core"],
-      "dependencies": ["react-hook-form@^7.91.0"],
+      "dependencies": ["react-hook-form@^7.92.0"],
       "files": [
         {
           "path": "registry/base-nova/protoform/components/auto-form/adapters/react-hook-form.tsx",
@@ -1841,7 +1841,7 @@
       "title": "Experimental Protoform AutoForm for React Hook Form v8",
       "description": "Experimental AutoForm adapter for the React Hook Form v8 beta with its native form API plus Protoform rendering and protobuf helpers.",
       "registryDependencies": ["@protoform/auto-form-core", "@protoform/use-proto-form-v8"],
-      "dependencies": ["react-hook-form-v8@npm:react-hook-form@8.0.0-beta.4"],
+      "dependencies": ["react-hook-form-v8@npm:react-hook-form@8.0.0-beta.5"],
       "files": [
         {
           "path": "registry/base-nova/protoform/components/auto-form-react-hook-form-v8/index.tsx",
@@ -1866,7 +1866,7 @@
       "title": "Experimental Protoform AutoForm for TanStack Form v2",
       "description": "Experimental AutoForm adapter for the TanStack Form v2 alpha with native atoms, validator arrays, ArrayField state, and submit validation errors.",
       "registryDependencies": ["@protoform/auto-form-core", "@protoform/use-proto-form-tanstack-v2"],
-      "dependencies": ["@tanstack/react-form-v2@npm:@tanstack/react-form@2.0.0-alpha.2", "zod"],
+      "dependencies": ["@tanstack/react-form-v2@npm:@tanstack/react-form@2.0.0-alpha.3", "zod"],
       "files": [
         {
           "path": "registry/base-nova/protoform/components/auto-form-tanstack-v2/index.tsx",
@@ -2044,7 +2044,7 @@
         "lucide-react",
         "motion",
         "react-day-picker",
-        "react-hook-form@^7.91.0",
+        "react-hook-form@^7.92.0",
         "tailwind-merge",
         "zod"
       ],
@@ -2143,7 +2143,7 @@
       ]
     },
     {
-      "dependencies": ["@bufbuild/protobuf", "react", "react-hook-form@^7.91.0"],
+      "dependencies": ["@bufbuild/protobuf", "react", "react-hook-form@^7.92.0"],
       "description": "Shared fixture descriptors and generated compatibility contracts for focused Protoform demos.",
       "files": [
         {

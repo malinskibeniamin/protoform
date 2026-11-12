@@ -355,7 +355,7 @@ describe('native form adapter registry entries', () => {
     const reactHookForm = item('protoform-react');
 
     expect(reactHookForm.registryDependencies).toEqual(['@protoform/auto-form-core', '@protoform/protoform-core']);
-    expect(reactHookForm.dependencies).toContain('react-hook-form@^7.91.0');
+    expect(reactHookForm.dependencies).toContain('react-hook-form@^7.92.0');
     expect(filePaths(reactHookForm)).toContain(
       'registry/base-nova/protoform/components/auto-form/adapters/react-hook-form.tsx'
     );
@@ -379,7 +379,7 @@ describe('native form adapter registry entries', () => {
   });
 
   test('ships TanStack Form v2 as separate experimental registry items', () => {
-    const packageAlias = '@tanstack/react-form-v2@npm:@tanstack/react-form@2.0.0-alpha.2';
+    const packageAlias = '@tanstack/react-form-v2@npm:@tanstack/react-form@2.0.0-alpha.3';
     const tanstackHook = item('use-proto-form-tanstack-v2');
     const tanstackAutoForm = item('auto-form-tanstack-v2');
 
@@ -397,7 +397,7 @@ describe('native form adapter registry entries', () => {
   });
 
   test('ships React Hook Form v8 as separate experimental registry items', () => {
-    const packageAlias = 'react-hook-form-v8@npm:react-hook-form@8.0.0-beta.4';
+    const packageAlias = 'react-hook-form-v8@npm:react-hook-form@8.0.0-beta.5';
     const reactHookFormHook = item('use-proto-form-v8');
     const reactHookFormAutoForm = item('auto-form-react-hook-form-v8');
 

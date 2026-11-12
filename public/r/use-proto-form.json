@@ -7,7 +7,7 @@
     "@bufbuild/protobuf",
     "@connectrpc/connect",
     "@hookform/resolvers",
-    "react-hook-form@^7.91.0"
+    "react-hook-form@^7.92.0"
   ],
   "registryDependencies": [
     "@protoform/hook-runtime"

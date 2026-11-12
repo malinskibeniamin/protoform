@@ -165,7 +165,7 @@ rozszerzania pozostają zarządzane przez TanStack Form.
 ## Eksperymentalne: TanStack Form v2 alpha
 
 Obsługa TanStack Form v2 jest osobną, opcjonalną ścieżką. Nie zastępuje powyższych stabilnych elementów v1.
-Rejestr obecnie przypina wersję `2.0.0-alpha.2` za pomocą aliasu pakietu, dzięki czemu obie generacje można
+Rejestr obecnie przypina wersję `2.0.0-alpha.3` za pomocą aliasu pakietu, dzięki czemu obie generacje można
 oceniać w jednej aplikacji. Przed wdrożeniem zapoznaj się z oficjalnym [ogłoszeniem v2](https://tanstack.com/blog/announcing-tanstack-form-v2-alpha)
 oraz [przewodnikiem migracji](https://tanstack.com/form/alpha/docs/migrate-from-v1).
 
@@ -177,7 +177,7 @@ bunx shadcn@latest add @protoform/use-proto-form-tanstack-v2
 
 Adapter v2 stosuje kontrakt v2 zamiast emulować v1: walidatory i listenery są tablicami,
 formularz udostępnia `form.atom`, pola bezpośrednio udostępniają `field.value` i `field.errors`, a pomyślnie
-wykonany walidator Standard Schema dodaje swój komunikat protobuf do `schemaOutputs`.
+wykonany walidator Standard Schema dodaje swój komunikat protobuf do `validatorOutputs`.
 
 ```tsx
 import { Button } from "@/components/ui/button";
@@ -198,8 +198,8 @@ export function ExperimentalSignupForm() {
         triggers: ["change"],
       },
     ],
-    onSubmit: async ({ createValidationError, schemaOutputs }) => {
-      const message = schemaOutputs.at(-1);
+    onSubmit: async ({ createValidationError, validatorOutputs }) => {
+      const message = validatorOutputs.at(-1);
       const result = await client.signup(message);
       if (!result.ok) {
         return createValidationError({
@@ -241,8 +241,8 @@ export function ExperimentalSignupForm() {
 }
 ```
 
-Walidator protobuf jest dodawany po walidatorach wywołującego. Jeśli wywołujący nie przekazał walidatorów schematu,
-typowany komunikat protobuf znajduje się w `schemaOutputs[0]`; w przeciwnym razie odczytaj ostatni wynik, jak pokazano powyżej. Hook
+Walidator protobuf jest dodawany po walidatorach wywołującego. Jeśli wywołujący nie przekazał walidatorów,
+typowany komunikat protobuf znajduje się w `validatorOutputs[0]`; w przeciwnym razie odczytaj ostatni wynik, jak pokazano powyżej. Hook
 dodaje również `createMessage`, `createUpdateMask` i `setOneofValue`. W przypadku błędów serwera podczas przesyłania użyj natywnej dla v2
 wartości zwracanej przez `createValidationError`.
 
