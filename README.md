@@ -54,88 +54,37 @@ These are placeholder registry URLs. Merge the relevant keys into your existing 
 do not replace it. shadcn supports [custom namespaces](https://ui.shadcn.com/docs/registry/namespace)
 and resolves [alias-based targets](https://ui.shadcn.com/docs/registry/registry-item-json) from that configuration.
 
-### Existing Radix-style shadcn components
+### UI SDK controls
+
+The bundled UI now uses [UI SDK](https://ui-sdk.dev/docs), pinned to `0.1.0-beta.1`.
+This is a breaking migration, not a shadcn/Base UI compatibility layer.
+
+For a complete themed installation:
 
 ```bash
-bunx shadcn@latest add @protoform/protoform @protoform/protoform-shadcn-host
+bunx shadcn@latest add @protoform/protoform-ui-sdk-tanstack
 ```
 
-The optional `protoform-shadcn-host` item installs one editable adapter file, not primitives.
-It imports your local alert, button, calendar, checkbox, collapsible, field, input, input-group,
-popover, radio-group, select, slider, switch, tabs, textarea, toggle, toggle-group and tooltip
-modules. Install any missing modules from **your** registry, for example
-`bunx shadcn@latest add @company/input @company/button`. Remove unused imports and entries
-from the adapter if you only need a smaller set.
+Use `protoform-ui-sdk` if you need the alternative Recharts module.
+For existing host-owned UI SDK controls, install `protoform` and `protoform-ui-sdk-host`, then
+pass `uiSdkHostComponents` from `auto-form/ui-sdk-host` to the host AutoForm entrypoint.
+Other design systems can still supply their own component map; core installs copy no primitives
+or theme tokens. Only controls exercised by a form need registration.
 
-```tsx
-import { AutoForm } from "@/features/auto-form/host";
-import { shadcnHostComponents } from "@/features/auto-form/shadcn-host";
+Native SDK APIs replace the old `asChild`, popup lifecycle, tabs, toggle-group, calendar,
+carousel, resizable-panel, and toast contracts. See the
+[bundle migration notes](registry/base-nova/protoform/UI_SDK_COMPONENTS.md).
+Tooltips need no provider: their native SDK behavior coordinates hover warm-up automatically.
 
-<AutoForm components={shadcnHostComponents} schema={RequestSchema} />;
+### Opt-in agent bridge
+
+```bash
+bunx shadcn@latest add @protoform/protoform-ui-sdk-agent
 ```
 
-The adapter composes label, copy feedback, and nullable protobuf selections without modifying
-primitives. Base UI and other custom APIs may require a different mapping; a registry URL alone
-does not make those APIs compatible. Do not change your primitives to match Protoform.
-
-### Custom controls and minimal forms
-
-Pass a component map directly to `AutoForm` when using a different UI API. Only controls rendered
-by your form need entries; the host entrypoint does not eagerly import your UI library. The
-`ui-props.ts` file describes renderer inputs independently of consumer implementation types.
-`testId` is translated to `data-testid` before reaching host controls.
-
-Specialized `Combobox`, `SimpleMultiSelect`, `JSONField`, `KeyValueField`, and `Choicebox*` controls
-are **not** supplied by the standard adapter. Register compatible host implementations through
-`components`, or use `fieldRegistry` / `formComponents` to provide your own field renderer.
-A missing control produces an actionable error naming it; supplying an updated map recovers the
-form. For a minimal text form, use `modes={["simple"]}` and `showSummary={false}` to avoid requiring
-tabs and summary controls.
-
-### Tooltip timing
-
-Keep AutoForm and adjacent controls under the same application-level tooltip provider so hover
-warm-up crosses form boundaries. AutoForm and the bundled multi-select do not create their own
-tooltip providers or override host timing. The `TooltipProvider` component-map entry remains
-available for custom renderers, but AutoForm itself does not require it.
-
-For Radix-style shadcn tooltips, configure the provider at your application root, for example:
-
-```tsx
-import { TooltipProvider } from "@/design-system/ui/tooltip";
-
-<TooltipProvider delayDuration={150} skipDelayDuration={400}>
-  <App />
-</TooltipProvider>;
-```
-
-Use your provider's own API: [Radix](https://www.radix-ui.com/primitives/docs/components/tooltip)
-uses `delayDuration` and `skipDelayDuration`;
-[Base UI](https://base-ui.com/react/components/tooltip) uses `delay` and `timeout`.
-When updating an existing install, move any relied-on form-local timing to this host provider.
-Radix tooltips require a provider; Base UI without one uses its standalone defaults and does not
-share hover warm-up.
-
-The bundled `TooltipContent` uses shadcn's CSS popup animation: text, background, and arrow
-animate together, with no text-only spring. Keep `@import "tw-animate-css";` in your app's
-stylesheet. Reduced-motion preferences disable the animation. The `detail` variant keeps
-readiness guidance instant. Motion is owned by these variants, not the former Motion
-`transition` prop.
-
-### Existing consumers
-
-- For a new full UI install, prefer `bunx shadcn@latest add @protoform/protoform-shadcn-tanstack`.
-  It includes native TanStack Charts and does not install Recharts. This chart choice is independent
-  of the form engine. Use `TanStackChart` from `@/components/ui/chart-tanstack` with native definitions.
-- Keep manual hook installs unchanged.
-- For host-owned UI, change the AutoForm import from `components/auto-form` to
-  `components/auto-form/host` and pass `components` explicitly.
-- `protoform-shadcn` remains an explicit legacy/demo bundle with the old entrypoint and customized
-  UI. It is **not** the bring-your-own-registry path. Installing `protoform` no longer pulls it in.
-- This initial host entrypoint uses React Hook Form v7. Existing experimental and TanStack
-  AutoForm entrypoints retain their legacy default maps; their hook-only installs remain UI-free.
-- Review source diffs when updating. This change does not delete old copied primitives or theme
-  files from an existing app. Remove them only after checking your own references.
+Import `createAgent` from your installed `lib/ui-sdk/agent` and call it before rendering.
+The helper does not create a bridge or register WebMCP tools automatically. Configure approval,
+sensitive-action confirmation, and secret handling in the consuming application.
 
 ## Flagship example
 
@@ -170,21 +119,21 @@ bunx shadcn@latest add @protoform/protoc-gen-protoform
 
 Useful items:
 
-| Item                        | Source copied into the app                                           |
-| --------------------------- | -------------------------------------------------------------------- |
-| `protoform-foundation`      | Framework-neutral field model and Standard Schema adapters           |
-| `hook-runtime`              | Hook conversion, Protovalidate, field masks, and Connect errors      |
-| `protoform-core`            | Protobuf conversion, validation, and `useProtoForm` without UI       |
-| `protobuf-provider`         | Full schema/UI parsing, annotations, AIP metadata, and workflows     |
-| `use-proto-form`            | Native React Hook Form integration                                   |
-| `use-proto-form-tanstack`   | Native TanStack Form integration                                     |
-| `protoform-react`           | React Hook Form AutoForm using a consumer-owned shadcn component map |
-| `protoform-shadcn-tanstack` | Recommended full UI source with TanStack Charts; no Recharts         |
-| `protoform-shadcn`          | Explicit Recharts fallback with the existing chart API               |
-| `protoform-shadcn-host`     | Editable adapter for existing Radix-style controls                   |
-| `auto-form-tanstack`        | TanStack Form AutoForm                                               |
-| `protoc-gen-protoform`      | Source-copy Buf plugin                                               |
-| `bookstore`                 | Complete five-RPC example                                            |
+| Item                        | Source copied into the app                                       |
+| --------------------------- | ---------------------------------------------------------------- |
+| `protoform-foundation`      | Framework-neutral field model and Standard Schema adapters       |
+| `hook-runtime`              | Hook conversion, Protovalidate, field masks, and Connect errors  |
+| `protoform-core`            | Protobuf conversion, validation, and `useProtoForm` without UI   |
+| `protobuf-provider`         | Full schema/UI parsing, annotations, AIP metadata, and workflows |
+| `use-proto-form`            | Native React Hook Form integration                               |
+| `use-proto-form-tanstack`   | Native TanStack Form integration                                 |
+| `protoform-react`           | React Hook Form AutoForm using a consumer-owned UI component map |
+| `protoform-ui-sdk-tanstack` | Recommended full UI source with TanStack Charts; no Recharts     |
+| `protoform-ui-sdk`          | Explicit Recharts fallback with the existing chart API           |
+| `protoform-ui-sdk-host`     | Editable adapter for host-owned UI SDK controls                  |
+| `auto-form-tanstack`        | TanStack Form AutoForm                                           |
+| `protoc-gen-protoform`      | Source-copy Buf plugin                                           |
+| `bookstore`                 | Complete five-RPC example                                        |
 
 To test newer changes, build the registry locally with
 `bun install --frozen-lockfile && bun run registry:build`.

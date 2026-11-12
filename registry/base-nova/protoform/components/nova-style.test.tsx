@@ -1,14 +1,14 @@
 import { describe, expect } from '@rstest/core';
 import { render, screen } from '@testing-library/react';
 
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Input } from '@/components/ui/input';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Select, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Slider } from '@/components/ui/slider';
-import { Switch } from '@/components/ui/switch';
-import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button/index';
+import { Checkbox } from '@/components/ui/checkbox/index';
+import { Input } from '@/components/ui/input/index';
+import { Radio, RadioGroup } from '@/components/ui/radio-group/index';
+import { Select, SelectTrigger, SelectValue } from '@/components/ui/select/index';
+import { Slider } from '@/components/ui/slider/index';
+import { Switch } from '@/components/ui/switch/index';
+import { Textarea } from '@/components/ui/textarea/index';
 
 describe('base Nova form controls', () => {
   test('use Nova density and geometry by default', () => {
@@ -24,7 +24,7 @@ describe('base Nova form controls', () => {
         </Select>
         <Checkbox aria-label="Accept terms" />
         <RadioGroup>
-          <RadioGroupItem aria-label="First option" value="first" />
+          <Radio aria-label="First option" value="first" />
         </RadioGroup>
         <Switch aria-label="Enable notifications" />
         <Slider aria-label="Volume" defaultValue={[50]} />
@@ -36,13 +36,13 @@ describe('base Nova form controls', () => {
     expect(screen.getByRole('textbox', { name: 'Description' })).toHaveClass('min-h-16', 'rounded-lg', 'px-2.5');
     const trigger = screen.getByRole('combobox', { name: 'Status' });
     expect(trigger).toHaveAttribute('data-size', 'default');
-    expect(trigger).toHaveClass('data-[size=default]:h-8', 'rounded-lg');
+    expect(trigger).toHaveClass('h-8', 'rounded-lg');
     expect(screen.getByRole('checkbox', { name: 'Accept terms' })).toHaveClass('size-4', 'rounded-sm');
     expect(screen.getByRole('radio', { name: 'First option' })).toHaveClass('size-4', 'rounded-full');
     const control = screen.getByRole('switch', { name: 'Enable notifications' });
     expect(control).toHaveAttribute('data-size', 'default');
-    expect(control).toHaveClass('data-[size=default]:h-[18.4px]', 'data-[size=default]:w-[32px]');
-    expect(screen.getByRole('slider', { name: 'Volume' })).toBeVisible();
-    expect(container.querySelector('[data-slot="slider-thumb"]')).toHaveClass('size-3');
+    expect(control).toHaveClass('h-5', 'w-9');
+    expect(screen.getByRole('slider', { name: 'Volume' })).toBeEnabled();
+    expect(container.querySelector('[data-slot="slider-thumb"]')).toHaveClass('size-4');
   });
 });

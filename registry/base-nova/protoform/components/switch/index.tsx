@@ -1,46 +1,61 @@
-import { Switch as SwitchPrimitive } from '@base-ui/react/switch';
+'use client';
+
+import { Switch as SDKSwitch, SwitchThumb as SDKSwitchThumb } from '@ui-sdk/react/switch';
+
 import type React from 'react';
+import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
+import { cn } from '@/registry/base-nova/protoform/lib/utils';
+import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
-import { renderWithDataState } from '@/registry/base-nova/protoform/lib/base-ui-compat';
-import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
-
-type SwitchProps = React.ComponentProps<typeof SwitchPrimitive.Root> &
-  SharedProps & {
-    size?: 'default' | 'sm';
-  };
-
-function Switch(allProps: SwitchProps) {
-  const { className, size = 'default', testId, onCheckedChange, render, nativeButton, ...props } = allProps;
-
-  const hasCheckedProp = 'checked' in allProps;
-  const checkedOverride = hasCheckedProp && allProps.checked === undefined ? { checked: false } : undefined;
-
+function Switch({
+  children,
+  className,
+  testId,
+  variant,
+  size = 'default',
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKSwitch>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
   return (
-    <SwitchPrimitive.Root
+    <SDKSwitch
+      {...definedProps(props)}
       className={(state) =>
         cn(
-          'peer group/switch relative inline-flex shrink-0 cursor-pointer items-center rounded-full border border-transparent transition-all outline-none after:absolute after:-inset-x-3 after:-inset-y-2 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 data-[size=default]:h-[18.4px] data-[size=default]:w-[32px] data-[size=sm]:h-[14px] data-[size=sm]:w-[24px] data-[state=checked]:bg-primary data-[state=unchecked]:bg-input dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40',
+          'group inline-flex h-5 w-9 shrink-0 items-center rounded-full bg-input outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 data-checked:bg-primary',
           typeof className === 'function' ? className(state) : className
         )
       }
       data-size={size}
-      data-slot="switch"
-      data-testid={testId}
-      nativeButton={nativeButton ?? render === undefined}
-      onCheckedChange={onCheckedChange}
-      render={render ?? renderWithDataState('button')}
-      {...props}
-      {...checkedOverride}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
     >
-      <SwitchPrimitive.Thumb
-        className={cn(
-          'pointer-events-none block rounded-full bg-background ring-0 transition-transform group-data-[size=default]/switch:size-4 group-data-[size=sm]/switch:size-3 data-[state=checked]:translate-x-[calc(100%-2px)] data-[state=unchecked]:translate-x-0 dark:data-[state=checked]:bg-primary-foreground dark:data-[state=unchecked]:bg-foreground'
-        )}
-        data-slot="switch-thumb"
-        render={renderWithDataState('span')}
-      />
-    </SwitchPrimitive.Root>
+      {children ?? <SwitchThumb />}
+    </SDKSwitch>
   );
 }
 
-export { Switch };
+function SwitchThumb({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKSwitchThumb>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKSwitchThumb
+      {...definedProps(props)}
+      className={(state) =>
+        cn(
+          'pointer-events-none block size-4 rounded-full bg-background transition-transform group-data-checked:translate-x-4 rtl:group-data-checked:-translate-x-4',
+          typeof className === 'function' ? className(state) : className
+        )
+      }
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
+
+export { Switch, SwitchThumb };

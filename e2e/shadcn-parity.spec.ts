@@ -102,9 +102,9 @@ test('layout controls preserve editing and resize by keyboard @cross-browser', a
   const caret = await note.evaluate((element: HTMLInputElement) => element.selectionStart);
   await page.keyboard.press('ArrowRight');
   expect(await note.evaluate((element: HTMLInputElement) => element.selectionStart)).toBe((caret ?? 0) + 1);
-  await page.getByRole('button', { name: 'Next slide' }).click();
-  await expect(page.getByRole('button', { name: 'Previous slide' })).toBeEnabled();
-  await page.getByRole('button', { name: 'Previous slide' }).click();
+  await page.getByRole('button', { name: 'Next schema' }).click();
+  await expect(page.getByRole('button', { name: 'Previous schema' })).toBeEnabled();
+  await page.getByRole('button', { name: 'Previous schema' }).click();
   await expect(note).toBeVisible();
   const handle = page.getByRole('separator', { name: 'Resize form and preview' });
   await handle.focus();
@@ -119,21 +119,20 @@ test('message samples recover and questionnaire validates before completion @cro
   await page.getByRole('button', { name: 'Toggle attachment sample state' }).click();
   await expect(page.getByText('Example uploaded state', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Append sample event' }).click();
-  await page.getByRole('button', { name: 'Scroll to end', exact: true }).click();
   await expect(page.getByText('Sample event 9: request validated.', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Next', exact: true }).click();
   await expect(page.getByText('Which format should the sample use?', { exact: true })).toBeVisible();
   await page.getByRole('radio', { name: 'JSON', exact: true }).check();
   await page.getByRole('button', { name: 'Next', exact: true }).click();
   await expect(page.getByText('Include sample validation?', { exact: true })).toBeVisible();
-  await page.getByRole('button', { name: 'Skip', exact: true }).click();
+  await page.getByRole('button', { name: 'Save sample answers', exact: true }).click();
   await expect(page.getByRole('status').filter({ hasText: 'Sample saved: json.' })).toBeVisible();
 });
 
 test('composition recipes filter, select, paginate and recover @cross-browser', async ({ page }) => {
   await page.getByRole('tab', { name: 'Recipes', exact: true }).click();
   await page.getByRole('button', { name: 'Choose sample date' }).click();
-  await page.getByRole('button', { name: 'Thursday, October 15th, 2026', exact: true }).click();
+  await page.getByRole('gridcell', { name: 'Thursday, October 15, 2026', exact: true }).click();
   await expect(page.getByLabel('Selected sample date')).toContainText('Oct 15, 2026');
   const table = page.getByRole('table', { name: 'Sample records' });
   await page.getByRole('checkbox', { name: 'Select Ada', exact: true }).check();
@@ -156,6 +155,30 @@ test('composition recipes filter, select, paginate and recover @cross-browser', 
 
 for (const name of ['Basics', 'Overlays', 'Layout', 'Messages', 'Recipes']) {
   let checkScenario: (page: Page) => Promise<void> = () => Promise.resolve();
+  if (name === 'Basics') {
+    checkScenario = async (page) => {
+      const bounds = await page.locator('[data-slot="otp-input"]').evaluate((root) => ({
+        right: root.getBoundingClientRect().right,
+        slotRights: Array.from(
+          root.querySelectorAll('[data-slot="otp-input-slot"]'),
+          (slot) => slot.getBoundingClientRect().right
+        ),
+      }));
+      expect(bounds.slotRights).toHaveLength(6);
+      for (const right of bounds.slotRights) {
+        expect(right).toBeLessThanOrEqual(bounds.right + 1);
+      }
+    };
+  }
+  if (name === 'Layout') {
+    checkScenario = async (page) => {
+      const bounds = await page.locator('[data-slot="resizable"]').evaluate((root) => ({
+        bottom: root.getBoundingClientRect().bottom,
+        sectionBottom: root.parentElement?.getBoundingClientRect().bottom ?? 0,
+      }));
+      expect(bounds.bottom).toBeLessThanOrEqual(bounds.sectionBottom);
+    };
+  }
   if (name === 'Recipes') {
     checkScenario = async (page) => {
       const tableViewport = page.getByRole('region', { name: 'Sample records', exact: true });

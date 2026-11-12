@@ -3,7 +3,7 @@ import { test } from '../scripts/e2e-test';
 
 const route = '/docs/blume-examples/registry/base-nova/protoform/demo/ui/shadcn-api';
 
-test('composes shadcn APIs and cancels selection without losing the current value', async ({ page }) => {
+test('composes UI SDK APIs and cancels selection without losing the current value', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', (error) => {
     errors.push(error.message);
@@ -29,19 +29,19 @@ test('composes shadcn APIs and cancels selection without losing the current valu
   );
   await page.getByRole('checkbox', { name: 'Cancel selection and disclosure changes' }).uncheck();
   await page.getByRole('button', { name: 'Show details', exact: true }).click();
-  await expect(page.getByText('Cancelable Base UI events are preserved.')).toBeVisible();
+  await expect(page.getByText('UI SDK changes can be canceled.')).toBeVisible();
   expect(errors).toEqual([]);
 });
 
-test('supports chips, both toggle contracts, numeric sliders and named popovers', async ({ page }) => {
+test('supports chips, array toggle selections, numeric sliders and named popovers', async ({ page }) => {
   await page.goto(route);
   await page.getByRole('combobox', { name: 'Fruit tags' }).fill('Plum');
   await page.getByRole('option', { name: 'Plum', exact: true }).click();
-  await page.getByRole('button', { name: 'Remove selection' }).click();
-  await expect(page.getByRole('button', { name: 'Remove selection' })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Remove Plum' }).click();
+  await expect(page.getByRole('button', { name: 'Remove Plum' })).toHaveCount(0);
   await page.getByRole('button', { name: 'Bold', exact: true }).click();
   await expect(page.getByText('Formatting: bold', { exact: true })).toBeVisible();
-  await page.getByRole('radio', { name: 'Right', exact: true }).click();
+  await page.getByRole('button', { name: 'Right', exact: true }).click();
   await expect(page.getByText('Alignment: right', { exact: true })).toBeVisible();
   await page.getByRole('slider', { name: 'Volume', exact: true }).focus();
   await page.keyboard.press('ArrowRight');

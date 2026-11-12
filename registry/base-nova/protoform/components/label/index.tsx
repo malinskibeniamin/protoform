@@ -1,26 +1,31 @@
-import React from 'react';
+'use client';
 
-import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
+import { Label as SDKLabel } from '@ui-sdk/react/label';
 
-const Label = React.forwardRef<
-  HTMLLabelElement,
-  React.ComponentPropsWithoutRef<'label'> & SharedProps & { variant?: 'field' | 'strong' }
->(({ className, variant, testId, ...props }, ref) => (
-  <label
-    className={cn(
-      'text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50',
-      variant === 'strong' && 'font-sans leading-5 font-semibold tracking-normal',
-      variant === 'field' &&
-        'group/field-label peer/field-label flex w-fit gap-2 leading-snug group-data-[disabled=true]/field:opacity-50 has-data-[state=checked]:border-primary has-data-[state=checked]:bg-primary/5 has-[>[data-slot=field]]:w-full has-[>[data-slot=field]]:flex-col has-[>[data-slot=field]]:rounded-md has-[>[data-slot=field]]:border dark:has-data-[state=checked]:bg-primary/10 [&>*]:data-[slot=field]:p-4',
-      className
-    )}
-    data-slot="label"
-    data-testid={testId}
-    ref={ref}
-    {...props}
-  />
-));
+import type React from 'react';
+import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
+import { cn } from '@/registry/base-nova/protoform/lib/utils';
+import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
-Label.displayName = 'Label';
+function Label({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKLabel>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKLabel
+      {...definedProps(props)}
+      className={(state) =>
+        cn('text-sm leading-none font-medium', typeof className === 'function' ? className(state) : className)
+      }
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
 
 export { Label };

@@ -34,7 +34,7 @@ test('installed controls retain paginated selections and announce every error', 
   });
   await page.goto(`${reliabilityBaseURL}/`);
   const title = page.getByRole('textbox', { name: /Title/u });
-  const methods = page.getByRole('button', { name: 'Multi-select trigger' });
+  const methods = page.getByRole('combobox', { name: 'Multi-select trigger' });
   await expect(methods).toContainText('post');
   const chevronOffset = await methods.evaluate((trigger) => {
     const chevron = trigger.querySelector(':scope > svg');
@@ -63,9 +63,7 @@ test('installed controls retain paginated selections and announce every error', 
   const search = page.getByRole('combobox', { name: 'Search options' });
   await expect.soft(search).not.toHaveAttribute('aria-invalid', 'true');
   const searchWidth = await search.evaluate((input) => input.getBoundingClientRect().width);
-  const popupWidth = await page
-    .getByRole('dialog', { name: 'Select options' })
-    .evaluate((popup) => popup.getBoundingClientRect().width);
+  const popupWidth = await page.getByRole('listbox').evaluate((popup) => popup.getBoundingClientRect().width);
   expect
     .soft(searchWidth / popupWidth, 'Search fills the popup row instead of shrinking to its default width')
     .toBeGreaterThan(0.8);

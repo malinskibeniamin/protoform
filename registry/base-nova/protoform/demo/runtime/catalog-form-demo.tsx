@@ -2,8 +2,8 @@
 
 import type { DescMethod } from '@bufbuild/protobuf';
 import { useState } from 'react';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert/index';
+import { Badge } from '@/components/ui/badge/index';
 import { AutoForm } from '@/registry/base-nova/protoform/components/auto-form';
 import { getDemoSchema } from './demo-schemas';
 import { formatSubmittedValue } from './format-submitted-value';

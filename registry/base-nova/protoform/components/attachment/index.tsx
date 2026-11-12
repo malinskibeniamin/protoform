@@ -1,10 +1,9 @@
 'use client';
 
-import { mergeProps } from '@base-ui/react/merge-props';
-import { useRender } from '@base-ui/react/use-render';
+import { mergeProps, type PartProps, renderElement } from '@ui-sdk/react/primitive';
 import { cva, type VariantProps } from 'class-variance-authority';
 import type React from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/button/index';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
 
 const attachmentVariants = cva(
@@ -146,21 +145,24 @@ function AttachmentAction({ className, variant, size = 'icon-xs', ...props }: Re
     />
   );
 }
-function AttachmentTrigger({ className, render, type, ...props }: useRender.ComponentProps<'button'>) {
-  return useRender({
-    defaultTagName: 'button',
-    props: mergeProps<'button'>(
-      {
-        type: render ? type : (type ?? 'button'),
-        className: cn('absolute inset-0 z-10 outline-none', className),
-      },
-      props
-    ),
-    render,
-    state: {
-      slot: 'attachment-trigger',
+function AttachmentTrigger({ className, render, type, ...props }: PartProps<'button'>) {
+  return renderElement(
+    'button',
+    {
+      ...mergeProps(
+        {
+          type: render ? type : (type ?? 'button'),
+          className: cn('absolute inset-0 z-10 outline-none', className),
+        },
+        props
+      ),
+      'data-slot': 'attachment-trigger',
     },
-  });
+    render,
+    {
+      slot: 'attachment-trigger',
+    }
+  );
 }
 function AttachmentGroup({ className, ...props }: React.ComponentProps<'div'>) {
   return (

@@ -1,13 +1,13 @@
 'use client';
 
-import { Button as ButtonPrimitive } from '@base-ui/react/button';
+import { Button as ButtonPrimitive } from '@ui-sdk/react/button';
 import { cva, type VariantProps } from 'class-variance-authority';
-import React, { type ElementType } from 'react';
+import type React from 'react';
 
-import { useGroup } from '@/components/ui/group';
-import { Spinner } from '@/components/ui/spinner';
-import { Slot } from '@/registry/base-nova/protoform/lib/base-ui-compat';
-import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
+import { Spinner } from '@/components/ui/spinner/index';
+import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
+import { cn } from '@/registry/base-nova/protoform/lib/utils';
+import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
 const buttonVariants = cva(
   [
@@ -15,7 +15,6 @@ const buttonVariants = cva(
     'rounded-lg border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap',
     'transition-all outline-none select-none',
     'cursor-pointer',
-    'data-[slot=help-trigger]:rounded-full data-[slot=help-trigger]:text-muted-foreground data-[slot=help-trigger]:shadow-none data-[slot=help-trigger]:hover:text-foreground',
     'disabled:pointer-events-none disabled:cursor-not-allowed',
     'disabled:opacity-50',
     'focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50',
@@ -93,6 +92,7 @@ const buttonVariants = cva(
           'focus-visible:ring-destructive',
           'disabled:border-border disabled:text-muted-foreground',
         ],
+        help: 'rounded-full bg-transparent text-muted-foreground shadow-none hover:bg-muted hover:text-foreground',
         ghost: ['bg-transparent text-foreground', 'hover:bg-muted hover:text-foreground', 'active:bg-muted/80'],
         inverse: [
           'bg-foreground text-background shadow-xs',
@@ -154,165 +154,45 @@ const buttonVariants = cva(
 
 export type ButtonVariants = VariantProps<typeof buttonVariants>;
 
-export type ButtonProps = ButtonPrimitive.Props &
-  ButtonVariants & {
-    asChild?: boolean | undefined;
-    as?: ElementType | undefined;
-    to?: string | undefined;
-    icon?: React.ReactNode | undefined;
+export type ButtonProps = UIProps<React.ComponentProps<typeof ButtonPrimitive>> &
+  VariantProps<typeof buttonVariants> &
+  SharedProps & {
+    icon?: React.ReactNode;
     isLoading?: boolean | undefined;
-    href?: string | undefined;
-    target?: string | undefined;
-    rel?: string | undefined;
-  } & SharedProps;
-
-function ButtonContent({ children, icon, isLoading }: Pick<ButtonProps, 'children' | 'icon' | 'isLoading'>) {
-  const content = icon ? (
-    <>
-      {children}
-      {icon}
-    </>
-  ) : (
-    children
-  );
-  if (isLoading === true) {
-    return (
-      <>
-        <span className="invisible contents">{content}</span>
-        <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center">
-          <Spinner />
-        </span>
-      </>
-    );
-  }
-  return content;
-}
-
-type ButtonStyleProps = Pick<ButtonProps, 'className' | 'variant' | 'size' | 'icon' | 'isLoading'> & {
-  positionClasses: string;
-};
-
-function getButtonClasses(
-  { className, variant, size, icon, isLoading, positionClasses }: ButtonStyleProps,
-  state: ButtonPrimitive.State
-) {
-  return cn(
-    buttonVariants({ size, variant }),
-    positionClasses,
-    icon && 'gap-2',
-    isLoading === true && 'relative',
-    typeof className === 'function' ? className(state) : className
-  );
-}
-
-function getButtonPositionClasses(attached: boolean, position: ReturnType<typeof useGroup>['position']) {
-  if (!attached) {
-    return 'rounded-lg';
-  }
-  if (position === 'first') {
-    return 'rounded-r-none rounded-l-lg border-r-0';
-  }
-  if (position === 'last') {
-    return 'rounded-r-lg rounded-l-none border-l-0';
-  }
-  if (position === 'middle') {
-    return 'rounded-none border-r-0 border-l-0';
-  }
-  return 'rounded-lg';
-}
-
-function LegacyButton({
-  as,
-  asChild,
-  children,
+  };
+function Button({
   className,
   variant,
   size,
   icon,
-  isLoading,
-  positionClasses,
+  isLoading = false,
   disabled,
-  style,
-  focusableWhenDisabled: _focusableWhenDisabled,
+  children,
+  testId,
+  type = 'button',
   ...props
-}: ButtonProps & { positionClasses: string }) {
-  const Component = as ?? Slot;
-  const state: ButtonPrimitive.State = { disabled: disabled === true };
-  return React.createElement(
-    Component,
-    {
-      ...props,
-      className: getButtonClasses({ className, variant, size, icon, isLoading, positionClasses }, state),
-      disabled,
-      style: typeof style === 'function' ? style(state) : style,
-    },
-    asChild === true ? (
-      children
-    ) : (
-      <ButtonContent icon={icon} isLoading={isLoading}>
-        {children}
-      </ButtonContent>
-    )
+}: ButtonProps) {
+  const renderChildren = typeof children === 'function' ? children : () => children;
+  const renderedIcon = isLoading === true ? <Spinner /> : icon;
+  return (
+    <ButtonPrimitive
+      {...definedProps(props)}
+      aria-busy={isLoading === true || undefined}
+      className={(state) =>
+        cn(buttonVariants({ variant, size }), typeof className === 'function' ? className(state) : className)
+      }
+      data-testid={testId ?? props['data-testid']}
+      disabled={disabled === true || isLoading === true}
+      type={type}
+    >
+      {(state) => (
+        <>
+          {renderedIcon}
+          {renderChildren(state)}
+        </>
+      )}
+    </ButtonPrimitive>
   );
 }
-
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  (
-    {
-      className,
-      variant,
-      size,
-      asChild = false,
-      testId,
-      as,
-      to,
-      icon,
-      isLoading = false,
-      disabled,
-      children,
-      render,
-      nativeButton,
-      type = 'button',
-      ...props
-    },
-    ref
-  ) => {
-    const { attached, position } = useGroup();
-    const isDisabled = disabled === true || isLoading;
-    const positionClasses = getButtonPositionClasses(attached, position);
-    const shared = {
-      'aria-busy': isLoading === true ? true : undefined,
-      'data-loading': isLoading === true ? true : undefined,
-      'data-slot': 'button',
-      'data-testid': testId,
-      disabled: isDisabled,
-      ref,
-      type,
-    } as const;
-    const styleProps = { className, variant, size, icon, isLoading, positionClasses };
-    if (asChild === true || as !== undefined) {
-      return (
-        <LegacyButton {...shared} {...props} {...styleProps} as={as} asChild={asChild} to={to}>
-          {children}
-        </LegacyButton>
-      );
-    }
-    return (
-      <ButtonPrimitive
-        {...shared}
-        {...props}
-        className={(state) => getButtonClasses(styleProps, state)}
-        nativeButton={nativeButton}
-        render={render}
-      >
-        <ButtonContent icon={icon} isLoading={isLoading}>
-          {children}
-        </ButtonContent>
-      </ButtonPrimitive>
-    );
-  }
-);
-
-Button.displayName = 'Button';
 
 export { Button, buttonVariants };

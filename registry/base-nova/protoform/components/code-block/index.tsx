@@ -1,12 +1,17 @@
 'use client';
 
-import { ScrollArea } from '@base-ui/react/scroll-area';
-import { useRender } from '@base-ui/react/use-render';
+import { mergeProps, renderElement } from '@ui-sdk/react/primitive';
+import {
+  ScrollArea,
+  ScrollAreaCorner,
+  ScrollAreaScrollbar,
+  ScrollAreaThumb,
+  ScrollAreaViewport,
+} from '@ui-sdk/react/scroll-area';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { CheckIcon, CopyIcon } from 'lucide-react';
 import React from 'react';
-
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/button/index';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
 
 const TRAILING_NEWLINE = /\n$/u;
@@ -118,8 +123,8 @@ function CodeBlockCopyControl({
         className={className}
         data-copied={copied === true || undefined}
         data-slot="code-block-copy-button"
-        onClick={async (event) => {
-          onClick?.(event);
+        onClick={async (event, details) => {
+          onClick?.(event, details);
           if (event.defaultPrevented) {
             return;
           }
@@ -169,36 +174,32 @@ function CodeBlockContent({
           .split('\n')
           .map((text, index) => ({ text, number: startLine + index }))
       : undefined;
-  const content = useRender({
-    defaultTagName: 'pre',
-    ref,
-    props: {
-      ...props,
-      onKeyDown,
-      className: cn(
-        'm-0 min-h-0 min-w-0 p-3 text-start font-mono leading-relaxed whitespace-pre outline-none [counter-reset:line_var(--code-line-start)] group-has-data-[slot=code-block-footer]/code-block:pb-2 group-has-data-[slot=code-block-header]/code-block:pt-2 group-data-[size=sm]/code-block:p-2.5 group-data-[size=sm]/code-block:group-has-data-[slot=code-block-header]/code-block:pt-1.5 data-wrap:wrap-break-word data-wrap:whitespace-pre-wrap',
-        className
-      ),
-      'data-numbered': lineNumbers === true || undefined,
-      'data-slot': 'code-block-content',
-      'data-wrap': wrap === true || undefined,
-      dir: 'ltr',
-      style: { '--code-line-start': startLine - 1, ...style },
-      children: (
-        <code
-          className="grid min-h-lh min-w-max content-start in-data-numbered:grid-cols-[auto_1fr] in-data-wrap:min-w-0"
-          data-slot="code-block-code"
-        >
-          {numberedLines === undefined
-            ? children
-            : numberedLines.map((line) => <CodeBlockLine key={line.number}>{line.text}</CodeBlockLine>)}
-        </code>
-      ),
-    },
-  });
+  const contentProps = {
+    ...props,
+    onKeyDown,
+    className: cn(
+      'm-0 min-h-0 min-w-0 p-3 text-start font-mono leading-relaxed whitespace-pre outline-none [counter-reset:line_var(--code-line-start)] group-has-data-[slot=code-block-footer]/code-block:pb-2 group-has-data-[slot=code-block-header]/code-block:pt-2 group-data-[size=sm]/code-block:p-2.5 group-data-[size=sm]/code-block:group-has-data-[slot=code-block-header]/code-block:pt-1.5 data-wrap:wrap-break-word data-wrap:whitespace-pre-wrap',
+      className
+    ),
+    'data-numbered': lineNumbers === true || undefined,
+    'data-slot': 'code-block-content',
+    'data-wrap': wrap === true || undefined,
+    dir: 'ltr',
+    style: { '--code-line-start': startLine - 1, ...style },
+    children: (
+      <code
+        className="grid min-h-lh min-w-max content-start in-data-numbered:grid-cols-[auto_1fr] in-data-wrap:min-w-0"
+        data-slot="code-block-code"
+      >
+        {numberedLines === undefined
+          ? children
+          : numberedLines.map((line) => <CodeBlockLine key={line.number}>{line.text}</CodeBlockLine>)}
+      </code>
+    ),
+  };
   return (
-    <ScrollArea.Root className="relative min-h-0 w-full min-w-0">
-      <ScrollArea.Viewport
+    <ScrollArea className="relative min-h-0 w-full min-w-0">
+      <ScrollAreaViewport
         aria-label={props['aria-label'] ?? 'Code'}
         className="min-h-0 min-w-0 overflow-auto outline-none"
         onKeyDown={(event) => {
@@ -220,17 +221,17 @@ function CodeBlockContent({
             event.currentTarget.scrollBy({ left: event.key === 'ArrowRight' ? 40 : -40 });
           }
         }}
-        render={content}
+        render={(viewportProps) => renderElement('pre', mergeProps(contentProps, viewportProps), <pre ref={ref} />)}
         role="region"
       />
-      <ScrollArea.Scrollbar className="flex h-2 touch-none p-0.5 select-none" orientation="horizontal">
-        <ScrollArea.Thumb className="rounded-full bg-border" />
-      </ScrollArea.Scrollbar>
-      <ScrollArea.Scrollbar className="absolute inset-y-0 right-0 flex w-2 touch-none p-0.5 select-none">
-        <ScrollArea.Thumb className="rounded-full bg-border" />
-      </ScrollArea.Scrollbar>
-      <ScrollArea.Corner />
-    </ScrollArea.Root>
+      <ScrollAreaScrollbar className="flex h-2 touch-none p-0.5 select-none" orientation="horizontal">
+        <ScrollAreaThumb className="rounded-full bg-border" />
+      </ScrollAreaScrollbar>
+      <ScrollAreaScrollbar className="absolute inset-y-0 right-0 flex w-2 touch-none p-0.5 select-none">
+        <ScrollAreaThumb className="rounded-full bg-border" />
+      </ScrollAreaScrollbar>
+      <ScrollAreaCorner />
+    </ScrollArea>
   );
 }
 

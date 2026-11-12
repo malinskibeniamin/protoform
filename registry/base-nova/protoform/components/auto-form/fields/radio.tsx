@@ -2,7 +2,7 @@
 
 import type { AutoFormFieldProps } from '../core-types';
 import type { FieldTypeDefinition } from '../registry';
-import { RadioGroup, RadioGroupItem, Text } from '../ui-components';
+import { Radio, RadioGroup, Text } from '../ui-components';
 import {
   getControlLabel,
   getFlatOptions,
@@ -41,7 +41,7 @@ function RadioFieldComponent({ error, field, id, inputProps, label }: AutoFormFi
             ) : null}
             <div className="grid gap-3 sm:grid-cols-2">
               {group.options.map((option) => (
-                <RadioGroupItem
+                <Radio
                   data-selected={String(option.value === value)}
                   disabled={inputProps['disabled']}
                   id={`${field.key}-${option.value}`}
@@ -51,7 +51,7 @@ function RadioFieldComponent({ error, field, id, inputProps, label }: AutoFormFi
                   variant="card"
                 >
                   {renderOptionLabel(option)}
-                </RadioGroupItem>
+                </Radio>
               ))}
             </div>
           </div>

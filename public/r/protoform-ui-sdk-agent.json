@@ -1,0 +1,22 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "protoform-ui-sdk-agent",
+  "title": "Opt-in UI SDK agent bridge",
+  "description": "Exports createAgent without creating a bridge or registering browser tools. Hosts own approval and sensitive-action policy.",
+  "dependencies": [
+    "@ui-sdk/core@0.1.0-beta.1",
+    "@ui-sdk/react@0.1.0-beta.1"
+  ],
+  "registryDependencies": [
+    "@protoform/protoform-license"
+  ],
+  "files": [
+    {
+      "path": "registry/base-nova/protoform/lib/ui-sdk/agent.ts",
+      "content": "import { createAgent as sdkCreateAgent } from '@ui-sdk/react/agent';\nexport const createAgent = sdkCreateAgent;\n",
+      "type": "registry:lib",
+      "target": "@lib/ui-sdk/agent.ts"
+    }
+  ],
+  "type": "registry:lib"
+}

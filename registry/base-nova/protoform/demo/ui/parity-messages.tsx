@@ -1,5 +1,5 @@
 import { CheckIcon, FileTextIcon } from 'lucide-react';
-import { type SubmitEvent, useState } from 'react';
+import { useState } from 'react';
 import {
   Attachment,
   AttachmentAction,
@@ -8,10 +8,10 @@ import {
   AttachmentDescription,
   AttachmentMedia,
   AttachmentTitle,
-} from '@/components/ui/attachment';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Bubble, BubbleContent, BubbleGroup } from '@/components/ui/bubble';
-import { Button } from '@/components/ui/button';
+} from '@/components/ui/attachment/index';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar/index';
+import { Bubble, BubbleContent, BubbleGroup } from '@/components/ui/bubble/index';
+import { Button } from '@/components/ui/button/index';
 import {
   Message,
   MessageAvatar,
@@ -19,30 +19,15 @@ import {
   MessageFooter,
   MessageGroup,
   MessageHeader,
-} from '@/components/ui/message';
+} from '@/components/ui/message/index';
 import {
   MessageScroller,
   MessageScrollerButton,
   MessageScrollerContent,
   MessageScrollerItem,
-  MessageScrollerProvider,
   MessageScrollerViewport,
-} from '@/components/ui/message-scroller';
-import {
-  Questionnaire,
-  QuestionnaireActions,
-  QuestionnaireChoice,
-  QuestionnaireChoices,
-  QuestionnaireDescription,
-  QuestionnaireError,
-  QuestionnaireItem,
-  QuestionnaireNext,
-  QuestionnairePrevious,
-  QuestionnaireProgress,
-  QuestionnaireSkip,
-  QuestionnaireSubmit,
-  QuestionnaireTitle,
-} from '@/components/ui/questionnaire';
+} from '@/components/ui/message-scroller/index';
+import { Questionnaire } from '@/components/ui/questionnaire/index';
 import { ParitySection } from './parity-shared';
 
 const questions = [
@@ -74,11 +59,7 @@ export default function MessageExamples() {
   const [failed, setFailed] = useState(true);
   const [messages, setMessages] = useState(initialMessages);
   const [answer, setAnswer] = useState('');
-  const submitAnswers = (event: SubmitEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const form = new FormData(event.currentTarget);
-    setAnswer(`Sample saved: ${String(form.get('format'))}.`);
-  };
+  const submitAnswers = (values: Record<string, string>) => setAnswer(`Sample saved: ${values['format']}.`);
   return (
     <div className="grid min-w-0 gap-6 md:grid-cols-2" data-testid="parity-messages">
       <ParitySection title="Attachment">
@@ -125,20 +106,19 @@ export default function MessageExamples() {
         </MessageGroup>
       </ParitySection>
       <ParitySection title="Message scroller">
-        <MessageScrollerProvider defaultScrollPosition="start">
-          <MessageScroller className="h-56">
-            <MessageScrollerViewport aria-label="Sample event messages">
-              <MessageScrollerContent>
-                {messages.map((message) => (
-                  <MessageScrollerItem key={message.id} messageId={message.id}>
-                    <p className="text-sm">{message.text}</p>
-                  </MessageScrollerItem>
-                ))}
-              </MessageScrollerContent>
-            </MessageScrollerViewport>
-            <MessageScrollerButton />
-          </MessageScroller>
-        </MessageScrollerProvider>
+        <MessageScroller className="h-56">
+          <MessageScrollerViewport aria-label="Sample event messages">
+            <MessageScrollerContent>
+              {messages.map((message) => (
+                <MessageScrollerItem data-message-id={message.id} key={message.id}>
+                  <p className="text-sm">{message.text}</p>
+                </MessageScrollerItem>
+              ))}
+            </MessageScrollerContent>
+          </MessageScrollerViewport>
+          <MessageScrollerButton />
+        </MessageScroller>
+
         <Button
           onClick={() =>
             setMessages([
@@ -155,31 +135,9 @@ export default function MessageExamples() {
       <div className="min-w-0 md:col-span-2">
         <ParitySection title="Questionnaire">
           <p className="text-sm text-muted-foreground">
-            Standalone shadcn questionnaire. Protoform’s existing form adapters are unchanged.
+            Questionnaire composed from UI SDK controls. Protoform’s existing form adapters are unchanged.
           </p>
-          <Questionnaire items={questions} onSubmit={submitAnswers}>
-            <QuestionnaireProgress />
-            {questions.map((question) => (
-              <QuestionnaireItem key={question.name} name={question.name} required={question.required}>
-                <QuestionnaireTitle>{question.prompt}</QuestionnaireTitle>
-                <QuestionnaireDescription>Choose an option for this local sample.</QuestionnaireDescription>
-                <QuestionnaireChoices>
-                  {question.choices.map((choice) => (
-                    <QuestionnaireChoice key={choice.value} value={choice.value}>
-                      {choice.label}
-                    </QuestionnaireChoice>
-                  ))}
-                </QuestionnaireChoices>
-                <QuestionnaireError />
-              </QuestionnaireItem>
-            ))}
-            <QuestionnaireActions>
-              <QuestionnairePrevious />
-              <QuestionnaireSkip />
-              <QuestionnaireNext />
-              <QuestionnaireSubmit>Save sample answers</QuestionnaireSubmit>
-            </QuestionnaireActions>
-          </Questionnaire>
+          <Questionnaire items={questions} onSubmit={submitAnswers} submitLabel="Save sample answers" />
           <p role="status">{answer}</p>
         </ParitySection>
       </div>

@@ -3,7 +3,7 @@
 import { CircleCheckIcon, CircleXIcon, ClockIcon, FileCodeIcon, TerminalIcon, WrapTextIcon } from 'lucide-react';
 import { useState } from 'react';
 
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/button/index';
 import {
   CodeBlock,
   CodeBlockActions,
@@ -12,7 +12,7 @@ import {
   CodeBlockHeader,
   CodeBlockLine,
   CodeBlockTitle,
-} from '@/components/ui/code-block';
+} from '@/components/ui/code-block/index';
 import {
   Trace,
   TraceCollapsible,
@@ -22,7 +22,7 @@ import {
   TraceIcon,
   TraceLine,
   TraceTitle,
-} from '@/components/ui/trace';
+} from '@/components/ui/trace/index';
 
 export const client = 'only';
 

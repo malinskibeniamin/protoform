@@ -1,263 +1,378 @@
 'use client';
 
-import { Menu as MenuPrimitive } from '@base-ui/react/menu';
-import { CheckIcon, ChevronRightIcon } from 'lucide-react';
-import type React from 'react';
-import { usePortalContainer } from '@/registry/base-nova/protoform/hooks/use-portal-container';
-import { cn } from '@/registry/base-nova/protoform/lib/utils';
+import {
+  Menu as SDKMenu,
+  MenuCheckboxItem as SDKMenuCheckboxItem,
+  MenuContent as SDKMenuContent,
+  MenuContextTrigger as SDKMenuContextTrigger,
+  MenuGroup as SDKMenuGroup,
+  MenuGroupLabel as SDKMenuGroupLabel,
+  MenuItem as SDKMenuItem,
+  MenuItemIcon as SDKMenuItemIcon,
+  MenuItemIndicator as SDKMenuItemIndicator,
+  MenuItems as SDKMenuItems,
+  MenuRadioGroup as SDKMenuRadioGroup,
+  MenuRadioItem as SDKMenuRadioItem,
+  MenuSeparator as SDKMenuSeparator,
+  MenuShortcut as SDKMenuShortcut,
+  MenuSub as SDKMenuSub,
+  MenuSubContent as SDKMenuSubContent,
+  MenuSubTrigger as SDKMenuSubTrigger,
+  MenuTrigger as SDKMenuTrigger,
+} from '@ui-sdk/react/menu';
 
-function DropdownMenu({ ...props }: MenuPrimitive.Root.Props) {
-  return <MenuPrimitive.Root data-slot="dropdown-menu" {...props} />;
-}
-function DropdownMenuPortal({ container, ...props }: MenuPrimitive.Portal.Props) {
-  const portalContainer = usePortalContainer();
-  return <MenuPrimitive.Portal container={container ?? portalContainer} data-slot="dropdown-menu-portal" {...props} />;
-}
-function DropdownMenuTrigger({ ...props }: MenuPrimitive.Trigger.Props) {
-  return <MenuPrimitive.Trigger data-slot="dropdown-menu-trigger" {...props} />;
-}
-function DropdownMenuContent({
-  align = 'start',
-  alignOffset = 0,
-  side = 'bottom',
-  sideOffset = 4,
+import type React from 'react';
+import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
+import { cn } from '@/registry/base-nova/protoform/lib/utils';
+import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
+
+const Menu = SDKMenu;
+
+function MenuCheckboxItem({
+  className,
+  testId,
   variant,
-  className,
+  size,
   ...props
-}: MenuPrimitive.Popup.Props &
-  Pick<MenuPrimitive.Positioner.Props, 'align' | 'alignOffset' | 'side' | 'sideOffset'> & {
-    variant?: 'submenu' | 'menubar' | 'menubar-submenu';
-  }) {
+}: UIProps<React.ComponentProps<typeof SDKMenuCheckboxItem>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
   return (
-    <DropdownMenuPortal>
-      <MenuPrimitive.Positioner
-        align={align}
-        alignOffset={alignOffset}
-        className="isolate z-50 outline-none"
-        side={side}
-        sideOffset={sideOffset}
-      >
-        <MenuPrimitive.Popup
-          className={(state) =>
-            cn(
-              'z-50 max-h-(--available-height) w-(--anchor-width) min-w-32 origin-(--transform-origin) overflow-x-hidden overflow-y-auto rounded-lg bg-popover p-1 text-popover-foreground shadow-md ring-1 ring-foreground/10 duration-100 outline-none data-closed:animate-out data-closed:overflow-hidden data-closed:fade-out-0 data-closed:zoom-out-95 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=inline-end]:slide-in-from-left-2 data-[side=inline-start]:slide-in-from-right-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2',
-              variant === 'submenu' && 'w-auto min-w-24',
-              variant === 'menubar' && 'min-w-36',
-              variant === 'menubar-submenu' && 'w-auto min-w-32',
-              typeof className === 'function' ? className(state) : className
-            )
-          }
-          data-slot="dropdown-menu-content"
-          {...props}
-        />
-      </MenuPrimitive.Positioner>
-    </DropdownMenuPortal>
-  );
-}
-function DropdownMenuGroup({ ...props }: MenuPrimitive.Group.Props) {
-  return <MenuPrimitive.Group data-slot="dropdown-menu-group" {...props} />;
-}
-function DropdownMenuLabel({
-  className,
-  inset,
-  ...props
-}: MenuPrimitive.GroupLabel.Props & {
-  inset?: boolean;
-}) {
-  return (
-    <MenuPrimitive.GroupLabel
+    <SDKMenuCheckboxItem
+      {...definedProps(props)}
       className={(state) =>
         cn(
-          'px-1.5 py-1 text-xs font-medium text-muted-foreground data-inset:pl-7',
+          'relative flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-accent data-highlighted:text-accent-foreground',
           typeof className === 'function' ? className(state) : className
         )
       }
-      data-inset={inset}
-      data-slot="dropdown-menu-label"
-      {...props}
-    />
-  );
-}
-function DropdownMenuItem({
-  className,
-  inset,
-  variant = 'default',
-  ...props
-}: MenuPrimitive.Item.Props & {
-  inset?: boolean;
-  variant?: 'default' | 'destructive';
-}) {
-  return (
-    <MenuPrimitive.Item
-      className={(state) =>
-        cn(
-          "group/dropdown-menu-item relative flex cursor-default items-center gap-1.5 rounded-md px-1.5 py-1 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50 data-inset:pl-7 data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 data-[variant=destructive]:focus:text-destructive dark:data-[variant=destructive]:focus:bg-destructive/20 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 data-[variant=destructive]:*:[svg]:text-destructive",
-          typeof className === 'function' ? className(state) : className
-        )
-      }
-      data-inset={inset}
-      data-slot="dropdown-menu-item"
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
       data-variant={variant}
-      {...props}
     />
   );
 }
-function DropdownMenuSub({ ...props }: MenuPrimitive.SubmenuRoot.Props) {
-  return <MenuPrimitive.SubmenuRoot data-slot="dropdown-menu-sub" {...props} />;
-}
-function DropdownMenuSubTrigger({
+
+function MenuContent({
   className,
-  inset,
-  children,
+  testId,
+  variant,
+  size,
   ...props
-}: MenuPrimitive.SubmenuTrigger.Props & {
-  inset?: boolean;
-}) {
+}: UIProps<React.ComponentProps<typeof SDKMenuContent>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
   return (
-    <MenuPrimitive.SubmenuTrigger
+    <SDKMenuContent
+      {...definedProps(props)}
       className={(state) =>
         cn(
-          "flex cursor-default items-center gap-1.5 rounded-md px-1.5 py-1 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground data-inset:pl-7 data-open:bg-accent data-open:text-accent-foreground data-popup-open:bg-accent data-popup-open:text-accent-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+          'z-50 max-h-(--available-height) min-w-36 overflow-auto rounded-lg border border-border bg-popover p-1 text-popover-foreground shadow-md outline-none',
           typeof className === 'function' ? className(state) : className
         )
       }
-      data-inset={inset}
-      data-slot="dropdown-menu-sub-trigger"
-      {...props}
-    >
-      {children}
-      <ChevronRightIcon className="ml-auto rtl:-scale-x-100" />
-    </MenuPrimitive.SubmenuTrigger>
-  );
-}
-function DropdownMenuSubContent({
-  align = 'start',
-  alignOffset = -3,
-  side = 'right',
-  sideOffset = 0,
-  className,
-  ...props
-}: React.ComponentProps<typeof DropdownMenuContent>) {
-  return (
-    <DropdownMenuContent
-      align={align}
-      alignOffset={alignOffset}
-      className={className}
-      data-slot="dropdown-menu-sub-content"
-      side={side}
-      sideOffset={sideOffset}
-      variant="submenu"
-      {...props}
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
     />
   );
 }
-function DropdownMenuCheckboxItem({
+
+function MenuContextTrigger({
   className,
-  children,
-  checked,
-  inset,
+  testId,
+  variant,
+  size,
   ...props
-}: MenuPrimitive.CheckboxItem.Props & {
-  inset?: boolean;
-}) {
+}: UIProps<React.ComponentProps<typeof SDKMenuContextTrigger>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
   return (
-    <MenuPrimitive.CheckboxItem
-      checked={checked}
+    <SDKMenuContextTrigger
+      {...definedProps(props)}
+      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
+
+function MenuGroup({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKMenuGroup>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKMenuGroup
+      {...definedProps(props)}
+      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
+
+function MenuGroupLabel({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKMenuGroupLabel>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKMenuGroupLabel
+      {...definedProps(props)}
       className={(state) =>
         cn(
-          "relative flex cursor-default items-center gap-1.5 rounded-md py-1 pr-8 pl-1.5 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground focus:**:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50 data-inset:pl-7 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+          'px-2 py-1.5 text-xs font-medium text-muted-foreground',
           typeof className === 'function' ? className(state) : className
         )
       }
-      data-inset={inset}
-      data-slot="dropdown-menu-checkbox-item"
-      {...props}
-    >
-      <span
-        className="pointer-events-none absolute right-2 flex items-center justify-center"
-        data-slot="dropdown-menu-checkbox-item-indicator"
-      >
-        <MenuPrimitive.CheckboxItemIndicator>
-          <CheckIcon />
-        </MenuPrimitive.CheckboxItemIndicator>
-      </span>
-      {children}
-    </MenuPrimitive.CheckboxItem>
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
   );
 }
-function DropdownMenuRadioGroup({ ...props }: MenuPrimitive.RadioGroup.Props) {
-  return <MenuPrimitive.RadioGroup data-slot="dropdown-menu-radio-group" {...props} />;
-}
-function DropdownMenuRadioItem({
+
+function MenuItem({
   className,
-  children,
-  inset,
+  testId,
+  variant,
+  size,
   ...props
-}: MenuPrimitive.RadioItem.Props & {
-  inset?: boolean;
-}) {
+}: UIProps<React.ComponentProps<typeof SDKMenuItem>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
   return (
-    <MenuPrimitive.RadioItem
+    <SDKMenuItem
+      {...definedProps(props)}
       className={(state) =>
         cn(
-          "relative flex cursor-default items-center gap-1.5 rounded-md py-1 pr-8 pl-1.5 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground focus:**:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50 data-inset:pl-7 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+          'relative flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-accent data-highlighted:text-accent-foreground',
           typeof className === 'function' ? className(state) : className
         )
       }
-      data-inset={inset}
-      data-slot="dropdown-menu-radio-item"
-      {...props}
-    >
-      <span
-        className="pointer-events-none absolute right-2 flex items-center justify-center"
-        data-slot="dropdown-menu-radio-item-indicator"
-      >
-        <MenuPrimitive.RadioItemIndicator>
-          <CheckIcon />
-        </MenuPrimitive.RadioItemIndicator>
-      </span>
-      {children}
-    </MenuPrimitive.RadioItem>
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
   );
 }
-function DropdownMenuSeparator({ className, ...props }: MenuPrimitive.Separator.Props) {
+
+function MenuItemIcon({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKMenuItemIcon>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
   return (
-    <MenuPrimitive.Separator
+    <SDKMenuItemIcon
+      {...definedProps(props)}
+      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
+
+function MenuItemIndicator({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKMenuItemIndicator>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKMenuItemIndicator
+      {...definedProps(props)}
+      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
+
+const MenuItems = SDKMenuItems;
+
+function MenuRadioGroup({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKMenuRadioGroup>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKMenuRadioGroup
+      {...definedProps(props)}
+      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
+
+function MenuRadioItem({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKMenuRadioItem>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKMenuRadioItem
+      {...definedProps(props)}
+      className={(state) =>
+        cn(
+          'relative flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-accent data-highlighted:text-accent-foreground',
+          typeof className === 'function' ? className(state) : className
+        )
+      }
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
+
+function MenuSeparator({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKMenuSeparator>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKMenuSeparator
+      {...definedProps(props)}
       className={(state) =>
         cn('-mx-1 my-1 h-px bg-border', typeof className === 'function' ? className(state) : className)
       }
-      data-slot="dropdown-menu-separator"
-      {...props}
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
     />
   );
 }
-function DropdownMenuShortcut({ className, ...props }: React.ComponentProps<'span'>) {
+
+function MenuShortcut({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKMenuShortcut>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
   return (
-    <span
-      className={cn(
-        'ml-auto text-xs tracking-widest text-muted-foreground group-focus/dropdown-menu-item:text-accent-foreground',
-        className
-      )}
-      data-slot="dropdown-menu-shortcut"
-      {...props}
+    <SDKMenuShortcut
+      {...definedProps(props)}
+      className={(state) =>
+        cn('ml-auto text-xs text-muted-foreground', typeof className === 'function' ? className(state) : className)
+      }
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
+
+const MenuSub = SDKMenuSub;
+
+function MenuSubContent({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKMenuSubContent>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKMenuSubContent
+      {...definedProps(props)}
+      className={(state) =>
+        cn(
+          'z-50 max-h-(--available-height) min-w-36 overflow-auto rounded-lg border border-border bg-popover p-1 text-popover-foreground shadow-md outline-none',
+          typeof className === 'function' ? className(state) : className
+        )
+      }
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
+
+function MenuSubTrigger({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKMenuSubTrigger>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKMenuSubTrigger
+      {...definedProps(props)}
+      className={(state) =>
+        cn(
+          'relative flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-accent data-highlighted:text-accent-foreground',
+          typeof className === 'function' ? className(state) : className
+        )
+      }
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
+
+function MenuTrigger({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKMenuTrigger>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKMenuTrigger
+      {...definedProps(props)}
+      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
     />
   );
 }
 
 export {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuPortal,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
+  Menu,
+  MenuCheckboxItem,
+  MenuContent,
+  MenuContextTrigger,
+  MenuGroup,
+  MenuGroupLabel,
+  MenuItem,
+  MenuItemIcon,
+  MenuItemIndicator,
+  MenuItems,
+  MenuRadioGroup,
+  MenuRadioItem,
+  MenuSeparator,
+  MenuShortcut,
+  MenuSub,
+  MenuSubContent,
+  MenuSubTrigger,
+  MenuTrigger,
 };

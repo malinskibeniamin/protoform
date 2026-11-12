@@ -39,7 +39,7 @@ describe('tanStack Form example', () => {
     await user.type(screen.getByLabelText(emailPattern), 'ada@example.com');
     await user.click(screen.getByRole('button', { name: 'Create profile' }));
 
-    expect(await screen.findByRole('status')).toHaveTextContent('profiles/ada-lovelace');
+    expect(await screen.findByRole('status', { name: 'Created profile' })).toHaveTextContent('profiles/ada-lovelace');
   });
 
   test('maps structured server details to the owning TanStack field', async () => {

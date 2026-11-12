@@ -4,8 +4,8 @@ import userEvent from '@testing-library/user-event';
 import type React from 'react';
 
 import { AutoForm } from '../host';
-import { shadcnUIComponents } from '../shadcn-ui-components';
 import { Button, Input, ProtoformUIProvider } from '../ui-components';
+import { uiSdkComponents } from '../ui-sdk-components';
 import { createMockProvider } from './test-utils';
 
 function ConsumerButton({ children, ...props }: React.ComponentProps<'button'>) {
@@ -19,7 +19,7 @@ function ConsumerButton({ children, ...props }: React.ComponentProps<'button'>) 
 describe('protoformUIProvider', () => {
   test('renders a minimal host form without a tooltip provider registration', () => {
     const schema = createMockProvider([{ key: 'title', required: true, type: 'string' }]);
-    const { TooltipProvider: _tooltipProvider, ...components } = shadcnUIComponents;
+    const components = uiSdkComponents;
     render(<AutoForm components={components} modes={['simple']} schema={schema} showSummary={false} />);
 
     expect(screen.getByRole('textbox', { name: 'Title *' })).toBeInTheDocument();
@@ -28,7 +28,7 @@ describe('protoformUIProvider', () => {
 
   test('shows a missing host control without requiring Alert and recovers when supplied', () => {
     const schema = createMockProvider([{ key: 'title', required: true, type: 'string' }]);
-    const { Input: _input, Alert: _alert, ...incomplete } = shadcnUIComponents;
+    const { Input: _input, Alert: _alert, ...incomplete } = uiSdkComponents;
     const onCaughtError = rs.fn();
     const view = render(<AutoForm components={incomplete} modes={['simple']} schema={schema} showSummary={false} />, {
       onCaughtError,

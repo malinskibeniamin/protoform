@@ -3,6 +3,7 @@
 import { AlertCircle, ChevronDown, CircleHelp, ExternalLink, PlusIcon, TrashIcon } from 'lucide-react';
 import React from 'react';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
+
 import { useAutoFormRuntimeContext } from './context';
 import type { ArrayElementWrapperProps, ArrayWrapperProps, FieldWrapperProps, ObjectWrapperProps } from './core-types';
 import { formSpacing } from './form-spacing';
@@ -22,7 +23,7 @@ import {
   AutoFormErrorDescriptionContext,
   Button,
   Collapsible,
-  CollapsibleContent,
+  CollapsiblePanel,
   CollapsibleTrigger,
   Field,
   FieldContent,
@@ -287,17 +288,18 @@ export const FieldWrapper: React.FC<FieldWrapperProps> = ({ label, children, id,
           </FieldLabel>
           {tooltipText ? (
             <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  aria-label={`Help for ${helpLabel}`}
-                  data-slot="help-trigger"
-                  data-testid={getAutoFormFieldTestId(testIdPrefix, id, 'help')}
-                  size="icon-xs"
-                  type="button"
-                  variant="ghost"
-                >
-                  <CircleHelp className="size-4 text-muted-foreground group-hover/button:text-foreground" />
-                </Button>
+              <TooltipTrigger
+                render={
+                  <Button
+                    aria-label={`Help for ${helpLabel}`}
+                    data-testid={getAutoFormFieldTestId(testIdPrefix, id, 'help')}
+                    size="icon-xs"
+                    type="button"
+                    variant="help"
+                  />
+                }
+              >
+                <CircleHelp className="size-4 text-muted-foreground group-hover/button:text-foreground" />
               </TooltipTrigger>
               <TooltipContent
                 className="max-w-sm text-xs text-pretty"
@@ -379,21 +381,21 @@ function CollapsibleObjectSection({
         className={cn('@container/section', formSpacing.field, showDivider && formSpacing.sectionDivider)}
         data-testid={testId}
       >
-        <CollapsibleTrigger asChild>
-          <Button className="h-auto w-full justify-between text-left" type="button" variant="ghost">
-            <div className={formSpacing.sectionHeader}>
-              <ObjectSectionHeading field={field} headingLevel={headingLevel} label={label} />
-            </div>
-            <ChevronDown className="size-4 shrink-0 text-muted-foreground transition-transform duration-200 [&:is([data-state=open]_*)]:rotate-180" />
-          </Button>
+        <CollapsibleTrigger
+          render={<Button className="h-auto w-full justify-between text-left" type="button" variant="ghost" />}
+        >
+          <div className={formSpacing.sectionHeader}>
+            <ObjectSectionHeading field={field} headingLevel={headingLevel} label={label} />
+          </div>
+          <ChevronDown className="size-4 shrink-0 text-muted-foreground transition-transform duration-200 [&:is([data-state=open]_*)]:rotate-180" />
         </CollapsibleTrigger>
-        <CollapsibleContent>
+        <CollapsiblePanel>
           <FormDepthProvider depth={depth + 1}>
             <div className={cn(formSpacing.field, isIndented && formSpacing.sectionIndent)} data-slot="section-body">
               {children}
             </div>
           </FormDepthProvider>
-        </CollapsibleContent>
+        </CollapsiblePanel>
       </section>
     </Collapsible>
   );

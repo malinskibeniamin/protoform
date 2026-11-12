@@ -1273,8 +1273,7 @@
         "registry/base-nova/protoform/components/tabs/index.tsx",
         "registry/base-nova/protoform/components/textarea/index.tsx",
         "registry/base-nova/protoform/components/toggle-group/index.tsx",
-        "registry/base-nova/protoform/components/typography/index.tsx",
-        "registry/base-nova/protoform/lib/base-ui-compat/index.tsx"
+        "registry/base-nova/protoform/components/typography/index.tsx"
       ],
       "linter": {
         "rules": {

@@ -1,7 +1,9 @@
+import { Textarea as SDKTextarea } from '@ui-sdk/react/textarea';
 import { cva, type VariantProps } from 'class-variance-authority';
 import React from 'react';
-
-import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
+import { definedProps } from '@/registry/base-nova/protoform/lib/sdk-props';
+import { cn } from '@/registry/base-nova/protoform/lib/utils';
+import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
 const textareaVariants = cva(
   'flex w-full rounded-lg border !border-input bg-transparent text-base transition-colors outline-none selection:bg-selected selection:text-selected-foreground placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:bg-input/50 disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 md:text-sm dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40',
@@ -32,12 +34,26 @@ const textareaVariants = cva(
 
 interface TextareaProps extends React.ComponentProps<'textarea'>, VariantProps<typeof textareaVariants>, SharedProps {}
 
+function TextareaPrimitive({
+  value,
+  defaultValue,
+  onSubmit: _onSubmit,
+  ...props
+}: React.ComponentProps<'textarea'> & { onValueChange?: React.ComponentProps<typeof SDKTextarea>['onValueChange'] }) {
+  return (
+    <SDKTextarea
+      {...definedProps(props)}
+      {...(value === undefined ? {} : { value: String(value) })}
+      {...(defaultValue === undefined ? {} : { defaultValue: String(defaultValue) })}
+    />
+  );
+}
 const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
   ({ className, size, resize, variant, testId, ...props }, ref) => (
-    <textarea
+    <TextareaPrimitive
       className={cn(textareaVariants({ resize, size, variant }), className)}
       data-slot="textarea"
-      data-testid={testId}
+      data-testid={testId ?? props['data-testid']}
       ref={ref}
       {...props}
     />

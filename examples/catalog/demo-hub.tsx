@@ -17,10 +17,11 @@ import {
   Select,
   SelectContent,
   SelectItem,
+  SelectList,
   SelectTrigger,
   SelectValue,
 } from '@/registry/base-nova/protoform/components/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/registry/base-nova/protoform/components/tabs';
+import { Tabs, TabsList, TabsPanel, TabsTab } from '@/registry/base-nova/protoform/components/tabs';
 
 import { ExampleLoading } from '../shared/example-loading';
 import { type DemoCatalogEntry, demoCatalog } from './demo-catalog';
@@ -140,11 +141,13 @@ export function DemoHub({ category }: { category: DemoHubCategory }) {
             <SelectValue>{selectedDemo.title}</SelectValue>
           </SelectTrigger>
           <SelectContent>
-            {demos.map((demo) => (
-              <SelectItem key={demo.id} value={demo.slug}>
-                {demo.title}
-              </SelectItem>
-            ))}
+            <SelectList>
+              {demos.map((demo) => (
+                <SelectItem key={demo.id} value={demo.slug}>
+                  {demo.title}
+                </SelectItem>
+              ))}
+            </SelectList>
           </SelectContent>
         </Select>
       </Field>
@@ -164,14 +167,14 @@ export function DemoHub({ category }: { category: DemoHubCategory }) {
 
         <Tabs defaultValue="preview" key={selectedDemo.slug}>
           <TabsList variant="underline">
-            <TabsTrigger value="preview" variant="underline">
+            <TabsTab value="preview" variant="underline">
               Preview
-            </TabsTrigger>
-            <TabsTrigger value="code" variant="underline">
+            </TabsTab>
+            <TabsTab value="code" variant="underline">
               Code
-            </TabsTrigger>
+            </TabsTab>
           </TabsList>
-          <TabsContent value="preview">
+          <TabsPanel value="preview">
             <div className="border-y border-border/60 py-8">
               {DemoComponent ? (
                 <Suspense fallback={<ExampleLoading label="Loading selected demo" />}>
@@ -184,8 +187,8 @@ export function DemoHub({ category }: { category: DemoHubCategory }) {
                 </Alert>
               )}
             </div>
-          </TabsContent>
-          <TabsContent value="code">
+          </TabsPanel>
+          <TabsPanel value="code">
             {DemoSource ? (
               <Suspense fallback={<ExampleLoading label="Loading selected source" />}>
                 {createElement(DemoSource)}
@@ -196,7 +199,7 @@ export function DemoHub({ category }: { category: DemoHubCategory }) {
                 <AlertDescription>The selected demo source could not be loaded.</AlertDescription>
               </Alert>
             )}
-          </TabsContent>
+          </TabsPanel>
         </Tabs>
 
         <div className="space-y-2">

@@ -138,21 +138,21 @@ function uiImports(path: string): string[] {
 
 describe('build-time UI adapter registry', () => {
   test('offers the complete TanStack UI bundle without installing Recharts', () => {
-    const tanstack = item('protoform-shadcn-tanstack');
-    const recharts = item('protoform-shadcn');
+    const tanstack = item('protoform-ui-sdk-tanstack');
+    const recharts = item('protoform-ui-sdk');
     const chartPath = 'registry/base-nova/protoform/components/chart/index.tsx';
     const tanstackPath = 'registry/base-nova/protoform/components/chart-tanstack/index.tsx';
     expect(filePaths(tanstack)).toEqual(
       expect.arrayContaining(
         filePaths(recharts).filter(
-          (path) => path !== chartPath && path !== 'registry/base-nova/protoform/SHADCN_COMPONENTS.md'
+          (path) => path !== chartPath && path !== 'registry/base-nova/protoform/UI_SDK_COMPONENTS.md'
         )
       )
     );
-    expect(filePaths(tanstack)).toContain('registry/base-nova/protoform/SHADCN_TANSTACK_COMPONENTS.md');
+    expect(filePaths(tanstack)).toContain('registry/base-nova/protoform/UI_SDK_TANSTACK_COMPONENTS.md');
     expect(filePaths(tanstack)).toContain(tanstackPath);
-    expect(closureFilePaths('protoform-shadcn-tanstack')).not.toContain(chartPath);
-    const packages = [...dependencyClosure('protoform-shadcn-tanstack')].flatMap(
+    expect(closureFilePaths('protoform-ui-sdk-tanstack')).not.toContain(chartPath);
+    const packages = [...dependencyClosure('protoform-ui-sdk-tanstack')].flatMap(
       (name) => item(name).dependencies?.map(packageName) ?? []
     );
     expect(packages).toContain('@tanstack/charts');
@@ -161,7 +161,7 @@ describe('build-time UI adapter registry', () => {
     expect(filePaths(recharts)).not.toContain(tanstackPath);
   });
 
-  test.each(['auto-form-core', 'hook-runtime', 'protobuf-provider', 'protoform-examples', 'protoform-shadcn'])(
+  test.each(['auto-form-core', 'hook-runtime', 'protobuf-provider', 'protoform-examples', 'protoform-ui-sdk'])(
     '%s requires the native-rule Protovalidate release',
     (name) => {
       expect(item(name).dependencies).toContain('@bufbuild/protovalidate@^1.3.0');
@@ -170,7 +170,7 @@ describe('build-time UI adapter registry', () => {
 
   test('default installation leaves host primitives and theme untouched', () => {
     const closure = [...dependencyClosure('protoform')].map(item);
-    expect(dependencyClosure('protoform')).not.toContain('protoform-shadcn');
+    expect(dependencyClosure('protoform')).not.toContain('protoform-ui-sdk');
     for (const entry of closure) {
       for (const file of entry.files ?? []) {
         expect(file.target ?? '', file.path).not.toMatch(/components\/ui\//u);
@@ -184,7 +184,7 @@ describe('build-time UI adapter registry', () => {
   test('splits core, React, and optional shadcn capabilities', () => {
     const core = item('protoform-core');
     const react = item('protoform-react');
-    const shadcn = item('protoform-shadcn');
+    const shadcn = item('protoform-ui-sdk');
 
     expect(core.registryDependencies).toEqual(['@protoform/use-proto-form']);
     expect(filePaths(core).some((path) => path.includes('/components/'))).toBe(false);
@@ -205,7 +205,7 @@ describe('build-time UI adapter registry', () => {
       const moduleFiles = shadcn.files?.filter((file) => file.path.startsWith(moduleRoot)) ?? [];
       expect(moduleFiles.length, moduleName).toBeGreaterThan(0);
       for (const file of moduleFiles) {
-        expect(file.target, file.path).toBe(`~/components/ui/${moduleName}/${file.path.slice(moduleRoot.length)}`);
+        expect(file.target, file.path).toBe(`@ui/${moduleName}/${file.path.slice(moduleRoot.length)}`);
       }
     }
   });
@@ -327,10 +327,10 @@ describe('build-time UI adapter registry', () => {
 
 describe('native form adapter registry entries', () => {
   test('ships the legacy shadcn map only with explicit legacy adapters', () => {
-    const componentMapPath = 'registry/base-nova/protoform/components/auto-form/shadcn-ui-components.ts';
+    const componentMapPath = 'registry/base-nova/protoform/components/auto-form/ui-sdk-components.ts';
 
     for (const adapterName of [
-      'protoform-shadcn',
+      'protoform-ui-sdk',
       'auto-form-react-hook-form-v8',
       'auto-form-tanstack',
       'auto-form-tanstack-v2',

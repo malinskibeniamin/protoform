@@ -2,8 +2,9 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { type MotionProps, motion } from 'motion/react';
 import React from 'react';
 
-import { Heading, Text } from '@/components/ui/typography';
-import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
+import { Heading, Text } from '@/components/ui/typography/index';
+import { cn } from '@/registry/base-nova/protoform/lib/utils';
+import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
 const cardVariants = cva(
   'flex min-w-0 flex-col rounded-lg border border-solid border-border bg-card text-card-foreground',

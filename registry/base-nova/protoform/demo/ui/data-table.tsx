@@ -17,18 +17,12 @@ import {
 } from '@tanstack/react-table';
 import { MoreHorizontalIcon } from 'lucide-react';
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Field } from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Button } from '@/components/ui/button/index';
+import { Checkbox } from '@/components/ui/checkbox/index';
+import { Menu, MenuCheckboxItem, MenuContent, MenuItem, MenuTrigger } from '@/components/ui/dropdown-menu/index';
+import { Field } from '@/components/ui/field/index';
+import { Input } from '@/components/ui/input/index';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table/index';
 
 const features = tableFeatures({
   columnFilteringFeature,
@@ -59,20 +53,20 @@ function SampleRecordActions({ record }: { record: SampleRecord }) {
   const [showDetails, setShowDetails] = useState(false);
   return (
     <div className="space-y-2">
-      <DropdownMenu>
-        <DropdownMenuTrigger
+      <Menu>
+        <MenuTrigger
           render={
             <Button aria-label={`Actions for ${record.name}`} size="icon-sm" type="button" variant="ghost">
               <MoreHorizontalIcon />
             </Button>
           }
         />
-        <DropdownMenuContent>
-          <DropdownMenuItem onClick={() => setShowDetails(showDetails !== true)}>
+        <MenuContent>
+          <MenuItem onClick={() => setShowDetails(showDetails !== true)}>
             {showDetails === true ? 'Hide details' : 'Show details'}
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+          </MenuItem>
+        </MenuContent>
+      </Menu>
       {showDetails === true ? (
         <p className="text-sm">
           {record.name}: {record.status}
@@ -99,8 +93,7 @@ const columns = helper.columns([
       <Field orientation="horizontal">
         <Checkbox
           aria-label="Select page records"
-          checked={table.getIsAllPageRowsSelected()}
-          indeterminate={table.getIsSomePageRowsSelected()}
+          checked={table.getIsSomePageRowsSelected() ? 'indeterminate' : table.getIsAllPageRowsSelected()}
           onCheckedChange={(checked) => table.toggleAllPageRowsSelected(checked === true)}
         />
       </Field>
@@ -156,29 +149,30 @@ export default function DataTableExample() {
             value={filter}
           />
         </Field>
-        <DropdownMenu>
-          <DropdownMenuTrigger
+        <Menu>
+          <MenuTrigger
             render={
               <Button type="button" variant="outline">
                 Visible columns
               </Button>
             }
           />
-          <DropdownMenuContent>
+          <MenuContent>
             {table
               .getAllColumns()
               .filter((column) => column.getCanHide())
               .map((column) => (
-                <DropdownMenuCheckboxItem
+                <MenuCheckboxItem
                   checked={column.getIsVisible()}
                   key={column.id}
                   onCheckedChange={(checked) => column.toggleVisibility(checked)}
+                  value={column.id}
                 >
                   {column.id}
-                </DropdownMenuCheckboxItem>
+                </MenuCheckboxItem>
               ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
+          </MenuContent>
+        </Menu>
       </div>
       <Table aria-label="Sample records">
         <TableHeader>
@@ -216,7 +210,7 @@ export default function DataTableExample() {
         <output aria-label="Selected record count" className="text-sm">
           {table.getSelectedRowModel().rows.length} selected
         </output>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button
             disabled={table.getCanPreviousPage() !== true}
             onClick={() => table.previousPage()}

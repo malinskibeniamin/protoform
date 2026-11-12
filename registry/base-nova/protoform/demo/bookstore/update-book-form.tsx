@@ -4,11 +4,11 @@ import { createConnectQueryKey, useMutation, useTransport } from '@connectrpc/co
 import { useQueryClient } from '@tanstack/react-query';
 import { useId, useState } from 'react';
 import { ErrorMessage } from 'react-hook-form';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
-import { Field, FieldError, FieldLabel } from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert/index';
+import { Button } from '@/components/ui/button/index';
+import { Field, FieldError, FieldLabel } from '@/components/ui/field/index';
+import { Input } from '@/components/ui/input/index';
+import { Textarea } from '@/components/ui/textarea/index';
 import { BookFormBinding } from '@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_form';
 import type { Book } from '@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_pb';
 import { LibraryService } from '@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_pb';

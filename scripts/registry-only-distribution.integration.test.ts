@@ -72,7 +72,7 @@ describe('registry-only distribution', () => {
     expect([...new Set(licenseTargets)]).toEqual([
       PROTOFORM_LICENSE_TARGET,
       '~/LICENSES/shadcn-MIT.txt',
-      '~/LICENSES/protoform-shadcn-provenance.md',
+      '~/LICENSES/protoform-ui-sdk-provenance.md',
     ]);
   });
 

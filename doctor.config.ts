@@ -152,18 +152,6 @@ export default defineConfig({
         rules: ['react-doctor/no-clone-element', 'react-doctor/no-react-children'],
       },
       {
-        files: ['registry/base-nova/protoform/lib/base-ui-compat/index.tsx'],
-        rules: [
-          'react-doctor/jsx-props-no-spreading',
-          'react-doctor/no-adjust-state-on-prop-change',
-          'react-doctor/no-clone-element',
-          'react-doctor/no-derived-state',
-          'react-doctor/no-derived-state-effect',
-          'react-doctor/no-effect-chain',
-          'react-doctor/no-react-children',
-        ],
-      },
-      {
         files: ['examples/catalog/demo-hub.tsx'],
         rules: ['react-doctor/display-name'],
       },

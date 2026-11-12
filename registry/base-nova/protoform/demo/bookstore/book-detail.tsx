@@ -1,8 +1,8 @@
 'use client';
 
 import { useId } from 'react';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert/index';
+import { Button } from '@/components/ui/button/index';
 import type { Book } from '@/registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_pb';
 
 export function BookDetail({

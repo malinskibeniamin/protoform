@@ -3,11 +3,11 @@
 import { Plus, X } from 'lucide-react';
 import { type ReactNode, useId, useRef } from 'react';
 
-import { Button } from '@/components/ui/button';
-import { Combobox, type ComboboxProps } from '@/components/ui/combobox';
-import { Input, type InputProps } from '@/components/ui/input';
+import { Button } from '@/components/ui/button/index';
+import { OptionCombobox, type OptionComboboxProps } from '@/components/ui/combobox/index';
+import { Input, type InputProps } from '@/components/ui/input/index';
 import { findDuplicateIndices, useInputListFocus } from '@/registry/base-nova/protoform/lib/input-utils';
-import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils';
+import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
 const DEFAULT_KEY_FIELD_PROPS = { placeholder: 'Key' };
 
@@ -21,7 +21,7 @@ export interface KeyValuePair {
 const EMPTY_KEY_VALUE_PAIRS: KeyValuePair[] = [];
 
 type InputFieldConfig = { mode?: 'input' } & Omit<InputProps, 'value' | 'onChange' | 'disabled' | 'aria-invalid'>;
-type ComboboxFieldConfig = { mode: 'combobox' } & Omit<ComboboxProps, 'value' | 'onChange' | 'disabled'>;
+type ComboboxFieldConfig = { mode: 'combobox' } & Omit<OptionComboboxProps, 'value' | 'onChange' | 'disabled'>;
 export type KeyValueFieldConfig = InputFieldConfig | ComboboxFieldConfig;
 
 export interface KeyValueFieldError {
@@ -60,7 +60,7 @@ function FieldRenderer({
 }) {
   if (config.mode === 'combobox') {
     const { mode: _m, ...comboboxProps } = config;
-    return <Combobox {...comboboxProps} disabled={disabled} onChange={onChange} testId={testId} value={value} />;
+    return <OptionCombobox {...comboboxProps} disabled={disabled} onChange={onChange} testId={testId} value={value} />;
   }
 
   const { mode: _, ...inputProps } = config;

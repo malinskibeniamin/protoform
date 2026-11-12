@@ -1,3 +1,1 @@
-'use client';
-
-export { DirectionProvider, useDirection } from '@base-ui/react/direction-provider';
+export { isRTL } from '@ui-sdk/core';

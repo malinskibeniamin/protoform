@@ -1,78 +1,56 @@
 'use client';
+import {
+  Slider as SDKSlider,
+  SliderControl as SDKSliderControl,
+  SliderIndicator as SDKSliderIndicator,
+  SliderThumb as SDKSliderThumb,
+  SliderTrack as SDKSliderTrack,
+} from '@ui-sdk/react/slider';
+import type React from 'react';
+import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
+import { cn } from '@/registry/base-nova/protoform/lib/utils';
+import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
-import { Slider as SliderPrimitive } from '@base-ui/react/slider';
-
-import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
-
-type SliderProps<Value extends number | readonly number[] = number[]> = SliderPrimitive.Root.Props<Value> & SharedProps;
-
-function getThumbLabel(label: string | undefined, count: number, index: number): string | undefined {
-  if (!(label !== undefined && label !== '')) {
-    return undefined;
-  }
-  return count === 1 ? label : `${label} ${index + 1}`;
-}
-
-function Slider<Value extends number | readonly number[] = number[]>({
+export { SliderControl, SliderIndicator, SliderThumb, SliderTrack, SliderValue } from '@ui-sdk/react/slider';
+export function Slider({
+  children,
   className,
-  defaultValue,
-  value,
-  min = 0,
-  max = 100,
   testId,
-  onValueChange,
-  'aria-label': ariaLabel,
+  'aria-label': label,
   ...props
-}: SliderProps<Value>) {
-  let values: readonly number[] = [min, max];
-  if (value !== undefined) {
-    values = typeof value === 'number' ? [value] : value;
-  } else if (defaultValue !== undefined) {
-    values = typeof defaultValue === 'number' ? [defaultValue] : defaultValue;
-  }
-  const thumbs = values.map((_thumbValue, index) => ({ index, key: `thumb-${index}` }));
-
+}: UIProps<React.ComponentProps<typeof SDKSlider>> & SharedProps) {
+  const values = props.value ?? props.defaultValue ?? 0;
+  const thumbs = (Array.isArray(values) ? values : [values]).map((_, position) => ({
+    id: `slider-thumb-${position}`,
+    position,
+  }));
   return (
-    <SliderPrimitive.Root
+    <SDKSlider
+      {...definedProps(props)}
+      aria-label={label}
       className={(state) =>
         cn(
-          'relative flex w-full touch-none items-center select-none data-[disabled]:opacity-50 data-[orientation=vertical]:h-full data-[orientation=vertical]:min-h-40 data-[orientation=vertical]:w-auto data-[orientation=vertical]:flex-col',
+          'relative flex w-full touch-none items-center select-none',
           typeof className === 'function' ? className(state) : className
         )
       }
-      data-slot="slider"
-      data-testid={testId}
-      defaultValue={defaultValue}
-      max={max}
-      min={min}
-      onValueChange={onValueChange}
-      value={value}
-      {...props}
+      data-testid={testId ?? props['data-testid']}
     >
-      <SliderPrimitive.Control className="relative flex w-full grow touch-none items-center select-none data-[orientation=vertical]:h-full data-[orientation=vertical]:w-auto data-[orientation=vertical]:flex-col">
-        <SliderPrimitive.Track
-          className={cn(
-            'relative grow overflow-hidden rounded-full bg-muted select-none data-[orientation=horizontal]:h-1 data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-1'
-          )}
-          data-slot="slider-track"
-        >
-          <SliderPrimitive.Indicator
-            className="absolute bg-primary select-none data-[orientation=horizontal]:h-full data-[orientation=vertical]:w-full"
-            data-slot="slider-range"
-          />
-        </SliderPrimitive.Track>
-        {thumbs.map((thumb) => (
-          <SliderPrimitive.Thumb
-            aria-label={getThumbLabel(ariaLabel, values.length, thumb.index)}
-            className="relative block size-3 shrink-0 rounded-full border border-ring bg-white ring-ring/50 transition select-none after:absolute after:-inset-2 hover:ring-3 focus-visible:ring-3 focus-visible:outline-hidden active:ring-3 disabled:pointer-events-none disabled:opacity-50"
-            data-slot="slider-thumb"
-            index={thumb.index}
-            key={thumb.key}
-          />
-        ))}
-      </SliderPrimitive.Control>
-    </SliderPrimitive.Root>
+      {children ?? (
+        <SDKSliderControl className="flex h-5 w-full items-center">
+          <SDKSliderTrack className="relative h-1.5 w-full rounded-full bg-muted">
+            <SDKSliderIndicator className="absolute h-full rounded-full bg-primary" />
+            {thumbs.map((thumb) => (
+              <SDKSliderThumb
+                aria-label={thumbs.length === 1 ? label : `${label ?? 'Value'} ${thumb.position + 1}`}
+                className="absolute top-1/2 size-4 -translate-1/2 rounded-full border border-primary bg-background shadow-sm has-focus-visible:ring-2 has-focus-visible:ring-ring"
+                index={thumb.position}
+                key={thumb.id}
+              />
+            ))}
+          </SDKSliderTrack>
+        </SDKSliderControl>
+      )}
+    </SDKSlider>
   );
 }
-
-export { Slider };

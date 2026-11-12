@@ -18,6 +18,7 @@ test('host primitives submit, report errors, and recover without a theme depende
   await choice.click();
   await page.getByRole('option', { exact: true, name: 'First' }).click();
   await expect(choice).toHaveText('First');
+  await expect(page.getByRole('combobox', { name: 'Nullable selection' })).toHaveText('Not set');
   await input.fill('Adopt without duplicating UI');
   await page.getByRole('button', { exact: true, name: 'Submit' }).click();
   await expect(page.getByLabel('Submitted title')).toHaveText('Adopt without duplicating UI');

@@ -1,7 +1,8 @@
 'use client';
 import React, { createContext, useContext } from 'react';
 
-import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
+import { cn } from '@/registry/base-nova/protoform/lib/utils';
+import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
 type GroupPosition = 'first' | 'middle' | 'last';
 

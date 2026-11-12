@@ -10,8 +10,8 @@ import {
 import { ReactHookFormEngine } from '../auto-form/adapters/react-hook-form-v8';
 import { AutoFormCore } from '../auto-form/auto-form-core';
 import { protoConversionOptionsFromFieldConfig } from '../auto-form/schema';
-import { shadcnUIComponents } from '../auto-form/shadcn-ui-components';
 import type { AutoFormValidationMode, AutoFormProps as BaseAutoFormProps } from '../auto-form/types';
+import { uiSdkComponents } from '../auto-form/ui-sdk-components';
 
 export type {
   ProtoformMessageCode,
@@ -105,7 +105,7 @@ export function AutoForm<T extends FormValues = FormValues, TCustomFieldType ext
   props: AutoFormProps<T, TCustomFieldType>
 ): React.ReactNode;
 export function AutoForm({
-  components = shadcnUIComponents,
+  components = uiSdkComponents,
   formOptions,
   resolver,
   ...props

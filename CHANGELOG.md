@@ -29,6 +29,10 @@ source snapshots.
 
 ### Changed
 
+- **Breaking:** all bundled interactive controls now use pinned UI SDK `0.1.0-beta.1` behaviors. The new registry items are `protoform-ui-sdk`, `protoform-ui-sdk-tanstack`, and `protoform-ui-sdk-host`; old shadcn/Base UI UI contracts are not retained. Native `render`, panel, array-selection, ISO-calendar, toast, and controller APIs replace the old ones. Renderer-boundary text controls now receive `onValueChange(string)`.
+- UI imports and targets honor the consumer's UI aliases. The themed bundles no longer install Base UI, shadcn React behaviors, cmdk, Embla, input-otp, DayPicker, or react-resizable-panels. Specialized chart and editor engines remain.
+- `protoform-ui-sdk-agent` is opt-in and exports `createAgent` without creating a bridge, registering browser tools, or granting actions automatically.
+
 - AutoForm core, its runtime provider, object sections, and string inputs compile under React Compiler without `"use no memo"`.
 - The bookstore demo shows field errors with React Hook Form's built-in `ErrorMessage` bound to `control`, so it no longer installs `@hookform/error-message`.
 - Stable React Hook Form items require `7.92.0`; the tested resolver version is `7.0.6`.
@@ -71,7 +75,7 @@ source snapshots.
 - Slots keep their children's React keys instead of keying them by position.
 - Changing `defaultMode` after mount switches mode in the same render instead of after an effect.
 - A required oneof with one available variant keeps its field test id on its section, as other oneofs do.
-- `protoform-shadcn` and `protoform-examples` install `@types/prismjs`, so a strict consumer type-checks `json-field` without adding the types by hand.
+- `protoform-ui-sdk` and `protoform-examples` install `@types/prismjs`, so a strict consumer type-checks `json-field` without adding the types by hand.
 
 ### Compatibility
 

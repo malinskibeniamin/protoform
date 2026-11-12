@@ -1,296 +1,458 @@
 'use client';
 
-import { Select as SelectPrimitive } from '@base-ui/react/select';
-import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from 'lucide-react';
-import React from 'react';
+import {
+  Select as SDKSelect,
+  SelectArrow as SDKSelectArrow,
+  SelectClear as SDKSelectClear,
+  SelectContent as SDKSelectContent,
+  SelectEmpty as SDKSelectEmpty,
+  SelectGroup as SDKSelectGroup,
+  SelectGroupLabel as SDKSelectGroupLabel,
+  SelectInput as SDKSelectInput,
+  SelectItem as SDKSelectItem,
+  SelectItemIcon as SDKSelectItemIcon,
+  SelectItemIndicator as SDKSelectItemIndicator,
+  SelectItems as SDKSelectItems,
+  SelectItemText as SDKSelectItemText,
+  SelectLabel as SDKSelectLabel,
+  SelectList as SDKSelectList,
+  SelectSelectAll as SDKSelectSelectAll,
+  SelectSeparator as SDKSelectSeparator,
+  SelectStatus as SDKSelectStatus,
+  SelectTrigger as SDKSelectTrigger,
+  SelectValue as SDKSelectValue,
+  SelectValueIcon as SDKSelectValueIcon,
+} from '@ui-sdk/react/select';
 
-import { useGroup } from '@/components/ui/group';
-import { usePortalContainer } from '@/registry/base-nova/protoform/hooks/use-portal-container';
-import { renderWithDataState } from '@/registry/base-nova/protoform/lib/base-ui-compat';
-import { cn, type PortalContentProps, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
+import { ChevronDownIcon } from 'lucide-react';
+import type React from 'react';
+import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
+import { cn } from '@/registry/base-nova/protoform/lib/utils';
+import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
-type SelectRootProps<Value = string, Multiple extends boolean | undefined = false> = SelectPrimitive.Root.Props<
-  Value,
-  Multiple
-> &
-  SharedProps;
+const Select = SDKSelect;
 
-function Select<Value = string, Multiple extends boolean | undefined = false>({
+function SelectArrow({
+  className,
   testId,
+  variant,
+  size,
   ...props
-}: SelectRootProps<Value, Multiple>) {
-  return <SelectPrimitive.Root data-slot="select" data-testid={testId} {...props} />;
-}
-
-Select.displayName = 'Select';
-
-function SelectGroup({ testId, ...props }: React.ComponentProps<typeof SelectPrimitive.Group> & SharedProps) {
-  return <SelectPrimitive.Group data-slot="select-group" data-testid={testId} {...props} />;
-}
-
-SelectGroup.displayName = 'SelectGroup';
-
-type SelectValueProps = Omit<React.ComponentProps<typeof SelectPrimitive.Value>, 'children'> & {
-  placeholder?: React.ReactNode;
-  children?: React.ReactNode | ((value: unknown) => React.ReactNode);
-};
-
-function SelectValue({ placeholder, children, ...props }: SelectValueProps) {
-  if (typeof children === 'function') {
-    const renderValue = children;
-    return (
-      <SelectPrimitive.Value data-slot="select-value" placeholder={placeholder} {...props}>
-        {(value: unknown) => {
-          const result = renderValue(value);
-          if ((result === null || result === undefined) && placeholder !== undefined) {
-            return placeholder;
-          }
-          return result;
-        }}
-      </SelectPrimitive.Value>
-    );
-  }
-  if (children !== undefined) {
-    return (
-      <SelectPrimitive.Value data-slot="select-value" placeholder={placeholder} {...props}>
-        {children as React.ComponentProps<typeof SelectPrimitive.Value>['children']}
-      </SelectPrimitive.Value>
-    );
-  }
-  return <SelectPrimitive.Value data-slot="select-value" placeholder={placeholder} {...props} />;
-}
-
-SelectValue.displayName = 'SelectValue';
-
-const SelectTrigger = React.forwardRef<
-  React.ComponentRef<typeof SelectPrimitive.Trigger>,
-  React.ComponentProps<typeof SelectPrimitive.Trigger> &
-    SharedProps & {
-      size?: 'sm' | 'default' | 'lg';
-    }
->(({ className, size = 'default', children, testId, ...props }, ref) => {
-  const { position: groupPosition, attached } = useGroup();
-
-  let positionClasses = 'rounded-lg';
-  if (attached && groupPosition === 'first') {
-    positionClasses = 'rounded-r-none rounded-l-lg border-r-0';
-  } else if (attached && groupPosition === 'last') {
-    positionClasses = 'rounded-r-lg rounded-l-none border-l-0';
-  } else if (attached && groupPosition === 'middle') {
-    positionClasses = 'rounded-none border-r-0 border-l-0';
-  }
-
+}: UIProps<React.ComponentProps<typeof SDKSelectArrow>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
   return (
-    <SelectPrimitive.Trigger
+    <SDKSelectArrow
+      {...definedProps(props)}
+      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
+
+function SelectClear({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKSelectClear>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKSelectClear
+      {...definedProps(props)}
+      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
+
+function SelectContent({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<Omit<React.ComponentProps<typeof SDKSelectContent>, 'keepMounted'>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKSelectContent
+      {...definedProps(props)}
       className={(state) =>
         cn(
-          "flex w-full cursor-pointer items-center justify-between gap-1.5 border !border-input bg-transparent py-2 pr-2 pl-2.5 text-sm whitespace-nowrap transition-colors outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 data-[placeholder]:text-muted-foreground data-[size=default]:h-8 data-[size=lg]:h-9 data-[size=sm]:h-7 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-1.5 dark:bg-input/30 dark:hover:bg-input/50 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground",
-          positionClasses,
+          'z-50 max-h-(--available-height) min-w-36 overflow-auto rounded-lg border border-border bg-popover p-1 text-popover-foreground shadow-md outline-none',
           typeof className === 'function' ? className(state) : className
         )
       }
       data-size={size}
-      data-slot="select-trigger"
-      data-testid={testId}
-      ref={ref}
-      render={renderWithDataState('button')}
-      {...props}
-    >
-      {children}
-      <SelectPrimitive.Icon
-        render={
-          <span>
-            <ChevronDownIcon className="size-4 opacity-50" />
-          </span>
-        }
-      />
-    </SelectPrimitive.Trigger>
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
   );
-});
+}
 
-SelectTrigger.displayName = 'SelectTrigger';
+function SelectEmpty({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKSelectEmpty>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKSelectEmpty
+      {...definedProps(props)}
+      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
 
-type SelectContentProps = React.ComponentProps<typeof SelectPrimitive.Popup> &
-  SharedProps &
-  Pick<PortalContentProps, 'container' | 'onOpenAutoFocus'> &
-  Pick<SelectPrimitive.Positioner.Props, 'side' | 'sideOffset' | 'align' | 'alignOffset' | 'alignItemWithTrigger'> & {
-    position?: 'popper' | 'item-aligned';
-  };
+function SelectGroup({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKSelectGroup>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKSelectGroup
+      {...definedProps(props)}
+      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
 
-const SelectContent = React.forwardRef<React.ComponentRef<typeof SelectPrimitive.Popup>, SelectContentProps>(
-  (contentProps, ref) => {
-    const {
-      className,
-      children,
-      testId,
-      container,
-      side = 'bottom',
-      align,
-      sideOffset = 4,
-      alignOffset,
-      alignItemWithTrigger = false,
-      ...props
-    } = contentProps;
-    const position = Reflect.get(props, 'position') ?? 'popper';
-    Reflect.deleteProperty(props, 'position');
-    const portalContainer = usePortalContainer();
-    return (
-      <SelectPrimitive.Portal container={container ?? portalContainer}>
-        <SelectPrimitive.Positioner
-          align={align}
-          alignItemWithTrigger={alignItemWithTrigger}
-          alignOffset={alignOffset}
-          className="z-50 max-h-(--available-height)"
-          side={side}
-          sideOffset={sideOffset}
-        >
-          <SelectPrimitive.Popup
-            className={(state) =>
-              cn(
-                'relative z-50 max-h-(--available-height) min-w-36 origin-(--transform-origin) overflow-hidden rounded-lg bg-popover text-popover-foreground shadow-md ring-1 ring-foreground/10 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
-                position === 'popper' &&
-                  'data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1',
-                typeof className === 'function' ? className(state) : className
-              )
-            }
-            data-slot="select-content"
-            data-testid={testId}
-            ref={ref}
-            render={renderWithDataState('div')}
-            {...props}
-          >
-            <SelectScrollUpButton />
-            <SelectPrimitive.List
-              className={cn(
-                'max-h-(--available-height) w-full overflow-x-hidden overflow-y-auto p-1',
-                position === 'popper' && 'min-w-(--anchor-width) scroll-my-1'
-              )}
-            >
-              {children}
-            </SelectPrimitive.List>
-            <SelectScrollDownButton />
-          </SelectPrimitive.Popup>
-        </SelectPrimitive.Positioner>
-      </SelectPrimitive.Portal>
-    );
-  }
-);
+function SelectLabel({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKSelectLabel>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKSelectLabel
+      {...definedProps(props)}
+      className={(state) =>
+        cn(
+          'px-2 py-1.5 text-xs font-medium text-muted-foreground',
+          typeof className === 'function' ? className(state) : className
+        )
+      }
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
 
-SelectContent.displayName = 'SelectContent';
+function SelectInput({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKSelectInput>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKSelectInput
+      {...definedProps(props)}
+      className={(state) =>
+        cn(
+          'h-9 w-full border-b border-border bg-transparent px-2 outline-none',
+          typeof className === 'function' ? className(state) : className
+        )
+      }
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
 
-const SelectLabel = React.forwardRef<
-  React.ComponentRef<typeof SelectPrimitive.GroupLabel>,
-  React.ComponentProps<typeof SelectPrimitive.GroupLabel>
->(({ className, ...props }, ref) => (
-  <SelectPrimitive.GroupLabel
-    className={(state) =>
-      cn('px-2 py-1.5 text-xs text-muted-foreground', typeof className === 'function' ? className(state) : className)
-    }
-    data-slot="select-label"
-    ref={ref}
-    {...props}
-  />
-));
+function SelectItem({
+  value,
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKSelectItem>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKSelectItem
+      value={value}
+      {...definedProps(props)}
+      className={(state) =>
+        cn(
+          'relative flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-accent data-highlighted:text-accent-foreground data-selected:bg-accent',
+          typeof className === 'function' ? className(state) : className
+        )
+      }
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
 
-SelectLabel.displayName = 'SelectLabel';
+function SelectItemIcon({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKSelectItemIcon>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKSelectItemIcon
+      {...definedProps(props)}
+      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
 
-const SelectItem = React.forwardRef<
-  React.ComponentRef<typeof SelectPrimitive.Item>,
-  React.ComponentProps<typeof SelectPrimitive.Item> & SharedProps
->(({ className, children, testId, ...props }, ref) => (
-  <SelectPrimitive.Item
-    className={(state) =>
-      cn(
-        "relative flex w-full cursor-pointer items-center gap-1.5 rounded-md py-1 pr-8 pl-1.5 text-sm outline-hidden select-none *:last:flex *:last:items-center *:last:gap-2 focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground",
-        typeof className === 'function' ? className(state) : className
-      )
-    }
-    data-slot="select-item"
-    data-testid={testId}
-    ref={ref}
-    {...props}
-  >
-    <span className="absolute right-2 flex size-3.5 items-center justify-center">
-      <SelectPrimitive.ItemIndicator>
-        <CheckIcon className="size-4" />
-      </SelectPrimitive.ItemIndicator>
-    </span>
-    <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
-  </SelectPrimitive.Item>
-));
+function SelectItemIndicator({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKSelectItemIndicator>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKSelectItemIndicator
+      {...definedProps(props)}
+      className={(state) => cn('ml-auto', typeof className === 'function' ? className(state) : className)}
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
 
-SelectItem.displayName = 'SelectItem';
+const SelectItems = SDKSelectItems;
 
-const SelectSeparator = React.forwardRef<
-  React.ComponentRef<typeof SelectPrimitive.Separator>,
-  React.ComponentProps<typeof SelectPrimitive.Separator>
->(({ className, ...props }, ref) => (
-  <SelectPrimitive.Separator
-    className={(state) =>
-      cn(
-        'pointer-events-none -mx-1 my-1 h-px bg-border',
-        typeof className === 'function' ? className(state) : className
-      )
-    }
-    data-slot="select-separator"
-    ref={ref}
-    {...props}
-  />
-));
+function SelectItemText({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKSelectItemText>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKSelectItemText
+      {...definedProps(props)}
+      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
 
-SelectSeparator.displayName = 'SelectSeparator';
+function SelectGroupLabel({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKSelectGroupLabel>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKSelectGroupLabel
+      {...definedProps(props)}
+      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
 
-const SelectScrollUpButton = React.forwardRef<
-  React.ComponentRef<typeof SelectPrimitive.ScrollUpArrow>,
-  React.ComponentProps<typeof SelectPrimitive.ScrollUpArrow>
->(({ className, ...props }, ref) => (
-  <SelectPrimitive.ScrollUpArrow
-    className={(state) =>
-      cn(
-        'flex cursor-pointer items-center justify-center py-1',
-        typeof className === 'function' ? className(state) : className
-      )
-    }
-    data-slot="select-scroll-up-button"
-    ref={ref}
-    {...props}
-  >
-    <ChevronUpIcon className="size-4" />
-  </SelectPrimitive.ScrollUpArrow>
-));
+function SelectList({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKSelectList>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKSelectList
+      {...definedProps(props)}
+      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
 
-SelectScrollUpButton.displayName = 'SelectScrollUpButton';
+function SelectSelectAll({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKSelectSelectAll>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKSelectSelectAll
+      {...definedProps(props)}
+      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
 
-const SelectScrollDownButton = React.forwardRef<
-  React.ComponentRef<typeof SelectPrimitive.ScrollDownArrow>,
-  React.ComponentProps<typeof SelectPrimitive.ScrollDownArrow>
->(({ className, ...props }, ref) => (
-  <SelectPrimitive.ScrollDownArrow
-    className={(state) =>
-      cn(
-        'flex cursor-pointer items-center justify-center py-1',
-        typeof className === 'function' ? className(state) : className
-      )
-    }
-    data-slot="select-scroll-down-button"
-    ref={ref}
-    {...props}
-  >
-    <ChevronDownIcon className="size-4" />
-  </SelectPrimitive.ScrollDownArrow>
-));
+function SelectSeparator({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKSelectSeparator>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKSelectSeparator
+      {...definedProps(props)}
+      className={(state) =>
+        cn('-mx-1 my-1 h-px bg-border', typeof className === 'function' ? className(state) : className)
+      }
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
 
-SelectScrollDownButton.displayName = 'SelectScrollDownButton';
+function SelectStatus({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKSelectStatus>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKSelectStatus
+      {...definedProps(props)}
+      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
+
+function SelectTrigger({
+  children,
+  className,
+  testId,
+  variant,
+  size = 'default',
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKSelectTrigger>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  const renderChildren = typeof children === 'function' ? children : () => children;
+  return (
+    <SDKSelectTrigger
+      {...definedProps(props)}
+      className={(state) =>
+        cn(
+          'flex h-8 w-full items-center justify-between gap-2 rounded-lg border border-input bg-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50',
+          typeof className === 'function' ? className(state) : className
+        )
+      }
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    >
+      {(state) => (
+        <>
+          {renderChildren(state)}
+          <ChevronDownIcon aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" />
+        </>
+      )}
+    </SDKSelectTrigger>
+  );
+}
+
+function SelectValue({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKSelectValue>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKSelectValue
+      {...definedProps(props)}
+      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
+
+function SelectValueIcon({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKSelectValueIcon>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKSelectValueIcon
+      {...definedProps(props)}
+      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
 
 export {
   Select,
+  SelectArrow,
+  SelectClear,
   SelectContent,
+  SelectEmpty,
   SelectGroup,
+  SelectGroupLabel,
+  SelectInput,
   SelectItem,
+  SelectItemIcon,
+  SelectItemIndicator,
+  SelectItems,
+  SelectItemText,
   SelectLabel,
-  SelectScrollDownButton,
-  SelectScrollUpButton,
+  SelectList,
+  SelectSelectAll,
   SelectSeparator,
+  SelectStatus,
   SelectTrigger,
   SelectValue,
+  SelectValueIcon,
 };

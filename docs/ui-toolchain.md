@@ -176,10 +176,10 @@ Additional compatible checks now enforce:
   scopes `data-chart`, not a DOM ID.
 - `noExplicitAny` remains an error in inherited test-file overrides, not only production code.
 
-The assertion rule has four scoped override groups naming 18 exact integration files in
+The assertion rule has scoped override groups naming exact integration files in
 `.oxlintrc.jsonc`, not directories or tests. These bridge runtime protobuf descriptors to Buf
 conditional types, dynamic native form-library paths, erased React-context generics, custom
-control names/ReactNode metadata, and Base UI render/ref/Motion contracts. Other unsafe-value
+control names/ReactNode metadata, and supported renderer value/ReactNode contracts. Other unsafe-value
 checks remain active in those files. Changes to these contracts need the hook, adapter,
 conversion, preservation, registry and consumer suites; disabling the rule does not validate
 external data. `scripts/release-hardening.test.ts` runs the installed linters on bad and valid
@@ -230,3 +230,8 @@ required CI checks and review policy changes at the repository-hosting layer.
 - [Biome conflicting-rule guidance](https://biomejs.dev/guides/upgrade-to-biome-v2/)
 - [Blume release notes](https://github.com/haydenbleasel/blume/releases/tag/blume%402.2.6)
 - [React Scan installation](https://github.com/aidenybai/react-scan#manual-installation)
+
+UI SDK imports are unstyled behavior primitives, not our styled design-system controls.
+`settings.shadcn.ignoreImports` excludes only `@ui-sdk/react` entries from component recognition.
+The design-system rules still recognize our local `@/components/ui` wrappers, and token/inline-style
+checks remain active on SDK primitives; positive and negative lint fixtures enforce that distinction.

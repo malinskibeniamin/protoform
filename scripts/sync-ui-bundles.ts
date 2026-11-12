@@ -13,7 +13,7 @@ function assertRegistry(value: unknown): asserts value is Registry {
 const registryPath = new URL('../registry.json', import.meta.url);
 const registry: unknown = JSON.parse(await readFile(registryPath, 'utf8'));
 assertRegistry(registry);
-const fallback = registry.items.find((item) => item.name === 'protoform-shadcn');
+const fallback = registry.items.find((item) => item.name === 'protoform-ui-sdk');
 if (fallback === undefined) {
   throw new Error('Missing Recharts fallback UI bundle');
 }
@@ -26,7 +26,7 @@ const version = z
   .parse(manifest.dependencies['@tanstack/charts']);
 const bundle = {
   ...structuredClone(fallback),
-  name: 'protoform-shadcn-tanstack',
+  name: 'protoform-ui-sdk-tanstack',
   title: 'Protoform UI with TanStack Charts',
   description: 'Recommended full UI bundle with native TanStack Charts. Installs no Recharts code or dependency.',
   dependencies: [
@@ -37,19 +37,19 @@ const bundle = {
     ...(fallback.files ?? [])
       .filter((file) => file.path !== 'registry/base-nova/protoform/components/chart/index.tsx')
       .map((file) =>
-        file.path === 'registry/base-nova/protoform/SHADCN_COMPONENTS.md'
-          ? { ...file, path: 'registry/base-nova/protoform/SHADCN_TANSTACK_COMPONENTS.md' }
+        file.path === 'registry/base-nova/protoform/UI_SDK_COMPONENTS.md'
+          ? { ...file, path: 'registry/base-nova/protoform/UI_SDK_TANSTACK_COMPONENTS.md' }
           : file
       ),
     {
       path: 'registry/base-nova/protoform/components/chart-tanstack/index.tsx',
       type: 'registry:ui',
-      target: '~/components/ui/chart-tanstack/index.tsx',
+      target: '@ui/chart-tanstack/index.tsx',
     },
     {
       path: 'registry/base-nova/protoform/components/chart-tanstack/chart-module.tsx',
       type: 'registry:ui',
-      target: '~/components/ui/chart-tanstack/chart-module.tsx',
+      target: '@ui/chart-tanstack/chart-module.tsx',
     },
   ],
 } satisfies Registry['items'][number];

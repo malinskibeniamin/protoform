@@ -1,6 +1,7 @@
 import { Loader2Icon } from 'lucide-react';
 
-import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
+import { cn } from '@/registry/base-nova/protoform/lib/utils';
+import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
 function Spinner({ className, testId, ...props }: React.ComponentProps<'svg'> & SharedProps) {
   return (

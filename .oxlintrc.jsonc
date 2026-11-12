@@ -1842,13 +1842,6 @@
       "rules": {
         "typescript/no-unsafe-type-assertion": "off"
       }
-    },
-    // Base UI render/ref/event and Motion prop unions are generic compatibility contracts. Covered by Slot composition and component browser tests.
-    {
-      "files": ["registry/base-nova/protoform/lib/base-ui-compat/index.tsx"],
-      "rules": {
-        "typescript/no-unsafe-type-assertion": "off"
-      }
     }
   ]
 }

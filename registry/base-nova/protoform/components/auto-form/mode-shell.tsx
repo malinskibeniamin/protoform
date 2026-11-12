@@ -3,6 +3,7 @@
 import { MotionConfig } from 'motion/react';
 import type React from 'react';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
+
 import { formSpacing } from './form-spacing';
 import { buildAutoFormTestId } from './test-ids';
 import type { AutoFormMode, AutoFormSummaryContext } from './types';
@@ -14,9 +15,9 @@ import {
   CopyButton,
   Heading,
   Tabs,
-  TabsContent,
   TabsList,
-  TabsTrigger,
+  TabsPanel,
+  TabsTab,
   Text,
   Textarea,
 } from './ui-components';
@@ -240,20 +241,20 @@ export function AutoFormModeShell<TNativeForm>({
       >
         <TabsList className="w-full justify-start" variant="underline">
           {modes.map((tabMode) => (
-            <TabsTrigger
+            <TabsTab
               key={tabMode}
               testId={buildAutoFormTestId(testIdPrefix, `tab-${tabMode}`)}
               value={tabMode}
               variant="underline"
             >
               {getModeLabel(tabMode)}
-            </TabsTrigger>
+            </TabsTab>
           ))}
         </TabsList>
         {modes.map((tabMode) => (
-          <TabsContent key={tabMode} testId={buildAutoFormTestId(testIdPrefix, `panel-${tabMode}`)} value={tabMode}>
+          <TabsPanel key={tabMode} testId={buildAutoFormTestId(testIdPrefix, `panel-${tabMode}`)} value={tabMode}>
             {renderModeBody(tabMode)}
-          </TabsContent>
+          </TabsPanel>
         ))}
       </Tabs>
     </MotionConfig>

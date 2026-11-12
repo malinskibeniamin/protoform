@@ -2,7 +2,7 @@ import { describe, expect } from '@rstest/core';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type React from 'react';
-import { Input as BundledInput } from '@/components/ui/input';
+import { Input as BundledInput } from '@/components/ui/input/index';
 import { AutoFormContext, type AutoFormContextValue } from '../context';
 import type { ParsedField } from '../core-types';
 import {
@@ -17,8 +17,8 @@ import {
 import { AutoFormFieldComponentRegistry } from '../fields';
 import { formSpacing } from '../form-spacing';
 import { OneofWrapper } from '../renderers/oneof';
-import { shadcnUIComponents } from '../shadcn-ui-components';
 import { Input, ProtoformUIProvider } from '../ui-components';
+import { uiSdkComponents } from '../ui-sdk-components';
 
 function withAutoFormContext(children: React.ReactNode) {
   const value: AutoFormContextValue = {
@@ -40,7 +40,7 @@ function withAutoFormContext(children: React.ReactNode) {
     },
   };
   return (
-    <ProtoformUIProvider components={shadcnUIComponents}>
+    <ProtoformUIProvider components={uiSdkComponents}>
       <AutoFormContext.Provider value={value}>{children}</AutoFormContext.Provider>
     </ProtoformUIProvider>
   );
@@ -209,7 +209,7 @@ describe('fieldWrapper', () => {
     expect(helpButton.querySelector('svg')).toHaveAttribute('fill', 'none');
     expect(screen.getByTestId('test-field-name')).toHaveAttribute('data-layout', 'split');
     expect(screen.getByRole('button', { name: 'Help for Replicas' })).toBeVisible();
-    expect(screen.queryByText('Choose between 1 and 12 replicas.')).not.toBeInTheDocument();
+    expect(screen.getByText('Choose between 1 and 12 replicas.')).not.toBeVisible();
   });
 });
 
@@ -227,7 +227,7 @@ describe('arrayWrapper', () => {
     unmount();
 
     render(
-      <ProtoformUIProvider components={shadcnUIComponents}>
+      <ProtoformUIProvider components={uiSdkComponents}>
         <ArrayElementWrapper index={0} onRemove={() => undefined} testId="item-0">
           first
         </ArrayElementWrapper>

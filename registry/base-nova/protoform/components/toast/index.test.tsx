@@ -2,12 +2,12 @@ import { afterEach, describe, expect } from '@rstest/core';
 import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/button/index';
 
 import { Toaster, toast } from '.';
 
 afterEach(() => {
-  act(() => toast.close());
+  act(() => toast.dismiss());
 });
 
 describe('toaster', () => {
@@ -18,7 +18,7 @@ describe('toaster', () => {
       <Toaster>
         <Button
           onClick={() =>
-            toast.add({
+            toast({
               description: 'The JSON data was copied to your clipboard.',
               title: 'JSON copied',
               type: 'success',
@@ -36,7 +36,7 @@ describe('toaster', () => {
     expect(screen.getByText('The JSON data was copied to your clipboard.')).toBeVisible();
 
     await user.keyboard('{F6}');
-    await user.click(screen.getByRole('button', { name: 'Close toast' }));
+    await user.click(screen.getByRole('button', { name: 'Dismiss notification' }));
 
     await waitFor(() => expect(screen.queryByText('JSON copied')).toBeNull());
   });

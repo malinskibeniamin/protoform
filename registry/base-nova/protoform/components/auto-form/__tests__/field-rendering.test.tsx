@@ -94,15 +94,15 @@ describe('autoForm – field rendering', () => {
       'data-slot',
       'auto-form-actions'
     );
-    expect(screen.getByRole('slider')).toBeVisible();
+    expect(screen.getByRole('slider')).toBeEnabled();
     expect(screen.getByRole('spinbutton', { name: /latitude/iu })).toBeVisible();
     expect(screen.getByRole('button', { name: SWITCH_TO_FORM_BUTTON })).toBeVisible();
     const productionOption = screen.getByRole('radio', { name: 'Production' });
     expect(productionOption.tagName).toBe('BUTTON');
     expect(productionOption.closest('label')).toBeNull();
-    expect(productionOption).toHaveAttribute('data-selected', 'true');
-    expect(screen.getByRole('radio', { name: 'Development' })).toHaveAttribute('data-selected', 'false');
-    expect(productionOption?.parentElement?.className).toContain('sm:grid-cols-2');
+    expect(productionOption).toHaveAttribute('data-checked');
+    expect(screen.getByRole('radio', { name: 'Development' })).not.toHaveAttribute('data-checked');
+    expect(productionOption.parentElement?.className).toContain('sm:grid-cols-2');
   });
 
   test('drops redundant fallback helper copy', () => {

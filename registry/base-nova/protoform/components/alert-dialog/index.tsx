@@ -1,158 +1,185 @@
 'use client';
 
-import { AlertDialog as AlertDialogPrimitive } from '@base-ui/react/alert-dialog';
-import type React from 'react';
-import { Button } from '@/components/ui/button';
-import { usePortalContainer } from '@/registry/base-nova/protoform/hooks/use-portal-container';
-import { cn } from '@/registry/base-nova/protoform/lib/utils';
+import {
+  AlertDialog as SDKAlertDialog,
+  AlertDialogBackdrop as SDKAlertDialogBackdrop,
+  AlertDialogClose as SDKAlertDialogClose,
+  AlertDialogContent as SDKAlertDialogContent,
+  AlertDialogDescription as SDKAlertDialogDescription,
+  AlertDialogShortcut as SDKAlertDialogShortcut,
+  AlertDialogTitle as SDKAlertDialogTitle,
+  AlertDialogTrigger as SDKAlertDialogTrigger,
+} from '@ui-sdk/react/alert-dialog';
 
-function AlertDialog({ ...props }: AlertDialogPrimitive.Root.Props) {
-  return <AlertDialogPrimitive.Root data-slot="alert-dialog" {...props} />;
-}
-function AlertDialogTrigger({ ...props }: AlertDialogPrimitive.Trigger.Props) {
-  return <AlertDialogPrimitive.Trigger data-slot="alert-dialog-trigger" {...props} />;
-}
-function AlertDialogPortal({ container, ...props }: AlertDialogPrimitive.Portal.Props) {
-  const portalContainer = usePortalContainer();
+import type React from 'react';
+import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
+import { cn } from '@/registry/base-nova/protoform/lib/utils';
+import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
+
+const AlertDialog = SDKAlertDialog;
+
+function AlertDialogBackdrop({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKAlertDialogBackdrop>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
   return (
-    <AlertDialogPrimitive.Portal container={container ?? portalContainer} data-slot="alert-dialog-portal" {...props} />
-  );
-}
-function AlertDialogOverlay({ className, ...props }: AlertDialogPrimitive.Backdrop.Props) {
-  return (
-    <AlertDialogPrimitive.Backdrop
+    <SDKAlertDialogBackdrop
+      {...definedProps(props)}
       className={(state) =>
-        cn(
-          'fixed inset-0 isolate z-50 bg-black/10 duration-100 data-closed:animate-out data-closed:fade-out-0 data-open:animate-in data-open:fade-in-0 supports-backdrop-filter:backdrop-blur-xs',
-          typeof className === 'function' ? className(state) : className
-        )
+        cn('fixed inset-0 z-50 bg-foreground/50', typeof className === 'function' ? className(state) : className)
       }
-      data-slot="alert-dialog-overlay"
-      {...props}
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
     />
   );
 }
+
+function AlertDialogClose({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKAlertDialogClose>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKAlertDialogClose
+      {...definedProps(props)}
+      className={(state) =>
+        cn(
+          'inline-flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50',
+          typeof className === 'function' ? className(state) : className
+        )
+      }
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
+
 function AlertDialogContent({
   className,
-  size = 'default',
+  testId,
+  variant,
+  size,
   ...props
-}: AlertDialogPrimitive.Popup.Props & {
-  size?: 'default' | 'sm';
-}) {
+}: UIProps<React.ComponentProps<typeof SDKAlertDialogContent>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
   return (
-    <AlertDialogPortal>
-      <AlertDialogOverlay />
-      <AlertDialogPrimitive.Popup
-        className={(state) =>
-          cn(
-            'group/alert-dialog-content fixed top-1/2 left-1/2 z-50 grid w-full -translate-1/2 gap-4 rounded-xl bg-popover p-4 text-popover-foreground ring-1 ring-foreground/10 duration-100 outline-none data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-[size=default]:max-w-xs data-[size=sm]:max-w-xs data-[size=default]:sm:max-w-sm',
-            typeof className === 'function' ? className(state) : className
-          )
-        }
-        data-size={size}
-        data-slot="alert-dialog-content"
-        {...props}
-      />
-    </AlertDialogPortal>
-  );
-}
-function AlertDialogHeader({ className, ...props }: React.ComponentProps<'div'>) {
-  return (
-    <div
-      className={cn(
-        'grid grid-rows-[auto_1fr] place-items-center gap-1.5 text-center has-data-[slot=alert-dialog-media]:grid-rows-[auto_auto_1fr] has-data-[slot=alert-dialog-media]:gap-x-4 sm:group-data-[size=default]/alert-dialog-content:place-items-start sm:group-data-[size=default]/alert-dialog-content:text-left sm:group-data-[size=default]/alert-dialog-content:has-data-[slot=alert-dialog-media]:grid-rows-[auto_1fr]',
-        className
-      )}
-      data-slot="alert-dialog-header"
-      {...props}
-    />
-  );
-}
-function AlertDialogFooter({ className, ...props }: React.ComponentProps<'div'>) {
-  return (
-    <div
-      className={cn(
-        '-mx-4 -mb-4 flex flex-col-reverse gap-2 rounded-b-xl border-t bg-muted/50 p-4 group-data-[size=sm]/alert-dialog-content:grid group-data-[size=sm]/alert-dialog-content:grid-cols-2 sm:flex-row sm:justify-end',
-        className
-      )}
-      data-slot="alert-dialog-footer"
-      {...props}
-    />
-  );
-}
-function AlertDialogMedia({ className, ...props }: React.ComponentProps<'div'>) {
-  return (
-    <div
-      className={cn(
-        "mb-2 inline-flex size-10 items-center justify-center rounded-md bg-muted sm:group-data-[size=default]/alert-dialog-content:row-span-2 *:[svg:not([class*='size-'])]:size-6",
-        className
-      )}
-      data-slot="alert-dialog-media"
-      {...props}
-    />
-  );
-}
-function AlertDialogTitle({ className, ...props }: React.ComponentProps<typeof AlertDialogPrimitive.Title>) {
-  return (
-    <AlertDialogPrimitive.Title
+    <SDKAlertDialogContent
+      {...definedProps(props)}
       className={(state) =>
         cn(
-          'font-display text-base font-medium sm:group-data-[size=default]/alert-dialog-content:group-has-data-[slot=alert-dialog-media]/alert-dialog-content:col-start-2',
+          'fixed top-1/2 left-1/2 z-50 grid max-h-screen w-full max-w-lg -translate-1/2 gap-4 overflow-auto rounded-xl border border-border bg-background p-6 text-foreground shadow-lg outline-none',
           typeof className === 'function' ? className(state) : className
         )
       }
-      data-slot="alert-dialog-title"
-      {...props}
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
     />
   );
 }
+
 function AlertDialogDescription({
   className,
+  testId,
+  variant,
+  size,
   ...props
-}: React.ComponentProps<typeof AlertDialogPrimitive.Description>) {
+}: UIProps<React.ComponentProps<typeof SDKAlertDialogDescription>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
   return (
-    <AlertDialogPrimitive.Description
+    <SDKAlertDialogDescription
+      {...definedProps(props)}
       className={(state) =>
-        cn(
-          'text-sm text-balance text-muted-foreground md:text-pretty *:[a]:underline *:[a]:underline-offset-3 *:[a]:hover:text-foreground',
-          typeof className === 'function' ? className(state) : className
-        )
+        cn('text-sm text-muted-foreground', typeof className === 'function' ? className(state) : className)
       }
-      data-slot="alert-dialog-description"
-      {...props}
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
     />
   );
 }
-function AlertDialogAction({ className, ...props }: React.ComponentProps<typeof Button>) {
-  return <Button className={className} data-slot="alert-dialog-action" type="button" {...props} />;
-}
-function AlertDialogCancel({
+
+function AlertDialogShortcut({
   className,
-  variant = 'outline',
-  size = 'md',
+  testId,
+  variant,
+  size,
   ...props
-}: AlertDialogPrimitive.Close.Props & Pick<React.ComponentProps<typeof Button>, 'variant' | 'size'>) {
+}: UIProps<React.ComponentProps<typeof SDKAlertDialogShortcut>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
   return (
-    <AlertDialogPrimitive.Close
-      className={className}
-      data-slot="alert-dialog-cancel"
-      render={<Button size={size} type="button" variant={variant} />}
-      {...props}
+    <SDKAlertDialogShortcut
+      {...definedProps(props)}
+      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
+
+function AlertDialogTitle({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKAlertDialogTitle>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKAlertDialogTitle
+      {...definedProps(props)}
+      className={(state) => cn('text-lg font-semibold', typeof className === 'function' ? className(state) : className)}
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
+
+function AlertDialogTrigger({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKAlertDialogTrigger>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKAlertDialogTrigger
+      {...definedProps(props)}
+      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
     />
   );
 }
 
 export {
   AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
+  AlertDialogBackdrop,
+  AlertDialogClose,
   AlertDialogContent,
   AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogMedia,
-  AlertDialogOverlay,
-  AlertDialogPortal,
+  AlertDialogShortcut,
   AlertDialogTitle,
   AlertDialogTrigger,
 };
+
+export function AlertDialogHeader({ className, ...props }: React.ComponentProps<'div'>) {
+  return <div {...props} className={cn('flex flex-col gap-2', className)} data-slot="alert-dialog-header" />;
+}
+
+export function AlertDialogFooter({ className, ...props }: React.ComponentProps<'div'>) {
+  return <div {...props} className={cn('flex flex-col gap-2', className)} data-slot="alert-dialog-footer" />;
+}

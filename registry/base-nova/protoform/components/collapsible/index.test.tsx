@@ -2,7 +2,7 @@ import { expect, rs, test } from '@rstest/core';
 import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '.';
+import { Collapsible, CollapsiblePanel, CollapsibleTrigger } from '.';
 
 test('keeps the primitive and animated content closed when an open change is cancelled', async () => {
   const user = userEvent.setup();
@@ -14,7 +14,7 @@ test('keeps the primitive and animated content closed when an open change is can
   render(
     <Collapsible onOpenChange={onOpenChange}>
       <CollapsibleTrigger>Details</CollapsibleTrigger>
-      <CollapsibleContent>Private output</CollapsibleContent>
+      <CollapsiblePanel>Private output</CollapsiblePanel>
     </Collapsible>
   );
   await user.click(screen.getByRole('button', { name: 'Details' }));
@@ -27,13 +27,13 @@ test('forwards native animation events rather than Motion animation definitions'
   const events: string[] = [];
   render(
     <Collapsible defaultOpen>
-      <CollapsibleContent
+      <CollapsiblePanel
         onAnimationStart={(event) => {
           events.push(event.type);
         }}
       >
         Animated output
-      </CollapsibleContent>
+      </CollapsiblePanel>
     </Collapsible>
   );
   fireEvent.animationStart(screen.getByText('Animated output'));

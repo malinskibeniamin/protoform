@@ -107,7 +107,7 @@ test('wraps contract-valid success identifiers on mobile @cross-browser', async 
   await page.getByRole('textbox', { name: 'Display name' }).fill('A'.repeat(40));
   await page.getByRole('textbox', { name: /^Email/u }).fill('audit@example.com');
   await page.getByRole('button', { name: 'Submit', exact: true }).click();
-  const result = page.getByRole('status');
+  const result = page.getByRole('status').filter({ hasText: 'profiles/' });
   await expect(result).toContainText(`profiles/${'a'.repeat(40)}`);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
   const description = result.locator('[data-slot="alert-description"]');
@@ -120,7 +120,9 @@ test('wraps contract-valid success identifiers on mobile @cross-browser', async 
   await next.click();
   await next.click();
   await page.getByRole('button', { name: 'Submit', exact: true }).click();
-  await expect(page.getByRole('status')).toContainText(`environments/${'a'.repeat(30)}`);
+  await expect(page.getByRole('status').filter({ hasText: 'environments/' })).toContainText(
+    `environments/${'a'.repeat(30)}`
+  );
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
 });
 

@@ -1,43 +1,173 @@
 'use client';
 
-import { ScrollArea as ScrollAreaPrimitive } from '@base-ui/react/scroll-area';
-import { cn } from '@/registry/base-nova/protoform/lib/utils';
+import {
+  ScrollArea as SDKScrollArea,
+  ScrollAreaContent as SDKScrollAreaContent,
+  ScrollAreaCorner as SDKScrollAreaCorner,
+  ScrollAreaScrollbar as SDKScrollAreaScrollbar,
+  ScrollAreaScrollToEnd as SDKScrollAreaScrollToEnd,
+  ScrollAreaThumb as SDKScrollAreaThumb,
+  ScrollAreaViewport as SDKScrollAreaViewport,
+} from '@ui-sdk/react/scroll-area';
 
-function ScrollArea({ className, children, ...props }: ScrollAreaPrimitive.Root.Props) {
+import type React from 'react';
+import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
+import { cn } from '@/registry/base-nova/protoform/lib/utils';
+import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
+
+function ScrollArea({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKScrollArea>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
   return (
-    <ScrollAreaPrimitive.Root
-      className={(state) => cn('relative', typeof className === 'function' ? className(state) : className)}
-      data-slot="scroll-area"
-      {...props}
-    >
-      <ScrollAreaPrimitive.Viewport
-        className="size-full outline-none focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-1 motion-reduce:transition-none"
-        data-slot="scroll-area-viewport"
-      >
-        {children}
-      </ScrollAreaPrimitive.Viewport>
-      <ScrollBar />
-      <ScrollAreaPrimitive.Corner />
-    </ScrollAreaPrimitive.Root>
+    <SDKScrollArea
+      {...definedProps(props)}
+      className={(state) =>
+        cn('relative overflow-hidden', typeof className === 'function' ? className(state) : className)
+      }
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
   );
 }
-function ScrollBar({ className, orientation = 'vertical', ...props }: ScrollAreaPrimitive.Scrollbar.Props) {
+
+function ScrollAreaContent({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKScrollAreaContent>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
   return (
-    <ScrollAreaPrimitive.Scrollbar
+    <SDKScrollAreaContent
+      {...definedProps(props)}
+      className={(state) => cn('min-w-full', typeof className === 'function' ? className(state) : className)}
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
+
+function ScrollAreaCorner({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKScrollAreaCorner>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKScrollAreaCorner
+      {...definedProps(props)}
+      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
+
+function ScrollAreaScrollbar({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKScrollAreaScrollbar>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKScrollAreaScrollbar
+      {...definedProps(props)}
       className={(state) =>
         cn(
-          'flex touch-none p-px transition-colors select-none data-horizontal:h-2.5 data-horizontal:flex-col data-horizontal:border-t data-horizontal:border-t-transparent data-vertical:h-full data-vertical:w-2.5 data-vertical:border-l data-vertical:border-l-transparent',
+          'flex touch-none p-0.5 select-none data-[orientation=horizontal]:h-2.5 data-[orientation=horizontal]:flex-col data-[orientation=vertical]:w-2.5',
           typeof className === 'function' ? className(state) : className
         )
       }
-      data-orientation={orientation}
-      data-slot="scroll-area-scrollbar"
-      orientation={orientation}
-      {...props}
-    >
-      <ScrollAreaPrimitive.Thumb className="relative flex-1 rounded-full bg-border" data-slot="scroll-area-thumb" />
-    </ScrollAreaPrimitive.Scrollbar>
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
   );
 }
 
-export { ScrollArea, ScrollBar };
+function ScrollAreaScrollToEnd({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKScrollAreaScrollToEnd>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKScrollAreaScrollToEnd
+      {...definedProps(props)}
+      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
+
+function ScrollAreaThumb({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKScrollAreaThumb>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKScrollAreaThumb
+      {...definedProps(props)}
+      className={(state) =>
+        cn('relative flex-1 rounded-full bg-border', typeof className === 'function' ? className(state) : className)
+      }
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
+
+function ScrollAreaViewport({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKScrollAreaViewport>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKScrollAreaViewport
+      {...definedProps(props)}
+      className={(state) =>
+        cn(
+          'size-full rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring',
+          typeof className === 'function' ? className(state) : className
+        )
+      }
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
+
+export {
+  ScrollArea,
+  ScrollAreaContent,
+  ScrollAreaCorner,
+  ScrollAreaScrollbar,
+  ScrollAreaScrollToEnd,
+  ScrollAreaThumb,
+  ScrollAreaViewport,
+};

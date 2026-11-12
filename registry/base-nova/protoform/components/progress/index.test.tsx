@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 
 import { Progress, ProgressLabel, ProgressValue } from './index';
 
-test('associates its progress label through Base UI context', () => {
+test('associates its progress label through UI SDK context', () => {
   render(
     <Progress value={25}>
       <ProgressLabel>Export data</ProgressLabel>

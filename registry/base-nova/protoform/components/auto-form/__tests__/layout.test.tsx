@@ -4,13 +4,11 @@ import type React from 'react';
 
 import { formSpacing } from '../form-spacing';
 import { FormField, FormLayout, FormSection, FormSubmit } from '../layout';
-import { shadcnUIComponents } from '../shadcn-ui-components';
 import { ProtoformUIProvider } from '../ui-components';
+import { uiSdkComponents } from '../ui-sdk-components';
 
 function render(children: React.ReactNode) {
-  return renderWithTestingLibrary(
-    <ProtoformUIProvider components={shadcnUIComponents}>{children}</ProtoformUIProvider>
-  );
+  return renderWithTestingLibrary(<ProtoformUIProvider components={uiSdkComponents}>{children}</ProtoformUIProvider>);
 }
 
 describe('formLayout', () => {
@@ -90,7 +88,7 @@ describe('formField', () => {
     expect(screen.queryByText('Your full name')).not.toBeInTheDocument();
 
     rerender(
-      <ProtoformUIProvider components={shadcnUIComponents}>
+      <ProtoformUIProvider components={uiSdkComponents}>
         <FormField label="Name" testId="fieldError">
           <input id="name" />
         </FormField>
@@ -110,7 +108,7 @@ describe('formSubmit', () => {
     expect(button.textContent).toBe('Save');
 
     rerender(
-      <ProtoformUIProvider components={shadcnUIComponents}>
+      <ProtoformUIProvider components={uiSdkComponents}>
         <FormSubmit testId="submit" />
       </ProtoformUIProvider>
     );

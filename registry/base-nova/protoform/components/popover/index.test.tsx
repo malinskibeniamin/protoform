@@ -1,18 +1,18 @@
 import { describe, expect } from '@rstest/core';
 import { render, screen } from '@testing-library/react';
 
-import { Popover, PopoverAnchor } from '.';
+import { Popover, PopoverTrigger } from '.';
 
 describe('popoverAnchor', () => {
-  test('supports Base UI render composition without adding a wrapper', () => {
+  test('supports UI SDK render composition without adding a wrapper', () => {
     render(
       <Popover>
-        <PopoverAnchor render={<button aria-label="Open nested command" type="button" />}>
+        <PopoverTrigger render={<button aria-label="Open nested command" type="button" />}>
           Open nested command
-        </PopoverAnchor>
+        </PopoverTrigger>
       </Popover>
     );
 
-    expect(screen.getByRole('button', { name: 'Open nested command' })).toHaveAttribute('data-slot', 'popover-anchor');
+    expect(screen.getByRole('button', { name: 'Open nested command' })).toHaveAttribute('data-slot', 'popover-trigger');
   });
 });
