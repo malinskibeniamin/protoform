@@ -15,7 +15,7 @@ describe('toaster', () => {
     const user = userEvent.setup();
 
     render(
-      <Toaster>
+      <Toaster className="isolate">
         <Button
           onClick={() =>
             toast({
@@ -33,6 +33,7 @@ describe('toaster', () => {
     await user.click(screen.getByRole('button', { name: 'Copy JSON' }));
 
     expect(await screen.findByText('JSON copied')).toBeVisible();
+    expect(screen.getByRole('region', { name: 'Notifications' })).toHaveClass('isolate');
     expect(screen.getByText('The JSON data was copied to your clipboard.')).toBeVisible();
 
     await user.keyboard('{F6}');
