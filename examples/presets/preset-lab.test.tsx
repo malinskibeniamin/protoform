@@ -52,9 +52,9 @@ describe('presetLab', () => {
 
     await waitFor(() => {
       expect(screen.getByRole('button', { name: 'Dark preview' })).toHaveAttribute('aria-pressed', 'true');
+      expect(screen.getByTestId('preset-preview')).toHaveClass('dark');
+      expect(new URL(window.location.href).searchParams.get('mode')).toBe('dark');
     });
-    expect(screen.getByTestId('preset-preview')).toHaveClass('dark');
-    expect(new URL(window.location.href).searchParams.get('mode')).toBe('dark');
   });
 
   test('starts from the current Blume docs theme when mode is not shared', () => {
