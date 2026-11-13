@@ -15,6 +15,7 @@ host entrypoint remain separate from UI implementation.
 - Tabs use `TabsTab` and `TabsPanel`, with string values.
 - Accordions and collapsibles use `AccordionPanel` and `CollapsiblePanel`.
 - Menus share `Menu*` parts; right-click areas use `MenuContextTrigger`.
+- Compose modal backdrops explicitly: `AlertDialogBackdrop`, `DialogBackdrop`, `DrawerBackdrop` or `SheetOverlay`. Sheets use the SDK Drawer with `side="right"` by default; put other sides on the root. The SDK viewport owns positioning and translation, while local styles provide dimensions and surfaces.
 - Compose `SelectContent` with an explicit `SelectList`. Use the native mount/unmount lifecycle. `keepMounted` is deliberately not exposed by the themed `SelectContent`: beta.1 loses its bound element for retained content and throws on Escape. Protoform does not patch the package.
 - Toggle groups always use arrays. Their entries are ordinary SDK toggles.
 - Calendars use ISO date/month strings and `onValueChange`, not DayPicker props or Date objects.

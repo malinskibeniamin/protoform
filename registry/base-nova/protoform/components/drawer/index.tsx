@@ -32,7 +32,10 @@ function DrawerBackdrop({
     <SDKDrawerBackdrop
       {...definedProps(props)}
       className={(state) =>
-        cn('fixed inset-0 z-50 bg-foreground/50', typeof className === 'function' ? className(state) : className)
+        cn(
+          'fixed inset-0 z-50 m-0 bg-black/10 backdrop-blur-xs',
+          typeof className === 'function' ? className(state) : className
+        )
       }
       data-size={size}
       data-testid={testId ?? props['data-testid']}
@@ -78,7 +81,13 @@ function DrawerContent({
       {...definedProps(props)}
       className={(state) =>
         cn(
-          'fixed inset-x-0 bottom-0 z-50 flex max-h-screen flex-col gap-4 rounded-t-xl border border-border bg-background p-6 text-foreground shadow-lg outline-none',
+          'relative z-50 flex max-h-dvh min-h-0 flex-col gap-4 border-border bg-background text-foreground shadow-lg outline-none',
+          {
+            bottom: 'w-full rounded-t-xl border-t',
+            top: 'w-full rounded-b-xl border-b',
+            left: 'h-dvh w-3/4 border-r sm:w-96',
+            right: 'h-dvh w-3/4 border-l sm:w-96',
+          }[state.side],
           typeof className === 'function' ? className(state) : className
         )
       }
@@ -180,7 +189,9 @@ function DrawerTitle({
   return (
     <SDKDrawerTitle
       {...definedProps(props)}
-      className={(state) => cn('text-lg font-semibold', typeof className === 'function' ? className(state) : className)}
+      className={(state) =>
+        cn('text-base font-medium text-foreground', typeof className === 'function' ? className(state) : className)
+      }
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -221,9 +232,17 @@ export {
 };
 
 export function DrawerHeader({ className, ...props }: React.ComponentProps<'div'>) {
-  return <div {...props} className={cn('flex flex-col gap-2', className)} data-slot="drawer-header" />;
+  return (
+    <div {...props} className={cn('flex shrink-0 flex-col gap-0.5 p-4 pb-0', className)} data-slot="drawer-header" />
+  );
 }
 
 export function DrawerFooter({ className, ...props }: React.ComponentProps<'div'>) {
-  return <div {...props} className={cn('flex flex-col gap-2', className)} data-slot="drawer-footer" />;
+  return (
+    <div
+      {...props}
+      className={cn('mt-auto flex shrink-0 flex-col gap-2 p-4 pt-0', className)}
+      data-slot="drawer-footer"
+    />
+  );
 }

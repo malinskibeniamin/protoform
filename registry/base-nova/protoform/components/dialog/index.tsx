@@ -30,7 +30,10 @@ function DialogBackdrop({
     <SDKDialogBackdrop
       {...definedProps(props)}
       className={(state) =>
-        cn('fixed inset-0 z-50 bg-foreground/50', typeof className === 'function' ? className(state) : className)
+        cn(
+          'fixed inset-0 z-50 m-0 bg-black/40 backdrop-blur-xs',
+          typeof className === 'function' ? className(state) : className
+        )
       }
       data-size={size}
       data-testid={testId ?? props['data-testid']}
@@ -76,7 +79,7 @@ function DialogContent({
       {...definedProps(props)}
       className={(state) =>
         cn(
-          'fixed top-1/2 left-1/2 z-50 grid max-h-screen w-full max-w-lg -translate-x-1/2 -translate-y-1/2 gap-4 overflow-auto rounded-xl border border-border bg-background p-6 text-foreground shadow-lg outline-none',
+          'fixed top-1/2 left-1/2 z-50 m-0 flex max-h-[85vh] w-full max-w-[calc(100%-2rem)] -translate-1/2 flex-col overflow-hidden rounded-xl border border-border bg-background text-foreground shadow-lg outline-none sm:max-w-lg',
           typeof className === 'function' ? className(state) : className
         )
       }
@@ -177,13 +180,25 @@ export {
 };
 
 export function DialogHeader({ className, ...props }: React.ComponentProps<'div'>) {
-  return <div {...props} className={cn('flex flex-col gap-2', className)} data-slot="dialog-header" />;
+  return (
+    <div
+      {...props}
+      className={cn('flex shrink-0 flex-col gap-1.5 p-4 text-center sm:text-left', className)}
+      data-slot="dialog-header"
+    />
+  );
 }
 
 export function DialogBody({ className, ...props }: React.ComponentProps<'div'>) {
-  return <div {...props} className={cn('flex flex-col gap-2', className)} data-slot="dialog-body" />;
+  return <div {...props} className={cn('min-h-0 flex-1 overflow-y-auto p-4', className)} data-slot="dialog-body" />;
 }
 
 export function DialogFooter({ className, ...props }: React.ComponentProps<'div'>) {
-  return <div {...props} className={cn('flex flex-col gap-2', className)} data-slot="dialog-footer" />;
+  return (
+    <div
+      {...props}
+      className={cn('flex shrink-0 flex-col-reverse justify-end gap-2 p-4 sm:flex-row sm:items-center', className)}
+      data-slot="dialog-footer"
+    />
+  );
 }

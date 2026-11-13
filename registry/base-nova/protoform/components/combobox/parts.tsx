@@ -29,6 +29,7 @@ import {
   ComboboxValueIcon as SDKComboboxValueIcon,
 } from '@ui-sdk/react/combobox';
 
+import { CheckIcon } from 'lucide-react';
 import type React from 'react';
 import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
@@ -289,6 +290,7 @@ function ComboboxInput({
 
 function ComboboxItem({
   value,
+  children,
   className,
   testId,
   variant,
@@ -296,20 +298,30 @@ function ComboboxItem({
   ...props
 }: UIProps<React.ComponentProps<typeof SDKComboboxItem>> &
   SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  const renderChildren = typeof children === 'function' ? children : () => children;
   return (
     <SDKComboboxItem
       value={value}
       {...definedProps(props)}
       className={(state) =>
         cn(
-          'relative flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-accent data-highlighted:text-accent-foreground',
+          'relative flex cursor-pointer items-center gap-2 rounded-md py-1.5 pr-8 pl-2 text-sm outline-none data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-accent data-highlighted:text-accent-foreground',
           typeof className === 'function' ? className(state) : className
         )
       }
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
-    />
+    >
+      {(state) => (
+        <>
+          {renderChildren(state)}
+          <SDKComboboxItemIndicator className="absolute right-2 flex size-4 items-center justify-center">
+            <CheckIcon aria-hidden="true" className="size-3.5" />
+          </SDKComboboxItemIndicator>
+        </>
+      )}
+    </SDKComboboxItem>
   );
 }
 

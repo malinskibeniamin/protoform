@@ -9,7 +9,14 @@ import React from 'react';
 import { Button } from '@/components/ui/button/index';
 import { Input } from '@/components/ui/input/index';
 import { Separator } from '@/components/ui/separator/index';
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet/index';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetOverlay,
+  SheetTitle,
+} from '@/components/ui/sheet/index';
 import { Skeleton } from '@/components/ui/skeleton/index';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip/index';
 import { useIsMobile } from '@/registry/base-nova/protoform/hooks/use-mobile';
@@ -161,6 +168,7 @@ function Sidebar({
   if (isMobile) {
     return (
       <Sheet onOpenChange={setOpenMobile} open={openMobile} side={side} {...props}>
+        <SheetOverlay />
         <SheetContent
           className="w-(--sidebar-width) [&>button]:hidden"
           data-mobile="true"

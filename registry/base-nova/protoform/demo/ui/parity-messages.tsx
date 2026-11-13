@@ -35,6 +35,7 @@ const questions = [
     name: 'format',
     required: true,
     prompt: 'Which format should the sample use?',
+    description: 'Choose an option for this local sample.',
     choices: [
       { value: 'json', label: 'JSON' },
       { value: 'protobuf', label: 'Protobuf' },

@@ -12,6 +12,7 @@ import {
   NavigationMenuViewport as SDKNavigationMenuViewport,
 } from '@ui-sdk/react/navigation-menu';
 
+import { ChevronDownIcon } from 'lucide-react';
 import type React from 'react';
 import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
@@ -165,6 +166,7 @@ function NavigationMenuList({
 }
 
 function NavigationMenuTrigger({
+  children,
   className,
   testId,
   variant,
@@ -172,19 +174,30 @@ function NavigationMenuTrigger({
   ...props
 }: UIProps<React.ComponentProps<typeof SDKNavigationMenuTrigger>> &
   SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  const renderChildren = typeof children === 'function' ? children : () => children;
   return (
     <SDKNavigationMenuTrigger
       {...definedProps(props)}
       className={(state) =>
         cn(
-          'inline-flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50',
+          'group/navigation-trigger inline-flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50',
           typeof className === 'function' ? className(state) : className
         )
       }
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
-    />
+    >
+      {(state) => (
+        <>
+          {renderChildren(state)}
+          <ChevronDownIcon
+            aria-hidden="true"
+            className="size-3 shrink-0 group-aria-expanded/navigation-trigger:rotate-180"
+          />
+        </>
+      )}
+    </SDKNavigationMenuTrigger>
   );
 }
 

@@ -24,7 +24,9 @@ function Progress({
   return (
     <SDKProgress
       {...definedProps(props)}
-      className={(state) => cn('w-full', typeof className === 'function' ? className(state) : className)}
+      className={(state) =>
+        cn('flex w-full flex-wrap gap-3', typeof className === 'function' ? className(state) : className)
+      }
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -88,7 +90,7 @@ function ProgressTrack({
       {...definedProps(props)}
       className={(state) =>
         cn(
-          'relative h-2 w-full overflow-hidden rounded-full bg-muted',
+          'relative flex h-1 w-full items-center overflow-x-hidden rounded-full bg-muted',
           typeof className === 'function' ? className(state) : className
         )
       }
@@ -111,7 +113,10 @@ function ProgressValue({
     <SDKProgressValue
       {...definedProps(props)}
       className={(state) =>
-        cn('text-sm text-muted-foreground', typeof className === 'function' ? className(state) : className)
+        cn(
+          'ml-auto text-sm text-muted-foreground tabular-nums',
+          typeof className === 'function' ? className(state) : className
+        )
       }
       data-size={size}
       data-testid={testId ?? props['data-testid']}

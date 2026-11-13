@@ -21,6 +21,7 @@ import {
   MenuTrigger as SDKMenuTrigger,
 } from '@ui-sdk/react/menu';
 
+import { CheckIcon, CircleIcon } from 'lucide-react';
 import type React from 'react';
 import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
@@ -29,6 +30,7 @@ import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index
 const Menu = SDKMenu;
 
 function MenuCheckboxItem({
+  children,
   className,
   testId,
   variant,
@@ -36,19 +38,29 @@ function MenuCheckboxItem({
   ...props
 }: UIProps<React.ComponentProps<typeof SDKMenuCheckboxItem>> &
   SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  const renderChildren = typeof children === 'function' ? children : () => children;
   return (
     <SDKMenuCheckboxItem
       {...definedProps(props)}
       className={(state) =>
         cn(
-          'relative flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-accent data-highlighted:text-accent-foreground',
+          'relative flex cursor-pointer items-center gap-2 rounded-md py-1.5 pr-8 pl-2 text-sm outline-none data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-accent data-highlighted:text-accent-foreground',
           typeof className === 'function' ? className(state) : className
         )
       }
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
-    />
+    >
+      {(state) => (
+        <>
+          {renderChildren(state)}
+          <SDKMenuItemIndicator className="absolute right-2 flex size-4 items-center justify-center">
+            <CheckIcon aria-hidden="true" className="size-3.5" />
+          </SDKMenuItemIndicator>
+        </>
+      )}
+    </SDKMenuCheckboxItem>
   );
 }
 
@@ -222,6 +234,7 @@ function MenuRadioGroup({
 }
 
 function MenuRadioItem({
+  children,
   className,
   testId,
   variant,
@@ -229,19 +242,29 @@ function MenuRadioItem({
   ...props
 }: UIProps<React.ComponentProps<typeof SDKMenuRadioItem>> &
   SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  const renderChildren = typeof children === 'function' ? children : () => children;
   return (
     <SDKMenuRadioItem
       {...definedProps(props)}
       className={(state) =>
         cn(
-          'relative flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-accent data-highlighted:text-accent-foreground',
+          'relative flex cursor-pointer items-center gap-2 rounded-md py-1.5 pr-8 pl-2 text-sm outline-none data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-accent data-highlighted:text-accent-foreground',
           typeof className === 'function' ? className(state) : className
         )
       }
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
-    />
+    >
+      {(state) => (
+        <>
+          {renderChildren(state)}
+          <SDKMenuItemIndicator className="absolute right-2 flex size-4 items-center justify-center">
+            <CircleIcon aria-hidden="true" className="size-3.5" />
+          </SDKMenuItemIndicator>
+        </>
+      )}
+    </SDKMenuRadioItem>
   );
 }
 

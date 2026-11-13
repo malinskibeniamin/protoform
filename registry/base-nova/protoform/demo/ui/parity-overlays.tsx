@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Accordion, AccordionItem, AccordionPanel, AccordionTrigger } from '@/components/ui/accordion/index';
 import {
   AlertDialog,
+  AlertDialogBackdrop,
   AlertDialogClose,
   AlertDialogContent,
   AlertDialogDescription,
@@ -14,6 +15,7 @@ import { Button } from '@/components/ui/button/index';
 import { MenuContextTrigger } from '@/components/ui/context-menu/index';
 import {
   Drawer,
+  DrawerBackdrop,
   DrawerClose,
   DrawerContent,
   DrawerDescription,
@@ -48,6 +50,7 @@ import {
   SheetDescription,
   SheetFooter,
   SheetHeader,
+  SheetOverlay,
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet/index';
@@ -91,6 +94,7 @@ export function OverlayExamples() {
                 </Button>
               }
             />
+            <AlertDialogBackdrop />
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle>Remove this sample record?</AlertDialogTitle>
@@ -121,6 +125,7 @@ export function OverlayExamples() {
               </Button>
             }
           />
+          <SheetOverlay />
           <SheetContent>
             <SheetHeader>
               <SheetTitle>Field details</SheetTitle>
@@ -148,6 +153,7 @@ export function OverlayExamples() {
               </Button>
             }
           />
+          <DrawerBackdrop />
           <DrawerContent>
             <DrawerHeader>
               <DrawerTitle>Form preview</DrawerTitle>

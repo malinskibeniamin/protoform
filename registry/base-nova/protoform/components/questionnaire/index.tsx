@@ -1,10 +1,12 @@
 'use client';
+import { RadioGroup } from '@ui-sdk/react/radio';
 import { useId, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button/index';
-import { Field, FieldError, FieldLabel } from '@/components/ui/field/index';
-import { Radio, RadioGroup } from '@/components/ui/radio-group/index';
+import { FieldError } from '@/components/ui/field/index';
+import { Radio, RadioIndicator } from '@/components/ui/radio-group/index';
 export interface Question {
   choices: { value: string; label: string }[];
+  description?: string;
   name: string;
   prompt: string;
   required?: boolean;
@@ -57,14 +59,16 @@ export function Questionnaire({
   }
   return (
     <form action={() => advance()} aria-label="Questionnaire" className="flex flex-col gap-4">
-      <p aria-live="polite">
+      <p aria-live="polite" className="text-xs font-medium text-muted-foreground tabular-nums">
         Question {step + 1} of {items.length}
       </p>
-      <h2 id={id} ref={heading} tabIndex={-1}>
+      <h2 className="text-base font-medium outline-none" id={id} ref={heading} tabIndex={-1}>
         {question.prompt}
       </h2>
+      {question.description ? <p className="text-sm text-muted-foreground">{question.description}</p> : null}
       <RadioGroup
         aria-labelledby={id}
+        className="grid gap-2"
         onValueChange={(value) => {
           if (value !== null) {
             setValues({ ...values, [question.name]: value });
@@ -74,17 +78,24 @@ export function Questionnaire({
         value={values[question.name] ?? null}
       >
         {question.choices.map((choice) => (
-          <Field key={choice.value} orientation="horizontal">
-            <Radio id={`${id}-${choice.value}`} value={choice.value} />
-            <FieldLabel htmlFor={`${id}-${choice.value}`}>{choice.label}</FieldLabel>
-          </Field>
+          <Radio key={choice.value} value={choice.value} variant="choice">
+            <span
+              aria-hidden="true"
+              className="flex size-4 shrink-0 items-center justify-center rounded-full border border-input"
+            >
+              <RadioIndicator />
+            </span>
+            <span>{choice.label}</span>
+          </Radio>
         ))}
       </RadioGroup>
       {error === '' ? null : <FieldError role="alert">{error}</FieldError>}
-      <div className="flex gap-2">
-        <Button disabled={step === 0 || pending} onClick={() => move(step - 1)} variant="outline">
-          Previous
-        </Button>
+      <div className="flex justify-end gap-2">
+        {step > 0 ? (
+          <Button className="mr-auto" disabled={pending} onClick={() => move(step - 1)} variant="outline">
+            Previous
+          </Button>
+        ) : null}
         {question.required !== true && step < items.length - 1 ? (
           <Button disabled={pending} onClick={() => advance(true)} variant="outline">
             Skip

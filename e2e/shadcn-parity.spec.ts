@@ -233,5 +233,6 @@ async function exerciseOverlay(page: Page, open: string, title: string, close: s
   await trigger.click();
   await expect(page.getByRole('dialog', { name: title })).toBeVisible();
   await page.getByRole('button', { name: close, exact: true }).click();
+  await expect(page.getByRole('dialog', { name: title })).toBeHidden();
   await expect(trigger).toBeFocused();
 }

@@ -38,7 +38,7 @@ function TabsIndicator({
 function TabsList({
   className,
   testId,
-  variant,
+  variant = 'default',
   size,
   ...props
 }: UIProps<React.ComponentProps<typeof SDKTabsList>> &
@@ -48,7 +48,11 @@ function TabsList({
       {...definedProps(props)}
       className={(state) =>
         cn(
-          'inline-flex items-center gap-1 rounded-lg bg-muted p-1 text-muted-foreground',
+          'group/tabs-list inline-flex h-10 items-center gap-1 text-muted-foreground',
+          variant === 'underline' &&
+            'relative w-full justify-start rounded-t-xl border-b border-border bg-background py-0 text-current',
+          variant === 'line' && 'bg-transparent',
+          variant !== 'underline' && variant !== 'line' && 'w-fit justify-center rounded-lg bg-muted p-1',
           typeof className === 'function' ? className(state) : className
         )
       }
@@ -91,7 +95,7 @@ function TabsTab({
       {...definedProps(props)}
       className={(state) =>
         cn(
-          'inline-flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 data-selected:bg-background data-selected:text-foreground data-selected:shadow-sm',
+          'inline-flex items-center justify-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium outline-none group-data-[variant=underline]/tabs-list:relative group-data-[variant=underline]/tabs-list:h-full group-data-[variant=underline]/tabs-list:rounded-none group-data-[variant=underline]/tabs-list:border-b-2 group-data-[variant=underline]/tabs-list:border-transparent group-data-[variant=underline]/tabs-list:px-4 group-data-[variant=underline]/tabs-list:py-2 focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 data-selected:bg-background data-selected:text-foreground data-selected:shadow-sm group-data-[variant=underline]/tabs-list:data-selected:border-primary group-data-[variant=underline]/tabs-list:data-selected:bg-transparent group-data-[variant=underline]/tabs-list:data-selected:shadow-none',
           typeof className === 'function' ? className(state) : className
         )
       }

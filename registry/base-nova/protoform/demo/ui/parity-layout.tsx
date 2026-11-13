@@ -152,7 +152,7 @@ export default function LayoutExamples() {
         </Table>
       </ParitySection>
       <ParitySection title="Carousel">
-        <Carousel aria-label="Schema previews" className="mx-8 min-w-0">
+        <Carousel aria-label="Schema previews" className="relative mx-8 min-w-0">
           <CarouselViewport>
             <CarouselContent>
               <CarouselItem>
@@ -168,8 +168,8 @@ export default function LayoutExamples() {
               </CarouselItem>
             </CarouselContent>
           </CarouselViewport>
-          <CarouselPrevious aria-label="Previous schema">Previous</CarouselPrevious>
-          <CarouselNext aria-label="Next schema">Next</CarouselNext>
+          <CarouselPrevious aria-label="Previous schema" />
+          <CarouselNext aria-label="Next schema" />
         </Carousel>
       </ParitySection>
       <ParitySection title="Chart">

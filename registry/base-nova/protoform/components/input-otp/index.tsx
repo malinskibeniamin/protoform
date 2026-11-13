@@ -55,6 +55,7 @@ function OTPInputGroup({
 }
 
 function OTPInputSeparator({
+  children = '−',
   className,
   testId,
   variant,
@@ -71,7 +72,9 @@ function OTPInputSeparator({
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
-    />
+    >
+      {children}
+    </SDKOTPInputSeparator>
   );
 }
 

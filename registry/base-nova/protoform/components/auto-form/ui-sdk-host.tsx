@@ -145,11 +145,11 @@ function HostTextarea({ resize: _resize, ...props }: ProtoformUIProps['Textarea'
   return <Textarea {...props} />;
 }
 
-function HostTabsList({ variant: _variant, ...props }: ProtoformUIProps['TabsList']) {
+function HostTabsList({ ...props }: ProtoformUIProps['TabsList']) {
   return <TabsList {...props} />;
 }
 
-function HostTabsTrigger({ variant: _variant, render: _render, ...props }: ProtoformUIProps['TabsTab']) {
+function HostTabsTrigger({ render: _render, ...props }: ProtoformUIProps['TabsTab']) {
   return <TabsTab {...definedProps({ ...props, onClick: undefined })} />;
 }
 

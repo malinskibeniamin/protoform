@@ -12,6 +12,7 @@ import {
 } from '@ui-sdk/react/alert-dialog';
 
 import type React from 'react';
+import { buttonVariants } from '@/components/ui/button/index';
 import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
@@ -30,7 +31,10 @@ function AlertDialogBackdrop({
     <SDKAlertDialogBackdrop
       {...definedProps(props)}
       className={(state) =>
-        cn('fixed inset-0 z-50 bg-foreground/50', typeof className === 'function' ? className(state) : className)
+        cn(
+          'fixed inset-0 z-50 m-0 bg-black/10 backdrop-blur-xs',
+          typeof className === 'function' ? className(state) : className
+        )
       }
       data-size={size}
       data-testid={testId ?? props['data-testid']}
@@ -52,7 +56,7 @@ function AlertDialogClose({
       {...definedProps(props)}
       className={(state) =>
         cn(
-          'inline-flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50',
+          buttonVariants({ variant: variant === 'destructive' ? 'destructive' : 'outline' }),
           typeof className === 'function' ? className(state) : className
         )
       }
@@ -76,7 +80,7 @@ function AlertDialogContent({
       {...definedProps(props)}
       className={(state) =>
         cn(
-          'fixed top-1/2 left-1/2 z-50 grid max-h-screen w-full max-w-lg -translate-1/2 gap-4 overflow-auto rounded-xl border border-border bg-background p-6 text-foreground shadow-lg outline-none',
+          'fixed top-1/2 left-1/2 z-50 m-0 grid max-h-[85vh] w-full max-w-[calc(100%-2rem)] max-w-xs -translate-1/2 gap-4 overflow-auto rounded-xl border border-border bg-background p-4 text-foreground shadow-lg outline-none sm:max-w-sm',
           typeof className === 'function' ? className(state) : className
         )
       }
@@ -138,7 +142,7 @@ function AlertDialogTitle({
   return (
     <SDKAlertDialogTitle
       {...definedProps(props)}
-      className={(state) => cn('text-lg font-semibold', typeof className === 'function' ? className(state) : className)}
+      className={(state) => cn('text-base font-medium', typeof className === 'function' ? className(state) : className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -177,9 +181,24 @@ export {
 };
 
 export function AlertDialogHeader({ className, ...props }: React.ComponentProps<'div'>) {
-  return <div {...props} className={cn('flex flex-col gap-2', className)} data-slot="alert-dialog-header" />;
+  return (
+    <div
+      {...props}
+      className={cn('flex flex-col gap-1.5 text-center sm:text-left', className)}
+      data-slot="alert-dialog-header"
+    />
+  );
 }
 
 export function AlertDialogFooter({ className, ...props }: React.ComponentProps<'div'>) {
-  return <div {...props} className={cn('flex flex-col gap-2', className)} data-slot="alert-dialog-footer" />;
+  return (
+    <div
+      {...props}
+      className={cn(
+        '-mx-4 -mb-4 flex flex-col-reverse gap-2 rounded-b-xl border-t bg-muted/50 p-4 sm:flex-row sm:justify-end',
+        className
+      )}
+      data-slot="alert-dialog-footer"
+    />
+  );
 }

@@ -12,6 +12,7 @@ import {
   CarouselViewport as SDKCarouselViewport,
 } from '@ui-sdk/react/carousel';
 
+import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import type React from 'react';
 import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
@@ -98,6 +99,7 @@ function CarouselItem({
 }
 
 function CarouselNext({
+  children,
   className,
   testId,
   variant,
@@ -107,17 +109,20 @@ function CarouselNext({
   SharedProps & { variant?: string | undefined; size?: string | undefined }) {
   return (
     <SDKCarouselNext
+      aria-label="Next slide"
       {...definedProps(props)}
       className={(state) =>
         cn(
-          'inline-flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50',
+          'absolute top-1/2 -right-8 inline-flex size-7 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-background text-foreground shadow-xs outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50',
           typeof className === 'function' ? className(state) : className
         )
       }
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
-    />
+    >
+      {children ?? <ChevronRightIcon aria-hidden="true" className="size-4 rtl:-scale-x-100" />}
+    </SDKCarouselNext>
   );
 }
 
@@ -141,6 +146,7 @@ function CarouselPlayToggle({
 }
 
 function CarouselPrevious({
+  children,
   className,
   testId,
   variant,
@@ -150,17 +156,20 @@ function CarouselPrevious({
   SharedProps & { variant?: string | undefined; size?: string | undefined }) {
   return (
     <SDKCarouselPrevious
+      aria-label="Previous slide"
       {...definedProps(props)}
       className={(state) =>
         cn(
-          'inline-flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50',
+          'absolute top-1/2 -left-8 inline-flex size-7 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-background text-foreground shadow-xs outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50',
           typeof className === 'function' ? className(state) : className
         )
       }
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
-    />
+    >
+      {children ?? <ChevronLeftIcon aria-hidden="true" className="size-4 rtl:-scale-x-100" />}
+    </SDKCarouselPrevious>
   );
 }
 

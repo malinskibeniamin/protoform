@@ -69,3 +69,9 @@ function requireRow(value: Element | undefined): HTMLElement {
   }
   return value;
 }
+
+test('keeps form-mode presentation metadata across the UI SDK host boundary', () => {
+  render(<AutoForm modes={['advanced', 'json']} schema={schema} />);
+  expect(screen.getByRole('tablist')).toHaveAttribute('data-variant', 'underline');
+  expect(screen.getByRole('tab', { name: ADVANCED_TAB })).toHaveAttribute('data-variant', 'underline');
+});
