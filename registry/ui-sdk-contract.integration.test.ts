@@ -20,7 +20,7 @@ test('ships pinned SDK packages and no superseded behavior packages', () => {
     .object({ dependencies: z.record(z.string(), z.string()) })
     .parse(JSON.parse(readFileSync('package.json', 'utf8')));
   for (const name of ['@ui-sdk/core', '@ui-sdk/react']) {
-    expect(manifest.dependencies[name]).toBe('0.1.0-beta.1');
+    expect(manifest.dependencies[name]).toBe('0.1.0-beta.2');
   }
   for (const name of [
     '@base-ui/react',

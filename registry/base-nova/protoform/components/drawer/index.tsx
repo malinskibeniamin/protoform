@@ -81,7 +81,8 @@ function DrawerContent({
       {...definedProps(props)}
       className={(state) =>
         cn(
-          'relative z-50 flex max-h-dvh min-h-0 flex-col gap-4 border-border bg-background text-foreground shadow-lg outline-none',
+          'relative z-50 flex max-h-dvh min-h-0 flex-col gap-4 border-border shadow-lg outline-none',
+          variant === 'sidebar' ? 'bg-sidebar p-0 text-sidebar-foreground' : 'bg-background text-foreground',
           {
             bottom: 'w-full rounded-t-xl border-t',
             top: 'w-full rounded-b-xl border-b',
@@ -189,9 +190,7 @@ function DrawerTitle({
   return (
     <SDKDrawerTitle
       {...definedProps(props)}
-      className={(state) =>
-        cn('text-base font-medium text-foreground', typeof className === 'function' ? className(state) : className)
-      }
+      className={(state) => cn('text-base font-medium', typeof className === 'function' ? className(state) : className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}

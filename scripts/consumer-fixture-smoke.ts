@@ -552,6 +552,15 @@ try {
       '<html lang="en"><head><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Indented sections</title><link rel="stylesheet" href="/app/globals.css" /></head><body><div id="root"></div><script type="module" src="/indented-sections-browser.tsx"></script></body></html>'
     );
     await cp(join(root, 'scripts/fixtures/custom-options-browser.tsx'), join(fixture, 'custom-options-browser.tsx'));
+    const uiRegressionSource = await readFile(join(root, 'scripts/fixtures/ui-regression-browser.tsx'), 'utf8');
+    await writeFile(
+      join(fixture, 'ui-regression-browser.tsx'),
+      uiRegressionSource.replaceAll('@/registry/base-nova/protoform/', './')
+    );
+    await writeFile(
+      join(fixture, 'ui-regression.html'),
+      '<html lang="en"><head><meta name="viewport" content="width=device-width, initial-scale=1" /><title>UI regression checks</title><link rel="stylesheet" href="/app/globals.css" /></head><body><div id="root"></div><script type="module" src="/ui-regression-browser.tsx"></script></body></html>'
+    );
     await writeFile(
       join(fixture, 'custom-options.html'),
       '<html lang="en"><head><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Custom option creation</title><link rel="stylesheet" href="/app/globals.css" /></head><body><div id="root"></div><script type="module" src="/custom-options-browser.tsx"></script></body></html>'
@@ -559,7 +568,7 @@ try {
     const theme = await readFile(join(root, 'scripts/fixtures/host-theme.css'), 'utf8');
     await writeFile(
       join(fixture, 'app/globals.css'),
-      `${theme}\n@source "../components";\n@source "../reliability-browser.tsx";\n@source "../native-defaults-browser.tsx";\n@source "../custom-options-browser.tsx";\n@source "../indented-sections-browser.tsx";\n`
+      `${theme}\n@source "../components";\n@source "../reliability-browser.tsx";\n@source "../native-defaults-browser.tsx";\n@source "../custom-options-browser.tsx";\n@source "../indented-sections-browser.tsx";\n@source "../ui-regression-browser.tsx";\n`
     );
     await writeFile(
       join(fixture, 'index.html'),

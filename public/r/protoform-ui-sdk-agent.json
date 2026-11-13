@@ -4,8 +4,8 @@
   "title": "Opt-in UI SDK agent bridge",
   "description": "Exports createAgent without creating a bridge or registering browser tools. Hosts own approval and sensitive-action policy.",
   "dependencies": [
-    "@ui-sdk/core@0.1.0-beta.1",
-    "@ui-sdk/react@0.1.0-beta.1"
+    "@ui-sdk/core@0.1.0-beta.2",
+    "@ui-sdk/react@0.1.0-beta.2"
   ],
   "registryDependencies": [
     "@protoform/protoform-license"

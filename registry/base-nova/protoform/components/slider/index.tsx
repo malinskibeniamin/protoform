@@ -11,7 +11,62 @@ import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/s
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
-export { SliderControl, SliderIndicator, SliderThumb, SliderTrack, SliderValue } from '@ui-sdk/react/slider';
+export { SliderValue } from '@ui-sdk/react/slider';
+
+export function SliderControl({ className, ...props }: UIProps<React.ComponentProps<typeof SDKSliderControl>>) {
+  return (
+    <SDKSliderControl
+      {...definedProps(props)}
+      className={(state) =>
+        cn(
+          'flex items-center',
+          state.orientation === 'vertical' ? 'h-full w-5 justify-center' : 'h-5 w-full',
+          typeof className === 'function' ? className(state) : className
+        )
+      }
+    />
+  );
+}
+
+export function SliderTrack({ className, ...props }: UIProps<React.ComponentProps<typeof SDKSliderTrack>>) {
+  return (
+    <SDKSliderTrack
+      {...definedProps(props)}
+      className={(state) =>
+        cn(
+          'relative rounded-full bg-muted',
+          state.orientation === 'vertical' ? 'h-full w-1.5' : 'h-1.5 w-full',
+          typeof className === 'function' ? className(state) : className
+        )
+      }
+    />
+  );
+}
+
+export function SliderIndicator({ className, ...props }: UIProps<React.ComponentProps<typeof SDKSliderIndicator>>) {
+  return (
+    <SDKSliderIndicator
+      {...definedProps(props)}
+      className={(state) =>
+        cn('absolute rounded-full bg-primary', typeof className === 'function' ? className(state) : className)
+      }
+    />
+  );
+}
+
+export function SliderThumb({ className, ...props }: UIProps<React.ComponentProps<typeof SDKSliderThumb>>) {
+  return (
+    <SDKSliderThumb
+      {...definedProps(props)}
+      className={(state) =>
+        cn(
+          'absolute size-4 rounded-full border border-primary bg-background shadow-sm has-focus-visible:ring-2 has-focus-visible:ring-ring',
+          typeof className === 'function' ? className(state) : className
+        )
+      }
+    />
+  );
+}
 export function Slider({
   children,
   className,
@@ -30,26 +85,26 @@ export function Slider({
       aria-label={label}
       className={(state) =>
         cn(
-          'relative flex w-full touch-none items-center select-none',
+          'relative flex touch-none items-center select-none',
+          state.orientation === 'vertical' ? 'h-full min-h-0 w-5 flex-col' : 'w-full',
           typeof className === 'function' ? className(state) : className
         )
       }
       data-testid={testId ?? props['data-testid']}
     >
       {children ?? (
-        <SDKSliderControl className="flex h-5 w-full items-center">
-          <SDKSliderTrack className="relative h-1.5 w-full rounded-full bg-muted">
-            <SDKSliderIndicator className="absolute h-full rounded-full bg-primary" />
+        <SliderControl>
+          <SliderTrack>
+            <SliderIndicator />
             {thumbs.map((thumb) => (
-              <SDKSliderThumb
+              <SliderThumb
                 aria-label={thumbs.length === 1 ? label : `${label ?? 'Value'} ${thumb.position + 1}`}
-                className="absolute top-1/2 size-4 -translate-1/2 rounded-full border border-primary bg-background shadow-sm has-focus-visible:ring-2 has-focus-visible:ring-ring"
                 index={thumb.position}
                 key={thumb.id}
               />
             ))}
-          </SDKSliderTrack>
-        </SDKSliderControl>
+          </SliderTrack>
+        </SliderControl>
       )}
     </SDKSlider>
   );

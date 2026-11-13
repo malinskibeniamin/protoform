@@ -1,8 +1,8 @@
 {
   "upstream": {
     "repository": "https://github.com/vercel-labs/ui",
-    "revision": "d55a1d825fd19d285ef4a3bd4c4ff1622df08373",
-    "version": "0.1.0-beta.1"
+    "revision": "8ff6bcf7100d48230a3fab8c72475d99316cc58a",
+    "version": "0.1.0-beta.2"
   },
   "components": [
     {

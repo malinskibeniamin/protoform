@@ -56,7 +56,7 @@ and resolves [alias-based targets](https://ui.shadcn.com/docs/registry/registry-
 
 ### UI SDK controls
 
-The bundled UI now uses [UI SDK](https://ui-sdk.dev/docs), pinned to `0.1.0-beta.1`.
+The bundled UI now uses [UI SDK](https://ui-sdk.dev/docs), pinned to `0.1.0-beta.2`.
 This is a breaking migration, not a shadcn/Base UI compatibility layer.
 
 For a complete themed installation:

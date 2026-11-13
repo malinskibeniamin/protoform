@@ -29,7 +29,7 @@ source snapshots.
 
 ### Changed
 
-- **Breaking:** all bundled interactive controls now use pinned UI SDK `0.1.0-beta.1` behaviors. The new registry items are `protoform-ui-sdk`, `protoform-ui-sdk-tanstack`, and `protoform-ui-sdk-host`; old shadcn/Base UI UI contracts are not retained. Native `render`, panel, array-selection, ISO-calendar, toast, and controller APIs replace the old ones. Renderer-boundary text controls now receive `onValueChange(string)`.
+- **Breaking:** all bundled interactive controls now use pinned UI SDK `0.1.0-beta.2` behaviors. The new registry items are `protoform-ui-sdk`, `protoform-ui-sdk-tanstack`, and `protoform-ui-sdk-host`; old shadcn/Base UI UI contracts are not retained. Native `render`, panel, array-selection, ISO-calendar, toast, and controller APIs replace the old ones. Renderer-boundary text controls now receive `onValueChange(string)`.
 - UI imports and targets honor the consumer's UI aliases. The themed bundles no longer install Base UI, shadcn React behaviors, cmdk, Embla, input-otp, DayPicker, or react-resizable-panels. Specialized chart and editor engines remain.
 - `protoform-ui-sdk-agent` is opt-in and exports `createAgent` without creating a bridge, registering browser tools, or granting actions automatically.
 

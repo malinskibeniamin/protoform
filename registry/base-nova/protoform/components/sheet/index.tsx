@@ -19,18 +19,23 @@ export {
 export function SheetContent({
   children,
   showCloseButton = true,
+  variant,
   ...props
 }: React.ComponentProps<typeof DrawerContent> & { showCloseButton?: boolean }) {
   const renderChildren = typeof children === 'function' ? children : () => children;
   return (
-    <DrawerContent {...props}>
+    <DrawerContent {...props} variant={variant}>
       {(state) => (
         <>
           {renderChildren(state)}
           {showCloseButton === true ? (
             <SDKDrawerClose
               aria-label="Close"
-              className={cn(buttonVariants({ size: 'icon-sm', variant: 'ghost' }), 'absolute top-3 right-3')}
+              className={cn(
+                buttonVariants({ size: 'icon-sm', variant: 'ghost' }),
+                'absolute top-3 right-3',
+                variant === 'sidebar' && 'text-current hover:bg-current/10'
+              )}
             >
               <XIcon aria-hidden="true" />
             </SDKDrawerClose>

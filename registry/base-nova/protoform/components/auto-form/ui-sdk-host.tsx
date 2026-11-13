@@ -180,7 +180,6 @@ function HostToggleGroup({
   onValueChange,
   type: _type,
   defaultValue: _defaultValue,
-  variant: _variant,
   ...props
 }: ProtoformUIProps['ToggleGroup']) {
   return (

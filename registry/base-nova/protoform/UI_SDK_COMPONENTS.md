@@ -1,7 +1,7 @@
 # Protoform UI SDK bundle
 
 `@protoform/protoform-ui-sdk` installs themed React controls built on
-`@ui-sdk/react` and `@ui-sdk/core`, pinned to `0.1.0-beta.1`.
+`@ui-sdk/react` and `@ui-sdk/core`, pinned to `0.1.0-beta.2`.
 UI SDK is beta: review upgrades and copied source before adopting another release.
 
 ## Breaking migration
@@ -16,7 +16,7 @@ host entrypoint remain separate from UI implementation.
 - Accordions and collapsibles use `AccordionPanel` and `CollapsiblePanel`.
 - Menus share `Menu*` parts; right-click areas use `MenuContextTrigger`.
 - Compose modal backdrops explicitly: `AlertDialogBackdrop`, `DialogBackdrop`, `DrawerBackdrop` or `SheetOverlay`. Sheets use the SDK Drawer with `side="right"` by default; put other sides on the root. The SDK viewport owns positioning and translation, while local styles provide dimensions and surfaces.
-- Compose `SelectContent` with an explicit `SelectList`. Use the native mount/unmount lifecycle. `keepMounted` is deliberately not exposed by the themed `SelectContent`: beta.1 loses its bound element for retained content and throws on Escape. Protoform does not patch the package.
+- Compose `SelectContent` with an explicit `SelectList`. Use the native mount/unmount lifecycle. `keepMounted` remains outside the themed API after a beta.1 Escape error during migration; retained content is not covered across the supported harnesses. Protoform does not patch the package.
 - Toggle groups always use arrays. Their entries are ordinary SDK toggles.
 - Calendars use ISO date/month strings and `onValueChange`, not DayPicker props or Date objects.
 - OTP inputs use `OTPInput*` and `onValueChange`.
@@ -52,7 +52,7 @@ styled locally with semantic tokens, not the optional upstream `web.css` theme.
 
 Behavior comes from the npm packages, not vendored implementation files. The upstream is
 [vercel-labs/ui](https://github.com/vercel-labs/ui), Apache-2.0, inspected at revision
-`d55a1d825fd19d285ef4a3bd4c4ff1622df08373`. Package licenses ship with npm installations.
+`8ff6bcf7100d48230a3fab8c72475d99316cc58a`. Package licenses ship with npm installations.
 The [version-matched docs](https://ui-sdk.dev/docs) also ship in `@ui-sdk/react/docs`.
 
 Existing presentation styles and non-behavioral compositions were adapted from MIT-licensed

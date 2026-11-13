@@ -45,7 +45,8 @@ function ResizableHandle({
       {...definedProps(props)}
       className={(state) =>
         cn(
-          'relative flex w-1 items-center justify-center bg-border focus-visible:ring-2 focus-visible:ring-ring',
+          'relative flex shrink-0 touch-none items-center justify-center bg-border outline-none select-none focus-visible:ring-2 focus-visible:ring-ring',
+          state.orientation === 'vertical' ? 'h-1 w-full cursor-row-resize' : 'w-1 cursor-col-resize',
           typeof className === 'function' ? className(state) : className
         )
       }
