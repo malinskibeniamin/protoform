@@ -23,13 +23,13 @@ test('requires an answer, preserves it across Back, and retries a failed save', 
     .mockResolvedValue(undefined);
   render(<Questionnaire items={items} onSubmit={onSubmit} submitLabel="Save answers" />);
   await user.click(screen.getByRole('button', { name: 'Next' }));
-  expect(screen.getByRole('alert')).toHaveTextContent('Choose an option');
+  expect(await screen.findByRole('alert')).toHaveTextContent('Choose an option');
   await user.click(screen.getByRole('radio', { name: 'JSON' }));
   await user.click(screen.getByRole('button', { name: 'Next' }));
-  await user.click(screen.getByRole('button', { name: 'Previous' }));
-  expect(screen.getByRole('radio', { name: 'JSON' })).toBeChecked();
+  await user.click(await screen.findByRole('button', { name: 'Previous' }));
+  expect(await screen.findByRole('radio', { name: 'JSON' })).toBeChecked();
   await user.click(screen.getByRole('button', { name: 'Next' }));
-  await user.click(screen.getByRole('radio', { name: 'Include validation' }));
+  await user.click(await screen.findByRole('radio', { name: 'Include validation' }));
   await user.click(screen.getByRole('button', { name: 'Save answers' }));
   await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('Could not save answers'));
   await user.click(screen.getByRole('button', { name: 'Save answers' }));

@@ -50,9 +50,8 @@ export function Questionnaire({
       setError('');
     } catch {
       setError('Could not save answers. Try again.');
-    } finally {
-      setPending(false);
     }
+    setPending(false);
   }
   if (!question) {
     return null;
@@ -69,10 +68,12 @@ export function Questionnaire({
       <RadioGroup
         aria-labelledby={id}
         className="grid gap-2"
-        onValueChange={(value) => {
-          if (value !== null) {
-            setValues({ ...values, [question.name]: value });
+        onValueChange={(value, details) => {
+          if (value === null) {
+            details.cancel();
+            return;
           }
+          setValues({ ...values, [question.name]: value });
           setError('');
         }}
         value={values[question.name] ?? null}
