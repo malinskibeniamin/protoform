@@ -54,6 +54,8 @@ export interface InputProps
     SharedProps {
   children?: React.ReactNode;
   containerClassName?: string | undefined;
+  controller?: React.ComponentProps<typeof SDKInput>['controller'];
+  'data-agent-secret'?: boolean | string | undefined;
   onValueChange?: React.ComponentProps<typeof SDKInput>['onValueChange'];
   showStepControls?: boolean | undefined;
   size?: VariantProps<typeof inputVariants>['size'] | number;
@@ -274,6 +276,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       containerClassName,
       readOnly,
       defaultValue,
+      'data-agent-secret': agentSecret,
       ...props
     },
     ref
@@ -335,7 +338,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           'data-[end-adornment=true]:pr-(--input-end-padding)',
           className
         )}
-        data-agent-secret={isPasswordInput || undefined}
+        data-agent-secret={isPasswordInput === true ? true : agentSecret}
         data-end-adornment={Boolean(endWidth)}
         data-slot="input"
         data-start-adornment={Boolean(startWidth)}

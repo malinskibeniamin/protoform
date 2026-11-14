@@ -9,6 +9,7 @@
   ],
   "registryDependencies": [
     "@protoform/auto-form-core",
+    "@protoform/protoform-ui-sdk-host",
     "@protoform/use-proto-form-tanstack-v2"
   ],
   "files": [

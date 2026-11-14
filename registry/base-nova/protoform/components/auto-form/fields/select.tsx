@@ -72,6 +72,7 @@ function SelectFieldComponent({ error, field, id, inputProps, label, path }: Aut
 
   return (
     <Select
+      disabled={inputProps['disabled']}
       items={[
         ...(field.required
           ? []
@@ -83,6 +84,7 @@ function SelectFieldComponent({ error, field, id, inputProps, label, path }: Aut
             ]),
         ...flatOptions.map((option) => ({
           label: renderOptionLabel(option),
+          textValue: typeof option.label === 'string' ? option.label : option.value,
           value: option.value,
         })),
       ]}

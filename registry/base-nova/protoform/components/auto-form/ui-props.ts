@@ -102,7 +102,7 @@ export interface ProtoformUIProps {
   Radio: Trigger & { value: string; variant?: 'card' };
   RadioGroup: Selection;
   Select: Omit<Selection, 'value' | 'onValueChange'> & {
-    items: { label: React.ReactNode; value: string | null }[];
+    items: { label: React.ReactNode; textValue?: string; value: string | null }[];
     value: string | null;
     onValueChange: (value: string | null) => void;
   };

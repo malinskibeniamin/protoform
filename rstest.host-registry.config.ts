@@ -15,6 +15,7 @@ export default defineConfig({
       'scripts/reliability-consumer.browser.spec.ts',
       'scripts/chart-consumer.browser.spec.ts',
       'scripts/ui-regression-consumer.browser.spec.ts',
+      'scripts/agent-consumer.browser.spec.ts',
     ],
     extends: definePlaywrightConfig({
       contextOptions: { baseURL: hostBaseURL, viewport, locale: 'en-US', timezoneId: 'UTC' },

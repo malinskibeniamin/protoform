@@ -14,6 +14,7 @@ const fixture = join(root, '.tmp', 'consumer-fixture');
 const hostFixture = join(root, '.tmp', 'host-consumer-fixture');
 const coreFixture = join(root, '.tmp', 'core-consumer-fixture');
 const tanstackFixture = join(root, '.tmp', 'tanstack-consumer-fixture');
+const adapterFixture = join(root, '.tmp', 'adapter-consumer-fixture');
 const publicDir = join(root, 'public');
 const leadingSlashes = /^\/+/u;
 const registryPort = Number(process.env['PROTOFORM_REGISTRY_PORT'] ?? '48741');
@@ -398,9 +399,10 @@ async function assertHostInstalled() {
       'import { uiSdkHostComponents } from "./features/forms/auto-form/ui-sdk-host";',
       'import type { SchemaProvider } from "./domain/runtime/core";',
       'import { createAgent } from "./domain/runtime/ui-sdk/agent";',
+      'import { createAgentSession } from "./domain/runtime/ui-sdk/session";',
       'import { renderToString } from "react-dom/server";',
       'const schema: SchemaProvider<{ title: string }> = { getDefaultValues: () => ({ title: "Host-owned UI" }), parseSchema: () => ({ fields: [{ key: "title", type: "string", required: true }] }), validateSchema: (values) => ({ data: values, success: true }) };',
-      'if (typeof createAgent !== "function") throw new Error("Missing opt-in SDK agent factory");',
+      'if (typeof createAgent !== "function" || typeof createAgentSession !== "function") throw new Error("Missing opt-in SDK agent factories");',
       'const html = renderToString(<AutoForm components={uiSdkHostComponents} schema={schema} modes={["simple"]} showSummary={false} withSubmit />);',
       'if (!html.includes("Host-owned UI") || !html.includes("data-testid=")) throw new Error("Installed host form did not render its value and test IDs");',
     ].join('\n')
@@ -482,6 +484,83 @@ async function assertTanStackInstalled() {
   console.log(`Full TanStack UI consumer installed and typechecked without Recharts: ${tanstackFixture}`);
 }
 
+async function assertOptionalAdapterInstalled(adapter: string) {
+  const packageSchema = z.looseObject({ dependencies: z.record(z.string(), z.string()) });
+  const engines = [
+    'react-hook-form',
+    'react-hook-form-v8',
+    '@hookform/resolvers',
+    '@tanstack/react-form',
+    '@tanstack/react-form-v2',
+  ];
+  await rm(adapterFixture, { force: true, recursive: true });
+  await mkdir(adapterFixture, { recursive: true });
+  await Promise.all(
+    [
+      'components.json',
+      'tsconfig.json',
+      '.npmrc',
+      'app',
+      'lib/utils.ts',
+      'hooks/use-mobile.ts',
+      'design-system/ui',
+      'domain/runtime/utils',
+      'domain/runtime/input-utils',
+    ].map(async (path) => {
+      await mkdir(join(adapterFixture, path, '..'), { recursive: true });
+      await cp(join(hostFixture, path), join(adapterFixture, path), { recursive: true });
+    })
+  );
+  const manifest = packageSchema.parse(JSON.parse(await readFile(join(hostFixture, 'package.json'), 'utf8')));
+  manifest.dependencies = Object.fromEntries(
+    Object.entries(manifest.dependencies).filter(([name]) => !engines.includes(name))
+  );
+  await writeFile(join(adapterFixture, 'package.json'), JSON.stringify(manifest, null, 2));
+  await $`bun install --cwd ${adapterFixture}`;
+  const registryItem = `@protoform/${adapter}`;
+  await $`bunx --no-install shadcn add ${registryItem} --cwd ${adapterFixture} --yes`;
+  await access(join(adapterFixture, 'features/forms/auto-form/ui-sdk-host.tsx'));
+  await access(join(adapterFixture, 'domain/runtime/sdk-props.ts'));
+  if (
+    existsSync(join(adapterFixture, 'features/forms/auto-form/index.tsx')) ||
+    existsSync(join(adapterFixture, 'features/forms/auto-form/adapters/react-hook-form.tsx'))
+  ) {
+    throw new Error(`Optional ${adapter} install pulled in the default form engine`);
+  }
+  await writeFile(
+    join(adapterFixture, 'consumer-smoke.tsx'),
+    [
+      `import { AutoForm } from "./features/forms/${adapter}";`,
+      'import { renderToString } from "react-dom/server";',
+      'import type { SchemaProvider } from "./domain/runtime/core";',
+      'const schema: SchemaProvider = { getDefaultValues: () => ({ title: "Standalone adapter" }), parseSchema: () => ({ fields: [{ key: "title", type: "string", required: true }] }), validateSchema: (values) => ({ data: values, success: true }) };',
+      'const html = renderToString(<AutoForm schema={schema} modes={["simple"]} showSummary={false} withSubmit />);',
+      'if (!html.includes("Standalone adapter")) throw new Error("Installed adapter did not render its default value");',
+    ].join('\n')
+  );
+  await $`bun run --cwd ${adapterFixture} typecheck`;
+  await $`bun ${join(adapterFixture, 'consumer-smoke.tsx')}`;
+  console.log(`Isolated optional adapter installed and rendered without the default engine: ${adapter}`);
+}
+
+async function assertOptionalAdaptersInstalled() {
+  await assertOptionalAdapterInstalled('auto-form-tanstack');
+  await assertOptionalAdapterInstalled('auto-form-tanstack-v2');
+  await assertOptionalAdapterInstalled('auto-form-react-hook-form-v8');
+}
+
+if (process.argv.includes('--adapters-only')) {
+  const server = await servePublic();
+  try {
+    await assertOptionalAdaptersInstalled();
+  } finally {
+    await new Promise<void>((resolve, reject) => {
+      server.close((error) => (error ? reject(error) : resolve()));
+    });
+  }
+  process.exit(0);
+}
+
 await createFixture();
 await rm(coreFixture, { force: true, recursive: true });
 await cp(fixture, coreFixture, { recursive: true });
@@ -491,6 +570,7 @@ const server = await servePublic();
 try {
   await rm(hostFixture, { force: true, recursive: true });
   await assertHostInstalled();
+  await assertOptionalAdaptersInstalled();
   if (!process.argv.includes('--host-only')) {
     await assertTanStackInstalled();
     await $`bun install --cwd ${coreFixture}`;
@@ -522,6 +602,14 @@ try {
     console.log(`Optional QuickJS consumer install and worker build passed: ${coreFixture}`);
 
     await $`bun install --cwd ${fixture}`;
+    await $`bunx --no-install shadcn add @protoform/ui-sdk-agent-workbench --cwd ${fixture} --yes --overwrite`;
+    await writeFile(
+      join(fixture, 'agent-install-smoke.tsx'),
+      'import Workbench from "./components/ui/examples/agent-workbench"; if (typeof Workbench !== "function") throw new Error("Missing agent workbench");'
+    );
+    await $`bun run --cwd ${fixture} typecheck`;
+    await $`bun ${join(fixture, 'agent-install-smoke.tsx')}`;
+    console.log('Agent workbench installed and imported in a clean consumer before any other UI bundle');
     await $`bunx --no-install shadcn add @protoform/bookstore --cwd ${fixture} --yes --overwrite`;
     await $`bunx --no-install shadcn add @protoform/auto-form-react-hook-form-v8 --cwd ${fixture} --yes --overwrite`;
     await $`bunx --no-install shadcn add @protoform/auto-form-tanstack --cwd ${fixture} --yes --overwrite`;
@@ -564,6 +652,14 @@ try {
     await writeFile(
       join(fixture, 'custom-options.html'),
       '<html lang="en"><head><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Custom option creation</title><link rel="stylesheet" href="/app/globals.css" /></head><body><div id="root"></div><script type="module" src="/custom-options-browser.tsx"></script></body></html>'
+    );
+    await writeFile(
+      join(fixture, 'agent-browser.tsx'),
+      'import { createRoot } from "react-dom/client"; import Workbench from "@/components/ui/examples/agent-workbench"; const root = document.querySelector("#root"); if (!root) throw new Error("Missing root"); createRoot(root).render(<Workbench />);'
+    );
+    await writeFile(
+      join(fixture, 'agent.html'),
+      '<html lang="en"><head><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Agent workbench</title><link rel="stylesheet" href="/app/globals.css" /></head><body><div id="root"></div><script type="module" src="/agent-browser.tsx"></script></body></html>'
     );
     const theme = await readFile(join(root, 'scripts/fixtures/host-theme.css'), 'utf8');
     await writeFile(

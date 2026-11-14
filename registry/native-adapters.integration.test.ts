@@ -351,6 +351,13 @@ describe('native form adapter registry entries', () => {
     expect(filePaths(core)).not.toContain('registry/base-nova/protoform/components/auto-form/adapters/tanstack-v2.tsx');
   });
 
+  test('keeps the shared UI SDK host map independent from form engines', () => {
+    const host = item('protoform-ui-sdk-host');
+    expect(host.registryDependencies).toEqual(['@protoform/auto-form-core']);
+    expect(filePaths(host)).toContain('registry/base-nova/protoform/components/auto-form/ui-sdk-host.tsx');
+    expect(filePaths(host)).toContain('registry/base-nova/protoform/lib/sdk-props.ts');
+  });
+
   test('ships React Hook Form as the default AutoForm adapter', () => {
     const reactHookForm = item('protoform-react');
 
@@ -369,6 +376,7 @@ describe('native form adapter registry entries', () => {
     expect(tanstackHook.dependencies).not.toContain('react-hook-form');
     expect(tanstackAutoForm.registryDependencies).toEqual([
       '@protoform/auto-form-core',
+      '@protoform/protoform-ui-sdk-host',
       '@protoform/use-proto-form-tanstack',
     ]);
     expect(tanstackAutoForm.dependencies).toContain('@tanstack/react-form');
@@ -387,6 +395,7 @@ describe('native form adapter registry entries', () => {
     expect(tanstackHook.dependencies).not.toContain('react-hook-form');
     expect(tanstackAutoForm.registryDependencies).toEqual([
       '@protoform/auto-form-core',
+      '@protoform/protoform-ui-sdk-host',
       '@protoform/use-proto-form-tanstack-v2',
     ]);
     expect(tanstackAutoForm.dependencies).toContain(packageAlias);
@@ -406,6 +415,7 @@ describe('native form adapter registry entries', () => {
     expect(reactHookFormHook.dependencies).not.toContain('@hookform/resolvers');
     expect(reactHookFormAutoForm.registryDependencies).toEqual([
       '@protoform/auto-form-core',
+      '@protoform/protoform-ui-sdk-host',
       '@protoform/use-proto-form-v8',
     ]);
     expect(reactHookFormAutoForm.dependencies).toContain(packageAlias);

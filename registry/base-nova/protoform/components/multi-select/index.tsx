@@ -103,6 +103,7 @@ export function SimpleMultiSelect({
           onValueChange?.(next);
         },
         onQueryChange: onSearch,
+        filter: onSearch === undefined ? undefined : (false as const),
       })}
       defaultOpen={defaultOpen}
       disabled={disabled}

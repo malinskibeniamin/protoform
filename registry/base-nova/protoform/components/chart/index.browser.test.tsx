@@ -175,3 +175,49 @@ test('reapplies removed overrides and leaves later caller declarations intact on
   rerender(<div data-chart="owned-chart" data-testid="owned-target" />);
   expect(target.style.getPropertyValue('--color-requests')).toBe('var(--primary)');
 });
+
+test('composes chart refs with React 19 cleanup across ref replacement and unmount', () => {
+  const firstCleanup = rs.fn();
+  const secondCleanup = rs.fn();
+  const firstRef = (node: HTMLDivElement | null) => (node === null ? undefined : firstCleanup);
+  const secondRef = (node: HTMLDivElement | null) => (node === null ? undefined : secondCleanup);
+  const { rerender, unmount } = render(
+    <ChartContainer config={{}} ref={firstRef}>
+      <BarChart data={[]} />
+    </ChartContainer>
+  );
+  rerender(
+    <ChartContainer config={{}} ref={firstRef}>
+      <BarChart data={[]} />
+    </ChartContainer>
+  );
+  expect(firstCleanup).not.toHaveBeenCalled();
+  rerender(
+    <ChartContainer config={{}} ref={secondRef}>
+      <BarChart data={[]} />
+    </ChartContainer>
+  );
+  expect(firstCleanup).toHaveBeenCalledTimes(1);
+  expect(secondCleanup).not.toHaveBeenCalled();
+  unmount();
+  expect(secondCleanup).toHaveBeenCalledTimes(1);
+});
+
+test('keeps chart object refs and legacy null cleanup working', () => {
+  const objectRef: { current: HTMLDivElement | null } = { current: null };
+  const legacyRef = rs.fn((_node: HTMLDivElement | null) => undefined);
+  const { rerender, unmount } = render(
+    <ChartContainer config={{}} ref={objectRef}>
+      <BarChart data={[]} />
+    </ChartContainer>
+  );
+  expect(objectRef.current).toBeInstanceOf(HTMLDivElement);
+  rerender(
+    <ChartContainer config={{}} ref={legacyRef}>
+      <BarChart data={[]} />
+    </ChartContainer>
+  );
+  expect(objectRef.current).toBeNull();
+  unmount();
+  expect(legacyRef.mock.calls.at(-1)?.[0]).toBeNull();
+});

@@ -25,6 +25,7 @@ const expectedItems = [
   'protoform-ui-sdk-tanstack',
   'protoform-ui-sdk-host',
   'protoform-ui-sdk-agent',
+  'ui-sdk-agent-workbench',
   'auto-form-react-hook-form-v8',
   'auto-form-tanstack',
   'auto-form-tanstack-v2',

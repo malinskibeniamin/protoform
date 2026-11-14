@@ -8,7 +8,7 @@
       "type": "registry:component",
       "title": "Protoform host UI adapter",
       "description": "Editable component map for host-owned UI SDK components. Does not copy primitives or modify theme tokens.",
-      "registryDependencies": ["@protoform/protoform-react"],
+      "registryDependencies": ["@protoform/auto-form-core"],
       "files": [
         {
           "path": "registry/base-nova/protoform/components/auto-form/ui-sdk-host.tsx",
@@ -1327,6 +1327,16 @@
           "path": "registry/base-nova/protoform/components/combobox/parts.tsx",
           "type": "registry:ui",
           "target": "@ui/combobox/parts.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/rating/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/rating/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/rating/primitive.ts",
+          "type": "registry:component",
+          "target": "@ui/rating/primitive.ts"
         }
       ],
       "devDependencies": ["@types/js-cookie@3.0.6"]
@@ -1823,6 +1833,16 @@
           "target": "@ui/combobox/parts.tsx"
         },
         {
+          "path": "registry/base-nova/protoform/components/rating/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/rating/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/rating/primitive.ts",
+          "type": "registry:component",
+          "target": "@ui/rating/primitive.ts"
+        },
+        {
           "path": "registry/base-nova/protoform/components/chart-tanstack/index.tsx",
           "type": "registry:ui",
           "target": "@ui/chart-tanstack/index.tsx"
@@ -1840,7 +1860,11 @@
       "type": "registry:block",
       "title": "Protoform AutoForm for TanStack Form",
       "description": "TanStack Form-native AutoForm with the complete native form API plus Protoform rendering and protobuf helpers.",
-      "registryDependencies": ["@protoform/auto-form-core", "@protoform/use-proto-form-tanstack"],
+      "registryDependencies": [
+        "@protoform/auto-form-core",
+        "@protoform/protoform-ui-sdk-host",
+        "@protoform/use-proto-form-tanstack"
+      ],
       "dependencies": ["@tanstack/react-form"],
       "files": [
         {
@@ -1865,7 +1889,11 @@
       "type": "registry:block",
       "title": "Experimental Protoform AutoForm for React Hook Form v8",
       "description": "Experimental AutoForm adapter for the React Hook Form v8 beta with its native form API plus Protoform rendering and protobuf helpers.",
-      "registryDependencies": ["@protoform/auto-form-core", "@protoform/use-proto-form-v8"],
+      "registryDependencies": [
+        "@protoform/auto-form-core",
+        "@protoform/protoform-ui-sdk-host",
+        "@protoform/use-proto-form-v8"
+      ],
       "dependencies": ["react-hook-form-v8@npm:react-hook-form@8.0.0-beta.5"],
       "files": [
         {
@@ -1890,7 +1918,11 @@
       "type": "registry:block",
       "title": "Experimental Protoform AutoForm for TanStack Form v2",
       "description": "Experimental AutoForm adapter for the TanStack Form v2 alpha with native atoms, validator arrays, ArrayField state, and submit validation errors.",
-      "registryDependencies": ["@protoform/auto-form-core", "@protoform/use-proto-form-tanstack-v2"],
+      "registryDependencies": [
+        "@protoform/auto-form-core",
+        "@protoform/protoform-ui-sdk-host",
+        "@protoform/use-proto-form-tanstack-v2"
+      ],
       "dependencies": ["@tanstack/react-form-v2@npm:@tanstack/react-form@2.0.0-alpha.3", "zod"],
       "files": [
         {
@@ -3978,7 +4010,7 @@
       "name": "protoform-ui-sdk-agent",
       "type": "registry:lib",
       "title": "Opt-in UI SDK agent bridge",
-      "description": "Exports createAgent without creating a bridge or registering browser tools. Hosts own approval and sensitive-action policy.",
+      "description": "Opt-in agent tools, explicit-policy sessions, redacted change subscriptions, and experimental history helpers. Never registers WebMCP tools or starts a session on import.",
       "registryDependencies": ["@protoform/protoform-license"],
       "dependencies": ["@ui-sdk/core@0.1.0-beta.2", "@ui-sdk/react@0.1.0-beta.2"],
       "files": [
@@ -3986,6 +4018,25 @@
           "path": "registry/base-nova/protoform/lib/ui-sdk/agent.ts",
           "type": "registry:lib",
           "target": "@lib/ui-sdk/agent.ts"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/session.ts",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/session.ts"
+        }
+      ]
+    },
+    {
+      "name": "ui-sdk-agent-workbench",
+      "type": "registry:example",
+      "title": "UI SDK agent workbench",
+      "description": "Explicitly enabled local agent, authorization and human confirmation, redacted secrets, a core-composed rating, and UI-only history. No model connection or WebMCP registration.",
+      "registryDependencies": ["@protoform/protoform-ui-sdk", "@protoform/protoform-ui-sdk-agent"],
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/ui/agent-workbench.tsx",
+          "type": "registry:example",
+          "target": "@ui/examples/agent-workbench.tsx"
         }
       ]
     }

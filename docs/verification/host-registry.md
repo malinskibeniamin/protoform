@@ -54,3 +54,9 @@ choicebox, JSON, and key/value controls still require explicit host mappings or 
 The `@host` namespace resolves the pinned local registry snapshot, not a moving third-party registry.
 Installing the core and host adapter must not mutate the already-installed controls or host theme.
 Previous screenshot baselines must be reviewed against the current native UI SDK composition.
+
+## Agent and core behavior verification
+
+The installed `ui-sdk-agent-workbench` example runs at `/agent.html` in the full consumer fixture. `scripts/agent-consumer.browser.spec.ts` covers explicit enablement, snapshot/query/act, controlled callback cancellation, custom primitive actions, secret/hidden marks, human approval and rejection, actual AutoForm validation/submission, asynchronous source propagation, staging/revert, seek/replay, source-specific undo, and repeated session disposal. A browser-provided WebMCP registration spy must remain untouched. `e2e/agent-workbench.spec.ts` separately exercises the built Blume example at 1280px, 390px, and 320px in light/dark modes: the docs preview's intrinsic sizing must not widen the page, even after long snapshot output, and approval controls must remain in the viewport.
+
+`registry/base-nova/protoform/components/rating/rating.browser.test.tsx` exercises the framework-free primitive with SDK `mount`, `checkPattern`, `checkServer`, and `checkDirection`, including strict SDK warnings, keyboard selection, announcements, argument bounds, and cancellation. `lib/ui-sdk/session.browser.test.tsx` tests the application's policy/lifecycle seam, not a reimplementation of SDK internals. UI history does not undo submitted side effects.

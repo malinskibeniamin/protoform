@@ -256,6 +256,11 @@
     {
       "name": "trace",
       "installPath": "components/ui/trace/index.tsx"
+    },
+    {
+      "name": "rating",
+      "docs": "https://ui-sdk.dev/docs/core",
+      "installPath": "components/ui/rating/index.tsx"
     }
   ],
   "compositions": [

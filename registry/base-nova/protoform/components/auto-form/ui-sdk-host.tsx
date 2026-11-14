@@ -99,7 +99,7 @@ function HostSelect({ children, disabled, items, onValueChange, value }: Protofo
       <Select
         disabled={disabled ?? false}
         items={items.map((item) => ({
-          label: typeof item.label === 'string' ? item.label : (item.value ?? 'Not set'),
+          label: item.textValue ?? (typeof item.label === 'string' ? item.label : (item.value ?? 'Not set')),
           value: JSON.stringify(item.value),
         }))}
         onValueChange={(next) => {

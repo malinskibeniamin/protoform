@@ -93,7 +93,7 @@ const columns = helper.columns([
       <Field orientation="horizontal">
         <Checkbox
           aria-label="Select page records"
-          checked={table.getIsSomePageRowsSelected() ? 'indeterminate' : table.getIsAllPageRowsSelected()}
+          checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() ? 'indeterminate' : false)}
           onCheckedChange={(checked) => table.toggleAllPageRowsSelected(checked === true)}
         />
       </Field>

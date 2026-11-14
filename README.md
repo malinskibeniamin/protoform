@@ -82,9 +82,16 @@ Tooltips need no provider: their native SDK behavior coordinates hover warm-up a
 bunx shadcn@latest add @protoform/protoform-ui-sdk-agent
 ```
 
-Import `createAgent` from your installed `lib/ui-sdk/agent` and call it before rendering.
-The helper does not create a bridge or register WebMCP tools automatically. Configure approval,
-sensitive-action confirmation, and secret handling in the consuming application.
+Use `createAgentSession` from the installed `lib/ui-sdk/session` for an explicit authorization policy,
+a separate human-confirmation callback, redacted subscriptions, and UI history. Create it before
+mounting agent-enabled controls and dispose it when the host disables the integration.
+The native `createAgent` factory remains in `lib/ui-sdk/agent`; SDK tool schemas, observation,
+and experimental history APIs come from their native package entries. Nothing creates a session,
+registers WebMCP tools, or connects a model automatically.
+
+Install `@protoform/ui-sdk-agent-workbench` for the local, interactive example and see the
+[core and agent integration notes](registry/base-nova/protoform/UI_SDK_COMPONENTS.md#core-composition-and-agent-workbench).
+The example exercises real controls and AutoForm validation but saves only in memory.
 
 ## Flagship example
 

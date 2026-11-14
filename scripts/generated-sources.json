@@ -165,6 +165,7 @@
   "public/r/standard-schema-demo.json",
   "public/r/stepper-demo.json",
   "public/r/tanstack-form-demo.json",
+  "public/r/ui-sdk-agent-workbench.json",
   "public/r/untrusted-input-demo.json",
   "public/r/use-proto-form-tanstack-v2.json",
   "public/r/use-proto-form-tanstack.json",
