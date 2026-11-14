@@ -92,7 +92,7 @@ function ShadcnApiExample() {
       <section aria-label="Selection APIs" className="grid min-w-0 gap-5 sm:grid-cols-2">
         <Field>
           <FieldLabel>Compositional combobox</FieldLabel>
-          <Combobox items={fruits} onValueChange={setFruit} value={fruit}>
+          <Combobox onValueChange={setFruit} value={fruit}>
             <ComboboxInput aria-label="Fruit" />
             <ComboboxContent>
               <ComboboxEmpty>No fruit found</ComboboxEmpty>
@@ -108,7 +108,7 @@ function ShadcnApiExample() {
         </Field>
         <Field>
           <FieldLabel>Multiple values and chips</FieldLabel>
-          <Combobox items={fruits} multiple onValueChange={setTags} value={tags}>
+          <Combobox multiple onValueChange={setTags} value={tags}>
             <ComboboxChips>
               <ComboboxValue>
                 {(state) =>

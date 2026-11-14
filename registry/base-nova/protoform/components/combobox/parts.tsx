@@ -1,5 +1,8 @@
 'use client';
 
+import { CheckIcon } from 'lucide-react';
+import type React from 'react';
+import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import {
   Combobox as SDKCombobox,
   ComboboxArrow as SDKComboboxArrow,
@@ -27,11 +30,7 @@ import {
   ComboboxTrigger as SDKComboboxTrigger,
   ComboboxValue as SDKComboboxValue,
   ComboboxValueIcon as SDKComboboxValueIcon,
-} from '@ui-sdk/react/combobox';
-
-import { CheckIcon } from 'lucide-react';
-import type React from 'react';
-import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
+} from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-combobox';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 

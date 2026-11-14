@@ -1,5 +1,8 @@
 'use client';
 
+import { CheckIcon, CircleIcon } from 'lucide-react';
+import type React from 'react';
+import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import {
   Menu as SDKMenu,
   MenuCheckboxItem as SDKMenuCheckboxItem,
@@ -19,11 +22,7 @@ import {
   MenuSubContent as SDKMenuSubContent,
   MenuSubTrigger as SDKMenuSubTrigger,
   MenuTrigger as SDKMenuTrigger,
-} from '@ui-sdk/react/menu';
-
-import { CheckIcon, CircleIcon } from 'lucide-react';
-import type React from 'react';
-import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
+} from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-menu';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 

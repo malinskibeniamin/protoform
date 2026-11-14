@@ -1,18 +1,25 @@
 'use client';
-import { Toast, ToastAction, ToastClose, ToastDescription, ToastRegion, ToastTitle, toast } from '@ui-sdk/react/toast';
 import type React from 'react';
+import {
+  createToaster as createSDKToaster,
+  Toast as SDKToast,
+  ToastAction as SDKToastAction,
+  ToastClose as SDKToastClose,
+  ToastDescription as SDKToastDescription,
+  ToastRegion as SDKToastRegion,
+  ToastTitle as SDKToastTitle,
+  toast as sdkToast,
+} from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-toast';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
 
-export {
-  createToaster,
-  Toast,
-  ToastAction,
-  ToastClose,
-  ToastDescription,
-  ToastRegion,
-  ToastTitle,
-  toast,
-} from '@ui-sdk/react/toast';
+export const createToaster = createSDKToaster;
+export const Toast = SDKToast;
+export const ToastAction = SDKToastAction;
+export const ToastClose = SDKToastClose;
+export const ToastDescription = SDKToastDescription;
+export const ToastRegion = SDKToastRegion;
+export const ToastTitle = SDKToastTitle;
+export const toast = sdkToast;
 export function Toaster({
   children,
   className,
@@ -21,7 +28,7 @@ export function Toaster({
   return (
     <>
       {children}
-      <ToastRegion
+      <SDKToastRegion
         {...props}
         aria-label={props['aria-label'] ?? 'Notifications'}
         className={(state) =>
@@ -33,16 +40,16 @@ export function Toaster({
         toaster={props.toaster ?? toast}
       >
         {() => (
-          <Toast className="flex items-start gap-3 rounded-lg border border-border bg-popover p-4 text-popover-foreground shadow-lg">
+          <SDKToast className="flex items-start gap-3 rounded-lg border border-border bg-popover p-4 text-popover-foreground shadow-lg">
             <div className="min-w-0 flex-1">
-              <ToastTitle className="font-medium wrap-break-word" />
-              <ToastDescription className="text-sm wrap-break-word text-muted-foreground" />
+              <SDKToastTitle className="font-medium wrap-break-word" />
+              <SDKToastDescription className="text-sm wrap-break-word text-muted-foreground" />
             </div>
-            <ToastAction className="text-sm font-medium" />
-            <ToastClose aria-label="Dismiss notification">×</ToastClose>
-          </Toast>
+            <SDKToastAction className="text-sm font-medium" />
+            <SDKToastClose aria-label="Dismiss notification">×</SDKToastClose>
+          </SDKToast>
         )}
-      </ToastRegion>
+      </SDKToastRegion>
     </>
   );
 }

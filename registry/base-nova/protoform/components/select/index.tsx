@@ -1,5 +1,8 @@
 'use client';
 
+import { CheckIcon, ChevronDownIcon } from 'lucide-react';
+import type React from 'react';
+import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import {
   Select as SDKSelect,
   SelectArrow as SDKSelectArrow,
@@ -22,10 +25,7 @@ import {
   SelectTrigger as SDKSelectTrigger,
   SelectValue as SDKSelectValue,
   SelectValueIcon as SDKSelectValueIcon,
-} from '@ui-sdk/react/select';
-import { CheckIcon, ChevronDownIcon } from 'lucide-react';
-import type React from 'react';
-import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
+} from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-select';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 

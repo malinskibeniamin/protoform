@@ -1477,6 +1477,31 @@
           "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-toggle.tsx",
           "type": "registry:lib",
           "target": "@lib/ui-sdk/adapters/core-toggle.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-menu.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-menu.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-select.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-select.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-combobox.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-combobox.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-navigation-menu.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-navigation-menu.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-toast.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-toast.tsx"
         }
       ],
       "devDependencies": ["@types/js-cookie@3.0.6"]
@@ -2121,6 +2146,31 @@
           "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-toggle.tsx",
           "type": "registry:lib",
           "target": "@lib/ui-sdk/adapters/core-toggle.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-menu.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-menu.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-select.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-select.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-combobox.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-combobox.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-navigation-menu.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-navigation-menu.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-toast.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-toast.tsx"
         },
         {
           "path": "registry/base-nova/protoform/UI_SDK_COMPONENTS.md",

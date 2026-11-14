@@ -4,7 +4,7 @@ import type React from 'react';
 import { definedProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
-import { groupOptions } from './combobox-utils';
+import { groupOptions, resolveLabel } from './combobox-utils';
 import {
   Combobox,
   ComboboxClear,
@@ -92,7 +92,7 @@ export function OptionCombobox({
         },
         disabled,
       })}
-      items={options.map((option) => ({ ...option, disabled: option.disabled ?? false }))}
+      itemToLabel={(item) => resolveLabel(options, item)}
       onValueChange={(next) => onChange(next ?? '')}
       status={loading === true ? 'loading' : 'idle'}
       value={value ?? null}
