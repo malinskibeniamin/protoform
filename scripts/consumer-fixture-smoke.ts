@@ -14,6 +14,7 @@ const fixture = join(root, '.tmp', 'consumer-fixture');
 const hostFixture = join(root, '.tmp', 'host-consumer-fixture');
 const coreFixture = join(root, '.tmp', 'core-consumer-fixture');
 const tanstackFixture = join(root, '.tmp', 'tanstack-consumer-fixture');
+const interopFixture = join(root, '.tmp', 'interop-consumer-fixture');
 const publicDir = join(root, 'public');
 const leadingSlashes = /^\/+/u;
 const registryPort = Number(process.env['PROTOFORM_REGISTRY_PORT'] ?? '48741');
@@ -22,6 +23,7 @@ if (!Number.isInteger(registryPort) || registryPort < 1 || registryPort > 65_535
 }
 const registryOrigin = `http://127.0.0.1:${registryPort}`;
 const rechartsPackage = /\brecharts@/u;
+const defaultFormPackages = /\breact-hook-form(?:-v8)?@|@hookform\/resolvers@/u;
 
 const contentTypes: Record<string, string> = {
   '.css': 'text/css; charset=utf-8',
@@ -463,6 +465,67 @@ async function assertHostInstalled() {
   );
 }
 
+async function assertInteropInstalled() {
+  await rm(interopFixture, { force: true, recursive: true });
+  await cp(fixture, interopFixture, { recursive: true });
+  const manifest = z
+    .looseObject({ dependencies: z.record(z.string(), z.string()) })
+    .parse(JSON.parse(await readFile(join(root, 'package.json'), 'utf8')));
+  const hostDependencies = [
+    '@base-ui/react',
+    'class-variance-authority',
+    'clsx',
+    'lucide-react',
+    'motion',
+    'tailwind-merge',
+  ].map((name) => {
+    const version = manifest.dependencies[name];
+    if (version === undefined) {
+      throw new Error(`Missing host control dependency: ${name}`);
+    }
+    return `${name}@${version}`;
+  });
+  await $`bun add --cwd ${interopFixture} ${hostDependencies}`;
+  const controls = ['alert', 'badge', 'button', 'field', 'group', 'input', 'label', 'separator', 'spinner'];
+  const hostFiles = [
+    ...controls.map((name) => `components/${name}/index.tsx`),
+    'lib/base-ui-compat/index.tsx',
+    'lib/utils/index.tsx',
+  ];
+  await Promise.all(
+    hostFiles.map(async (path) => {
+      const target = path.startsWith('components/') ? path.replace('components/', 'components/ui/') : path;
+      await mkdir(join(interopFixture, target, '..'), { recursive: true });
+      const source = await readFile(join(root, 'registry/base-nova/protoform', path), 'utf8');
+      await writeFile(join(interopFixture, target), source.replaceAll('@/registry/base-nova/protoform/lib/', '@/lib/'));
+    })
+  );
+  await $`bunx --no-install shadcn add @protoform/formik-demo @protoform/final-form-demo @protoform/tanstack-form-demo --cwd ${interopFixture} --yes --overwrite`;
+  const graph = await $`bun pm --cwd ${interopFixture} ls --all`.quiet().text();
+  const lock = await readFile(join(interopFixture, 'bun.lock'), 'utf8');
+  if (defaultFormPackages.test(graph) || defaultFormPackages.test(lock)) {
+    throw new Error('Native interop demos installed React Hook Form or its resolvers');
+  }
+  await access(join(interopFixture, 'LICENSES/protoform-MIT.txt'));
+  if (existsSync(join(interopFixture, 'components/protoform-examples/runtime/catalog-form-demo.tsx'))) {
+    throw new Error('Native interop demos installed the default catalog renderer');
+  }
+  await writeFile(
+    join(interopFixture, 'consumer-smoke.tsx'),
+    [
+      'import { renderToStaticMarkup } from "react-dom/server";',
+      'import { FormikDemo } from "./components/protoform-examples/formik";',
+      'import { FinalFormDemo } from "./components/protoform-examples/final-form";',
+      'import { TanstackFormDemo } from "./components/protoform-examples/tanstack-form";',
+      'const html = renderToStaticMarkup(<><FormikDemo /><FinalFormDemo /><TanstackFormDemo /></>);',
+      'for (const engine of ["Formik", "Final Form", "TanStack Form"]) { if (!html.includes("Validate with " + engine)) throw new Error("Installed " + engine + " demo did not render"); }',
+    ].join('\n')
+  );
+  await $`bun run --cwd ${interopFixture} typecheck`;
+  await $`bun ${join(interopFixture, 'consumer-smoke.tsx')}`;
+  console.log(`Native interop demos installed, typechecked, and rendered without RHF: ${interopFixture}`);
+}
+
 async function assertTanStackInstalled() {
   await $`bun install --cwd ${tanstackFixture}`;
   await $`bunx --no-install shadcn add @protoform/protoform-shadcn-tanstack --cwd ${tanstackFixture} --yes --overwrite`;
@@ -509,9 +572,14 @@ await rm(tanstackFixture, { force: true, recursive: true });
 await cp(fixture, tanstackFixture, { recursive: true });
 const server = await servePublic();
 try {
-  await rm(hostFixture, { force: true, recursive: true });
-  await assertHostInstalled();
   if (!process.argv.includes('--host-only')) {
+    await assertInteropInstalled();
+  }
+  if (!process.argv.includes('--interop-only')) {
+    await rm(hostFixture, { force: true, recursive: true });
+    await assertHostInstalled();
+  }
+  if (!(process.argv.includes('--host-only') || process.argv.includes('--interop-only'))) {
     await assertTanStackInstalled();
     await $`bun install --cwd ${coreFixture}`;
     await $`bunx --no-install shadcn add @protoform/protoform-core --cwd ${coreFixture} --yes --overwrite`;

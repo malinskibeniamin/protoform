@@ -29,6 +29,7 @@ const expectedItems = [
   'auto-form-tanstack-v2',
   'protoform',
   'protoform-examples',
+  'protoform-demo-fixtures',
   'protoform-demo-runtime',
   ...demoCatalog.map((demo) => demo.registryName),
 ];
@@ -96,6 +97,10 @@ const dependencyItemSchema = z.object({
   files: z.array(z.object({ target: z.string().optional() })).optional(),
   registryDependencies: z.array(z.string()).optional(),
 });
+
+function includesPackage(dependencies: string[] | undefined, name: string): boolean {
+  return dependencies?.some((dependency) => dependency === name || dependency.startsWith(`${name}@`)) ?? false;
+}
 const protoformReact = dependencyItemSchema.parse(JSON.parse(readFileSync('public/r/protoform-react.json', 'utf8')));
 if (
   !(
@@ -124,8 +129,8 @@ const reactHookFormV8AutoForm = dependencyItemSchema.parse(
 );
 if (
   !reactHookFormV8Hook.dependencies?.includes(reactHookFormV8Alias) ||
-  reactHookFormV8Hook.dependencies.includes('react-hook-form') ||
-  reactHookFormV8Hook.dependencies.includes('@hookform/resolvers')
+  includesPackage(reactHookFormV8Hook.dependencies, 'react-hook-form') ||
+  includesPackage(reactHookFormV8Hook.dependencies, '@hookform/resolvers')
 ) {
   throw new Error('use-proto-form-v8 must install only the pinned v8 form-library alias');
 }
@@ -150,7 +155,7 @@ if (
 ) {
   throw new Error('auto-form-tanstack must depend on the shared core and TanStack hook');
 }
-if (tanstackAutoForm.dependencies?.includes('react-hook-form')) {
+if (includesPackage(tanstackAutoForm.dependencies, 'react-hook-form')) {
   throw new Error('auto-form-tanstack must not install React Hook Form');
 }
 

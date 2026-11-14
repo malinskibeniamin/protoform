@@ -5,6 +5,7 @@ import type { AutoFormFieldProps } from '../core-types';
 import { FIELD_MASK_PATH_SPLIT_PATTERN, getFieldUiConfig } from '../helpers';
 import type { FieldTypeDefinition } from '../registry';
 import { Text, Textarea } from '../ui-components';
+import { builtInFieldMetadata } from './metadata';
 import { useFieldTestIds } from './shared';
 
 function FieldMaskFieldComponent({ error, field, id, inputProps }: AutoFormFieldProps) {
@@ -46,8 +47,6 @@ function FieldMaskFieldComponent({ error, field, id, inputProps }: AutoFormField
 export { FieldMaskFieldComponent };
 
 export const fieldMaskFieldDefinition: FieldTypeDefinition = {
+  ...builtInFieldMetadata.fieldMask,
   component: FieldMaskFieldComponent,
-  match: (field) => field.type === 'fieldMask',
-  name: 'fieldMask',
-  priority: 10,
 };

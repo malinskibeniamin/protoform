@@ -4,11 +4,11 @@
   "title": "Protoform protobuf provider",
   "description": "Protobuf-ES v2 descriptors, ProtoValidate and CEL validation, AIP helpers, and Connect error mapping.",
   "dependencies": [
-    "@buf/googleapis_googleapis.bufbuild_es",
-    "@bufbuild/protobuf",
+    "@buf/googleapis_googleapis.bufbuild_es@^2.15.0-20261015202054-8ac61b9e5023.1",
+    "@bufbuild/protobuf@^2.16.0",
     "@bufbuild/protovalidate@^1.3.0",
-    "@connectrpc/connect",
-    "@standard-schema/spec"
+    "@connectrpc/connect@^2.3.0",
+    "@standard-schema/spec@^1.1.0"
   ],
   "registryDependencies": [
     "@protoform/hook-runtime"

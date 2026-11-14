@@ -134,6 +134,7 @@
   "public/r/protobuf-well-known-types-demo.json",
   "public/r/protoc-gen-protoform.json",
   "public/r/protoform-core.json",
+  "public/r/protoform-demo-fixtures.json",
   "public/r/protoform-demo-runtime.json",
   "public/r/protoform-examples.json",
   "public/r/protoform-foundation.json",

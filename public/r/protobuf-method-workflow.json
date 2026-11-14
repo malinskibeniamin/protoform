@@ -4,8 +4,8 @@
   "title": "Protobuf method workflow",
   "description": "Reads AIP method categories, HTTP bindings, and long-running operation info from method descriptors, and composes create, update, and delete requests.",
   "dependencies": [
-    "@buf/googleapis_googleapis.bufbuild_es",
-    "@bufbuild/protobuf"
+    "@buf/googleapis_googleapis.bufbuild_es@^2.15.0-20261015202054-8ac61b9e5023.1",
+    "@bufbuild/protobuf@^2.16.0"
   ],
   "registryDependencies": [
     "@protoform/protobuf-provider"

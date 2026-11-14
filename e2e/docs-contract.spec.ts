@@ -1,4 +1,5 @@
 import { expect } from '@rstest/playwright';
+import ts from 'typescript';
 import { z } from 'zod';
 import { demoCatalog } from '../examples/catalog/demo-catalog';
 import { demoHubs, demoRedirects } from '../examples/catalog/demo-docs';
@@ -102,6 +103,40 @@ test('keeps the selected demo when switching documentation language', async ({ p
   await expect(page).toHaveURL(`${docsBaseURL}/docs/pl/protobuf-examples#protobuf-maps`);
   await expect(page.locator('html')).toHaveAttribute('lang', 'pl');
   await expect(page.getByRole('heading', { exact: true, name: 'Protobuf maps' })).toBeVisible();
+});
+
+test('keeps locale selection independent of unused translation dictionaries', async ({ page, request }) => {
+  await page.goto('/docs/getting-started');
+  const script = await page.locator('script[src*="/LanguageSwitcher."]').getAttribute('src');
+  if (!script) {
+    throw new Error('The language switcher must load its client module.');
+  }
+  const visited = new Set<string>();
+  let bytes = 0;
+  const visit = async (url: string): Promise<void> => {
+    if (visited.has(url)) {
+      return;
+    }
+    visited.add(url);
+    const response = await request.get(url);
+    expect(response.ok()).toBe(true);
+    const body = await response.body();
+    bytes += body.byteLength;
+    const source = ts.createSourceFile(url, body.toString(), ts.ScriptTarget.Latest, true);
+    const imports = source.statements.flatMap((statement) => {
+      if (
+        (ts.isImportDeclaration(statement) || ts.isExportDeclaration(statement)) &&
+        statement.moduleSpecifier &&
+        ts.isStringLiteral(statement.moduleSpecifier)
+      ) {
+        return [new URL(statement.moduleSpecifier.text, url).href];
+      }
+      return [];
+    });
+    await Promise.all(imports.map(visit));
+  };
+  await visit(new URL(script, docsBaseURL).href);
+  expect(bytes).toBeLessThan(8192);
 });
 
 test('publishes complete search assets for every configured language', async ({ request }) => {

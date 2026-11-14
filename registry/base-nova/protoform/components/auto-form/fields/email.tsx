@@ -2,8 +2,9 @@
 
 import { MailIcon } from 'lucide-react';
 import type { AutoFormFieldProps } from '../core-types';
-import { EMAIL_FIELD_PATTERN, getFieldUiConfig } from '../helpers';
+import { getFieldUiConfig } from '../helpers';
 import type { FieldTypeDefinition } from '../registry';
+import { builtInFieldMetadata } from './metadata';
 import { StringLikeInput, useFieldTestIds } from './shared';
 
 function EmailFieldComponent(props: AutoFormFieldProps) {
@@ -25,9 +26,6 @@ function EmailFieldComponent(props: AutoFormFieldProps) {
 export { EmailFieldComponent };
 
 export const emailFieldDefinition: FieldTypeDefinition = {
+  ...builtInFieldMetadata.email,
   component: EmailFieldComponent,
-  match: (field, context) =>
-    field.type === 'string' && (context.inputType === 'email' || EMAIL_FIELD_PATTERN.test(context.identity)),
-  name: 'email',
-  priority: 20,
 };

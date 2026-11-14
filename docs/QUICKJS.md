@@ -18,7 +18,7 @@ With the `@protoform` registry configured in `components.json`:
 bunx shadcn@latest add @protoform/protoform-quickjs
 ```
 
-This installs editable `lib/quickjs` source and `quickjs-emscripten@0.32.0`. It does not install React or AutoForm. Install your preferred AutoForm item separately. Existing items do not depend on QuickJS.
+This installs editable `lib/quickjs` source and `quickjs-emscripten-core@0.32.0` plus `@jitl/quickjs-wasmfile-release-sync@0.32.0`. It does not install React or AutoForm. Install your preferred AutoForm item separately. Existing items do not depend on QuickJS.
 
 ## Evaluate a complete rule
 
@@ -144,7 +144,7 @@ The [order review example](../examples/quickjs/README.md) keeps host drafts and 
 
 ### Resource-limit evidence and remaining risks
 
-The pinned `quickjs-emscripten@0.32.0` has open reports of [under-enforced heap accounting and host-stack overflow](https://github.com/justjake/quickjs-emscripten/issues/275), and [WASM abort during out-of-memory cleanup](https://github.com/justjake/quickjs-emscripten/issues/257). We do not claim to fix those upstream defects. The separate linear-memory cap uses the version's supported `newVariant(..., { wasmMemory })` API, not the unreleased `maxMemoryBytes` option proposed in [upstream PR 283](https://github.com/justjake/quickjs-emscripten/pull/283).
+The pinned QuickJS 0.32.0 runtime has open reports of [under-enforced heap accounting and host-stack overflow](https://github.com/justjake/quickjs-emscripten/issues/275), and [WASM abort during out-of-memory cleanup](https://github.com/justjake/quickjs-emscripten/issues/257). We do not claim to fix those upstream defects. The separate linear-memory cap uses the version's supported `newVariant(..., { wasmMemory })` API, not the unreleased `maxMemoryBytes` option proposed in [upstream PR 283](https://github.com/justjake/quickjs-emscripten/pull/283).
 
 The evaluator test instantiates real WASM modules and verifies that their actual memories are independent and reject growth past 32 MiB. Browser tests reject an infinite loop, a bounded 40 MiB buffer attempt, and recursion, then successfully evaluate another rule in a fresh worker. These checks demonstrate those failure/recovery paths, not exhaustive denial-of-service resistance. No large allocation stress payloads or browser/process memory ceilings are certified. Review this boundary again before enabling unreviewed code.
 

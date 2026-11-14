@@ -14,6 +14,21 @@ export const EMAIL_FIELD_PATTERN = /(email|e-mail)/iu;
 export const CURRENCY_FIELD_PATTERN = /(amount|price|cost|balance|budget|revenue|salary|subtotal|total)/iu;
 export const LONG_TEXT_FIELD_PATTERN = /(bio|description|details|notes?|summary|message|comment)/iu;
 
+export function readDataProviderId(field: ParsedField | undefined): string | undefined {
+  const customData = field?.fieldConfig?.customData;
+  if (!(customData && typeof customData === 'object')) {
+    return;
+  }
+  if (typeof customData['dataProvider'] === 'string') {
+    return customData['dataProvider'];
+  }
+  const { ui } = customData;
+  if (isRecord(ui) && typeof ui['dataProvider'] === 'string') {
+    return ui['dataProvider'];
+  }
+  return undefined;
+}
+
 export function isRecord(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
 }

@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process';
 import { type AutoFormConfigurationDiagnostic, inspectAutoFormConfiguration } from '../configuration';
 import { defaultRegistry } from '../fields';
 import { createMockProvider } from './test-utils';
@@ -33,6 +34,61 @@ const schema = createMockProvider([
 ]);
 
 describe('inspectAutoFormConfiguration', () => {
+  test.each(['headless-first', 'runtime-first'])('preserves live registry behavior with %s imports', (order) => {
+    const output = execFileSync(
+      'bun',
+      [
+        '--eval',
+        `
+          const inspectorPath = './registry/base-nova/protoform/components/auto-form/configuration';
+          const runtimePath = './registry/base-nova/protoform/components/auto-form/fields';
+          const schema = {
+            getDefaultValues: () => ({}),
+            parseSchema: () => ({ fields: [{ key: 'headline', required: false, type: 'string' }] }),
+            validateSchema: values => ({ data: values, success: true }),
+          };
+          ${order === 'runtime-first' ? 'await import(runtimePath);' : ''}
+          const { inspectAutoFormConfiguration } = await import(inspectorPath);
+          const before = inspectAutoFormConfiguration({ schema });
+          const { AutoFormFieldComponentRegistry, defaultRegistry } = await import(runtimePath);
+          const original = defaultRegistry.list().find(definition => definition.name === 'string');
+          defaultRegistry.register({ ...original, name: 'slider', priority: 1000, match: () => true });
+          const afterRegister = inspectAutoFormConfiguration({ schema });
+          const clone = defaultRegistry.clone().register({ ...original, name: 'custom', priority: 2000, match: () => true });
+          const cloneDiagnostics = inspectAutoFormConfiguration({ fieldRegistry: clone, schema });
+          defaultRegistry.list()[0].name = 'date';
+          const afterMutation = inspectAutoFormConfiguration({ schema });
+          AutoFormFieldComponentRegistry.addedRenderer = original.component;
+          const addedRenderer = inspectAutoFormConfiguration({ schema, fieldConfig: { headline: { fieldType: 'addedRenderer' } } });
+          console.log(JSON.stringify({ before, afterRegister, cloneDiagnostics, afterMutation, addedRenderer }));
+        `,
+      ],
+      { encoding: 'utf8' }
+    );
+    const result: unknown = JSON.parse(output);
+    expect(result).toEqual({
+      before: [],
+      addedRenderer: [],
+      afterRegister: [
+        {
+          code: 'incompatible-control',
+          message: 'Renderer "slider" is incompatible with field type "string".',
+          path: 'headline',
+          severity: 'error',
+        },
+      ],
+      cloneDiagnostics: [],
+      afterMutation: [
+        {
+          code: 'incompatible-control',
+          message: 'Renderer "date" is incompatible with field type "string".',
+          path: 'headline',
+          severity: 'error',
+        },
+      ],
+    });
+  });
+
   test('returns deterministic diagnostics for every nested configuration defect', () => {
     const diagnostics = inspectAutoFormConfiguration({
       dataProviders: {},

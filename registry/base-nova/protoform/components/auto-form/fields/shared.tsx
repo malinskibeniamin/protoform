@@ -5,7 +5,7 @@ import React from 'react';
 
 import { useAutoFormRuntimeContext } from '../context';
 import type { AutoFormFieldProps } from '../core-types';
-import { getFieldUiConfig, isRecord, NUMERIC_OPTION_PATTERN } from '../helpers';
+import { getFieldUiConfig, NUMERIC_OPTION_PATTERN, readDataProviderId as readFieldDataProviderId } from '../helpers';
 import { getAutoFormChoiceTestId, getAutoFormFieldTestId } from '../test-ids';
 import type { AutoFormOptionGroup, AutoFormOptionItem } from '../types';
 import { Input, InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from '../ui-components';
@@ -222,16 +222,5 @@ export function StringLikeInput({
 }
 
 export function readDataProviderId(field: AutoFormFieldProps['field'] | undefined): string | undefined {
-  const customData = field?.fieldConfig?.customData;
-  if (!(customData && typeof customData === 'object')) {
-    return;
-  }
-  if (typeof customData['dataProvider'] === 'string') {
-    return customData['dataProvider'];
-  }
-  const { ui } = customData;
-  if (isRecord(ui) && typeof ui['dataProvider'] === 'string') {
-    return ui['dataProvider'];
-  }
-  return undefined;
+  return readFieldDataProviderId(field);
 }

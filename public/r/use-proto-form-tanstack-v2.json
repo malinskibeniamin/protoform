@@ -4,7 +4,7 @@
   "title": "Experimental useProtoForm for TanStack Form v2",
   "description": "Experimental TanStack Form v2 alpha adapter with the native atom, validator-array, and validator-output APIs plus protobuf messages, update masks, and oneofs.",
   "dependencies": [
-    "@bufbuild/protobuf",
+    "@bufbuild/protobuf@^2.16.0",
     "@tanstack/react-form-v2@npm:@tanstack/react-form@2.0.0-alpha.3"
   ],
   "registryDependencies": [

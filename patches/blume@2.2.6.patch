@@ -1,11 +1,157 @@
+diff --git a/src/components/layout/LanguageSwitcher.astro b/src/components/layout/LanguageSwitcher.astro
+index acdc311..6a9796e 100644
+--- a/src/components/layout/LanguageSwitcher.astro
++++ b/src/components/layout/LanguageSwitcher.astro
+@@ -95 +95 @@ const menuRowClass =
+-  import { rememberLocaleChoice } from "./locale-redirect.ts";
++  import { rememberLocaleChoice } from "./locale-choice.ts";
+diff --git a/src/components/layout/locale-choice.ts b/src/components/layout/locale-choice.ts
+new file mode 100644
+index 0000000..f0fcdcb
+--- /dev/null
++++ b/src/components/layout/locale-choice.ts
+@@ -0,0 +1,65 @@
++export const LOCALE_STORAGE_KEY = "blume-locale";
++
++/** A click target that can look up its ancestors: an element. */
++interface ClosestTarget {
++  closest: (selector: string) => {
++    getAttribute: (name: string) => string | null;
++    setAttribute: (name: string, value: string) => void;
++  } | null;
++}
++
++/** A click, as the listener reads it. */
++interface Click {
++  target: EventTarget | ClosestTarget | null;
++}
++
++/** What {@link rememberLocaleChoice} listens on: the document. */
++export interface ChoiceTarget {
++  addEventListener: (
++    type: "click",
++    listener: (event: Click) => void,
++    options: { capture: true }
++  ) => void;
++  location: { readonly hash: string };
++}
++
++const hasClosest = (target: Click["target"]): target is ClosestTarget =>
++  target !== null && "closest" in target;
++
++/** The switcher link a click landed on, if any. */
++const chosenLink = (target: Click["target"]) =>
++  hasClosest(target) ? target.closest("a[data-blume-locale-choice]") : null;
++
++/**
++ * Remember a language picked with the switcher, so routing by browser
++ * language stops sending the reader elsewhere, and keep the reader's place:
++ * the chosen link carries the current fragment (a heading the translation
++ * lacks leaves the reader at the top). One listener on the document covers
++ * every switcher, on every page the client router swaps in. It listens in
++ * the capture phase: the client router's own listener on the document reads
++ * the link's href and navigates, and it's registered first.
++ */
++export const rememberLocaleChoice = (target: ChoiceTarget): void => {
++  target.addEventListener(
++    "click",
++    (event) => {
++      const link = chosenLink(event.target);
++      const code = link?.getAttribute("hreflang");
++      if (!(link && code)) {
++        return;
++      }
++      // Rewritten even without a fragment, so one left by an earlier click
++      // (one that opened a new tab) doesn't stick.
++      const href = link.getAttribute("href");
++      if (href !== null) {
++        link.setAttribute("href", href.split("#")[0] + target.location.hash);
++      }
++      try {
++        localStorage.setItem(LOCALE_STORAGE_KEY, code);
++      } catch {
++        // Storage can be off; routing then stays off too (see the script).
++      }
++    },
++    { capture: true }
++  );
++};
+diff --git a/src/components/layout/locale-redirect.ts b/src/components/layout/locale-redirect.ts
+index 8b2792b..aed25db 100644
+--- a/src/components/layout/locale-redirect.ts
++++ b/src/components/layout/locale-redirect.ts
+@@ -19 +19 @@ import type { RouteSet } from "../../core/locale-links.ts";
+-export const LOCALE_STORAGE_KEY = "blume-locale";
++export { LOCALE_STORAGE_KEY, rememberLocaleChoice, type ChoiceTarget } from "./locale-choice.ts";
+@@ -64,63 +63,0 @@ export const LOCALE_REDIRECT_SCRIPT = `(()=>{const s=document.currentScript;if(!
+-/** A click target that can look up its ancestors: an element. */
+-interface ClosestTarget {
+-  closest: (selector: string) => {
+-    getAttribute: (name: string) => string | null;
+-    setAttribute: (name: string, value: string) => void;
+-  } | null;
+-}
+-
+-/** A click, as the listener reads it. */
+-interface Click {
+-  target: EventTarget | ClosestTarget | null;
+-}
+-
+-/** What {@link rememberLocaleChoice} listens on: the document. */
+-export interface ChoiceTarget {
+-  addEventListener: (
+-    type: "click",
+-    listener: (event: Click) => void,
+-    options: { capture: true }
+-  ) => void;
+-  location: { readonly hash: string };
+-}
+-
+-const hasClosest = (target: Click["target"]): target is ClosestTarget =>
+-  target !== null && "closest" in target;
+-
+-/** The switcher link a click landed on, if any. */
+-const chosenLink = (target: Click["target"]) =>
+-  hasClosest(target) ? target.closest("a[data-blume-locale-choice]") : null;
+-
+-/**
+- * Remember a language picked with the switcher, so routing by browser
+- * language stops sending the reader elsewhere, and keep the reader's place:
+- * the chosen link carries the current fragment (a heading the translation
+- * lacks leaves the reader at the top). One listener on the document covers
+- * every switcher, on every page the client router swaps in. It listens in
+- * the capture phase: the client router's own listener on the document reads
+- * the link's href and navigates, and it's registered first.
+- */
+-export const rememberLocaleChoice = (target: ChoiceTarget): void => {
+-  target.addEventListener(
+-    "click",
+-    (event) => {
+-      const link = chosenLink(event.target);
+-      const code = link?.getAttribute("hreflang");
+-      if (!(link && code)) {
+-        return;
+-      }
+-      // Rewritten even without a fragment, so one left by an earlier click
+-      // (one that opened a new tab) doesn't stick.
+-      const href = link.getAttribute("href");
+-      if (href !== null) {
+-        link.setAttribute("href", href.split("#")[0] + target.location.hash);
+-      }
+-      try {
+-        localStorage.setItem(LOCALE_STORAGE_KEY, code);
+-      } catch {
+-        // Storage can be off; routing then stays off too (see the script).
+-      }
+-    },
+-    { capture: true }
+-  );
+-};
 diff --git a/src/components/openapi/Playground.astro b/src/components/openapi/Playground.astro
-index d77021c58766a6aa6a87194dd15d779bfbae5420..c2186f5e61fb293ae4f5392d69db5c5ef393b817 100644
+index d77021c..c2186f5 100644
 --- a/src/components/openapi/Playground.astro
 +++ b/src/components/openapi/Playground.astro
-@@ -9,12 +9,8 @@ import { paramKey, type PlaygroundModel } from "./request.ts";
- import { referenceStrings } from "./strings.ts";
- 
- /**
+@@ -12,6 +12,2 @@ import { referenceStrings } from "./strings.ts";
 - * The interactive "Try it" panel for one operation. Everything is
 - * server-rendered — a native collapsed `<details>` with plain labelled
 - * inputs, keyboard-operable with zero JS — and the client module only loads
@@ -14,13 +160,7 @@ index d77021c58766a6aa6a87194dd15d779bfbae5420..c2186f5e61fb293ae4f5392d69db5c5e
 - * lazy chunk needs no data fetch.
 + * The interactive "Try it" panel for one operation. Controls are wired when
 + * the custom element connects so the first edit or Send click is not lost.
-  */
- 
- interface Props {
-@@ -331,31 +327,11 @@ const CHECKBOX_ROW =
- </blume-playground>
- 
- <script>
+@@ -334,5 +330,2 @@ const CHECKBOX_ROW =
 -  // Hydration waits for intent: a collapsed <details> can only fire its first
 -  // `toggle` by opening, so the one-shot listener imports the client module —
 -  // a separate chunk readers who never try a request never download — and
@@ -28,8 +168,7 @@ index d77021c58766a6aa6a87194dd15d779bfbae5420..c2186f5e61fb293ae4f5392d69db5c5e
 -  // so that module stays import-safe under the test runner.
 +  import { initPlayground } from "./playground-client.ts";
 +
-   class BlumePlayground extends HTMLElement {
-     connectedCallback() {
+@@ -341,18 +334 @@ const CHECKBOX_ROW =
 -      const details = this.querySelector<HTMLDetailsElement>(
 -        "details[data-playground]"
 -      );
@@ -49,6 +188,3 @@ index d77021c58766a6aa6a87194dd15d779bfbae5420..c2186f5e61fb293ae4f5392d69db5c5e
 -      }
 -      details.addEventListener("toggle", init, { once: true });
 +      initPlayground(this);
-     }
-   }
- 

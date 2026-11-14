@@ -1,8 +1,6 @@
 'use client';
 
-import { getProtoFieldCustomData } from '@/registry/base-nova/protoform/lib/protobuf-provider/provider';
 import type { AutoFormFieldProps } from '../core-types';
-import { CONSENT_FIELD_PATTERN } from '../helpers';
 import type { FieldTypeDefinition } from '../registry';
 import {
   Checkbox,
@@ -14,6 +12,7 @@ import {
   Switch,
   Toggle,
 } from '../ui-components';
+import { builtInFieldMetadata } from './metadata';
 import { getControlLabel, useFieldTestIds } from './shared';
 
 function BooleanFieldComponent({ error, field, id, inputProps, label }: AutoFormFieldProps) {
@@ -128,28 +127,16 @@ function ToggleFieldComponent({ error, field, id, inputProps, label }: AutoFormF
 export { BooleanFieldComponent, CheckboxFieldComponent, SwitchFieldComponent, ToggleFieldComponent };
 
 export const booleanFieldDefinition: FieldTypeDefinition = {
+  ...builtInFieldMetadata.boolean,
   component: BooleanFieldComponent,
-  match: (field) => {
-    if (field.type !== 'boolean') {
-      return false;
-    }
-    const protoData = getProtoFieldCustomData(field);
-    return Boolean(protoData?.supportsUnset) && !field.required;
-  },
-  name: 'boolean',
-  priority: 15,
 };
 
 export const checkboxFieldDefinition: FieldTypeDefinition = {
+  ...builtInFieldMetadata.checkbox,
   component: CheckboxFieldComponent,
-  match: (field, context) => field.type === 'boolean' && CONSENT_FIELD_PATTERN.test(context.identity),
-  name: 'checkbox',
-  priority: 14,
 };
 
 export const switchFieldDefinition: FieldTypeDefinition = {
+  ...builtInFieldMetadata.switch,
   component: SwitchFieldComponent,
-  match: (field) => field.type === 'boolean',
-  name: 'switch',
-  priority: 10,
 };

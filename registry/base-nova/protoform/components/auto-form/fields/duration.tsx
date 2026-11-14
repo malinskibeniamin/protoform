@@ -4,6 +4,7 @@ import type { AutoFormFieldProps } from '../core-types';
 import { getFieldUiConfig } from '../helpers';
 import type { FieldTypeDefinition } from '../registry';
 import { Input } from '../ui-components';
+import { builtInFieldMetadata } from './metadata';
 import { useFieldTestIds } from './shared';
 
 function DurationFieldComponent({ error, field, id, inputProps }: AutoFormFieldProps) {
@@ -29,8 +30,6 @@ function DurationFieldComponent({ error, field, id, inputProps }: AutoFormFieldP
 export { DurationFieldComponent };
 
 export const durationFieldDefinition: FieldTypeDefinition = {
+  ...builtInFieldMetadata.duration,
   component: DurationFieldComponent,
-  match: (field) => field.type === 'duration',
-  name: 'duration',
-  priority: 10,
 };

@@ -4,8 +4,8 @@
   "title": "Experimental useProtoForm for React Hook Form v8",
   "description": "Experimental React Hook Form v8 beta adapter with protobuf messages, update masks, oneofs, and Connect/gRPC field violations.",
   "dependencies": [
-    "@bufbuild/protobuf",
-    "@connectrpc/connect",
+    "@bufbuild/protobuf@^2.16.0",
+    "@connectrpc/connect@^2.3.0",
     "react-hook-form-v8@npm:react-hook-form@8.0.0-beta.5"
   ],
   "registryDependencies": [

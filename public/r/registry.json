@@ -1,7 +1,4 @@
 {
-  "$schema": "https://ui.shadcn.com/schema/registry.json",
-  "name": "protoform",
-  "homepage": "https://github.com/malinskibeniamin/protoform",
   "items": [
     {
       "name": "protoform-shadcn-host",
@@ -37,11 +34,11 @@
       "description": "Five live Book RPC flows: list, get, RHF stepper create with ISBN CEL, update masks with etags, and AutoForm delete.",
       "registryDependencies": ["@protoform/protoform-shadcn", "@protoform/protoform-demo-runtime"],
       "dependencies": [
-        "@buf/googleapis_googleapis.bufbuild_es",
-        "@bufbuild/protobuf",
-        "@connectrpc/connect",
-        "@connectrpc/connect-query",
-        "@tanstack/react-query",
+        "@buf/googleapis_googleapis.bufbuild_es@^2.15.0-20261015202054-8ac61b9e5023.1",
+        "@bufbuild/protobuf@^2.16.0",
+        "@connectrpc/connect@^2.3.0",
+        "@connectrpc/connect-query@^2.3.1",
+        "@tanstack/react-query@^5.105.1",
         "react-hook-form@^7.92.0"
       ],
       "files": [
@@ -98,7 +95,7 @@
       "title": "Protoform foundation",
       "description": "Framework-free field model and Standard Schema integration shared by Protoform adapters.",
       "registryDependencies": ["@protoform/protoform-license"],
-      "dependencies": ["@standard-schema/spec"],
+      "dependencies": ["@standard-schema/spec@^1.1.0"],
       "files": [
         {
           "path": "registry/base-nova/protoform/lib/core/field-model.ts",
@@ -128,7 +125,7 @@
       "title": "Form library validation adapters",
       "description": "Formik and Final Form validators built from any Standard Schema, including Protoform schemas.",
       "registryDependencies": ["@protoform/protoform-foundation"],
-      "dependencies": ["@standard-schema/spec"],
+      "dependencies": ["@standard-schema/spec@^1.1.0"],
       "files": [
         {
           "path": "registry/base-nova/protoform/lib/core/form-library-adapters.ts",
@@ -144,11 +141,11 @@
       "description": "Focused protobuf conversion, validation, field-mask, and Connect error runtime shared by form hooks.",
       "registryDependencies": ["@protoform/protoform-foundation"],
       "dependencies": [
-        "@buf/googleapis_googleapis.bufbuild_es",
-        "@bufbuild/protobuf",
+        "@buf/googleapis_googleapis.bufbuild_es@^2.15.0-20261015202054-8ac61b9e5023.1",
+        "@bufbuild/protobuf@^2.16.0",
         "@bufbuild/protovalidate@^1.3.0",
-        "@connectrpc/connect",
-        "@standard-schema/spec"
+        "@connectrpc/connect@^2.3.0",
+        "@standard-schema/spec@^1.1.0"
       ],
       "files": [
         {
@@ -205,11 +202,11 @@
       "description": "Protobuf-ES v2 descriptors, ProtoValidate and CEL validation, AIP helpers, and Connect error mapping.",
       "registryDependencies": ["@protoform/hook-runtime"],
       "dependencies": [
-        "@buf/googleapis_googleapis.bufbuild_es",
-        "@bufbuild/protobuf",
+        "@buf/googleapis_googleapis.bufbuild_es@^2.15.0-20261015202054-8ac61b9e5023.1",
+        "@bufbuild/protobuf@^2.16.0",
         "@bufbuild/protovalidate@^1.3.0",
-        "@connectrpc/connect",
-        "@standard-schema/spec"
+        "@connectrpc/connect@^2.3.0",
+        "@standard-schema/spec@^1.1.0"
       ],
       "files": [
         {
@@ -265,7 +262,10 @@
       "title": "Protobuf method workflow",
       "description": "Reads AIP method categories, HTTP bindings, and long-running operation info from method descriptors, and composes create, update, and delete requests.",
       "registryDependencies": ["@protoform/protobuf-provider"],
-      "dependencies": ["@buf/googleapis_googleapis.bufbuild_es", "@bufbuild/protobuf"],
+      "dependencies": [
+        "@buf/googleapis_googleapis.bufbuild_es@^2.15.0-20261015202054-8ac61b9e5023.1",
+        "@bufbuild/protobuf@^2.16.0"
+      ],
       "files": [
         {
           "path": "registry/base-nova/protoform/lib/protobuf-provider/method-workflow.ts",
@@ -285,7 +285,7 @@
       "title": "Protoform binding generator",
       "description": "Source-copy Buf plugin that emits typed form bindings and source annotations next to generated Protobuf-ES files.",
       "registryDependencies": ["@protoform/protoform-license"],
-      "dependencies": ["@bufbuild/protobuf", "@bufbuild/protoplugin"],
+      "dependencies": ["@bufbuild/protobuf@^2.16.0", "@bufbuild/protoplugin@^2.16.0"],
       "files": [
         {
           "path": "registry/base-nova/protoform/scripts/protoc-gen-protoform/generate-annotations.ts",
@@ -339,7 +339,12 @@
       "type": "registry:hook",
       "title": "useProtoForm",
       "description": "React Hook Form adapter for ProtoValidate ES, CEL rules, protobuf defaults, oneofs, and Connect/gRPC field violations.",
-      "dependencies": ["@bufbuild/protobuf", "@connectrpc/connect", "@hookform/resolvers", "react-hook-form@^7.92.0"],
+      "dependencies": [
+        "@bufbuild/protobuf@^2.16.0",
+        "@connectrpc/connect@^2.3.0",
+        "@hookform/resolvers@^7.0.6",
+        "react-hook-form@^7.92.0"
+      ],
       "files": [
         {
           "path": "registry/base-nova/protoform/hooks/use-proto-form/index.ts",
@@ -378,7 +383,7 @@
       "type": "registry:hook",
       "title": "useProtoForm for TanStack Form",
       "description": "TanStack Form adapter that preserves the native form API and adds protobuf messages, update masks, oneofs, and Connect/gRPC field violations.",
-      "dependencies": ["@bufbuild/protobuf", "@connectrpc/connect", "@tanstack/react-form"],
+      "dependencies": ["@bufbuild/protobuf@^2.16.0", "@connectrpc/connect@^2.3.0", "@tanstack/react-form@^1.33.5"],
       "files": [
         {
           "path": "registry/base-nova/protoform/hooks/use-proto-form-tanstack/index.ts",
@@ -394,8 +399,8 @@
       "title": "Experimental useProtoForm for React Hook Form v8",
       "description": "Experimental React Hook Form v8 beta adapter with protobuf messages, update masks, oneofs, and Connect/gRPC field violations.",
       "dependencies": [
-        "@bufbuild/protobuf",
-        "@connectrpc/connect",
+        "@bufbuild/protobuf@^2.16.0",
+        "@connectrpc/connect@^2.3.0",
         "react-hook-form-v8@npm:react-hook-form@8.0.0-beta.5"
       ],
       "files": [
@@ -427,7 +432,7 @@
       "type": "registry:hook",
       "title": "Experimental useProtoForm for TanStack Form v2",
       "description": "Experimental TanStack Form v2 alpha adapter with the native atom, validator-array, and validator-output APIs plus protobuf messages, update masks, and oneofs.",
-      "dependencies": ["@bufbuild/protobuf", "@tanstack/react-form-v2@npm:@tanstack/react-form@2.0.0-alpha.3"],
+      "dependencies": ["@bufbuild/protobuf@^2.16.0", "@tanstack/react-form-v2@npm:@tanstack/react-form@2.0.0-alpha.3"],
       "files": [
         {
           "path": "registry/base-nova/protoform/hooks/use-proto-form-tanstack-v2/index.ts",
@@ -444,15 +449,15 @@
       "description": "Engine-neutral AutoForm renderer that consumes a host-owned shadcn-compatible component map.",
       "registryDependencies": ["@protoform/protoform-foundation", "@protoform/protobuf-provider"],
       "dependencies": [
-        "@buf/googleapis_googleapis.bufbuild_es",
-        "@bufbuild/cel",
-        "@bufbuild/protobuf",
+        "@buf/googleapis_googleapis.bufbuild_es@^2.15.0-20261015202054-8ac61b9e5023.1",
+        "@bufbuild/cel@^0.6.1",
+        "@bufbuild/protobuf@^2.16.0",
         "@bufbuild/protovalidate@^1.3.0",
-        "@connectrpc/connect",
-        "@standard-schema/spec",
-        "date-fns",
-        "lucide-react",
-        "motion"
+        "@connectrpc/connect@^2.3.0",
+        "@standard-schema/spec@^1.1.0",
+        "date-fns@^4.4.0",
+        "lucide-react@^1.66.0",
+        "motion@^14.9.0"
       ],
       "files": [
         {
@@ -554,6 +559,11 @@
           "path": "registry/base-nova/protoform/components/auto-form/fields/key-value.tsx",
           "type": "registry:component",
           "target": "@components/auto-form/fields/key-value.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/fields/metadata.ts",
+          "type": "registry:component",
+          "target": "@components/auto-form/fields/metadata.ts"
         },
         {
           "path": "registry/base-nova/protoform/components/auto-form/fields/multiselect.tsx",
@@ -850,28 +860,28 @@
       "registryDependencies": ["@protoform/protoform-react"],
       "dependencies": [
         "@base-ui/react@^1.9.0",
-        "@buf/googleapis_googleapis.bufbuild_es",
-        "@bufbuild/cel",
-        "@bufbuild/protobuf",
+        "@buf/googleapis_googleapis.bufbuild_es@^2.15.0-20261015202054-8ac61b9e5023.1",
+        "@bufbuild/cel@^0.6.1",
+        "@bufbuild/protobuf@^2.16.0",
         "@bufbuild/protovalidate@^1.3.0",
-        "@codemirror/lang-json",
-        "@codemirror/language",
-        "@codemirror/lint",
-        "@codemirror/view",
-        "@connectrpc/connect",
-        "@lezer/highlight",
-        "@standard-schema/spec",
-        "@tanstack/react-router",
-        "@uiw/react-codemirror",
-        "class-variance-authority",
-        "clsx",
-        "cmdk",
-        "date-fns",
-        "lucide-react",
-        "motion",
-        "react-day-picker",
-        "tailwind-merge",
-        "zod",
+        "@codemirror/lang-json@^6.0.2",
+        "@codemirror/language@^6.13.1",
+        "@codemirror/lint@^6.9.7",
+        "@codemirror/view@^6.43.15",
+        "@connectrpc/connect@^2.3.0",
+        "@lezer/highlight@^1.2.5",
+        "@standard-schema/spec@^1.1.0",
+        "@tanstack/react-router@^1.170.46",
+        "@uiw/react-codemirror@^4.25.12",
+        "class-variance-authority@^0.7.1",
+        "clsx@^2.1.1",
+        "cmdk@^1.1.1",
+        "date-fns@^4.4.0",
+        "lucide-react@^1.66.0",
+        "motion@^14.9.0",
+        "react-day-picker@^10.0.2",
+        "tailwind-merge@^3.7.0",
+        "zod@^4.6.7",
         "@shadcn/react@0.3.1",
         "@tanstack/react-table@9.3.1",
         "embla-carousel-react@8.6.0",
@@ -1340,28 +1350,28 @@
       "registryDependencies": ["@protoform/protoform-react"],
       "dependencies": [
         "@base-ui/react@^1.9.0",
-        "@buf/googleapis_googleapis.bufbuild_es",
-        "@bufbuild/cel",
-        "@bufbuild/protobuf",
+        "@buf/googleapis_googleapis.bufbuild_es@^2.15.0-20261015202054-8ac61b9e5023.1",
+        "@bufbuild/cel@^0.6.1",
+        "@bufbuild/protobuf@^2.16.0",
         "@bufbuild/protovalidate@^1.3.0",
-        "@codemirror/lang-json",
-        "@codemirror/language",
-        "@codemirror/lint",
-        "@codemirror/view",
-        "@connectrpc/connect",
-        "@lezer/highlight",
-        "@standard-schema/spec",
-        "@tanstack/react-router",
-        "@uiw/react-codemirror",
-        "class-variance-authority",
-        "clsx",
-        "cmdk",
-        "date-fns",
-        "lucide-react",
-        "motion",
-        "react-day-picker",
-        "tailwind-merge",
-        "zod",
+        "@codemirror/lang-json@^6.0.2",
+        "@codemirror/language@^6.13.1",
+        "@codemirror/lint@^6.9.7",
+        "@codemirror/view@^6.43.15",
+        "@connectrpc/connect@^2.3.0",
+        "@lezer/highlight@^1.2.5",
+        "@standard-schema/spec@^1.1.0",
+        "@tanstack/react-router@^1.170.46",
+        "@uiw/react-codemirror@^4.25.12",
+        "class-variance-authority@^0.7.1",
+        "clsx@^2.1.1",
+        "cmdk@^1.1.1",
+        "date-fns@^4.4.0",
+        "lucide-react@^1.66.0",
+        "motion@^14.9.0",
+        "react-day-picker@^10.0.2",
+        "tailwind-merge@^3.7.0",
+        "zod@^4.6.7",
         "@shadcn/react@0.3.1",
         "@tanstack/react-table@9.3.1",
         "embla-carousel-react@8.6.0",
@@ -1816,7 +1826,7 @@
       "title": "Protoform AutoForm for TanStack Form",
       "description": "TanStack Form-native AutoForm with the complete native form API plus Protoform rendering and protobuf helpers.",
       "registryDependencies": ["@protoform/auto-form-core", "@protoform/use-proto-form-tanstack"],
-      "dependencies": ["@tanstack/react-form"],
+      "dependencies": ["@tanstack/react-form@^1.33.5"],
       "files": [
         {
           "path": "registry/base-nova/protoform/components/auto-form-tanstack/index.tsx",
@@ -1866,7 +1876,7 @@
       "title": "Experimental Protoform AutoForm for TanStack Form v2",
       "description": "Experimental AutoForm adapter for the TanStack Form v2 alpha with native atoms, validator arrays, ArrayField state, and submit validation errors.",
       "registryDependencies": ["@protoform/auto-form-core", "@protoform/use-proto-form-tanstack-v2"],
-      "dependencies": ["@tanstack/react-form-v2@npm:@tanstack/react-form@2.0.0-alpha.3", "zod"],
+      "dependencies": ["@tanstack/react-form-v2@npm:@tanstack/react-form@2.0.0-alpha.3", "zod@^4.6.7"],
       "files": [
         {
           "path": "registry/base-nova/protoform/components/auto-form-tanstack-v2/index.tsx",
@@ -2023,30 +2033,30 @@
       ],
       "dependencies": [
         "@base-ui/react@^1.9.0",
-        "@buf/googleapis_googleapis.bufbuild_es",
-        "@bufbuild/cel",
-        "@bufbuild/protobuf",
+        "@buf/googleapis_googleapis.bufbuild_es@^2.15.0-20261015202054-8ac61b9e5023.1",
+        "@bufbuild/cel@^0.6.1",
+        "@bufbuild/protobuf@^2.16.0",
         "@bufbuild/protovalidate@^1.3.0",
-        "@codemirror/lang-json",
-        "@codemirror/language",
-        "@codemirror/lint",
-        "@codemirror/view",
-        "@connectrpc/connect",
-        "@hookform/resolvers",
-        "@lezer/highlight",
-        "@standard-schema/spec",
-        "@tanstack/react-router",
-        "@uiw/react-codemirror",
-        "class-variance-authority",
-        "clsx",
-        "cmdk",
-        "date-fns",
-        "lucide-react",
-        "motion",
-        "react-day-picker",
+        "@codemirror/lang-json@^6.0.2",
+        "@codemirror/language@^6.13.1",
+        "@codemirror/lint@^6.9.7",
+        "@codemirror/view@^6.43.15",
+        "@connectrpc/connect@^2.3.0",
+        "@hookform/resolvers@^7.0.6",
+        "@lezer/highlight@^1.2.5",
+        "@standard-schema/spec@^1.1.0",
+        "@tanstack/react-router@^1.170.46",
+        "@uiw/react-codemirror@^4.25.12",
+        "class-variance-authority@^0.7.1",
+        "clsx@^2.1.1",
+        "cmdk@^1.1.1",
+        "date-fns@^4.4.0",
+        "lucide-react@^1.66.0",
+        "motion@^14.9.0",
+        "react-day-picker@^10.0.2",
         "react-hook-form@^7.92.0",
-        "tailwind-merge",
-        "zod"
+        "tailwind-merge@^3.7.0",
+        "zod@^4.6.7"
       ],
       "files": [
         {
@@ -2103,7 +2113,7 @@
       "title": "Protoform QuickJS rules (experimental)",
       "description": "Experimental, opt-in worker-isolated presentation rules for reviewed JavaScript. CEL remains the default for conditional fields.",
       "registryDependencies": ["@protoform/protoform-foundation"],
-      "dependencies": ["quickjs-emscripten@0.32.0"],
+      "dependencies": ["quickjs-emscripten-core@0.32.0", "@jitl/quickjs-wasmfile-release-sync@0.32.0"],
       "files": [
         {
           "path": "registry/base-nova/protoform/lib/quickjs/bindings.ts",
@@ -2143,18 +2153,13 @@
       ]
     },
     {
-      "dependencies": ["@bufbuild/protobuf", "react", "react-hook-form@^7.92.0"],
+      "dependencies": ["@bufbuild/protobuf@^2.16.0"],
       "description": "Shared fixture descriptors and generated compatibility contracts for focused Protoform demos.",
       "files": [
         {
           "path": "registry/base-nova/protoform/demo/runtime/demo-schemas.ts",
           "target": "~/components/protoform-examples/runtime/demo-schemas.ts",
           "type": "registry:lib"
-        },
-        {
-          "path": "registry/base-nova/protoform/demo/runtime/catalog-form-demo.tsx",
-          "target": "~/components/protoform-examples/runtime/catalog-form-demo.tsx",
-          "type": "registry:component"
         },
         {
           "path": "registry/base-nova/protoform/demo/runtime/format-submitted-value.ts",
@@ -2237,8 +2242,23 @@
           "type": "registry:lib"
         }
       ],
+      "name": "protoform-demo-fixtures",
+      "registryDependencies": ["@protoform/protobuf-provider"],
+      "title": "Protoform demo fixtures",
+      "type": "registry:block"
+    },
+    {
+      "dependencies": ["react"],
+      "description": "React Hook Form catalog renderer with shared Protoform demo fixtures.",
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/runtime/catalog-form-demo.tsx",
+          "target": "~/components/protoform-examples/runtime/catalog-form-demo.tsx",
+          "type": "registry:component"
+        }
+      ],
       "name": "protoform-demo-runtime",
-      "registryDependencies": ["@protoform/protoform"],
+      "registryDependencies": ["@protoform/protoform", "@protoform/protoform-demo-fixtures"],
       "title": "Protoform demo runtime",
       "type": "registry:block"
     },
@@ -3728,7 +3748,7 @@
       "type": "registry:example"
     },
     {
-      "dependencies": ["@tanstack/react-form"],
+      "dependencies": ["@tanstack/react-form@^1.33.5"],
       "description": "Use the same generated field model through the optional TanStack Form adapter.",
       "files": [
         {
@@ -3738,12 +3758,12 @@
         }
       ],
       "name": "tanstack-form-demo",
-      "registryDependencies": ["@protoform/protoform-demo-runtime", "@protoform/use-proto-form-tanstack"],
+      "registryDependencies": ["@protoform/protoform-demo-fixtures", "@protoform/use-proto-form-tanstack"],
       "title": "TanStack Form interoperability",
       "type": "registry:example"
     },
     {
-      "dependencies": ["formik"],
+      "dependencies": ["formik@^2.4.9"],
       "description": "Feed Protoform validation results into an existing Formik form without replacing Formik state.",
       "files": [
         {
@@ -3753,12 +3773,12 @@
         }
       ],
       "name": "formik-demo",
-      "registryDependencies": ["@protoform/protoform-demo-runtime", "@protoform/form-library-adapters"],
+      "registryDependencies": ["@protoform/protoform-demo-fixtures", "@protoform/form-library-adapters"],
       "title": "Formik interoperability",
       "type": "registry:example"
     },
     {
-      "dependencies": ["final-form", "react-final-form"],
+      "dependencies": ["final-form@^5.0.1", "react-final-form@^7.0.1"],
       "description": "Feed Protoform validation results into Final Form while preserving its native subscription model.",
       "files": [
         {
@@ -3768,7 +3788,7 @@
         }
       ],
       "name": "final-form-demo",
-      "registryDependencies": ["@protoform/protoform-demo-runtime", "@protoform/form-library-adapters"],
+      "registryDependencies": ["@protoform/protoform-demo-fixtures", "@protoform/form-library-adapters"],
       "title": "Final Form interoperability",
       "type": "registry:example"
     },
@@ -3952,5 +3972,8 @@
       "title": "Untrusted input hardening",
       "type": "registry:example"
     }
-  ]
+  ],
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "protoform",
+  "homepage": "https://github.com/malinskibeniamin/protoform"
 }

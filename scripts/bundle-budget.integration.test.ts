@@ -1,5 +1,7 @@
 import { execFileSync } from 'node:child_process';
 import { mkdirSync, readFileSync, rmSync, statSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { gzipSync } from 'node:zlib';
 import { describe, expect } from '@rstest/core';
 
 const external = [
@@ -39,6 +41,47 @@ const entries = [
 ] as const;
 
 describe('bundle budgets', () => {
+  test('keeps the headless configuration inspector independent of rendering runtimes', async () => {
+    const { build } = await import('vite');
+    const modules: string[] = [];
+    let compressedBytes = 0;
+    await build({
+      configFile: false,
+      logLevel: 'silent',
+      resolve: { alias: { '@': resolve('.') } },
+      plugins: [
+        {
+          name: 'inspect-configuration-dependencies',
+          generateBundle(_options, bundle) {
+            for (const output of Object.values(bundle)) {
+              if (output.type !== 'chunk') {
+                continue;
+              }
+              compressedBytes += gzipSync(output.code).byteLength;
+              modules.push(
+                ...Object.entries(output.modules)
+                  .filter(([, module]) => module.renderedLength > 0)
+                  .map(([file]) => file)
+              );
+            }
+          },
+        },
+      ],
+      build: {
+        lib: { entry: 'registry/base-nova/protoform/components/auto-form/configuration.ts', formats: ['es'] },
+        minify: true,
+        reportCompressedSize: false,
+        write: false,
+      },
+    });
+    expect(modules.some((file) => file.endsWith('/auto-form/configuration.ts'))).toBe(true);
+    expect(modules.filter((file) => /\/auto-form\/fields\/.*\.tsx$/u.test(file))).toEqual([]);
+    expect(
+      modules.filter((file) => /\/node_modules\/(?:date-fns|lucide-react|motion|framer-motion|react)\//u.test(file))
+    ).toEqual([]);
+    expect(compressedBytes).toBeLessThan(160_000);
+  });
+
   test('enforces registry runtime and example budgets', () => {
     const outputDirectory = '.tmp/bundle-budget';
     rmSync(outputDirectory, { force: true, recursive: true });

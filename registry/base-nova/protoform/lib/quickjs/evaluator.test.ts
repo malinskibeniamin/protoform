@@ -1,18 +1,19 @@
 import { create } from '@bufbuild/protobuf';
+import RELEASE_SYNC from '@jitl/quickjs-wasmfile-release-sync';
 import { PresenceMatrixSchema } from '../../../../../conformance/gen/protoform/conformance/v1/conformance_pb';
 import { evaluateQuickJs } from './evaluator';
 
 declare const { expect, jest, test }: typeof import('bun:test');
 
-const quickJs = await import('quickjs-emscripten');
+const quickJs = await import('quickjs-emscripten-core');
 
 test('context startup does not consume the guest execution budget', async () => {
-  const QuickJS = await quickJs.newQuickJSWASMModule(quickJs.RELEASE_SYNC);
+  const QuickJS = await quickJs.newQuickJSWASMModuleFromVariant(RELEASE_SYNC);
   const runtime = QuickJS.newRuntime();
   const createContext = runtime.newContext.bind(runtime);
   let elapsed = 0;
   const clock = jest.spyOn(performance, 'now').mockImplementation(() => elapsed);
-  const createModule = jest.spyOn(quickJs, 'newQuickJSWASMModule').mockResolvedValue(QuickJS);
+  const createModule = jest.spyOn(quickJs, 'newQuickJSWASMModuleFromVariant').mockResolvedValue(QuickJS);
   const createRuntime = jest.spyOn(QuickJS, 'newRuntime').mockReturnValue(runtime);
   const contextStartup = jest.spyOn(runtime, 'newContext').mockImplementation((...args) => {
     const context = createContext(...args);
@@ -32,9 +33,9 @@ test('context startup does not consume the guest execution budget', async () => 
 });
 
 test('each evaluation has independent WASM memory that cannot grow past 32 MiB', async () => {
-  const instantiate = quickJs.newQuickJSWASMModule;
+  const instantiate = quickJs.newQuickJSWASMModuleFromVariant;
   const memories: WebAssembly.Memory[] = [];
-  const createModule = jest.spyOn(quickJs, 'newQuickJSWASMModule').mockImplementation(async (...args) => {
+  const createModule = jest.spyOn(quickJs, 'newQuickJSWASMModuleFromVariant').mockImplementation(async (...args) => {
     const module = await instantiate(...args);
     memories.push(module.getWasmMemory());
     return module;
@@ -55,9 +56,9 @@ test('each evaluation has independent WASM memory that cannot grow past 32 MiB',
 });
 
 test('disposes the runtime if guest context creation fails', async () => {
-  const module = await quickJs.newQuickJSWASMModule(quickJs.RELEASE_SYNC);
+  const module = await quickJs.newQuickJSWASMModuleFromVariant(RELEASE_SYNC);
   const runtime = module.newRuntime();
-  const createModule = jest.spyOn(quickJs, 'newQuickJSWASMModule').mockResolvedValue(module);
+  const createModule = jest.spyOn(quickJs, 'newQuickJSWASMModuleFromVariant').mockResolvedValue(module);
   const createRuntime = jest.spyOn(module, 'newRuntime').mockReturnValue(runtime);
   const createContext = jest.spyOn(runtime, 'newContext').mockImplementation(() => {
     throw new Error('Context allocation failed');

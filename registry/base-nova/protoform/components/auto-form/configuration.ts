@@ -1,8 +1,7 @@
 import type { ParsedField } from './core-types';
 import type { DataProviderRegistry } from './data-providers';
-import { AutoFormFieldComponentRegistry, defaultRegistry } from './fields';
-import { readDataProviderId } from './fields/shared';
-import { getFieldUiConfig, resolveRenderFieldType } from './helpers';
+import { BUILT_IN_RENDERER_TYPES, getDefaultFieldMetadataRegistry, hasBuiltInFieldRenderer } from './fields/metadata';
+import { getFieldUiConfig, readDataProviderId, resolveRenderFieldType } from './helpers';
 import { buildFieldMatchContext, type FieldTypeRegistry } from './registry';
 import { mergeFieldOverrides, protoConversionOptionsFromFieldConfig, resolveSchema } from './schema';
 import { getStepConfigurationError } from './step-configuration';
@@ -41,38 +40,9 @@ export interface InspectAutoFormConfigurationInput<
   stepper?: AutoFormStepperConfig;
 }
 
+type FieldMetadataRegistry = ReturnType<typeof getDefaultFieldMetadataRegistry>;
+
 const STRUCTURAL_FIELD_TYPES = new Set(['array', 'map', 'object', 'oneof']);
-const BUILT_IN_RENDERER_TYPES: Readonly<Record<string, readonly string[]>> = {
-  boolean: ['boolean'],
-  bytes: ['bytes'],
-  checkbox: ['boolean'],
-  choicebox: ['select'],
-  combobox: ['select'],
-  currency: ['string'],
-  dataProviderMultiSelect: ['array'],
-  dataProviderSelect: ['number', 'string'],
-  date: ['date'],
-  'dropzone-json': ['json', 'object'],
-  duration: ['duration'],
-  email: ['string'],
-  fieldMask: ['fieldMask'],
-  int64: ['int64'],
-  json: ['json', 'object'],
-  keyValue: ['array', 'map'],
-  multiselect: ['array'],
-  number: ['number'],
-  password: ['string'],
-  radio: ['select'],
-  select: ['select'],
-  slider: ['number'],
-  string: ['string'],
-  switch: ['boolean'],
-  textarea: ['string'],
-  timestamp: ['timestamp'],
-  toggle: ['boolean'],
-  toggleGroup: ['select'],
-  url: ['string'],
-};
 
 function collectFields(
   fields: ParsedField[],
@@ -84,7 +54,7 @@ function collectFields(
   });
 }
 
-function resolvedRenderer(field: ParsedField, registry: FieldTypeRegistry<string>): string {
+function resolvedRenderer(field: ParsedField, registry: FieldMetadataRegistry): string {
   const configured = getFieldUiConfig(field).control;
   if (configured !== undefined && configured !== '') {
     return configured;
@@ -92,11 +62,11 @@ function resolvedRenderer(field: ParsedField, registry: FieldTypeRegistry<string
   return registry.resolve(field, buildFieldMatchContext(field))?.name ?? resolveRenderFieldType(field);
 }
 
-function hasRenderer(field: ParsedField, renderer: string, registry: FieldTypeRegistry<string>): boolean {
+function hasRenderer(field: ParsedField, renderer: string, registry: FieldMetadataRegistry): boolean {
   if (STRUCTURAL_FIELD_TYPES.has(field.type) && renderer === field.type) {
     return true;
   }
-  if (renderer !== 'fallback' && Object.hasOwn(AutoFormFieldComponentRegistry, renderer)) {
+  if (hasBuiltInFieldRenderer(renderer)) {
     return true;
   }
   return registry.list().some((definition) => definition.name === renderer);
@@ -105,7 +75,7 @@ function hasRenderer(field: ParsedField, renderer: string, registry: FieldTypeRe
 function fieldDiagnostics(
   field: ParsedField,
   path: string,
-  registry: FieldTypeRegistry<string>,
+  registry: FieldMetadataRegistry,
   dataProviders: DataProviderRegistry | undefined
 ): AutoFormConfigurationDiagnostic[] {
   const diagnostics: AutoFormConfigurationDiagnostic[] = [];
@@ -205,7 +175,7 @@ export function inspectAutoFormConfiguration<
   const fields = mergeFieldOverrides(resolvedSchema.parsedSchema.fields, fieldConfig);
   const flattenedFields = collectFields(fields);
   const validPaths = new Set(flattenedFields.map((entry) => entry.path));
-  const activeRegistry = fieldRegistry ?? defaultRegistry;
+  const activeRegistry = fieldRegistry ?? getDefaultFieldMetadataRegistry();
   const diagnostics: AutoFormConfigurationDiagnostic[] = [...stepDiagnostic];
 
   for (const path of Object.keys(fieldConfig ?? {})) {

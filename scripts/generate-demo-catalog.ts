@@ -5,6 +5,7 @@ import { z } from 'zod';
 
 import { type DemoCatalogEntry, demoCatalog } from '../examples/catalog/demo-catalog.js';
 import { demoHubs, demosForHub } from '../examples/catalog/demo-docs.js';
+import { synchronizeRegistryDependencies } from './registry-dependencies.js';
 
 const root = new URL('../', import.meta.url).pathname;
 const aipDirectory = join(root, 'content/docs/(aip-examples)');
@@ -502,7 +503,6 @@ function generateRegistryRuntime(): string[] {
 
   return [
     'registry/base-nova/protoform/demo/runtime/demo-schemas.ts',
-    'registry/base-nova/protoform/demo/runtime/catalog-form-demo.tsx',
     'registry/base-nova/protoform/demo/runtime/format-submitted-value.ts',
     ...generatedFiles.map((file) => `registry/base-nova/protoform/demo/runtime/gen/${file}`),
   ];
@@ -521,7 +521,11 @@ function generateRegistry(): void {
       items: z.array(z.intersection(z.record(z.string(), z.unknown()), z.looseObject({ name: z.string() }))),
     })
     .parse(JSON.parse(readFileSync(registryPath, 'utf8')));
-  const generatedNames = new Set(['protoform-demo-runtime', ...demoCatalog.map((demo) => demo.registryName)]);
+  const generatedNames = new Set([
+    'protoform-demo-fixtures',
+    'protoform-demo-runtime',
+    ...demoCatalog.map((demo) => demo.registryName),
+  ]);
   const items = registry.items.filter((item) => {
     if (generatedNames.has(item.name)) {
       return false;
@@ -549,7 +553,7 @@ function generateRegistry(): void {
 
   items.push(
     {
-      dependencies: ['@bufbuild/protobuf', 'react', 'react-hook-form@^7.92.0'],
+      dependencies: ['@bufbuild/protobuf'],
       description: 'Shared fixture descriptors and generated compatibility contracts for focused Protoform demos.',
       files: runtimeFiles.map((path) => ({
         path,
@@ -559,13 +563,30 @@ function generateRegistry(): void {
         )}`,
         type: path.endsWith('.tsx') ? 'registry:component' : 'registry:lib',
       })),
+      name: 'protoform-demo-fixtures',
+      registryDependencies: [registryItem('protobuf-provider')],
+      title: 'Protoform demo fixtures',
+      type: 'registry:block',
+    },
+    {
+      dependencies: ['react'],
+      description: 'React Hook Form catalog renderer with shared Protoform demo fixtures.',
+      files: [
+        {
+          path: 'registry/base-nova/protoform/demo/runtime/catalog-form-demo.tsx',
+          target: '~/components/protoform-examples/runtime/catalog-form-demo.tsx',
+          type: 'registry:component',
+        },
+      ],
       name: 'protoform-demo-runtime',
-      registryDependencies: [registryItem('protoform')],
+      registryDependencies: [registryItem('protoform'), registryItem('protoform-demo-fixtures')],
       title: 'Protoform demo runtime',
       type: 'registry:block',
     },
     ...demoCatalog.map((demo) => {
-      const registryDependencies = [registryItem('protoform-demo-runtime')];
+      const registryDependencies = [
+        registryItem(demo.engine === 'react-hook-form' ? 'protoform-demo-runtime' : 'protoform-demo-fixtures'),
+      ];
       if (demo.engine === 'tanstack-form') {
         registryDependencies.push(registryItem('use-proto-form-tanstack'));
       }
@@ -591,6 +612,13 @@ function generateRegistry(): void {
     })
   );
   registry.items = items;
+  const manifest = z
+    .looseObject({
+      dependencies: z.record(z.string(), z.string()),
+      devDependencies: z.record(z.string(), z.string()),
+    })
+    .parse(JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')));
+  synchronizeRegistryDependencies(registry.items, manifest);
   writeFileSync(registryPath, `${JSON.stringify(registry, null, 2)}\n`);
   writtenPaths.push(registryPath);
 }

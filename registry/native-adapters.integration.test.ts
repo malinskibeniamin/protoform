@@ -137,6 +137,27 @@ function uiImports(path: string): string[] {
 }
 
 describe('build-time UI adapter registry', () => {
+  test('declares the tested dependency ranges without changing host React or the v1 bridge', () => {
+    const manifest = z
+      .looseObject({
+        dependencies: z.record(z.string(), z.string()),
+        devDependencies: z.record(z.string(), z.string()),
+      })
+      .parse(JSON.parse(readFileSync('package.json', 'utf8')));
+    for (const entry of registry.items) {
+      for (const dependency of [...(entry.dependencies ?? []), ...(entry.devDependencies ?? [])]) {
+        const name = packageName(dependency);
+        const version =
+          entry.name === 'protobuf-v1-bridge' && name === '@bufbuild/protobuf'
+            ? '^1.10.1'
+            : (manifest.dependencies[name] ?? manifest.devDependencies[name]);
+        expect(dependency, `${entry.name} -> ${name}`).toBe(
+          HOST_OWNED_PACKAGES.has(name) ? name : `${name}@${version}`
+        );
+      }
+    }
+  });
+
   test('offers the complete TanStack UI bundle without installing Recharts', () => {
     const tanstack = item('protoform-shadcn-tanstack');
     const recharts = item('protoform-shadcn');
@@ -175,7 +196,7 @@ describe('build-time UI adapter registry', () => {
       for (const file of entry.files ?? []) {
         expect(file.target ?? '', file.path).not.toMatch(/components\/ui\//u);
       }
-      expect(entry.dependencies ?? [], entry.name).not.toContain('@base-ui/react');
+      expect(entry.dependencies?.map(packageName) ?? [], entry.name).not.toContain('@base-ui/react');
       expect(entry).not.toHaveProperty('css');
       expect(entry).not.toHaveProperty('cssVars');
     }
@@ -326,6 +347,19 @@ describe('build-time UI adapter registry', () => {
 });
 
 describe('native form adapter registry entries', () => {
+  test.each(['formik-demo', 'final-form-demo', 'tanstack-form-demo'])(
+    '%s installs shared fixtures without the default form engine',
+    (name) => {
+      const closure = [...dependencyClosure(name)].map(item);
+      const packages = closure.flatMap((entry) => entry.dependencies?.map(packageName) ?? []);
+      expect(packages).not.toContain('react-hook-form');
+      expect(packages).not.toContain('@hookform/resolvers');
+      expect(closureFilePaths(name)).toContain('registry/base-nova/protoform/demo/runtime/format-submitted-value.ts');
+      expect(closureFilePaths(name)).not.toContain('registry/base-nova/protoform/demo/runtime/catalog-form-demo.tsx');
+      expect(dependencyClosure(name)).toContain('protoform-license');
+    }
+  );
+
   test('ships the legacy shadcn map only with explicit legacy adapters', () => {
     const componentMapPath = 'registry/base-nova/protoform/components/auto-form/shadcn-ui-components.ts';
 
@@ -342,8 +376,8 @@ describe('native form adapter registry entries', () => {
   test('keeps the shared AutoForm core independent from form engines', () => {
     const core = item('auto-form-core');
 
-    expect(core.dependencies).not.toContain('react-hook-form');
-    expect(core.dependencies).not.toContain('@tanstack/react-form');
+    expect(core.dependencies?.map(packageName)).not.toContain('react-hook-form');
+    expect(core.dependencies?.map(packageName)).not.toContain('@tanstack/react-form');
     expect(filePaths(core)).not.toContain(
       'registry/base-nova/protoform/components/auto-form/adapters/react-hook-form.tsx'
     );
@@ -365,14 +399,14 @@ describe('native form adapter registry entries', () => {
     const tanstackHook = item('use-proto-form-tanstack');
     const tanstackAutoForm = item('auto-form-tanstack');
 
-    expect(tanstackHook.dependencies).toContain('@tanstack/react-form');
-    expect(tanstackHook.dependencies).not.toContain('react-hook-form');
+    expect(tanstackHook.dependencies).toContain('@tanstack/react-form@^1.33.5');
+    expect(tanstackHook.dependencies?.map(packageName)).not.toContain('react-hook-form');
     expect(tanstackAutoForm.registryDependencies).toEqual([
       '@protoform/auto-form-core',
       '@protoform/use-proto-form-tanstack',
     ]);
-    expect(tanstackAutoForm.dependencies).toContain('@tanstack/react-form');
-    expect(tanstackAutoForm.dependencies).not.toContain('react-hook-form');
+    expect(tanstackAutoForm.dependencies).toContain('@tanstack/react-form@^1.33.5');
+    expect(tanstackAutoForm.dependencies?.map(packageName)).not.toContain('react-hook-form');
     expect(filePaths(tanstackAutoForm)).toContain(
       'registry/base-nova/protoform/components/auto-form/adapters/tanstack.tsx'
     );
@@ -384,13 +418,13 @@ describe('native form adapter registry entries', () => {
     const tanstackAutoForm = item('auto-form-tanstack-v2');
 
     expect(tanstackHook.dependencies).toContain(packageAlias);
-    expect(tanstackHook.dependencies).not.toContain('react-hook-form');
+    expect(tanstackHook.dependencies?.map(packageName)).not.toContain('react-hook-form');
     expect(tanstackAutoForm.registryDependencies).toEqual([
       '@protoform/auto-form-core',
       '@protoform/use-proto-form-tanstack-v2',
     ]);
     expect(tanstackAutoForm.dependencies).toContain(packageAlias);
-    expect(tanstackAutoForm.dependencies).not.toContain('react-hook-form');
+    expect(tanstackAutoForm.dependencies?.map(packageName)).not.toContain('react-hook-form');
     expect(filePaths(tanstackAutoForm)).toContain(
       'registry/base-nova/protoform/components/auto-form/adapters/tanstack-v2.tsx'
     );
@@ -402,14 +436,14 @@ describe('native form adapter registry entries', () => {
     const reactHookFormAutoForm = item('auto-form-react-hook-form-v8');
 
     expect(reactHookFormHook.dependencies).toContain(packageAlias);
-    expect(reactHookFormHook.dependencies).not.toContain('react-hook-form');
-    expect(reactHookFormHook.dependencies).not.toContain('@hookform/resolvers');
+    expect(reactHookFormHook.dependencies?.map(packageName)).not.toContain('react-hook-form');
+    expect(reactHookFormHook.dependencies?.map(packageName)).not.toContain('@hookform/resolvers');
     expect(reactHookFormAutoForm.registryDependencies).toEqual([
       '@protoform/auto-form-core',
       '@protoform/use-proto-form-v8',
     ]);
     expect(reactHookFormAutoForm.dependencies).toContain(packageAlias);
-    expect(reactHookFormAutoForm.dependencies).not.toContain('react-hook-form');
+    expect(reactHookFormAutoForm.dependencies?.map(packageName)).not.toContain('react-hook-form');
     expect(filePaths(reactHookFormAutoForm)).toContain(
       'registry/base-nova/protoform/components/auto-form/adapters/react-hook-form-v8.tsx'
     );
@@ -460,7 +494,7 @@ describe('opt-in capabilities', () => {
   });
 
   test('demos format submitted values from the demo runtime instead of the base install', () => {
-    expect(filePaths(item('protoform-demo-runtime'))).toContain(`${PROTOFORM}/demo/runtime/format-submitted-value.ts`);
+    expect(closureFilePaths('protoform-demo-runtime')).toContain(`${PROTOFORM}/demo/runtime/format-submitted-value.ts`);
     expect(closureFilePaths('protoform').some((file) => file.endsWith('/format-submitted-value.ts'))).toBe(false);
   });
 

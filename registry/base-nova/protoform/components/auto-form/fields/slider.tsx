@@ -6,6 +6,7 @@ import type { AutoFormFieldProps } from '../core-types';
 import { getFieldUiConfig } from '../helpers';
 import type { FieldTypeDefinition } from '../registry';
 import { Input, Slider } from '../ui-components';
+import { builtInFieldMetadata } from './metadata';
 import { normalizeNumberValue, parseNumericProp, resolveNumericStep, useFieldTestIds } from './shared';
 
 function SliderFieldComponent({ error, field, id, inputProps, label: fieldLabel }: AutoFormFieldProps) {
@@ -73,29 +74,6 @@ function SliderFieldComponent({ error, field, id, inputProps, label: fieldLabel 
 export { SliderFieldComponent };
 
 export const sliderFieldDefinition: FieldTypeDefinition = {
+  ...builtInFieldMetadata.slider,
   component: SliderFieldComponent,
-  match: (field) => {
-    if (field.type !== 'number') {
-      return false;
-    }
-    const customData = field.fieldConfig?.customData;
-    if (!(customData && typeof customData === 'object')) {
-      return false;
-    }
-    const bag = customData;
-    if (bag['control'] === 'slider') {
-      return true;
-    }
-    if (
-      typeof bag['ui'] === 'object' &&
-      bag['ui'] !== null &&
-      'control' in bag['ui'] &&
-      bag['ui'].control === 'slider'
-    ) {
-      return true;
-    }
-    return false;
-  },
-  name: 'slider',
-  priority: 15,
 };

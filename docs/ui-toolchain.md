@@ -47,6 +47,12 @@ This trades deferred initialization for working controls; remove the patch
 when upstream makes initialization synchronous or exposes a real loading/readiness state.
 The pinned package integrity in `bun.lock` owns provenance; upstream license files are unchanged.
 
+The same patch isolates the language-choice listener from server-side locale routing. Importing
+the routing module retained every UI translation dictionary in the eager language-switcher chunk.
+The docs browser contract bounds the complete static client import graph and preserves language
+selection with the current fragment. Remove this portion when upstream separates that browser
+boundary without losing locale persistence, dismissal or routing behavior.
+
 The 2.2.6 upgrade retains that patch: the same-task first-edit regression still fails
 against the unpatched release. Blume's declaration exports and localized reference labels,
 Astro's build/router fixes, Connect's cancellation cleanup and Rstest's Happy DOM 21
@@ -80,6 +86,11 @@ All remain within their parents' existing ranges; Seroval stays on 1.6 to avoid 
 streaming API changes. See the [static-path advisory](https://github.com/advisories/GHSA-rmxm-3fg6-px4f),
 [Seroval injection advisory](https://github.com/advisories/GHSA-f86p-h4j2-7qgj) and
 [systeminformation command-injection advisory](https://github.com/advisories/GHSA-3f7j-7jwc-fxfj).
+
+Astro 7.4.12 and Vite 8.3.8 retain their compatible framework/bundler pairing. Targeted lockfile
+updates select `@astrojs/node` 11.1.13, `@hono/node-server` 2.1.8 and Hono 4.13.18 within their
+parents' existing ranges. The existing Minimatch override advances to 11.0.8 for its compile-cost,
+cache-retention and literal-escaping fixes. These updates add no audit exceptions or new overrides.
 
 ## Formatting and edit hooks
 

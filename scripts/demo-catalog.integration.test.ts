@@ -211,7 +211,9 @@ describe('live demo catalog', () => {
     for (const demo of demoCatalog) {
       const item = registryItems.get(demo.registryName);
       expect(item, demo.registryName).toBeDefined();
-      expect(item?.registryDependencies).toContain('@protoform/protoform-demo-runtime');
+      expect(item?.registryDependencies).toContain(
+        demo.engine === 'react-hook-form' ? '@protoform/protoform-demo-runtime' : '@protoform/protoform-demo-fixtures'
+      );
       expect(item?.files?.[0]?.target).toBe(`~/components/protoform-examples/${demo.slug}.tsx`);
     }
   });
@@ -228,7 +230,7 @@ describe('live demo catalog', () => {
       })
       .parse(JSON.parse(read('registry.json')));
     const runtimePrefix = 'registry/base-nova/protoform/demo/runtime/gen/';
-    const runtime = registry.items.find((item) => item.name === 'protoform-demo-runtime');
+    const runtime = registry.items.find((item) => item.name === 'protoform-demo-fixtures');
 
     expect(manifest.scripts['proto:generate']).toContain('bun run demos:generate && bun run registry:build');
     expect(runtime).toBeDefined();
