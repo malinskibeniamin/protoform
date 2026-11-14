@@ -1,234 +1,205 @@
 'use client';
 
-import { useRender } from '@base-ui/react/use-render';
-import useEmblaCarousel, { type UseEmblaCarouselType } from 'embla-carousel-react';
+import {
+  Carousel as SDKCarousel,
+  CarouselContent as SDKCarouselContent,
+  CarouselIndicator as SDKCarouselIndicator,
+  CarouselIndicatorGroup as SDKCarouselIndicatorGroup,
+  CarouselItem as SDKCarouselItem,
+  CarouselNext as SDKCarouselNext,
+  CarouselPlayToggle as SDKCarouselPlayToggle,
+  CarouselPrevious as SDKCarouselPrevious,
+  CarouselViewport as SDKCarouselViewport,
+} from '@ui-sdk/react/carousel';
+
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
-import React from 'react';
-import { Button } from '@/components/ui/button';
+import type React from 'react';
+import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
+import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
-type CarouselApi = UseEmblaCarouselType[1];
-type UseCarouselParameters = Parameters<typeof useEmblaCarousel>;
-type CarouselOptions = UseCarouselParameters[0];
-type CarouselPlugin = UseCarouselParameters[1];
-interface CarouselProps {
-  opts?: CarouselOptions;
-  orientation?: 'horizontal' | 'vertical';
-  plugins?: CarouselPlugin;
-  setApi?: ((api: CarouselApi) => void) | undefined;
-}
-type CarouselContextProps = {
-  carouselRef: ReturnType<typeof useEmblaCarousel>[0];
-  api: ReturnType<typeof useEmblaCarousel>[1];
-  scrollPrev: () => void;
-  scrollNext: () => void;
-  canScrollPrev: boolean;
-  canScrollNext: boolean;
-} & Omit<CarouselProps, 'setApi'> & { setApi?: (api: CarouselApi) => void };
-const CarouselContext = React.createContext<CarouselContextProps | null>(null);
-function useCarousel() {
-  const context = React.useContext(CarouselContext);
-  if (context === null) {
-    throw new Error('useCarousel must be used within a <Carousel />');
-  }
-  return context;
-}
-function useEmblaControls({ orientation = 'horizontal', opts, setApi, plugins }: CarouselProps) {
-  const [carouselRef, api] = useEmblaCarousel(
-    {
-      ...opts,
-      axis: orientation === 'horizontal' ? 'x' : 'y',
-    },
-    plugins
-  );
-  const scrollState = React.useSyncExternalStore(
-    (onChange) => {
-      if (api === undefined) {
-        return () => undefined;
-      }
-      api.on('select', onChange);
-      api.on('reInit', onChange);
-      return () => {
-        api.off('select', onChange);
-        api.off('reInit', onChange);
-      };
-    },
-    () => (api?.canScrollPrev() === true ? 1 : 0) + (api?.canScrollNext() === true ? 2 : 0),
-    () => 0
-  );
-  const canScrollPrev = scrollState % 2 === 1;
-  const canScrollNext = scrollState >= 2;
+const Carousel = SDKCarousel;
 
-  const scrollPrev = () => {
-    api?.scrollPrev();
-  };
-  const scrollNext = () => {
-    api?.scrollNext();
-  };
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
-    if (
-      event.defaultPrevented ||
-      event.altKey ||
-      event.ctrlKey ||
-      event.metaKey ||
-      event.shiftKey ||
-      (event.target instanceof HTMLElement &&
-        event.target.closest('input, textarea, select, [contenteditable="true"]') !== null)
-    ) {
-      return;
-    }
-    const previousKey = orientation === 'horizontal' ? 'ArrowLeft' : 'ArrowUp';
-    const nextKey = orientation === 'horizontal' ? 'ArrowRight' : 'ArrowDown';
-    if (event.key === previousKey) {
-      event.preventDefault();
-      scrollPrev();
-    } else if (event.key === nextKey) {
-      event.preventDefault();
-      scrollNext();
-    }
-  };
-  React.useImperativeHandle(
-    (instance: CarouselApi | null) => {
-      if (instance !== null && instance !== undefined) {
-        setApi?.(instance);
-      }
-    },
-    () => api,
-    [api]
-  );
-  return { carouselRef, api, opts, orientation, scrollPrev, scrollNext, canScrollPrev, canScrollNext, handleKeyDown };
-}
-function Carousel({
+function CarouselContent({
   className,
-  children,
-  orientation = 'horizontal',
-  opts,
-  setApi,
-  plugins,
-  ref,
-  onKeyDownCapture,
+  testId,
+  variant,
+  size,
   ...props
-}: React.ComponentProps<'div'> & CarouselProps) {
-  const controls = useEmblaControls({ orientation, opts, setApi, plugins });
-  const surface = useRender({
-    defaultTagName: 'div',
-    ref,
-    props: {
-      'aria-label': 'Carousel',
-      'aria-roledescription': 'carousel',
-      role: 'region',
-      ...props,
-      className: cn('relative', className),
-      'data-slot': 'carousel',
-      onKeyDownCapture: (event: React.KeyboardEvent<HTMLDivElement>) => {
-        onKeyDownCapture?.(event);
-        controls.handleKeyDown(event);
-      },
-      children,
-    },
-  });
-  return <CarouselContext.Provider value={controls}>{surface}</CarouselContext.Provider>;
-}
-
-function CarouselContent({ className, ...props }: React.ComponentProps<'div'>) {
-  const { carouselRef, orientation } = useCarousel();
+}: UIProps<React.ComponentProps<typeof SDKCarouselContent>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
   return (
-    <div className="overflow-hidden" data-slot="carousel-content" ref={carouselRef}>
-      <div className={cn('flex', orientation === 'horizontal' ? '-ml-4' : '-mt-4 flex-col', className)} {...props} />
-    </div>
+    <SDKCarouselContent
+      {...definedProps(props)}
+      className={(state) => cn('flex', typeof className === 'function' ? className(state) : className)}
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
   );
 }
-function CarouselItem({ className, render, ...props }: useRender.ComponentProps<'div'>) {
-  const { orientation } = useCarousel();
-  return useRender({
-    defaultTagName: 'div',
-    render,
-    props: {
-      ...props,
-      role: 'group',
-      'aria-roledescription': 'slide',
-      className: cn('min-w-0 shrink-0 grow-0 basis-full', orientation === 'horizontal' ? 'pl-4' : 'pt-4', className),
-      'data-slot': 'carousel-item',
-    },
-  });
+
+function CarouselIndicator({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKCarouselIndicator>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKCarouselIndicator
+      {...definedProps(props)}
+      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
 }
 
-function CarouselNavigationButton({
+function CarouselIndicatorGroup({
   className,
-  direction,
-  orientation,
+  testId,
+  variant,
+  size,
   ...props
-}: React.ComponentProps<'button'> & {
-  direction: 'previous' | 'next';
-  orientation: 'horizontal' | 'vertical' | undefined;
-}) {
-  let placement = 'inset-y-0 -left-12 my-auto';
-  if (direction === 'next') {
-    placement = 'inset-y-0 -right-12 my-auto';
-  }
-  if (orientation === 'vertical') {
-    placement =
-      direction === 'previous'
-        ? '-top-12 left-1/2 -translate-x-1/2 rotate-90'
-        : '-bottom-12 left-1/2 -translate-x-1/2 rotate-90';
-  }
-  return useRender({
-    defaultTagName: 'button',
-    props: {
-      ...props,
-      type: props.type ?? 'button',
-      className: cn('absolute touch-manipulation', placement, className),
-    },
-  });
+}: UIProps<React.ComponentProps<typeof SDKCarouselIndicatorGroup>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKCarouselIndicatorGroup
+      {...definedProps(props)}
+      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
+
+function CarouselItem({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKCarouselItem>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKCarouselItem
+      {...definedProps(props)}
+      className={(state) =>
+        cn('min-w-0 shrink-0 grow-0 basis-full', typeof className === 'function' ? className(state) : className)
+      }
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
+
+function CarouselNext({
+  children,
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKCarouselNext>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKCarouselNext
+      aria-label="Next slide"
+      {...definedProps(props)}
+      className={(state) =>
+        cn(
+          'absolute top-1/2 -right-8 inline-flex size-7 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-background text-foreground shadow-xs outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50',
+          typeof className === 'function' ? className(state) : className
+        )
+      }
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    >
+      {children ?? <ChevronRightIcon aria-hidden="true" className="size-4 rtl:-scale-x-100" />}
+    </SDKCarouselNext>
+  );
+}
+
+function CarouselPlayToggle({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKCarouselPlayToggle>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKCarouselPlayToggle
+      {...definedProps(props)}
+      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
 }
 
 function CarouselPrevious({
+  children,
   className,
-  variant = 'outline',
-  size = 'icon-sm',
+  testId,
+  variant,
+  size,
   ...props
-}: React.ComponentProps<typeof Button>) {
-  const { orientation, scrollPrev, canScrollPrev } = useCarousel();
+}: UIProps<React.ComponentProps<typeof SDKCarouselPrevious>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
   return (
-    <Button
-      className={className}
-      data-slot="carousel-previous"
-      disabled={!canScrollPrev}
-      onClick={scrollPrev}
-      render={<CarouselNavigationButton direction="previous" orientation={orientation} />}
-      size={size}
-      type="button"
-      variant={variant}
-      {...props}
+    <SDKCarouselPrevious
+      aria-label="Previous slide"
+      {...definedProps(props)}
+      className={(state) =>
+        cn(
+          'absolute top-1/2 -left-8 inline-flex size-7 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-background text-foreground shadow-xs outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50',
+          typeof className === 'function' ? className(state) : className
+        )
+      }
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
     >
-      <ChevronLeftIcon className="rtl:-scale-x-100" />
-      <span className="sr-only">Previous slide</span>
-    </Button>
-  );
-}
-function CarouselNext({
-  className,
-  variant = 'outline',
-  size = 'icon-sm',
-  ...props
-}: React.ComponentProps<typeof Button>) {
-  const { orientation, scrollNext, canScrollNext } = useCarousel();
-  return (
-    <Button
-      className={className}
-      data-slot="carousel-next"
-      disabled={!canScrollNext}
-      onClick={scrollNext}
-      render={<CarouselNavigationButton direction="next" orientation={orientation} />}
-      size={size}
-      type="button"
-      variant={variant}
-      {...props}
-    >
-      <ChevronRightIcon className="rtl:-scale-x-100" />
-      <span className="sr-only">Next slide</span>
-    </Button>
+      {children ?? <ChevronLeftIcon aria-hidden="true" className="size-4 rtl:-scale-x-100" />}
+    </SDKCarouselPrevious>
   );
 }
 
-export { Carousel, type CarouselApi, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, useCarousel };
+function CarouselViewport({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKCarouselViewport>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKCarouselViewport
+      {...definedProps(props)}
+      className={(state) => cn('overflow-hidden', typeof className === 'function' ? className(state) : className)}
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
+
+export {
+  Carousel,
+  CarouselContent,
+  CarouselIndicator,
+  CarouselIndicatorGroup,
+  CarouselItem,
+  CarouselNext,
+  CarouselPlayToggle,
+  CarouselPrevious,
+  CarouselViewport,
+};

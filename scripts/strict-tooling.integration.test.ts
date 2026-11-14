@@ -483,7 +483,6 @@ export function Field() {
       'examples/catalog/demo-hub.tsx',
       'examples/presets/preset-lab.tsx',
       'registry/base-nova/protoform/demo/bookstore/bookstore-demo.tsx',
-      'registry/base-nova/protoform/lib/base-ui-compat/index.tsx',
       'registry/base-nova/protoform/lib/protobuf-provider/auto-form-example-annotations.ts',
     ]);
   });

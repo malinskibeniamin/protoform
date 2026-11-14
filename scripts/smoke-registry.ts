@@ -21,9 +21,11 @@ const expectedItems = [
   'use-proto-form-tanstack-v2',
   'auto-form-core',
   'protoform-react',
-  'protoform-shadcn',
-  'protoform-shadcn-tanstack',
-  'protoform-shadcn-host',
+  'protoform-ui-sdk',
+  'protoform-ui-sdk-tanstack',
+  'protoform-ui-sdk-host',
+  'protoform-ui-sdk-agent',
+  'ui-sdk-agent-workbench',
   'auto-form-react-hook-form-v8',
   'auto-form-tanstack',
   'auto-form-tanstack-v2',
@@ -106,13 +108,13 @@ if (
   throw new Error('protoform-react must depend on the shared renderer and core');
 }
 
-const protoformShadcn = dependencyItemSchema.parse(JSON.parse(readFileSync('public/r/protoform-shadcn.json', 'utf8')));
+const protoformShadcn = dependencyItemSchema.parse(JSON.parse(readFileSync('public/r/protoform-ui-sdk.json', 'utf8')));
 if (
   protoformShadcn.registryDependencies?.length !== 1 ||
   protoformShadcn.registryDependencies[0] !== '@protoform/protoform-react' ||
-  !protoformShadcn.files?.some((file) => file.target === '~/components/ui/button/index.tsx')
+  !protoformShadcn.files?.some((file) => file.target === '@ui/button/index.tsx')
 ) {
-  throw new Error('protoform-shadcn must install optional defaults through the configured ui alias');
+  throw new Error('protoform-ui-sdk must install optional defaults through the configured ui alias');
 }
 
 const reactHookFormV8Alias = 'react-hook-form-v8@npm:react-hook-form@8.0.0-beta.5';

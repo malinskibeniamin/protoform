@@ -680,8 +680,11 @@ test('keeps readiness areas readable with enlarged text', async ({ page }) => {
   const serviceCheck = page.getByRole('button', {
     name: 'Service and RPC descriptors: Verified',
   });
+  await page.keyboard.press('Tab');
   await serviceCheck.focus();
-  await expect(page.getByRole('tooltip')).toContainText('Generated service methods now expose request descriptors');
+  await expect(page.getByRole('tooltip').filter({ hasText: 'Generated service methods' })).toContainText(
+    'Generated service methods now expose request descriptors'
+  );
 
   await page.evaluate(() => {
     document.documentElement.style.fontSize = '200%';
@@ -711,7 +714,7 @@ for (const pageInfo of pages) {
     scenarioChecks.push(async (page) => {
       await page.getByRole('textbox', { name: 'Name' }).fill('Ada');
       await page.getByRole('button', { name: 'Submit' }).click();
-      await expect(page.getByRole('status')).toContainText('Submitted: Ada');
+      await expect(page.getByRole('status').filter({ hasText: 'Submitted: Ada' })).toContainText('Submitted: Ada');
     });
   }
   if (pageInfo.name === 'two-step-form') {
@@ -722,7 +725,9 @@ for (const pageInfo of pages) {
       await expect(page.getByText('Step 2 of 2')).toBeVisible();
       await page.getByRole('textbox', { name: 'Email' }).fill('ada@example.com');
       await page.getByRole('button', { name: 'Submit' }).click();
-      await expect(page.getByRole('status')).toContainText('Submitted: Ada, ada@example.com');
+      await expect(page.getByRole('status').filter({ hasText: 'Submitted: Ada, ada@example.com' })).toContainText(
+        'Submitted: Ada, ada@example.com'
+      );
     });
   }
   if (pageInfo.name === 'cel-re2-form') {
@@ -741,7 +746,9 @@ for (const pageInfo of pages) {
       await page.getByRole('textbox', { name: 'Phone' }).fill('+442079460000');
       await expect(page.getByRole('textbox', { name: 'Email' })).toHaveCount(0);
       await page.getByRole('button', { name: 'Submit' }).click();
-      await expect(page.getByRole('status')).toContainText('Submitted phone: +442079460000');
+      await expect(page.getByRole('status').filter({ hasText: 'Submitted phone: +442079460000' })).toContainText(
+        'Submitted phone: +442079460000'
+      );
     });
   }
   if (pageInfo.name === 'server-error-form') {
@@ -760,7 +767,9 @@ for (const pageInfo of pages) {
       await displayName.fill('Grace Hopper');
       await page.getByRole('textbox', { name: 'Biography' }).fill('Compiler pioneer');
       await page.getByRole('button', { name: 'Submit' }).click();
-      await expect(page.getByRole('status')).toContainText('Update mask: display_name, biography');
+      await expect(page.getByRole('status').filter({ hasText: 'Update mask: display_name, biography' })).toContainText(
+        'Update mask: display_name, biography'
+      );
     });
   }
   if (pageInfo.name === 'complex-example') {

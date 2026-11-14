@@ -128,6 +128,7 @@
   "settings": {
     "shadcn": {
       "ui": "@/components/ui",
+      "ignoreImports": ["^@ui-sdk/react(?:/|$)"],
       "componentImports": ["^@/components/ui/", "^@/registry/base-nova/protoform/components/"]
     }
   }

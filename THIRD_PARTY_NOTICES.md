@@ -15,7 +15,13 @@ Technologies, Inc. and Google LLC. The generated files retain their upstream cop
 Some UI component source under `registry/base-nova/protoform` is adapted from
 [shadcn/ui](https://github.com/shadcn-ui/ui). It is used under the MIT License. The upstream notice
 is in [LICENSES/shadcn-MIT.txt](LICENSES/shadcn-MIT.txt). Code Block and Trace source provenance
-and local adaptations are recorded in [SHADCN_COMPONENTS.md](registry/base-nova/protoform/SHADCN_COMPONENTS.md).
+and local adaptations are recorded in [UI_SDK_COMPONENTS.md](registry/base-nova/protoform/UI_SDK_COMPONENTS.md).
+
+## UI SDK
+
+Interactive UI behaviors use [UI SDK](https://github.com/vercel-labs/ui), Apache-2.0,
+through the pinned `@ui-sdk/core` and `@ui-sdk/react` packages. Their licenses remain in the
+installed packages. See the bundle provenance above for migration and style attribution.
 
 ## Blume
 

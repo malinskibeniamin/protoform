@@ -10,6 +10,21 @@ const lintReport = z.object({
 
 const cases = [
   {
+    name: 'allows styling unstyled UI SDK primitives without exempting token or inline-style checks',
+    prefix: '.tmp/shadcn-lint-',
+    rules: [],
+    source: `import { Button as ButtonPrimitive } from '@ui-sdk/react/button';
+export function Control() {return <ButtonPrimitive className="rounded-md bg-primary text-primary-foreground" />;}`,
+  },
+  {
+    name: 'still rejects off-token and inline styling on UI SDK primitives',
+    prefix: '.tmp/shadcn-lint-',
+    rules: ['no-raw-colors', 'no-arbitrary-values', 'no-inline-styles'],
+    source: `import { Button as ButtonPrimitive } from '@ui-sdk/react/button';
+export function Control() {return <ButtonPrimitive className="bg-red-500 p-[13px]" style={{color:'red'}} />;}`,
+  },
+
+  {
     name: 'does not broaden the SVG property-list allowance to arbitrary transitions',
     prefix: '.tmp/shadcn-lint-',
     rules: ['no-arbitrary-values'],

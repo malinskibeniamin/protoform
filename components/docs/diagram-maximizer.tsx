@@ -5,12 +5,13 @@ import { createPortal } from 'react-dom';
 
 import {
   Dialog,
+  DialogBackdrop,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/registry/base-nova/protoform/components/dialog';
-import { TooltipProvider } from '@/registry/base-nova/protoform/components/tooltip';
 import { DiagramControl } from './diagram-control';
 import type { ActiveDiagram, DiagramPortal } from './diagram-maximizer-types';
 import { ExpandedDiagramPreview } from './expanded-diagram-preview';
@@ -165,7 +166,7 @@ export function DiagramMaximizer() {
   }
 
   return (
-    <TooltipProvider delayDuration={150} skipDelayDuration={0}>
+    <>
       {portals.map((portal) => {
         const isFullscreen = fullscreenTarget === portal.target;
 
@@ -177,12 +178,16 @@ export function DiagramMaximizer() {
       })}
 
       <Dialog onOpenChange={handleDialogOpenChange} open={activeDiagram !== null}>
+        <DialogBackdrop />
         <DialogContent
           className="inset-0 h-[100dvh] max-h-none w-full max-w-none translate-0 sm:max-w-none"
           data-diagram-dialog=""
           size="full"
           variant="fullscreen"
         >
+          <DialogClose aria-label="Close" className="absolute top-4 right-4">
+            ×
+          </DialogClose>
           <DialogHeader className="border-b border-border pr-14">
             <DialogTitle>
               {activeDiagram?.label === 'diagram' ? 'Diagram' : (activeDiagram?.label ?? 'Diagram')}
@@ -194,6 +199,6 @@ export function DiagramMaximizer() {
           {activeDiagram ? <ExpandedDiagramPreview target={activeDiagram.target} /> : null}
         </DialogContent>
       </Dialog>
-    </TooltipProvider>
+    </>
   );
 }

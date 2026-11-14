@@ -165,7 +165,7 @@ describe('autoForm – protobuf forms', () => {
     );
     await user.click(screen.getByRole('combobox', { name: PREFERRED_CONTACT_LABEL }));
     await user.click(await screen.findByRole('option', { name: PREFERRED_PHONE_LABEL }));
-    await user.type(await screen.findByLabelText(PREFERRED_PHONE_LABEL), '+14155550123');
+    await user.type(await screen.findByRole('textbox', { name: PREFERRED_PHONE_LABEL }), '+14155550123');
     await user.click(screen.getByRole('button', { name: SUBMIT_BUTTON }));
     await waitFor(() => {
       expect(onSubmit).not.toHaveBeenCalled();
@@ -299,8 +299,8 @@ describe('autoForm – protobuf forms', () => {
     fireEvent.pointerDown(phoneOption, { pointerType: 'touch' });
     fireEvent.click(phoneOption);
 
-    const phoneInput = await screen.findByLabelText(PREFERRED_PHONE_LABEL);
-    fireEvent.change(phoneInput, { target: { value: '+14155550123' } });
+    const phoneInput = await screen.findByRole('textbox', { name: PREFERRED_PHONE_LABEL });
+    fireEvent.input(phoneInput, { target: { value: '+14155550123' } });
 
     await user.click(screen.getByRole('button', { name: SUBMIT_BUTTON }));
 

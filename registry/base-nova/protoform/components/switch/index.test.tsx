@@ -10,5 +10,5 @@ test('supports keyboard activation when rendering the standard non-button switch
   await user.tab();
   await user.keyboard(' ');
   expect(screen.getByRole('switch', { name: 'Notifications' })).toBeChecked();
-  expect(onCheckedChange).toHaveBeenCalledWith(true, expect.objectContaining({ reason: 'none' }));
+  expect(onCheckedChange).toHaveBeenCalledWith(true, expect.objectContaining({ reason: 'press' }));
 });

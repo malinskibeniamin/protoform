@@ -1,48 +1,81 @@
 'use client';
 
 import {
-  Separator as PanelResizeHandlePrimitive,
-  type SeparatorProps as PanelResizeHandlePrimitiveProps,
-  Group as ResizablePrimitiveGroup,
-  type GroupProps as ResizablePrimitiveGroupProps,
-  Panel as ResizablePrimitivePanel,
-  type PanelProps as ResizablePrimitivePanelProps,
-} from 'react-resizable-panels';
+  Resizable as SDKResizable,
+  ResizableHandle as SDKResizableHandle,
+  ResizablePanel as SDKResizablePanel,
+} from '@ui-sdk/react/resizable';
+
+import type React from 'react';
+import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
+import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
-const ResizeHandlePrimitive = PanelResizeHandlePrimitive;
-
-function ResizablePanelGroup({ className, ...props }: ResizablePrimitiveGroupProps) {
+function Resizable({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKResizable>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
   return (
-    <ResizablePrimitiveGroup
-      className={cn('flex size-full aria-[orientation=vertical]:flex-col', className)}
-      data-slot="resizable-panel-group"
-      {...props}
+    <SDKResizable
+      {...definedProps(props)}
+      className={(state) =>
+        cn('flex min-h-0 w-full min-w-0', typeof className === 'function' ? className(state) : className)
+      }
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
     />
   );
 }
-function ResizablePanel({ ...props }: ResizablePrimitivePanelProps) {
-  return <ResizablePrimitivePanel data-slot="resizable-panel" {...props} />;
-}
+
 function ResizableHandle({
-  withHandle,
   className,
+  testId,
+  variant,
+  size,
   ...props
-}: PanelResizeHandlePrimitiveProps & {
-  withHandle?: boolean;
-}) {
+}: UIProps<React.ComponentProps<typeof SDKResizableHandle>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
   return (
-    <ResizeHandlePrimitive
-      className={cn(
-        'relative flex w-px items-center justify-center bg-border ring-offset-background after:absolute after:inset-y-0 after:left-1/2 after:w-1 after:-translate-x-1/2 focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-hidden aria-[orientation=horizontal]:h-px aria-[orientation=horizontal]:w-full aria-[orientation=horizontal]:after:left-0 aria-[orientation=horizontal]:after:h-1 aria-[orientation=horizontal]:after:w-full aria-[orientation=horizontal]:after:translate-x-0 aria-[orientation=horizontal]:after:-translate-y-1/2 [&[aria-orientation=horizontal]>div]:rotate-90',
-        className
-      )}
-      data-slot="resizable-handle"
-      {...props}
-    >
-      {withHandle === true && <div className="z-10 flex h-6 w-1 shrink-0 rounded-lg bg-border" />}
-    </ResizeHandlePrimitive>
+    <SDKResizableHandle
+      {...definedProps(props)}
+      className={(state) =>
+        cn(
+          'relative flex shrink-0 touch-none items-center justify-center bg-border outline-none select-none focus-visible:ring-2 focus-visible:ring-ring',
+          state.orientation === 'vertical' ? 'h-1 w-full cursor-row-resize' : 'w-1 cursor-col-resize',
+          typeof className === 'function' ? className(state) : className
+        )
+      }
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
   );
 }
 
-export { ResizableHandle, ResizablePanel, ResizablePanelGroup };
+function ResizablePanel({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKResizablePanel>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKResizablePanel
+      {...definedProps(props)}
+      className={(state) =>
+        cn('min-w-0 overflow-hidden', typeof className === 'function' ? className(state) : className)
+      }
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
+
+export { Resizable, ResizableHandle, ResizablePanel };

@@ -31,10 +31,10 @@ bunx shadcn@latest add @protoform/protoform-core
 bunx shadcn@latest add @protoform/protoform-react
 
 # Recommended full UI bundle for new apps: TanStack Charts, without Recharts
-bunx shadcn@latest add @protoform/protoform-shadcn-tanstack
+bunx shadcn@latest add @protoform/protoform-ui-sdk-tanstack
 
 # Recharts fallback: preserves the existing JSX chart API
-bunx shadcn@latest add @protoform/protoform-shadcn
+bunx shadcn@latest add @protoform/protoform-ui-sdk
 
 # Experimental React Hook Form v8 beta hook
 bunx shadcn@latest add @protoform/use-proto-form-v8
@@ -74,8 +74,8 @@ bunx shadcn@latest add @protoform/bookstore
 | `use-proto-form-v8`            | Oceniasz wersję beta React Hook Form v8                                      | Oddzielny natywny hook v8 przypięty do `8.0.0-beta.5`                                             |
 | `use-proto-form-tanstack`      | Korzystasz już z TanStack Form                                               | Natywne API TanStack oraz komunikaty protobuf, maski aktualizacji, pola oneof i błędy serwera     |
 | `protoform-react`              | Chcesz pól generowanych ze schematu z domyślnym silnikiem                    | Współdzielony renderer oraz adapter React Hook Form                                               |
-| `protoform-shadcn-tanstack`    | Chcesz zalecany pełny zestaw UI dla nowej aplikacji                          | `protoform-react`, wspólne kontrolki UI i natywne TanStack Charts; bez zależności od Recharts     |
-| `protoform-shadcn`             | Potrzebujesz dotychczasowego API wykresów Recharts jako alternatywy          | `protoform-react`, te same kontrolki UI i oryginalny komponent Recharts                           |
+| `protoform-ui-sdk-tanstack`    | Chcesz zalecany pełny zestaw UI dla nowej aplikacji                          | `protoform-react`, wspólne kontrolki UI i natywne TanStack Charts; bez zależności od Recharts     |
+| `protoform-ui-sdk`             | Potrzebujesz dotychczasowego API wykresów Recharts jako alternatywy          | `protoform-react`, te same kontrolki UI i oryginalny komponent Recharts                           |
 | `auto-form-react-hook-form-v8` | Oceniasz pola generowane w wersji beta React Hook Form v8                    | Oddzielny natywny adapter AutoForm v8 oraz współdzielony renderer                                 |
 | `auto-form-tanstack`           | Chcesz pól generowanych ze schematu z TanStack Form                          | Współdzielony renderer oraz adapter TanStack Form                                                 |
 | `use-proto-form-tanstack-v2`   | Oceniasz wersję alfa TanStack Form v2                                        | Oddzielny natywny hook v2 przypięty do `2.0.0-alpha.3`                                            |
@@ -94,8 +94,8 @@ parsowania metadanych schematu/UI ani wygenerowanych modułów deskryptorów wal
 przez alias `ui` w `components.json`. Dojrzałe aplikacje mogą skierować ten alias na kanoniczną
 fasadę `components/ui/*`, złożoną z bezpośrednich reeksportów lub cienkich adapterów zgodności.
 
-`protoform-shadcn-tanstack` jest zalecaną opcjonalną implementacją UI dla nowych aplikacji.
-`protoform-shadcn` pozostaje dostępny jako alternatywa oparta na Recharts. Oba warianty instalują moduły UI
+`protoform-ui-sdk-tanstack` jest zalecaną opcjonalną implementacją UI dla nowych aplikacji.
+`protoform-ui-sdk` pozostaje dostępny jako alternatywa oparta na Recharts. Oba warianty instalują moduły UI
 w `components/ui`, nie włączając ich do renderera React. Nadpisania `AutoFormUIComponents` dla
 konkretnego formularza pozostają skupione na formularzu, opakowaniach pól, przycisku wysyłania,
 opakowaniach kolekcji i błędach, zamiast wstrzykiwać każdy prymityw w czasie działania.
@@ -141,7 +141,7 @@ paletę wykresu na tokeny `--chart-1` do `--chart-6`. Każdemu wykresowi nadaj o
 `ariaLabel` i zachowaj podsumowanie lub tabelę z dokładnymi wartościami. Definicje odpowiadają za skale,
 obsługę klawiatury, podpowiedzi i dane; komponent nie tłumaczy JSX biblioteki Recharts.
 
-Wybierz jawną alternatywę `protoform-shadcn`, gdy potrzebujesz `ChartContainer`, `ChartTooltip`
+Wybierz jawną alternatywę `protoform-ui-sdk`, gdy potrzebujesz `ChartContainer`, `ChartTooltip`
 i elementów potomnych Recharts. Dotychczasowe aplikacje zachowują importy i działanie. Wybór następuje podczas
 instalacji, a nie automatycznie po błędzie biblioteki wykresów. Dla nowej aplikacji wybierz jeden pełny zestaw UI;
 zestaw TanStack nie wymaga wcześniejszego zainstalowania zestawu Recharts.

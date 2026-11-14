@@ -1,70 +1,120 @@
 'use client';
 
-import { Accordion as AccordionPrimitive } from '@base-ui/react/accordion';
+import {
+  Accordion as SDKAccordion,
+  AccordionHeader as SDKAccordionHeader,
+  AccordionItem as SDKAccordionItem,
+  AccordionPanel as SDKAccordionPanel,
+  AccordionTrigger as SDKAccordionTrigger,
+} from '@ui-sdk/react/accordion';
+
 import { ChevronDownIcon, ChevronUpIcon } from 'lucide-react';
+import type React from 'react';
+import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
+import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
-function Accordion({ className, ...props }: AccordionPrimitive.Root.Props) {
+const Accordion = SDKAccordion;
+
+function AccordionHeader({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKAccordionHeader>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
   return (
-    <AccordionPrimitive.Root
-      className={(state) => cn('flex w-full flex-col', typeof className === 'function' ? className(state) : className)}
-      data-slot="accordion"
-      {...props}
+    <SDKAccordionHeader
+      {...definedProps(props)}
+      className={(state) => cn('flex', typeof className === 'function' ? className(state) : className)}
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
     />
   );
 }
-function AccordionItem({ className, ...props }: AccordionPrimitive.Item.Props) {
+
+function AccordionItem({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKAccordionItem>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
   return (
-    <AccordionPrimitive.Item
-      className={(state) => cn('not-last:border-b', typeof className === 'function' ? className(state) : className)}
-      data-slot="accordion-item"
-      {...props}
+    <SDKAccordionItem
+      {...definedProps(props)}
+      className={(state) =>
+        cn('not-last:border-b not-last:border-border', typeof className === 'function' ? className(state) : className)
+      }
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
     />
   );
 }
-function AccordionTrigger({ className, children, ...props }: AccordionPrimitive.Trigger.Props) {
+
+function AccordionPanel({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKAccordionPanel>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
   return (
-    <AccordionPrimitive.Header className="flex">
-      <AccordionPrimitive.Trigger
-        className={(state) =>
-          cn(
-            'group/accordion-trigger relative flex flex-1 items-start justify-between rounded-lg border border-transparent py-2.5 text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:after:border-ring aria-disabled:pointer-events-none aria-disabled:opacity-50 **:data-[slot=accordion-trigger-icon]:ml-auto **:data-[slot=accordion-trigger-icon]:size-4 **:data-[slot=accordion-trigger-icon]:text-muted-foreground',
-            typeof className === 'function' ? className(state) : className
-          )
-        }
-        data-slot="accordion-trigger"
-        {...props}
-      >
-        {children}
-        <ChevronDownIcon
-          className="pointer-events-none shrink-0 group-aria-expanded/accordion-trigger:hidden"
-          data-slot="accordion-trigger-icon"
-        />
-        <ChevronUpIcon
-          className="pointer-events-none hidden shrink-0 group-aria-expanded/accordion-trigger:inline"
-          data-slot="accordion-trigger-icon"
-        />
-      </AccordionPrimitive.Trigger>
-    </AccordionPrimitive.Header>
+    <SDKAccordionPanel
+      {...definedProps(props)}
+      className={(state) =>
+        cn('overflow-hidden pb-2.5 text-sm', typeof className === 'function' ? className(state) : className)
+      }
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
   );
 }
-function AccordionContent({ className, children, ...props }: AccordionPrimitive.Panel.Props) {
+
+function AccordionTrigger({
+  children,
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKAccordionTrigger>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  const renderChildren = typeof children === 'function' ? children : () => children;
   return (
-    <AccordionPrimitive.Panel
-      className="overflow-hidden text-sm data-closed:animate-accordion-up data-open:animate-accordion-down"
-      data-slot="accordion-content"
-      {...props}
+    <SDKAccordionTrigger
+      {...definedProps(props)}
+      className={(state) =>
+        cn(
+          'group/accordion-trigger relative flex w-full flex-1 items-start justify-between rounded-lg border border-transparent py-2.5 text-left text-sm font-medium outline-none hover:underline focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50',
+          typeof className === 'function' ? className(state) : className
+        )
+      }
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
     >
-      <div
-        className={cn(
-          'h-(--accordion-panel-height) pt-0 pb-2.5 data-ending-style:h-0 data-starting-style:h-0 [&_a]:underline [&_a]:underline-offset-3 [&_a]:hover:text-foreground [&_p:not(:last-child)]:mb-4',
-          className
-        )}
-      >
-        {children}
-      </div>
-    </AccordionPrimitive.Panel>
+      {(state) => (
+        <>
+          {renderChildren(state)}
+          <ChevronDownIcon
+            aria-hidden="true"
+            className="ml-auto size-4 shrink-0 text-muted-foreground group-aria-expanded/accordion-trigger:hidden"
+          />
+          <ChevronUpIcon
+            aria-hidden="true"
+            className="ml-auto hidden size-4 shrink-0 text-muted-foreground group-aria-expanded/accordion-trigger:block"
+          />
+        </>
+      )}
+    </SDKAccordionTrigger>
   );
 }
 
-export { Accordion, AccordionContent, AccordionItem, AccordionTrigger };
+export { Accordion, AccordionHeader, AccordionItem, AccordionPanel, AccordionTrigger };

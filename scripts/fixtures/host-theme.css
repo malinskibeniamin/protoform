@@ -23,6 +23,8 @@
   --color-border: rgb(229 229 229);
   --color-input: rgb(229 229 229);
   --color-ring: rgb(163 163 163);
+  --color-sidebar: var(--sidebar, var(--background));
+  --color-sidebar-foreground: var(--sidebar-foreground, var(--foreground));
   --radius-sm: 0.375rem;
   --radius-md: 0.5rem;
   --radius-lg: 0.625rem;
@@ -32,6 +34,8 @@
   --background: rgb(255 255 255);
   --foreground: rgb(23 23 23);
   --primary: rgb(23 23 23);
+  --regression-sidebar: rgb(24 40 70);
+  --regression-sidebar-foreground: rgb(240 245 255);
 }
 @layer base {
   * {

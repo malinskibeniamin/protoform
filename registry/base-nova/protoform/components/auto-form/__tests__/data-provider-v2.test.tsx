@@ -327,7 +327,7 @@ describe('autoForm data providers v2', () => {
     const view = render(<AutoForm dataProviders={{}} schema={schema} />);
     view.rerender(<AutoForm dataProviders={{ methods: useMethods }} schema={schema} />);
 
-    await user.click(screen.getByRole('button', { name: 'Multi-select trigger' }));
+    await user.click(screen.getByRole('combobox', { name: 'Multi-select trigger' }));
     expect(screen.getByText('GET')).toBeVisible();
   });
 
@@ -363,7 +363,7 @@ describe('autoForm data providers v2', () => {
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
     expect(onSubmit.mock.calls[0]?.[0]).toMatchObject({ methods: ['get'] });
     expect(screen.getByRole('alert')).toHaveTextContent('Failed to load options');
-    expect(screen.getByRole('button', { name: 'Multi-select trigger' })).toHaveAttribute('aria-disabled', 'true');
+    expect(screen.getByRole('combobox', { name: 'Multi-select trigger' })).toBeDisabled();
     expect(screen.getByText('get')).toBeVisible();
   });
 
@@ -410,7 +410,7 @@ describe('autoForm data providers v2', () => {
 
     render(<AutoForm dataProviders={{ methods: { component: EmptyRegionsProvider } }} schema={schema} />);
 
-    await user.click(screen.getByRole('button', { name: 'Multi-select trigger' }));
+    await user.click(screen.getByRole('combobox', { name: 'Multi-select trigger' }));
     expect(await screen.findByRole('link', { name: 'Create a region' })).toBeVisible();
     expect(screen.queryByText('No items found')).toBeNull();
   });
@@ -454,7 +454,7 @@ test('multi-select preserves incomplete selections and clears only missing value
   await user.click(screen.getByRole('button', { name: 'Submit' }));
   await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(2));
   expect(onSubmit.mock.calls[1]?.[0]).toMatchObject({ methods: ['get', 'post'] });
-  await user.click(screen.getByRole('button', { name: 'Multi-select trigger' }));
+  await user.click(screen.getByRole('combobox', { name: 'Multi-select trigger' }));
   expect(screen.getByRole('option', { name: 'GET' })).toBeVisible();
   expect(screen.getByRole('option', { name: 'POST' })).toBeVisible();
   await user.type(screen.getByPlaceholderText('Search…'), 'post');

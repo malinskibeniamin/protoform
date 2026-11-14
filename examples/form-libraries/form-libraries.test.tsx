@@ -40,7 +40,7 @@ describe('formik example', () => {
     await fillProfile(user);
     await user.click(screen.getByRole('button', { name: 'Create profile' }));
 
-    expect(await screen.findByRole('status')).toHaveTextContent('profiles/ada-lovelace');
+    expect(await screen.findByRole('status', { name: 'Created profile' })).toHaveTextContent('profiles/ada-lovelace');
   });
 
   test('maps structured server errors into Formik', async () => {
@@ -70,7 +70,7 @@ describe('final Form example', () => {
     await fillProfile(user);
     await user.click(screen.getByRole('button', { name: 'Create profile' }));
 
-    expect(await screen.findByRole('status')).toHaveTextContent('profiles/ada-lovelace');
+    expect(await screen.findByRole('status', { name: 'Created profile' })).toHaveTextContent('profiles/ada-lovelace');
   });
 
   test('maps structured server errors into Final Form', async () => {

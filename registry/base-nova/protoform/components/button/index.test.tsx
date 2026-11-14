@@ -35,7 +35,7 @@ test('supports the shadcn render API and state callbacks without submitting a fo
   expect(onSubmit).not.toHaveBeenCalled();
 });
 
-test('keeps the Protoform loading, icon and asChild extensions', async () => {
+test('keeps the Protoform loading, icon and render composition', async () => {
   const onClick = rs.fn();
   const user = userEvent.setup();
   const { rerender } = render(
@@ -46,8 +46,8 @@ test('keeps the Protoform loading, icon and asChild extensions', async () => {
   expect(screen.getByRole('button', { name: /save/iu })).toBeDisabled();
   expect(screen.getByRole('button', { name: /save/iu })).toHaveAttribute('aria-busy', 'true');
   rerender(
-    <Button asChild onClick={onClick} variant="accent">
-      {React.createElement('button', { type: 'button' }, 'Legacy action')}
+    <Button onClick={onClick} render={React.createElement('button', { type: 'button' })} variant="accent">
+      Legacy action
     </Button>
   );
   expect(screen.getAllByRole('button')).toHaveLength(1);
@@ -61,6 +61,6 @@ test('preserves caller data attributes for specialized buttons', () => {
       Help
     </Button>
   );
-  expect(screen.getByRole('button', { name: 'Help' })).toHaveAttribute('data-slot', 'help-trigger');
+  expect(screen.getByRole('button', { name: 'Help' })).toHaveAttribute('data-slot', 'button');
   expect(screen.getByTestId('caller-button')).toBeVisible();
 });

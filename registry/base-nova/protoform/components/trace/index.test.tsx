@@ -3,7 +3,7 @@ import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
 
-import { CodeBlock, CodeBlockContent } from '@/components/ui/code-block';
+import { CodeBlock, CodeBlockContent } from '@/components/ui/code-block/index';
 import {
   Trace,
   TraceCollapsible,

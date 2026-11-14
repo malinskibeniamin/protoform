@@ -17,7 +17,7 @@ function Int64FieldComponent({ error, field, id, inputProps }: AutoFormFieldProp
       id={id}
       inputMode="numeric"
       onBlur={inputProps['onBlur']}
-      onChange={(event) => inputProps['onValueChange'](event.target.value)}
+      onValueChange={(nextInputValue) => inputProps['onValueChange'](nextInputValue)}
       placeholder={getFieldUiConfig(field).placeholder}
       testId={testIds.control}
       value={typeof inputProps['value'] === 'string' ? inputProps['value'] : ''}

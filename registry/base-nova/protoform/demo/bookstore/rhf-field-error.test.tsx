@@ -3,7 +3,7 @@ import { Code, ConnectError } from '@connectrpc/connect';
 import { expect, test } from '@rstest/core';
 import { act, render, renderHook, screen } from '@testing-library/react';
 import { ErrorMessage } from 'react-hook-form';
-import { Field, FieldError } from '@/components/ui/field';
+import { Field, FieldError } from '@/components/ui/field/index';
 import { useProtoForm } from '@/registry/base-nova/protoform/hooks/use-proto-form';
 import { BookFormBinding } from '../runtime/gen/protoform/conformance/v1/aip_form';
 

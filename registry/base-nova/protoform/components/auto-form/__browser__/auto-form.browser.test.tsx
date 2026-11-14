@@ -1,7 +1,7 @@
 import { page } from '@rstest/browser';
 import { render } from '@rstest/browser-react';
 import { expect, test } from '@rstest/core';
-import { SimpleMultiSelect } from '@/components/ui/multi-select';
+import { SimpleMultiSelect } from '@/components/ui/multi-select/index';
 import { AutoForm } from '..';
 import type { ParsedField, SchemaProvider } from '../core-types';
 import { AutoFormFieldComponentRegistry } from '../fields/index';

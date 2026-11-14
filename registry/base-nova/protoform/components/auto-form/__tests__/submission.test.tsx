@@ -2,7 +2,7 @@ import type { MessageShape } from '@bufbuild/protobuf';
 import { afterEach, describe, expect, rs } from '@rstest/core';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/button/index';
 import { SubmitBasicFormRequestSchema } from '@/examples/gen/protoform/examples/v1/forms_pb.js';
 import { AutoForm } from '..';
 import { Form } from '../field-wrapper';

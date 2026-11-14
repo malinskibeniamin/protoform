@@ -7,12 +7,7 @@ import { Badge } from '@/registry/base-nova/protoform/components/badge';
 import { Button } from '@/registry/base-nova/protoform/components/button';
 import { Field, FieldLabel } from '@/registry/base-nova/protoform/components/field';
 import { Input } from '@/registry/base-nova/protoform/components/input';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/registry/base-nova/protoform/components/tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/registry/base-nova/protoform/components/tooltip';
 import {
   getReadinessSummary,
   type ReadinessRequirement,
@@ -174,42 +169,42 @@ export function ReadinessDashboard() {
           </div>
         </div>
 
-        <TooltipProvider delayDuration={100} skipDelayDuration={0}>
-          <fieldset
-            aria-label="Readiness check status map"
-            className="m-0 mt-6 grid min-w-0 grid-cols-[repeat(auto-fill,minmax(0.75rem,1fr))] gap-1 border-0 p-0"
-          >
-            {readinessRequirements.map((requirement) => {
-              const label = `${requirement.title}: ${statusLabel(requirement.status)}`;
-              return (
-                <Tooltip key={requirement.id}>
-                  <TooltipTrigger asChild>
+        <fieldset
+          aria-label="Readiness check status map"
+          className="m-0 mt-6 grid min-w-0 grid-cols-[repeat(auto-fill,minmax(0.75rem,1fr))] gap-1 border-0 p-0"
+        >
+          {readinessRequirements.map((requirement) => {
+            const label = `${requirement.title}: ${statusLabel(requirement.status)}`;
+            return (
+              <Tooltip key={requirement.id}>
+                <TooltipTrigger
+                  render={
                     <Button
                       aria-label={label}
                       className="relative aspect-square h-auto min-h-3 w-full"
                       size="icon-xs"
                       type="button"
                       variant="ghost"
-                    >
-                      <span
-                        aria-hidden="true"
-                        className="absolute inset-0 rounded-xs bg-muted-foreground/10 hover:bg-muted-foreground/25 active:bg-muted-foreground/25 data-[status=deferred]:bg-readiness-deferred data-[status=deferred]:hover:bg-readiness-deferred-hover data-[status=deferred]:active:bg-readiness-deferred-hover data-[status=external]:bg-muted-foreground/25 data-[status=external]:hover:bg-muted-foreground/40 data-[status=external]:active:bg-muted-foreground/40 data-[status=missing]:bg-readiness-missing data-[status=missing]:hover:bg-readiness-missing-hover data-[status=missing]:active:bg-readiness-missing-hover data-[status=optional]:bg-readiness-verified/50 data-[status=optional]:hover:bg-readiness-verified/65 data-[status=optional]:active:bg-readiness-verified/65 data-[status=out-of-target]:bg-muted-foreground/15 data-[status=out-of-target]:hover:bg-muted-foreground/30 data-[status=out-of-target]:active:bg-muted-foreground/30 data-[status=unsupported]:bg-readiness-unsupported data-[status=unsupported]:hover:bg-readiness-unsupported-hover data-[status=unsupported]:active:bg-readiness-unsupported-hover data-[status=verified]:bg-readiness-verified data-[status=verified]:hover:bg-readiness-verified-hover data-[status=verified]:active:bg-readiness-verified-hover"
-                        data-status={requirement.status}
-                      />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent arrow={false} className="max-w-xs text-pretty" role="tooltip" variant="detail">
-                    <span className="block font-semibold">{requirement.title}</span>
-                    <span className="mt-1 block text-xs">
-                      {statusLabel(requirement.status)} · {requirement.level}
-                    </span>
-                    <span className="mt-2 block text-xs">{requirementExplanation(requirement)}</span>
-                  </TooltipContent>
-                </Tooltip>
-              );
-            })}
-          </fieldset>
-        </TooltipProvider>
+                    />
+                  }
+                >
+                  <span
+                    aria-hidden="true"
+                    className="absolute inset-0 rounded-xs bg-muted-foreground/10 hover:bg-muted-foreground/25 active:bg-muted-foreground/25 data-[status=deferred]:bg-readiness-deferred data-[status=deferred]:hover:bg-readiness-deferred-hover data-[status=deferred]:active:bg-readiness-deferred-hover data-[status=external]:bg-muted-foreground/25 data-[status=external]:hover:bg-muted-foreground/40 data-[status=external]:active:bg-muted-foreground/40 data-[status=missing]:bg-readiness-missing data-[status=missing]:hover:bg-readiness-missing-hover data-[status=missing]:active:bg-readiness-missing-hover data-[status=optional]:bg-readiness-verified/50 data-[status=optional]:hover:bg-readiness-verified/65 data-[status=optional]:active:bg-readiness-verified/65 data-[status=out-of-target]:bg-muted-foreground/15 data-[status=out-of-target]:hover:bg-muted-foreground/30 data-[status=out-of-target]:active:bg-muted-foreground/30 data-[status=unsupported]:bg-readiness-unsupported data-[status=unsupported]:hover:bg-readiness-unsupported-hover data-[status=unsupported]:active:bg-readiness-unsupported-hover data-[status=verified]:bg-readiness-verified data-[status=verified]:hover:bg-readiness-verified-hover data-[status=verified]:active:bg-readiness-verified-hover"
+                    data-status={requirement.status}
+                  />
+                </TooltipTrigger>
+                <TooltipContent className="max-w-xs text-pretty" role="tooltip" variant="detail">
+                  <span className="block font-semibold">{requirement.title}</span>
+                  <span className="mt-1 block text-xs">
+                    {statusLabel(requirement.status)} · {requirement.level}
+                  </span>
+                  <span className="mt-2 block text-xs">{requirementExplanation(requirement)}</span>
+                </TooltipContent>
+              </Tooltip>
+            );
+          })}
+        </fieldset>
       </section>
 
       <section aria-labelledby={categoryReadinessHeadingId}>

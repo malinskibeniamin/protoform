@@ -1,4 +1,4 @@
-import type { ComboboxOption } from '.';
+import type { ComboboxOption } from './option-combobox';
 
 export interface GroupedOptions {
   readonly heading: string;

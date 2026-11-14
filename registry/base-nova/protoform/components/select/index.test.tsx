@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { expectTypeOf } from 'expect-type';
 
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.';
+import { Select, SelectContent, SelectItem, SelectList, SelectTrigger, SelectValue } from '.';
 
 test('infers numeric values and forwards the cancelable shadcn change event', async () => {
   const user = userEvent.setup();
@@ -25,8 +25,10 @@ test('infers numeric values and forwards the cancelable shadcn change event', as
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value={1}>One</SelectItem>
-        <SelectItem value={2}>Two</SelectItem>
+        <SelectList>
+          <SelectItem value={1}>One</SelectItem>
+          <SelectItem value={2}>Two</SelectItem>
+        </SelectList>
       </SelectContent>
     </Select>
   );

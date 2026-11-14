@@ -1,0 +1,283 @@
+{
+  "upstream": {
+    "repository": "https://github.com/vercel-labs/ui",
+    "revision": "8ff6bcf7100d48230a3fab8c72475d99316cc58a",
+    "version": "0.1.0-beta.2"
+  },
+  "components": [
+    {
+      "name": "accordion",
+      "installPath": "components/ui/accordion/index.tsx"
+    },
+    {
+      "name": "alert",
+      "installPath": "components/ui/alert/index.tsx"
+    },
+    {
+      "name": "alert-dialog",
+      "installPath": "components/ui/alert-dialog/index.tsx"
+    },
+    {
+      "name": "aspect-ratio",
+      "installPath": "components/ui/aspect-ratio/index.tsx"
+    },
+    {
+      "name": "attachment",
+      "installPath": "components/ui/attachment/index.tsx"
+    },
+    {
+      "name": "avatar",
+      "installPath": "components/ui/avatar/index.tsx"
+    },
+    {
+      "name": "badge",
+      "installPath": "components/ui/badge/index.tsx"
+    },
+    {
+      "name": "breadcrumb",
+      "installPath": "components/ui/breadcrumb/index.tsx"
+    },
+    {
+      "name": "bubble",
+      "installPath": "components/ui/bubble/index.tsx"
+    },
+    {
+      "name": "button",
+      "installPath": "components/ui/button/index.tsx"
+    },
+    {
+      "name": "button-group",
+      "installPath": "components/ui/button-group/index.tsx"
+    },
+    {
+      "name": "calendar",
+      "installPath": "components/ui/calendar/index.tsx"
+    },
+    {
+      "name": "card",
+      "installPath": "components/ui/card/index.tsx"
+    },
+    {
+      "name": "carousel",
+      "installPath": "components/ui/carousel/index.tsx"
+    },
+    {
+      "name": "chart",
+      "installPath": "components/ui/chart/index.tsx"
+    },
+    {
+      "name": "checkbox",
+      "installPath": "components/ui/checkbox/index.tsx"
+    },
+    {
+      "name": "code-block",
+      "installPath": "components/ui/code-block/index.tsx"
+    },
+    {
+      "name": "collapsible",
+      "installPath": "components/ui/collapsible/index.tsx"
+    },
+    {
+      "name": "combobox",
+      "installPath": "components/ui/combobox/index.tsx"
+    },
+    {
+      "name": "command",
+      "installPath": "components/ui/command/index.tsx"
+    },
+    {
+      "name": "context-menu",
+      "installPath": "components/ui/context-menu/index.tsx"
+    },
+    {
+      "name": "dialog",
+      "installPath": "components/ui/dialog/index.tsx"
+    },
+    {
+      "name": "direction",
+      "installPath": "components/ui/direction/index.tsx"
+    },
+    {
+      "name": "drawer",
+      "installPath": "components/ui/drawer/index.tsx"
+    },
+    {
+      "name": "dropdown-menu",
+      "installPath": "components/ui/dropdown-menu/index.tsx"
+    },
+    {
+      "name": "empty",
+      "installPath": "components/ui/empty/index.tsx"
+    },
+    {
+      "name": "field",
+      "installPath": "components/ui/field/index.tsx"
+    },
+    {
+      "name": "hover-card",
+      "installPath": "components/ui/hover-card/index.tsx"
+    },
+    {
+      "name": "input",
+      "installPath": "components/ui/input/index.tsx"
+    },
+    {
+      "name": "input-group",
+      "installPath": "components/ui/input-group/index.tsx"
+    },
+    {
+      "name": "input-otp",
+      "installPath": "components/ui/input-otp/index.tsx"
+    },
+    {
+      "name": "item",
+      "installPath": "components/ui/item/index.tsx"
+    },
+    {
+      "name": "kbd",
+      "installPath": "components/ui/kbd/index.tsx"
+    },
+    {
+      "name": "label",
+      "installPath": "components/ui/label/index.tsx"
+    },
+    {
+      "name": "marker",
+      "installPath": "components/ui/marker/index.tsx"
+    },
+    {
+      "name": "menubar",
+      "installPath": "components/ui/menubar/index.tsx"
+    },
+    {
+      "name": "message",
+      "installPath": "components/ui/message/index.tsx"
+    },
+    {
+      "name": "message-scroller",
+      "installPath": "components/ui/message-scroller/index.tsx"
+    },
+    {
+      "name": "native-select",
+      "installPath": "components/ui/native-select/index.tsx"
+    },
+    {
+      "name": "navigation-menu",
+      "installPath": "components/ui/navigation-menu/index.tsx"
+    },
+    {
+      "name": "pagination",
+      "installPath": "components/ui/pagination/index.tsx"
+    },
+    {
+      "name": "popover",
+      "installPath": "components/ui/popover/index.tsx"
+    },
+    {
+      "name": "progress",
+      "installPath": "components/ui/progress/index.tsx"
+    },
+    {
+      "name": "questionnaire",
+      "installPath": "components/ui/questionnaire/index.tsx"
+    },
+    {
+      "name": "radio-group",
+      "installPath": "components/ui/radio-group/index.tsx"
+    },
+    {
+      "name": "resizable",
+      "installPath": "components/ui/resizable/index.tsx"
+    },
+    {
+      "name": "scroll-area",
+      "installPath": "components/ui/scroll-area/index.tsx"
+    },
+    {
+      "name": "select",
+      "installPath": "components/ui/select/index.tsx"
+    },
+    {
+      "name": "separator",
+      "installPath": "components/ui/separator/index.tsx"
+    },
+    {
+      "name": "sheet",
+      "installPath": "components/ui/sheet/index.tsx"
+    },
+    {
+      "name": "sidebar",
+      "installPath": "components/ui/sidebar/index.tsx"
+    },
+    {
+      "name": "skeleton",
+      "installPath": "components/ui/skeleton/index.tsx"
+    },
+    {
+      "name": "slider",
+      "installPath": "components/ui/slider/index.tsx"
+    },
+    {
+      "name": "spinner",
+      "installPath": "components/ui/spinner/index.tsx"
+    },
+    {
+      "name": "switch",
+      "installPath": "components/ui/switch/index.tsx"
+    },
+    {
+      "name": "table",
+      "installPath": "components/ui/table/index.tsx"
+    },
+    {
+      "name": "tabs",
+      "installPath": "components/ui/tabs/index.tsx"
+    },
+    {
+      "name": "textarea",
+      "installPath": "components/ui/textarea/index.tsx"
+    },
+    {
+      "name": "toast",
+      "installPath": "components/ui/toast/index.tsx"
+    },
+    {
+      "name": "toggle",
+      "installPath": "components/ui/toggle/index.tsx"
+    },
+    {
+      "name": "toggle-group",
+      "installPath": "components/ui/toggle-group/index.tsx"
+    },
+    {
+      "name": "tooltip",
+      "installPath": "components/ui/tooltip/index.tsx"
+    },
+    {
+      "name": "trace",
+      "installPath": "components/ui/trace/index.tsx"
+    },
+    {
+      "name": "rating",
+      "docs": "https://ui-sdk.dev/docs/core",
+      "installPath": "components/ui/rating/index.tsx"
+    }
+  ],
+  "compositions": [
+    {
+      "name": "typography",
+      "docs": "https://ui.shadcn.com/docs/components/base/typography",
+      "installPath": "components/ui/typography/index.tsx"
+    },
+    {
+      "name": "date-picker",
+      "docs": "https://ui.shadcn.com/docs/components/base/date-picker",
+      "installPath": "components/ui/examples/date-picker.tsx"
+    },
+    {
+      "name": "data-table",
+      "docs": "https://ui.shadcn.com/docs/components/base/data-table",
+      "installPath": "components/ui/examples/data-table.tsx"
+    }
+  ]
+}

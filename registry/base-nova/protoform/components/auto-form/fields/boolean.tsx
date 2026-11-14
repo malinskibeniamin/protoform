@@ -22,6 +22,7 @@ function BooleanFieldComponent({ error, field, id, inputProps, label }: AutoForm
 
   return (
     <Select
+      disabled={inputProps['disabled']}
       items={[
         { label: 'Not set', value: null },
         { label: 'True', value: 'true' },

@@ -1,6 +1,5 @@
 'use client';
 
-import { useRender } from '@base-ui/react/use-render';
 import type { CSSProperties } from 'react';
 import React from 'react';
 import type {
@@ -65,27 +64,24 @@ function ChartContainer({
 }) {
   const uniqueId = React.useId();
   const chartId = `chart-${id ?? uniqueId.replaceAll(':', '')}`;
-  const chartRef = React.useRef<HTMLDivElement>(null);
-  const chart = useRender({
-    defaultTagName: 'div',
-    ref: [chartRef, ref ?? null],
-    props: {
-      ...props,
-      className: cn(
+  const chart = (
+    <div
+      {...props}
+      className={cn(
         "flex aspect-video justify-center text-xs scheme-light dark:scheme-dark [&_.recharts-cartesian-axis-tick_text]:fill-muted-foreground [&_.recharts-cartesian-grid_line[stroke='#ccc']]:stroke-border/50 [&_.recharts-curve.recharts-tooltip-cursor]:stroke-border [&_.recharts-dot[stroke='#fff']]:stroke-transparent [&_.recharts-layer]:outline-hidden [&_.recharts-polar-grid_[stroke='#ccc']]:stroke-border [&_.recharts-radial-bar-background-sector]:fill-muted [&_.recharts-rectangle.recharts-tooltip-cursor]:fill-muted [&_.recharts-reference-line_[stroke='#ccc']]:stroke-border [&_.recharts-sector]:outline-hidden [&_.recharts-sector[stroke='#fff']]:stroke-transparent [&_.recharts-surface]:outline-hidden",
         className
-      ),
-      'data-chart': chartId,
-      'data-slot': 'chart',
-      children: (
-        <React.Suspense fallback={<p role="status">Loading chart…</p>}>
-          <RechartsPrimitiveResponsiveContainer initialDimension={initialDimension}>
-            {children}
-          </RechartsPrimitiveResponsiveContainer>
-        </React.Suspense>
-      ),
-    },
-  });
+      )}
+      data-chart={chartId}
+      data-slot="chart"
+      ref={ref}
+    >
+      <React.Suspense fallback={<p role="status">Loading chart…</p>}>
+        <RechartsPrimitiveResponsiveContainer initialDimension={initialDimension}>
+          {children}
+        </RechartsPrimitiveResponsiveContainer>
+      </React.Suspense>
+    </div>
+  );
   return (
     <ChartContext.Provider value={config}>
       {chart}

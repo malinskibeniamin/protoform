@@ -3,9 +3,10 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 import { createContext, useContext, useId, useMemo } from 'react';
 
-import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
-import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
+import { Label } from '@/components/ui/label/index';
+import { Separator } from '@/components/ui/separator/index';
+import { cn } from '@/registry/base-nova/protoform/lib/utils';
+import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
 interface FieldContextValue {
   errorId: string | undefined;
@@ -123,7 +124,7 @@ function FieldLabel({
   htmlFor,
   required,
   ...props
-}: React.ComponentProps<typeof Label> & { required?: boolean }) {
+}: Omit<React.ComponentProps<typeof Label>, 'children'> & { children?: React.ReactNode } & { required?: boolean }) {
   return (
     <Label className={className} data-slot="field-label" htmlFor={htmlFor} variant="field" {...props}>
       {children}

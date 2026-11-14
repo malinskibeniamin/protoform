@@ -4,26 +4,32 @@ import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type React from 'react';
 import { getDemoSchema } from '@/registry/base-nova/protoform/demo/runtime/demo-schemas';
-import { AutoForm, shadcnUIComponents } from '..';
+import { AutoForm, uiSdkComponents } from '..';
 import { createMockProvider } from './test-utils';
 
-function ConsumerInput({ testId, ...props }: React.ComponentProps<'input'> & { testId?: string }) {
-  return <input data-testid={testId} {...props} />;
+function ConsumerInput({
+  testId,
+  onValueChange,
+  ...props
+}: React.ComponentProps<'input'> & { testId?: string; onValueChange?: (value: string) => void }) {
+  return <input data-testid={testId} {...props} onChange={(event) => onValueChange?.(event.target.value)} />;
 }
 
 function ConsumerTextarea({
   testId,
+  onValueChange,
   resize: _resize,
   ...props
 }: React.ComponentProps<'textarea'> & {
   testId?: string;
+  onValueChange?: (value: string) => void;
   resize?: string;
 }) {
-  return <textarea data-testid={testId} {...props} />;
+  return <textarea data-testid={testId} {...props} onChange={(event) => onValueChange?.(event.target.value)} />;
 }
 
 const components = {
-  ...shadcnUIComponents,
+  ...uiSdkComponents,
   Input: ConsumerInput,
   InputGroupInput: ConsumerInput,
   Textarea: ConsumerTextarea,
@@ -138,7 +144,7 @@ test('keeps every same-field error and links selection controls to their errors'
   expect(screen.getByText('Enter a title', { exact: true }).tagName).toBe('LI');
   expect(screen.getByText('Use at least three characters', { exact: true }).tagName).toBe('LI');
   const select = screen.getByRole('combobox', { name: 'Choice' });
-  const multi = screen.getByRole('button', { name: 'Multi-select trigger' });
+  const multi = screen.getByRole('combobox', { name: 'Multi-select trigger' });
   expect(select).toHaveAttribute('aria-invalid', 'true');
   expect(select).toHaveAccessibleDescription('Choose an option');
   expect(multi).toHaveAttribute('aria-invalid', 'true');

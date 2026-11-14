@@ -788,11 +788,9 @@ export function PresetLab() {
                     <CopyIcon aria-hidden="true" />
                     Copy Bun command
                   </Button>
-                  <Button asChild size="sm" variant="outline">
-                    <a href={createUrl} rel="noreferrer" target="_blank">
-                      Open in shadcn/create
-                      <ExternalLinkIcon aria-hidden="true" />
-                    </a>
+                  <Button render={<a href={createUrl} rel="noreferrer" target="_blank" />} size="sm" variant="outline">
+                    Open in shadcn/create
+                    <ExternalLinkIcon aria-hidden="true" />
                   </Button>
                 </div>
               </footer>

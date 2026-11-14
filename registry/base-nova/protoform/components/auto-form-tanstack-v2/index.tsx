@@ -6,8 +6,8 @@ import {
   TanStackV2Engine,
 } from '../auto-form/adapters/tanstack-v2';
 import { AutoFormCore } from '../auto-form/auto-form-core';
-import { shadcnUIComponents } from '../auto-form/shadcn-ui-components';
 import type { AutoFormProps as BaseAutoFormProps } from '../auto-form/types';
+import { uiSdkComponents } from '../auto-form/ui-sdk-components';
 
 export type {
   ProtoformMessageCode,
@@ -84,7 +84,7 @@ export type {
 } from '../auto-form/types';
 
 export function AutoForm<T extends FormValues = FormValues, TCustomFieldType extends string = never>({
-  components = shadcnUIComponents,
+  components = uiSdkComponents,
   formOptions,
   ...props
 }: AutoFormProps<T, TCustomFieldType>) {

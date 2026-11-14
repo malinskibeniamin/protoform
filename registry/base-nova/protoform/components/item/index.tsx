@@ -1,19 +1,17 @@
 'use client';
 
-import { mergeProps } from '@base-ui/react/merge-props';
-import { useRender } from '@base-ui/react/use-render';
+import { mergeProps, type PartProps, renderElement } from '@ui-sdk/react/primitive';
 import { cva, type VariantProps } from 'class-variance-authority';
 import React from 'react';
-import { Separator } from '@/components/ui/separator';
+import { Separator } from '@/components/ui/separator/index';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
 
 const ItemGroupContext = React.createContext(false);
-function ItemGroup({ className, render, ...props }: useRender.ComponentProps<'div'>) {
-  const list = useRender({
-    defaultTagName: 'div',
-    render,
-    props: {
-      ...mergeProps<'div'>(
+function ItemGroup({ className, render, ...props }: PartProps<'div'>) {
+  const list = renderElement(
+    'div',
+    {
+      ...mergeProps(
         {
           role: 'list',
           className: cn(
@@ -25,7 +23,8 @@ function ItemGroup({ className, render, ...props }: useRender.ComponentProps<'di
       ),
       'data-slot': 'item-group',
     },
-  });
+    render
+  );
   return <ItemGroupContext.Provider value>{list}</ItemGroupContext.Provider>;
 }
 
@@ -63,29 +62,34 @@ function Item({
   size = 'default',
   render,
   ...props
-}: useRender.ComponentProps<'div' | 'li'> & VariantProps<typeof itemVariants>) {
+}: PartProps<'div' | 'li'> & VariantProps<typeof itemVariants>) {
   const grouped = React.useContext(ItemGroupContext);
-  return useRender({
-    defaultTagName: grouped === true ? 'li' : 'div',
-    props: mergeProps<'div' | 'li'>(
-      {
-        className: cn(
-          itemVariants({
-            variant,
-            size,
-            className,
-          })
-        ),
-      },
-      props
-    ),
+  return renderElement(
+    grouped === true ? 'li' : 'div',
+    {
+      ...mergeProps(
+        {
+          className: cn(
+            itemVariants({
+              variant,
+              size,
+              className,
+            })
+          ),
+        },
+        props
+      ),
+      'data-slot': 'item',
+      'data-variant': variant,
+      'data-size': size,
+    },
     render,
-    state: {
+    {
       slot: 'item',
       variant,
       size,
-    },
-  });
+    }
+  );
 }
 const itemMediaVariants = cva(
   'flex shrink-0 items-center justify-center gap-2 group-has-data-[slot=item-description]/item:translate-y-0.5 group-has-data-[slot=item-description]/item:self-start [&_svg]:pointer-events-none',

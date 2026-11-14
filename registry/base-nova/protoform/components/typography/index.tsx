@@ -4,7 +4,8 @@ import { Link as TanStackLink } from '@tanstack/react-router';
 import { cva, type VariantProps } from 'class-variance-authority';
 import React, { forwardRef } from 'react';
 
-import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
+import { cn } from '@/registry/base-nova/protoform/lib/utils';
+import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
 const headingVariants = cva('font-display leading-none font-medium tracking-tight', {
   defaultVariants: {

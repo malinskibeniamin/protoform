@@ -4,7 +4,6 @@ import { XIcon } from 'lucide-react';
 import {
   type ComponentProps,
   createContext,
-  type MouseEventHandler,
   type ReactNode,
   useContext,
   useEffect,
@@ -13,10 +12,18 @@ import {
   useState,
 } from 'react';
 
-import { Button } from '@/components/ui/button';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
+import { Button } from '@/components/ui/button/index';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command/index';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover/index';
+import { cn } from '@/registry/base-nova/protoform/lib/utils';
+import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
 interface TagsContextType {
   onOpenChange: (open: boolean) => void;
@@ -95,21 +102,25 @@ export const Tags = ({
     </TagsContext.Provider>
   );
 };
-export type TagsTriggerProps = ComponentProps<typeof Button> & { testId?: string | undefined };
+export type TagsTriggerProps = Omit<ComponentProps<typeof Button>, 'children'> & { children?: React.ReactNode } & {
+  testId?: string | undefined;
+};
 export const TagsTrigger = ({ className, children, testId, ...props }: TagsTriggerProps) => (
-  <PopoverTrigger asChild>
-    <Button
-      className={cn('h-auto w-full justify-between', className)}
-      data-testid={testId}
-      role="combobox"
-      variant="outline"
-      {...props}
-    >
-      <div className="flex flex-wrap items-center gap-1">
-        {children}
-        <span className="px-2 py-px text-muted-foreground">Select a tag…</span>
-      </div>
-    </Button>
+  <PopoverTrigger
+    render={
+      <Button
+        className={cn('h-auto w-full justify-between', className)}
+        data-testid={testId}
+        role="combobox"
+        variant="outline"
+        {...props}
+      />
+    }
+  >
+    <div className="flex flex-wrap items-center gap-1">
+      {children}
+      <span className="px-2 py-px text-muted-foreground">Select a tag…</span>
+    </div>
   </PopoverTrigger>
 );
 export type TagsValueProps = ComponentProps<'span'> & { testId?: string | undefined };
@@ -119,39 +130,36 @@ export const TagsValue = ({
   onRemove,
   testId,
   ...props
-}: TagsValueProps & { onRemove?: () => void }) => {
-  const handleRemove: MouseEventHandler<HTMLButtonElement> = (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    onRemove?.();
-  };
-  return (
-    <span
-      className={cn(
-        'm-0.5 inline-flex min-h-6 cursor-pointer items-center gap-1.5 rounded-md bg-muted px-2 py-1 text-sm font-medium text-foreground transition-colors hover:bg-muted',
-        className
-      )}
-      data-testid={testId}
-      {...props}
-    >
-      <span className="leading-tight">{children}</span>
-      {onRemove ? (
-        <Button
-          aria-label="Remove tag"
-          className="cursor-pointer"
-          onClick={handleRemove}
-          size="icon-xs"
-          type="button"
-          variant="ghost"
-        >
-          <XIcon className="text-muted-foreground" size={12} />
-        </Button>
-      ) : null}
-    </span>
-  );
-};
+}: TagsValueProps & { onRemove?: () => void }) => (
+  <span
+    className={cn(
+      'm-0.5 inline-flex min-h-6 cursor-pointer items-center gap-1.5 rounded-md bg-muted px-2 py-1 text-sm font-medium text-foreground transition-colors hover:bg-muted',
+      className
+    )}
+    data-testid={testId}
+    {...props}
+  >
+    <span className="leading-tight">{children}</span>
+    {onRemove ? (
+      <Button
+        aria-label="Remove tag"
+        className="cursor-pointer"
+        onClick={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          onRemove?.();
+        }}
+        size="icon-xs"
+        type="button"
+        variant="ghost"
+      >
+        <XIcon className="text-muted-foreground" size={12} />
+      </Button>
+    ) : null}
+  </span>
+);
 
-export type TagsContentProps = ComponentProps<typeof PopoverContent>;
+export type TagsContentProps = Omit<ComponentProps<typeof PopoverContent>, 'children'> & { children?: React.ReactNode };
 export const TagsContent = ({ className, children, ...props }: TagsContentProps) => {
   const { width } = useTagsContext();
   const widthStyle: NonNullable<TagsContentProps['style']> & { '--tags-width': string | undefined } = {

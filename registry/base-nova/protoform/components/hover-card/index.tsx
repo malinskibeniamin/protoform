@@ -1,47 +1,79 @@
 'use client';
 
-import { PreviewCard as PreviewCardPrimitive } from '@base-ui/react/preview-card';
-import { usePortalContainer } from '@/registry/base-nova/protoform/hooks/use-portal-container';
-import { cn } from '@/registry/base-nova/protoform/lib/utils';
+import {
+  HoverCard as SDKHoverCard,
+  HoverCardArrow as SDKHoverCardArrow,
+  HoverCardContent as SDKHoverCardContent,
+  HoverCardTrigger as SDKHoverCardTrigger,
+} from '@ui-sdk/react/hover-card';
 
-function HoverCard({ ...props }: PreviewCardPrimitive.Root.Props) {
-  return <PreviewCardPrimitive.Root data-slot="hover-card" {...props} />;
-}
-function HoverCardTrigger({ ...props }: PreviewCardPrimitive.Trigger.Props) {
-  return <PreviewCardPrimitive.Trigger data-slot="hover-card-trigger" {...props} />;
-}
-function HoverCardContent({
+import type React from 'react';
+import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
+import { cn } from '@/registry/base-nova/protoform/lib/utils';
+import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
+
+const HoverCard = SDKHoverCard;
+
+function HoverCardArrow({
   className,
-  side = 'bottom',
-  sideOffset = 4,
-  align = 'center',
-  alignOffset = 4,
+  testId,
+  variant,
+  size,
   ...props
-}: PreviewCardPrimitive.Popup.Props &
-  Pick<PreviewCardPrimitive.Positioner.Props, 'align' | 'alignOffset' | 'side' | 'sideOffset'>) {
-  const portalContainer = usePortalContainer();
+}: UIProps<React.ComponentProps<typeof SDKHoverCardArrow>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
   return (
-    <PreviewCardPrimitive.Portal container={portalContainer} data-slot="hover-card-portal">
-      <PreviewCardPrimitive.Positioner
-        align={align}
-        alignOffset={alignOffset}
-        className="isolate z-50"
-        side={side}
-        sideOffset={sideOffset}
-      >
-        <PreviewCardPrimitive.Popup
-          className={(state) =>
-            cn(
-              'z-50 w-64 origin-(--transform-origin) rounded-lg bg-popover p-2.5 text-sm text-popover-foreground shadow-md ring-1 ring-foreground/10 outline-hidden duration-100 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=inline-end]:slide-in-from-left-2 data-[side=inline-start]:slide-in-from-right-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2',
-              typeof className === 'function' ? className(state) : className
-            )
-          }
-          data-slot="hover-card-content"
-          {...props}
-        />
-      </PreviewCardPrimitive.Positioner>
-    </PreviewCardPrimitive.Portal>
+    <SDKHoverCardArrow
+      {...definedProps(props)}
+      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
   );
 }
 
-export { HoverCard, HoverCardContent, HoverCardTrigger };
+function HoverCardContent({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKHoverCardContent>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKHoverCardContent
+      {...definedProps(props)}
+      className={(state) =>
+        cn(
+          'z-50 max-h-(--available-height) w-64 min-w-36 overflow-auto rounded-lg border border-border bg-popover p-1 p-4 text-popover-foreground shadow-md outline-none',
+          typeof className === 'function' ? className(state) : className
+        )
+      }
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
+
+function HoverCardTrigger({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKHoverCardTrigger>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKHoverCardTrigger
+      {...definedProps(props)}
+      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
+
+export { HoverCard, HoverCardArrow, HoverCardContent, HoverCardTrigger };

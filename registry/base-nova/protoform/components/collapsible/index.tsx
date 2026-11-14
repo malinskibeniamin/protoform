@@ -1,125 +1,76 @@
 'use client';
 
-import { Collapsible as CollapsiblePrimitive } from '@base-ui/react/collapsible';
-import { AnimatePresence, type HTMLMotionProps, motion, type Transition } from 'motion/react';
-import React from 'react';
+import {
+  Collapsible as SDKCollapsible,
+  CollapsiblePanel as SDKCollapsiblePanel,
+  CollapsibleTrigger as SDKCollapsibleTrigger,
+} from '@ui-sdk/react/collapsible';
 
-import { asChildToRender, asChildTrigger, splitMotionProps } from '@/registry/base-nova/protoform/lib/base-ui-compat';
-import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
+import type React from 'react';
+import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
+import { cn } from '@/registry/base-nova/protoform/lib/utils';
+import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
-const DEFAULT_TRANSITION = { damping: 22, stiffness: 150, type: 'spring' } satisfies Transition;
-
-interface CollapsibleContextType {
-  isOpen: boolean;
-}
-
-const CollapsibleContext = React.createContext<boolean | undefined>(undefined);
-
-const useCollapsible = (): CollapsibleContextType => {
-  const context = React.useContext(CollapsibleContext);
-  if (context === undefined) {
-    throw new Error('useCollapsible must be used within a Collapsible');
-  }
-  return { isOpen: context };
-};
-
-type CollapsibleProps = React.ComponentProps<typeof CollapsiblePrimitive.Root> &
-  SharedProps & {
-    asChild?: boolean;
-  };
-
-function Collapsible({ children, testId, asChild, onOpenChange, open, defaultOpen, ...props }: CollapsibleProps) {
-  const [uncontrolledOpen, setUncontrolledOpen] = React.useState(defaultOpen ?? false);
-  const isOpen = open ?? uncontrolledOpen;
-
-  const handleOpenChange: NonNullable<CollapsiblePrimitive.Root.Props['onOpenChange']> = (nextOpen, details) => {
-    onOpenChange?.(nextOpen, details);
-    if (details.isCanceled) {
-      return;
-    }
-    if (open === undefined) {
-      setUncontrolledOpen(nextOpen);
-    }
-  };
-
+function Collapsible({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKCollapsible>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
   return (
-    <CollapsibleContext.Provider value={isOpen}>
-      <CollapsiblePrimitive.Root
-        data-slot="collapsible"
-        data-testid={testId}
-        {...props}
-        defaultOpen={defaultOpen}
-        open={open}
-        {...asChildToRender({ asChild, children })}
-        onOpenChange={handleOpenChange}
-      />
-    </CollapsibleContext.Provider>
-  );
-}
-
-type CollapsibleTriggerProps = React.ComponentProps<typeof CollapsiblePrimitive.Trigger> & {
-  asChild?: boolean;
-};
-
-function CollapsibleTrigger({ className, ...props }: CollapsibleTriggerProps) {
-  return (
-    <CollapsiblePrimitive.Trigger
-      className={(state) => cn('cursor-pointer', typeof className === 'function' ? className(state) : className)}
-      data-slot="collapsible-trigger"
-      {...asChildTrigger(props)}
+    <SDKCollapsible
+      {...definedProps(props)}
+      className={(state) => cn('w-full', typeof className === 'function' ? className(state) : className)}
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
     />
   );
 }
 
-type CollapsibleContentProps = React.ComponentProps<typeof CollapsiblePrimitive.Panel> &
-  Omit<HTMLMotionProps<'div'>, keyof React.ComponentProps<typeof CollapsiblePrimitive.Panel>> & {
-    transition?: Transition;
-  };
-
-function CollapsibleContent({
+function CollapsiblePanel({
   className,
-  children,
-  render,
-  keepMounted = false,
-  transition = DEFAULT_TRANSITION,
+  testId,
+  variant,
+  size,
   ...props
-}: CollapsibleContentProps) {
-  const { isOpen } = useCollapsible();
-  const separated = splitMotionProps(props);
-
+}: UIProps<React.ComponentProps<typeof SDKCollapsiblePanel>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
   return (
-    <AnimatePresence>
-      {isOpen || keepMounted === true ? (
-        <CollapsiblePrimitive.Panel
-          className={className}
-          data-slot="collapsible-content"
-          keepMounted
-          render={render}
-          {...separated.native}
-        >
-          <motion.div
-            animate={{ height: 'auto', opacity: 1, overflow: 'hidden' }}
-            exit={{ height: 0, opacity: 0, overflow: 'hidden' }}
-            initial={{ height: 0, opacity: 0, overflow: 'hidden' }}
-            layout
-            transition={transition}
-            {...separated.motion}
-          >
-            {children}
-          </motion.div>
-        </CollapsiblePrimitive.Panel>
-      ) : null}
-    </AnimatePresence>
+    <SDKCollapsiblePanel
+      {...definedProps(props)}
+      className={(state) => cn('overflow-hidden', typeof className === 'function' ? className(state) : className)}
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
   );
 }
 
-export {
-  Collapsible,
-  CollapsibleContent,
-  type CollapsibleContentProps,
-  type CollapsibleContextType,
-  type CollapsibleProps,
-  CollapsibleTrigger,
-  type CollapsibleTriggerProps,
-  useCollapsible,
-};
+function CollapsibleTrigger({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKCollapsibleTrigger>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKCollapsibleTrigger
+      {...definedProps(props)}
+      className={(state) =>
+        cn(
+          'outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50',
+          typeof className === 'function' ? className(state) : className
+        )
+      }
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
+
+export { Collapsible, CollapsiblePanel, CollapsibleTrigger };

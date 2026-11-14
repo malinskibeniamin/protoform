@@ -14,7 +14,7 @@ test('keeps the Protoform uncontrolled indeterminate convenience value editable'
   expect(checkbox).toHaveAttribute('aria-checked', 'true');
 });
 
-test('honors canceled changes, native events and Base UI state classes', async () => {
+test('honors canceled changes, native events and UI SDK state classes', async () => {
   const user = userEvent.setup();
   const onChange = rs.fn();
   const animationEvents: string[] = [];

@@ -1,5 +1,5 @@
 import { lazy, Suspense, useId } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/tabs/index';
 import { FoundationExamples } from './parity-foundations';
 import { OverlayExamples } from './parity-overlays';
 
@@ -18,52 +18,52 @@ export default function ShadcnParityExample() {
     >
       <div className="space-y-2">
         <h2 className="text-2xl font-semibold" id={parityHeadingId}>
-          Shadcn component catalog
+          UI SDK component catalog
         </h2>
         <p className="text-sm text-muted-foreground">
-          Bundled Base UI components and composition examples. Samples are local and do not submit to a backend.
+          Bundled UI SDK components and composition examples. Samples are local and do not submit to a backend.
           Protoform’s existing form APIs are unchanged.
         </p>
       </div>
       <Tabs defaultValue="basics">
-        <TabsList aria-label="Component categories" className="h-auto w-full grid-cols-2 sm:grid-cols-5" layout="equal">
-          <TabsTrigger className="min-h-11" value="basics">
+        <TabsList aria-label="Component categories" className="grid h-auto w-full grid-cols-2 sm:grid-cols-5">
+          <TabsTab className="min-h-11" value="basics">
             Basics
-          </TabsTrigger>
-          <TabsTrigger className="min-h-11" value="overlays">
+          </TabsTab>
+          <TabsTab className="min-h-11" value="overlays">
             Overlays
-          </TabsTrigger>
-          <TabsTrigger className="min-h-11" value="layout">
+          </TabsTab>
+          <TabsTab className="min-h-11" value="layout">
             Layout
-          </TabsTrigger>
-          <TabsTrigger className="min-h-11" value="messages">
+          </TabsTab>
+          <TabsTab className="min-h-11" value="messages">
             Messages
-          </TabsTrigger>
-          <TabsTrigger className="min-h-11" value="recipes">
+          </TabsTab>
+          <TabsTab className="min-h-11" value="recipes">
             Recipes
-          </TabsTrigger>
+          </TabsTab>
         </TabsList>
-        <TabsContent value="basics">
+        <TabsPanel value="basics">
           <FoundationExamples headingId={parityHeadingId} />
-        </TabsContent>
-        <TabsContent value="overlays">
+        </TabsPanel>
+        <TabsPanel value="overlays">
           <OverlayExamples />
-        </TabsContent>
-        <TabsContent value="layout">
+        </TabsPanel>
+        <TabsPanel value="layout">
           <Suspense fallback={<p role="status">Loading layout components…</p>}>
             <LayoutExamples />
           </Suspense>
-        </TabsContent>
-        <TabsContent value="messages">
+        </TabsPanel>
+        <TabsPanel value="messages">
           <Suspense fallback={<p role="status">Loading message components…</p>}>
             <MessageExamples />
           </Suspense>
-        </TabsContent>
-        <TabsContent value="recipes">
+        </TabsPanel>
+        <TabsPanel value="recipes">
           <Suspense fallback={<p role="status">Loading composition examples…</p>}>
             <RecipeExamples />
           </Suspense>
-        </TabsContent>
+        </TabsPanel>
       </Tabs>
     </div>
   );

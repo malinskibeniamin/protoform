@@ -14,7 +14,7 @@ test('uses one thumb for a numeric value and preserves its callback shape', asyn
       aria-label="Volume"
       defaultValue={30}
       onValueChange={(value, details) => {
-        expectTypeOf(value).toEqualTypeOf<number>();
+        expectTypeOf(value).toEqualTypeOf<number | number[]>();
         onChange(value, details.reason);
       }}
     />
@@ -24,12 +24,18 @@ test('uses one thumb for a numeric value and preserves its callback shape', asyn
   await user.tab();
   expect(thumb).toHaveFocus();
   await user.keyboard('{ArrowRight}');
-  expect(onChange).toHaveBeenCalledWith(31, 'keyboard');
+  expect(onChange).toHaveBeenCalledWith(31, 'step-key');
 });
 
 function ControlledVolume() {
   const [value, setValue] = useState(30);
-  return <Slider aria-label="Controlled volume" onValueChange={setValue} value={value} />;
+  return (
+    <Slider
+      aria-label="Controlled volume"
+      onValueChange={(next) => setValue(typeof next === 'number' ? next : (next[0] ?? 0))}
+      value={value}
+    />
+  );
 }
 
 test('keeps the controlled thumb focused across consecutive keyboard changes', async () => {
@@ -38,6 +44,6 @@ test('keeps the controlled thumb focused across consecutive keyboard changes', a
   const thumb = screen.getByRole('slider', { name: 'Controlled volume' });
   await user.tab();
   await user.keyboard('{ArrowRight}{ArrowRight}');
-  expect(screen.getByRole('slider', { name: 'Controlled volume' })).toHaveAttribute('aria-valuenow', '32');
+  expect(screen.getByRole('slider', { name: 'Controlled volume' })).toHaveValue('32');
   expect(thumb).toHaveFocus();
 });

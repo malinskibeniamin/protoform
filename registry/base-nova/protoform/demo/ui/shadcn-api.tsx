@@ -3,26 +3,26 @@
 import { RotateCcwIcon } from 'lucide-react';
 import { useId, useState } from 'react';
 
-import { Alert, AlertAction, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { ChartStyle } from '@/components/ui/chart';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Alert, AlertAction, AlertDescription, AlertTitle } from '@/components/ui/alert/index';
+import { Badge } from '@/components/ui/badge/index';
+import { Button } from '@/components/ui/button/index';
+import { ChartStyle } from '@/components/ui/chart/index';
+import { Checkbox } from '@/components/ui/checkbox/index';
+import { Collapsible, CollapsiblePanel, CollapsibleTrigger } from '@/components/ui/collapsible/index';
 import {
   Combobox,
   ComboboxChip,
+  ComboboxChipRemove,
   ComboboxChips,
-  ComboboxChipsInput,
   ComboboxContent,
   ComboboxEmpty,
   ComboboxInput,
   ComboboxItem,
   ComboboxList,
   ComboboxValue,
-  useComboboxAnchor,
-} from '@/components/ui/combobox';
-import { Field, FieldLabel } from '@/components/ui/field';
+  OptionCombobox,
+} from '@/components/ui/combobox/index';
+import { Field, FieldLabel } from '@/components/ui/field/index';
 import {
   Popover,
   PopoverContent,
@@ -30,11 +30,18 @@ import {
   PopoverHeader,
   PopoverTitle,
   PopoverTrigger,
-} from '@/components/ui/popover';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Slider } from '@/components/ui/slider';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+} from '@/components/ui/popover/index';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectList,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select/index';
+import { Slider } from '@/components/ui/slider/index';
+import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/tabs/index';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group/index';
 
 export const client = 'only';
 
@@ -59,27 +66,19 @@ function ShadcnApiExample() {
   const [range, setRange] = useState([20, 80]);
   const [actions, setActions] = useState(0);
   const [green, setGreen] = useState(false);
-  const anchor = useComboboxAnchor();
 
   return (
     <div className="w-full max-w-[min(64rem,calc(100vw-3rem))] space-y-8" data-testid="shadcn-api-example">
       <header className="space-y-2">
-        <h1 className="text-2xl font-semibold">Shadcn APIs, Protoform extensions</h1>
+        <h1 className="text-2xl font-semibold">UI SDK APIs, Protoform compositions</h1>
         <p className="text-sm text-muted-foreground">
-          Official Base UI composition and typed callbacks, alongside the existing convenience APIs. All actions stay in
-          this demo.
+          Native UI SDK composition and typed callbacks. All actions stay in this demo.
         </p>
       </header>
       <section aria-label="Button APIs" className="space-y-3">
         <h2 className="font-semibold">Render and variant APIs</h2>
         <div className="flex flex-wrap items-center gap-3">
-          <Button
-            nativeButton={false}
-            onClick={() => setActions(actions + 1)}
-            render={<span />}
-            size="default"
-            variant="default"
-          >
+          <Button onClick={() => setActions(actions + 1)} render={<span />} size="default" variant="default">
             Rendered action
           </Button>
           <Button onClick={() => setActions(actions + 1)} size="md" variant="accent">
@@ -94,15 +93,15 @@ function ShadcnApiExample() {
         <Field>
           <FieldLabel>Compositional combobox</FieldLabel>
           <Combobox items={fruits} onValueChange={setFruit} value={fruit}>
-            <ComboboxInput aria-label="Fruit" showClear />
+            <ComboboxInput aria-label="Fruit" />
             <ComboboxContent>
               <ComboboxEmpty>No fruit found</ComboboxEmpty>
               <ComboboxList>
-                {(item: string) => (
+                {fruits.map((item) => (
                   <ComboboxItem key={item} value={item}>
                     {item}
                   </ComboboxItem>
-                )}
+                ))}
               </ComboboxList>
             </ComboboxContent>
           </Combobox>
@@ -110,33 +109,38 @@ function ShadcnApiExample() {
         <Field>
           <FieldLabel>Multiple values and chips</FieldLabel>
           <Combobox items={fruits} multiple onValueChange={setTags} value={tags}>
-            <ComboboxChips ref={anchor}>
+            <ComboboxChips>
               <ComboboxValue>
-                {(values) =>
-                  Array.isArray(values)
-                    ? values.map((value: unknown) =>
-                        typeof value === 'string' ? <ComboboxChip key={value}>{value}</ComboboxChip> : null
+                {(state) =>
+                  Array.isArray(state.value)
+                    ? state.value.map((value: unknown) =>
+                        typeof value === 'string' ? (
+                          <ComboboxChip key={value} value={value}>
+                            {value}
+                            <ComboboxChipRemove aria-label={`Remove ${value}`}>×</ComboboxChipRemove>
+                          </ComboboxChip>
+                        ) : null
                       )
                     : null
                 }
               </ComboboxValue>
-              <ComboboxChipsInput aria-label="Fruit tags" />
+              <ComboboxInput aria-label="Fruit tags" />
             </ComboboxChips>
-            <ComboboxContent anchor={anchor}>
+            <ComboboxContent>
               <ComboboxEmpty>No fruit found</ComboboxEmpty>
               <ComboboxList>
-                {(item: string) => (
+                {fruits.map((item) => (
                   <ComboboxItem key={item} value={item}>
                     {item}
                   </ComboboxItem>
-                )}
+                ))}
               </ComboboxList>
             </ComboboxContent>
           </Combobox>
         </Field>
         <Field>
           <FieldLabel>Protoform convenience combobox</FieldLabel>
-          <Combobox
+          <OptionCombobox
             aria-label="Legacy fruit"
             onChange={(value) => setFruit(value)}
             options={fruits.map((value) => ({ label: value, value }))}
@@ -161,16 +165,22 @@ function ShadcnApiExample() {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {numericItems.map((item) => (
-                <SelectItem key={item.value} value={item.value}>
-                  {item.label}
-                </SelectItem>
-              ))}
+              <SelectList>
+                {numericItems.map((item) => (
+                  <SelectItem key={item.value} value={item.value}>
+                    {item.label}
+                  </SelectItem>
+                ))}
+              </SelectList>
             </SelectContent>
           </Select>
         </Field>
         <Field orientation="horizontal">
-          <Checkbox checked={cancelChanges} id={cancelApiChangesId} onCheckedChange={setCancelChanges} />
+          <Checkbox
+            checked={cancelChanges}
+            id={cancelApiChangesId}
+            onCheckedChange={(value) => setCancelChanges(value === true)}
+          />
           <FieldLabel htmlFor={cancelApiChangesId}>Cancel selection and disclosure changes</FieldLabel>
         </Field>
         <p aria-live="polite" className="text-sm text-muted-foreground">
@@ -180,7 +190,7 @@ function ShadcnApiExample() {
       <section aria-label="Toggle and slider APIs" className="grid gap-5 sm:grid-cols-2">
         <Field>
           <FieldLabel>Shadcn array selection</FieldLabel>
-          <ToggleGroup aria-label="Formatting" multiple onValueChange={setFormat} spacing={2} value={format}>
+          <ToggleGroup aria-label="Formatting" multiple onValueChange={setFormat} value={format}>
             <ToggleGroupItem value="bold">Bold</ToggleGroupItem>
             <ToggleGroupItem value="italic">Italic</ToggleGroupItem>
           </ToggleGroup>
@@ -188,7 +198,11 @@ function ShadcnApiExample() {
         </Field>
         <Field>
           <FieldLabel>Protoform single selection</FieldLabel>
-          <ToggleGroup aria-label="Alignment" onValueChange={setAlignment} type="single" value={alignment}>
+          <ToggleGroup
+            aria-label="Alignment"
+            onValueChange={(values) => setAlignment(values[0] ?? '')}
+            value={[alignment]}
+          >
             <ToggleGroupItem value="left">Left</ToggleGroupItem>
             <ToggleGroupItem value="right">Right</ToggleGroupItem>
           </ToggleGroup>
@@ -196,22 +210,30 @@ function ShadcnApiExample() {
         </Field>
         <Field>
           <FieldLabel>Numeric slider</FieldLabel>
-          <Slider aria-label="Volume" onValueChange={setVolume} value={volume} />
+          <Slider
+            aria-label="Volume"
+            onValueChange={(value) => setVolume(typeof value === 'number' ? value : (value[0] ?? 0))}
+            value={volume}
+          />
           <p>Volume: {volume}</p>
         </Field>
         <Field>
           <FieldLabel>Array slider</FieldLabel>
-          <Slider aria-label="Range" onValueChange={setRange} value={range} />
+          <Slider
+            aria-label="Range"
+            onValueChange={(value) => setRange(typeof value === 'number' ? [value] : value)}
+            value={range}
+          />
           <p>Range: {range.join('–')}</p>
         </Field>
       </section>
       <section aria-label="Composition APIs" className="space-y-3">
-        <Tabs defaultValue={1}>
+        <Tabs defaultValue="1">
           <TabsList aria-label="API sections" variant="line">
-            <TabsTrigger value={1}>Disclosure</TabsTrigger>
-            <TabsTrigger value={2}>Chart colors</TabsTrigger>
+            <TabsTab value="1">Disclosure</TabsTab>
+            <TabsTab value="2">Chart colors</TabsTab>
           </TabsList>
-          <TabsContent value={1}>
+          <TabsPanel value="1">
             <Collapsible
               onOpenChange={(open, details) => {
                 setEvent(`${details.reason}: ${String(open)}`);
@@ -221,9 +243,9 @@ function ShadcnApiExample() {
               }}
             >
               <CollapsibleTrigger render={<Button type="button" variant="outline" />}>Show details</CollapsibleTrigger>
-              <CollapsibleContent>
-                <p className="pt-3">Cancelable Base UI events are preserved.</p>
-              </CollapsibleContent>
+              <CollapsiblePanel>
+                <p className="pt-3">UI SDK changes can be canceled.</p>
+              </CollapsiblePanel>
             </Collapsible>
             <Popover>
               <PopoverTrigger render={<Button type="button" variant="outline" />}>Open API information</PopoverTrigger>
@@ -236,8 +258,8 @@ function ShadcnApiExample() {
                 </PopoverHeader>
               </PopoverContent>
             </Popover>
-          </TabsContent>
-          <TabsContent value={2}>
+          </TabsPanel>
+          <TabsPanel value="2">
             <div className="space-y-3" data-chart="api-colors">
               <ChartStyle config={{ example: { color: green === true ? '#15803d' : '#7c3aed' } }} id="api-colors" />
               <p className="font-semibold text-(--color-example)">Scoped ChartStyle color</p>
@@ -245,11 +267,11 @@ function ShadcnApiExample() {
                 Change chart color
               </Button>
             </div>
-          </TabsContent>
+          </TabsPanel>
         </Tabs>
         <Alert variant="default">
-          <AlertTitle>Both API styles are available</AlertTitle>
-          <AlertDescription>Use official composition or keep Protoform convenience props.</AlertDescription>
+          <AlertTitle>Native behaviors, themed compositions</AlertTitle>
+          <AlertDescription>Use UI SDK parts directly or the Protoform form-field compositions.</AlertDescription>
           <AlertAction>
             <Button
               aria-label="Reset event"

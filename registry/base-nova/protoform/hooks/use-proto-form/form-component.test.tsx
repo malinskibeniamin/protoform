@@ -4,8 +4,8 @@ import { afterEach, describe, expect, rs } from '@rstest/core';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Form, type FormSubmitHandler } from 'react-hook-form';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button/index';
+import { Input } from '@/components/ui/input/index';
 import { SubmitBasicFormRequestSchema } from '@/examples/gen/protoform/examples/v1/forms_pb.js';
 import { useProtoForm } from './index.js';
 

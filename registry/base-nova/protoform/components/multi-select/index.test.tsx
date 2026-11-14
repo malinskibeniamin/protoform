@@ -74,10 +74,10 @@ test('hides empty groups when searching', async () => {
       ]}
     />
   );
-  await user.click(screen.getByRole('button', { name: 'Status' }));
+  await user.click(screen.getByRole('combobox', { name: 'Status' }));
   await user.click(await screen.findByRole('combobox', { name: 'Search options' }));
   await user.paste('active');
-  await waitFor(() => expect(screen.queryByText('Past')).not.toBeInTheDocument());
+  await waitFor(() => expect(screen.getByText('Past')).not.toBeVisible());
   expect(screen.getByRole('option', { name: 'Active' })).toBeVisible();
 });
 

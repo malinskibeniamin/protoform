@@ -66,11 +66,11 @@ describe('readinessDashboard', () => {
     render(<ReadinessDashboard />);
 
     await user.click(screen.getByRole('button', { name: 'Optional' }));
-    expect(screen.getByText('Protobuf-ES v1 proto2/proto3 migration bridge')).toBeVisible();
+    expect(screen.getByRole('heading', { name: 'Protobuf-ES v1 proto2/proto3 migration bridge' })).toBeVisible();
     expect(screen.getByText('Verified optional')).toBeVisible();
 
     await user.click(screen.getByRole('button', { name: 'Out of target' }));
-    expect(screen.getByText('Proto2 groups and extensions')).toBeVisible();
+    expect(screen.getByRole('heading', { name: 'Proto2 groups and extensions' })).toBeVisible();
     expect(screen.getAllByText('Out of target')).toHaveLength(2);
   });
 
@@ -91,11 +91,11 @@ describe('readinessDashboard', () => {
     expect(screen.getAllByRole('heading', { name: 'Protobuf' })[0]).toBeVisible();
     expect(screen.getByRole('button', { name: 'Verified' })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.getByRole('button', { name: 'Gaps' })).toHaveAttribute('aria-pressed', 'false');
-    expect(screen.getByText('String fields')).toBeVisible();
+    expect(screen.getByRole('heading', { name: 'String fields' })).toBeVisible();
 
     await user.click(screen.getByRole('button', { name: 'All' }));
 
-    expect(screen.getByText('String fields')).toBeVisible();
+    expect(screen.getByRole('heading', { name: 'String fields' })).toBeVisible();
     const search = screen.getByRole('searchbox', {
       name: 'Search readiness checks',
     });
@@ -108,12 +108,12 @@ describe('readinessDashboard', () => {
 
     await user.click(screen.getByRole('button', { name: 'Gaps' }));
 
-    expect(screen.queryByText('String fields')).not.toBeInTheDocument();
-    expect(screen.queryByText('Service and RPC descriptors')).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'String fields' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Service and RPC descriptors' })).not.toBeInTheDocument();
     expect(screen.getByText('No readiness checks match these filters.')).toBeVisible();
 
     await user.click(screen.getByRole('button', { name: 'External' }));
-    expect(screen.getByText('Binary wire compatibility')).toBeVisible();
+    expect(screen.getByRole('heading', { name: 'Binary wire compatibility' })).toBeVisible();
   });
 
   test('explains verified checks from the status map', async () => {

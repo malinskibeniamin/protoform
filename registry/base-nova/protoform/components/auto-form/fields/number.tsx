@@ -22,8 +22,8 @@ function NumberFieldComponent({ error, field, id, inputProps }: AutoFormFieldPro
       max={inputProps['max']}
       min={inputProps['min']}
       onBlur={inputProps['onBlur']}
-      onChange={(event) => {
-        const nextValue = event.target.value;
+      onValueChange={(nextInputValue) => {
+        const nextValue = nextInputValue;
         inputProps['onValueChange'](nextValue === '' ? undefined : Number(nextValue));
       }}
       placeholder={getFieldUiConfig(field).placeholder}

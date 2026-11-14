@@ -22,8 +22,8 @@ import {
   Select,
   SelectContent,
   SelectGroup,
+  SelectGroupLabel,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '../ui-components';
@@ -72,6 +72,7 @@ function SelectFieldComponent({ error, field, id, inputProps, label, path }: Aut
 
   return (
     <Select
+      disabled={inputProps['disabled']}
       items={[
         ...(field.required
           ? []
@@ -83,6 +84,7 @@ function SelectFieldComponent({ error, field, id, inputProps, label, path }: Aut
             ]),
         ...flatOptions.map((option) => ({
           label: renderOptionLabel(option),
+          textValue: typeof option.label === 'string' ? option.label : option.value,
           value: option.value,
         })),
       ]}
@@ -118,7 +120,7 @@ function SelectFieldComponent({ error, field, id, inputProps, label, path }: Aut
                 key={`${field.key}-group-${String(group.label ?? group.options.map((option) => option.value).join('-'))}`}
                 testId={testIds.group(String(group.label ?? group.options.map((option) => option.value).join('-')))}
               >
-                {group.label ? <SelectLabel>{group.label}</SelectLabel> : null}
+                {group.label ? <SelectGroupLabel>{group.label}</SelectGroupLabel> : null}
                 {group.options.map((option) => (
                   <SelectItem key={option.value} testId={testIds.option(option.value)} value={option.value}>
                     {renderOptionLabel(option)}

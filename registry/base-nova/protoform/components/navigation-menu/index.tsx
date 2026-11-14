@@ -1,152 +1,222 @@
 'use client';
 
-import { NavigationMenu as NavigationMenuPrimitive } from '@base-ui/react/navigation-menu';
-import { cva } from 'class-variance-authority';
+import {
+  NavigationMenu as SDKNavigationMenu,
+  NavigationMenuContent as SDKNavigationMenuContent,
+  NavigationMenuIndicator as SDKNavigationMenuIndicator,
+  NavigationMenuItem as SDKNavigationMenuItem,
+  NavigationMenuLink as SDKNavigationMenuLink,
+  NavigationMenuLinkIcon as SDKNavigationMenuLinkIcon,
+  NavigationMenuList as SDKNavigationMenuList,
+  NavigationMenuTrigger as SDKNavigationMenuTrigger,
+  NavigationMenuViewport as SDKNavigationMenuViewport,
+} from '@ui-sdk/react/navigation-menu';
+
 import { ChevronDownIcon } from 'lucide-react';
-import { usePortalContainer } from '@/registry/base-nova/protoform/hooks/use-portal-container';
+import type React from 'react';
+import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
+import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
 function NavigationMenu({
-  align = 'start',
   className,
-  children,
+  testId,
+  variant,
+  size,
   ...props
-}: NavigationMenuPrimitive.Root.Props & Pick<NavigationMenuPrimitive.Positioner.Props, 'align'>) {
+}: UIProps<React.ComponentProps<typeof SDKNavigationMenu>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
   return (
-    <NavigationMenuPrimitive.Root
+    <SDKNavigationMenu
+      {...definedProps(props)}
       className={(state) =>
-        cn(
-          'group/navigation-menu relative flex max-w-max flex-1 items-center justify-center',
-          typeof className === 'function' ? className(state) : className
-        )
+        cn('relative flex items-center', typeof className === 'function' ? className(state) : className)
       }
-      data-slot="navigation-menu"
-      {...props}
-    >
-      {children}
-      <NavigationMenuPositioner align={align} />
-    </NavigationMenuPrimitive.Root>
-  );
-}
-function NavigationMenuList({ className, ...props }: React.ComponentPropsWithRef<typeof NavigationMenuPrimitive.List>) {
-  return (
-    <NavigationMenuPrimitive.List
-      className={(state) =>
-        cn(
-          'group flex flex-1 list-none items-center justify-center gap-0',
-          typeof className === 'function' ? className(state) : className
-        )
-      }
-      data-slot="navigation-menu-list"
-      {...props}
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
     />
   );
 }
-function NavigationMenuItem({ className, ...props }: React.ComponentPropsWithRef<typeof NavigationMenuPrimitive.Item>) {
-  return (
-    <NavigationMenuPrimitive.Item
-      className={(state) => cn('relative', typeof className === 'function' ? className(state) : className)}
-      data-slot="navigation-menu-item"
-      {...props}
-    />
-  );
-}
-const navigationMenuTriggerStyle = cva(
-  'group/navigation-menu-trigger inline-flex h-9 w-max items-center justify-center rounded-lg px-2.5 py-1.5 text-sm font-medium transition-colors outline-none hover:bg-muted focus:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 data-open:bg-muted/50 data-open:hover:bg-muted data-open:focus:bg-muted data-popup-open:bg-muted/50 data-popup-open:hover:bg-muted'
-);
-function NavigationMenuTrigger({ className, children, ...props }: NavigationMenuPrimitive.Trigger.Props) {
-  return (
-    <NavigationMenuPrimitive.Trigger
-      className={(state) =>
-        cn(navigationMenuTriggerStyle(), 'group', typeof className === 'function' ? className(state) : className)
-      }
-      data-slot="navigation-menu-trigger"
-      {...props}
-    >
-      {children}{' '}
-      <ChevronDownIcon
-        aria-hidden="true"
-        className="relative top-px ml-1 size-3 transition duration-300 group-data-open/navigation-menu-trigger:rotate-180 group-data-popup-open/navigation-menu-trigger:rotate-180"
-      />
-    </NavigationMenuPrimitive.Trigger>
-  );
-}
-function NavigationMenuContent({ className, ...props }: NavigationMenuPrimitive.Content.Props) {
-  return (
-    <NavigationMenuPrimitive.Content
-      className={(state) =>
-        cn(
-          'h-full w-auto p-1 transition duration-350 ease-out group-data-[viewport=false]/navigation-menu:rounded-lg group-data-[viewport=false]/navigation-menu:bg-popover group-data-[viewport=false]/navigation-menu:text-popover-foreground group-data-[viewport=false]/navigation-menu:shadow group-data-[viewport=false]/navigation-menu:ring-1 group-data-[viewport=false]/navigation-menu:ring-foreground/10 group-data-[viewport=false]/navigation-menu:duration-300 group-data-[viewport=false]/navigation-menu:data-closed:animate-out group-data-[viewport=false]/navigation-menu:data-closed:fade-out-0 group-data-[viewport=false]/navigation-menu:data-closed:zoom-out-95 data-ending-style:opacity-0 group-data-[viewport=false]/navigation-menu:data-open:animate-in group-data-[viewport=false]/navigation-menu:data-open:fade-in-0 group-data-[viewport=false]/navigation-menu:data-open:zoom-in-95 data-starting-style:opacity-0 data-ending-style:data-[activation-direction=left]:translate-x-1/2 data-starting-style:data-[activation-direction=left]:-translate-x-1/2 data-ending-style:data-[activation-direction=right]:-translate-x-1/2 data-starting-style:data-[activation-direction=right]:translate-x-1/2 data-[motion=from-end]:slide-in-from-right-52 data-[motion=from-start]:slide-in-from-left-52 data-[motion=to-end]:slide-out-to-right-52 data-[motion=to-start]:slide-out-to-left-52 data-[motion^=from-]:animate-in data-[motion^=from-]:fade-in data-[motion^=to-]:animate-out data-[motion^=to-]:fade-out **:data-[slot=navigation-menu-link]:focus:ring-0 **:data-[slot=navigation-menu-link]:focus:outline-none',
-          typeof className === 'function' ? className(state) : className
-        )
-      }
-      data-slot="navigation-menu-content"
-      {...props}
-    />
-  );
-}
-function NavigationMenuPositioner({
+
+function NavigationMenuContent({
   className,
-  side = 'bottom',
-  sideOffset = 8,
-  align = 'start',
-  alignOffset = 0,
+  testId,
+  variant,
+  size,
   ...props
-}: NavigationMenuPrimitive.Positioner.Props) {
-  const portalContainer = usePortalContainer();
+}: UIProps<React.ComponentProps<typeof SDKNavigationMenuContent>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
   return (
-    <NavigationMenuPrimitive.Portal container={portalContainer}>
-      <NavigationMenuPrimitive.Positioner
-        align={align}
-        alignOffset={alignOffset}
-        className={(state) =>
-          cn(
-            'isolate z-50 h-(--positioner-height) w-(--positioner-width) max-w-(--available-width) transition duration-350 ease-out data-instant:transition-none data-[side=bottom]:before:inset-x-0 data-[side=bottom]:before:top-[-10px]',
-            typeof className === 'function' ? className(state) : className
-          )
-        }
-        side={side}
-        sideOffset={sideOffset}
-        {...props}
-      >
-        <NavigationMenuPrimitive.Popup className="relative h-(--popup-height) w-(--popup-width) origin-(--transform-origin) rounded-lg bg-popover text-popover-foreground shadow ring-1 ring-foreground/10 transition duration-350 ease-out outline-none data-ending-style:scale-90 data-ending-style:opacity-0 data-ending-style:duration-150 data-ending-style:ease-in-out data-starting-style:scale-90 data-starting-style:opacity-0">
-          <NavigationMenuPrimitive.Viewport className="relative size-full overflow-hidden" />
-        </NavigationMenuPrimitive.Popup>
-      </NavigationMenuPrimitive.Positioner>
-    </NavigationMenuPrimitive.Portal>
-  );
-}
-function NavigationMenuLink({ className, ...props }: NavigationMenuPrimitive.Link.Props) {
-  return (
-    <NavigationMenuPrimitive.Link
+    <SDKNavigationMenuContent
+      {...definedProps(props)}
       className={(state) =>
         cn(
-          "flex items-center gap-2 rounded-lg p-2 text-sm transition-colors outline-none hover:bg-muted focus:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-1 in-data-[slot=navigation-menu-content]:rounded-md data-active:bg-muted/50 data-active:hover:bg-muted data-active:focus:bg-muted [&_svg:not([class*='size-'])]:size-4",
+          'z-50 max-h-(--available-height) min-w-36 overflow-auto rounded-lg border border-border bg-popover p-1 text-popover-foreground shadow-md outline-none',
           typeof className === 'function' ? className(state) : className
         )
       }
-      data-slot="navigation-menu-link"
-      {...props}
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
     />
   );
 }
+
 function NavigationMenuIndicator({
   className,
+  testId,
+  variant,
+  size,
   ...props
-}: React.ComponentPropsWithRef<typeof NavigationMenuPrimitive.Icon>) {
+}: UIProps<React.ComponentProps<typeof SDKNavigationMenuIndicator>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
   return (
-    <NavigationMenuPrimitive.Icon
+    <SDKNavigationMenuIndicator
+      {...definedProps(props)}
+      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
+
+function NavigationMenuItem({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKNavigationMenuItem>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKNavigationMenuItem
+      {...definedProps(props)}
+      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
+
+function NavigationMenuLink({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKNavigationMenuLink>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKNavigationMenuLink
+      {...definedProps(props)}
       className={(state) =>
         cn(
-          'top-full z-1 flex h-1.5 items-end justify-center overflow-hidden data-[state=hidden]:animate-out data-[state=hidden]:fade-out data-[state=visible]:animate-in data-[state=visible]:fade-in',
+          'inline-flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50',
           typeof className === 'function' ? className(state) : className
         )
       }
-      data-slot="navigation-menu-indicator"
-      {...props}
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
+
+function NavigationMenuLinkIcon({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKNavigationMenuLinkIcon>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKNavigationMenuLinkIcon
+      {...definedProps(props)}
+      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
+
+function NavigationMenuList({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKNavigationMenuList>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKNavigationMenuList
+      {...definedProps(props)}
+      className={(state) =>
+        cn('flex list-none items-center gap-1', typeof className === 'function' ? className(state) : className)
+      }
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
+  );
+}
+
+function NavigationMenuTrigger({
+  children,
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKNavigationMenuTrigger>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  const renderChildren = typeof children === 'function' ? children : () => children;
+  return (
+    <SDKNavigationMenuTrigger
+      {...definedProps(props)}
+      className={(state) =>
+        cn(
+          'group/navigation-trigger inline-flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50',
+          typeof className === 'function' ? className(state) : className
+        )
+      }
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
     >
-      <div className="relative top-[60%] size-2 rotate-45 rounded-tl-sm bg-border shadow-md" />
-    </NavigationMenuPrimitive.Icon>
+      {(state) => (
+        <>
+          {renderChildren(state)}
+          <ChevronDownIcon
+            aria-hidden="true"
+            className="size-3 shrink-0 group-aria-expanded/navigation-trigger:rotate-180"
+          />
+        </>
+      )}
+    </SDKNavigationMenuTrigger>
+  );
+}
+
+function NavigationMenuViewport({
+  className,
+  testId,
+  variant,
+  size,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKNavigationMenuViewport>> &
+  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+  return (
+    <SDKNavigationMenuViewport
+      {...definedProps(props)}
+      className={(state) => cn('relative', typeof className === 'function' ? className(state) : className)}
+      data-size={size}
+      data-testid={testId ?? props['data-testid']}
+      data-variant={variant}
+    />
   );
 }
 
@@ -156,8 +226,8 @@ export {
   NavigationMenuIndicator,
   NavigationMenuItem,
   NavigationMenuLink,
+  NavigationMenuLinkIcon,
   NavigationMenuList,
-  NavigationMenuPositioner,
   NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
+  NavigationMenuViewport,
 };

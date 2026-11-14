@@ -21,6 +21,6 @@ describe('sliderFieldComponent', () => {
     };
     render(<AutoForm fieldConfig={{ replicas: { inputProps: { max: 10, min: 1 } } }} schema={provider} />);
 
-    expect(screen.getByRole('slider', { name: 'Replicas slider' })).toBeVisible();
+    expect(screen.getByRole('slider', { name: 'Replicas slider' })).toBeEnabled();
   });
 });

@@ -14,24 +14,28 @@ export function DiagramControl({ isFullscreen, onToggle, portal }: DiagramContro
   const action = isFullscreen ? 'Exit' : 'View';
   const accessibleName = `${action} ${portal.label} full screen`;
 
-  async function handleFullscreenToggle(event: React.MouseEvent<HTMLButtonElement>) {
-    await onToggle(portal, event.currentTarget);
+  async function handleFullscreenToggle(event: React.MouseEvent<HTMLElement>) {
+    if (event.currentTarget instanceof HTMLButtonElement) {
+      await onToggle(portal, event.currentTarget);
+    }
   }
 
   return (
     <Tooltip>
-      <TooltipTrigger asChild>
-        <Button
-          aria-label={accessibleName}
-          className=""
-          onClick={handleFullscreenToggle}
-          size="icon-sm"
-          title={isFullscreen ? 'Exit full screen' : 'View diagram full screen'}
-          type="button"
-          variant="outline"
-        >
-          {isFullscreen ? <Minimize2 aria-hidden="true" /> : <Maximize2 aria-hidden="true" />}
-        </Button>
+      <TooltipTrigger
+        render={
+          <Button
+            aria-label={accessibleName}
+            className=""
+            onClick={handleFullscreenToggle}
+            size="icon-sm"
+            title={isFullscreen ? 'Exit full screen' : 'View diagram full screen'}
+            type="button"
+            variant="outline"
+          />
+        }
+      >
+        {isFullscreen ? <Minimize2 aria-hidden="true" /> : <Maximize2 aria-hidden="true" />}
       </TooltipTrigger>
       <TooltipContent container={portal.host} side="left">
         {isFullscreen ? 'Exit full screen' : 'View diagram full screen'}

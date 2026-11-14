@@ -15,10 +15,10 @@ the fixtures and local registry port are shared. `--host-only` skips the older b
 
 The host fixture uses `new-york`, an independently configured `@host` registry namespace, and
 separate nested aliases for UI, components, hooks, and library files. Before installing Protoform,
-it records the contents of 20 existing upstream UI files, the host stylesheet, utilities, and
+it records the contents of the existing UI SDK control files, the host stylesheet, utilities, and
 `components.json`. After installation it verifies byte equality and that no extra primitives appeared.
 It then typechecks and server-renders the installed AutoForm, not repository source aliases.
-The other fixtures typecheck core-only and legacy installs, including the experimental form engines.
+The other fixtures typecheck core-only and themed UI SDK installs, including the experimental form engines.
 
 ## Browser coverage
 
@@ -46,14 +46,17 @@ the stylesheet. The original handwritten-CSS snapshots were inadequate styling e
 
 ## Scope and limitations
 
-- This draft's host entrypoint uses React Hook Form v7. The existing experimental/TanStack AutoForm
-  entrypoints keep their legacy maps; hook-only installations remain independent of UI.
-- The supplied adapter targets Radix-style shadcn APIs. A Base UI or bespoke registry may need its
-  own adapter; matching component names alone does not prove matching behavior.
-- Specialized combobox, multiselect, choicebox, JSON, and key/value controls need explicit host
-  mappings or custom field renderers. They are not silently replaced with weaker controls.
-- No existing consumer files are deleted. Migration of previously copied UI remains a reviewed,
-  consumer-owned operation.
-- No primitive implementations or themes were changed. Most extra source-file changes are import
-  paths needed to support independently nested aliases. The internal field-mask renderer was renamed
-  to avoid shadcn confusing it with the protobuf field-mask helper during import rewriting.
+The host adapter maps the renderer-neutral form boundary to host-owned UI SDK controls. Other
+component libraries need their own map. All form engines use the same updated boundary; hook-only
+and core-only installations stay independent of UI SDK. Specialized combobox, multi-select,
+choicebox, JSON, and key/value controls still require explicit host mappings or custom renderers.
+
+The `@host` namespace resolves the pinned local registry snapshot, not a moving third-party registry.
+Installing the core and host adapter must not mutate the already-installed controls or host theme.
+Previous screenshot baselines must be reviewed against the current native UI SDK composition.
+
+## Agent and core behavior verification
+
+The installed `ui-sdk-agent-workbench` example runs at `/agent.html` in the full consumer fixture. `scripts/agent-consumer.browser.spec.ts` covers explicit enablement, snapshot/query/act, controlled callback cancellation, custom primitive actions, secret/hidden marks, human approval and rejection, actual AutoForm validation/submission, asynchronous source propagation, staging/revert, seek/replay, source-specific undo, and repeated session disposal. A browser-provided WebMCP registration spy must remain untouched. `e2e/agent-workbench.spec.ts` separately exercises the built Blume example at 1280px, 390px, and 320px in light/dark modes: the docs preview's intrinsic sizing must not widen the page, even after long snapshot output, and approval controls must remain in the viewport.
+
+`registry/base-nova/protoform/components/rating/rating.browser.test.tsx` exercises the framework-free primitive with SDK `mount`, `checkPattern`, `checkServer`, and `checkDirection`, including strict SDK warnings, keyboard selection, announcements, argument bounds, and cancellation. `lib/ui-sdk/session.browser.test.tsx` tests the application's policy/lifecycle seam, not a reimplementation of SDK internals. UI history does not undo submitted side effects.

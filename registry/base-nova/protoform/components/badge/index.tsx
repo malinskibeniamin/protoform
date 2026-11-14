@@ -1,9 +1,9 @@
-import { useRender } from '@base-ui/react/use-render';
+import { type PartProps, renderElement } from '@ui-sdk/react/primitive';
 import { cva, type VariantProps } from 'class-variance-authority';
 import type React from 'react';
 
-import { asChildToRender } from '@/registry/base-nova/protoform/lib/base-ui-compat';
-import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
+import { cn } from '@/registry/base-nova/protoform/lib/utils';
+import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
 const badgeVariants = cva(
   'inline-flex max-w-full shrink-0 items-center justify-center truncate rounded-md border font-medium transition selection:bg-selected selection:text-selected-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&>svg]:pointer-events-none',
@@ -74,60 +74,33 @@ export type BadgeSize = VariantProps<typeof badgeVariants>['size'];
 function Badge({
   className,
   variant,
-  asChild = false,
   testId,
   icon,
   children,
   size,
-  ref,
   render,
   ...props
-}: useRender.ComponentProps<'span'> &
-  SharedProps & {
-    asChild?: boolean;
+}: Omit<PartProps<'span'>, 'children'> & { children?: React.ReactNode } & SharedProps & {
     icon?: React.ReactNode;
     variant?: BadgeVariant;
     size?: BadgeSize;
   }) {
-  const childProps = asChildToRender({ asChild, children, render });
-
-  const renderContent = () => {
-    if (asChild === true) {
-      return children;
-    }
-
-    if (icon && children) {
-      return (
+  return renderElement(
+    'span',
+    {
+      ...props,
+      className: cn(badgeVariants({ size, variant }), typeof className === 'function' ? className({}) : className),
+      'data-slot': 'badge',
+      'data-testid': testId ?? props['data-testid'],
+      children: (
         <>
           {icon}
-          <span className="truncate">{children}</span>
+          {children}
         </>
-      );
-    }
-
-    if (icon) {
-      return icon;
-    }
-
-    if (children) {
-      return <span className="truncate">{children}</span>;
-    }
-
-    return null;
-  };
-
-  return useRender({
-    defaultTagName: 'span',
-    render: childProps.render,
-    ref,
-    props: {
-      ...props,
-      className: cn(badgeVariants({ size, variant }), className),
-      'data-slot': 'badge',
-      'data-testid': testId,
-      children: asChild === true ? undefined : renderContent(),
+      ),
     },
-  });
+    render
+  );
 }
 
 export { Badge, badgeVariants };

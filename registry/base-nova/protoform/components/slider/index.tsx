@@ -1,78 +1,111 @@
 'use client';
+import {
+  Slider as SDKSlider,
+  SliderControl as SDKSliderControl,
+  SliderIndicator as SDKSliderIndicator,
+  SliderThumb as SDKSliderThumb,
+  SliderTrack as SDKSliderTrack,
+} from '@ui-sdk/react/slider';
+import type React from 'react';
+import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
+import { cn } from '@/registry/base-nova/protoform/lib/utils';
+import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
-import { Slider as SliderPrimitive } from '@base-ui/react/slider';
+export { SliderValue } from '@ui-sdk/react/slider';
 
-import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
-
-type SliderProps<Value extends number | readonly number[] = number[]> = SliderPrimitive.Root.Props<Value> & SharedProps;
-
-function getThumbLabel(label: string | undefined, count: number, index: number): string | undefined {
-  if (!(label !== undefined && label !== '')) {
-    return undefined;
-  }
-  return count === 1 ? label : `${label} ${index + 1}`;
-}
-
-function Slider<Value extends number | readonly number[] = number[]>({
-  className,
-  defaultValue,
-  value,
-  min = 0,
-  max = 100,
-  testId,
-  onValueChange,
-  'aria-label': ariaLabel,
-  ...props
-}: SliderProps<Value>) {
-  let values: readonly number[] = [min, max];
-  if (value !== undefined) {
-    values = typeof value === 'number' ? [value] : value;
-  } else if (defaultValue !== undefined) {
-    values = typeof defaultValue === 'number' ? [defaultValue] : defaultValue;
-  }
-  const thumbs = values.map((_thumbValue, index) => ({ index, key: `thumb-${index}` }));
-
+export function SliderControl({ className, ...props }: UIProps<React.ComponentProps<typeof SDKSliderControl>>) {
   return (
-    <SliderPrimitive.Root
+    <SDKSliderControl
+      {...definedProps(props)}
       className={(state) =>
         cn(
-          'relative flex w-full touch-none items-center select-none data-[disabled]:opacity-50 data-[orientation=vertical]:h-full data-[orientation=vertical]:min-h-40 data-[orientation=vertical]:w-auto data-[orientation=vertical]:flex-col',
+          'flex items-center',
+          state.orientation === 'vertical' ? 'h-full w-5 justify-center' : 'h-5 w-full',
           typeof className === 'function' ? className(state) : className
         )
       }
-      data-slot="slider"
-      data-testid={testId}
-      defaultValue={defaultValue}
-      max={max}
-      min={min}
-      onValueChange={onValueChange}
-      value={value}
-      {...props}
-    >
-      <SliderPrimitive.Control className="relative flex w-full grow touch-none items-center select-none data-[orientation=vertical]:h-full data-[orientation=vertical]:w-auto data-[orientation=vertical]:flex-col">
-        <SliderPrimitive.Track
-          className={cn(
-            'relative grow overflow-hidden rounded-full bg-muted select-none data-[orientation=horizontal]:h-1 data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-1'
-          )}
-          data-slot="slider-track"
-        >
-          <SliderPrimitive.Indicator
-            className="absolute bg-primary select-none data-[orientation=horizontal]:h-full data-[orientation=vertical]:w-full"
-            data-slot="slider-range"
-          />
-        </SliderPrimitive.Track>
-        {thumbs.map((thumb) => (
-          <SliderPrimitive.Thumb
-            aria-label={getThumbLabel(ariaLabel, values.length, thumb.index)}
-            className="relative block size-3 shrink-0 rounded-full border border-ring bg-white ring-ring/50 transition select-none after:absolute after:-inset-2 hover:ring-3 focus-visible:ring-3 focus-visible:outline-hidden active:ring-3 disabled:pointer-events-none disabled:opacity-50"
-            data-slot="slider-thumb"
-            index={thumb.index}
-            key={thumb.key}
-          />
-        ))}
-      </SliderPrimitive.Control>
-    </SliderPrimitive.Root>
+    />
   );
 }
 
-export { Slider };
+export function SliderTrack({ className, ...props }: UIProps<React.ComponentProps<typeof SDKSliderTrack>>) {
+  return (
+    <SDKSliderTrack
+      {...definedProps(props)}
+      className={(state) =>
+        cn(
+          'relative rounded-full bg-muted',
+          state.orientation === 'vertical' ? 'h-full w-1.5' : 'h-1.5 w-full',
+          typeof className === 'function' ? className(state) : className
+        )
+      }
+    />
+  );
+}
+
+export function SliderIndicator({ className, ...props }: UIProps<React.ComponentProps<typeof SDKSliderIndicator>>) {
+  return (
+    <SDKSliderIndicator
+      {...definedProps(props)}
+      className={(state) =>
+        cn('absolute rounded-full bg-primary', typeof className === 'function' ? className(state) : className)
+      }
+    />
+  );
+}
+
+export function SliderThumb({ className, ...props }: UIProps<React.ComponentProps<typeof SDKSliderThumb>>) {
+  return (
+    <SDKSliderThumb
+      {...definedProps(props)}
+      className={(state) =>
+        cn(
+          'absolute size-4 rounded-full border border-primary bg-background shadow-sm has-focus-visible:ring-2 has-focus-visible:ring-ring',
+          typeof className === 'function' ? className(state) : className
+        )
+      }
+    />
+  );
+}
+export function Slider({
+  children,
+  className,
+  testId,
+  'aria-label': label,
+  ...props
+}: UIProps<React.ComponentProps<typeof SDKSlider>> & SharedProps) {
+  const values = props.value ?? props.defaultValue ?? 0;
+  const thumbs = (Array.isArray(values) ? values : [values]).map((_, position) => ({
+    id: `slider-thumb-${position}`,
+    position,
+  }));
+  return (
+    <SDKSlider
+      {...definedProps(props)}
+      aria-label={label}
+      className={(state) =>
+        cn(
+          'relative flex touch-none items-center select-none',
+          state.orientation === 'vertical' ? 'h-full min-h-0 w-5 flex-col' : 'w-full',
+          typeof className === 'function' ? className(state) : className
+        )
+      }
+      data-testid={testId ?? props['data-testid']}
+    >
+      {children ?? (
+        <SliderControl>
+          <SliderTrack>
+            <SliderIndicator />
+            {thumbs.map((thumb) => (
+              <SliderThumb
+                aria-label={thumbs.length === 1 ? label : `${label ?? 'Value'} ${thumb.position + 1}`}
+                index={thumb.position}
+                key={thumb.id}
+              />
+            ))}
+          </SliderTrack>
+        </SliderControl>
+      )}
+    </SDKSlider>
+  );
+}

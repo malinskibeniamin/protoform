@@ -31,10 +31,10 @@ bunx shadcn@latest add @protoform/protoform-core
 bunx shadcn@latest add @protoform/protoform-react
 
 # Recommended full UI bundle for new apps: TanStack Charts, without Recharts
-bunx shadcn@latest add @protoform/protoform-shadcn-tanstack
+bunx shadcn@latest add @protoform/protoform-ui-sdk-tanstack
 
 # Recharts fallback: preserves the existing JSX chart API
-bunx shadcn@latest add @protoform/protoform-shadcn
+bunx shadcn@latest add @protoform/protoform-ui-sdk
 
 # Experimental React Hook Form v8 beta hook
 bunx shadcn@latest add @protoform/use-proto-form-v8
@@ -74,8 +74,8 @@ bunx shadcn@latest add @protoform/bookstore
 | `use-proto-form-v8`            | 你正在評估 React Hook Form v8 beta            | 獨立的 v8 原生 hook，固定使用 `8.0.0-beta.5`                                  |
 | `use-proto-form-tanstack`      | 你已使用 TanStack Form                        | 原生 TanStack API，以及 protobuf 訊息、更新遮罩、oneof 和伺服器錯誤           |
 | `protoform-react`              | 你想使用預設引擎產生 schema 驅動的欄位        | 共用 renderer，以及 React Hook Form adapter                                   |
-| `protoform-shadcn-tanstack`    | 你需要新應用程式建議使用的完整 UI 組合        | `protoform-react`、共用 UI 控制項和原生 TanStack Charts；不依賴 Recharts      |
-| `protoform-shadcn`             | 你需要保留既有 Recharts 圖表 API 作為備選     | `protoform-react`、相同的 UI 控制項和原有 Recharts 元件                       |
+| `protoform-ui-sdk-tanstack`    | 你需要新應用程式建議使用的完整 UI 組合        | `protoform-react`、共用 UI 控制項和原生 TanStack Charts；不依賴 Recharts      |
+| `protoform-ui-sdk`             | 你需要保留既有 Recharts 圖表 API 作為備選     | `protoform-react`、相同的 UI 控制項和原有 Recharts 元件                       |
 | `auto-form-react-hook-form-v8` | 你正在評估 React Hook Form v8 beta 的產生欄位 | 獨立的 v8 原生 AutoForm adapter 和共用 renderer                               |
 | `auto-form-tanstack`           | 你想使用 TanStack Form 產生 schema 驅動的欄位 | 共用 renderer，以及 TanStack Form adapter                                     |
 | `use-proto-form-tanstack-v2`   | 你正在評估 TanStack Form v2 alpha             | 獨立的 v2 原生 hook，固定使用 `2.0.0-alpha.3`                                 |
@@ -94,8 +94,8 @@ schema/UI metadata 解析或 Protoform 產生的驗證/UI descriptor 模組。�
 別名解析所需的 UI 能力。成熟的應用程式可以將該別名指向標準的 `components/ui/*`
 facade，其中只包含直接重新匯出或輕量相容 adapter。
 
-`protoform-shadcn-tanstack` 是新應用程式建議選用的 UI 實作。
-`protoform-shadcn` 仍作為 Recharts 備選提供。兩者都將 UI 模組安裝到 `components/ui`，
+`protoform-ui-sdk-tanstack` 是新應用程式建議選用的 UI 實作。
+`protoform-ui-sdk` 仍作為 Recharts 備選提供。兩者都將 UI 模組安裝到 `components/ui`，
 而不會讓這些實作成為 React renderer 的一部分。每個表單的 `AutoFormUIComponents`
 override 仍只負責表單、欄位 wrapper、提交按鈕、集合 wrapper 和錯誤，而不是在執行階段
 注入每個 primitive。
@@ -142,7 +142,7 @@ export function RequestsChart() {
 元件不會轉換 Recharts JSX。
 
 如果需要 `ChartContainer`、`ChartTooltip` 和 Recharts 子元素，請明確選擇
-`protoform-shadcn` 備選。既有應用程式的匯入路徑和行為維持不變。這是安裝時的選擇，
+`protoform-ui-sdk` 備選。既有應用程式的匯入路徑和行為維持不變。這是安裝時的選擇，
 不是圖表庫發生錯誤後的自動復原機制。新應用程式只需選擇一個完整 UI 組合；
 安裝 TanStack 組合之前不必安裝 Recharts 組合。
 

@@ -1,13 +1,15 @@
 'use client';
-
+import { Input as SDKInput } from '@ui-sdk/react/input';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { Eye, EyeOff, Minus, Plus } from 'lucide-react';
 import type { CSSProperties } from 'react';
 import React, { createContext, useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { useFieldContext } from '@/components/ui/field';
-import { useGroup } from '@/components/ui/group';
-import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
+import { Button } from '@/components/ui/button/index';
+import { useFieldContext } from '@/components/ui/field/index';
+import { useGroup } from '@/components/ui/group/index';
+import { definedProps } from '@/registry/base-nova/protoform/lib/sdk-props';
+import { cn } from '@/registry/base-nova/protoform/lib/utils';
+import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
 export const inputVariants = cva(
   'flex w-full min-w-0 border !border-input bg-transparent text-base transition-colors outline-none [-moz-appearance:textfield] selection:bg-selection selection:text-selection-foreground file:inline-flex file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:!text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-input/50 disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 md:text-sm dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none',
@@ -52,6 +54,9 @@ export interface InputProps
     SharedProps {
   children?: React.ReactNode;
   containerClassName?: string | undefined;
+  controller?: React.ComponentProps<typeof SDKInput>['controller'];
+  'data-agent-secret'?: boolean | string | undefined;
+  onValueChange?: React.ComponentProps<typeof SDKInput>['onValueChange'];
   showStepControls?: boolean | undefined;
   size?: VariantProps<typeof inputVariants>['size'] | number;
 }
@@ -233,6 +238,31 @@ function getInputSizes(requestedSize: InputProps['size']) {
   };
 }
 
+function InputPrimitive({
+  value,
+  defaultValue,
+  ...props
+}: React.ComponentProps<'input'> & { onValueChange?: React.ComponentProps<typeof SDKInput>['onValueChange'] }) {
+  return (
+    <SDKInput
+      {...definedProps(props)}
+      {...(value === undefined ? {} : { value: String(value) })}
+      {...(defaultValue === undefined ? {} : { defaultValue: String(defaultValue) })}
+    />
+  );
+}
+function getInputAccessibilityProps(
+  props: InputProps,
+  field: ReturnType<typeof useFieldContext>,
+  testId: string | undefined
+) {
+  return {
+    'aria-describedby': props['aria-describedby'] ?? field.errorId,
+    'aria-invalid': props['aria-invalid'] ?? (field.invalid || undefined),
+    'data-testid': testId ?? props['data-testid'],
+  };
+}
+
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   (
     {
@@ -246,6 +276,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       containerClassName,
       readOnly,
       defaultValue,
+      'data-agent-secret': agentSecret,
       ...props
     },
     ref
@@ -296,10 +327,9 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       '--input-end-padding': `${(endWidth ?? 0) + 16}px`,
     };
     const inputElement = (
-      <input
+      <InputPrimitive
         {...props}
-        aria-describedby={props['aria-describedby'] ?? fieldCtx.errorId}
-        aria-invalid={props['aria-invalid'] ?? (fieldCtx.invalid || undefined)}
+        {...getInputAccessibilityProps(props, fieldCtx, testId)}
         className={cn(
           positionClasses,
           inputVariants({ size, variant: inputVariant }),
@@ -308,10 +338,10 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           'data-[end-adornment=true]:pr-(--input-end-padding)',
           className
         )}
+        data-agent-secret={isPasswordInput === true ? true : agentSecret}
         data-end-adornment={Boolean(endWidth)}
         data-slot="input"
         data-start-adornment={Boolean(startWidth)}
-        data-testid={testId}
         onChange={isNumberInput ? handleInputChange : props.onChange}
         readOnly={readOnly}
         ref={inputRef}
