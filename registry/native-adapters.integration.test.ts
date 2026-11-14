@@ -150,6 +150,11 @@ describe('build-time UI adapter registry', () => {
       )
     );
     expect(filePaths(tanstack)).toContain('registry/base-nova/protoform/UI_SDK_TANSTACK_COMPONENTS.md');
+    expect(tanstack.files).toContainEqual({
+      path: 'registry/base-nova/protoform/UI_SDK_COMPONENTS.md',
+      type: 'registry:file',
+      target: '~/LICENSES/protoform-ui-sdk-controls.md',
+    });
     expect(filePaths(tanstack)).toContain(tanstackPath);
     expect(closureFilePaths('protoform-ui-sdk-tanstack')).not.toContain(chartPath);
     const packages = [...dependencyClosure('protoform-ui-sdk-tanstack')].flatMap(

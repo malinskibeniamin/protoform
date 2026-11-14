@@ -1,5 +1,7 @@
 'use client';
 
+import type React from 'react';
+import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import {
   Drawer as SDKDrawer,
   DrawerBackdrop as SDKDrawerBackdrop,
@@ -11,10 +13,7 @@ import {
   DrawerShortcut as SDKDrawerShortcut,
   DrawerTitle as SDKDrawerTitle,
   DrawerTrigger as SDKDrawerTrigger,
-} from '@ui-sdk/react/drawer';
-
-import type React from 'react';
-import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
+} from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-drawer';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 

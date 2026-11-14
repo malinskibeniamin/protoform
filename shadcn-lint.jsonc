@@ -130,7 +130,7 @@
       "ui": "@/components/ui",
       "ignoreImports": [
         "^@ui-sdk/react(?:/|$)",
-        "^@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-(?:accordion|alert-dialog|avatar|button|calendar|carousel|collapsible|dialog|hover-card|input|label|popover|progress|resizable|scroll-area|separator|slider|switch|tabs|textarea)$"
+        "^@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-(?:accordion|alert-dialog|avatar|button|calendar|carousel|checkbox|collapsible|command|dialog|drawer|hover-card|input|label|otp-input|popover|progress|radio|resizable|scroll-area|separator|slider|switch|tabs|textarea|toggle)$"
       ],
       "componentImports": ["^@/components/ui/", "^@/registry/base-nova/protoform/components/"]
     }

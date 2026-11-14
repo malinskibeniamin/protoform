@@ -1,5 +1,7 @@
 'use client';
 
+import type React from 'react';
+import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import {
   Command as SDKCommand,
   CommandEmpty as SDKCommandEmpty,
@@ -15,10 +17,7 @@ import {
   CommandSeparator as SDKCommandSeparator,
   CommandShortcut as SDKCommandShortcut,
   CommandStatus as SDKCommandStatus,
-} from '@ui-sdk/react/command';
-
-import type React from 'react';
-import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
+} from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-command';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 

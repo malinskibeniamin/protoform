@@ -1,9 +1,9 @@
 'use client';
-import { RadioGroup } from '@ui-sdk/react/radio';
 import { useId, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button/index';
 import { FieldError } from '@/components/ui/field/index';
 import { Radio, RadioIndicator } from '@/components/ui/radio-group/index';
+import { RadioGroup } from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-radio';
 export interface Question {
   choices: { value: string; label: string }[];
   description?: string;

@@ -1,10 +1,9 @@
-import { RadioIndicator, Radio as RadioPrimitive } from '@ui-sdk/react/radio';
 import { Circle } from 'lucide-react';
 import { AnimatePresence, motion, type Transition } from 'motion/react';
 import { type ComponentProps, forwardRef, type HTMLAttributes } from 'react';
-
 import { Card, CardContent, CardDescription, CardHeader, type CardProps, CardTitle } from '@/components/ui/card/index';
 import { RadioGroup } from '@/components/ui/radio-group/index';
+import { RadioIndicator, Radio as RadioPrimitive } from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-radio';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 

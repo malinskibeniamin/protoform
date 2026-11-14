@@ -42,6 +42,11 @@ const bundle = {
           : file
       ),
     {
+      path: 'registry/base-nova/protoform/UI_SDK_COMPONENTS.md',
+      type: 'registry:file',
+      target: '~/LICENSES/protoform-ui-sdk-controls.md',
+    },
+    {
       path: 'registry/base-nova/protoform/components/chart-tanstack/index.tsx',
       type: 'registry:ui',
       target: '@ui/chart-tanstack/index.tsx',

@@ -50,7 +50,7 @@ describe('registry-only distribution', () => {
     ).toEqual([]);
   });
 
-  test('distributes Protoform MIT and the bundled shadcn notices', () => {
+  test('distributes Protoform MIT, bundled shadcn notices, and SDK guidance', () => {
     const registry = z
       .looseObject({
         items: z.array(
@@ -73,6 +73,7 @@ describe('registry-only distribution', () => {
       PROTOFORM_LICENSE_TARGET,
       '~/LICENSES/shadcn-MIT.txt',
       '~/LICENSES/protoform-ui-sdk-provenance.md',
+      '~/LICENSES/protoform-ui-sdk-controls.md',
     ]);
   });
 

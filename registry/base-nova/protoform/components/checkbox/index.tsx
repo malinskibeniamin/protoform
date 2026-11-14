@@ -1,14 +1,13 @@
 'use client';
 
+import { CheckIcon, MinusIcon } from 'lucide-react';
+import type React from 'react';
+import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import {
   Checkbox as SDKCheckbox,
   CheckboxGroup as SDKCheckboxGroup,
   CheckboxIndicator as SDKCheckboxIndicator,
-} from '@ui-sdk/react/checkbox';
-
-import { CheckIcon, MinusIcon } from 'lucide-react';
-import type React from 'react';
-import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
+} from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-checkbox';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 

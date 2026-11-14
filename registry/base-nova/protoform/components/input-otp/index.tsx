@@ -1,14 +1,13 @@
 'use client';
 
+import type React from 'react';
+import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import {
   OTPInput as SDKOTPInput,
   OTPInputGroup as SDKOTPInputGroup,
   OTPInputSeparator as SDKOTPInputSeparator,
   OTPInputSlot as SDKOTPInputSlot,
-} from '@ui-sdk/react/otp-input';
-
-import type React from 'react';
-import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
+} from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-otp-input';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 

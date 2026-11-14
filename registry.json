@@ -1447,6 +1447,36 @@
           "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/portal.tsx",
           "target": "@lib/ui-sdk/adapters/portal.tsx",
           "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-checkbox.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-checkbox.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-command.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-command.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-drawer.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-drawer.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-otp-input.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-otp-input.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-radio.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-radio.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-toggle.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-toggle.tsx"
         }
       ],
       "devDependencies": ["@types/js-cookie@3.0.6"]
@@ -2061,6 +2091,41 @@
           "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/portal.tsx",
           "target": "@lib/ui-sdk/adapters/portal.tsx",
           "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-checkbox.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-checkbox.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-command.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-command.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-drawer.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-drawer.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-otp-input.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-otp-input.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-radio.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-radio.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-toggle.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-toggle.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/UI_SDK_COMPONENTS.md",
+          "type": "registry:file",
+          "target": "~/LICENSES/protoform-ui-sdk-controls.md"
         },
         {
           "path": "registry/base-nova/protoform/components/chart-tanstack/index.tsx",
