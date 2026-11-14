@@ -24,6 +24,15 @@ and Linux x64/arm64; it does not ship Windows or Intel macOS binaries. TypeScrip
 synchronous AST APIs used by tooling, not for source/test typechecking. Blume retains its own
 Astro/MDX checker.
 
+The primary strict program includes authored tests, so the combined gate checks it once;
+`typecheck:tests` remains available for a targeted test program. Coverage is checked against
+the primary program, preventing tests from silently moving outside the combined gate.
+
+Rstest's Node and Happy DOM projects enable React Compiler through SWC's
+`jsc.transform.reactCompiler`; the React plugin's `reactCompiler` option applies only to
+web targets. Real CLI regressions compile a valid component and reject an impure render
+in all three Node-target projects. Browser mode retains the plugin's web-target transform.
+
 `bun run scan:react` starts an opt-in development server with the installed React Scan module loaded
 before React hydration. Profiling is never injected into builds or previews. The installed CLI's
 `init` command replaces the older URL-based command; no unpinned CDN script is used.

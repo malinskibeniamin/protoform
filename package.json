@@ -82,7 +82,7 @@
     "test:unit:ci": "bun test --parallel=1 --dots",
     "test:unit:watch": "bun test --watch --parallel=4",
     "type:check": "bun run typecheck",
-    "typecheck": "bun run typecheck:coverage && bun run typecheck:source && bun run typecheck:tests && bun run docs:blume:check",
+    "typecheck": "bun run typecheck:coverage && bun run typecheck:source && bun run docs:blume:check",
     "typecheck:coverage": "bun run scripts/check-typescript-coverage.ts",
     "typecheck:source": "tsrs --noEmit",
     "typecheck:tests": "tsrs --project tsconfig.tests.json --noEmit"

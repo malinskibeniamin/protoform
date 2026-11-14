@@ -25,12 +25,10 @@ function normalizePath(path: string): string {
 const sources = authoredFiles().filter((path) => typescriptPathPattern.test(path));
 
 const compilerFiles = new Set(
-  ['tsconfig.json', 'tsconfig.tests.json'].flatMap((config) =>
-    run('tsrs', ['--project', config, '--listFilesOnly', '--pretty', 'false'])
-      .split('\n')
-      .filter(Boolean)
-      .map(normalizePath)
-  )
+  run('tsrs', ['--project', 'tsconfig.json', '--listFilesOnly', '--pretty', 'false'])
+    .split('\n')
+    .filter(Boolean)
+    .map(normalizePath)
 );
 
 const missingFiles = sources

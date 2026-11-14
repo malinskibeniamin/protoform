@@ -11,6 +11,19 @@ export default defineConfig({
     'examples/**/*.integration.test.ts',
     'scripts/**/*.integration.test.ts',
   ],
-  plugins: [pluginReact({ reactCompiler: { compilationMode: 'infer', panicThreshold: 'all_errors', target: '19' } })],
+  plugins: [pluginReact()],
   testEnvironment: 'node',
+  tools: {
+    swc: {
+      jsc: {
+        transform: {
+          reactCompiler: {
+            compilationMode: 'infer',
+            panicThreshold: 'all_errors',
+            target: '19',
+          },
+        },
+      },
+    },
+  },
 });

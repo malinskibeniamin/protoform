@@ -1,5 +1,6 @@
 import { spawnSync } from 'node:child_process';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { describe, expect } from '@rstest/core';
 import { z } from 'zod';
 
@@ -33,7 +34,7 @@ describe('frontend quality policy', () => {
 
   test('typechecks every authored test with the strict project settings', () => {
     expect(manifest.scripts['typecheck:tests']).toBe('tsrs --project tsconfig.tests.json --noEmit');
-    expect(manifest.scripts['typecheck']).toContain('bun run typecheck:tests');
+    expect(manifest.scripts['typecheck']).toContain('bun run typecheck:source');
     expect(existsSync('tsconfig.tests.json')).toBe(true);
     expect(testTsconfig.include).toEqual(
       expect.arrayContaining(['conformance/**/*.ts', 'e2e/**/*.ts', '**/*.test.ts', '**/*.test.tsx', '**/*.spec.ts'])
@@ -41,6 +42,30 @@ describe('frontend quality policy', () => {
     expect(testTsconfig.exclude ?? []).not.toEqual(
       expect.arrayContaining(['**/*.test.ts', '**/*.test.tsx', '**/__tests__/**'])
     );
+  });
+
+  test('rejects invalid authored tests through the primary strict compiler program', { timeout: 60_000 }, () => {
+    const directory = mkdtempSync(resolve('scripts/typecheck-probe-'));
+    const fixture = resolve(directory, 'probe.test.ts');
+    const run = () =>
+      spawnSync('bun', ['run', 'typecheck:source', '--incremental', 'false', '--pretty', 'false'], {
+        encoding: 'utf8',
+        timeout: 20_000,
+      });
+    try {
+      writeFileSync(fixture, 'export const value: string = 123;\n');
+      const primary = run();
+      expect(primary.error).toBeUndefined();
+      expect(primary.status).toBe(2);
+      expect(primary.stdout + primary.stderr).toContain('TS2322');
+
+      writeFileSync(fixture, "export const value: string = 'valid';\n");
+      const valid = run();
+      expect(valid.error).toBeUndefined();
+      expect(valid.status, valid.stdout + valid.stderr).toBe(0);
+    } finally {
+      rmSync(directory, { recursive: true, force: true });
+    }
   });
 
   test('typechecks every tracked authored TypeScript file', () => {

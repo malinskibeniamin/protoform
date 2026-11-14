@@ -488,21 +488,60 @@ export function Field() {
     ]);
   });
 
-  test('enables fail-fast React Compiler coverage for docs and every React test suite', async () => {
+  test('enables React Compiler for the docs application', () => {
     expect(blumeConfig).toMatchObject({ react: { compiler: true } });
-
-    const configPaths = [
-      'rstest.browser.config.ts',
-      'rstest.conformance.config.ts',
-      'rstest.dom.config.ts',
-      'rstest.node.config.ts',
-    ];
-    const configSources = await Promise.all(configPaths.map((configPath) => readFile(configPath, 'utf8')));
-    for (const source of configSources) {
-      expect(source).toContain('reactCompiler:');
-      expect(source).toContain("panicThreshold: 'all_errors'");
-    }
   });
+
+  test.each(['node', 'dom', 'conformance'])(
+    'executes fail-fast React Compiler in the %s test project',
+    (suite) => {
+      mkdirSync('.tmp', { recursive: true });
+      const directory = mkdtempSync(resolve('.tmp/react-compiler-probe-'));
+      const fixture = resolve(directory, 'probe.test.tsx');
+      const config = resolve(directory, 'rstest.config.ts');
+      const baseConfig = resolve(`rstest.${suite}.config.ts`);
+      const run = () =>
+        spawnSync(process.execPath, ['scripts/run-tests.ts', suite, '--config', config, '--reporters', 'dot'], {
+          encoding: 'utf8',
+          timeout: 20_000,
+        });
+      try {
+        writeFileSync(
+          config,
+          `import base from ${JSON.stringify(baseConfig)};
+export default { ...base, include: [${JSON.stringify(fixture)}], performance: { buildCache: false } };
+`
+        );
+        writeFileSync(
+          fixture,
+          `import { expect, test } from '@rstest/core';
+export function Probe({ label }: { label: string }) { return <p>{label}</p>; }
+test('valid component', () => { expect(typeof Probe).toBe('function'); });
+`
+        );
+        const valid = run();
+        expect(valid.error).toBeUndefined();
+        expect(valid.stdout + valid.stderr).toContain('1 passed');
+        expect(valid.status).toBe(0);
+
+        writeFileSync(
+          fixture,
+          `import { expect, test } from '@rstest/core';
+let renders = 0;
+export function Probe() { renders += 1; return <p>{renders}</p>; }
+test('invalid component', () => { expect(typeof Probe).toBe('function'); });
+`
+        );
+        const invalid = run();
+        expect(invalid.error).toBeUndefined();
+        expect(invalid.status).toBe(1);
+        expect(invalid.stdout + invalid.stderr).toContain('[ReactCompiler] Cannot reassign variables declared outside');
+      } finally {
+        rmSync(directory, { recursive: true, force: true });
+      }
+    },
+    60_000
+  );
 
   test('keeps TypeScript stricter than the requested baseline', () => {
     expect(tsconfig.compilerOptions).toMatchObject({
