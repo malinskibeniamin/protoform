@@ -255,3 +255,13 @@ of the host kernel's native exit error. The first hosted replay exposed the prio
 fixture's Linux-only `ESRCH` assumption; all eight consumer screenshots and actual
 shutdown had passed. Both the persistent-denial rejection and real closed-port assertion
 remain required.
+
+### Verified local host-reference refresh
+
+The dependency-boundary changes replayed unchanged `a7eeda56` on Darwin 27.2.0 arm64,
+Node 26.13.0 and Playwright 1.64.1 with identical resolved consumer dependencies.
+That base reproduced one desktop and two mobile heading-pixel differences against the
+default Darwin host-control references. Candidate host captures had identical decoded
+pixels to the unchanged base. Only the four host/missing-control references were copied
+from the inspected base captures; all 16 candidate consumer cases then passed normally.
+No comparator, tolerance, screenshot path, skip or automatic-update policy changed.
