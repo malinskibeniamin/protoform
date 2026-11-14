@@ -1,31 +1,31 @@
 'use client';
+import type React from 'react';
 import {
   CalendarDay as CalendarDayPrimitive,
   CalendarGrid as CalendarGridPrimitive,
   CalendarHeading as CalendarHeadingPrimitive,
+  CalendarMonthSelect as CalendarMonthSelectPrimitive,
   CalendarNext as CalendarNextPrimitive,
   CalendarPrevious as CalendarPreviousPrimitive,
   CalendarWeekday as CalendarWeekdayPrimitive,
   CalendarWeekdays as CalendarWeekdayPrimitives,
   CalendarWeeks as CalendarWeeksPrimitive,
+  CalendarYearSelect as CalendarYearSelectPrimitive,
   Calendar as SDKCalendar,
-} from '@ui-sdk/react/calendar';
-import type React from 'react';
+} from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-calendar';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
 
-export {
-  CalendarDay,
-  CalendarGrid,
-  CalendarHeading,
-  CalendarMonthSelect,
-  CalendarNext,
-  CalendarPrevious,
-  CalendarWeekday,
-  CalendarWeekdays,
-  CalendarWeeks,
-  CalendarYearSelect,
-  createCalendarController,
-} from '@ui-sdk/react/calendar';
+export { createCalendarController } from '@ui-sdk/core/calendar';
+export const CalendarDay = CalendarDayPrimitive;
+export const CalendarGrid = CalendarGridPrimitive;
+export const CalendarHeading = CalendarHeadingPrimitive;
+export const CalendarMonthSelect = CalendarMonthSelectPrimitive;
+export const CalendarNext = CalendarNextPrimitive;
+export const CalendarPrevious = CalendarPreviousPrimitive;
+export const CalendarWeekday = CalendarWeekdayPrimitive;
+export const CalendarWeekdays = CalendarWeekdayPrimitives;
+export const CalendarWeeks = CalendarWeeksPrimitive;
+export const CalendarYearSelect = CalendarYearSelectPrimitive;
 export function Calendar({ className, children, ...props }: React.ComponentProps<typeof SDKCalendar>) {
   return (
     <SDKCalendar

@@ -1,5 +1,7 @@
 'use client';
 
+import type React from 'react';
+import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import {
   ScrollArea as SDKScrollArea,
   ScrollAreaContent as SDKScrollAreaContent,
@@ -8,10 +10,7 @@ import {
   ScrollAreaScrollToEnd as SDKScrollAreaScrollToEnd,
   ScrollAreaThumb as SDKScrollAreaThumb,
   ScrollAreaViewport as SDKScrollAreaViewport,
-} from '@ui-sdk/react/scroll-area';
-
-import type React from 'react';
-import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
+} from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-scroll-area';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 

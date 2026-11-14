@@ -1,5 +1,7 @@
 'use client';
 
+import type React from 'react';
+import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import {
   Dialog as SDKDialog,
   DialogBackdrop as SDKDialogBackdrop,
@@ -9,10 +11,7 @@ import {
   DialogShortcut as SDKDialogShortcut,
   DialogTitle as SDKDialogTitle,
   DialogTrigger as SDKDialogTrigger,
-} from '@ui-sdk/react/dialog';
-
-import type React from 'react';
-import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
+} from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-dialog';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 

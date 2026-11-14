@@ -1,9 +1,8 @@
 'use client';
 
-import { Separator as SDKSeparator } from '@ui-sdk/react/separator';
-
 import type React from 'react';
 import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
+import { Separator as SDKSeparator } from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-separator';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 

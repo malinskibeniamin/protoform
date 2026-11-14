@@ -94,3 +94,23 @@ History is experimental. `undoSource('agent')` preserves later human edits, whil
 Read installed docs via `node_modules/@ui-sdk/react/docs/llms.txt`, `docs/agents.md`, and the core package's `docs/core.md` and `skills/ui-sdk/SKILL.md`; public web docs may describe a newer release.
 
 The agent marks constrain the UI SDK bridge, not arbitrary same-origin code or browser automation with full DOM access. Backend authorization remains required for real side effects.
+
+## Owned React adapters
+
+The agreed boundary is React rendering owned by Protoform over upstream public core component primitives, not locally rewritten state/behavior compositions. Adapter source lives in `lib/ui-sdk/adapters`; semantic-token styling stays in the component modules.
+
+The first group covers Accordion, Avatar, Button, Calendar, Carousel, Collapsible, Dialog, AlertDialog, HoverCard, Input, Label, Popover, Progress, Resizable, ScrollArea, Separator, Slider, Switch, Tabs, and Textarea. Text adapters forward their initial values into native React markup as well as core options. Switch renders the core's native form input beside—not inside—its button. Plain Button bridges React events and asynchronous actions to the core's own pending-action API.
+
+The beta.2 optional-schema type mismatch also affects built-in primitives under exact optional properties. `withOptionSchema` retains each factory's existing schema object and supplies an empty schema only when absent. It does not replace state, slots, or behavior, and no installed package is patched.
+
+A Button with both a custom `render` and an action callback retains the SDK React adapter: the direct bridge failed the installed router-link regression by canceling the first navigation as soon as the action became pending. The retained adapter preserves first navigation and blocks subsequent pending presses.
+
+This is not yet the complete control migration. In beta.2, core menu checkbox/radio parts and Select/Combobox extensions such as select-all are registered by renderer-only feature factories. Rendering their declared parts directly from the public primitives fails because the slot definition has not been registered. The package explicitly marks `@ui-sdk/core/renderer` as non-public and unstable. The agreed exception is to retain SDK React adapters only for demonstrated public-API gaps. No unstable renderer import is added here.
+
+External controller-connected Dialog, AlertDialog, and Popover triggers, and roots configured with those controllers, likewise retain their SDK React adapter: a raw core part has no root handle outside its root, and the public controller does not expose one. Retaining just the trigger is insufficient: the SDK React root also registers the controller-to-renderer handle needed by that trigger. Ordinary in-root triggers use owned adapters. Other popup parts use owned adapters with inherited/explicit React portal containers; Dialog and Popover content also render the public viewport slot when their resolved presentation is a sheet. Tooltip also has an additional optional-slot typing incompatibility beyond the shared schema mismatch.
+
+The design-system linter recognizes only explicitly enumerated owned adapter imports as unstyled parts. Semantic-token, arbitrary-value, and inline-style checks still apply; styled component usage retains its existing contracts. Positive and negative lint fixtures protect that distinction.
+
+Distinctive `core-*` adapter filenames and `primitive-schema.ts` prevent shadcn basename collisions with AutoForm fields and schema helpers. Local part exports use imported bindings so the CLI rewrites their custom host aliases correctly. Clean consumer installs verify the emitted source.
+
+Families not yet migrated are remaining implementation work, not automatic public-API exceptions. The exceptions above are bounded to observed failures; the rest of the migration continues at the agreed public-core boundary.

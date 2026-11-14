@@ -1,15 +1,14 @@
 'use client';
 
+import type React from 'react';
+import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import {
   Progress as SDKProgress,
   ProgressIndicator as SDKProgressIndicator,
   ProgressLabel as SDKProgressLabel,
   ProgressTrack as SDKProgressTrack,
   ProgressValue as SDKProgressValue,
-} from '@ui-sdk/react/progress';
-
-import type React from 'react';
-import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
+} from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-progress';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 

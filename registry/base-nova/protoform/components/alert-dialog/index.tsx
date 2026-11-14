@@ -1,5 +1,8 @@
 'use client';
 
+import type React from 'react';
+import { buttonVariants } from '@/components/ui/button/index';
+import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import {
   AlertDialog as SDKAlertDialog,
   AlertDialogBackdrop as SDKAlertDialogBackdrop,
@@ -9,11 +12,7 @@ import {
   AlertDialogShortcut as SDKAlertDialogShortcut,
   AlertDialogTitle as SDKAlertDialogTitle,
   AlertDialogTrigger as SDKAlertDialogTrigger,
-} from '@ui-sdk/react/alert-dialog';
-
-import type React from 'react';
-import { buttonVariants } from '@/components/ui/button/index';
-import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
+} from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-alert-dialog';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 

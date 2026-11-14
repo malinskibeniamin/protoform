@@ -3,7 +3,6 @@ import { join } from 'node:path';
 import { expect, test } from '@rstest/core';
 import type { Combobox as SDKCombobox } from '@ui-sdk/react/combobox';
 import type { Select as SDKSelect } from '@ui-sdk/react/select';
-import type { Tabs as SDKTabs } from '@ui-sdk/react/tabs';
 import { expectTypeOf } from 'expect-type';
 import { z } from 'zod';
 import type { Combobox } from './base-nova/protoform/components/combobox';
@@ -13,7 +12,9 @@ import type { Tabs } from './base-nova/protoform/components/tabs';
 test('preserves the native generic roots instead of emulating their old API', () => {
   expectTypeOf<typeof Select>().toEqualTypeOf<typeof SDKSelect>();
   expectTypeOf<typeof Combobox>().toEqualTypeOf<typeof SDKCombobox>();
-  expectTypeOf<typeof Tabs>().toEqualTypeOf<typeof SDKTabs>();
+  type TabProps = Parameters<typeof Tabs<'profile' | 'settings'>>[0];
+  expectTypeOf<TabProps['value']>().toEqualTypeOf<'profile' | 'settings' | null | undefined>();
+  expectTypeOf<Parameters<NonNullable<TabProps['onValueChange']>>[0]>().toEqualTypeOf<'profile' | 'settings' | null>();
 });
 test('ships pinned SDK packages and no superseded behavior packages', () => {
   const manifest = z

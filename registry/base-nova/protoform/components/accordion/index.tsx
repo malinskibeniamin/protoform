@@ -1,16 +1,15 @@
 'use client';
 
+import { ChevronDownIcon, ChevronUpIcon } from 'lucide-react';
+import type React from 'react';
+import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import {
   Accordion as SDKAccordion,
   AccordionHeader as SDKAccordionHeader,
   AccordionItem as SDKAccordionItem,
   AccordionPanel as SDKAccordionPanel,
   AccordionTrigger as SDKAccordionTrigger,
-} from '@ui-sdk/react/accordion';
-
-import { ChevronDownIcon, ChevronUpIcon } from 'lucide-react';
-import type React from 'react';
-import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
+} from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-accordion';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 

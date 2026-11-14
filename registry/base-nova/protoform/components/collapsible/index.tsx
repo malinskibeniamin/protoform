@@ -1,13 +1,12 @@
 'use client';
 
+import type React from 'react';
+import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import {
   Collapsible as SDKCollapsible,
   CollapsiblePanel as SDKCollapsiblePanel,
   CollapsibleTrigger as SDKCollapsibleTrigger,
-} from '@ui-sdk/react/collapsible';
-
-import type React from 'react';
-import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
+} from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-collapsible';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 

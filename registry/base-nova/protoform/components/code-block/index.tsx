@@ -1,17 +1,17 @@
 'use client';
 
 import { mergeProps, renderElement } from '@ui-sdk/react/primitive';
+import { cva, type VariantProps } from 'class-variance-authority';
+import { CheckIcon, CopyIcon } from 'lucide-react';
+import React from 'react';
+import { Button } from '@/components/ui/button/index';
 import {
   ScrollArea,
   ScrollAreaCorner,
   ScrollAreaScrollbar,
   ScrollAreaThumb,
   ScrollAreaViewport,
-} from '@ui-sdk/react/scroll-area';
-import { cva, type VariantProps } from 'class-variance-authority';
-import { CheckIcon, CopyIcon } from 'lucide-react';
-import React from 'react';
-import { Button } from '@/components/ui/button/index';
+} from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-scroll-area';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
 
 const TRAILING_NEWLINE = /\n$/u;

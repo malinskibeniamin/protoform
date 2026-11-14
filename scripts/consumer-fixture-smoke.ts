@@ -506,6 +506,7 @@ async function assertOptionalAdapterInstalled(adapter: string) {
       'design-system/ui',
       'domain/runtime/utils',
       'domain/runtime/input-utils',
+      'domain/runtime/ui-sdk/adapters',
     ].map(async (path) => {
       await mkdir(join(adapterFixture, path, '..'), { recursive: true });
       await cp(join(hostFixture, path), join(adapterFixture, path), { recursive: true });

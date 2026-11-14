@@ -1,6 +1,6 @@
+import { createInputController } from '@ui-sdk/core/input';
 import { agentTools } from '@ui-sdk/react/agent';
 import { stageChanges } from '@ui-sdk/react/history';
-import { createInputController } from '@ui-sdk/react/input';
 import { elementOf, observe, withSource } from '@ui-sdk/react/observe';
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';

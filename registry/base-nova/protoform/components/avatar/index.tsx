@@ -1,13 +1,12 @@
 'use client';
 
+import type React from 'react';
+import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import {
   Avatar as SDKAvatar,
   AvatarFallback as SDKAvatarFallback,
   AvatarImage as SDKAvatarImage,
-} from '@ui-sdk/react/avatar';
-
-import type React from 'react';
-import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
+} from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-avatar';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 

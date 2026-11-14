@@ -1,14 +1,13 @@
 'use client';
 
+import type React from 'react';
+import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import {
   HoverCard as SDKHoverCard,
   HoverCardArrow as SDKHoverCardArrow,
   HoverCardContent as SDKHoverCardContent,
   HoverCardTrigger as SDKHoverCardTrigger,
-} from '@ui-sdk/react/hover-card';
-
-import type React from 'react';
-import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
+} from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-hover-card';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 

@@ -128,7 +128,10 @@
   "settings": {
     "shadcn": {
       "ui": "@/components/ui",
-      "ignoreImports": ["^@ui-sdk/react(?:/|$)"],
+      "ignoreImports": [
+        "^@ui-sdk/react(?:/|$)",
+        "^@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-(?:accordion|alert-dialog|avatar|button|calendar|carousel|collapsible|dialog|hover-card|input|label|popover|progress|resizable|scroll-area|separator|slider|switch|tabs|textarea)$"
+      ],
       "componentImports": ["^@/components/ui/", "^@/registry/base-nova/protoform/components/"]
     }
   }

@@ -1,11 +1,10 @@
 'use client';
 
-import { Button as ButtonPrimitive } from '@ui-sdk/react/button';
 import { cva, type VariantProps } from 'class-variance-authority';
 import type React from 'react';
-
 import { Spinner } from '@/components/ui/spinner/index';
 import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
+import { Button as ButtonPrimitive } from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-button';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 

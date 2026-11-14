@@ -1,5 +1,7 @@
 'use client';
 
+import type React from 'react';
+import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import {
   Tabs as SDKTabs,
   TabsIndicator as SDKTabsIndicator,
@@ -7,10 +9,7 @@ import {
   TabsPanel as SDKTabsPanel,
   TabsTab as SDKTabsTab,
   TabsTabIcon as SDKTabsTabIcon,
-} from '@ui-sdk/react/tabs';
-
-import type React from 'react';
-import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
+} from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-tabs';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 

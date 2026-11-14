@@ -1,7 +1,7 @@
-import { Textarea as SDKTextarea } from '@ui-sdk/react/textarea';
 import { cva, type VariantProps } from 'class-variance-authority';
 import React from 'react';
 import { definedProps } from '@/registry/base-nova/protoform/lib/sdk-props';
+import { Textarea as SDKTextarea } from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-textarea';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 

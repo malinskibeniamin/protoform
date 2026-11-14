@@ -1,9 +1,8 @@
 'use client';
 
-import { Label as SDKLabel } from '@ui-sdk/react/label';
-
 import type React from 'react';
 import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
+import { Label as SDKLabel } from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-label';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 

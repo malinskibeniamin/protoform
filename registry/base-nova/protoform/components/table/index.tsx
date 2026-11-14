@@ -1,12 +1,12 @@
 'use client';
 
+import type React from 'react';
 import {
   ScrollArea as ScrollAreaRoot,
   ScrollAreaScrollbar,
   ScrollAreaThumb,
   ScrollAreaViewport,
-} from '@ui-sdk/react/scroll-area';
-import type React from 'react';
+} from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-scroll-area';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
 
 function scrollTableWithKeyboard(event: React.KeyboardEvent<HTMLDivElement>) {

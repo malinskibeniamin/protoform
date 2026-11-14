@@ -1337,6 +1337,116 @@
           "path": "registry/base-nova/protoform/components/rating/primitive.ts",
           "type": "registry:component",
           "target": "@ui/rating/primitive.ts"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-accordion.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-accordion.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-alert-dialog.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-alert-dialog.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-avatar.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-avatar.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-button.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-button.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-carousel.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-carousel.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-collapsible.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-collapsible.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-dialog.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-dialog.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-hover-card.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-hover-card.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-input.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-input.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-label.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-label.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-popover.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-popover.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-progress.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-progress.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-resizable.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-resizable.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/primitive-schema.ts",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/primitive-schema.ts"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-scroll-area.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-scroll-area.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-separator.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-separator.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-switch.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-switch.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-tabs.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-tabs.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-textarea.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-textarea.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-calendar.tsx",
+          "target": "@lib/ui-sdk/adapters/core-calendar.tsx",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-slider.tsx",
+          "target": "@lib/ui-sdk/adapters/core-slider.tsx",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/portal.tsx",
+          "target": "@lib/ui-sdk/adapters/portal.tsx",
+          "type": "registry:lib"
         }
       ],
       "devDependencies": ["@types/js-cookie@3.0.6"]
@@ -1841,6 +1951,116 @@
           "path": "registry/base-nova/protoform/components/rating/primitive.ts",
           "type": "registry:component",
           "target": "@ui/rating/primitive.ts"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-accordion.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-accordion.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-alert-dialog.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-alert-dialog.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-avatar.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-avatar.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-button.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-button.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-carousel.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-carousel.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-collapsible.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-collapsible.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-dialog.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-dialog.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-hover-card.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-hover-card.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-input.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-input.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-label.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-label.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-popover.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-popover.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-progress.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-progress.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-resizable.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-resizable.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/primitive-schema.ts",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/primitive-schema.ts"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-scroll-area.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-scroll-area.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-separator.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-separator.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-switch.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-switch.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-tabs.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-tabs.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-textarea.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-textarea.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-calendar.tsx",
+          "target": "@lib/ui-sdk/adapters/core-calendar.tsx",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-slider.tsx",
+          "target": "@lib/ui-sdk/adapters/core-slider.tsx",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/portal.tsx",
+          "target": "@lib/ui-sdk/adapters/portal.tsx",
+          "type": "registry:lib"
         },
         {
           "path": "registry/base-nova/protoform/components/chart-tanstack/index.tsx",

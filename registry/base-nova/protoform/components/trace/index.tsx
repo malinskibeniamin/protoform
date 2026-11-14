@@ -1,9 +1,9 @@
 'use client';
 
-import { CollapsibleTrigger } from '@ui-sdk/react/collapsible';
 import { ChevronRightIcon } from 'lucide-react';
 import type * as React from 'react';
 import { Collapsible, CollapsiblePanel } from '@/components/ui/collapsible/index';
+import { CollapsibleTrigger } from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-collapsible';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
 
 function Trace({ className, ...props }: React.ComponentProps<'div'>) {

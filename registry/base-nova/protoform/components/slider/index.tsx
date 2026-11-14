@@ -1,17 +1,18 @@
 'use client';
+import type React from 'react';
+import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import {
   Slider as SDKSlider,
   SliderControl as SDKSliderControl,
   SliderIndicator as SDKSliderIndicator,
   SliderThumb as SDKSliderThumb,
   SliderTrack as SDKSliderTrack,
-} from '@ui-sdk/react/slider';
-import type React from 'react';
-import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
+  SliderValue as SliderValuePrimitive,
+} from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-slider';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
-export { SliderValue } from '@ui-sdk/react/slider';
+export const SliderValue = SliderValuePrimitive;
 
 export function SliderControl({ className, ...props }: UIProps<React.ComponentProps<typeof SDKSliderControl>>) {
   return (

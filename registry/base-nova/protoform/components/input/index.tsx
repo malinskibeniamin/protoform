@@ -1,5 +1,4 @@
 'use client';
-import { Input as SDKInput } from '@ui-sdk/react/input';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { Eye, EyeOff, Minus, Plus } from 'lucide-react';
 import type { CSSProperties } from 'react';
@@ -8,6 +7,7 @@ import { Button } from '@/components/ui/button/index';
 import { useFieldContext } from '@/components/ui/field/index';
 import { useGroup } from '@/components/ui/group/index';
 import { definedProps } from '@/registry/base-nova/protoform/lib/sdk-props';
+import { Input as SDKInput } from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-input';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 

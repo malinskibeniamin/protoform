@@ -1,8 +1,11 @@
 'use client';
-import { ScrollAreaContent, ScrollAreaScrollToEnd } from '@ui-sdk/react/scroll-area';
 import { ArrowDownIcon } from 'lucide-react';
 import type React from 'react';
 import { ScrollArea, ScrollAreaViewport } from '@/components/ui/scroll-area/index';
+import {
+  ScrollAreaContent,
+  ScrollAreaScrollToEnd,
+} from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-scroll-area';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
 export function MessageScroller(props: React.ComponentProps<typeof ScrollArea>) {
   return <ScrollArea stickToEnd {...props} />;

@@ -1,5 +1,7 @@
 'use client';
 
+import type React from 'react';
+import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import {
   Popover as SDKPopover,
   PopoverArrow as SDKPopoverArrow,
@@ -9,10 +11,7 @@ import {
   PopoverShortcut as SDKPopoverShortcut,
   PopoverTitle as SDKPopoverTitle,
   PopoverTrigger as SDKPopoverTrigger,
-} from '@ui-sdk/react/popover';
-
-import type React from 'react';
-import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
+} from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-popover';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 

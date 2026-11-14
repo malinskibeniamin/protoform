@@ -10,6 +10,21 @@ const lintReport = z.object({
 
 const cases = [
   {
+    name: 'recognizes owned core adapters as unstyled rendering parts',
+    prefix: '.tmp/shadcn-lint-',
+    rules: [],
+    source: `import { Slider } from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-slider';
+export function Definition() { return <Slider className={(state) => state.disabled ? 'bg-muted' : 'bg-primary'} />; }`,
+  },
+  {
+    name: 'keeps raw token and inline checks on owned core adapters',
+    prefix: '.tmp/shadcn-lint-',
+    rules: ['no-raw-colors', 'no-arbitrary-values', 'no-inline-styles'],
+    source: `import { Slider } from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-slider';
+export function Invalid() { return <Slider className="bg-red-500 p-[13px]" style={{color:'red'}} />; }`,
+  },
+
+  {
     name: 'allows styling unstyled UI SDK primitives without exempting token or inline-style checks',
     prefix: '.tmp/shadcn-lint-',
     rules: [],
