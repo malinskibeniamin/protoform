@@ -1,6 +1,7 @@
 'use client';
 
 import { mergeProps, type PartProps, renderElement } from '@ui-sdk/react/primitive';
+import { useShortcut, useShortcutHint } from '@ui-sdk/react/shortcuts';
 import { cva, type VariantProps } from 'class-variance-authority';
 import Cookies from 'js-cookie';
 import { PanelLeftIcon } from 'lucide-react';
@@ -82,17 +83,7 @@ function useSidebarState({
   };
   const toggleSidebar = () =>
     isMobile ? setOpenMobile((previousOpen) => !previousOpen) : setOpen((previousOpen) => !previousOpen);
-  const toggleSidebarEvent = React.useEffectEvent(toggleSidebar);
-  React.useEffect(function synchronizeSidebar1() {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === SIDEBAR_KEYBOARD_SHORTCUT && (event.metaKey || event.ctrlKey)) {
-        event.preventDefault();
-        toggleSidebarEvent();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  useShortcut(`mod+${SIDEBAR_KEYBOARD_SHORTCUT}`, toggleSidebar, { description: 'Toggle sidebar' });
   const state: SidebarContextProps['state'] = open === true ? 'expanded' : 'collapsed';
   return {
     state,
@@ -154,6 +145,11 @@ function Sidebar({
   collapsible?: 'offcanvas' | 'icon' | 'none';
 }) {
   const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
+  const mobileLayer = React.useRef<HTMLDivElement>(null);
+  useShortcut(isMobile && openMobile ? `mod+${SIDEBAR_KEYBOARD_SHORTCUT}` : null, () => setOpenMobile(false), {
+    layer: mobileLayer,
+    description: 'Close sidebar',
+  });
   if (collapsible === 'none') {
     return (
       <div
@@ -175,6 +171,7 @@ function Sidebar({
           data-sidebar="sidebar"
           data-slot="sidebar"
           dir={dir}
+          ref={mobileLayer}
           style={mobileStyle}
           variant="sidebar"
         >
@@ -232,8 +229,10 @@ function Sidebar({
 }
 function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<typeof Button>) {
   const { toggleSidebar } = useSidebar();
+  const hint = useShortcutHint(`mod+${SIDEBAR_KEYBOARD_SHORTCUT}`);
   return (
     <Button
+      aria-keyshortcuts={hint.ariaKeyshortcuts}
       className={className}
       data-sidebar="trigger"
       data-slot="sidebar-trigger"
@@ -242,6 +241,7 @@ function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<t
         toggleSidebar();
       }}
       size="icon-sm"
+      title={`Toggle Sidebar (${hint.text})`}
       type="button"
       variant="ghost"
       {...props}

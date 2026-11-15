@@ -261,6 +261,14 @@
       "name": "rating",
       "docs": "https://ui-sdk.dev/docs/core",
       "installPath": "components/ui/rating/index.tsx"
+    },
+    {
+      "name": "async-option-combobox",
+      "installPath": "components/ui/async-option-combobox/index.tsx"
+    },
+    {
+      "name": "preferences",
+      "installPath": "components/ui/preferences/index.tsx"
     }
   ],
   "compositions": [

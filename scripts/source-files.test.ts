@@ -4,13 +4,19 @@ declare const { describe, expect, test }: typeof import('bun:test');
 
 describe('quality source ownership', () => {
   test('does not trust generated-looking names or directories', () => {
-    for (const file of ['new/gen/escape.ts', 'components/escape.gen.ts', 'examples/not_generated_pb.ts']) {
+    for (const file of [
+      'new/gen/escape.ts',
+      'components/escape.gen.ts',
+      'examples/not_generated_pb.ts',
+      'public/r/not-generated.json',
+    ]) {
       expect(isGeneratedSource(file)).toBe(false);
     }
   });
 
   test('recognizes checked-in generator outputs by exact path', () => {
     expect(isGeneratedSource('examples/gen/protoform/examples/v1/forms_pb.ts')).toBe(true);
+    expect(isGeneratedSource('public/r/ui-sdk-hooks.json')).toBe(true);
     expect(isGeneratedSource('registry/base-nova/protoform/components/input/index.tsx')).toBe(false);
   });
 });

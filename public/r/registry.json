@@ -1502,6 +1502,21 @@
           "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-toast.tsx",
           "type": "registry:lib",
           "target": "@lib/ui-sdk/adapters/core-toast.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/async-option-combobox/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/async-option-combobox/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/preferences/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/preferences/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-field.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-field.tsx"
         }
       ],
       "devDependencies": ["@types/js-cookie@3.0.6"]
@@ -2171,6 +2186,21 @@
           "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-toast.tsx",
           "type": "registry:lib",
           "target": "@lib/ui-sdk/adapters/core-toast.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/async-option-combobox/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/async-option-combobox/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/preferences/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/preferences/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-field.tsx",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/adapters/core-field.tsx"
         },
         {
           "path": "registry/base-nova/protoform/UI_SDK_COMPONENTS.md",
@@ -4372,6 +4402,20 @@
           "path": "registry/base-nova/protoform/demo/ui/agent-workbench.tsx",
           "type": "registry:example",
           "target": "@ui/examples/agent-workbench.tsx"
+        }
+      ]
+    },
+    {
+      "name": "ui-sdk-hooks",
+      "type": "registry:example",
+      "title": "UI SDK hook integrations",
+      "description": "Field accessibility, asynchronous options and opt-in saved preferences.",
+      "registryDependencies": ["@protoform/protoform-ui-sdk"],
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/ui/sdk-hooks.tsx",
+          "type": "registry:component",
+          "target": "@components/protoform-examples/ui-sdk-hooks.tsx"
         }
       ]
     }

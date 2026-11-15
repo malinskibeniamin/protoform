@@ -611,6 +611,7 @@ try {
     await $`bun run --cwd ${fixture} typecheck`;
     await $`bun ${join(fixture, 'agent-install-smoke.tsx')}`;
     console.log('Agent workbench installed and imported in a clean consumer before any other UI bundle');
+    await $`bunx --no-install shadcn add @protoform/ui-sdk-hooks --cwd ${fixture} --yes --overwrite`;
     await $`bunx --no-install shadcn add @protoform/bookstore --cwd ${fixture} --yes --overwrite`;
     await $`bunx --no-install shadcn add @protoform/auto-form-react-hook-form-v8 --cwd ${fixture} --yes --overwrite`;
     await $`bunx --no-install shadcn add @protoform/auto-form-tanstack --cwd ${fixture} --yes --overwrite`;
@@ -661,6 +662,14 @@ try {
     await writeFile(
       join(fixture, 'agent.html'),
       '<html lang="en"><head><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Agent workbench</title><link rel="stylesheet" href="/app/globals.css" /></head><body><div id="root"></div><script type="module" src="/agent-browser.tsx"></script></body></html>'
+    );
+    await writeFile(
+      join(fixture, 'hooks-browser.tsx'),
+      'import { createRoot } from "react-dom/client"; import Hooks from "@/components/protoform-examples/ui-sdk-hooks"; const root = document.querySelector("#root"); if (!root) throw new Error("Missing root"); createRoot(root).render(<Hooks />);'
+    );
+    await writeFile(
+      join(fixture, 'hooks.html'),
+      '<html lang="en"><head><meta name="viewport" content="width=device-width, initial-scale=1" /><title>SDK hooks</title><link rel="stylesheet" href="/app/globals.css" /></head><body><div id="root"></div><script type="module" src="/hooks-browser.tsx"></script></body></html>'
     );
     const theme = await readFile(join(root, 'scripts/fixtures/host-theme.css'), 'utf8');
     await writeFile(

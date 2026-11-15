@@ -1,4 +1,6 @@
 'use client';
+import type { AsyncOptionsStatus } from '@ui-sdk/core/async-options';
+import type { ComboboxController } from '@ui-sdk/core/combobox';
 import { SearchIcon, XIcon } from 'lucide-react';
 import type React from 'react';
 import { definedProps } from '@/registry/base-nova/protoform/lib/sdk-props';
@@ -31,29 +33,39 @@ export interface ComboboxOption {
 export interface OptionComboboxProps extends React.AriaAttributes, SharedProps {
   className?: string | undefined;
   clearable?: boolean | undefined;
+  controller?: ComboboxController | undefined;
   creatable?: boolean | undefined;
   createLabel?: string | undefined;
   disabled?: boolean | undefined;
   emptyState?: React.ReactNode;
   filter?: boolean | undefined;
+  footer?: React.ReactNode;
   id?: string | undefined;
   inputTestId?: string | undefined;
   loading?: boolean | undefined;
+  modal?: boolean | 'pointer' | undefined;
   onChange: (value: string) => void;
   onCreateOption?: ((value: string) => void) | undefined;
   onInputValueChange?: ((value: string) => void) | undefined;
+  onLoadMore?: (() => void) | undefined;
   options: readonly ComboboxOption[];
   placeholder?: string | undefined;
   renderOption?: ((option: ComboboxOption) => React.ReactNode) | undefined;
+  status?: AsyncOptionsStatus | undefined;
   value?: string | undefined;
 }
 export function OptionCombobox({
   options,
+  controller,
+  footer,
   value,
   onChange,
   onInputValueChange,
+  onLoadMore,
   disabled,
   loading = false,
+  status,
+  modal,
   filter = true,
   clearable = true,
   creatable,
@@ -68,6 +80,7 @@ export function OptionCombobox({
   ...inputProps
 }: OptionComboboxProps) {
   const groups = groupOptions(options);
+  const isLoading = status === undefined ? loading === true : status === 'loading';
   function renderOptions(items: readonly ComboboxOption[]) {
     return items.map((option) => (
       <ComboboxItem
@@ -90,11 +103,14 @@ export function OptionCombobox({
             onInputValueChange?.(query);
           }
         },
+        onLoadMore,
+        controller,
         disabled,
+        modal,
       })}
       itemToLabel={(item) => resolveLabel(options, item)}
       onValueChange={(next) => onChange(next ?? '')}
-      status={loading === true ? 'loading' : 'idle'}
+      status={status ?? (isLoading ? 'loading' : 'idle')}
       value={value ?? null}
       {...(filter === true ? {} : { filter: false })}
     >
@@ -137,7 +153,8 @@ export function OptionCombobox({
             </ComboboxCreate>
           ) : null}
         </ComboboxList>
-        {loading === true ? <ComboboxStatus>Loading…</ComboboxStatus> : <ComboboxEmpty>{emptyState}</ComboboxEmpty>}
+        {isLoading ? <ComboboxStatus>Loading…</ComboboxStatus> : <ComboboxEmpty>{emptyState}</ComboboxEmpty>}
+        {footer}
       </ComboboxContent>
     </Combobox>
   );
