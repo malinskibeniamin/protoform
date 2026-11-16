@@ -5,7 +5,7 @@ import { test } from './e2e-test';
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
     const registrations: string[] = [];
-    Reflect.set(window, 'agentTestRegistrations', registrations);
+    Reflect.set(globalThis.window, 'agentTestRegistrations', registrations);
     Object.defineProperty(document, 'modelContext', {
       configurable: true,
       value: {
@@ -55,7 +55,7 @@ test('installed bridge stays opt-in, discovers controls and choices, and honors 
   await expect(result).toContainText('inputSchema');
   await expect(result).toContainText('snapshot');
   await expect(result).toContainText('query');
-  expect(await page.evaluate((): unknown => Reflect.get(window, 'agentTestRegistrations'))).toEqual([]);
+  expect(await page.evaluate((): unknown => Reflect.get(globalThis.window, 'agentTestRegistrations'))).toEqual([]);
 });
 
 test('human confirmation gates real form validation and saves, while async changes retain their source', async ({
@@ -127,5 +127,5 @@ test('disabling a pending confirmation aborts it and repeated sessions do not re
   await page.getByRole('button', { name: 'Disable agent', exact: true }).click();
   await expect(page.getByRole('textbox', { name: 'Project name' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Fill sample' })).toBeDisabled();
-  expect(await page.evaluate((): unknown => Reflect.get(window, 'agentTestRegistrations'))).toEqual([]);
+  expect(await page.evaluate((): unknown => Reflect.get(globalThis.window, 'agentTestRegistrations'))).toEqual([]);
 });

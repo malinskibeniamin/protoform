@@ -15,9 +15,7 @@ interface SharedMutationControls {
   validateOnly?: boolean | undefined;
 }
 
-interface RequestInitValues {
-  [field: string]: unknown;
-}
+type RequestInitValues = Record<string, unknown>;
 
 export interface ComposeCreateRequestOptions extends SharedMutationControls {
   parent?: string | undefined;
@@ -100,7 +98,7 @@ export function composeCreateRequest<Method extends DescMethodUnary>(
   const resource = resourceField(method);
   const init: RequestInitValues = { [resource.localName]: options.resource };
   assignOptional(init, method, options.parent, 'parent', 'parent');
-  assignOptional(init, method, options.resourceId, 'resource id', resource.localName.concat('Id'), 'resourceId');
+  assignOptional(init, method, options.resourceId, 'resource id', `${resource.localName}Id`, 'resourceId');
   assignOptional(init, method, options.requestId, 'request id', 'requestId', 'request_id');
   assignOptional(init, method, options.validateOnly, 'validate only', 'validateOnly', 'validate_only');
   return createRequest(method, init);

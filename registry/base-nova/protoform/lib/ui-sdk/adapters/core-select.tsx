@@ -43,12 +43,14 @@ export const SelectSeparator = parts.Separator;
 export const SelectStatus = parts.Status;
 export const SelectClear = parts.Clear;
 export const SelectArrow = parts.Arrow;
-const RootPlaceholder = createContext<string | undefined>(undefined);
+const RootPlaceholderContext = createContext<string | undefined>(undefined);
 export function Select<T = string, Multiple extends boolean | undefined = false>(
   props: ComponentProps<typeof ConnectedRoot<T, Multiple>>
 ) {
   return (
-    <RootPlaceholder value={props.placeholder}>{createElement(ConnectedRoot<T, Multiple>, props)}</RootPlaceholder>
+    <RootPlaceholderContext value={props.placeholder}>
+      {createElement(ConnectedRoot<T, Multiple>, props)}
+    </RootPlaceholderContext>
   );
 }
 export function SelectTrigger({ controller, ...props }: ComponentProps<typeof ControllerTrigger>) {
@@ -66,7 +68,7 @@ export function SelectValue({
   ...props
 }: Omit<ComponentProps<typeof parts.Value>, 'text'>) {
   const generatedId = useId();
-  const root = useContext(RootPlaceholder);
+  const root = useContext(RootPlaceholderContext);
   return usePart(
     primitive,
     'value',

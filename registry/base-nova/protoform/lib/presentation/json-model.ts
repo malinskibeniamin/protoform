@@ -247,9 +247,7 @@ export interface JSONSchemaType {
     | ('string' | 'number' | 'integer' | 'boolean' | 'array' | 'object' | 'null')[];
 }
 
-export interface JSONObject {
-  [key: string]: JSONValue;
-}
+export type JSONObject = Record<string, JSONValue>;
 
 export function updateValueAtPath(obj: JSONValue, path: string[], value: JSONValue): JSONValue {
   if (path.length === 0) {

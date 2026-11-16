@@ -141,9 +141,9 @@ function Sidebar({
   collapsible?: 'offcanvas' | 'icon' | 'none';
 }) {
   const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
-  const mobileLayer = React.useRef<HTMLDivElement>(null);
+  const mobileLayerRef = React.useRef<HTMLDivElement>(null);
   useShortcut(isMobile && openMobile ? `mod+${SIDEBAR_KEYBOARD_SHORTCUT}` : null, () => setOpenMobile(false), {
-    layer: mobileLayer,
+    layer: mobileLayerRef,
     description: 'Close sidebar',
   });
   if (collapsible === 'none') {
@@ -167,7 +167,7 @@ function Sidebar({
           data-sidebar="sidebar"
           data-slot="sidebar"
           dir={dir}
-          ref={mobileLayer}
+          ref={mobileLayerRef}
           style={mobileStyle}
           variant="sidebar"
         >

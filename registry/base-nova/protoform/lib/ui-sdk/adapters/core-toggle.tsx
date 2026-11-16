@@ -8,7 +8,7 @@ import { definedProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import { withOptionSchema } from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/primitive-schema';
 
 const parts = createParts(withOptionSchema(toggle), { root: 'button', icon: 'span' });
-const GroupScope = createContext(false);
+const GroupScopeContext = createContext(false);
 export function ToggleGroup<T extends string = string>({
   children,
   ...props
@@ -17,13 +17,13 @@ export function ToggleGroup<T extends string = string>({
     ...props,
     children: (state) => {
       const content = typeof children === 'function' ? children(state) : children;
-      return <GroupScope value>{content}</GroupScope>;
+      return <GroupScopeContext value>{content}</GroupScopeContext>;
     },
   };
   return createElement(ConnectedToggleGroup<T>, renderedProps);
 }
 export function Toggle(props: ComponentProps<typeof GroupToggle>) {
-  const grouped = useContext(GroupScope);
+  const grouped = useContext(GroupScopeContext);
   return grouped === true ? createElement(GroupToggle, props) : createElement(parts.Root, definedProps(props));
 }
 export const ToggleIcon = parts.Icon;

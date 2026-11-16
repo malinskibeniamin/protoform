@@ -183,13 +183,13 @@ test('searches translated docs with non-Latin text', async ({ page }) => {
 
 test('navigates OpenAPI pages without reloading the document', async ({ page }) => {
   await page.goto('/docs/reference');
-  await page.evaluate(() => Reflect.set(window, '__protoformNavigationSentinel', 'preserved'));
+  await page.evaluate(() => Reflect.set(globalThis.window, '__protoformNavigationSentinel', 'preserved'));
 
   await page.getByRole('link').filter({ hasText: 'Create a book' }).first().click();
 
   await expect(page.getByRole('heading', { name: 'Create a book' })).toBeVisible();
   await expect
-    .poll(() => page.evaluate((): unknown => Reflect.get(window, '__protoformNavigationSentinel')))
+    .poll(() => page.evaluate((): unknown => Reflect.get(globalThis.window, '__protoformNavigationSentinel')))
     .toBe('preserved');
 });
 
@@ -206,9 +206,8 @@ test('renders the native OpenAPI reference and real RPC method shape', async ({ 
   await page.getByRole('combobox', { name: 'Base URL' }).selectOption('http://127.0.0.1:55012');
   const requestBody = page.getByRole('textbox', { name: 'Request body' });
   const bookId = `protoform-guide-${browserName}-${randomUUID()}`;
-  await requestBody.fill(
-    (await requestBody.inputValue()).replace(JSON.stringify('protoform-guide'), JSON.stringify(bookId))
-  );
+  const inputValue1 = await requestBody.inputValue();
+  await requestBody.fill(inputValue1.replace(JSON.stringify('protoform-guide'), JSON.stringify(bookId)));
   await page.getByRole('button', { name: 'Send' }).click();
   await expect(playground).toContainText('200 OK');
   const cleanup = await page.request.post('http://127.0.0.1:55012/protoform.conformance.v1.LibraryService/DeleteBook', {

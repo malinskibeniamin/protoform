@@ -579,41 +579,46 @@ test('owned select/combobox parts preserve opt-in agent confirmation, read-back,
       </>
     );
     await act(async () => {
-      expect(
-        (await session.agent.act({ steps: [{ ref: 'Agent select', action: 'setValue', args: ['Beta'] }] })).ok
-      ).toBe(true);
+      const selectResult = await session.agent.act({
+        steps: [{ ref: 'Agent select', action: 'setValue', args: ['Beta'] }],
+      });
+      expect(selectResult.ok).toBe(true);
     });
     await expect.element(page.getByRole('combobox', { name: 'Agent select' })).toHaveText('Alpha');
     expect(sources).toContain('agent');
-    expect(
-      (await session.agent.act({ steps: [{ ref: 'Agent project', action: 'setValue', args: ['Beta'] }] })).ok
-    ).toBe(false);
+    const unconfirmedProject = await session.agent.act({
+      steps: [{ ref: 'Agent project', action: 'setValue', args: ['Beta'] }],
+    });
+    expect(unconfirmedProject.ok).toBe(false);
     await expect.element(page.getByRole('combobox', { name: 'Agent project' })).toHaveValue('Alpha');
     approved = true;
-    expect(
-      (await session.agent.act({ steps: [{ ref: 'Agent project', action: 'setValue', args: ['Unknown project'] }] })).ok
-    ).toBe(false);
+    const unknownProject = await session.agent.act({
+      steps: [{ ref: 'Agent project', action: 'setValue', args: ['Unknown project'] }],
+    });
+    expect(unknownProject.ok).toBe(false);
     await expect.element(page.getByRole('combobox', { name: 'Agent project' })).toHaveValue('Alpha');
     await act(async () => {
-      expect(
-        (await session.agent.act({ steps: [{ ref: 'Custom project', action: 'setValue', args: ['Unknown project'] }] }))
-          .ok
-      ).toBe(true);
+      const customProject = await session.agent.act({
+        steps: [{ ref: 'Custom project', action: 'setValue', args: ['Unknown project'] }],
+      });
+      expect(customProject.ok).toBe(true);
     });
     await expect.element(page.getByRole('combobox', { name: 'Custom project' })).toHaveValue('Unknown project');
     await act(async () => {
-      expect(
-        (await session.agent.act({ steps: [{ ref: 'Agent project', action: 'setValue', args: ['Beta'] }] })).ok
-      ).toBe(true);
+      const projectChange = await session.agent.act({
+        steps: [{ ref: 'Agent project', action: 'setValue', args: ['Beta'] }],
+      });
+      expect(projectChange.ok).toBe(true);
     });
     await expect.element(page.getByRole('combobox', { name: 'Agent project' })).toHaveValue('Beta');
     await session.history.undoSource('agent');
     await expect.element(page.getByRole('combobox', { name: 'Agent project' })).toHaveValue('Alpha');
     await expect.element(page.getByRole('combobox', { name: 'Custom project' })).toHaveValue('Alpha');
     session.dispose();
-    expect(
-      (await session.agent.act({ steps: [{ ref: 'Agent project', action: 'setValue', args: ['Beta'] }] })).ok
-    ).toBe(false);
+    const disposedProject = await session.agent.act({
+      steps: [{ ref: 'Agent project', action: 'setValue', args: ['Beta'] }],
+    });
+    expect(disposedProject.ok).toBe(false);
   } finally {
     session.dispose();
   }

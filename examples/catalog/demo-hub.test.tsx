@@ -8,11 +8,11 @@ const demoSchemaSource = /getDemoSchema/u;
 
 describe('demoHub', () => {
   beforeEach(() => {
-    window.history.replaceState(null, '', '/docs/protobuf-examples');
+    globalThis.window.history.replaceState(null, '', '/docs/protobuf-examples');
   });
 
   test('opens a directly linked demo and keeps selection in the URL', async () => {
-    window.history.replaceState(null, '', '/docs/protobuf-examples#protobuf-oneof');
+    globalThis.window.history.replaceState(null, '', '/docs/protobuf-examples#protobuf-oneof');
 
     render(<DemoHub category="protobuf" />);
 
@@ -27,14 +27,14 @@ describe('demoHub', () => {
     fireEvent.pointerDown(option, { pointerType: 'touch' });
     fireEvent.click(option);
 
-    expect(window.location.hash).toBe('#protobuf-maps');
+    expect(globalThis.window.location.hash).toBe('#protobuf-maps');
     expect(screen.getByRole('heading', { name: 'Protobuf maps' })).toBeInTheDocument();
     expect(await screen.findByRole('group', { name: 'Bool Keys' }, { timeout: 5000 })).toBeInTheDocument();
     expect(screen.queryByRole('status', { name: 'Loading selected demo' })).not.toBeInTheDocument();
   });
 
   test('keeps the selected demo source available without a wrapper page', async () => {
-    window.history.replaceState(null, '', '/docs/cel-examples#cel-safe-evaluation');
+    globalThis.window.history.replaceState(null, '', '/docs/cel-examples#cel-safe-evaluation');
 
     render(<DemoHub category="cel" />);
 

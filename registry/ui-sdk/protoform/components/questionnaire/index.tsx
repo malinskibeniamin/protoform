@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/sdk/button/index';
 import { FieldError } from '@/components/ui/sdk/field/index';
 import { Radio, RadioIndicator } from '@/components/ui/sdk/radio-group/index';
 import { RadioGroup } from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-radio';
+
 export interface Question {
   choices: { value: string; label: string }[];
   description?: string;
@@ -24,13 +25,13 @@ export function Questionnaire({
   const [values, setValues] = useState<Record<string, string>>({});
   const [error, setError] = useState('');
   const [pending, setPending] = useState(false);
-  const heading = useRef<HTMLHeadingElement>(null);
+  const headingRef = useRef<HTMLHeadingElement>(null);
   const id = useId();
   const question = items[step];
   function move(next: number) {
     setStep(next);
     setError('');
-    requestAnimationFrame(() => heading.current?.focus());
+    requestAnimationFrame(() => headingRef.current?.focus());
   }
   async function advance(skip = false) {
     if (question === undefined || pending === true) {
@@ -61,7 +62,7 @@ export function Questionnaire({
       <p aria-live="polite" className="text-xs font-medium text-muted-foreground tabular-nums">
         Question {step + 1} of {items.length}
       </p>
-      <h2 className="text-base font-medium outline-none" id={id} ref={heading} tabIndex={-1}>
+      <h2 className="text-base font-medium outline-none" id={id} ref={headingRef} tabIndex={-1}>
         {question.prompt}
       </h2>
       {question.description ? <p className="text-sm text-muted-foreground">{question.description}</p> : null}

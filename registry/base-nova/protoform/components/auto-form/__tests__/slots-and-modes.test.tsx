@@ -38,7 +38,7 @@ describe('autoForm slots', () => {
 
     const fieldsRoot = container.querySelector('[data-slot="auto-form-fields"]');
     expect(fieldsRoot).not.toBeNull();
-    const rows = Array.from(fieldsRoot?.children ?? []);
+    const rows = [...(fieldsRoot?.children ?? [])];
     expect(rows).toHaveLength(4);
     expect(rows[0]).toHaveTextContent('Top slot');
     expect(rows[1]).toHaveTextContent('Plain child');

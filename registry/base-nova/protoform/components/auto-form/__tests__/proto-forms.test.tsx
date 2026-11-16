@@ -131,7 +131,7 @@ describe('autoForm – protobuf forms', () => {
     expect(submittedValue.$typeName).toBe('protoform.v1.AutoFormExample');
     expect(submittedValue.employeeNumber).toBe(4001n);
     expect(submittedValue.storageQuotaBytes).toBe(4096n);
-    expect(Array.from(submittedValue.avatarBytes)).toEqual([1, 2, 3, 4]);
+    expect([...submittedValue.avatarBytes]).toEqual([1, 2, 3, 4]);
     expect(submittedValue.labels).toEqual({ team: 'frontend' });
     expect(submittedValue.officeLocations['hq']?.city).toBe('San Francisco');
     expect(submittedValue.preferredContact).toEqual({

@@ -27,7 +27,7 @@ function readStatusMessages(status: unknown): string[] {
 }
 
 export function FormikExample({ baseUrl }: { baseUrl?: string }) {
-  const idPrefix = React.useId();
+  const prefixId = React.useId();
   const [profileId, setProfileId] = React.useState<string>();
   const client = createClient(FormExamplesService, createFormExamplesTransport(baseUrl));
 
@@ -60,7 +60,7 @@ export function FormikExample({ baseUrl }: { baseUrl?: string }) {
           helpers.setStatus(serverErrors.root);
           const firstField = firstServerErrorField(serverErrors);
           if (firstField) {
-            const fieldId = `${idPrefix}-${firstField}`;
+            const fieldId = `${prefixId}-${firstField}`;
             document.querySelector<HTMLElement>(`#${CSS.escape(fieldId)}`)?.focus();
           }
         }
@@ -76,12 +76,12 @@ export function FormikExample({ baseUrl }: { baseUrl?: string }) {
           <form className="space-y-6" onSubmit={handleSubmit}>
             <FieldGroup>
               <Field data-invalid={displayNameErrors.length > 0}>
-                <FieldLabel htmlFor={`${idPrefix}-displayName`} required>
+                <FieldLabel htmlFor={`${prefixId}-displayName`} required>
                   Display name
                 </FieldLabel>
                 <Input
                   aria-invalid={displayNameErrors.length > 0 || undefined}
-                  id={`${idPrefix}-displayName`}
+                  id={`${prefixId}-displayName`}
                   name="displayName"
                   onBlur={handleBlur}
                   onChange={handleChange}
@@ -92,12 +92,12 @@ export function FormikExample({ baseUrl }: { baseUrl?: string }) {
               </Field>
 
               <Field data-invalid={emailErrors.length > 0}>
-                <FieldLabel htmlFor={`${idPrefix}-email`} required>
+                <FieldLabel htmlFor={`${prefixId}-email`} required>
                   Email
                 </FieldLabel>
                 <Input
                   aria-invalid={emailErrors.length > 0 || undefined}
-                  id={`${idPrefix}-email`}
+                  id={`${prefixId}-email`}
                   name="email"
                   onBlur={handleBlur}
                   onChange={handleChange}

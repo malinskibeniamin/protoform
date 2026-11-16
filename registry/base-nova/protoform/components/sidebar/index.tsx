@@ -80,8 +80,8 @@ function useSidebarState({
         toggleSidebarEvent();
       }
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    globalThis.window.addEventListener('keydown', handleKeyDown);
+    return () => globalThis.window.removeEventListener('keydown', handleKeyDown);
   }, []);
   const state: SidebarContextProps['state'] = open === true ? 'expanded' : 'collapsed';
   return {

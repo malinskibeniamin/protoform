@@ -6,7 +6,7 @@ import { createParts, renderElement } from '@ui-sdk/react/primitive';
 import { type ComponentProps, createElement } from 'react';
 import { definedProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import {
-  PopupContainer,
+  PopupContainerContext,
   PopupPortal,
   usePopupContainer,
 } from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/portal';
@@ -26,9 +26,9 @@ export function Dialog({ container, controller, children, ...props }: ComponentP
   const target = usePopupContainer(container);
   const Root = controller === undefined ? parts.Root : ControllerDialog;
   return (
-    <PopupContainer value={target}>
+    <PopupContainerContext value={target}>
       {createElement(Root, { ...props, ...definedProps({ container: target, controller }) }, children)}
-    </PopupContainer>
+    </PopupContainerContext>
   );
 }
 export function DialogTrigger(props: ComponentProps<typeof ControllerDialogTrigger>) {

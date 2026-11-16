@@ -13,7 +13,7 @@
   "files": [
     {
       "path": "registry/base-nova/protoform/lib/ui-sdk/agent.ts",
-      "content": "import { createAgent as sdkCreateAgent } from '@ui-sdk/react/agent';\nexport const createAgent = sdkCreateAgent;\nexport type { AgentAction, AgentComponent, AgentStep, ObservedChange } from '@ui-sdk/react/agent';\n",
+      "content": "import { createAgent as sdkCreateAgent } from '@ui-sdk/react/agent';\n\nexport const createAgent = sdkCreateAgent;\nexport type { AgentAction, AgentComponent, AgentStep, ObservedChange } from '@ui-sdk/react/agent';\n",
       "type": "registry:lib",
       "target": "@lib/ui-sdk/agent.ts"
     },

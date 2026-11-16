@@ -30,5 +30,5 @@ export function groupOptions<Option extends LabelledOption>(
       groups.set(groupKey, { heading: groupKey, options: [option], testId: option.groupTestId });
     }
   }
-  return Array.from(groups.values());
+  return [...groups.values()];
 }

@@ -4,7 +4,7 @@ import { hoverCard } from '@ui-sdk/core/hover-card';
 import { createParts } from '@ui-sdk/react/primitive';
 import { type ComponentProps, createElement } from 'react';
 import {
-  PopupContainer,
+  PopupContainerContext,
   PopupPortal,
   usePopupContainer,
 } from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/portal';
@@ -14,9 +14,9 @@ const parts = createParts(withOptionSchema(hoverCard), { trigger: 'a', content: 
 export function HoverCard({ container, children, ...props }: ComponentProps<typeof parts.Root>) {
   const target = usePopupContainer(container);
   return (
-    <PopupContainer value={target}>
+    <PopupContainerContext value={target}>
       {createElement(parts.Root, { ...props, container: target }, children)}
-    </PopupContainer>
+    </PopupContainerContext>
   );
 }
 export const HoverCardTrigger = parts.Trigger;

@@ -503,7 +503,8 @@ function findMultiSelectOption(
   options: MultiSelectOption[] | undefined,
   value: string
 ): MultiSelectOptionItem | undefined {
-  for (const option of options ?? []) {
+  const availableOptions = options ?? [];
+  for (const option of availableOptions) {
     if ('type' in option) {
       continue;
     }

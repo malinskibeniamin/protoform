@@ -8,7 +8,7 @@ import { ProvisionCapacityRequestSchema, TimeRangeSchema } from './gen/protoform
 
 function field(schema: ReturnType<typeof parseProtoSchema>, key: string) {
   const match = schema.fields.find((candidate) => candidate.key === key);
-  if (!match) {
+  if (match === undefined) {
     throw new Error(`Missing ${key}.`);
   }
   return match;
@@ -87,7 +87,7 @@ describe('aip field pattern conformance', () => {
           endTime: '2026-01-02T00:00:00Z',
           startTime: '2026-01-01T00:00:00Z',
         },
-      ].map((values) => schema['~standard'].validate(values))
+      ].map(async (values) => schema['~standard'].validate(values))
     );
     for (const result of validResults) {
       expect(result.issues).toBeUndefined();
@@ -103,7 +103,7 @@ describe('aip field pattern conformance', () => {
           endTime: '2025-12-31T00:00:00Z',
           startTime: '2026-01-01T00:00:00Z',
         },
-      ].map((values) => schema['~standard'].validate(values))
+      ].map(async (values) => schema['~standard'].validate(values))
     );
     for (const result of invalidResults) {
       expect(result.issues).toEqual(

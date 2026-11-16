@@ -255,7 +255,7 @@ function readBlumeTheme(): PresetMode {
 }
 
 function readInitialSelection(): InitialSelection {
-  if (typeof window === 'undefined') {
+  if (Reflect.get(globalThis, 'window') === undefined) {
     return {
       mode: 'light',
       preset: defaultPreset,
@@ -263,7 +263,7 @@ function readInitialSelection(): InitialSelection {
     };
   }
 
-  const searchParams = new URLSearchParams(window.location.search);
+  const searchParams = new URLSearchParams(globalThis.window.location.search);
   const presetCode = searchParams.get('preset');
   const requestedMode = searchParams.get('mode');
   const supportedPreset = presetCode ? findSupportedPreset(presetCode) : undefined;
@@ -488,10 +488,10 @@ export function PresetLab() {
 
   useEffect(
     function synchronizePresetUrl() {
-      const url = new URL(window.location.href);
+      const url = new URL(globalThis.window.location.href);
       url.searchParams.set('preset', presetCode);
       url.searchParams.set('mode', mode);
-      window.history.replaceState({}, '', url);
+      globalThis.window.history.replaceState({}, '', url);
     },
     [mode, presetCode]
   );

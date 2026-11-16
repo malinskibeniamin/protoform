@@ -40,7 +40,7 @@ import {
 
 function field(schema: ReturnType<typeof parseProtoSchema>, key: string) {
   const match = schema.fields.find((candidate) => candidate.key === key);
-  if (!match) {
+  if (match === undefined) {
     throw new Error(`Missing ${key}.`);
   }
   return match;

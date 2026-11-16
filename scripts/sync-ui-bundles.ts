@@ -18,9 +18,10 @@ if (presentation === undefined) {
   throw new Error('Missing shared UI presentation registry item');
 }
 const chartModules = new Set(['chart-recharts.tsx', 'chart-tanstack.tsx', 'chart-module.tsx']);
+const presentationFiles = await readdir(new URL(`../${presentationDirectory}`, import.meta.url));
 presentation.files = [
   ...(presentation.files ?? []).filter((file) => !file.path.startsWith(`${presentationDirectory}/`)),
-  ...(await readdir(new URL(`../${presentationDirectory}`, import.meta.url)))
+  ...presentationFiles
     .filter((name) => sourceFileExtension.test(name) && !chartModules.has(name))
     .toSorted()
     .map((name) => ({

@@ -24,7 +24,7 @@ const parts = createParts(primitive, {
   status: 'div',
   shortcut: 'span',
 });
-const ItemLabel = createContext('');
+const ItemLabelContext = createContext('');
 export const Command = DataCommand;
 export const CommandInput = parts.Input;
 export const CommandGroup = parts.Group;
@@ -56,20 +56,24 @@ export function CommandItem({
   value,
   ...props
 }: CommandItemProps & Omit<PartProps<'div', CommandItemState>, 'value' | 'defaultValue' | 'onChange' | 'onSelect'>) {
-  const generatedValue = useId();
-  const itemValue = value ?? generatedValue;
+  const generatedValueId = useId();
+  const itemValue = value ?? generatedValueId;
   const renderedProps: ComponentProps<typeof parts.Item> = {
     ...definedProps(props),
     ...definedProps({ label, value: itemValue }),
     children: (state) => {
       const content = typeof children === 'function' ? children(state) : children;
-      return <ItemLabel value={label ?? (typeof children === 'string' ? children : itemValue)}>{content}</ItemLabel>;
+      return (
+        <ItemLabelContext value={label ?? (typeof children === 'string' ? children : itemValue)}>
+          {content}
+        </ItemLabelContext>
+      );
     },
   };
   return createElement(parts.Item, renderedProps);
 }
 export function CommandItemText({ children, ...props }: Omit<ComponentProps<typeof parts.ItemText>, 'text' | 'write'>) {
-  const label = useContext(ItemLabel);
+  const label = useContext(ItemLabelContext);
   const text = typeof children === 'string' ? children : label;
   const renderedProps: ComponentProps<typeof parts.ItemText> = {
     ...props,

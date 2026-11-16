@@ -29,7 +29,7 @@ function formatSubmittedValue(value: Record<string, unknown>): string {
         return nestedValue.toString();
       }
       if (nestedValue instanceof Uint8Array) {
-        return Array.from(nestedValue);
+        return [...nestedValue];
       }
       return nestedValue;
     },

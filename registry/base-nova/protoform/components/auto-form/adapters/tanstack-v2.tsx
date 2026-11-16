@@ -174,34 +174,34 @@ function TanStackV2ArrayController({
   const { form } = useTanStackV2EngineContext();
   const ArrayField = form.ArrayField as unknown as DynamicArrayFieldComponent;
   const collectionId = React.useId();
-  const nextItemId = React.useRef(0);
-  const keys = React.useRef<string[]>([]);
+  const nextItemIdRef = React.useRef(0);
+  const keysRef = React.useRef<string[]>([]);
   const fieldName = toTanStackV2Path(name);
 
   return (
     <ArrayField name={fieldName}>
       {(field) => {
         const arrayValue: unknown[] = Array.isArray(field.value) ? field.value : [];
-        while (keys.current.length < arrayValue.length) {
-          nextItemId.current += 1;
-          keys.current.push(`${collectionId}-${nextItemId.current}`);
+        while (keysRef.current.length < arrayValue.length) {
+          nextItemIdRef.current += 1;
+          keysRef.current.push(`${collectionId}-${nextItemIdRef.current}`);
         }
-        if (keys.current.length > arrayValue.length) {
-          keys.current.length = arrayValue.length;
+        if (keysRef.current.length > arrayValue.length) {
+          keysRef.current.length = arrayValue.length;
         }
 
         return children({
           append: (item) => {
-            nextItemId.current += 1;
-            keys.current.push(`${collectionId}-${nextItemId.current}`);
+            nextItemIdRef.current += 1;
+            keysRef.current.push(`${collectionId}-${nextItemIdRef.current}`);
             field.pushValue(item);
           },
           items: arrayValue.map((item, index) => ({
-            key: keys.current[index] ?? `auto-form-item-${index}`,
+            key: keysRef.current[index] ?? `auto-form-item-${index}`,
             value: item,
           })),
           remove: (index) => {
-            keys.current.splice(index, 1);
+            keysRef.current.splice(index, 1);
             field.removeValue(index);
           },
         });
@@ -290,7 +290,7 @@ export function TanStackV2Engine({
   const [submitError, setSubmitError] = React.useState<string>();
   const [isAutoFormSubmitting, setIsAutoFormSubmitting] = React.useState(false);
   const [nativeFieldErrors, setNativeFieldErrors] = React.useState(new Map<string, string[]>());
-  const fieldRefs = React.useRef(new Map<string, HTMLElement>());
+  const fieldsRef = React.useRef(new Map<string, HTMLElement>());
 
   const providerValidator: FormValidator<FormValues> = {
     run: async ({ signal, value }) => {
@@ -392,9 +392,9 @@ export function TanStackV2Engine({
   }, []);
   const registerRef = React.useCallback((name: string, element: HTMLElement | null) => {
     if (element) {
-      fieldRefs.current.set(name, element);
+      fieldsRef.current.set(name, element);
     } else {
-      fieldRefs.current.delete(name);
+      fieldsRef.current.delete(name);
     }
   }, []);
   const contextValue = React.useMemo<TanStackV2EngineContextValue>(
@@ -409,7 +409,7 @@ export function TanStackV2Engine({
     dirtyFields,
     errors,
     FieldController: TanStackV2FieldController,
-    focus: (path) => fieldRefs.current.get(path)?.focus(),
+    focus: (path) => fieldsRef.current.get(path)?.focus(),
     getFieldInvalid: (path) =>
       (fieldErrors.get(path)?.length ?? 0) > 0 || (nativeFieldErrors.get(path)?.length ?? 0) > 0,
     getValues: () => form.state.values,

@@ -2,7 +2,7 @@ import { Storage } from 'happy-dom';
 import { fetch as nodeFetch } from 'undici';
 import { ResizeObserverMock } from './rstest.shared.setup';
 
-if (typeof window !== 'undefined') {
+if (Reflect.get(globalThis, 'window') !== undefined) {
   Object.defineProperty(Element.prototype, 'animate', {
     configurable: true,
     value: undefined,

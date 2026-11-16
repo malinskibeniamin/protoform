@@ -15,13 +15,13 @@ const request: ReviewedQuickJsRequest = {
 };
 
 function deferred<T>() {
-  let resolve!: (value: T) => void;
-  let reject!: (error: Error) => void;
-  const promise = new Promise<T>((yes, no) => {
-    resolve = yes;
-    reject = no;
+  let resolvePromise!: (value: T) => void;
+  let rejectPromise!: (error: Error) => void;
+  const promise = new Promise<T>((resolve, reject) => {
+    resolvePromise = resolve;
+    rejectPromise = reject;
   });
-  return { promise, reject, resolve };
+  return { promise, reject: rejectPromise, resolve: resolvePromise };
 }
 
 test('only the latest revision can enable submission, even when cancellation is ignored', async () => {

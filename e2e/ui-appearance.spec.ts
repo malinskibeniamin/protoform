@@ -54,7 +54,12 @@ for (const width of [1280, 390]) {
     await page.getByRole('button', { name: 'Open field sheet' }).click();
     const sheet = page.getByRole('dialog', { name: 'Field details' });
     await expect(sheet).toBeVisible();
-    await expect.poll(async () => (await sheet.boundingBox())?.y).toBe(0);
+    await expect
+      .poll(async () => {
+        const position = await sheet.boundingBox();
+        return position?.y;
+      })
+      .toBe(0);
     await expect
       .poll(async () => {
         const bounds = await sheet.boundingBox();
@@ -82,7 +87,8 @@ test('retains readable message spacing and full-width questionnaire choice cards
   await expect(viewport.locator('[data-slot="scroll-area-content"]')).toHaveCSS('row-gap', '24px');
   const form = page.getByRole('form', { name: 'Questionnaire' });
   const choice = form.getByRole('radio', { name: 'JSON', exact: true });
-  expect((await choice.boundingBox())?.height).toBeGreaterThanOrEqual(44);
+  const choiceBounds = await choice.boundingBox();
+  expect(choiceBounds?.height).toBeGreaterThanOrEqual(44);
   await expect(choice).toHaveCSS('border-top-width', '1px');
   await expect(form.getByRole('button', { name: 'Previous' })).toHaveCount(0);
   await choice.click();

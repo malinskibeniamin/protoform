@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/sdk/select/index';
 import { definedProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
+
 export interface MultiSelectOptionItem {
   disabled?: boolean | undefined;
   label?: React.ReactNode;

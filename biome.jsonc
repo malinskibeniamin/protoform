@@ -173,7 +173,8 @@
         "useFlatMap": "error",
         "useIndexOf": "error",
         "useLiteralKeys": "off",
-        "useMaxParams": "off",
+        // Bound internal APIs without rewriting stable protobuf/UI callback contracts.
+        "useMaxParams": { "level": "error", "options": { "max": 7 } },
         "useNumericLiterals": "error",
         "useOptionalChain": "error",
         "useRegexLiterals": "error",
@@ -469,8 +470,8 @@
         // Svelte is not used.
         "noSvelteInternal": "off",
         "noTanstackQueryRestDestructuring": "error",
-        // Simple nullish fallbacks and indexed schema fields are readable loop inputs.
-        "noUnreadableForOfExpression": "off",
+        // Name nontrivial iterable expressions before entering a loop.
+        "noUnreadableForOfExpression": "error",
         "noUnsafeReturn": "error",
         "noUselessSplice": "error",
         // Vue is not used.
@@ -571,8 +572,8 @@
         // Preserve the existing host-theme cascade.
         "useLayeredStyles": "off",
         "useModernMathApis": "error",
-        // New naming policy is separate from this dependency upgrade.
-        "useReactNamingConvention": "off",
+        // React contexts, refs and state follow the naming contract of their producing API.
+        "useReactNamingConvention": "error",
         "useVueBaseImport": "error",
         "noBaseToString": "error",
         "noExtendNative": "error",
@@ -634,6 +635,7 @@
         },
         "usePromiseRejectErrors": "error",
         "useReactCompiler": "error",
+        // forwardRef render functions must remain expressions; declarations are enforced elsewhere.
         "useReactFunctionComponentDefinition": "off",
         "useRegexpExec": "error",
         "useStrictBooleanExpressions": "error",
@@ -642,6 +644,64 @@
         "useSvelteRequireEachKey": "off",
         "useTailwindShorthandClasses": "error",
         "useValidTestTitle": "error",
+        // Biome 2.6.7–2.6.8: runtime safety, redundant types, test assertions and YAML structure.
+        "noAsyncPromiseFinally": "error",
+        "noBufferConstructor": "error",
+        "noConfusingArraySplice": "error",
+        "noDuplicateTypeConstituents": "error",
+        "noDynamicRequire": "error",
+        "noInvalidFetchOptions": "error",
+        "noLateCurrentTargetAccess": "error",
+        // Misidentifies a narrowed Array.isArray result reassigned before React callbacks as a string.
+        "noMisusedSpread": "off",
+        "noNewArray": "error",
+        "noReactDirectStateMutation": "error",
+        "noRedundantTypeConstituents": "error",
+        "noScssNullComparison": "error",
+        "noTripleSlashReference": "error",
+        "noUnresolvedDefaultImport": "error",
+        "noUselessFallbackInSpread": "error",
+        "noUselessParameterPropertyAssignment": "error",
+        "noUselessQualifier": "error",
+        "noUselessSpread": "error",
+        "noYamlEmptyMapKeys": "error",
+        // Empty YAML values deliberately encode null, including GitHub Actions event declarations.
+        "noYamlEmptyMapValues": "off",
+        "noYamlEmptySequenceEntries": "error",
+        // Cannot recognize revision-guarded updates, submission locks or sequential screenshot polling.
+        "useAtomicUpdates": "off",
+        "useCatchErrorName": "error",
+        "useConsistentFontWeightNotation": "error",
+        "useConsistentTupleLabels": "error",
+        "useExpectToHaveBeenCalled": "error",
+        "useExpectToHaveBeenCalledTimes": "error",
+        "useGlobalRegexInMatchAll": "error",
+        "useGlobalRegexInReplaceAll": "error",
+        "usePackageJsonValidLicense": "error",
+        "useSpyOn": "error",
+        "useTopLevelRequire": "error",
+        "useValidCharacterComparison": "error",
+        "useValidNamespaceImports": "error",
+        // Native disabled behavior prevents edits/submission; aria-disabled alone does not.
+        "noDisabledAttribute": "off",
+        // No project-wide selector budget or additional Tailwind denylist has been defined.
+        "noExcessiveSelectorComplexity": "off",
+        "noTailwindRestrictedClasses": "off",
+        // Preserve public protobuf/form Boolean names instead of imposing a new naming contract.
+        "useConsistentBooleanName": "off",
+        // Call-count assertions intentionally test lifecycle behavior without prescribing arguments.
+        "useCalledWith": "off",
+        // Drizzle, Vue and Svelte are not project runtimes.
+        "noDrizzleDbObjectInsideTransaction": "off",
+        "noSvelteAsyncStore": "off",
+        "noVueAsyncComputed": "off",
+        "noVueDefineModelDefault": "off",
+        "noVueDeprecatedFilter": "off",
+        "noVueDeprecatedVIs": "off",
+        "noVueExportInScriptSetup": "off",
+        "noVueExposeAfterAwait": "off",
+        "useVueConsistentVOnHandlerStyle": "off",
+        "useVueRegisteredComponentNameCasing": "off",
         "useTailwindSortedClasses": {
           "fix": "safe",
           "level": "error"
@@ -698,6 +758,7 @@
         "noExportedImports": "error",
         "noHeadElement": "error",
         "noHexColors": "error",
+        // React Doctor requires shorthand true props; enabling the opposite notation creates an unsatisfiable gate.
         "noImplicitBoolean": "off",
         "noIncrementDecrement": "error",
         "noInferrableTypes": "error",
@@ -782,7 +843,7 @@
         },
         "useForOf": "error",
         "useFragmentSyntax": "error",
-        "useGlobalThis": "off",
+        "useGlobalThis": "error",
         "useGraphqlNamingConvention": "error",
         "useGroupedAccessorPairs": "error",
         "useImportType": "error",

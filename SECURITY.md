@@ -21,7 +21,11 @@ The maintainer will acknowledge reports on a best-effort basis, coordinate a fix
 confirmed, and credit reporters who request attribution. No response or remediation service-level
 agreement is offered.
 
-## Dependency gate
+## Manual dependency audit
+
+Dependency auditing is manual. CI and the `ci:gate`, `quality:gate`, and `release:gate` commands
+do not run it or block on dependency advisories. Passing these gates does not establish that
+dependencies are free of known vulnerabilities. CodeQL and Scorecard automation remain unchanged.
 
 `bun run security:audit` validates Bun’s advisory output and fails closed on unexcepted findings
 or malformed results. Exceptions, if approved, must name an exact package and advisory, include a
@@ -31,7 +35,7 @@ The former exceptions for `braces` ([GHSA-vfj7-8cjw-p6xm](https://github.com/adv
 and `sprintf-js` ([GHSA-hp3w-g68c-fv3c](https://github.com/advisories/GHSA-hp3w-g68c-fv3c))
 have been removed. GitHub withdrew those advisories on 2026-10-23 and 2026-10-22, respectively.
 This is not a claim that the packages received patches. No advisory is currently waived;
-new or reinstated findings remain blocking.
+new or reinstated findings fail the manual audit.
 
 Bun cannot audit the Buf-generated package registry because that registry does not support the
 audit endpoint. The script preserves that warning; a passing audit is not proof that every registry

@@ -157,8 +157,8 @@ export function useProviderOptions({
   const optionsKey = safeStringify(
     options.map(({ description, group, label, value }) => ({ description, group, label, value }))
   );
-  const providerPageKey = requestKey.concat(':', optionsKey);
-  const collectedPageKey = React.useRef<string | undefined>(undefined);
+  const providerPageKey = `${requestKey}:${optionsKey}`;
+  const collectedPageKeyRef = React.useRef<string | undefined>(undefined);
   const availableOptions =
     isLoading === true || hasProviderError
       ? loadedOptions
@@ -178,10 +178,10 @@ export function useProviderOptions({
 
   React.useEffect(
     function collectProviderPageEffect() {
-      if (isLoading === true || hasProviderError || collectedPageKey.current === providerPageKey) {
+      if (isLoading === true || hasProviderError || collectedPageKeyRef.current === providerPageKey) {
         return;
       }
-      collectedPageKey.current = providerPageKey;
+      collectedPageKeyRef.current = providerPageKey;
       setLoadedOptions((currentOptions) => mergeProviderOptions(hasCursor ? currentOptions : [], options));
     },
     [hasCursor, isLoading, options, hasProviderError, providerPageKey]

@@ -254,7 +254,8 @@ test('preferences preserve agent source, confirmation, cancellation, read-back, 
       </>
     );
     const change = { steps: [{ ref: 'Agent density', action: 'setValue', args: ['compact'] }] };
-    expect((await session.agent.act(change)).ok).toBe(false);
+    const unconfirmedDensity = await session.agent.act(change);
+    expect(unconfirmedDensity.ok).toBe(false);
     expect(preference.get().value).toBe('comfortable');
     confirmed.mockReturnValue(true);
     await session.agent.act(change);
@@ -274,9 +275,10 @@ test('preferences preserve agent source, confirmation, cancellation, read-back, 
   } finally {
     session.dispose();
   }
-  expect(
-    (await session.agent.act({ steps: [{ ref: 'Agent density', action: 'setValue', args: ['compact'] }] })).ok
-  ).toBe(false);
+  const disposedDensity = await session.agent.act({
+    steps: [{ ref: 'Agent density', action: 'setValue', args: ['compact'] }],
+  });
+  expect(disposedDensity.ok).toBe(false);
 });
 
 test('explicit label targets preserve caller accessible names instead of replacing them', async () => {

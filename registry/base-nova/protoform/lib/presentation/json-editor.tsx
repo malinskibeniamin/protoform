@@ -39,20 +39,20 @@ const JSONEditor = ({ controls, value, onChange, error: externalError, label, on
   const generatedId = React.useId();
   const editorId = id ?? generatedId;
   const containerRef = useRef<HTMLDivElement>(null);
-  const lastPublishedText = useRef<string | undefined>(undefined);
-  const previousValue = useRef(value);
+  const lastPublishedTextRef = useRef<string | undefined>(undefined);
+  const previousValueRef = useRef(value);
 
   useEffect(
     function synchronizeEditor() {
-      if (previousValue.current === value) {
+      if (previousValueRef.current === value) {
         return;
       }
-      previousValue.current = value;
-      if (value !== lastPublishedText.current && value !== editorContent) {
+      previousValueRef.current = value;
+      if (value !== lastPublishedTextRef.current && value !== editorContent) {
         setEditorContent(value);
         setInternalError(undefined);
       }
-      lastPublishedText.current = undefined;
+      lastPublishedTextRef.current = undefined;
     },
     [value, editorContent]
   );
@@ -67,7 +67,7 @@ const JSONEditor = ({ controls, value, onChange, error: externalError, label, on
       setInternalError(`Invalid JSON. ${error instanceof Error ? error.message : 'Check the syntax.'}`);
       return;
     }
-    lastPublishedText.current = JSON.stringify(parsed, null, 2);
+    lastPublishedTextRef.current = JSON.stringify(parsed, null, 2);
     setInternalError(undefined);
     onChange(parsed);
   };

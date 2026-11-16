@@ -75,20 +75,20 @@ function JSONField({
 
   const [rawJSONValue, setRawJSONValue] = useState<string>(() => initialJSONText(value, schema, showPlaceholder));
 
-  const lastPublishedValue = useRef(value);
+  const lastPublishedValueRef = useRef(value);
 
   const publishValue = (parsed: JSONValue) => {
-    lastPublishedValue.current = parsed;
+    lastPublishedValueRef.current = parsed;
     onChange(parsed);
     setJSONError(undefined);
   };
 
   useEffect(
     function synchronizeExternalValue() {
-      if (Object.is(value, lastPublishedValue.current)) {
+      if (Object.is(value, lastPublishedValueRef.current)) {
         return;
       }
-      lastPublishedValue.current = value;
+      lastPublishedValueRef.current = value;
       setJSONError(undefined);
       setRawJSONValue(initialJSONText(value, schema, showPlaceholder));
     },
@@ -96,7 +96,7 @@ function JSONField({
   );
 
   const handleSwitchToFormMode = () => {
-    const invalidEditor = Array.from(containerRef.current?.querySelectorAll('textarea') ?? []).find(
+    const invalidEditor = [...(containerRef.current?.querySelectorAll('textarea') ?? [])].find(
       (textarea) => !textarea.checkValidity()
     );
     if (invalidEditor !== undefined) {

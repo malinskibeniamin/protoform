@@ -134,7 +134,7 @@ function Settings() {
 }
 
 export default function AgentWorkbench() {
-  const panel = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [confirmation, setConfirmation] = useState<Confirmation | null>(null);
   const [preview, setPreview] = useState<Preview | null>(null);
@@ -151,7 +151,7 @@ export default function AgentWorkbench() {
     const stopHistory = session.history.subscribe(() => setHistory(JSON.stringify(session.history.entries(), null, 2)));
     const stopObserve = observe(
       (change) => setActivity(JSON.stringify({ component: change.component, key: change.key, source: change.source })),
-      { within: () => panel.current }
+      { within: () => panelRef.current }
     );
     return () => {
       stopObserve();
@@ -162,9 +162,9 @@ export default function AgentWorkbench() {
   function enable() {
     const next = createAgentSession({
       allow: (step) =>
-        panel.current?.contains(elementOf(step.ref)) === true &&
+        panelRef.current?.contains(elementOf(step.ref)) === true &&
         ['setValue', 'setChecked', 'press'].includes(step.action),
-      history: { within: () => panel.current },
+      history: { within: () => panelRef.current },
       confirm: (step, { signal }) =>
         new Promise<boolean>((resolve) => {
           function finish(approved: boolean) {
@@ -242,7 +242,7 @@ export default function AgentWorkbench() {
       <p aria-label="Agent status" role="status">
         {agentStatus}
       </p>
-      <div ref={panel}>{session === null ? <p>Enable the bridge to mount the local example.</p> : <Settings />}</div>
+      <div ref={panelRef}>{session === null ? <p>Enable the bridge to mount the local example.</p> : <Settings />}</div>
       <section aria-label="Agent diagnostics" className="space-y-4" data-agent-hidden>
         <section aria-label="Tool result" className="space-y-2">
           <h2 className="text-sm font-medium">Tool result</h2>

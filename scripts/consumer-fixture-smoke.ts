@@ -418,12 +418,12 @@ async function assertHostInstalled() {
       'import { Card as SDKCard } from "./design-system/ui/sdk/card";',
       'import { useGroup as useBaseGroup } from "./design-system/ui/group";',
       'import { useGroup as useSDKGroup } from "./design-system/ui/sdk/group";',
-      'if (BaseCard !== SDKCard || useBaseGroup !== useSDKGroup) throw new Error("Foundations installed duplicate shared presentation implementations");',
       'import { shadcnHostComponents } from "./features/forms/auto-form/shadcn-host";',
       'import type { SchemaProvider } from "./domain/runtime/core";',
       'import { createAgent } from "./domain/runtime/ui-sdk/agent";',
       'import { createAgentSession } from "./domain/runtime/ui-sdk/session";',
       'import { renderToString } from "react-dom/server";',
+      'if (BaseCard !== SDKCard || useBaseGroup !== useSDKGroup) throw new Error("Foundations installed duplicate shared presentation implementations");',
       'const schema: SchemaProvider<{ title: string }> = { getDefaultValues: () => ({ title: "Host-owned UI" }), parseSchema: () => ({ fields: [{ key: "title", type: "string", required: true }] }), validateSchema: (values) => ({ data: values, success: true }) };',
       'if (typeof createAgent !== "function" || typeof createAgentSession !== "function") throw new Error("Missing opt-in SDK agent factories");',
       'const html = renderToString(<AutoForm components={uiSdkHostComponents} schema={schema} modes={["simple"]} showSummary={false} withSubmit />);',
@@ -511,13 +511,13 @@ async function assertTanStackInstalled() {
 
 async function assertOptionalAdapterInstalled(adapter: string) {
   const packageSchema = z.looseObject({ dependencies: z.record(z.string(), z.string()) });
-  const engines = [
+  const engines = new Set([
     'react-hook-form',
     'react-hook-form-v8',
     '@hookform/resolvers',
     '@tanstack/react-form',
     '@tanstack/react-form-v2',
-  ];
+  ]);
   await rm(adapterFixture, { force: true, recursive: true });
   await mkdir(adapterFixture, { recursive: true });
   await Promise.all(
@@ -541,7 +541,7 @@ async function assertOptionalAdapterInstalled(adapter: string) {
   await rm(join(adapterFixture, 'design-system/ui/sdk'), { recursive: true, force: true });
   const manifest = packageSchema.parse(JSON.parse(await readFile(join(hostFixture, 'package.json'), 'utf8')));
   manifest.dependencies = Object.fromEntries(
-    Object.entries(manifest.dependencies).filter(([name]) => !engines.includes(name))
+    Object.entries(manifest.dependencies).filter(([name]) => !engines.has(name))
   );
   await writeFile(join(adapterFixture, 'package.json'), JSON.stringify(manifest, null, 2));
   await $`bun install --cwd ${adapterFixture}`;

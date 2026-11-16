@@ -16,7 +16,7 @@ import { type ComponentProps, createContext, createElement, type ReactNode, useC
 import { withOptionSchema } from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/primitive-schema';
 
 const primitive = withOptionSchema(toastRegion);
-const Item = createContext<ToastData<ReactNode> | null>(null);
+const ToastItemContext = createContext<ToastData<ReactNode> | null>(null);
 export const Toast = ConnectedToast;
 export const ToastAction = ConnectedToastAction;
 export const ToastClose = ConnectedToastClose;
@@ -28,13 +28,13 @@ export function ToastRegion({ children, ...props }: ComponentProps<typeof Connec
   }
   const renderedProps: ComponentProps<typeof ConnectedRegion> = {
     ...props,
-    children: (data, item) => <Item value={data}>{children(data, item)}</Item>,
+    children: (data, item) => <ToastItemContext value={data}>{children(data, item)}</ToastItemContext>,
   };
   return createElement(ConnectedRegion, renderedProps);
 }
 type TextProps = ComponentProps<typeof ConnectedTitle> & { slot: 'title' | 'description' };
 function ToastText({ slot, ...props }: TextProps) {
-  const item = useContext(Item);
+  const item = useContext(ToastItemContext);
   if (item === null) {
     return createElement(slot === 'title' ? ConnectedTitle : ConnectedDescription, props);
   }

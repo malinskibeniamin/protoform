@@ -69,7 +69,8 @@ async function stop(child: ChildProcess) {
 
 async function isReady(url: string) {
   try {
-    return (await fetch(url, { signal: AbortSignal.timeout(500) })).ok;
+    const response1 = await fetch(url, { signal: AbortSignal.timeout(500) });
+    return response1.ok;
   } catch (error) {
     return { error };
   }

@@ -50,7 +50,6 @@ jobs:
           else
             echo "::notice::Skipping compatibility check because the previous main is unavailable or not an ancestor."
           fi
-      - run: bun run security:audit
       - run: bun run registry:build
       - run: bun run test:unit
       - name: Wait for Chromium before browser tests

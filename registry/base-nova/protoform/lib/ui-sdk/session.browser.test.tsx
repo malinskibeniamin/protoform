@@ -61,10 +61,12 @@ test('requires authorization and separate confirmation, exposes only declared ac
     expect(snapshot.find((entry) => entry.label === 'Hidden session note')).toBeUndefined();
     expect(snapshot.find((entry) => entry.label === 'Session secret')?.['value']).toBe('[redacted]');
     const change = () => session.agent.act({ steps: [{ ref: 'Session name', action: 'setValue', args: ['Atlas'] }] });
-    expect((await change()).ok).toBe(false);
+    const unauthorizedChange = await change();
+    expect(unauthorizedChange.ok).toBe(false);
     permit = true;
     await act(async () => {
-      expect((await change()).ok).toBe(true);
+      const authorizedChange = await change();
+      expect(authorizedChange.ok).toBe(true);
     });
     await expect.element(page.getByRole('textbox', { name: 'Session name' })).toHaveValue('Atlas');
     await act(async () => {
@@ -72,16 +74,14 @@ test('requires authorization and separate confirmation, exposes only declared ac
     });
     await expect.element(page.getByRole('textbox', { name: 'Session name' })).toHaveValue('Atlas');
     const confirm = () => session.agent.act({ steps: [{ ref: 'Apply local record', action: 'press' }] });
-    expect((await confirm()).ok).toBe(false);
+    const unconfirmedSave = await confirm();
+    expect(unconfirmedSave.ok).toBe(false);
     await expect.element(page.getByLabel('Local save count')).toHaveText('0');
     approve = true;
-    expect(
-      (
-        await session.agent.act({
-          steps: [{ ref: 'Apply local record', action: 'press', args: ['Apply local record'] }],
-        })
-      ).ok
-    ).toBe(true);
+    const confirmedSave = await session.agent.act({
+      steps: [{ ref: 'Apply local record', action: 'press', args: ['Apply local record'] }],
+    });
+    expect(confirmedSave.ok).toBe(true);
     await expect.element(page.getByLabel('Local save count')).toHaveText('1');
     await act(async () => {
       await session.agent.act({ steps: [{ ref: 'Session secret', action: 'setValue', args: ['replacement-secret'] }] });
@@ -91,7 +91,8 @@ test('requires authorization and separate confirmation, exposes only declared ac
     expect(observed.some((changeEvent) => changeEvent.source === 'agent')).toBe(true);
     const count = observed.length;
     session.dispose();
-    expect((await change()).ok).toBe(false);
+    const disposedChange = await change();
+    expect(disposedChange.ok).toBe(false);
     await page.getByRole('textbox', { name: 'Session name' }).fill('Human after disposal');
     expect(observed).toHaveLength(count);
   } finally {
@@ -107,9 +108,10 @@ for (const { Control, label, value } of [
     const session = createAgentSession({ allow: () => true });
     try {
       await render(<Control aria-label={label} defaultValue={value} readOnly required />);
-      expect((await session.agent.act({ steps: [{ ref: label, action: 'setValue', args: ['Agent edit'] }] })).ok).toBe(
-        false
-      );
+      const readOnlyChange = await session.agent.act({
+        steps: [{ ref: label, action: 'setValue', args: ['Agent edit'] }],
+      });
+      expect(readOnlyChange.ok).toBe(false);
       await expect.element(page.getByRole('textbox', { name: label })).toHaveValue(value);
       const entry = session.agent.snapshot().find((control) => control.label === label);
       expect(entry?.['disabled']).toBe(true);
@@ -175,7 +177,8 @@ test('disposal aborts pending permission without opening a later confirmation', 
     await requested.promise;
     session.dispose();
     granted.resolve(true);
-    expect((await pending).ok).toBe(false);
+    const pendingResult = await pending;
+    expect(pendingResult.ok).toBe(false);
     expect(confirmations).toBe(0);
     expect(session.signal.aborted).toBe(true);
     await expect.element(page.getByLabel('Local save count')).toHaveText('0');

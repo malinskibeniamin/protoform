@@ -404,30 +404,29 @@ test('owned controls preserve opt-in agent read-back, cancellation, confirmation
     expect(snapshot.some((entry) => entry.label === 'Private toggle')).toBe(false);
     expect(JSON.stringify(snapshot)).not.toContain('483920');
     await act(async () => {
-      expect(
-        (await session.agent.act({ steps: [{ ref: 'Agent delivery', action: 'setValue', args: ['express'] }] })).ok
-      ).toBe(true);
+      const deliveryResult = await session.agent.act({
+        steps: [{ ref: 'Agent delivery', action: 'setValue', args: ['express'] }],
+      });
+      expect(deliveryResult.ok).toBe(true);
     });
     await expect.element(page.getByRole('radio', { name: 'Agent standard' })).toHaveAttribute('aria-checked', 'true');
-    expect(
-      (await session.agent.act({ steps: [{ ref: 'Agent approval', action: 'setChecked', args: [true] }] })).ok
-    ).toBe(false);
+    const unconfirmedApproval = await session.agent.act({
+      steps: [{ ref: 'Agent approval', action: 'setChecked', args: [true] }],
+    });
+    expect(unconfirmedApproval.ok).toBe(false);
     await expect
       .element(page.getByRole('checkbox', { name: 'Agent approval' }))
       .toHaveAttribute('aria-checked', 'false');
     approved = true;
     await act(async () => {
-      expect(
-        (
-          await session.agent.act({
-            steps: [
-              { ref: 'Agent approval', action: 'setChecked', args: [true] },
-              { ref: 'Agent bold', action: 'setPressed', args: [true] },
-              { ref: 'Agent code', action: 'setValue', args: ['483921'] },
-            ],
-          })
-        ).ok
-      ).toBe(true);
+      const approvedChanges = await session.agent.act({
+        steps: [
+          { ref: 'Agent approval', action: 'setChecked', args: [true] },
+          { ref: 'Agent bold', action: 'setPressed', args: [true] },
+          { ref: 'Agent code', action: 'setValue', args: ['483921'] },
+        ],
+      });
+      expect(approvedChanges.ok).toBe(true);
     });
     await expect
       .element(page.getByRole('checkbox', { name: 'Agent approval' }))
@@ -444,9 +443,10 @@ test('owned controls preserve opt-in agent read-back, cancellation, confirmation
     await expect.element(page.getByRole('button', { name: 'Agent bold' })).toHaveAttribute('aria-pressed', 'false');
     await expect.element(page.getByRole('textbox', { name: 'Agent code' })).toHaveValue('483921');
     session.dispose();
-    expect((await session.agent.act({ steps: [{ ref: 'Agent bold', action: 'setPressed', args: [true] }] })).ok).toBe(
-      false
-    );
+    const disposedChange = await session.agent.act({
+      steps: [{ ref: 'Agent bold', action: 'setPressed', args: [true] }],
+    });
+    expect(disposedChange.ok).toBe(false);
   } finally {
     session.dispose();
   }

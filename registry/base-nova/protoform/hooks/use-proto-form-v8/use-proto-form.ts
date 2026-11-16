@@ -85,7 +85,7 @@ export function useProtoForm<Desc extends DescMessage>(
     serverPathPrefix !== undefined && serverPathPrefix !== ''
       ? [serverPathPrefix, ...serverPathPrefixes]
       : serverPathPrefixes;
-  const sourceMessage = useRef(isMessage(rest.defaultValues, schema) ? rest.defaultValues : undefined);
+  const sourceMessageRef = useRef(isMessage(rest.defaultValues, schema) ? rest.defaultValues : undefined);
   const normalizeValues = (values: unknown) =>
     isMessage(values, schema) ? protoToFormValues(schema, values) : (values as ProtoFormShape<Desc>);
   const suppliedDefaults = rest.defaultValues;
@@ -95,7 +95,7 @@ export function useProtoForm<Desc extends DescMessage>(
       ? async () => {
           const values = await suppliedDefaults();
           if (isMessage(values, schema)) {
-            sourceMessage.current = values;
+            sourceMessageRef.current = values;
           }
           return normalizeValues(values);
         }
@@ -103,7 +103,7 @@ export function useProtoForm<Desc extends DescMessage>(
 
   const resolver = createProtoResolver(schema, conversionOptions);
   const resolveValues: typeof resolver = (values, context, resolverOptions) =>
-    resolver(values, context, resolverOptions, sourceMessage.current);
+    resolver(values, context, resolverOptions, sourceMessageRef.current);
   const form = useForm({
     ...rest,
     defaultValues,
@@ -114,7 +114,7 @@ export function useProtoForm<Desc extends DescMessage>(
   const reset: UseProtoFormReturn<Desc>['reset'] = (values, keepStateOptions) => {
     const next = typeof values === 'function' ? values(form.getValues()) : values;
     if (isMessage(next, schema)) {
-      sourceMessage.current = next;
+      sourceMessageRef.current = next;
     }
     form.reset(next === undefined ? undefined : normalizeValues(next), keepStateOptions);
   };
@@ -124,7 +124,7 @@ export function useProtoForm<Desc extends DescMessage>(
   };
   const createMessage = (values?: ProtoFormShape<Desc>): MessageShape<Desc> => {
     const raw = values ?? form.getValues();
-    return formValuesToProto(schema, raw, sourceMessage.current, conversionOptions);
+    return formValuesToProto(schema, raw, sourceMessageRef.current, conversionOptions);
   };
 
   const createUpdateMask = (): FieldMask => createDirtyUpdateMask(schema, dirtyFields, form.getValues(), initialValues);

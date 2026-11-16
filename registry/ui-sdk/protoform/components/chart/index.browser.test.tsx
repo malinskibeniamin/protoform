@@ -21,7 +21,8 @@ test('uses the new legend position instead of the legacy alignment for content s
       </BarChart>
     </ChartContainer>
   );
-  const legend = (await screen.findByText('Requests')).parentElement;
+  const requestsLabel = await screen.findByText('Requests');
+  const legend = requestsLabel.parentElement;
   expect(legend).toHaveClass('pb-3');
   expect(legend).not.toHaveClass('pt-3');
 
@@ -51,7 +52,8 @@ test('uses the resolved vertical layout for a side legend', async () => {
       </BarChart>
     </ChartContainer>
   );
-  const legend = (await screen.findByText('Requests')).parentElement;
+  const requestsLabel = await screen.findByText('Requests');
+  const legend = requestsLabel.parentElement;
   expect(await screen.findByText('Responses')).toBeVisible();
   expect(legend).toHaveClass('flex-col');
   expect(legend).not.toHaveClass('pt-3', 'pb-3');

@@ -32,14 +32,15 @@ import {
 
 function field(schema: ReturnType<typeof parseProtoSchema>, key: string) {
   const match = schema.fields.find((candidate) => candidate.key === key);
-  if (!match) {
+  if (match === undefined) {
     throw new Error(`Missing ${key}.`);
   }
   return match;
 }
 
 async function issues(schema: DescMessage, values: Record<string, unknown>) {
-  return (await createProtoFormSchema(schema)['~standard'].validate(values)).issues;
+  const validationResult1 = await createProtoFormSchema(schema)['~standard'].validate(values);
+  return validationResult1.issues;
 }
 
 describe('aip workflow form conformance', () => {

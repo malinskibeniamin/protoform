@@ -22,18 +22,18 @@ import {
 import { createParts, usePart } from '@ui-sdk/react/primitive';
 import { type ComponentProps, createContext, createElement, useContext, useId } from 'react';
 import { definedProps } from '@/registry/base-nova/protoform/lib/sdk-props';
-import { PopupContainer, usePopupContainer } from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/portal';
+import { PopupContainerContext, usePopupContainer } from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/portal';
 import { withOptionSchema } from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/primitive-schema';
 
 const primitive = withOptionSchema(menu);
 const parts = createParts(primitive, { trigger: 'button', item: 'div', separator: 'div', shortcut: 'span' });
-const GroupId = createContext<string | null>(null);
+const GroupIdContext = createContext<string | null>(null);
 export function Menu({ container, children, ...props }: ComponentProps<typeof ConnectedMenu>) {
   const target = usePopupContainer(container);
   return (
-    <PopupContainer value={target}>
+    <PopupContainerContext value={target}>
       {createElement(ConnectedMenu, { ...props, container: target }, children)}
-    </PopupContainer>
+    </PopupContainerContext>
   );
 }
 export function MenuTrigger({ controller, ...props }: ComponentProps<typeof ControllerTrigger>) {
@@ -47,10 +47,10 @@ export const MenuShortcut = parts.Shortcut;
 export function MenuGroup(props: ComponentProps<typeof import('@ui-sdk/react/menu').MenuGroup>) {
   const id = useId();
   const group = usePart(primitive, 'group', { id }, props, 'div');
-  return <GroupId value={id}>{group}</GroupId>;
+  return <GroupIdContext value={id}>{group}</GroupIdContext>;
 }
 export function MenuGroupLabel(props: ComponentProps<typeof ConnectedGroupLabel>) {
-  const group = useContext(GroupId);
+  const group = useContext(GroupIdContext);
   return group === null
     ? createElement(ConnectedGroupLabel, props)
     : createElement(OwnedGroupLabel, { ...props, group });

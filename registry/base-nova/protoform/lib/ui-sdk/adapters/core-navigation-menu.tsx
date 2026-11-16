@@ -11,7 +11,7 @@ import { createParts } from '@ui-sdk/react/primitive';
 import { type ComponentProps, createElement } from 'react';
 import { definedProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import {
-  PopupContainer,
+  PopupContainerContext,
   PopupPortal,
   usePopupContainer,
 } from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/portal';
@@ -28,7 +28,9 @@ const parts = createParts(withOptionSchema(navigationMenu), {
 export function NavigationMenu<T extends string = string>(props: ComponentProps<typeof ConnectedRoot<T>>) {
   const target = usePopupContainer(props.container);
   return (
-    <PopupContainer value={target}>{createElement(ConnectedRoot<T>, { ...props, container: target })}</PopupContainer>
+    <PopupContainerContext value={target}>
+      {createElement(ConnectedRoot<T>, { ...props, container: target })}
+    </PopupContainerContext>
   );
 }
 export const NavigationMenuContent = ConnectedContent;

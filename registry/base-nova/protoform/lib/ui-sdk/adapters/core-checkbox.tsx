@@ -9,7 +9,7 @@ import { withOptionSchema } from '@/registry/base-nova/protoform/lib/ui-sdk/adap
 
 const primitive = withOptionSchema(checkbox);
 const parts = createParts(primitive, { indicator: 'span' });
-const GroupScope = createContext(false);
+const GroupScopeContext = createContext(false);
 type CheckboxProps = ComponentProps<typeof GroupCheckbox>;
 export function CheckboxGroup<T extends string = string>({
   children,
@@ -19,13 +19,13 @@ export function CheckboxGroup<T extends string = string>({
     ...props,
     children: (state) => {
       const content = typeof children === 'function' ? children(state) : children;
-      return <GroupScope value>{content}</GroupScope>;
+      return <GroupScopeContext value>{content}</GroupScopeContext>;
     },
   };
   return createElement(ConnectedCheckboxGroup<T>, renderedProps);
 }
 export function Checkbox(props: CheckboxProps) {
-  const grouped = useContext(GroupScope);
+  const grouped = useContext(GroupScopeContext);
   return grouped === true ? createElement(GroupCheckbox, props) : createElement(NativeCheckbox, props);
 }
 function NativeCheckbox({

@@ -55,7 +55,7 @@ function App() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
   const [submitted, setSubmitted] = useState('');
-  const finishAction = useRef<() => void>(() => undefined);
+  const finishActionRef = useRef<() => void>(() => undefined);
   const navigate = () => setNavigations((count) => count + 1);
   return (
     <main className="mx-auto max-w-xl space-y-6 p-6">
@@ -109,14 +109,14 @@ function App() {
         <Button
           onClick={() =>
             new Promise<void>((resolve) => {
-              finishAction.current = resolve;
+              finishActionRef.current = resolve;
             })
           }
           render={<RouterLink href="/pending" onNavigate={navigate} />}
         >
           Pending route
         </Button>
-        <Button onClick={() => finishAction.current()}>Finish action</Button>
+        <Button onClick={() => finishActionRef.current()}>Finish action</Button>
         <output aria-label="Route navigations">{navigations}</output>
       </section>
       <Dialog>

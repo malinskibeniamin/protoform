@@ -127,10 +127,10 @@ function TextareaInput({ onValueChange, onChange, ...props }: ProtoformUIProps['
     />
   );
 }
-const SelectionLabel = React.createContext<React.ReactNode>(undefined);
+const SelectionLabelContext = React.createContext<React.ReactNode>(undefined);
 function FormSelect({ children, disabled, items, onValueChange, value }: ProtoformUIProps['Select']) {
   return (
-    <SelectionLabel value={items.find((item) => item.value === value)?.label}>
+    <SelectionLabelContext value={items.find((item) => item.value === value)?.label}>
       <Select
         disabled={disabled ?? false}
         items={items.map((item) => ({ label: item.label, value: JSON.stringify(item.value) }))}
@@ -149,14 +149,14 @@ function FormSelect({ children, disabled, items, onValueChange, value }: Protofo
       >
         {children}
       </Select>
-    </SelectionLabel>
+    </SelectionLabelContext>
   );
 }
 function FormSelectItem({ value, ...props }: ProtoformUIProps['SelectItem']) {
   return <SelectItem {...props} value={JSON.stringify(value)} />;
 }
 function FormSelectValue({ children, placeholder, testId, ...props }: ProtoformUIProps['SelectValue']) {
-  const label = React.useContext(SelectionLabel);
+  const label = React.useContext(SelectionLabelContext);
   return (
     <div {...props} data-testid={testId ?? props['data-testid']}>
       <SelectValue placeholder={placeholder}>{label ?? children ?? placeholder}</SelectValue>

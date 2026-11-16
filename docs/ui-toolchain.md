@@ -3,24 +3,24 @@
 Run `bun run lint:fix` and `bun run type:check` before submitting changes. CI also runs component,
 conformance, browser, registry-consumer and documentation tests.
 
-## Reviewed versions (updated 2026-11-08)
+## Reviewed versions (updated 2026-11-16)
 
 | Tool            | Version             | Responsibility                                     |
 | --------------- | ------------------- | -------------------------------------------------- |
 | Bun             | 1.4.4               | Package manager; pinned across workflows           |
 | Blume           | 2.2.7               | Astro/MDX checking, builds and audits              |
-| Ultracite       | 8.1.1               | Shared conventions and safe edit hooks             |
-| Biome           | 2.6.6               | General linting and source formatting              |
-| Oxlint          | 1.92.0              | Additional syntax, import, promise and test checks |
-| oxlint-tsgolint | 7.0.2006            | Type-aware linting and compiler diagnostics        |
-| tsrs            | 0.23.0-ts7.1.0-beta | Rust-based strict source and test checking         |
-| Oxfmt           | 0.77.0              | Astro/Markdown/YAML formatting                     |
-| React Doctor    | 0.9.22              | Full warning-blocking component/design audit       |
+| Ultracite       | 8.2.1               | Shared conventions and safe edit hooks             |
+| Biome           | 2.6.8               | General linting and source formatting              |
+| Oxlint          | 1.94.0              | Additional syntax, import, promise and test checks |
+| oxlint-tsgolint | 7.0.2007            | Type-aware linting and compiler diagnostics        |
+| tsrs            | 0.25.0-ts7.1.0-beta | Rust-based strict source and test checking         |
+| Oxfmt           | 0.79.0              | Astro/Markdown/YAML formatting                     |
+| React Doctor    | 0.9.23              | Full warning-blocking component/design audit       |
 | React Scan      | 0.5.7               | Interactive profiling: `bun run scan:react`        |
 
 Source, test, and authored-file coverage checks use the exactly pinned Rust compiler, `tsrs`.
 This release targets TypeScript 7.1 beta and uses upstream checker defaults. It supports macOS
-arm64/x64, Linux x64/arm64 and Windows x64. The project uses the default checker mode, not `--fast`. TypeScript 6 remains for
+arm64/x64, Linux x64/arm64 and Windows x64/arm64. The project uses the default checker mode, not `--fast`. TypeScript 6 remains for
 synchronous AST APIs used by tooling, not for source/test typechecking. Blume retains its own
 Astro/MDX checker.
 
@@ -51,7 +51,7 @@ now detects a change missed by version 7. That comparator migration did not rege
 The subsequent dependency refresh updates eight owner-authorized, agent-reviewed text-rendering baselines only;
 dimensions, layout and zero-pixel tolerance remain unchanged. Capture details and hashes are in
 `docs/verification/macos-screenshot-provenance.json`.
-The registry source pins `react-resizable-panels@4.19.1` for copied consumers too;
+The registry source pins `react-resizable-panels@4.24.0` for copied consumers too;
 new Workspace APIs remain unused.
 
 The version-scoped `deepmerge@^4` override installs the exact npm alias
@@ -86,6 +86,25 @@ The current refresh supersedes these resolutions with compatible releases, inclu
 [Seroval injection advisory](https://github.com/advisories/GHSA-f86p-h4j2-7qgj) and
 [systeminformation command-injection advisory](https://github.com/advisories/GHSA-3f7j-7jwc-fxfj).
 
+The 2026-11-17 runtime/development refresh uses the latest stable npm tags for the 16 requested
+packages (Biome was already current), plus `tsrs` 0.25.0 on its existing TypeScript 7.1 beta track.
+[Oxlint 1.94.0](https://github.com/oxc-project/oxc/releases/tag/oxlint_v1.94.0) and
+[Oxfmt 0.79.0](https://github.com/oxc-project/oxc/releases/tag/oxfmt_v0.79.0) add safer fixes,
+more suggestions and Prettier 3.10.1 support. Installed rule catalogs contain no new IDs.
+The disabled-rule review enables four Biome and 19 Oxlint rules as errors without broadening
+any file exemptions. Parameter count is capped at seven to preserve existing callback contracts.
+Async form callbacks and default-handled protobuf enum values remain supported by the
+configured Promise/exhaustiveness checks. React refs and IDs use recognizable local names;
+named loop/await results preserve runtime behavior. React Doctor keeps shorthand true props,
+and named forwardRef render callbacks retain their debugging/display names.
+
+Oxlint's type-aware runner is explicitly `node_modules/.bin/tsrs-lint`; the separate source and
+test `tsrs --noEmit` checks remain in place. The installed stable-tag tsrs runner accepts the
+Boolean `checksConditionals` option, not Oxlint 1.94's new object-form `flagUnions` option.
+Do not enable that option until the stable tsrs runner supports it. Numeric CSS parsing,
+empty callback expressions, generic builder returns and compiler inference retain their
+existing contracts rather than accepting destructive autofixes.
+
 ## Formatting and edit hooks
 
 Biome owns JavaScript, TypeScript, JSON and CSS/SCSS formatting. Oxfmt owns Astro,
@@ -106,12 +125,12 @@ plus a valid edit that formats only its target. Run it with
 ## Rule decisions and coverage
 
 `lint:rules` compares installed Biome, Oxlint, shadcn and React Doctor catalogs with explicit decisions.
-New or removed rules fail until reviewed. Biome has 613 rules globally enabled as errors out of
-767 explicit decisions. The React, Astro, Playwright, TanStack and type-aware presets match
+New or removed rules fail until reviewed. Biome has 648 rules globally enabled as errors out of
+816 explicit decisions. The React, Astro, Playwright, TanStack and type-aware presets match
 this project's dependencies. React Native, Drizzle, Vue and Svelte presets are not installed.
 `.oxlintrc.jsonc` records all 872 Oxlint decisions,
-including nursery rules. Duplicate conventions have one owner: Oxlint's Boolean-cast fixer, for
-example, conflicts with Biome's strict mixed-union conditions.
+including nursery rules. Incompatible duplicate conventions retain one owner: Biome owns
+mixed/type-only import placement and lowercase hexadecimal digits.
 `prefer-return-this-type` is not safe for generic builders: an intersection silently erased the
 field registry's accumulated literal names. A compiler-contract regression protects that API.
 
@@ -121,8 +140,8 @@ The 2.6.3 review enables 19 of its 33 new rules, including Boolean sort comparat
 unsafe returns and TanStack Query rest destructuring. Two existing applicable rules also
 become errors: Playwright describe callbacks and scoped Astro styles. Positional Playwright
 selectors remain valid for ordered collection tests; underscore conventions and mandatory
-minimum animation durations add noise here. The loop-expression rule rejects readable
-nullish fallbacks, and `Iterator.zip` is not available in the project's Node 26 runtime.
+minimum animation durations add noise here. Loop expressions now use named inputs before iteration. `Iterator.zip` remains unavailable
+in the project's Node 26 runtime.
 Other disabled additions target frameworks the project does not use.
 
 ### Biome 2.6.4 additions
@@ -171,6 +190,38 @@ architecture-independent source consumers. No previously enforced rule is weaken
 Source adoption makes nullable conditions explicit without changing empty-string fallbacks,
 uses equivalent array predicates and Tailwind shorthand, and annotates the sequential server
 startup reducer's Promise accumulator. Registry copies are regenerated from authored source.
+
+### Biome 2.6.7–2.6.8 additions
+
+The installed schema adds 49 nursery rules across these two patches; 31 become errors.
+They cover invalid Fetch options, late `event.currentTarget` reads, deprecated Buffer
+construction, redundant types/spreads, invalid namespace imports, global regular expressions,
+mock assertions, package licenses and YAML structure. Every pre-upgrade rule decision and
+exception boundary is unchanged. Three conformance helpers now check `Array.find()` results
+explicitly against `undefined` to satisfy the updated type inference.
+
+The remaining 18 additions are explicitly off:
+
+- Ten target Drizzle, Vue or Svelte, which are not project runtimes.
+- `noDisabledAttribute` conflicts with intentional native disabled controls, which prevent
+  editing and submission rather than merely announcing an unavailable action.
+- `noExcessiveSelectorComplexity` and `noTailwindRestrictedClasses` require project-specific
+  limits/denylists that this upgrade does not introduce.
+- `useConsistentBooleanName` would impose new names on public protobuf/form contracts;
+  `useCalledWith` rejects intentional lifecycle call-count assertions.
+- `noYamlEmptyMapValues` rejects intentional YAML null values, including workflow event declarations.
+- `noMisusedSpread` incorrectly treats the JSON editor's `Array.isArray()`-narrowed,
+  subsequently reassigned array as a string inside React callbacks.
+- `useAtomicUpdates` does not recognize the QuickJS controller's revision guards/submission
+  lock or the screenshot poller's sequential updates. These are not unguarded stale writes.
+
+The release-hardening suite rejects invalid Fetch bodies, non-global `replaceAll()` regexes,
+late `currentTarget` access and empty YAML sequence entries, and accepts valid counterparts.
+The full source lint gate exercises the intentionally accepted cases above.
+
+Biome 2.6.8 improves flow narrowing, conditional types and overload selection. The faster
+suppression-free and Tailwind lint paths apply without configuration changes; this repository
+has not benchmarked the upstream performance claims. Markdown/YAML formatting remains with Oxfmt.
 
 ### Release hardening
 
@@ -229,6 +280,8 @@ required CI checks and review policy changes at the repository-hosting layer.
 
 ## Upstream evidence
 
+- [Biome 2.6.8 release notes](https://github.com/biomejs/biome/releases/tag/%40biomejs%2Fbiome%402.6.8)
+- [Biome 2.6.7 release notes](https://github.com/biomejs/biome/releases/tag/%40biomejs%2Fbiome%402.6.7)
 - [Biome 2.6.6 release notes](https://github.com/biomejs/biome/releases/tag/%40biomejs%2Fbiome%402.6.6)
 - [Biome 2.6.5 release notes](https://github.com/biomejs/biome/releases/tag/%40biomejs%2Fbiome%402.6.5)
 

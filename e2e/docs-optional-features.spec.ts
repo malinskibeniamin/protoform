@@ -24,13 +24,15 @@ test("links to each page's actual GitHub source and shows its update date", asyn
 
 test('exports the current page as PDF and a readable EPUB without a server', async ({ page }) => {
   await page.addInitScript(() => {
-    window.print = () => Reflect.set(window, '__protoformPrinted', true);
+    globalThis.window.print = () => Reflect.set(globalThis.window, '__protoformPrinted', true);
   });
   await page.goto('/docs/getting-started');
   await expect(page.locator('[data-blume-page-actions]')).toHaveScreenshot('key-free-page-actions.png');
   await page.getByText('Export', { exact: true }).click();
   await page.getByRole('button', { exact: true, name: 'Export to PDF' }).click();
-  await expect.poll(() => page.evaluate((): unknown => Reflect.get(window, '__protoformPrinted'))).toBe(true);
+  await expect
+    .poll(() => page.evaluate((): unknown => Reflect.get(globalThis.window, '__protoformPrinted')))
+    .toBe(true);
 
   const downloading = page.waitForEvent('download');
   await page.getByRole('button', { exact: true, name: 'Export to EPUB' }).click();
@@ -49,7 +51,7 @@ test('exports the current page as PDF and a readable EPUB without a server', asy
 for (const locale of ['en', 'zh', 'zh-TW', 'pl']) {
   test(`omits page narration in ${locale} even when browser voices are available @cross-browser`, async ({ page }) => {
     await page.addInitScript(() => {
-      Object.defineProperty(window, 'speechSynthesis', {
+      Object.defineProperty(globalThis.window, 'speechSynthesis', {
         value: {
           addEventListener: () => undefined,
           cancel: () => undefined,
@@ -66,7 +68,7 @@ for (const locale of ['en', 'zh', 'zh-TW', 'pl']) {
       });
     });
 
-    const localePrefix = locale === 'en' ? '' : locale.concat('/');
+    const localePrefix = locale === 'en' ? '' : `${locale}/`;
     await page.goto(`/docs/${localePrefix}getting-started`);
     await expect(page.locator('html')).toHaveAttribute('lang', locale);
     await expect(page.getByRole('main').getByRole('heading', { level: 1 })).toBeVisible();
@@ -131,7 +133,8 @@ test('generates all 18 API sample languages and updates samples from the request
   ]);
   const samples = request.getByRole('tabpanel', { includeHidden: true });
   await expect(samples).toHaveCount(18);
-  await Promise.all((await samples.all()).map((sample) => expect(sample).toContainText('CreateBook')));
+  const sampleElements1 = await samples.all();
+  await Promise.all(sampleElements1.map((sample) => expect(sample).toContainText('CreateBook')));
   await page.waitForFunction(() => customElements.get('blume-playground') !== undefined);
   await page.getByText('Try it', { exact: true }).click();
   await page

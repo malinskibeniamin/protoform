@@ -221,7 +221,7 @@ describe('required Protoform conformance', () => {
       },
       username: 'protoform_admin',
     });
-    expect(Array.from(result.value.avatarBytes)).toEqual([1, 2, 3, 4]);
+    expect([...result.value.avatarBytes]).toEqual([1, 2, 3, 4]);
   });
 
   test.each(requiredValidationCases)('returns form-shaped paths for $name failures', async ({ input, paths }) => {

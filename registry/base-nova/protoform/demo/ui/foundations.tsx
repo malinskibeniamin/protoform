@@ -38,27 +38,27 @@ export default function UIFoundationsExample() {
   const [session, setSession] = useState<Session | undefined>(undefined);
   const [status, setStatus] = useState('SDK disabled');
   const [snapshot, setSnapshot] = useState('');
-  const resource = useRef<Session | undefined>(undefined);
-  const enhancement = useRef<HTMLDivElement>(null);
-  useEffect(() => () => resource.current?.dispose(), []);
+  const resourceRef = useRef<Session | undefined>(undefined);
+  const enhancementRef = useRef<HTMLDivElement>(null);
+  useEffect(() => () => resourceRef.current?.dispose(), []);
   function enable() {
-    if (resource.current !== undefined) {
+    if (resourceRef.current !== undefined) {
       return;
     }
     const next = createAgentSession({
       allow: (step) =>
-        enhancement.current?.contains(elementOf(step.ref)) === true &&
+        enhancementRef.current?.contains(elementOf(step.ref)) === true &&
         step.action === 'setValue' &&
         step.confirm === undefined,
-      history: { within: () => enhancement.current },
+      history: { within: () => enhancementRef.current },
     });
-    resource.current = next;
+    resourceRef.current = next;
     setSession(next);
     setStatus('SDK enabled');
   }
   function stop() {
-    resource.current?.dispose();
-    resource.current = undefined;
+    resourceRef.current?.dispose();
+    resourceRef.current = undefined;
     setSession(undefined);
     setSnapshot('');
     setStatus('SDK stopped');
@@ -100,7 +100,7 @@ export default function UIFoundationsExample() {
             Stop SDK enhancement
           </Button>
         )}
-        <div ref={enhancement}>
+        <div ref={enhancementRef}>
           {session === undefined ? null : (
             <Rating aria-label="SDK rating" onValueChange={setScore} value={score}>
               {scores.map((value) => (

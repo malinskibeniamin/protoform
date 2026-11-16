@@ -317,12 +317,9 @@ const SLOTTABLE_IDENTIFIER = Symbol.for('protoform.slottable');
 
 type SlottableComponent = React.FC<{ children: React.ReactNode }> & { __slottableId: symbol };
 
-export const Slottable: SlottableComponent = Object.assign(
-  function renderSlottable({ children }: { children: React.ReactNode }) {
-    return children;
-  },
-  { __slottableId: SLOTTABLE_IDENTIFIER }
-);
+export const Slottable: SlottableComponent = Object.assign(({ children }: { children: React.ReactNode }) => children, {
+  __slottableId: SLOTTABLE_IDENTIFIER,
+});
 Slottable.displayName = 'Slottable';
 
 function isSlottable(child: React.ReactNode): child is React.ReactElement<{ children: React.ReactNode }> {

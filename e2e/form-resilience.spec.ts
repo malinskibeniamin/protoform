@@ -76,12 +76,10 @@ for (const theme of ['light', 'dark']) {
         context.fillRect(0, 0, 1, 1);
       }
       const luminance = () => {
-        const rgb = Array.from(context.getImageData(0, 0, 1, 1).data)
-          .slice(0, 3)
-          .map((channel) => {
-            const value = channel / 255;
-            return value <= 4.045e-2 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
-          });
+        const rgb = [...context.getImageData(0, 0, 1, 1).data].slice(0, 3).map((channel) => {
+          const value = channel / 255;
+          return value <= 4.045e-2 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+        });
         return 0.2126 * (rgb[0] ?? 0) + 0.7152 * (rgb[1] ?? 0) + 0.0722 * (rgb[2] ?? 0);
       };
       const background = luminance();
@@ -135,7 +133,8 @@ test('uses the form container rather than viewport for nested layouts @cross-bro
     form.style.width = '320px';
     form.style.maxWidth = '100%';
   });
-  expect((await cidr.boundingBox())?.width).toBeGreaterThanOrEqual(180);
+  const bounds1 = await cidr.boundingBox();
+  expect(bounds1?.width).toBeGreaterThanOrEqual(180);
   await cidr.fill('10.0.0.0/8');
   await expect(cidr).toHaveValue('10.0.0.0/8');
 });

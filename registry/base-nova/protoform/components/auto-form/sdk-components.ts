@@ -12,6 +12,7 @@ import { KeyValueField } from '@/components/ui/sdk/key-value-field/index';
 import { SimpleMultiSelect } from '@/components/ui/sdk/multi-select/index';
 import type { ProtoformUIComponentMap } from './ui-component-map';
 import { uiSdkHostComponents } from './ui-sdk-host';
+
 export const uiSdkComponents = {
   ...uiSdkHostComponents,
   Combobox: OptionCombobox,

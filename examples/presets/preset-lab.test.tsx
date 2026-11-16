@@ -12,7 +12,7 @@ const submitPattern = /submit/iu;
 
 describe('presetLab', () => {
   beforeEach(() => {
-    window.history.replaceState({}, '', '/docs/presets');
+    globalThis.window.history.replaceState({}, '', '/docs/presets');
     document.documentElement.dataset['theme'] = 'light';
     localStorage.setItem('blume-theme', 'light');
     Object.defineProperty(document, 'fullscreenElement', {
@@ -53,7 +53,7 @@ describe('presetLab', () => {
     await waitFor(() => {
       expect(screen.getByRole('button', { name: 'Dark preview' })).toHaveAttribute('aria-pressed', 'true');
       expect(screen.getByTestId('preset-preview')).toHaveClass('dark');
-      expect(new URL(window.location.href).searchParams.get('mode')).toBe('dark');
+      expect(new URL(globalThis.window.location.href).searchParams.get('mode')).toBe('dark');
     });
   });
 
@@ -122,9 +122,9 @@ describe('presetLab', () => {
       '--selected: oklch(0.488 0.243 264.376); --selection: oklch(0.488 0.243 264.376)'
     );
     await waitFor(() => {
-      expect(new URL(window.location.href).searchParams.get('preset')).toBeTruthy();
+      expect(new URL(globalThis.window.location.href).searchParams.get('preset')).toBeTruthy();
     });
-    const sharedPreset = new URL(window.location.href).searchParams.get('preset');
+    const sharedPreset = new URL(globalThis.window.location.href).searchParams.get('preset');
     expect(sharedPreset).toBe('b1YmqvjO4');
     expect(screen.getByRole('link', { name: 'Open in shadcn/create' })).toHaveAttribute(
       'href',
@@ -141,7 +141,7 @@ describe('presetLab', () => {
 
     expect(screen.getByTestId('preset-preview')).toHaveClass('dark');
     expect(screen.getByTestId('preset-preview')).toHaveStyle('--background: oklch(0.145 0 0)');
-    expect(new URL(window.location.href).searchParams.get('mode')).toBe('dark');
+    expect(new URL(globalThis.window.location.href).searchParams.get('mode')).toBe('dark');
 
     const ids = [...document.querySelectorAll('[id]')].map((element) => element.id);
     expect(new Set(ids).size).toBe(ids.length);
@@ -225,7 +225,7 @@ describe('presetLab', () => {
   test('reports invalid shared presets and clipboard failures', async () => {
     const supportedCode = buildPresetCode(defaultPreset, defaultRadius);
     const noncanonicalCode = `${supportedCode[0]}0${supportedCode.slice(1)}`;
-    window.history.replaceState({}, '', `/docs/presets?preset=${noncanonicalCode}&mode=night`);
+    globalThis.window.history.replaceState({}, '', `/docs/presets?preset=${noncanonicalCode}&mode=night`);
     const user = userEvent.setup();
     Object.defineProperty(navigator, 'clipboard', {
       configurable: true,
@@ -245,7 +245,7 @@ describe('presetLab', () => {
 
   test('preserves a supported preset when only the shared mode is invalid', () => {
     const presetCode = buildPresetCode(defaultPreset, defaultRadius);
-    window.history.replaceState({}, '', `/docs/presets?preset=${presetCode}&mode=night`);
+    globalThis.window.history.replaceState({}, '', `/docs/presets?preset=${presetCode}&mode=night`);
 
     render(<PresetLab />);
 
