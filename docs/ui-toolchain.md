@@ -3,14 +3,14 @@
 Run `bun run lint:fix` and `bun run type:check` before submitting changes. CI also runs component,
 conformance, browser, registry-consumer and documentation tests.
 
-## Reviewed versions (updated 2026-11-08)
+## Reviewed versions (updated 2026-11-16)
 
 | Tool            | Version             | Responsibility                                     |
 | --------------- | ------------------- | -------------------------------------------------- |
 | Bun             | 1.4.4               | Package manager; pinned across workflows           |
 | Blume           | 2.2.7               | Astro/MDX checking, builds and audits              |
 | Ultracite       | 8.1.1               | Shared conventions and safe edit hooks             |
-| Biome           | 2.6.6               | General linting and source formatting              |
+| Biome           | 2.6.8               | General linting and source formatting              |
 | Oxlint          | 1.92.0              | Additional syntax, import, promise and test checks |
 | oxlint-tsgolint | 7.0.2006            | Type-aware linting and compiler diagnostics        |
 | tsrs            | 0.23.0-ts7.1.0-beta | Rust-based strict source and test checking         |
@@ -106,8 +106,8 @@ plus a valid edit that formats only its target. Run it with
 ## Rule decisions and coverage
 
 `lint:rules` compares installed Biome, Oxlint, shadcn and React Doctor catalogs with explicit decisions.
-New or removed rules fail until reviewed. Biome has 613 rules globally enabled as errors out of
-767 explicit decisions. The React, Astro, Playwright, TanStack and type-aware presets match
+New or removed rules fail until reviewed. Biome has 644 rules globally enabled as errors out of
+816 explicit decisions. The React, Astro, Playwright, TanStack and type-aware presets match
 this project's dependencies. React Native, Drizzle, Vue and Svelte presets are not installed.
 `.oxlintrc.jsonc` records all 872 Oxlint decisions,
 including nursery rules. Duplicate conventions have one owner: Oxlint's Boolean-cast fixer, for
@@ -172,6 +172,38 @@ Source adoption makes nullable conditions explicit without changing empty-string
 uses equivalent array predicates and Tailwind shorthand, and annotates the sequential server
 startup reducer's Promise accumulator. Registry copies are regenerated from authored source.
 
+### Biome 2.6.7–2.6.8 additions
+
+The installed schema adds 49 nursery rules across these two patches; 31 become errors.
+They cover invalid Fetch options, late `event.currentTarget` reads, deprecated Buffer
+construction, redundant types/spreads, invalid namespace imports, global regular expressions,
+mock assertions, package licenses and YAML structure. Every pre-upgrade rule decision and
+exception boundary is unchanged. Three conformance helpers now check `Array.find()` results
+explicitly against `undefined` to satisfy the updated type inference.
+
+The remaining 18 additions are explicitly off:
+
+- Ten target Drizzle, Vue or Svelte, which are not project runtimes.
+- `noDisabledAttribute` conflicts with intentional native disabled controls, which prevent
+  editing and submission rather than merely announcing an unavailable action.
+- `noExcessiveSelectorComplexity` and `noTailwindRestrictedClasses` require project-specific
+  limits/denylists that this upgrade does not introduce.
+- `useConsistentBooleanName` would impose new names on public protobuf/form contracts;
+  `useCalledWith` rejects intentional lifecycle call-count assertions.
+- `noYamlEmptyMapValues` rejects intentional YAML null values, including workflow event declarations.
+- `noMisusedSpread` incorrectly treats the JSON editor's `Array.isArray()`-narrowed,
+  subsequently reassigned array as a string inside React callbacks.
+- `useAtomicUpdates` does not recognize the QuickJS controller's revision guards/submission
+  lock or the screenshot poller's sequential updates. These are not unguarded stale writes.
+
+The release-hardening suite rejects invalid Fetch bodies, non-global `replaceAll()` regexes,
+late `currentTarget` access and empty YAML sequence entries, and accepts valid counterparts.
+The full source lint gate exercises the intentionally accepted cases above.
+
+Biome 2.6.8 improves flow narrowing, conditional types and overload selection. The faster
+suppression-free and Tailwind lint paths apply without configuration changes; this repository
+has not benchmarked the upstream performance claims. Markdown/YAML formatting remains with Oxfmt.
+
 ### Release hardening
 
 Additional compatible checks now enforce:
@@ -229,6 +261,8 @@ required CI checks and review policy changes at the repository-hosting layer.
 
 ## Upstream evidence
 
+- [Biome 2.6.8 release notes](https://github.com/biomejs/biome/releases/tag/%40biomejs%2Fbiome%402.6.8)
+- [Biome 2.6.7 release notes](https://github.com/biomejs/biome/releases/tag/%40biomejs%2Fbiome%402.6.7)
 - [Biome 2.6.6 release notes](https://github.com/biomejs/biome/releases/tag/%40biomejs%2Fbiome%402.6.6)
 - [Biome 2.6.5 release notes](https://github.com/biomejs/biome/releases/tag/%40biomejs%2Fbiome%402.6.5)
 

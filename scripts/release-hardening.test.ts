@@ -166,6 +166,36 @@ export function safeNarrow(value: unknown) {
 
 test.each([
   {
+    path: 'scripts/biome-patch-probe.ts',
+    group: 'nursery',
+    rule: 'noInvalidFetchOptions',
+    invalid: "export const request = new Request('/api', { method: 'GET', body: 'payload' });",
+    valid: "export const request = new Request('/api', { method: 'POST', body: 'payload' });",
+  },
+  {
+    path: 'scripts/biome-patch-probe.ts',
+    group: 'nursery',
+    rule: 'useGlobalRegexInReplaceAll',
+    invalid: "export function normalize(value: string) { return value.replaceAll(/x/, 'y'); }",
+    valid: "export function normalize(value: string) { return value.replaceAll(/x/g, 'y'); }",
+  },
+  {
+    path: 'components/biome-patch-probe.tsx',
+    group: 'nursery',
+    rule: 'noLateCurrentTargetAccess',
+    invalid:
+      "export function listen(element: HTMLElement) { element.addEventListener('click', async (event) => { await Promise.resolve(); console.log(event.currentTarget); }); }",
+    valid:
+      "export function listen(element: HTMLElement) { element.addEventListener('click', async (event) => { const target = event.currentTarget; await Promise.resolve(); console.log(target); }); }",
+  },
+  {
+    path: '.github/workflows/biome-patch-probe.yml',
+    group: 'nursery',
+    rule: 'noYamlEmptySequenceEntries',
+    invalid: 'branches:\n  - main\n  -\n',
+    valid: 'branches:\n  - main\n  - release\n',
+  },
+  {
     path: 'components/docs/release-probe.astro',
     group: 'nursery',
     rule: 'useAstroClientOnlyDirectiveValue',
