@@ -260,6 +260,7 @@ export default defineConfig({
     'react-doctor/forbid-elements': 'error',
     'react-doctor/form-control-requires-name': 'error',
     'react-doctor/forward-ref-uses-ref': 'error',
+    'react-doctor/forwarded-set-state-in-effect': 'error',
     'react-doctor/git-provider-url-injection-risk': 'error',
     'react-doctor/heading-has-content': 'error',
     'react-doctor/hook-import-rename-loses-use-prefix': 'error',

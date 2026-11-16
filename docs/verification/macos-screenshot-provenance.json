@@ -115,5 +115,68 @@
         "sha256": "838b2eb7656e9035e8c9874ab7955928289f44dc2354d7a81fd8e25403578420"
       }
     ]
+  },
+  "dependency_refresh": {
+    "date": "2026-11-08",
+    "base_revision": "74cac6678b0af36bd8753a14cb5856b8a3386d37",
+    "capture": "Local owner-authorized rendering-only refresh on the dependency-upgrade worktree; earlier capture records above remain historical.",
+    "os": "ProductName:\t\tmacOS\nProductVersion:\t\t26.7.2\nBuildVersion:\t\t25G332",
+    "kernel_release": "25.6.0",
+    "architecture": "arm64",
+    "node": "v26.13.0",
+    "bun": "1.4.4",
+    "playwright": "1.65.0",
+    "tailwindcss": "4.3.5",
+    "review": "Unchanged dimensions and layout; each image differs by 1–7 comparator pixels, localized to text. Prior Chromium 156 and Tailwind 4.3.3 also reproduced the remaining text differences. Zero-pixel tolerance and threshold 0.2 are unchanged.",
+    "files": [
+      {
+        "path": "scripts/__screenshots__/reliability-consumer.browser.spec.ts/desktop/darwin-25-arm64/reliability-errors.png",
+        "previous_sha256": "4ded620351ef019e9ad45cf6a26d530d4efe120ff63faa2f69b78c42cb45f287",
+        "sha256": "6036bf55ae846d5238d9b7ecab22ab223a9529d9ce5d77f0b5963e3521cd48e4",
+        "different_pixels": 1
+      },
+      {
+        "path": "scripts/__screenshots__/reliability-consumer.browser.spec.ts/desktop/darwin/native-defaults-v7.png",
+        "previous_sha256": "e23d3c9eb205e1c5177d60a3670378fe3dffc3a308057806d26c9018f8fd20e1",
+        "sha256": "29f42ac6c115b6b52b6e966526f83b7d912808a4130cc87d454e7547b604943e",
+        "different_pixels": 7
+      },
+      {
+        "path": "scripts/__screenshots__/reliability-consumer.browser.spec.ts/desktop/darwin/native-defaults-v8.png",
+        "previous_sha256": "7378b19808d18c8e874810702af7fa7b6de2e5bcd5f224289e7075abd1e9fe41",
+        "sha256": "92f19c1ae0f12a138b0916b5dff7a2d153d7955000a728da49e9c45c8416e6dc",
+        "different_pixels": 7
+      },
+      {
+        "path": "scripts/__screenshots__/reliability-consumer.browser.spec.ts/desktop/darwin/reliability-errors.png",
+        "previous_sha256": "4ded620351ef019e9ad45cf6a26d530d4efe120ff63faa2f69b78c42cb45f287",
+        "sha256": "6036bf55ae846d5238d9b7ecab22ab223a9529d9ce5d77f0b5963e3521cd48e4",
+        "different_pixels": 1
+      },
+      {
+        "path": "scripts/__screenshots__/reliability-consumer.browser.spec.ts/mobile/darwin-25-arm64/reliability-errors.png",
+        "previous_sha256": "336c0565628aae24b23426ddf315d5a3a794e3178a6ea156714be0e7c2cb6c30",
+        "sha256": "e8ddfe49addcd9a9e4edef04567ae90f104fe624d206ffae9f2bcf06978acfdd",
+        "different_pixels": 1
+      },
+      {
+        "path": "scripts/__screenshots__/reliability-consumer.browser.spec.ts/mobile/darwin/native-defaults-v7.png",
+        "previous_sha256": "e2111ef23e9cd9bf351c3bb0b7ca70f2cb4f08e874f3a377ff322a08b91d6684",
+        "sha256": "fce873b3c5ede1eda095d2fcafc9fa2ed92f58e14b2aa9cda16af38647fe2d18",
+        "different_pixels": 6
+      },
+      {
+        "path": "scripts/__screenshots__/reliability-consumer.browser.spec.ts/mobile/darwin/native-defaults-v8.png",
+        "previous_sha256": "0b6912cffc1a1059bb85b2d6d1325b05e429b2bfe67d14f6903622fee5041d9e",
+        "sha256": "db66f1c69ac00f51c2c6ad1c046517458849f2171e619585df1f220215f08746",
+        "different_pixels": 6
+      },
+      {
+        "path": "scripts/__screenshots__/reliability-consumer.browser.spec.ts/mobile/darwin/reliability-errors.png",
+        "previous_sha256": "336c0565628aae24b23426ddf315d5a3a794e3178a6ea156714be0e7c2cb6c30",
+        "sha256": "e8ddfe49addcd9a9e4edef04567ae90f104fe624d206ffae9f2bcf06978acfdd",
+        "different_pixels": 1
+      }
+    ]
   }
 }

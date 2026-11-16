@@ -1,4 +1,4 @@
-import { auditExceptions, classifyAudit } from './security-audit-policy';
+import { type AuditException, classifyAudit } from './security-audit-policy';
 
 declare const { expect, test }: typeof import('bun:test');
 
@@ -12,6 +12,10 @@ const sprintfAdvisory = {
   severity: 'moderate' as const,
   title: 'sprintf-js vulnerable to denial of service through unbounded precision specifiers',
 };
+const fixtureExceptions: AuditException[] = [
+  { package: 'braces', url: advisory.url, expires: '2026-11-04', reason: 'Test-only exception' },
+  { package: 'sprintf-js', url: sprintfAdvisory.url, expires: '2026-11-04', reason: 'Test-only exception' },
+];
 for (const finding of [
   { package: 'braces', advisory },
   { package: 'sprintf-js', advisory: sprintfAdvisory },
@@ -19,12 +23,12 @@ for (const finding of [
   test(`temporarily permits the approved ${finding.package} advisory, but blocks it at and after expiry`, () => {
     const response = { [finding.package]: [finding.advisory] };
     const expectedFinding = { ...finding.advisory, package: finding.package };
-    expect(classifyAudit(response, auditExceptions, new Date('2026-11-03T23:59:59.999Z'))).toEqual({
+    expect(classifyAudit(response, fixtureExceptions, new Date('2026-11-03T23:59:59.999Z'))).toEqual({
       blocking: [],
       excepted: [expectedFinding],
     });
     for (const deadline of ['2026-11-04T00:00:00.000Z', '2026-11-05T00:00:00.000Z']) {
-      expect(classifyAudit(response, auditExceptions, new Date(deadline))).toEqual({
+      expect(classifyAudit(response, fixtureExceptions, new Date(deadline))).toEqual({
         blocking: [expectedFinding],
         excepted: [],
       });
@@ -35,7 +39,7 @@ test('does not extend approved exceptions to another package or advisory', () =>
   expect(
     classifyAudit(
       { 'sprintf-js': [sprintfAdvisory, advisory], braces: [sprintfAdvisory] },
-      auditExceptions,
+      fixtureExceptions,
       new Date('2026-10-06')
     )
   ).toEqual({

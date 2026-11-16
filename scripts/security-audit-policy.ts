@@ -18,21 +18,7 @@ export interface AuditException {
   url: string;
 }
 
-export const auditExceptions: AuditException[] = [
-  {
-    package: 'braces',
-    url: 'https://github.com/advisories/GHSA-vfj7-8cjw-p6xm',
-    expires: '2026-11-04',
-    reason: 'Maintainer-approved temporary exception for transitive registry/lint tooling; no published upstream fix.',
-  },
-  {
-    package: 'sprintf-js',
-    url: 'https://github.com/advisories/GHSA-hp3w-g68c-fv3c',
-    expires: '2026-11-04',
-    reason:
-      'Maintainer-approved temporary exception for transitive Blume frontmatter tooling; no published upstream fix.',
-  },
-];
+export const auditExceptions: AuditException[] = [];
 
 export function classifyAudit(response: unknown, exceptions: readonly AuditException[], now: Date) {
   const findings = Object.entries(auditSchema.parse(response)).flatMap(([name, advisories]) =>

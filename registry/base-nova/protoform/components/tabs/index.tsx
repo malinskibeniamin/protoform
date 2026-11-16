@@ -353,7 +353,7 @@ function TabsTrigger({ className, value, variant, testId, disabled, render, ...p
       disabled={disabled}
       nativeButton={nativeButton}
       render={renderTabWithActiveState('button', render)}
-      value={value}
+      value={attributeValue}
       {...props}
     />
   );
