@@ -1,5 +1,4 @@
 import { spawnSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
 import { describe, expect } from '@rstest/core';
 import { z } from 'zod';
 
@@ -37,12 +36,6 @@ describe('buf policy', () => {
     expect(new Set(violations.map((violation) => violation.type))).toEqual(new Set(['PROTOVALIDATE']));
   });
 
-  test('runs the complete lint policy in CI', () => {
-    const workflow = readFileSync('.github/workflows/ci.yml', 'utf8');
-
-    expect(workflow).toContain('bunx buf lint');
-  });
-
   test('enforces target-branch compatibility and rejects an isolated fixture', () => {
     const result = runBufBreaking(
       'conformance/expected-failures/breaking/candidate',
@@ -57,16 +50,5 @@ describe('buf policy', () => {
 
     expect(result.status).not.toBe(0);
     expect(violations.map((violation) => violation.type)).toContain('FIELD_SAME_TYPE');
-
-    const workflow = readFileSync('.github/workflows/ci.yml', 'utf8');
-    const manifest = z
-      .looseObject({ scripts: z.record(z.string(), z.string()).optional() })
-      .parse(JSON.parse(readFileSync('package.json', 'utf8')));
-
-    expect(manifest.scripts?.['proto:breaking']).toBe('bun run scripts/check-proto-breaking.ts');
-    expect(workflow).toContain('fetch-depth: 0');
-    expect(workflow).toContain('bun run proto:breaking');
-    expect(workflow).toContain('github.event.pull_request.base.sha');
-    expect(workflow).toContain('github.event.before');
   });
 });

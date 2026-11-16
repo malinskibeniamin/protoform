@@ -366,7 +366,7 @@ async function assertHostInstalled() {
     'import { clsx, type ClassValue } from "clsx";\nimport { twMerge } from "tailwind-merge";\nexport function cn(...inputs: ClassValue[]) { return twMerge(clsx(inputs)); }\n'
   );
   await $`bun install --cwd ${hostFixture}`;
-  await $`bun add --cwd ${hostFixture} clsx tailwind-merge tailwindcss@4.3.3 @tailwindcss/vite@4.3.3`;
+  await $`bun add --cwd ${hostFixture} clsx tailwind-merge tailwindcss@4.3.5 @tailwindcss/vite@4.3.5`;
   await cp('scripts/fixtures/host-theme.css', join(hostFixture, 'app/globals.css'));
   await $`bunx --no-install shadcn add @host/protoform-shadcn-tanstack --cwd ${hostFixture} --yes`;
   const baseUIPaths = [
@@ -486,7 +486,7 @@ async function assertTanStackInstalled() {
     join(tanstackFixture, 'chart-browser.tsx'),
     chartSource.replaceAll('@/components/ui/sdk/', './components/ui/sdk/')
   );
-  await $`bun add --cwd ${tanstackFixture} tailwindcss@4.3.3 @tailwindcss/vite@4.3.3`;
+  await $`bun add --cwd ${tanstackFixture} tailwindcss@4.3.5 @tailwindcss/vite@4.3.5`;
   const theme = await readFile(join(root, 'scripts/fixtures/host-theme.css'), 'utf8');
   await writeFile(
     join(tanstackFixture, 'app/globals.css'),
@@ -659,7 +659,7 @@ try {
     await $`bunx --no-install shadcn add @protoform/auto-form-tanstack --cwd ${fixture} --yes --overwrite`;
     await $`bunx --no-install shadcn add @protoform/auto-form-tanstack-v2 --cwd ${fixture} --yes --overwrite`;
     await assertInstalled();
-    await $`bun add --cwd ${fixture} tailwindcss@4.3.3 @tailwindcss/vite@4.3.3`;
+    await $`bun add --cwd ${fixture} tailwindcss@4.3.5 @tailwindcss/vite@4.3.5`;
     const browserSource = await readFile(join(root, 'scripts/fixtures/reliability-browser.tsx'), 'utf8');
     await writeFile(
       join(fixture, 'reliability-browser.tsx'),
