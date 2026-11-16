@@ -9,8 +9,8 @@ import {
 } from '@ui-sdk/react/tooltip';
 
 import type React from 'react';
+import { stateClassName } from '@/components/ui/shared/state-class-name';
 import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
-import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
 const Tooltip = SDKTooltip;
@@ -26,7 +26,7 @@ function TooltipArrow({
   return (
     <SDKTooltipArrow
       {...definedProps(props)}
-      className={(state) => cn('fill-foreground', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('fill-foreground', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -45,13 +45,13 @@ function TooltipContent({
   return (
     <SDKTooltipContent
       {...definedProps(props)}
-      className={(state) =>
-        cn(
+      className={stateClassName(
+        [
           'z-50 max-w-xs rounded-md px-3 py-1.5 text-xs shadow-md',
           variant === 'detail' ? 'bg-tooltip-detail text-tooltip-detail-foreground' : 'bg-foreground text-background',
-          typeof className === 'function' ? className(state) : className
-        )
-      }
+        ],
+        className
+      )}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -70,7 +70,7 @@ function TooltipShortcut({
   return (
     <SDKTooltipShortcut
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -89,7 +89,7 @@ function TooltipTrigger({
   return (
     <SDKTooltipTrigger
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}

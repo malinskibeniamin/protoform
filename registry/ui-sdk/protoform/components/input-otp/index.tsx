@@ -1,6 +1,7 @@
 'use client';
 
 import type React from 'react';
+import { stateClassName } from '@/components/ui/shared/state-class-name';
 import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import {
   OTPInput as SDKOTPInput,
@@ -8,7 +9,6 @@ import {
   OTPInputSeparator as SDKOTPInputSeparator,
   OTPInputSlot as SDKOTPInputSlot,
 } from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-otp-input';
-import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
 function OTPInput({
@@ -22,9 +22,7 @@ function OTPInput({
   return (
     <SDKOTPInput
       {...definedProps(props)}
-      className={(state) =>
-        cn('flex min-w-0 items-center gap-2', typeof className === 'function' ? className(state) : className)
-      }
+      className={stateClassName('flex min-w-0 items-center gap-2', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -43,9 +41,7 @@ function OTPInputGroup({
   return (
     <SDKOTPInputGroup
       {...definedProps(props)}
-      className={(state) =>
-        cn('flex min-w-0 items-center', typeof className === 'function' ? className(state) : className)
-      }
+      className={stateClassName('flex min-w-0 items-center', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -65,9 +61,7 @@ function OTPInputSeparator({
   return (
     <SDKOTPInputSeparator
       {...definedProps(props)}
-      className={(state) =>
-        cn('px-1 text-muted-foreground', typeof className === 'function' ? className(state) : className)
-      }
+      className={stateClassName('px-1 text-muted-foreground', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -88,12 +82,10 @@ function OTPInputSlot({
   return (
     <SDKOTPInputSlot
       {...definedProps(props)}
-      className={(state) =>
-        cn(
-          'relative flex size-8 min-w-0 items-center justify-center border border-input text-sm first:rounded-l-md last:rounded-r-md data-active:ring-2 data-active:ring-ring',
-          typeof className === 'function' ? className(state) : className
-        )
-      }
+      className={stateClassName(
+        'relative flex size-8 min-w-0 items-center justify-center border border-input text-sm first:rounded-l-md last:rounded-r-md data-active:ring-2 data-active:ring-ring',
+        className
+      )}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}

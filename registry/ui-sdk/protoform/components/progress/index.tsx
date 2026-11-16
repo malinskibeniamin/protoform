@@ -1,6 +1,7 @@
 'use client';
 
 import type React from 'react';
+import { stateClassName } from '@/components/ui/shared/state-class-name';
 import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import {
   Progress as SDKProgress,
@@ -9,7 +10,6 @@ import {
   ProgressTrack as SDKProgressTrack,
   ProgressValue as SDKProgressValue,
 } from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-progress';
-import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
 function Progress({
@@ -23,9 +23,7 @@ function Progress({
   return (
     <SDKProgress
       {...definedProps(props)}
-      className={(state) =>
-        cn('flex w-full flex-wrap gap-3', typeof className === 'function' ? className(state) : className)
-      }
+      className={stateClassName('flex w-full flex-wrap gap-3', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -44,12 +42,7 @@ function ProgressIndicator({
   return (
     <SDKProgressIndicator
       {...definedProps(props)}
-      className={(state) =>
-        cn(
-          'h-full bg-primary transition-all motion-reduce:transition-none',
-          typeof className === 'function' ? className(state) : className
-        )
-      }
+      className={stateClassName('h-full bg-primary transition-all motion-reduce:transition-none', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -68,7 +61,7 @@ function ProgressLabel({
   return (
     <SDKProgressLabel
       {...definedProps(props)}
-      className={(state) => cn('text-sm font-medium', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('text-sm font-medium', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -87,12 +80,10 @@ function ProgressTrack({
   return (
     <SDKProgressTrack
       {...definedProps(props)}
-      className={(state) =>
-        cn(
-          'relative flex h-1 w-full items-center overflow-x-hidden rounded-full bg-muted',
-          typeof className === 'function' ? className(state) : className
-        )
-      }
+      className={stateClassName(
+        'relative flex h-1 w-full items-center overflow-x-hidden rounded-full bg-muted',
+        className
+      )}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -111,12 +102,7 @@ function ProgressValue({
   return (
     <SDKProgressValue
       {...definedProps(props)}
-      className={(state) =>
-        cn(
-          'ml-auto text-sm text-muted-foreground tabular-nums',
-          typeof className === 'function' ? className(state) : className
-        )
-      }
+      className={stateClassName('ml-auto text-sm text-muted-foreground tabular-nums', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}

@@ -1,9 +1,9 @@
 'use client';
 
 import type React from 'react';
+import { stateClassName } from '@/components/ui/shared/state-class-name';
 import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import { Label as SDKLabel } from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-label';
-import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
 function Label({
@@ -17,9 +17,7 @@ function Label({
   return (
     <SDKLabel
       {...definedProps(props)}
-      className={(state) =>
-        cn('text-sm leading-none font-medium', typeof className === 'function' ? className(state) : className)
-      }
+      className={stateClassName('text-sm leading-none font-medium', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}

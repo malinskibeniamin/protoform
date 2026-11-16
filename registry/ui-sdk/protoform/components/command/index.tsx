@@ -1,6 +1,7 @@
 'use client';
 
 import type React from 'react';
+import { stateClassName } from '@/components/ui/shared/state-class-name';
 import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import {
   Command as SDKCommand,
@@ -18,7 +19,6 @@ import {
   CommandShortcut as SDKCommandShortcut,
   CommandStatus as SDKCommandStatus,
 } from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-command';
-import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
 const Command = SDKCommand;
@@ -34,9 +34,7 @@ function CommandEmpty({
   return (
     <SDKCommandEmpty
       {...definedProps(props)}
-      className={(state) =>
-        cn('py-6 text-center text-sm', typeof className === 'function' ? className(state) : className)
-      }
+      className={stateClassName('py-6 text-center text-sm', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -55,7 +53,7 @@ function CommandGroup({
   return (
     <SDKCommandGroup
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -74,12 +72,7 @@ function CommandGroupLabel({
   return (
     <SDKCommandGroupLabel
       {...definedProps(props)}
-      className={(state) =>
-        cn(
-          'px-2 py-1.5 text-xs font-medium text-muted-foreground',
-          typeof className === 'function' ? className(state) : className
-        )
-      }
+      className={stateClassName('px-2 py-1.5 text-xs font-medium text-muted-foreground', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -98,12 +91,10 @@ function CommandInput({
   return (
     <SDKCommandInput
       {...definedProps(props)}
-      className={(state) =>
-        cn(
-          'h-11 w-full border-b border-border bg-transparent px-3 text-sm outline-none',
-          typeof className === 'function' ? className(state) : className
-        )
-      }
+      className={stateClassName(
+        'h-11 w-full border-b border-border bg-transparent px-3 text-sm outline-none',
+        className
+      )}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -122,12 +113,10 @@ function CommandItem({
   return (
     <SDKCommandItem
       {...definedProps(props)}
-      className={(state) =>
-        cn(
-          'relative flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-accent data-highlighted:text-accent-foreground',
-          typeof className === 'function' ? className(state) : className
-        )
-      }
+      className={stateClassName(
+        'relative flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-accent data-highlighted:text-accent-foreground',
+        className
+      )}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -146,7 +135,7 @@ function CommandItemIcon({
   return (
     <SDKCommandItemIcon
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -167,7 +156,7 @@ function CommandItemText({
   return (
     <SDKCommandItemText
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -186,9 +175,7 @@ function CommandList({
   return (
     <SDKCommandList
       {...definedProps(props)}
-      className={(state) =>
-        cn('max-h-72 overflow-auto p-1', typeof className === 'function' ? className(state) : className)
-      }
+      className={stateClassName('max-h-72 overflow-auto p-1', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -209,9 +196,7 @@ function CommandSeparator({
   return (
     <SDKCommandSeparator
       {...definedProps(props)}
-      className={(state) =>
-        cn('-mx-1 my-1 h-px bg-border', typeof className === 'function' ? className(state) : className)
-      }
+      className={stateClassName('-mx-1 my-1 h-px bg-border', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -230,9 +215,7 @@ function CommandShortcut({
   return (
     <SDKCommandShortcut
       {...definedProps(props)}
-      className={(state) =>
-        cn('ml-auto text-xs text-muted-foreground', typeof className === 'function' ? className(state) : className)
-      }
+      className={stateClassName('ml-auto text-xs text-muted-foreground', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -251,7 +234,7 @@ function CommandStatus({
   return (
     <SDKCommandStatus
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}

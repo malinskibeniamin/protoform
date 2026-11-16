@@ -2,6 +2,7 @@
 
 import { CheckIcon } from 'lucide-react';
 import type React from 'react';
+import { stateClassName } from '@/components/ui/shared/state-class-name';
 import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import {
   Combobox as SDKCombobox,
@@ -31,7 +32,6 @@ import {
   ComboboxValue as SDKComboboxValue,
   ComboboxValueIcon as SDKComboboxValueIcon,
 } from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-combobox';
-import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
 const Combobox = SDKCombobox;
@@ -47,7 +47,7 @@ function ComboboxArrow({
   return (
     <SDKComboboxArrow
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -68,7 +68,7 @@ function ComboboxChip({
     <SDKComboboxChip
       value={value}
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -87,7 +87,7 @@ function ComboboxChipRemove({
   return (
     <SDKComboboxChipRemove
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -106,7 +106,7 @@ function ComboboxChips({
   return (
     <SDKComboboxChips
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -125,7 +125,7 @@ function ComboboxChipsOverflow({
   return (
     <SDKComboboxChipsOverflow
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -144,12 +144,10 @@ function ComboboxClear({
   return (
     <SDKComboboxClear
       {...definedProps(props)}
-      className={(state) =>
-        cn(
-          'inline-flex size-5 items-center justify-center rounded-sm text-muted-foreground outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring',
-          typeof className === 'function' ? className(state) : className
-        )
-      }
+      className={stateClassName(
+        'inline-flex size-5 items-center justify-center rounded-sm text-muted-foreground outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring',
+        className
+      )}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -168,12 +166,10 @@ function ComboboxContent({
   return (
     <SDKComboboxContent
       {...definedProps(props)}
-      className={(state) =>
-        cn(
-          'z-50 max-h-(--available-height) min-w-36 overflow-auto rounded-lg border border-border bg-popover p-1 text-popover-foreground shadow-md outline-none',
-          typeof className === 'function' ? className(state) : className
-        )
-      }
+      className={stateClassName(
+        'z-50 max-h-(--available-height) min-w-36 overflow-auto rounded-lg border border-border bg-popover p-1 text-popover-foreground shadow-md outline-none',
+        className
+      )}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -192,7 +188,7 @@ function ComboboxCreate({
   return (
     <SDKComboboxCreate
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -211,9 +207,7 @@ function ComboboxEmpty({
   return (
     <SDKComboboxEmpty
       {...definedProps(props)}
-      className={(state) =>
-        cn('p-4 text-sm text-muted-foreground', typeof className === 'function' ? className(state) : className)
-      }
+      className={stateClassName('p-4 text-sm text-muted-foreground', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -232,7 +226,7 @@ function ComboboxGroup({
   return (
     <SDKComboboxGroup
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -251,9 +245,7 @@ function ComboboxLabel({
   return (
     <SDKComboboxLabel
       {...definedProps(props)}
-      className={(state) =>
-        cn('px-2 py-1.5 text-xs text-muted-foreground', typeof className === 'function' ? className(state) : className)
-      }
+      className={stateClassName('px-2 py-1.5 text-xs text-muted-foreground', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -272,14 +264,12 @@ function ComboboxInput({
   return (
     <SDKComboboxInput
       {...definedProps(props)}
-      className={(state) =>
-        cn(
-          variant === 'search'
-            ? 'h-9 w-full rounded-lg border border-input bg-background px-9 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50'
-            : 'h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50',
-          typeof className === 'function' ? className(state) : className
-        )
-      }
+      className={stateClassName(
+        variant === 'search'
+          ? 'h-9 w-full rounded-lg border border-input bg-background px-9 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50'
+          : 'h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50',
+        className
+      )}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -302,12 +292,10 @@ function ComboboxItem({
     <SDKComboboxItem
       value={value}
       {...definedProps(props)}
-      className={(state) =>
-        cn(
-          'relative flex cursor-pointer items-center gap-2 rounded-md py-1.5 pr-8 pl-2 text-sm outline-none data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-accent data-highlighted:text-accent-foreground',
-          typeof className === 'function' ? className(state) : className
-        )
-      }
+      className={stateClassName(
+        'relative flex cursor-pointer items-center gap-2 rounded-md py-1.5 pr-8 pl-2 text-sm outline-none data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-accent data-highlighted:text-accent-foreground',
+        className
+      )}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -335,7 +323,7 @@ function ComboboxItemIcon({
   return (
     <SDKComboboxItemIcon
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -354,7 +342,7 @@ function ComboboxItemIndicator({
   return (
     <SDKComboboxItemIndicator
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -375,7 +363,7 @@ function ComboboxItemText({
   return (
     <SDKComboboxItemText
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -394,7 +382,7 @@ function ComboboxGroupLabel({
   return (
     <SDKComboboxGroupLabel
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -413,9 +401,7 @@ function ComboboxList({
   return (
     <SDKComboboxList
       {...definedProps(props)}
-      className={(state) =>
-        cn('max-h-64 overflow-auto', typeof className === 'function' ? className(state) : className)
-      }
+      className={stateClassName('max-h-64 overflow-auto', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -434,7 +420,7 @@ function ComboboxSelectAll({
   return (
     <SDKComboboxSelectAll
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -453,7 +439,7 @@ function ComboboxSeparator({
   return (
     <SDKComboboxSeparator
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -472,7 +458,7 @@ function ComboboxStatus({
   return (
     <SDKComboboxStatus
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -491,7 +477,7 @@ function ComboboxTrigger({
   return (
     <SDKComboboxTrigger
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -512,7 +498,7 @@ function ComboboxValueIcon({
   return (
     <SDKComboboxValueIcon
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}

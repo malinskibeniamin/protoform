@@ -7,12 +7,11 @@ import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input, InputEnd, InputStart } from '@/components/ui/input';
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from '@/components/ui/input-group';
+import { groupOptions, resolveLabel } from '@/components/ui/shared/combobox-options';
 import { Spinner } from '@/components/ui/spinner';
 import { usePortalContainer } from '@/registry/base-nova/protoform/hooks/use-portal-container';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import type { PortalContentProps, PortalRootProps, SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
-
-import { groupOptions, resolveLabel } from './combobox-utils';
 
 export interface ComboboxOption {
   data?: unknown;

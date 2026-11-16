@@ -165,7 +165,10 @@ export function KeyValueRowLayout({
   addAction: ReactNode;
 }) {
   return (
-    <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-2 @min-[28rem]/key-value:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]">
+    <div
+      className="grid grid-cols-[minmax(0,1fr)] items-start gap-2 @min-[28rem]/key-value:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]"
+      data-row
+    >
       <div className="col-start-1 row-start-1 min-w-0 space-y-1">
         {keyControl}
         {keyError}

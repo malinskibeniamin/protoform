@@ -8,6 +8,8 @@ Name new worktrees `beniamin-malinski/ticket-name-if-any/feature-description`.
 
 Keep `@base-ui/react` as the default UI foundation under `components/*`. Keep the form core and engine adapters independent of either UI library. SDK controls live under `registry/ui-sdk/protoform/components/*` and install to the configured UI alias under `sdk/`; they must not overwrite default Base UI controls or attach a second behavior owner to them. Opt in through the SDK AutoForm entrypoint or an explicit component map.
 
+Share foundation-independent React presentation and composite-editor logic in `lib/presentation`, reached through `@/components/ui/shared/*`. Its registry dependency installs one copy under the configured UI alias's `shared/` directory, keeping styles inside UI-scoped Tailwind sources. Public Base UI and SDK entrypoints bind their own behavior implementations; reuse shared controls, layouts, and variants rather than copying them into each namespace.
+
 ## UI SDK
 
 Before changing UI SDK code, read `node_modules/@ui-sdk/react/docs/llms.txt` and the version-matched skill at `node_modules/@ui-sdk/core/skills/ui-sdk/SKILL.md`. Read only the relevant component pages. For new primitives, search `node_modules/@ui-sdk/core/docs/core.md` by heading and read `node_modules/@ui-sdk/react/docs/rendering.md`.

@@ -3,10 +3,10 @@ import type { AsyncOptionsStatus } from '@ui-sdk/core/async-options';
 import type { ComboboxController } from '@ui-sdk/core/combobox';
 import { SearchIcon, XIcon } from 'lucide-react';
 import type React from 'react';
+import { groupOptions, resolveLabel } from '@/components/ui/shared/combobox-options';
 import { definedProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
-import { groupOptions, resolveLabel } from './combobox-utils';
 import {
   Combobox,
   ComboboxClear,

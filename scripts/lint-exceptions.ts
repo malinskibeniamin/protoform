@@ -282,11 +282,25 @@ function scopeIsContained(candidate: readonly string[], previous: readonly strin
 }
 
 const SDK_COMPONENT_SOURCE = /^registry\/ui-sdk\/protoform\/components\/(?:[a-z0-9-]+\/)*[a-z0-9.-]+\.tsx$/u;
+const SHARED_COMPONENT_SOURCE = /^registry\/base-nova\/protoform\/lib\/presentation\/([a-z0-9-]+)\.(?:ts|tsx)$/u;
 function componentPolicyOwner(file: string, selector: string): string {
-  if (file !== 'doctor.config.ts' || !SDK_COMPONENT_SOURCE.test(selector) || posix.normalize(selector) !== selector) {
+  if (posix.normalize(selector) !== selector) {
     return selector;
   }
-  return selector.replace('registry/ui-sdk/protoform/components/', 'registry/base-nova/protoform/components/');
+  if (file === 'doctor.config.ts' && SDK_COMPONENT_SOURCE.test(selector)) {
+    return selector.replace('registry/ui-sdk/protoform/components/', 'registry/base-nova/protoform/components/');
+  }
+  if (!['doctor.config.ts', 'biome.jsonc', '.oxlintrc.jsonc', 'shadcn-lint.jsonc'].includes(file)) {
+    return selector;
+  }
+  const component = SHARED_COMPONENT_SOURCE.exec(selector)?.[1];
+  if (component === undefined) {
+    return selector;
+  }
+  const owner = ['json-model', 'json-controls', 'json-editor', 'json-code-editor'].includes(component)
+    ? 'json-field'
+    : component;
+  return `registry/base-nova/protoform/components/${owner}/index.tsx`;
 }
 
 function ownerCoversRule(

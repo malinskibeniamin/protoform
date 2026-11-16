@@ -1,5 +1,6 @@
 'use client';
 import type React from 'react';
+import { stateClassName } from '@/components/ui/shared/state-class-name';
 import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import {
   Slider as SDKSlider,
@@ -48,9 +49,7 @@ export function SliderIndicator({ className, ...props }: UIProps<React.Component
   return (
     <SDKSliderIndicator
       {...definedProps(props)}
-      className={(state) =>
-        cn('absolute rounded-full bg-primary', typeof className === 'function' ? className(state) : className)
-      }
+      className={stateClassName('absolute rounded-full bg-primary', className)}
     />
   );
 }
@@ -59,12 +58,10 @@ export function SliderThumb({ className, ...props }: UIProps<React.ComponentProp
   return (
     <SDKSliderThumb
       {...definedProps(props)}
-      className={(state) =>
-        cn(
-          'absolute size-4 rounded-full border border-primary bg-background shadow-sm has-focus-visible:ring-2 has-focus-visible:ring-ring',
-          typeof className === 'function' ? className(state) : className
-        )
-      }
+      className={stateClassName(
+        'absolute size-4 rounded-full border border-primary bg-background shadow-sm has-focus-visible:ring-2 has-focus-visible:ring-ring',
+        className
+      )}
     />
   );
 }

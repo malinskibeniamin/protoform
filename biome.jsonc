@@ -1688,6 +1688,41 @@
           }
         }
       }
+    },
+    {
+      // The shared renderer retains the original schema editor's bounded policies.
+      "includes": ["registry/base-nova/protoform/lib/presentation/json-field.tsx"],
+      "linter": {
+        "rules": {
+          "complexity": { "noExcessiveCognitiveComplexity": "off", "noExcessiveLinesPerFunction": "off" },
+          "a11y": { "noNoninteractiveElementInteractions": "off", "noStaticElementInteractions": "off" },
+          "suspicious": { "noArrayIndexKey": "off" },
+          "nursery": { "useReactCompiler": "off" }
+        }
+      }
+    },
+    {
+      // This is the same recursive schema parser, shared instead of copied per foundation.
+      "includes": ["registry/base-nova/protoform/lib/presentation/json-model.ts"],
+      "linter": { "rules": { "complexity": { "noExcessiveCognitiveComplexity": "off" } } }
+    },
+    {
+      // This click only focuses the composed input, as in the original input-group wrapper.
+      "includes": ["registry/base-nova/protoform/lib/presentation/input-group.tsx"],
+      "linter": {
+        "rules": {
+          "a11y": {
+            "noNoninteractiveElementInteractions": "off",
+            "noStaticElementInteractions": "off",
+            "useKeyWithClickEvents": "off"
+          }
+        }
+      }
+    },
+    {
+      // Shared rows retain the same positional identity for key/value pairs without IDs.
+      "includes": ["registry/base-nova/protoform/lib/presentation/key-value-field.tsx"],
+      "linter": { "rules": { "suspicious": { "noArrayIndexKey": "off" } } }
     }
   ],
   "tailwind": {

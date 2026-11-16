@@ -2,6 +2,7 @@
 
 import type React from 'react';
 import { buttonVariants } from '@/components/ui/sdk/button/index';
+import { stateClassName } from '@/components/ui/shared/state-class-name';
 import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import {
   AlertDialog as SDKAlertDialog,
@@ -29,12 +30,7 @@ function AlertDialogBackdrop({
   return (
     <SDKAlertDialogBackdrop
       {...definedProps(props)}
-      className={(state) =>
-        cn(
-          'fixed inset-0 z-50 m-0 bg-black/10 backdrop-blur-xs',
-          typeof className === 'function' ? className(state) : className
-        )
-      }
+      className={stateClassName('fixed inset-0 z-50 m-0 bg-black/10 backdrop-blur-xs', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -53,12 +49,10 @@ function AlertDialogClose({
   return (
     <SDKAlertDialogClose
       {...definedProps(props)}
-      className={(state) =>
-        cn(
-          buttonVariants({ variant: variant === 'destructive' ? 'destructive' : 'outline' }),
-          typeof className === 'function' ? className(state) : className
-        )
-      }
+      className={stateClassName(
+        buttonVariants({ variant: variant === 'destructive' ? 'destructive' : 'outline' }),
+        className
+      )}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -77,12 +71,10 @@ function AlertDialogContent({
   return (
     <SDKAlertDialogContent
       {...definedProps(props)}
-      className={(state) =>
-        cn(
-          'fixed top-1/2 left-1/2 z-50 m-0 grid max-h-[85vh] w-full max-w-[calc(100%-2rem)] max-w-xs -translate-1/2 gap-4 overflow-auto rounded-xl border border-border bg-background p-4 text-foreground shadow-lg outline-none sm:max-w-sm',
-          typeof className === 'function' ? className(state) : className
-        )
-      }
+      className={stateClassName(
+        'fixed top-1/2 left-1/2 z-50 m-0 grid max-h-[85vh] w-full max-w-[calc(100%-2rem)] max-w-xs -translate-1/2 gap-4 overflow-auto rounded-xl border border-border bg-background p-4 text-foreground shadow-lg outline-none sm:max-w-sm',
+        className
+      )}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -101,9 +93,7 @@ function AlertDialogDescription({
   return (
     <SDKAlertDialogDescription
       {...definedProps(props)}
-      className={(state) =>
-        cn('text-sm text-muted-foreground', typeof className === 'function' ? className(state) : className)
-      }
+      className={stateClassName('text-sm text-muted-foreground', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -122,7 +112,7 @@ function AlertDialogShortcut({
   return (
     <SDKAlertDialogShortcut
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -141,7 +131,7 @@ function AlertDialogTitle({
   return (
     <SDKAlertDialogTitle
       {...definedProps(props)}
-      className={(state) => cn('text-base font-medium', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('text-base font-medium', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -160,7 +150,7 @@ function AlertDialogTrigger({
   return (
     <SDKAlertDialogTrigger
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}

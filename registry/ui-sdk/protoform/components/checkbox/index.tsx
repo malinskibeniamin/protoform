@@ -2,13 +2,13 @@
 
 import { CheckIcon, MinusIcon } from 'lucide-react';
 import type React from 'react';
+import { stateClassName } from '@/components/ui/shared/state-class-name';
 import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import {
   Checkbox as SDKCheckbox,
   CheckboxGroup as SDKCheckboxGroup,
   CheckboxIndicator as SDKCheckboxIndicator,
 } from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-checkbox';
-import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
 function Checkbox({
@@ -23,12 +23,10 @@ function Checkbox({
   return (
     <SDKCheckbox
       {...definedProps(props)}
-      className={(state) =>
-        cn(
-          'peer inline-flex size-4 shrink-0 items-center justify-center rounded-sm border border-input outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 data-checked:bg-primary data-checked:text-primary-foreground data-indeterminate:bg-primary data-indeterminate:text-primary-foreground',
-          typeof className === 'function' ? className(state) : className
-        )
-      }
+      className={stateClassName(
+        'peer inline-flex size-4 shrink-0 items-center justify-center rounded-sm border border-input outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 data-checked:bg-primary data-checked:text-primary-foreground data-indeterminate:bg-primary data-indeterminate:text-primary-foreground',
+        className
+      )}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -55,9 +53,7 @@ function CheckboxIndicator({
   return (
     <SDKCheckboxIndicator
       {...definedProps(props)}
-      className={(state) =>
-        cn('flex items-center justify-center', typeof className === 'function' ? className(state) : className)
-      }
+      className={stateClassName('flex items-center justify-center', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}

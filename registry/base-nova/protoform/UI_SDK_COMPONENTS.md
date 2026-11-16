@@ -8,9 +8,25 @@ form core remains UI-independent. SDK controls install to the configured UI alia
 Use the SDK AutoForm entrypoint or pass its component map explicitly. SDK sessions expose
 SDK controls only; they do not automatically add agent actions to Base UI controls.
 
+## Shared presentation, separate behavior
+
+`lib/presentation` owns foundation-independent React controls, style variants, input adornments,
+and the JSON/key-value editors. The `@/components/ui/shared/*` source alias resolves those modules.
+The shared registry dependency installs them once under the configured UI alias's private
+`shared/` directory, so an application's UI-scoped Tailwind sources include their classes.
+The default and SDK public entrypoints remain unchanged. They reuse shared exports or supply
+explicit native-control bindings to the shared editor, rather than maintaining another copy.
+
+SDK primitives, Field coordination, shortcuts, agent sessions, and preferences remain SDK-owned.
+Sharing presentation does not attach SDK behavior to Base UI controls. Recharts and TanStack
+chart presentation ship through separate registry dependencies; the common registry item includes
+neither chart engine's presentation modules. Clean installs verify shared component/context identity and both
+installation orders with custom aliases. Full-catalog module graphs reject either foundation
+pulling in the other UI engine.
+
 ## Beta.5 update
 
-Both SDK packages are pinned together to the newest published beta, not a moving npm tag.
+Both SDK packages are pinned together at beta.5, not a moving npm tag.
 The [beta.3](https://github.com/vercel-labs/ui/releases/tag/%40ui-sdk/core%400.1.0-beta.3),
 [beta.4](https://github.com/vercel-labs/ui/releases/tag/%40ui-sdk/core%400.1.0-beta.4), and
 [beta.5](https://github.com/vercel-labs/ui/releases/tag/%40ui-sdk/core%400.1.0-beta.5) updates retain the public component entries.

@@ -1,6 +1,7 @@
 'use client';
 
 import type React from 'react';
+import { stateClassName } from '@/components/ui/shared/state-class-name';
 import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import {
   HoverCard as SDKHoverCard,
@@ -8,7 +9,6 @@ import {
   HoverCardContent as SDKHoverCardContent,
   HoverCardTrigger as SDKHoverCardTrigger,
 } from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-hover-card';
-import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
 const HoverCard = SDKHoverCard;
@@ -24,7 +24,7 @@ function HoverCardArrow({
   return (
     <SDKHoverCardArrow
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -43,12 +43,10 @@ function HoverCardContent({
   return (
     <SDKHoverCardContent
       {...definedProps(props)}
-      className={(state) =>
-        cn(
-          'z-50 max-h-(--available-height) w-64 min-w-36 overflow-auto rounded-lg border border-border bg-popover p-1 p-4 text-popover-foreground shadow-md outline-none',
-          typeof className === 'function' ? className(state) : className
-        )
-      }
+      className={stateClassName(
+        'z-50 max-h-(--available-height) w-64 min-w-36 overflow-auto rounded-lg border border-border bg-popover p-1 p-4 text-popover-foreground shadow-md outline-none',
+        className
+      )}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -67,7 +65,7 @@ function HoverCardTrigger({
   return (
     <SDKHoverCardTrigger
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}

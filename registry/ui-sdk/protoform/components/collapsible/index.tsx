@@ -1,13 +1,13 @@
 'use client';
 
 import type React from 'react';
+import { stateClassName } from '@/components/ui/shared/state-class-name';
 import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import {
   Collapsible as SDKCollapsible,
   CollapsiblePanel as SDKCollapsiblePanel,
   CollapsibleTrigger as SDKCollapsibleTrigger,
 } from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-collapsible';
-import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
 function Collapsible({
@@ -21,7 +21,7 @@ function Collapsible({
   return (
     <SDKCollapsible
       {...definedProps(props)}
-      className={(state) => cn('w-full', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('w-full', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -40,7 +40,7 @@ function CollapsiblePanel({
   return (
     <SDKCollapsiblePanel
       {...definedProps(props)}
-      className={(state) => cn('overflow-hidden', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('overflow-hidden', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -59,12 +59,10 @@ function CollapsibleTrigger({
   return (
     <SDKCollapsibleTrigger
       {...definedProps(props)}
-      className={(state) =>
-        cn(
-          'outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50',
-          typeof className === 'function' ? className(state) : className
-        )
-      }
+      className={stateClassName(
+        'outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50',
+        className
+      )}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}

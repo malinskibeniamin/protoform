@@ -1,6 +1,7 @@
 'use client';
 
 import type React from 'react';
+import { stateClassName } from '@/components/ui/shared/state-class-name';
 import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import {
   Resizable as SDKResizable,
@@ -21,9 +22,7 @@ function Resizable({
   return (
     <SDKResizable
       {...definedProps(props)}
-      className={(state) =>
-        cn('flex min-h-0 w-full min-w-0', typeof className === 'function' ? className(state) : className)
-      }
+      className={stateClassName('flex min-h-0 w-full min-w-0', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -67,9 +66,7 @@ function ResizablePanel({
   return (
     <SDKResizablePanel
       {...definedProps(props)}
-      className={(state) =>
-        cn('min-w-0 overflow-hidden', typeof className === 'function' ? className(state) : className)
-      }
+      className={stateClassName('min-w-0 overflow-hidden', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}

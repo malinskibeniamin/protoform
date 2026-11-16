@@ -21,6 +21,10 @@ stylesheet, utilities, and `components.json` before installing the SDK host map 
 and verifies that no existing control changed and no extra primitives appeared. The primary
 consumer checks the reverse order: adding Base UI after SDK must leave SDK files unchanged.
 It then typechecks and server-renders the installed AutoForm, not repository source aliases.
+The installed Base UI and SDK Card and Group exports must have identical implementation
+identity, proving that their common presentation is installed once rather than copied.
+The fixture disables automatic Tailwind source discovery: shared styles must compile through
+the existing UI source roots, without scanning private library directories.
 The other fixtures typecheck core-only and themed SDK installs, plus Base UI-backed alternate
 form engines. The SDK agent workbench must first install and import in a clean consumer without Base UI.
 
@@ -72,6 +76,8 @@ include Base UI without SDK, explicit SDK AutoForm must include SDK without Base
 headless core and host must include neither. The Base UI map supplies its tooltip provider through
 the optional renderer-map `Provider`; a regression test preserves input identity and edits across
 map updates.
+The same isolation assertions also build every public control entrypoint in each catalog,
+covering controls outside AutoForm's default map.
 
 `ui-foundations` installs a real default Base UI form beside an explicitly enabled SDK rating.
 `scripts/foundations-consumer.browser.spec.ts` exercises the installed example in both host-browser

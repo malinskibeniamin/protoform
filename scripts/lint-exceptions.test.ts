@@ -235,3 +235,45 @@ test('carries only existing Doctor policies to literal SDK component counterpart
     )
   ).toHaveLength(1);
 });
+
+test('moves existing component policies only to literal shared implementation owners', () => {
+  const baseline = `export default { ignore: { overrides: [
+    { files: ['registry/base-nova/protoform/components/card/index.tsx'], rules: ['react-doctor/use-lazy-motion'] }
+  ] } };`;
+  const policy = (path: string, rule = 'react-doctor/use-lazy-motion') =>
+    `export default { ignore: { overrides: [{ files: ['${path}'], rules: ['${rule}'] }] } };`;
+  expect(
+    newLintExceptions('doctor.config.ts', policy('registry/base-nova/protoform/lib/presentation/card.tsx'), baseline)
+  ).toEqual([]);
+  for (const path of [
+    'registry/base-nova/protoform/lib/presentation/**',
+    'registry/base-nova/protoform/lib/presentation/../card.tsx',
+    'registry/base-nova/protoform/lib/presentation/badge.tsx',
+    'registry/base-nova/protoform/lib/other/card.tsx',
+  ]) {
+    expect(newLintExceptions('doctor.config.ts', policy(path), baseline)).toHaveLength(1);
+  }
+  expect(
+    newLintExceptions(
+      'doctor.config.ts',
+      policy('registry/base-nova/protoform/lib/presentation/card.tsx', 'react-doctor/no-eval'),
+      baseline
+    )
+  ).toHaveLength(1);
+  const biome = (path: string) =>
+    `{ "overrides": [{ "includes": ["${path}"], "linter": { "rules": { "complexity": { "noExcessiveCognitiveComplexity": "off" } } } }] }`;
+  expect(
+    newLintExceptions(
+      'biome.jsonc',
+      biome('registry/base-nova/protoform/lib/presentation/json-model.ts'),
+      biome('registry/base-nova/protoform/components/json-field/index.tsx')
+    )
+  ).toEqual([]);
+  expect(
+    newLintExceptions(
+      'biome.jsonc',
+      biome('registry/base-nova/protoform/lib/presentation/**'),
+      biome('registry/base-nova/protoform/components/json-field/index.tsx')
+    )
+  ).toHaveLength(1);
+});

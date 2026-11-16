@@ -93,6 +93,12 @@ Each control has one behavior owner; do not attach SDK behavior to a Base UI-con
 Renderer maps may supply an optional `Provider` for library-owned composition contexts, such as
 Base UI tooltip coordination, without coupling the form core to the library.
 
+Both full bundles reuse one React presentation layer under the UI alias's private `shared/`
+directory. Appearance-only controls, style variants, and JSON/key-value editor logic have one
+implementation; each public namespace binds its own behavior primitives. These helpers stay
+inside ordinary UI-scoped Tailwind sources. Chart-specific dependencies remain separate, so
+the TanStack variants do not install Recharts.
+
 Custom component maps use the updated renderer-neutral contract: text controls receive
 `onValueChange(string)`, and slots use names such as `Radio`, `CollapsiblePanel`, `SelectGroupLabel`,
 `TabsTab`, and `TabsPanel`. The supplied Base UI map translates these to native APIs. Existing

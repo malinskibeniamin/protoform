@@ -1,6 +1,7 @@
 'use client';
 
 import type React from 'react';
+import { stateClassName } from '@/components/ui/shared/state-class-name';
 import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import {
   Popover as SDKPopover,
@@ -28,7 +29,7 @@ function PopoverArrow({
   return (
     <SDKPopoverArrow
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -47,7 +48,7 @@ function PopoverClose({
   return (
     <SDKPopoverClose
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -66,12 +67,10 @@ function PopoverContent({
   return (
     <SDKPopoverContent
       {...definedProps(props)}
-      className={(state) =>
-        cn(
-          'z-50 max-h-(--available-height) w-72 min-w-36 overflow-auto rounded-lg border border-border bg-popover p-1 p-4 text-popover-foreground shadow-md outline-none',
-          typeof className === 'function' ? className(state) : className
-        )
-      }
+      className={stateClassName(
+        'z-50 max-h-(--available-height) w-72 min-w-36 overflow-auto rounded-lg border border-border bg-popover p-1 p-4 text-popover-foreground shadow-md outline-none',
+        className
+      )}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -90,7 +89,7 @@ function PopoverDescription({
   return (
     <SDKPopoverDescription
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -109,7 +108,7 @@ function PopoverShortcut({
   return (
     <SDKPopoverShortcut
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -128,7 +127,7 @@ function PopoverTitle({
   return (
     <SDKPopoverTitle
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -147,7 +146,7 @@ function PopoverTrigger({
   return (
     <SDKPopoverTrigger
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}

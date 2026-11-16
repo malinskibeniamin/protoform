@@ -2,6 +2,7 @@
 
 import { CheckIcon, ChevronDownIcon } from 'lucide-react';
 import type React from 'react';
+import { stateClassName } from '@/components/ui/shared/state-class-name';
 import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import {
   Select as SDKSelect,
@@ -26,7 +27,6 @@ import {
   SelectValue as SDKSelectValue,
   SelectValueIcon as SDKSelectValueIcon,
 } from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-select';
-import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
 const Select = SDKSelect;
@@ -42,7 +42,7 @@ function SelectArrow({
   return (
     <SDKSelectArrow
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -61,7 +61,7 @@ function SelectClear({
   return (
     <SDKSelectClear
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -80,12 +80,10 @@ function SelectContent({
   return (
     <SDKSelectContent
       {...definedProps(props)}
-      className={(state) =>
-        cn(
-          'z-50 max-h-(--available-height) min-w-36 overflow-auto rounded-lg border border-border bg-popover p-1 text-popover-foreground shadow-md outline-none',
-          typeof className === 'function' ? className(state) : className
-        )
-      }
+      className={stateClassName(
+        'z-50 max-h-(--available-height) min-w-36 overflow-auto rounded-lg border border-border bg-popover p-1 text-popover-foreground shadow-md outline-none',
+        className
+      )}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -104,7 +102,7 @@ function SelectEmpty({
   return (
     <SDKSelectEmpty
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -123,7 +121,7 @@ function SelectGroup({
   return (
     <SDKSelectGroup
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -142,12 +140,7 @@ function SelectLabel({
   return (
     <SDKSelectLabel
       {...definedProps(props)}
-      className={(state) =>
-        cn(
-          'px-2 py-1.5 text-xs font-medium text-muted-foreground',
-          typeof className === 'function' ? className(state) : className
-        )
-      }
+      className={stateClassName('px-2 py-1.5 text-xs font-medium text-muted-foreground', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -166,12 +159,7 @@ function SelectInput({
   return (
     <SDKSelectInput
       {...definedProps(props)}
-      className={(state) =>
-        cn(
-          'h-9 w-full border-b border-border bg-transparent px-2 outline-none',
-          typeof className === 'function' ? className(state) : className
-        )
-      }
+      className={stateClassName('h-9 w-full border-b border-border bg-transparent px-2 outline-none', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -194,12 +182,10 @@ function SelectItem({
     <SDKSelectItem
       value={value}
       {...definedProps(props)}
-      className={(state) =>
-        cn(
-          'relative flex cursor-pointer items-center gap-2 rounded-md py-1.5 pr-8 pl-2 text-sm outline-none data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-accent data-highlighted:text-accent-foreground data-selected:bg-accent',
-          typeof className === 'function' ? className(state) : className
-        )
-      }
+      className={stateClassName(
+        'relative flex cursor-pointer items-center gap-2 rounded-md py-1.5 pr-8 pl-2 text-sm outline-none data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-accent data-highlighted:text-accent-foreground data-selected:bg-accent',
+        className
+      )}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -227,7 +213,7 @@ function SelectItemIcon({
   return (
     <SDKSelectItemIcon
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -246,7 +232,7 @@ function SelectItemIndicator({
   return (
     <SDKSelectItemIndicator
       {...definedProps(props)}
-      className={(state) => cn('ml-auto', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('ml-auto', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -267,7 +253,7 @@ function SelectItemText({
   return (
     <SDKSelectItemText
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -286,7 +272,7 @@ function SelectGroupLabel({
   return (
     <SDKSelectGroupLabel
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -305,7 +291,7 @@ function SelectList({
   return (
     <SDKSelectList
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -324,7 +310,7 @@ function SelectSelectAll({
   return (
     <SDKSelectSelectAll
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -343,9 +329,7 @@ function SelectSeparator({
   return (
     <SDKSelectSeparator
       {...definedProps(props)}
-      className={(state) =>
-        cn('-mx-1 my-1 h-px bg-border', typeof className === 'function' ? className(state) : className)
-      }
+      className={stateClassName('-mx-1 my-1 h-px bg-border', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -364,7 +348,7 @@ function SelectStatus({
   return (
     <SDKSelectStatus
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -385,12 +369,10 @@ function SelectTrigger({
   return (
     <SDKSelectTrigger
       {...definedProps(props)}
-      className={(state) =>
-        cn(
-          'flex h-8 w-full items-center justify-between gap-2 rounded-lg border border-input bg-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50',
-          typeof className === 'function' ? className(state) : className
-        )
-      }
+      className={stateClassName(
+        'flex h-8 w-full items-center justify-between gap-2 rounded-lg border border-input bg-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50',
+        className
+      )}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -416,7 +398,7 @@ function SelectValue({
   return (
     <SDKSelectValue
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -435,7 +417,7 @@ function SelectValueIcon({
   return (
     <SDKSelectValueIcon
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}

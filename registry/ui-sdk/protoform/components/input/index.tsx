@@ -1,64 +1,29 @@
 'use client';
-import { cva, type VariantProps } from 'class-variance-authority';
-import { Eye, EyeOff, Minus, Plus } from 'lucide-react';
 import type { CSSProperties } from 'react';
-import React, { createContext, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/sdk/button/index';
 import { useFieldContext } from '@/components/ui/sdk/field/index';
 import { useGroup } from '@/components/ui/sdk/group/index';
+import type { InputProps as NativeInputProps } from '@/components/ui/shared/input';
+import {
+  getInputGroupClasses,
+  getInputMode,
+  getInputSizes,
+  getInputValueProps,
+  InputContext,
+  NumberInputControls,
+  PasswordVisibilityControl,
+  useNumberInputHandlers,
+} from '@/components/ui/shared/input';
+import { inputContainerVariants, inputVariants } from '@/components/ui/shared/input-variants';
 import { definedProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import { Input as SDKInput } from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-input';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
-import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
-export const inputVariants = cva(
-  'flex w-full min-w-0 border !border-input bg-transparent text-base transition-colors outline-none [-moz-appearance:textfield] selection:bg-selection selection:text-selection-foreground file:inline-flex file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:!text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-input/50 disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 md:text-sm dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none',
-  {
-    defaultVariants: {
-      size: 'md',
-      variant: 'standard',
-    },
-    variants: {
-      size: {
-        lg: 'h-9 px-3 py-1 file:h-7',
-        md: 'h-8 px-2.5 py-1 file:h-6',
-        sm: 'h-7 px-2 py-1 text-sm file:h-5',
-      },
-      variant: {
-        group: 'rounded-none border-0 bg-transparent shadow-none focus-visible:ring-0 dark:bg-transparent',
-        password: 'pr-10',
-        standard: '',
-      },
-    },
-  }
-);
-
-const stepControlSizes = { lg: 'icon-lg', md: 'icon', sm: 'icon-sm' } as const;
-
-const inputContainerVariants = cva('', {
-  defaultVariants: {
-    layout: 'standard',
-  },
-  variants: {
-    layout: {
-      number: 'flex items-center gap-2',
-      password: 'relative flex w-full flex-1',
-      standard: 'relative flex items-center',
-    },
-  },
-});
-
-export interface InputProps
-  extends Omit<React.ComponentProps<'input'>, 'size'>,
-    Omit<VariantProps<typeof inputVariants>, 'size'>,
-    SharedProps {
-  children?: React.ReactNode;
-  containerClassName?: string | undefined;
+export interface InputProps extends NativeInputProps {
   controller?: React.ComponentProps<typeof SDKInput>['controller'];
   'data-agent-secret'?: boolean | string | undefined;
   onValueChange?: React.ComponentProps<typeof SDKInput>['onValueChange'];
-  showStepControls?: boolean | undefined;
-  size?: VariantProps<typeof inputVariants>['size'] | number;
 }
 
 function useInputState(value: InputProps['value'], defaultValue: InputProps['defaultValue']) {
@@ -71,170 +36,6 @@ function useInputState(value: InputProps['value'], defaultValue: InputProps['def
     setMirror((previous) => ({ ...previous, value: typeof next === 'function' ? next(previous.value) : next }));
   }, []);
   return { setShowPassword, setValue, showPassword, value: mirror.value };
-}
-
-function dispatchInputChange(input: HTMLInputElement | null, newValue: string): void {
-  if (!input) {
-    return;
-  }
-  const descriptor = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value');
-  if (!descriptor?.set) {
-    throw new Error('The input does not expose a native value setter.');
-  }
-  descriptor.set.call(input, newValue);
-  input.dispatchEvent(new Event('input', { bubbles: true }));
-}
-
-function useNumberInputHandlers(
-  value: string,
-  setValue: React.Dispatch<React.SetStateAction<string>>,
-  step: number,
-  inputRef: React.RefObject<HTMLInputElement | null>,
-  onChange?: React.ChangeEventHandler<HTMLInputElement>
-) {
-  const increment = () => {
-    const currentValue = Number.parseFloat(value) || 0;
-    const newValue = (currentValue + step).toString();
-    dispatchInputChange(inputRef.current, newValue);
-  };
-
-  const decrement = () => {
-    const currentValue = Number.parseFloat(value) || 0;
-    const newValue = (currentValue - step).toString();
-    dispatchInputChange(inputRef.current, newValue);
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(e.target.value);
-    onChange?.(e);
-  };
-
-  return { decrement, handleInputChange, increment };
-}
-
-function getInputGroupClasses(attached: boolean, groupPosition: ReturnType<typeof useGroup>['position']) {
-  let positionClasses = 'rounded-lg';
-  if (attached && groupPosition === 'first') {
-    positionClasses = 'rounded-r-none rounded-l-lg border-r-0';
-  } else if (attached && groupPosition === 'last') {
-    positionClasses = 'rounded-r-lg rounded-l-none border-l-0';
-  } else if (attached && groupPosition === 'middle') {
-    positionClasses = 'rounded-none border-r-0 border-l-0';
-  }
-  return positionClasses;
-}
-
-function getInputMode(
-  type: InputProps['type'],
-  variant: InputProps['variant'],
-  showPassword: boolean,
-  showStepControls: InputProps['showStepControls']
-) {
-  const isPasswordInput = type === 'password';
-  const shouldShowControls = type === 'number' && showStepControls;
-  let inputType = type;
-  if (isPasswordInput) {
-    inputType = showPassword ? 'text' : 'password';
-  }
-
-  let layout: 'number' | 'password' | 'standard' | null | undefined = variant === 'group' ? 'standard' : variant;
-  if (shouldShowControls) {
-    layout = 'number';
-  } else if (isPasswordInput) {
-    layout = 'password';
-  }
-  const inputVariant = isPasswordInput && variant !== 'group' ? 'password' : variant;
-  return { inputType, inputVariant, layout };
-}
-
-function getInputValueProps(
-  isNumberInput: boolean,
-  value: string,
-  controlledValue: InputProps['value'],
-  defaultValue: InputProps['defaultValue']
-) {
-  let inputValueProps: Pick<React.InputHTMLAttributes<HTMLInputElement>, 'defaultValue' | 'value'>;
-  if (isNumberInput) {
-    inputValueProps = { value };
-  } else if (controlledValue === undefined) {
-    inputValueProps = { defaultValue };
-  } else {
-    inputValueProps = { value: controlledValue };
-  }
-  return inputValueProps;
-}
-
-function PasswordVisibilityControl({
-  size,
-  disabled,
-  showPassword,
-  onToggle,
-}: {
-  size: VariantProps<typeof inputVariants>['size'];
-  disabled: InputProps['disabled'];
-  showPassword: boolean;
-  onToggle: () => void;
-}) {
-  const passwordToggleSize = size === 'sm' ? 'icon-xs' : 'icon-sm';
-  return (
-    <InputEnd className="pointer-events-auto">
-      <Button
-        aria-label={showPassword ? 'Hide password' : 'Show password'}
-        disabled={disabled}
-        onClick={onToggle}
-        size={passwordToggleSize}
-        type="button"
-        variant="ghost"
-      >
-        {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
-      </Button>
-    </InputEnd>
-  );
-}
-
-function NumberInputControls({
-  size,
-  disabled,
-  increment,
-  decrement,
-}: {
-  size: VariantProps<typeof inputVariants>['size'];
-  disabled: InputProps['disabled'];
-  increment: () => void;
-  decrement: () => void;
-}) {
-  const controlSize = stepControlSizes[size ?? 'md'];
-  return (
-    <div className="flex flex-row gap-1">
-      <Button
-        aria-label="Increase value"
-        disabled={disabled}
-        onClick={increment}
-        size={controlSize}
-        type="button"
-        variant="outline"
-      >
-        <Plus />
-      </Button>
-      <Button
-        aria-label="Decrease value"
-        disabled={disabled}
-        onClick={decrement}
-        size={controlSize}
-        type="button"
-        variant="outline"
-      >
-        <Minus />
-      </Button>
-    </div>
-  );
-}
-
-function getInputSizes(requestedSize: InputProps['size']) {
-  return {
-    size: typeof requestedSize === 'number' ? undefined : requestedSize,
-    nativeSize: typeof requestedSize === 'number' ? requestedSize : undefined,
-  };
 }
 
 function InputPrimitive({
@@ -363,6 +164,7 @@ const Input = ({
         {children}
         {isPasswordInput ? (
           <PasswordVisibilityControl
+            Button={Button}
             disabled={controlsDisabled}
             onToggle={() => setShowPassword(showPassword !== true)}
             showPassword={showPassword}
@@ -370,69 +172,20 @@ const Input = ({
           />
         ) : null}
         {shouldShowControls === true ? (
-          <NumberInputControls decrement={decrement} disabled={controlsDisabled} increment={increment} size={size} />
+          <NumberInputControls
+            Button={Button}
+            decrement={decrement}
+            disabled={controlsDisabled}
+            increment={increment}
+            size={size}
+          />
         ) : null}
       </div>
     </InputContext.Provider>
   );
 };
 
-const inputEndClassNames = 'absolute inset-y-0 right-2 z-10 flex items-center pointer-events-none';
-
-const InputContext = createContext<{
-  setStartWidth: (width: number) => void;
-  setEndWidth: (width: number) => void;
-  startWidth: number | undefined;
-  endWidth: number | undefined;
-}>({
-  endWidth: undefined,
-  setEndWidth: () => undefined,
-  setStartWidth: () => undefined,
-  startWidth: undefined,
-});
-
-const useInputContext = () => {
-  const context = React.useContext(InputContext);
-  if (context === null) {
-    throw new Error('useInputContext must be used within an InputContextProvider');
-  }
-  return context;
-};
-
-const InputStart = ({ children, className, ...props }: { children: React.ReactNode; className?: string }) => {
-  const { setStartWidth } = useInputContext();
-  const startRef = React.useRef<HTMLSpanElement>(null);
-
-  useEffect(() => {
-    setStartWidth(startRef.current?.offsetWidth ?? 0);
-  }, [setStartWidth]);
-
-  return (
-    <span
-      className={cn('pointer-events-none absolute inset-y-0 left-2 z-10 flex items-center', className)}
-      ref={startRef}
-      {...props}
-    >
-      {children}
-    </span>
-  );
-};
-
-const InputEnd = ({ children, className, ...props }: { children: React.ReactNode; className?: string }) => {
-  const { setEndWidth } = useInputContext();
-  const endRef = React.useRef<HTMLSpanElement>(null);
-
-  useEffect(() => {
-    setEndWidth(endRef.current?.offsetWidth ?? 0);
-  }, [setEndWidth]);
-
-  return (
-    <span className={cn(inputEndClassNames, className)} ref={endRef} {...props}>
-      {children}
-    </span>
-  );
-};
-
 Input.displayName = 'Input';
 
-export { Input, InputEnd, InputStart };
+export { InputEnd, InputStart } from '@/components/ui/shared/input';
+export { Input };

@@ -1,5 +1,6 @@
 'use client';
 import type React from 'react';
+import { stateClassName } from '@/components/ui/shared/state-class-name';
 import {
   createToaster as createSDKToaster,
   Toast as SDKToast,
@@ -10,7 +11,6 @@ import {
   ToastTitle as SDKToastTitle,
   toast as sdkToast,
 } from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-toast';
-import { cn } from '@/registry/base-nova/protoform/lib/utils';
 
 export const createToaster = createSDKToaster;
 export const Toast = SDKToast;
@@ -31,12 +31,7 @@ export function Toaster({
       <SDKToastRegion
         {...props}
         aria-label={props['aria-label'] ?? 'Notifications'}
-        className={(state) =>
-          cn(
-            'fixed inset-x-4 bottom-4 z-50 flex flex-col gap-2 sm:left-auto sm:w-80',
-            typeof className === 'function' ? className(state) : className
-          )
-        }
+        className={stateClassName('fixed inset-x-4 bottom-4 z-50 flex flex-col gap-2 sm:left-auto sm:w-80', className)}
         toaster={props.toaster ?? toast}
       >
         {() => (

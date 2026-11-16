@@ -414,6 +414,11 @@ async function assertHostInstalled() {
     [
       'import { AutoForm } from "./features/forms/auto-form/host";',
       'import { uiSdkHostComponents } from "./features/forms/auto-form/ui-sdk-host";',
+      'import { Card as BaseCard } from "./design-system/ui/card";',
+      'import { Card as SDKCard } from "./design-system/ui/sdk/card";',
+      'import { useGroup as useBaseGroup } from "./design-system/ui/group";',
+      'import { useGroup as useSDKGroup } from "./design-system/ui/sdk/group";',
+      'if (BaseCard !== SDKCard || useBaseGroup !== useSDKGroup) throw new Error("Foundations installed duplicate shared presentation implementations");',
       'import { shadcnHostComponents } from "./features/forms/auto-form/shadcn-host";',
       'import type { SchemaProvider } from "./domain/runtime/core";',
       'import { createAgent } from "./domain/runtime/ui-sdk/agent";',
@@ -526,7 +531,6 @@ async function assertOptionalAdapterInstalled(adapter: string) {
       'design-system/ui',
       'domain/runtime/utils',
       'domain/runtime/input-utils',
-      'domain/runtime/control-layouts.tsx',
       'features/hooks',
       'domain/runtime/base-ui-compat',
     ].map(async (path) => {

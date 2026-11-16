@@ -25,6 +25,9 @@ const expectedItems = [
   'protoform-shadcn-tanstack',
   'protoform-shadcn-host',
   'protoform-ui-sdk',
+  'protoform-ui-presentation',
+  'protoform-recharts-presentation',
+  'protoform-tanstack-charts-presentation',
   'protoform-ui-sdk-tanstack',
   'protoform-ui-sdk-host',
   'protoform-ui-sdk-agent',
@@ -115,8 +118,10 @@ if (
 
 const protoformShadcn = dependencyItemSchema.parse(JSON.parse(readFileSync('public/r/protoform-shadcn.json', 'utf8')));
 if (
-  protoformShadcn.registryDependencies?.length !== 1 ||
-  protoformShadcn.registryDependencies[0] !== '@protoform/protoform-react' ||
+  protoformShadcn.registryDependencies?.length !== 3 ||
+  !protoformShadcn.registryDependencies.includes('@protoform/protoform-react') ||
+  !protoformShadcn.registryDependencies.includes('@protoform/protoform-ui-presentation') ||
+  !protoformShadcn.registryDependencies.includes('@protoform/protoform-recharts-presentation') ||
   !protoformShadcn.files?.some((file) => file.target === '@ui/button/index.tsx')
 ) {
   throw new Error('protoform-shadcn must install optional Base UI defaults through the configured ui alias');

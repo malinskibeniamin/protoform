@@ -1,5 +1,6 @@
 'use client';
 import type React from 'react';
+import { stateClassName } from '@/components/ui/shared/state-class-name';
 import {
   CalendarDay as CalendarDayPrimitive,
   CalendarGrid as CalendarGridPrimitive,
@@ -13,7 +14,6 @@ import {
   CalendarYearSelect as CalendarYearSelectPrimitive,
   Calendar as SDKCalendar,
 } from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-calendar';
-import { cn } from '@/registry/base-nova/protoform/lib/utils';
 
 export { createCalendarController } from '@ui-sdk/core/calendar';
 export const CalendarDay = CalendarDayPrimitive;
@@ -30,12 +30,7 @@ export function Calendar({ className, children, ...props }: React.ComponentProps
   return (
     <SDKCalendar
       {...props}
-      className={(state) =>
-        cn(
-          'w-fit rounded-lg border border-border bg-background p-3 text-sm',
-          typeof className === 'function' ? className(state) : className
-        )
-      }
+      className={stateClassName('w-fit rounded-lg border border-border bg-background p-3 text-sm', className)}
     >
       {children ?? (
         <>

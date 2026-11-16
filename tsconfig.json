@@ -37,7 +37,8 @@
       "@/components/ui/*": ["./registry/base-nova/protoform/components/*"],
       "@/*": ["./*"],
       "@/components/ui": ["./registry/base-nova/protoform/components"],
-      "@/components/ui/sdk/*": ["./registry/ui-sdk/protoform/components/*"]
+      "@/components/ui/sdk/*": ["./registry/ui-sdk/protoform/components/*"],
+      "@/components/ui/shared/*": ["./registry/base-nova/protoform/lib/presentation/*"]
     },
     "moduleDetection": "force",
     "checkJs": true

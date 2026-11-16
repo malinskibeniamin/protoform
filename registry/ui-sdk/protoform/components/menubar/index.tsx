@@ -3,8 +3,8 @@
 import { Menubar as SDKMenubar } from '@ui-sdk/react/menubar';
 
 import type React from 'react';
+import { stateClassName } from '@/components/ui/shared/state-class-name';
 import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
-import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
 function Menubar({
@@ -18,12 +18,7 @@ function Menubar({
   return (
     <SDKMenubar
       {...definedProps(props)}
-      className={(state) =>
-        cn(
-          'flex items-center gap-1 rounded-md border border-border p-1',
-          typeof className === 'function' ? className(state) : className
-        )
-      }
+      className={stateClassName('flex items-center gap-1 rounded-md border border-border p-1', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}

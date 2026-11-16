@@ -1,0 +1,26 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "protoform-tanstack-charts-presentation",
+  "title": "protoform-tanstack-charts-presentation",
+  "dependencies": [
+    "@tanstack/charts@1.5.0"
+  ],
+  "registryDependencies": [
+    "@protoform/protoform-ui-presentation"
+  ],
+  "files": [
+    {
+      "path": "registry/base-nova/protoform/lib/presentation/chart-tanstack.tsx",
+      "content": "'use client';\n\nimport type { ChartValue } from '@tanstack/charts';\nimport type { ChartProps } from '@tanstack/charts/react';\nimport type { CSSProperties } from 'react';\nimport { lazy, Suspense } from 'react';\nimport { cn } from '@/registry/base-nova/protoform/lib/utils';\n\nconst ChartModule = lazy(() => import('./chart-module').then((module) => ({ default: module.ChartModule })));\n\nexport type TanStackChartProps<\n  TDatum,\n  TXValue extends ChartValue = ChartValue,\n  TYValue extends ChartValue = ChartValue,\n> = ChartProps<TDatum, TXValue, TYValue>;\n\nexport function TanStackChart<\n  TDatum,\n  TXValue extends ChartValue = ChartValue,\n  TYValue extends ChartValue = ChartValue,\n>({ className, ...props }: TanStackChartProps<TDatum, TXValue, TYValue>) {\n  const defaultHeight = props.aspectRatio === undefined ? 320 : undefined;\n  const loadingHeight = props.height ?? defaultHeight;\n  const loadingStyle: CSSProperties & Record<`--${string}`, string | number | undefined> = {\n    '--chart-loading-width': props.width === undefined ? '100%' : `${props.width}px`,\n    '--chart-loading-height': loadingHeight === undefined ? undefined : `${loadingHeight}px`,\n    '--chart-loading-aspect-ratio': props.aspectRatio,\n    ...props.style,\n  };\n  return (\n    <Suspense\n      fallback={\n        <div\n          aria-label={props.ariaLabel}\n          className={cn(\n            'grid aspect-(--chart-loading-aspect-ratio) h-(--chart-loading-height) w-(--chart-loading-width) place-items-center text-sm text-muted-foreground',\n            className\n          )}\n          role=\"status\"\n          style={loadingStyle}\n        >\n          Loading chart…\n        </div>\n      }\n    >\n      <ChartModule>\n        {(Chart) => (\n          <Chart\n            {...props}\n            className={cn(\n              'min-w-0 text-foreground [--ts-chart-1:var(--chart-1)] [--ts-chart-2:var(--chart-2)] [--ts-chart-3:var(--chart-3)] [--ts-chart-4:var(--chart-4)] [--ts-chart-5:var(--chart-5)] [--ts-chart-6:var(--chart-6)] [&_.ts-chart]:focus-visible:ring-2 [&_.ts-chart]:focus-visible:ring-ring/50',\n              className\n            )}\n          />\n        )}\n      </ChartModule>\n    </Suspense>\n  );\n}\n",
+      "type": "registry:ui",
+      "target": "@ui/shared/chart-tanstack.tsx"
+    },
+    {
+      "path": "registry/base-nova/protoform/lib/presentation/chart-module.tsx",
+      "content": "'use client';\n\nimport { Chart } from '@tanstack/charts/react';\nimport type { ReactNode } from 'react';\n\nexport function ChartModule({ children }: { children: (Component: typeof Chart) => ReactNode }) {\n  return children(Chart);\n}\n",
+      "type": "registry:ui",
+      "target": "@ui/shared/chart-module.tsx"
+    }
+  ],
+  "type": "registry:lib"
+}

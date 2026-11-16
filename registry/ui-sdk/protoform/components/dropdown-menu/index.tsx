@@ -2,6 +2,7 @@
 
 import { CheckIcon, CircleIcon } from 'lucide-react';
 import type React from 'react';
+import { stateClassName } from '@/components/ui/shared/state-class-name';
 import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import {
   Menu as SDKMenu,
@@ -23,7 +24,6 @@ import {
   MenuSubTrigger as SDKMenuSubTrigger,
   MenuTrigger as SDKMenuTrigger,
 } from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-menu';
-import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
 const Menu = SDKMenu;
@@ -41,12 +41,10 @@ function MenuCheckboxItem({
   return (
     <SDKMenuCheckboxItem
       {...definedProps(props)}
-      className={(state) =>
-        cn(
-          'relative flex cursor-pointer items-center gap-2 rounded-md py-1.5 pr-8 pl-2 text-sm outline-none data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-accent data-highlighted:text-accent-foreground',
-          typeof className === 'function' ? className(state) : className
-        )
-      }
+      className={stateClassName(
+        'relative flex cursor-pointer items-center gap-2 rounded-md py-1.5 pr-8 pl-2 text-sm outline-none data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-accent data-highlighted:text-accent-foreground',
+        className
+      )}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -74,12 +72,10 @@ function MenuContent({
   return (
     <SDKMenuContent
       {...definedProps(props)}
-      className={(state) =>
-        cn(
-          'z-50 max-h-(--available-height) min-w-36 overflow-auto rounded-lg border border-border bg-popover p-1 text-popover-foreground shadow-md outline-none',
-          typeof className === 'function' ? className(state) : className
-        )
-      }
+      className={stateClassName(
+        'z-50 max-h-(--available-height) min-w-36 overflow-auto rounded-lg border border-border bg-popover p-1 text-popover-foreground shadow-md outline-none',
+        className
+      )}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -98,7 +94,7 @@ function MenuContextTrigger({
   return (
     <SDKMenuContextTrigger
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -117,7 +113,7 @@ function MenuGroup({
   return (
     <SDKMenuGroup
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -136,12 +132,7 @@ function MenuGroupLabel({
   return (
     <SDKMenuGroupLabel
       {...definedProps(props)}
-      className={(state) =>
-        cn(
-          'px-2 py-1.5 text-xs font-medium text-muted-foreground',
-          typeof className === 'function' ? className(state) : className
-        )
-      }
+      className={stateClassName('px-2 py-1.5 text-xs font-medium text-muted-foreground', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -160,12 +151,10 @@ function MenuItem({
   return (
     <SDKMenuItem
       {...definedProps(props)}
-      className={(state) =>
-        cn(
-          'relative flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-accent data-highlighted:text-accent-foreground',
-          typeof className === 'function' ? className(state) : className
-        )
-      }
+      className={stateClassName(
+        'relative flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-accent data-highlighted:text-accent-foreground',
+        className
+      )}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -184,7 +173,7 @@ function MenuItemIcon({
   return (
     <SDKMenuItemIcon
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -203,7 +192,7 @@ function MenuItemIndicator({
   return (
     <SDKMenuItemIndicator
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -224,7 +213,7 @@ function MenuRadioGroup({
   return (
     <SDKMenuRadioGroup
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -245,12 +234,10 @@ function MenuRadioItem({
   return (
     <SDKMenuRadioItem
       {...definedProps(props)}
-      className={(state) =>
-        cn(
-          'relative flex cursor-pointer items-center gap-2 rounded-md py-1.5 pr-8 pl-2 text-sm outline-none data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-accent data-highlighted:text-accent-foreground',
-          typeof className === 'function' ? className(state) : className
-        )
-      }
+      className={stateClassName(
+        'relative flex cursor-pointer items-center gap-2 rounded-md py-1.5 pr-8 pl-2 text-sm outline-none data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-accent data-highlighted:text-accent-foreground',
+        className
+      )}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -278,9 +265,7 @@ function MenuSeparator({
   return (
     <SDKMenuSeparator
       {...definedProps(props)}
-      className={(state) =>
-        cn('-mx-1 my-1 h-px bg-border', typeof className === 'function' ? className(state) : className)
-      }
+      className={stateClassName('-mx-1 my-1 h-px bg-border', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -299,9 +284,7 @@ function MenuShortcut({
   return (
     <SDKMenuShortcut
       {...definedProps(props)}
-      className={(state) =>
-        cn('ml-auto text-xs text-muted-foreground', typeof className === 'function' ? className(state) : className)
-      }
+      className={stateClassName('ml-auto text-xs text-muted-foreground', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -322,12 +305,10 @@ function MenuSubContent({
   return (
     <SDKMenuSubContent
       {...definedProps(props)}
-      className={(state) =>
-        cn(
-          'z-50 max-h-(--available-height) min-w-36 overflow-auto rounded-lg border border-border bg-popover p-1 text-popover-foreground shadow-md outline-none',
-          typeof className === 'function' ? className(state) : className
-        )
-      }
+      className={stateClassName(
+        'z-50 max-h-(--available-height) min-w-36 overflow-auto rounded-lg border border-border bg-popover p-1 text-popover-foreground shadow-md outline-none',
+        className
+      )}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -346,12 +327,10 @@ function MenuSubTrigger({
   return (
     <SDKMenuSubTrigger
       {...definedProps(props)}
-      className={(state) =>
-        cn(
-          'relative flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-accent data-highlighted:text-accent-foreground',
-          typeof className === 'function' ? className(state) : className
-        )
-      }
+      className={stateClassName(
+        'relative flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-accent data-highlighted:text-accent-foreground',
+        className
+      )}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -370,7 +349,7 @@ function MenuTrigger({
   return (
     <SDKMenuTrigger
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}

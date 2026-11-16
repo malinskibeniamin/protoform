@@ -1,9 +1,10 @@
 import { execFileSync } from 'node:child_process';
-import { readFile, writeFile } from 'node:fs/promises';
+import { readdir, readFile, writeFile } from 'node:fs/promises';
 import { registrySchema } from 'shadcn/schema';
 import { z } from 'zod';
 
 type Registry = z.infer<typeof registrySchema>;
+const sourceFileExtension = /\.tsx?$/u;
 const fallbackPackages = /^(?:recharts|react-is)(?:@|$)/u;
 function assertRegistry(value: unknown): asserts value is Registry {
   registrySchema.parse(value);
@@ -11,6 +12,23 @@ function assertRegistry(value: unknown): asserts value is Registry {
 const registryPath = new URL('../registry.json', import.meta.url);
 const registry: unknown = JSON.parse(await readFile(registryPath, 'utf8'));
 assertRegistry(registry);
+const presentationDirectory = 'registry/base-nova/protoform/lib/presentation';
+const presentation = registry.items.find((item) => item.name === 'protoform-ui-presentation');
+if (presentation === undefined) {
+  throw new Error('Missing shared UI presentation registry item');
+}
+const chartModules = new Set(['chart-recharts.tsx', 'chart-tanstack.tsx', 'chart-module.tsx']);
+presentation.files = [
+  ...(presentation.files ?? []).filter((file) => !file.path.startsWith(`${presentationDirectory}/`)),
+  ...(await readdir(new URL(`../${presentationDirectory}`, import.meta.url)))
+    .filter((name) => sourceFileExtension.test(name) && !chartModules.has(name))
+    .toSorted()
+    .map((name) => ({
+      path: `${presentationDirectory}/${name}`,
+      type: 'registry:ui' as const,
+      target: `@ui/shared/${name}`,
+    })),
+];
 const manifest = z
   .object({ dependencies: z.record(z.string(), z.string()) })
   .parse(JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8')));
@@ -52,6 +70,12 @@ for (const { name, directory, documentation, target } of [
     name: `${name}-tanstack`,
     title: `${fallback.title ?? name} with TanStack Charts`,
     description: `${fallback.description ?? ''} Uses TanStack Charts instead of Recharts.`,
+    registryDependencies: [
+      ...(fallback.registryDependencies ?? []).filter(
+        (dependency) => dependency !== '@protoform/protoform-recharts-presentation'
+      ),
+      '@protoform/protoform-tanstack-charts-presentation',
+    ],
     dependencies: [
       ...(fallback.dependencies ?? []).filter((dependency) => !fallbackPackages.test(dependency)),
       `@tanstack/charts@${version}`,
@@ -69,11 +93,6 @@ for (const { name, directory, documentation, target } of [
         path: `${directory}/chart-tanstack/index.tsx`,
         type: 'registry:ui',
         target: `${target}/chart-tanstack/index.tsx`,
-      },
-      {
-        path: `${directory}/chart-tanstack/chart-module.tsx`,
-        type: 'registry:ui',
-        target: `${target}/chart-tanstack/chart-module.tsx`,
       },
     ],
   } satisfies Registry['items'][number];

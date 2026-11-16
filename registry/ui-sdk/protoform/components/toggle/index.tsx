@@ -1,6 +1,7 @@
 'use client';
 
 import type React from 'react';
+import { stateClassName } from '@/components/ui/shared/state-class-name';
 import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import {
   Toggle as SDKToggle,
@@ -30,8 +31,8 @@ function Toggle({
   return (
     <SDKToggle
       {...definedProps(props)}
-      className={(state) =>
-        cn(
+      className={stateClassName(
+        [
           'inline-flex cursor-pointer items-center justify-center gap-2 rounded-md bg-transparent text-sm font-medium whitespace-nowrap outline-none hover:bg-muted hover:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 data-pressed:bg-accent data-pressed:text-accent-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*="size-"])]:size-4',
           toggleSizes[size ?? 'md'] ?? 'h-9 min-w-9 px-2',
           size === undefined &&
@@ -39,9 +40,9 @@ function Toggle({
           variant === 'outline' && 'border !border-input shadow-xs hover:bg-accent hover:text-accent-foreground',
           variant === undefined &&
             'group-data-[variant=outline]/toggle-group:border group-data-[variant=outline]/toggle-group:border-input group-data-[variant=outline]/toggle-group:shadow-xs group-data-[variant=outline]/toggle-group:hover:bg-accent group-data-[variant=outline]/toggle-group:hover:text-accent-foreground',
-          typeof className === 'function' ? className(state) : className
-        )
-      }
+        ],
+        className
+      )}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}
@@ -84,7 +85,7 @@ function ToggleIcon({
   return (
     <SDKToggleIcon
       {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
+      className={stateClassName('', className)}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}

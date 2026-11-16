@@ -1,9 +1,9 @@
 'use client';
 
 import type React from 'react';
+import { stateClassName } from '@/components/ui/shared/state-class-name';
 import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import { Separator as SDKSeparator } from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-separator';
-import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
 function Separator({
@@ -17,12 +17,10 @@ function Separator({
   return (
     <SDKSeparator
       {...definedProps(props)}
-      className={(state) =>
-        cn(
-          'shrink-0 bg-border data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px',
-          typeof className === 'function' ? className(state) : className
-        )
-      }
+      className={stateClassName(
+        'shrink-0 bg-border data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px',
+        className
+      )}
       data-size={size}
       data-testid={testId ?? props['data-testid']}
       data-variant={variant}

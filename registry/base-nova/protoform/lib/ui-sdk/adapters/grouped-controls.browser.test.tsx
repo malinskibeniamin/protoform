@@ -200,7 +200,11 @@ test('retained checkbox group coordination preserves parent selection, form valu
 test('owned standalone toggles and retained group coordination preserve pressed values and roving focus', async () => {
   await render(
     <>
-      <Toggle aria-label="Standalone bold" defaultPressed />
+      {createElement(Toggle, {
+        'aria-label': 'Standalone bold',
+        className: (state) => (state.pressed ? 'custom-pressed px-7' : 'custom-idle px-5'),
+        defaultPressed: true,
+      })}
       <Toggle aria-label="Refused italic" onPressedChange={(_value, details) => details.cancel()} />
       <ToggleGroup aria-label="View mode" defaultValue={['grid']} deselectable={false}>
         <Toggle value="grid">Grid view</Toggle>
@@ -208,8 +212,14 @@ test('owned standalone toggles and retained group coordination preserve pressed 
       </ToggleGroup>
     </>
   );
-  await page.getByRole('button', { name: 'Standalone bold' }).press('Space');
-  await expect.element(page.getByRole('button', { name: 'Standalone bold' })).toHaveAttribute('aria-pressed', 'false');
+  const bold = page.getByRole('button', { name: 'Standalone bold' });
+  await expect.element(bold).toHaveClass(/custom-pressed/u);
+  await expect.element(bold).toHaveClass(/px-7/u);
+  await bold.press('Space');
+  await expect.element(bold).toHaveAttribute('aria-pressed', 'false');
+  await expect.element(bold).toHaveClass(/custom-idle/u);
+  await expect.element(bold).toHaveClass(/px-5/u);
+  await expect.element(bold).not.toHaveClass(/custom-pressed/u);
   await page.getByRole('button', { name: 'Refused italic' }).click();
   await expect.element(page.getByRole('button', { name: 'Refused italic' })).toHaveAttribute('aria-pressed', 'false');
   await expect.element(page.getByRole('button', { name: 'Grid view' })).toHaveAttribute('aria-pressed', 'true');
