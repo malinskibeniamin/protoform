@@ -2,7 +2,7 @@
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "aip-182-external-software-dependencies",
   "title": "AIP-182 External software dependencies",
-  "description": "Every external runtime dependency is declared by a public source-copy registry item.",
+  "description": "An installed source-copy consumer runs with host-supplied primitives and public runtime dependencies.",
   "dependencies": [],
   "registryDependencies": [
     "@protoform/protoform-demo-runtime"

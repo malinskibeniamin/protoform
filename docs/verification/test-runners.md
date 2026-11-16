@@ -69,10 +69,10 @@ rstest.host-registry.config.ts -> desktop/mobile installed consumers
 rstest.canary.config.ts     -> native E2E compatibility regression cases
 ```
 
-- Rstest packages are pinned to `0.12.5`. Happy DOM remains `21.0.4`; this baseline
+- Rstest packages are pinned to `0.12.6`. Happy DOM remains `21.0.4`; this baseline
   already used Happy DOM and had no direct JSDOM or Vitest dependency.
 - Direct `@playwright/test` imports/dependency/configurations are removed.
-  `playwright@1.64.1` remains as the browser automation engine, not the test runner.
+  `playwright@1.65.0` remains as the browser automation engine, not the test runner.
 - Shared Testing Library matchers and AutoForm test utilities remain. Simulated media,
   scrolling, storage and resize shims stay confined to Happy DOM, not native browsers.
   Happy DOM disables implicit CSS/iframe loading while retaining explicit real HTTP fetch.
@@ -227,7 +227,14 @@ and five docs images. Original normal assertions passed after explicit capture. 
 new image was copied byte-for-byte from artifact `12278532997`, ZIP digest
 `sha256:94c4d8812388645a378ef113a589c14f5bb7e3eea399a9c9eaeeaf90cf391e78`.
 [Capture provenance and per-file hashes](macos-screenshot-provenance.json) record the source,
-runtimes, image, locale and paths. All pre-existing PNGs remain byte-identical.
+runtimes, image, locale and paths. At that capture, all pre-existing PNGs remained byte-identical.
+
+The 2026-11-08 dependency refresh subsequently updates eight agent-reviewed consumer references with owner authorization:
+six generic Darwin images and two Darwin 25 arm64 error-state images. Each changes only 1–7
+text-rendering pixels; image dimensions and layout are unchanged. Four additional captures with
+zero comparator differences were restored byte-for-byte instead of introducing encoding-only churn.
+The provenance file records the local capture environment and previous/current hashes separately
+from the historical hosted captures. No comparison tolerance or test assertion is weakened.
 
 `PROTOFORM_SCREENSHOT_PLATFORM=darwin-25-arm64` selects only that native host's references.
 Wrong-host, arbitrary and traversal keys fail; missing variants never fall back. All

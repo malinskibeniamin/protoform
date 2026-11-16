@@ -3,9 +3,9 @@ import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-const API_LINTER = 'github.com/googleapis/api-linter/v2/cmd/api-linter@v2.3.1';
+const API_LINTER = 'github.com/googleapis/api-linter/v2/cmd/api-linter@v2.4.1';
 const AIP_PROTO = 'conformance/proto/protoform/conformance/v1/aip.proto';
-const GO_TOOLCHAIN = 'go1.26.6';
+const GO_TOOLCHAIN = 'go1.27.3';
 const ENABLED_RULES = [
   'core::0127',
   'core::0131',

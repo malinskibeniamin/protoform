@@ -3,24 +3,24 @@
 Run `bun run lint:fix` and `bun run type:check` before submitting changes. CI also runs component,
 conformance, browser, registry-consumer and documentation tests.
 
-## Reviewed versions (updated 2026-11-06)
+## Reviewed versions (updated 2026-11-08)
 
-| Tool            | Version                     | Responsibility                                     |
-| --------------- | --------------------------- | -------------------------------------------------- |
-| Bun             | 1.4.4                       | Package manager; pinned across workflows           |
-| Blume           | 2.2.6                       | Astro/MDX checking, builds and audits              |
-| Ultracite       | 8.1.0                       | Shared conventions and safe edit hooks             |
-| Biome           | 2.6.6                       | General linting and source formatting              |
-| Oxlint          | 1.90.0                      | Additional syntax, import, promise and test checks |
-| oxlint-tsgolint | 7.0.2005                    | Type-aware linting and compiler diagnostics        |
-| tsrs            | 0.18.0-ts7.1.0-dev.20260929 | Rust-based strict source and test checking         |
-| Oxfmt           | 0.75.0                      | Astro/Markdown/YAML formatting                     |
-| React Doctor    | 0.9.18                      | Full warning-blocking component/design audit       |
-| React Scan      | 0.5.7                       | Interactive profiling: `bun run scan:react`        |
+| Tool            | Version             | Responsibility                                     |
+| --------------- | ------------------- | -------------------------------------------------- |
+| Bun             | 1.4.4               | Package manager; pinned across workflows           |
+| Blume           | 2.2.7               | Astro/MDX checking, builds and audits              |
+| Ultracite       | 8.1.1               | Shared conventions and safe edit hooks             |
+| Biome           | 2.6.6               | General linting and source formatting              |
+| Oxlint          | 1.92.0              | Additional syntax, import, promise and test checks |
+| oxlint-tsgolint | 7.0.2006            | Type-aware linting and compiler diagnostics        |
+| tsrs            | 0.23.0-ts7.1.0-beta | Rust-based strict source and test checking         |
+| Oxfmt           | 0.77.0              | Astro/Markdown/YAML formatting                     |
+| React Doctor    | 0.9.22              | Full warning-blocking component/design audit       |
+| React Scan      | 0.5.7               | Interactive profiling: `bun run scan:react`        |
 
 Source, test, and authored-file coverage checks use the exactly pinned Rust compiler, `tsrs`.
-This release follows TypeScript 7.1 development, not the Microsoft 7.1 beta. It supports macOS arm64
-and Linux x64/arm64; it does not ship Windows or Intel macOS binaries. TypeScript 6 remains for
+This release targets TypeScript 7.1 beta and uses upstream checker defaults. It supports macOS
+arm64/x64, Linux x64/arm64 and Windows x64. The project uses the default checker mode, not `--fast`. TypeScript 6 remains for
 synchronous AST APIs used by tooling, not for source/test typechecking. Blume retains its own
 Astro/MDX checker.
 
@@ -28,7 +28,7 @@ Astro/MDX checker.
 before React hydration. Profiling is never injected into builds or previews. The installed CLI's
 `init` command replaces the older URL-based command; no unpinned CDN script is used.
 
-Blume 2.2.6 has a Bun-managed patch in `patches/blume@2.2.6.patch`: load the OpenAPI request
+Blume 2.2.7 has a Bun-managed patch in `patches/blume@2.2.7.patch`: load the OpenAPI request
 module before defining its custom element. Its new lazy import lost early edits and Send clicks
 while the already-visible controls were unwired. The existing fast-edit/send browser regressions
 failed before this patch. Handlers attach when the element connects, not on the queued disclosure
@@ -38,8 +38,8 @@ This trades deferred initialization for working controls; remove the patch
 when upstream makes initialization synchronous or exposes a real loading/readiness state.
 The pinned package integrity in `bun.lock` owns provenance; upstream license files are unchanged.
 
-The 2.2.6 upgrade retains that patch: the same-task first-edit regression still fails
-against the unpatched release. Blume's declaration exports and localized reference labels,
+The 2.2.7 upgrade retains that patch: its unpatched source still defers initialization
+until the disclosure toggle. Blume's declaration exports and localized reference labels,
 Astro's build/router fixes, Connect's cancellation cleanup and Rstest's Happy DOM 21
 prebundling apply without local opt-ins. Resolver 7's breaking TypeBox migration does not
 affect Protoform, which only uses `toNestErrors` and `validateFieldsNatively`.
@@ -47,12 +47,15 @@ affect Protoform, which only uses `toNestErrors` and `validateFieldsNatively`.
 Pixelmatch 8 uses OKLab/HyAB color differences and improved transparency detection. The
 screenshot comparator keeps `threshold: 0.2`, anti-alias filtering and zero differing-pixel
 acceptance; it does not opt into masks or windowed counts. A transparent-white regression
-now detects a change missed by version 7. No screenshot reference is regenerated.
-The registry source pins `react-resizable-panels@4.16.1` for copied consumers too, including
-its pointer-coordinate corrections under CSS zoom/scale; new Workspace APIs remain unused.
+now detects a change missed by version 7. That comparator migration did not regenerate references.
+The subsequent dependency refresh updates eight owner-authorized, agent-reviewed text-rendering baselines only;
+dimensions, layout and zero-pixel tolerance remain unchanged. Capture details and hashes are in
+`docs/verification/macos-screenshot-provenance.json`.
+The registry source pins `react-resizable-panels@4.19.1` for copied consumers too;
+new Workspace APIs remain unused.
 
 The version-scoped `deepmerge@^4` override installs the exact npm alias
-`@stackline/deepmerge@1.1.0` for Ultracite, shadcn and `@shadcn/registry`.
+`@stackline/deepmerge@1.1.2` for Ultracite, shadcn and `@shadcn/registry`.
 It replaces the prototype-poisoning behavior in CVE-2026-93753 without changing the audit
 policy or adding an advisory exception. Formik's separate deepmerge 2.x remains unchanged.
 The fork has no runtime dependencies and preserves the default callable CommonJS/ESM API,
@@ -61,14 +64,25 @@ recursive configuration merging, custom array merging and `merge.all`.
 consumer, hostile input in both merge positions, and ordinary configuration behavior.
 Remove the override when those consumers resolve an upstream release with the same fix;
 rerun the security audit, regressions and registry consumer checks first.
-See the [fork's release and compatibility notes](https://github.com/alexandroit/stackline-deepmerge/releases/tag/v1.1.0)
+See the [fork's release and compatibility notes](https://github.com/alexandroit/stackline-deepmerge/releases/tag/v1.1.2)
 and [Bun's version-scoped override semantics](https://bun.com/docs/pm/overrides#version-scoped-overrides).
 
-The 2.6.4 verification also refreshed three existing transitive resolutions to their smallest
+The 2026-11-08 refresh updates stable production/dev packages and both existing experimental
+comparison tracks (React Hook Form `8.0.0-beta.5` and TanStack Form `2.0.0-alpha.3`).
+TanStack v2 submission callbacks now read `validatorOutputs`, not `schemaOutputs`.
+Protobuf runtime and generators move together to 2.17.0; Buf locks and registry output are regenerated.
+The new React Doctor `forwarded-set-state-in-effect` rule is enforced as an error.
+
+Six redundant overrides were removed: MCP SDK, Rspack, Vercel's Zod, KaTeX, Lodash ES and Sharp.
+Their parents now resolve compatible versions normally. Security overrides remain for Glob 14.0.4,
+Minimatch 11.0.5, Typography's selector parser 7.1.7, Vercel's path-to-regexp 6.3.0, router's
+path-to-regexp 8.4.2 and the deepmerge fork. The path-to-regexp lines intentionally differ: the
+parents rely on different APIs; forcing v9 into either is not a compatible upgrade.
+
+The 2.6.4 verification previously refreshed three transitive resolutions to their smallest
 fixed releases: `@hono/node-server` 2.1.3, `seroval` 1.6.11 and `systeminformation` 5.33.16.
 These remediate nine audit advisories without adding dependencies, overrides or audit exceptions.
-All remain within their parents' existing ranges; Seroval stays on 1.6 to avoid unrelated 1.7
-streaming API changes. See the [static-path advisory](https://github.com/advisories/GHSA-rmxm-3fg6-px4f),
+The current refresh supersedes these resolutions with compatible releases, including Seroval 1.7.10. See the [static-path advisory](https://github.com/advisories/GHSA-rmxm-3fg6-px4f),
 [Seroval injection advisory](https://github.com/advisories/GHSA-f86p-h4j2-7qgj) and
 [systeminformation command-injection advisory](https://github.com/advisories/GHSA-3f7j-7jwc-fxfj).
 
@@ -225,8 +239,8 @@ required CI checks and review policy changes at the repository-hosting layer.
 - [Biome 2.6.4 release notes](https://github.com/biomejs/biome/releases/tag/%40biomejs%2Fbiome%402.6.4)
 - [Biome 2.6.3 release notes](https://biomejs.dev/internals/changelog/version/2-6-3/)
 - [Oxfmt Astro configuration](https://www.ultracite.ai/docs/configuration#formatting-astro-files-oxfmt)
-- [Oxlint release notes](https://github.com/oxc-project/oxc/releases/tag/oxlint_v1.90.0)
+- [Oxlint release notes](https://github.com/oxc-project/oxc/releases/tag/oxlint_v1.92.0)
 - [Type-aware Oxlint](https://oxc.rs/docs/guide/usage/linter/type-aware)
 - [Biome conflicting-rule guidance](https://biomejs.dev/guides/upgrade-to-biome-v2/)
-- [Blume release notes](https://github.com/haydenbleasel/blume/releases/tag/blume%402.2.6)
+- [Blume release notes](https://github.com/haydenbleasel/blume/releases/tag/blume%402.2.7)
 - [React Scan installation](https://github.com/aidenybai/react-scan#manual-installation)
