@@ -35,10 +35,10 @@ const schema: SchemaProvider = {
 export default function UIFoundationsExample() {
   const [saved, setSaved] = useState('Not saved');
   const [score, setScore] = useState(0);
-  const [session, setSession] = useState<Session>();
+  const [session, setSession] = useState<Session | undefined>(undefined);
   const [status, setStatus] = useState('SDK disabled');
   const [snapshot, setSnapshot] = useState('');
-  const resource = useRef<Session>(undefined);
+  const resource = useRef<Session | undefined>(undefined);
   const enhancement = useRef<HTMLDivElement>(null);
   useEffect(() => () => resource.current?.dispose(), []);
   function enable() {

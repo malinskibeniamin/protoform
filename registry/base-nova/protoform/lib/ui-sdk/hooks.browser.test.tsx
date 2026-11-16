@@ -164,7 +164,7 @@ test('async options expose a real failed-load retry', async () => {
   await expect.poll(() => load.mock.calls.length).toBe(2);
   await page.getByRole('combobox', { name: 'Remote project' }).press('ArrowDown');
   await expect.element(page.getByRole('option', { name: 'Recovered project' })).toBeVisible();
-  expect(load.mock.calls).toHaveLength(2);
+  expect(load).toHaveBeenCalledTimes(2);
 });
 test('preference selection restores only explicitly supplied storage and honors cancellation', async () => {
   const key = 'protoform-hooks-test';

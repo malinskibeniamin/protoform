@@ -13,8 +13,14 @@ test('installed hooks connect field errors and recover asynchronous paged option
   await page.getByRole('button', { name: 'Toggle field error' }).click();
   await expect(title).toHaveAttribute('aria-invalid', 'true');
   await expect(page.getByRole('alert')).toHaveText('Choose a longer project title.');
+  await expect(page.getByRole('status').filter({ hasText: 'Choose a longer project title.' })).toHaveText(
+    'Choose a longer project title.'
+  );
   await page.getByRole('button', { name: 'Toggle field error' }).click();
-  await expect(page.getByText('Choose a longer project title.')).toHaveCount(0);
+  await expect(page.getByRole('alert')).toHaveCount(0);
+  await expect(title).not.toHaveAttribute('aria-invalid', 'true');
+  await expect(title).toHaveAccessibleDescription('Labels, descriptions, and errors connect through SDK Field.');
+  await expect(title).toHaveValue('Atlas 🌊');
   const input = page.getByRole('combobox', { name: 'Search projects' });
   await input.fill('A');
   await expect(page.getByRole('option', { name: 'Apollo', exact: true })).toBeVisible();
