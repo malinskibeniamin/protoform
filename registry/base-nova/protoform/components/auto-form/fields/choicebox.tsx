@@ -1,7 +1,6 @@
 'use client';
 
 import type { AutoFormFieldProps } from '../core-types';
-import { getFieldUiConfig } from '../helpers';
 import type { FieldTypeDefinition } from '../registry';
 import {
   Choicebox,
@@ -11,6 +10,7 @@ import {
   ChoiceboxItemIndicator,
   ChoiceboxItemTitle,
 } from '../ui-components';
+import { builtInFieldMetadata } from './metadata';
 import { getControlLabel, getFlatOptions, hasNumericOptions, renderOptionLabel, useFieldTestIds } from './shared';
 
 function ChoiceboxFieldComponent({ error, field, id, inputProps, label }: AutoFormFieldProps) {
@@ -49,13 +49,6 @@ function ChoiceboxFieldComponent({ error, field, id, inputProps, label }: AutoFo
 export { ChoiceboxFieldComponent };
 
 export const choiceboxFieldDefinition: FieldTypeDefinition = {
+  ...builtInFieldMetadata.choicebox,
   component: ChoiceboxFieldComponent,
-  match: (field) => {
-    if (field.type !== 'select') {
-      return false;
-    }
-    return getFieldUiConfig(field).control === 'choicebox';
-  },
-  name: 'choicebox',
-  priority: 25,
 };

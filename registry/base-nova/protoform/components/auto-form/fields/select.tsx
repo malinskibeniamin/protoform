@@ -28,6 +28,7 @@ import {
   SelectValue,
 } from '../ui-components';
 import { safeStringify } from '../utils/serialization';
+import { builtInFieldMetadata } from './metadata';
 import {
   getControlLabel,
   getFlatOptions,
@@ -355,26 +356,11 @@ function ProviderOptionLabel({ option }: { option: DataProviderOption }) {
 export { SelectFieldComponent };
 
 export const selectFieldDefinition: FieldTypeDefinition = {
+  ...builtInFieldMetadata.select,
   component: SelectFieldComponent,
-  match: (field) => {
-    if (field.type !== 'select') {
-      return false;
-    }
-    const optionCount = field.options?.length ?? 0;
-    return optionCount > 3 && optionCount <= 8;
-  },
-  name: 'select',
-  priority: 12,
 };
 
 export const dataProviderSelectFieldDefinition: FieldTypeDefinition = {
+  ...builtInFieldMetadata.dataProviderSelect,
   component: SelectFieldComponent,
-  match: (field) => {
-    if (field.type !== 'string' && field.type !== 'number') {
-      return false;
-    }
-    return readDataProviderId(field) !== undefined;
-  },
-  name: 'dataProviderSelect',
-  priority: 120,
 };

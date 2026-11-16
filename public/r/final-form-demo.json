@@ -4,11 +4,11 @@
   "title": "Final Form interoperability",
   "description": "Feed Protoform validation results into Final Form while preserving its native subscription model.",
   "dependencies": [
-    "final-form",
-    "react-final-form"
+    "final-form@^5.0.1",
+    "react-final-form@^7.0.1"
   ],
   "registryDependencies": [
-    "@protoform/protoform-demo-runtime",
+    "@protoform/protoform-demo-fixtures",
     "@protoform/form-library-adapters"
   ],
   "files": [

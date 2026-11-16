@@ -129,4 +129,79 @@ export function Field() {
     expect(repeated.status).toBe(0);
     expect(repeated.stdout).toBe(result.stdout);
   });
+
+  test.each(['node', 'dom', 'conformance'])(
+    'executes fail-fast React Compiler in the %s test project',
+    (suite) => {
+      mkdirSync('.tmp', { recursive: true });
+      const directory = mkdtempSync(resolve('.tmp/react-compiler-probe-'));
+      const fixture = resolve(directory, 'probe.test.tsx');
+      const config = resolve(directory, 'rstest.config.ts');
+      const baseConfig = resolve(`rstest.${suite}.config.ts`);
+      const run = () =>
+        spawnSync(process.execPath, ['scripts/run-tests.ts', suite, '--config', config, '--reporters', 'dot'], {
+          encoding: 'utf8',
+          timeout: 20_000,
+        });
+      try {
+        writeFileSync(
+          config,
+          `import base from ${JSON.stringify(baseConfig)};
+export default { ...base, include: [${JSON.stringify(fixture)}], performance: { buildCache: false } };
+`
+        );
+        writeFileSync(
+          fixture,
+          `import { expect, test } from '@rstest/core';
+export function Probe({ label }: { label: string }) { return <p>{label}</p>; }
+test('valid component', () => { expect(typeof Probe).toBe('function'); });
+`
+        );
+        const valid = run();
+        expect(valid.error).toBeUndefined();
+        expect(valid.stdout + valid.stderr).toContain('1 passed');
+        expect(valid.status).toBe(0);
+
+        writeFileSync(
+          fixture,
+          `import { expect, test } from '@rstest/core';
+let renders = 0;
+export function Probe() { renders += 1; return <p>{renders}</p>; }
+test('invalid component', () => { expect(typeof Probe).toBe('function'); });
+`
+        );
+        const invalid = run();
+        expect(invalid.error).toBeUndefined();
+        expect(invalid.status).toBe(1);
+        expect(invalid.stdout + invalid.stderr).toContain('[ReactCompiler] Cannot reassign variables declared outside');
+      } finally {
+        rmSync(directory, { recursive: true, force: true });
+      }
+    },
+    60_000
+  );
+
+  test('rejects invalid authored tests through the primary strict compiler program', () => {
+    const directory = mkdtempSync(resolve('scripts/typecheck-probe-'));
+    const fixture = resolve(directory, 'probe.test.ts');
+    const run = () =>
+      spawnSync('bun', ['run', 'typecheck:source', '--incremental', 'false', '--pretty', 'false'], {
+        encoding: 'utf8',
+        timeout: 20_000,
+      });
+    try {
+      writeFileSync(fixture, 'export const value: string = 123;\n');
+      const primary = run();
+      expect(primary.error).toBeUndefined();
+      expect(primary.status).toBe(2);
+      expect(primary.stdout + primary.stderr).toContain('TS2322');
+
+      writeFileSync(fixture, "export const value: string = 'valid';\n");
+      const valid = run();
+      expect(valid.error).toBeUndefined();
+      expect(valid.status, valid.stdout + valid.stderr).toBe(0);
+    } finally {
+      rmSync(directory, { recursive: true, force: true });
+    }
+  }, 60_000);
 });

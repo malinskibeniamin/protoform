@@ -1,19 +1,22 @@
 #!/usr/bin/env bun
 
 import { existsSync } from 'node:fs';
-import { access, cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { access, cp, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { createServer } from 'node:http';
+import { tmpdir } from 'node:os';
 import { extname, join, resolve as resolvePath } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { $, Glob } from 'bun';
+import { $, Glob, resolveSync, semver } from 'bun';
 import { z } from 'zod';
 import shadcnCatalog from '../registry/shadcn-catalog.json' with { type: 'json' };
+import { type ConsumerDependencyMode, consumerDependencyVersion } from './registry-dependencies';
 
 const root = resolvePath(fileURLToPath(new URL('..', import.meta.url)));
 const fixture = join(root, '.tmp', 'consumer-fixture');
 const hostFixture = join(root, '.tmp', 'host-consumer-fixture');
 const coreFixture = join(root, '.tmp', 'core-consumer-fixture');
 const tanstackFixture = join(root, '.tmp', 'tanstack-consumer-fixture');
+const interopFixture = join(root, '.tmp', 'interop-consumer-fixture');
 const publicDir = join(root, 'public');
 const queryVersion = z
   .object({ version: z.string() })
@@ -27,6 +30,7 @@ if (!Number.isInteger(registryPort) || registryPort < 1 || registryPort > 65_535
 }
 const registryOrigin = `http://127.0.0.1:${registryPort}`;
 const rechartsPackage = /\brecharts@/u;
+const defaultFormPackages = /\breact-hook-form(?:-v8)?@|@hookform\/resolvers@/u;
 
 const contentTypes: Record<string, string> = {
   '.css': 'text/css; charset=utf-8',
@@ -36,12 +40,12 @@ const contentTypes: Record<string, string> = {
   '.svg': 'image/svg+xml; charset=utf-8',
 };
 
-async function createFixture() {
-  await rm(fixture, { force: true, recursive: true });
-  await mkdir(join(fixture, 'app'), { recursive: true });
-  await writeFile(join(fixture, '.npmrc'), '@buf:registry=https://buf.build/gen/npm/v1/\n');
+async function createFixture(target = fixture) {
+  await rm(target, { force: true, recursive: true });
+  await mkdir(join(target, 'app'), { recursive: true });
+  await writeFile(join(target, '.npmrc'), '@buf:registry=https://buf.build/gen/npm/v1/\n');
   await writeFile(
-    join(fixture, 'package.json'),
+    join(target, 'package.json'),
     `${JSON.stringify(
       {
         dependencies: {
@@ -67,7 +71,7 @@ async function createFixture() {
     )}\n`
   );
   await writeFile(
-    join(fixture, 'components.json'),
+    join(target, 'components.json'),
     `${JSON.stringify(
       {
         $schema: 'https://ui.shadcn.com/schema.json',
@@ -98,7 +102,7 @@ async function createFixture() {
     )}\n`
   );
   await writeFile(
-    join(fixture, 'tsconfig.json'),
+    join(target, 'tsconfig.json'),
     `${JSON.stringify(
       {
         compilerOptions: {
@@ -120,7 +124,7 @@ async function createFixture() {
       2
     )}\n`
   );
-  await writeFile(join(fixture, 'app', 'globals.css'), "@import 'tailwindcss';\n");
+  await writeFile(join(target, 'app', 'globals.css'), "@import 'tailwindcss';\n");
 }
 
 function servePublic() {
@@ -482,6 +486,67 @@ async function assertHostInstalled() {
   );
 }
 
+async function assertInteropInstalled() {
+  await rm(interopFixture, { force: true, recursive: true });
+  await cp(fixture, interopFixture, { recursive: true });
+  const manifest = z
+    .looseObject({ dependencies: z.record(z.string(), z.string()) })
+    .parse(JSON.parse(await readFile(join(root, 'package.json'), 'utf8')));
+  const hostDependencies = [
+    '@base-ui/react',
+    'class-variance-authority',
+    'clsx',
+    'lucide-react',
+    'motion',
+    'tailwind-merge',
+  ].map((name) => {
+    const version = manifest.dependencies[name];
+    if (version === undefined) {
+      throw new Error(`Missing host control dependency: ${name}`);
+    }
+    return `${name}@${version}`;
+  });
+  await $`bun add --cwd ${interopFixture} ${hostDependencies}`;
+  const controls = ['alert', 'badge', 'button', 'field', 'group', 'input', 'label', 'separator', 'spinner'];
+  const hostFiles = [
+    ...controls.map((name) => `components/${name}/index.tsx`),
+    'lib/base-ui-compat/index.tsx',
+    'lib/utils/index.tsx',
+  ];
+  await Promise.all(
+    hostFiles.map(async (path) => {
+      const target = path.startsWith('components/') ? path.replace('components/', 'components/ui/') : path;
+      await mkdir(join(interopFixture, target, '..'), { recursive: true });
+      const source = await readFile(join(root, 'registry/base-nova/protoform', path), 'utf8');
+      await writeFile(join(interopFixture, target), source.replaceAll('@/registry/base-nova/protoform/lib/', '@/lib/'));
+    })
+  );
+  await $`bunx --no-install shadcn add @protoform/formik-demo @protoform/final-form-demo @protoform/tanstack-form-demo --cwd ${interopFixture} --yes --overwrite`;
+  const graph = await $`bun pm --cwd ${interopFixture} ls --all`.quiet().text();
+  const lock = await readFile(join(interopFixture, 'bun.lock'), 'utf8');
+  if (defaultFormPackages.test(graph) || defaultFormPackages.test(lock)) {
+    throw new Error('Native interop demos installed React Hook Form or its resolvers');
+  }
+  await access(join(interopFixture, 'LICENSES/protoform-MIT.txt'));
+  if (existsSync(join(interopFixture, 'components/protoform-examples/runtime/catalog-form-demo.tsx'))) {
+    throw new Error('Native interop demos installed the default catalog renderer');
+  }
+  await writeFile(
+    join(interopFixture, 'consumer-smoke.tsx'),
+    [
+      'import { renderToStaticMarkup } from "react-dom/server";',
+      'import { FormikDemo } from "./components/protoform-examples/formik";',
+      'import { FinalFormDemo } from "./components/protoform-examples/final-form";',
+      'import { TanstackFormDemo } from "./components/protoform-examples/tanstack-form";',
+      'const html = renderToStaticMarkup(<><FormikDemo /><FinalFormDemo /><TanstackFormDemo /></>);',
+      'for (const engine of ["Formik", "Final Form", "TanStack Form"]) { if (!html.includes("Validate with " + engine)) throw new Error("Installed " + engine + " demo did not render"); }',
+    ].join('\n')
+  );
+  await $`bun run --cwd ${interopFixture} typecheck`;
+  await $`bun ${join(interopFixture, 'consumer-smoke.tsx')}`;
+  console.log(`Native interop demos installed, typechecked, and rendered without RHF: ${interopFixture}`);
+}
+
 async function assertTanStackInstalled() {
   await $`bun install --cwd ${tanstackFixture}`;
   await $`bunx --no-install shadcn add @protoform/protoform-shadcn-tanstack --cwd ${tanstackFixture} --yes --overwrite`;
@@ -521,127 +586,341 @@ async function assertTanStackInstalled() {
   console.log(`Full TanStack UI consumer installed and typechecked without Recharts: ${tanstackFixture}`);
 }
 
-await createFixture();
-await rm(coreFixture, { force: true, recursive: true });
-await cp(fixture, coreFixture, { recursive: true });
-await rm(tanstackFixture, { force: true, recursive: true });
-await cp(fixture, tanstackFixture, { recursive: true });
+const consumerManifestSchema = z.looseObject({
+  dependencies: z.record(z.string(), z.string()),
+  devDependencies: z.record(z.string(), z.string()),
+});
+const consumerCases = {
+  table: {
+    names: ['protoform-ui-data-table-demo'],
+    forbidden:
+      /(?:recharts|@tanstack\/charts|@tanstack\/react-router|react-day-picker|embla-carousel-react|input-otp|@codemirror\/|@uiw\/react-codemirror|react-hook-form|@bufbuild\/protobuf)/u,
+    source: [
+      'import { renderToReadableStream } from "react-dom/server";',
+      'import DataTable from "./components/ui/examples/data-table";',
+      'const stream = await renderToReadableStream(<DataTable />);',
+      'await stream.allReady;',
+      'const html = await new Response(stream).text();',
+      'for (const expected of ["Ada", "ada@example.test", "Ready"]) if (!html.includes(expected)) throw new Error("Installed table did not render " + expected);',
+    ],
+  },
+  'typography-router': {
+    names: ['protoform-ui-typography-tanstack-link'],
+    forbidden: /react-hook-form|@bufbuild\/protobuf|recharts|@tanstack\/react-table/u,
+    source: [
+      'import { renderToReadableStream } from "react-dom/server";',
+      'import { createMemoryHistory, createRootRoute, createRoute, createRouter, RouterProvider } from "@tanstack/react-router";',
+      'import { TanStackLink } from "./components/ui/typography/tanstack-link";',
+      'const root = createRootRoute({ component: () => <TanStackLink to="/next" preload="intent">Installed typed route</TanStackLink> });',
+      'const next = createRoute({ getParentRoute: () => root, path: "/next", component: () => <p>Next route</p> });',
+      'const router = createRouter({ routeTree: root.addChildren([next]), history: createMemoryHistory({ initialEntries: ["/"] }) });',
+      'await router.load();',
+      'const stream = await renderToReadableStream(<RouterProvider router={router} />);',
+      'await stream.allReady;',
+      'const html = await new Response(stream).text();',
+      'for (const expected of ["Installed typed route", \'href="/next"\']) if (!html.includes(expected)) throw new Error("Installed router link failed " + expected);',
+    ],
+  },
+  'protobuf-v1': {
+    names: ['protobuf-v1-bridge'],
+    forbidden: /@bufbuild\/protobuf@(?:2|\^2)\.|react-hook-form|@bufbuild\/protovalidate/u,
+    source: [
+      'import { StringValue } from "@bufbuild/protobuf";',
+      'import { createProtobufV1Provider } from "./lib/protobuf-v1-bridge";',
+      'const provider = createProtobufV1Provider(StringValue);',
+      'const result = provider.validateSchema({ value: "v1 consumer" });',
+      'if (!result.success || result.data.value !== "v1 consumer") throw new Error("Separate protobuf-v1 consumer failed");',
+    ],
+  },
+  capabilities: {
+    names: [
+      'protoform-ui-alert',
+      'protoform-ui-calendar',
+      'protoform-ui-carousel',
+      'protoform-ui-input-otp',
+      'protoform-ui-json-field',
+      'protoform-ui-chart-tanstack',
+      'formik-demo',
+      'final-form-demo',
+      'tanstack-form-demo',
+      'use-proto-form',
+      'use-proto-form-v8',
+      'use-proto-form-tanstack-v2',
+    ],
+    forbidden: /\brecharts@|@tanstack\/react-router@/u,
+    source: [
+      'import { renderToReadableStream } from "react-dom/server";',
+      'import { Calendar } from "./components/ui/calendar";',
+      'import { Carousel, CarouselContent, CarouselItem } from "./components/ui/carousel";',
+      'import { InputOTP, InputOTPGroup, InputOTPSlot } from "./components/ui/input-otp";',
+      'import { JSONField } from "./components/ui/json-field";',
+      'import { TanStackChart } from "./components/ui/chart-tanstack";',
+      'import { barY, defineChart } from "@tanstack/charts";',
+      'import { scaleBand } from "@tanstack/charts/scales/band";',
+      'import { scaleLinear } from "@tanstack/charts/scales/linear";',
+      'const definition = defineChart({ marks: [barY([{ label: "one", value: 1 }], { x: "label", y: "value" })], scales: { x: { scale: scaleBand }, y: { scale: scaleLinear } } });',
+      'import { FormikDemo } from "./components/protoform-examples/formik";',
+      'import { FinalFormDemo } from "./components/protoform-examples/final-form";',
+      'import { TanstackFormDemo } from "./components/protoform-examples/tanstack-form";',
+      'import { useProtoForm } from "./hooks/use-proto-form";',
+      'import { useProtoForm as useV8 } from "./hooks/use-proto-form-v8";',
+      'import { useProtoForm as useV2 } from "./hooks/use-proto-form-tanstack-v2";',
+      'if (![useProtoForm, useV8, useV2].every((hook) => typeof hook === "function")) throw new Error("Installed engine adapter missing");',
+      'const stream = await renderToReadableStream(<><Calendar month={new Date(2026, 0, 1)} /><Carousel><CarouselContent><CarouselItem>Installed slide</CarouselItem></CarouselContent></Carousel><InputOTP maxLength={1}><InputOTPGroup><InputOTPSlot index={0} /></InputOTPGroup></InputOTP><JSONField schema={{ type: "object", properties: { title: { type: "string" } } }} value={{ title: "Installed editor" }} onChange={() => undefined} /><TanStackChart definition={definition} ariaLabel="Installed chart" /><FormikDemo /><FinalFormDemo /><TanstackFormDemo /></>);',
+      'await stream.allReady;',
+      'const html = await new Response(stream).text();',
+      'for (const expected of ["Installed slide", "Installed editor", "Installed chart", "Validate with Formik", "Validate with Final Form", "Validate with TanStack Form"]) if (!html.includes(expected)) throw new Error("Installed capability did not render " + expected);',
+    ],
+  },
+};
+
+function selectedConsumerVersions(source: Record<string, string>, names: string[], mode: ConsumerDependencyMode) {
+  return Object.fromEntries(
+    names.map((name) => {
+      const version = source[name];
+      if (version === undefined) {
+        throw new Error(`Missing consumer dependency: ${name}`);
+      }
+      return [name, consumerDependencyVersion(version, mode)];
+    })
+  );
+}
+
+async function assertVersionedConsumer(
+  mode: ConsumerDependencyMode,
+  capability: keyof typeof consumerCases,
+  matrixRoot: string
+) {
+  const target = join(matrixRoot, `${capability}-${mode}`);
+  await createFixture(target);
+  const repo = consumerManifestSchema.parse(JSON.parse(await readFile(join(root, 'package.json'), 'utf8')));
+  const dependencies = selectedConsumerVersions(repo.dependencies, ['react', 'react-dom'], mode);
+  const devDependencies = selectedConsumerVersions(
+    repo.devDependencies,
+    ['typescript', '@types/node', '@types/react', '@types/react-dom'],
+    mode
+  );
+  await writeFile(
+    join(target, 'package.json'),
+    JSON.stringify(
+      {
+        name: `protoform-${capability}-${mode}-consumer`,
+        private: true,
+        type: 'module',
+        scripts: { typecheck: 'tsc --noEmit' },
+        dependencies,
+        devDependencies,
+      },
+      null,
+      2
+    )
+  );
+  await $`bun install --cwd ${target}`;
+  for (const name of ['@rstest/core', 'blume']) {
+    let inherited: string | undefined;
+    try {
+      inherited = resolveSync(name, target);
+    } catch (error) {
+      if (!z.object({ code: z.literal('ERR_MODULE_NOT_FOUND') }).safeParse(error).success) {
+        throw error;
+      }
+    }
+    if (inherited !== undefined) {
+      throw new Error(`Consumer fixture inherits repository dependency ${name}: ${inherited}`);
+    }
+  }
+  const consumer = consumerCases[capability];
+  const registryNames = consumer.names.map((name) => `@protoform/${name}`);
+  await $`bunx --no-install shadcn add ${registryNames} --cwd ${target} --yes --overwrite`;
+  const installed = consumerManifestSchema.parse(JSON.parse(await readFile(join(target, 'package.json'), 'utf8')));
+  for (const section of [installed.dependencies, installed.devDependencies]) {
+    for (const [name, version] of Object.entries(section)) {
+      section[name] = consumerDependencyVersion(version, mode);
+    }
+  }
+  await writeFile(join(target, 'package.json'), JSON.stringify(installed, null, 2));
+  await rm(join(target, 'bun.lock'), { force: true });
+  await rm(join(target, 'node_modules'), { force: true, recursive: true });
+  await $`bun install --cwd ${target}`;
+  await Promise.all(
+    Object.entries({ ...installed.dependencies, ...installed.devDependencies }).map(async ([name, version]) => {
+      const actual = z
+        .object({ version: z.string() })
+        .parse(JSON.parse(await readFile(join(target, 'node_modules', name, 'package.json'), 'utf8'))).version;
+      const range = version.startsWith('npm:') ? version.slice(version.lastIndexOf('@') + 1) : version;
+      if (!semver.satisfies(actual, range)) {
+        throw new Error(`${capability}/${mode}: installed ${name}@${actual} outside ${range}`);
+      }
+    })
+  );
+  const graph = await $`bun pm --cwd ${target} ls --all`.quiet().text();
+  const lock = await readFile(join(target, 'bun.lock'), 'utf8');
+  const { forbidden } = consumer;
+  if (forbidden.test(graph) || forbidden.test(lock)) {
+    throw new Error(`${capability}/${mode}: unsupported dependency graph`);
+  }
+  await access(join(target, 'LICENSES/protoform-MIT.txt'));
+  await writeFile(join(target, 'consumer-smoke.tsx'), consumer.source.join('\n'));
+  await $`bun run --cwd ${target} typecheck`;
+  await $`bun --no-install ${join(target, 'consumer-smoke.tsx')}`;
+  console.log(
+    `Clean installed consumer passed compile + ${capability === 'protobuf-v1' ? 'v1 validation' : 'render'} + graph exclusions: ${capability}/${mode} (${target})`
+  );
+}
+
+async function assertSupportedVersionMatrix(modes: ConsumerDependencyMode[]) {
+  const matrixRoot = await mkdtemp(join(tmpdir(), 'protoform-registry-matrix-'));
+  try {
+    await modes.reduce(
+      (previous, mode) =>
+        previous.then(async () => {
+          await assertVersionedConsumer(mode, 'table', matrixRoot);
+          await assertVersionedConsumer(mode, 'capabilities', matrixRoot);
+          await assertVersionedConsumer(mode, 'typography-router', matrixRoot);
+          return assertVersionedConsumer(mode, 'protobuf-v1', matrixRoot);
+        }),
+      Promise.resolve()
+    );
+  } finally {
+    await rm(matrixRoot, { force: true, recursive: true });
+  }
+}
+
+const isolatedMatrix = process.argv.includes('--granular-only') || process.argv.includes('--matrix-only');
+if (!isolatedMatrix) {
+  await createFixture();
+  await rm(coreFixture, { force: true, recursive: true });
+  await cp(fixture, coreFixture, { recursive: true });
+  await rm(tanstackFixture, { force: true, recursive: true });
+  await cp(fixture, tanstackFixture, { recursive: true });
+}
+
 const server = await servePublic();
 try {
-  await rm(hostFixture, { force: true, recursive: true });
-  await assertHostInstalled();
-  if (!process.argv.includes('--host-only')) {
-    await assertTanStackInstalled();
-    await $`bun install --cwd ${coreFixture}`;
-    await $`bunx --no-install shadcn add @protoform/protoform-core --cwd ${coreFixture} --yes --overwrite`;
-    await assertCoreInstalled();
-    await $`bun run --cwd ${coreFixture} typecheck`;
-    console.log(`Core-only consumer fixture passed: ${coreFixture}`);
-    await $`bunx --no-install shadcn add @protoform/protoform-quickjs --cwd ${coreFixture} --yes --overwrite`;
-    await writeFile(
-      join(coreFixture, 'quickjs-smoke.ts'),
-      [
-        'import { createQuickJsFormRequest } from "./lib/quickjs/bindings";',
-        'import { createQuickJsController } from "./lib/quickjs/controller";',
-        'import { quickJsFieldConfig } from "./lib/quickjs/presentation";',
-        'const controller = createQuickJsController();',
-        'const request = createQuickJsFormRequest({ rule: { id: "consumer-smoke", version: "1", source: "(form, fields) => ({fields:{company:{visible:form.tags.length > 0 && fields.company.required}}})" }, schema: { fields: [{ key: "company", required: false, type: "string" }, { key: "tags", required: false, type: "array" }] }, values: { tags: ["consumer"] }, valueFields: ["tags"] });',
-        'await controller.update(request);',
-        'await controller.submit(request, () => { document.body.textContent = JSON.stringify(quickJsFieldConfig(controller.getSnapshot().presentation)); });',
-        'controller.dispose();',
-      ].join('\n')
-    );
-    await writeFile(
-      join(coreFixture, 'index.html'),
-      '<!doctype html><html lang="en"><head><title>QuickJS consumer</title></head><body><script type="module" src="/quickjs-smoke.ts"></script></body></html>'
-    );
-    await writeFile(join(coreFixture, 'quickjs-vite.config.mjs'), 'export default {};');
-    await $`bun run --cwd ${coreFixture} typecheck`;
-    await $`bun ${join(coreFixture, 'node_modules/vite/bin/vite.js')} build ${coreFixture} --config ${join(coreFixture, 'quickjs-vite.config.mjs')}`;
-    console.log(`Optional QuickJS consumer install and worker build passed: ${coreFixture}`);
+  if (isolatedMatrix) {
+    await assertSupportedVersionMatrix(process.argv.includes('--matrix-only') ? ['floor', 'current'] : ['current']);
+  } else {
+    if (!process.argv.includes('--host-only')) {
+      await assertInteropInstalled();
+    }
+    if (!process.argv.includes('--interop-only')) {
+      await rm(hostFixture, { force: true, recursive: true });
+      await assertHostInstalled();
+    }
+    if (!(process.argv.includes('--host-only') || process.argv.includes('--interop-only'))) {
+      await assertTanStackInstalled();
+      await $`bun install --cwd ${coreFixture}`;
+      await $`bunx --no-install shadcn add @protoform/protoform-core --cwd ${coreFixture} --yes --overwrite`;
+      await assertCoreInstalled();
+      await $`bun run --cwd ${coreFixture} typecheck`;
+      console.log(`Core-only consumer fixture passed: ${coreFixture}`);
+      await $`bunx --no-install shadcn add @protoform/protoform-quickjs --cwd ${coreFixture} --yes --overwrite`;
+      await writeFile(
+        join(coreFixture, 'quickjs-smoke.ts'),
+        [
+          'import { createQuickJsFormRequest } from "./lib/quickjs/bindings";',
+          'import { createQuickJsController } from "./lib/quickjs/controller";',
+          'import { quickJsFieldConfig } from "./lib/quickjs/presentation";',
+          'const controller = createQuickJsController();',
+          'const request = createQuickJsFormRequest({ rule: { id: "consumer-smoke", version: "1", source: "(form, fields) => ({fields:{company:{visible:form.tags.length > 0 && fields.company.required}}})" }, schema: { fields: [{ key: "company", required: false, type: "string" }, { key: "tags", required: false, type: "array" }] }, values: { tags: ["consumer"] }, valueFields: ["tags"] });',
+          'await controller.update(request);',
+          'await controller.submit(request, () => { document.body.textContent = JSON.stringify(quickJsFieldConfig(controller.getSnapshot().presentation)); });',
+          'controller.dispose();',
+        ].join('\n')
+      );
+      await writeFile(
+        join(coreFixture, 'index.html'),
+        '<!doctype html><html lang="en"><head><title>QuickJS consumer</title></head><body><script type="module" src="/quickjs-smoke.ts"></script></body></html>'
+      );
+      await writeFile(join(coreFixture, 'quickjs-vite.config.mjs'), 'export default {};');
+      await $`bun run --cwd ${coreFixture} typecheck`;
+      await $`bun ${join(coreFixture, 'node_modules/vite/bin/vite.js')} build ${coreFixture} --config ${join(coreFixture, 'quickjs-vite.config.mjs')}`;
+      console.log(`Optional QuickJS consumer install and worker build passed: ${coreFixture}`);
 
-    await $`bun install --cwd ${fixture}`;
-    await $`bunx --no-install shadcn add @protoform/bookstore --cwd ${fixture} --yes --overwrite`;
-    await $`bunx --no-install shadcn add @protoform/auto-form-react-hook-form-v8 --cwd ${fixture} --yes --overwrite`;
-    await $`bunx --no-install shadcn add @protoform/auto-form-tanstack --cwd ${fixture} --yes --overwrite`;
-    await $`bunx --no-install shadcn add @protoform/auto-form-tanstack-v2 --cwd ${fixture} --yes --overwrite`;
-    await $`bunx --no-install shadcn add @protoform/auto-form-formisch @protoform/use-proto-form-formisch --cwd ${fixture} --yes --overwrite`;
-    await assertInstalled();
-    const canonicalPaths = [
-      ...(await Array.fromAsync(new Glob('components/ui/**/*').scan({ cwd: fixture, onlyFiles: true }))),
-      ...(await Array.fromAsync(new Glob('components/auto-form/**/*').scan({ cwd: fixture, onlyFiles: true }))),
-      'lib/utils/index.tsx',
-    ];
-    const canonicalSources = await Promise.all(
-      canonicalPaths.map(async (path) => ({ path, content: await readFile(join(fixture, path), 'utf8') }))
-    );
-    await $`bunx --no-install shadcn add @protoform/ui-sdk-agent-workbench @protoform/ui-sdk-hooks --cwd ${fixture} --yes`;
-    await Promise.all(
-      canonicalSources.map(async ({ path, content }) => {
-        if ((await readFile(join(fixture, path), 'utf8')) !== content) {
-          throw new Error(`SDK enhancement modified canonical source ${path}`);
-        }
-      })
-    );
-    await Promise.all(
-      [
-        { name: 'agent', component: '@/components/protoform-examples/ui-sdk-agent-workbench' },
-        { name: 'hooks', component: '@/components/protoform-examples/ui-sdk-hooks' },
-      ].map(async ({ name, component }) => {
-        await writeFile(
-          join(fixture, `${name}-browser.tsx`),
-          `import { createRoot } from 'react-dom/client'; import Example from '${component}'; const root = document.getElementById('root'); if (!root) throw new Error('Missing root'); createRoot(root).render(<Example />);`
-        );
-        await writeFile(
-          join(fixture, `${name}.html`),
-          `<html lang="en"><head><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Optional SDK enhancement</title><link rel="stylesheet" href="/app/globals.css" /></head><body><div id="root"></div><script type="module" src="/${name}-browser.tsx"></script></body></html>`
-        );
-      })
-    );
-    await $`bun add --cwd ${fixture} tailwindcss@4.3.5 @tailwindcss/vite@4.3.5`;
-    const browserSource = await readFile(join(root, 'scripts/fixtures/reliability-browser.tsx'), 'utf8');
-    await writeFile(
-      join(fixture, 'reliability-browser.tsx'),
-      browserSource.replaceAll('@/registry/base-nova/protoform/', './')
-    );
-    const nativeSource = await readFile(join(root, 'scripts/fixtures/native-defaults-browser.tsx'), 'utf8');
-    await writeFile(
-      join(fixture, 'native-defaults-browser.tsx'),
-      nativeSource.replaceAll('@/registry/base-nova/protoform/', './')
-    );
-    await writeFile(
-      join(fixture, 'native.html'),
-      '<html lang="en"><head><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Native timestamp defaults</title><link rel="stylesheet" href="/app/globals.css" /></head><body><div id="root"></div><script type="module" src="/native-defaults-browser.tsx"></script></body></html>'
-    );
-    const indentedSource = await readFile(join(root, 'scripts/fixtures/indented-sections-browser.tsx'), 'utf8');
-    await writeFile(
-      join(fixture, 'indented-sections-browser.tsx'),
-      indentedSource.replaceAll('@/registry/base-nova/protoform/', './')
-    );
-    await writeFile(
-      join(fixture, 'indented-sections.html'),
-      '<html lang="en"><head><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Indented sections</title><link rel="stylesheet" href="/app/globals.css" /></head><body><div id="root"></div><script type="module" src="/indented-sections-browser.tsx"></script></body></html>'
-    );
-    await cp(join(root, 'scripts/fixtures/custom-options-browser.tsx'), join(fixture, 'custom-options-browser.tsx'));
-    await writeFile(
-      join(fixture, 'custom-options.html'),
-      '<html lang="en"><head><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Custom option creation</title><link rel="stylesheet" href="/app/globals.css" /></head><body><div id="root"></div><script type="module" src="/custom-options-browser.tsx"></script></body></html>'
-    );
-    const theme = await readFile(join(root, 'scripts/fixtures/host-theme.css'), 'utf8');
-    await writeFile(
-      join(fixture, 'app/globals.css'),
-      `@layer ui-sdk;\n${theme}\n@source "../components";\n@source "../reliability-browser.tsx";\n@source "../native-defaults-browser.tsx";\n@source "../custom-options-browser.tsx";\n@source "../indented-sections-browser.tsx";\n`
-    );
-    await writeFile(
-      join(fixture, 'index.html'),
-      '<html lang="en"><head><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Form reliability</title><link rel="stylesheet" href="/app/globals.css" /></head><body><div id="root"></div><script type="module" src="/reliability-browser.tsx"></script></body></html>'
-    );
-    await writeFile(
-      join(fixture, 'vite.config.mjs'),
-      `import react from '@vitejs/plugin-react'; import tailwindcss from '@tailwindcss/vite'; export default { plugins: [react(), tailwindcss()], resolve: { alias: { '@': ${JSON.stringify(fixture)} } } };`
-    );
-    await $`bun run --cwd ${fixture} typecheck`;
-    console.log(`Registry-only consumer fixture passed: ${fixture}`);
+      await $`bun install --cwd ${fixture}`;
+      await $`bunx --no-install shadcn add @protoform/bookstore --cwd ${fixture} --yes --overwrite`;
+      await $`bunx --no-install shadcn add @protoform/auto-form-react-hook-form-v8 --cwd ${fixture} --yes --overwrite`;
+      await $`bunx --no-install shadcn add @protoform/auto-form-tanstack --cwd ${fixture} --yes --overwrite`;
+      await $`bunx --no-install shadcn add @protoform/auto-form-tanstack-v2 --cwd ${fixture} --yes --overwrite`;
+      await $`bunx --no-install shadcn add @protoform/auto-form-formisch @protoform/use-proto-form-formisch --cwd ${fixture} --yes --overwrite`;
+      await assertInstalled();
+      const canonicalPaths = [
+        ...(await Array.fromAsync(new Glob('components/ui/**/*').scan({ cwd: fixture, onlyFiles: true }))),
+        ...(await Array.fromAsync(new Glob('components/auto-form/**/*').scan({ cwd: fixture, onlyFiles: true }))),
+        'lib/utils/index.tsx',
+      ];
+      const canonicalSources = await Promise.all(
+        canonicalPaths.map(async (path) => ({ path, content: await readFile(join(fixture, path), 'utf8') }))
+      );
+      await $`bunx --no-install shadcn add @protoform/ui-sdk-agent-workbench @protoform/ui-sdk-hooks --cwd ${fixture} --yes`;
+      await Promise.all(
+        canonicalSources.map(async ({ path, content }) => {
+          if ((await readFile(join(fixture, path), 'utf8')) !== content) {
+            throw new Error(`SDK enhancement modified canonical source ${path}`);
+          }
+        })
+      );
+      await Promise.all(
+        [
+          { name: 'agent', component: '@/components/protoform-examples/ui-sdk-agent-workbench' },
+          { name: 'hooks', component: '@/components/protoform-examples/ui-sdk-hooks' },
+        ].map(async ({ name, component }) => {
+          await writeFile(
+            join(fixture, `${name}-browser.tsx`),
+            `import { createRoot } from 'react-dom/client'; import Example from '${component}'; const root = document.getElementById('root'); if (!root) throw new Error('Missing root'); createRoot(root).render(<Example />);`
+          );
+          await writeFile(
+            join(fixture, `${name}.html`),
+            `<html lang="en"><head><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Optional SDK enhancement</title><link rel="stylesheet" href="/app/globals.css" /></head><body><div id="root"></div><script type="module" src="/${name}-browser.tsx"></script></body></html>`
+          );
+        })
+      );
+      await $`bun add --cwd ${fixture} tailwindcss@4.3.5 @tailwindcss/vite@4.3.5`;
+      const browserSource = await readFile(join(root, 'scripts/fixtures/reliability-browser.tsx'), 'utf8');
+      await writeFile(
+        join(fixture, 'reliability-browser.tsx'),
+        browserSource.replaceAll('@/registry/base-nova/protoform/', './')
+      );
+      const nativeSource = await readFile(join(root, 'scripts/fixtures/native-defaults-browser.tsx'), 'utf8');
+      await writeFile(
+        join(fixture, 'native-defaults-browser.tsx'),
+        nativeSource.replaceAll('@/registry/base-nova/protoform/', './')
+      );
+      await writeFile(
+        join(fixture, 'native.html'),
+        '<html lang="en"><head><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Native timestamp defaults</title><link rel="stylesheet" href="/app/globals.css" /></head><body><div id="root"></div><script type="module" src="/native-defaults-browser.tsx"></script></body></html>'
+      );
+      const indentedSource = await readFile(join(root, 'scripts/fixtures/indented-sections-browser.tsx'), 'utf8');
+      await writeFile(
+        join(fixture, 'indented-sections-browser.tsx'),
+        indentedSource.replaceAll('@/registry/base-nova/protoform/', './')
+      );
+      await writeFile(
+        join(fixture, 'indented-sections.html'),
+        '<html lang="en"><head><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Indented sections</title><link rel="stylesheet" href="/app/globals.css" /></head><body><div id="root"></div><script type="module" src="/indented-sections-browser.tsx"></script></body></html>'
+      );
+      await cp(join(root, 'scripts/fixtures/custom-options-browser.tsx'), join(fixture, 'custom-options-browser.tsx'));
+      await writeFile(
+        join(fixture, 'custom-options.html'),
+        '<html lang="en"><head><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Custom option creation</title><link rel="stylesheet" href="/app/globals.css" /></head><body><div id="root"></div><script type="module" src="/custom-options-browser.tsx"></script></body></html>'
+      );
+      const theme = await readFile(join(root, 'scripts/fixtures/host-theme.css'), 'utf8');
+      await writeFile(
+        join(fixture, 'app/globals.css'),
+        `@layer ui-sdk;\n${theme}\n@source "../components";\n@source "../reliability-browser.tsx";\n@source "../native-defaults-browser.tsx";\n@source "../custom-options-browser.tsx";\n@source "../indented-sections-browser.tsx";\n`
+      );
+      await writeFile(
+        join(fixture, 'index.html'),
+        '<html lang="en"><head><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Form reliability</title><link rel="stylesheet" href="/app/globals.css" /></head><body><div id="root"></div><script type="module" src="/reliability-browser.tsx"></script></body></html>'
+      );
+      await writeFile(
+        join(fixture, 'vite.config.mjs'),
+        `import react from '@vitejs/plugin-react'; import tailwindcss from '@tailwindcss/vite'; export default { plugins: [react(), tailwindcss()], resolve: { alias: { '@': ${JSON.stringify(fixture)} } } };`
+      );
+      await $`bun run --cwd ${fixture} typecheck`;
+      console.log(`Registry-only consumer fixture passed: ${fixture}`);
+      await assertSupportedVersionMatrix(['floor', 'current']);
+    }
   }
 } finally {
   await new Promise<void>((resolve, reject) => {

@@ -16,6 +16,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '../ui-components';
+import { builtInFieldMetadata } from './metadata';
 import {
   buildTimestampValue,
   getControlLabel,
@@ -116,15 +117,11 @@ function TimestampFieldComponent({ error, field, id, inputProps, label }: AutoFo
 export { DateFieldComponent, TimestampFieldComponent };
 
 export const dateFieldDefinition: FieldTypeDefinition = {
+  ...builtInFieldMetadata.date,
   component: DateFieldComponent,
-  match: (field) => field.type === 'date',
-  name: 'date',
-  priority: 10,
 };
 
 export const timestampFieldDefinition: FieldTypeDefinition = {
+  ...builtInFieldMetadata.timestamp,
   component: TimestampFieldComponent,
-  match: (field) => field.type === 'timestamp',
-  name: 'timestamp',
-  priority: 10,
 };

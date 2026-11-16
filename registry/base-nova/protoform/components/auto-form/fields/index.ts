@@ -19,6 +19,7 @@ import { fieldMaskFieldDefinition } from './field-mask-control';
 import { int64FieldDefinition } from './int64';
 import { jsonFieldDefinition } from './json';
 import { keyValueFieldDefinition } from './key-value';
+import { bindDefaultFieldMetadataRegistry } from './metadata';
 import { dataProviderMultiselectFieldDefinition, multiselectFieldDefinition } from './multiselect';
 import { numberFieldDefinition } from './number';
 import { passwordFieldDefinition } from './password';
@@ -100,6 +101,8 @@ export const AutoFormFieldComponentRegistry = {
   toggleGroup: toggleGroupFieldDefinition.component,
   url: urlFieldDefinition.component,
 } satisfies AutoFormFieldComponents<FieldTypes>;
+
+bindDefaultFieldMetadataRegistry(defaultRegistry, AutoFormFieldComponentRegistry);
 
 export { booleanFieldDefinition, checkboxFieldDefinition, switchFieldDefinition } from './boolean';
 export { bytesFieldDefinition } from './bytes';

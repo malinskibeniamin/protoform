@@ -5,6 +5,7 @@ import type { AutoFormFieldProps } from '../core-types';
 import { getProtoJsonSchema } from '../proto/conversion';
 import type { FieldTypeDefinition } from '../registry';
 import { JSONField } from '../ui-components';
+import { builtInFieldMetadata } from './metadata';
 import { useFieldTestIds } from './shared';
 
 function JsonFieldComponent({ field, id, inputProps, label }: AutoFormFieldProps) {
@@ -29,8 +30,6 @@ function JsonFieldComponent({ field, id, inputProps, label }: AutoFormFieldProps
 export { JsonFieldComponent };
 
 export const jsonFieldDefinition: FieldTypeDefinition = {
+  ...builtInFieldMetadata.json,
   component: JsonFieldComponent,
-  match: (field) => field.type === 'json',
-  name: 'json',
-  priority: 10,
 };

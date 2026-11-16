@@ -10,6 +10,7 @@ import {
 } from '../helpers';
 import type { FieldTypeDefinition } from '../registry';
 import { KeyValueField } from '../ui-components';
+import { builtInFieldMetadata } from './metadata';
 import { useFieldTestIds } from './shared';
 
 function KeyValueFieldComponent({ field, id, inputProps }: AutoFormFieldProps) {
@@ -52,53 +53,7 @@ function KeyValueFieldComponent({ field, id, inputProps }: AutoFormFieldProps) {
 
 export { KeyValueFieldComponent };
 
-function isKeyValueScalarField(field: { type?: string | undefined } | undefined): boolean {
-  if (!field) {
-    return false;
-  }
-  return ['string', 'email', 'url', 'password', 'currency', 'number', 'int64', 'select', 'combobox'].includes(
-    field.type ?? ''
-  );
-}
-
-function isSimpleKeyValueLikeObject(
-  field:
-    | {
-        type?: string | undefined;
-        schema?: Array<{ key: string; type?: string | undefined }> | undefined;
-      }
-    | undefined
-): boolean {
-  if (!(field?.type === 'object' && field.schema?.length === 2)) {
-    return false;
-  }
-
-  const keyField = field.schema.find((candidate) => candidate.key === 'key');
-  const valueField = field.schema.find((candidate) => candidate.key === 'value');
-  return (
-    keyField !== undefined &&
-    valueField !== undefined &&
-    isKeyValueScalarField(keyField) &&
-    isKeyValueScalarField(valueField)
-  );
-}
-
 export const keyValueFieldDefinition: FieldTypeDefinition = {
+  ...builtInFieldMetadata.keyValue,
   component: KeyValueFieldComponent,
-  match: (field) => {
-    if (field.type === 'array') {
-      const itemField = field.schema?.[0];
-      return isSimpleKeyValueLikeObject(itemField);
-    }
-
-    if (field.type === 'map') {
-      const keyField = field.schema?.[0];
-      const valueField = field.schema?.[1];
-      return isKeyValueScalarField(keyField) && isKeyValueScalarField(valueField);
-    }
-
-    return false;
-  },
-  name: 'keyValue',
-  priority: 18,
 };

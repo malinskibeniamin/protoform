@@ -18,15 +18,7 @@ export default defineConfig({
   output: {
     externals: [/^zod(?:\/|$)/u],
   },
-  plugins: [
-    pluginReact({
-      reactCompiler: {
-        compilationMode: 'infer',
-        panicThreshold: 'all_errors',
-        target: '19',
-      },
-    }),
-  ],
+  plugins: [pluginReact()],
   pool: {
     maxWorkers: 4,
     type: 'vmThreads',
@@ -37,4 +29,17 @@ export default defineConfig({
     options: { settings: { disableCSSFileLoading: true, disableIframePageLoading: true } },
   },
   testTimeout: 15_000,
+  tools: {
+    swc: {
+      jsc: {
+        transform: {
+          reactCompiler: {
+            compilationMode: 'infer',
+            panicThreshold: 'all_errors',
+            target: '19',
+          },
+        },
+      },
+    },
+  },
 });

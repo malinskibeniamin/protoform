@@ -1,4 +1,5 @@
-import { newQuickJSWASMModule, newVariant, RELEASE_SYNC } from 'quickjs-emscripten';
+import RELEASE_SYNC from '@jitl/quickjs-wasmfile-release-sync';
+import { newQuickJSWASMModuleFromVariant, newVariant } from 'quickjs-emscripten-core';
 
 import {
   isRecord,
@@ -14,7 +15,7 @@ export async function evaluateQuickJs(request: unknown): Promise<QuickJsPresenta
   if (source.length > QUICKJS_TEXT_LIMIT || input.length > QUICKJS_TEXT_LIMIT) {
     throw new Error('Input too large');
   }
-  const QuickJS = await newQuickJSWASMModule(
+  const QuickJS = await newQuickJSWASMModuleFromVariant(
     newVariant(RELEASE_SYNC, { wasmMemory: new WebAssembly.Memory({ initial: 256, maximum: 512 }) })
   );
   const runtime = QuickJS.newRuntime();

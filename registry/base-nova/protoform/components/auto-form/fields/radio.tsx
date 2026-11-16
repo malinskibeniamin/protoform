@@ -3,6 +3,7 @@
 import type { AutoFormFieldProps } from '../core-types';
 import type { FieldTypeDefinition } from '../registry';
 import { RadioGroup, RadioGroupItem, Text } from '../ui-components';
+import { builtInFieldMetadata } from './metadata';
 import {
   getControlLabel,
   getFlatOptions,
@@ -64,14 +65,6 @@ function RadioFieldComponent({ error, field, id, inputProps, label }: AutoFormFi
 export { RadioFieldComponent };
 
 export const radioFieldDefinition: FieldTypeDefinition = {
+  ...builtInFieldMetadata.radio,
   component: RadioFieldComponent,
-  match: (field) => {
-    if (field.type !== 'select') {
-      return false;
-    }
-    const optionCount = field.options?.length ?? 0;
-    return optionCount > 0 && optionCount <= 3;
-  },
-  name: 'radio',
-  priority: 15,
 };

@@ -104,6 +104,24 @@ under `node_modules`; Rsdoctor still disables it when profiling. New runtime fai
 images and traces use ignored `.rstest/` artifacts, uploaded on PR job failures.
 No application source or shared registry dependency is removed.
 
+The local gates share the completed strict docs build instead of compiling it again
+after application E2E. `docs:blume:build` checks a content-sealed receipt at
+`.tmp/docs-build.json` against Git history, tracked and untracked input bytes,
+ignored root `.env` files, the build environment and toolchain. The fingerprint
+includes dirty docs, application sources, registry artifacts, configuration and lockfiles.
+It also checks every output path and byte in `dist`, not only its entrypoint.
+
+```text
+unchanged inputs + complete matching dist -> reuse strict build
+missing, stale or corrupt receipt/output  -> clean dist -> strict build -> seal
+failed build or inputs changed mid-build  -> failure, no reusable receipt
+```
+
+Standalone E2E still builds missing or stale docs. Registry builds and every other
+gate remain in place. There is no environment switch that skips validation.
+Remove `.tmp/docs-build.json` or run `bun run docs:blume:compile` for a fresh strict
+compile. The helper does not change output ownership or permissions.
+
 ```bash
 bun install --frozen-lockfile
 bun run lint:fix
@@ -262,3 +280,13 @@ of the host kernel's native exit error. The first hosted replay exposed the prio
 fixture's Linux-only `ESRCH` assumption; all eight consumer screenshots and actual
 shutdown had passed. Both the persistent-denial rejection and real closed-port assertion
 remain required.
+
+### Verified local host-reference refresh
+
+The dependency-boundary changes replayed unchanged `a7eeda56` on Darwin 27.2.0 arm64,
+Node 26.13.0 and Playwright 1.64.1 with identical resolved consumer dependencies.
+That base reproduced one desktop and two mobile heading-pixel differences against the
+default Darwin host-control references. Candidate host captures had identical decoded
+pixels to the unchanged base. Only the four host/missing-control references were copied
+from the inspected base captures; all 16 candidate consumer cases then passed normally.
+No comparator, tolerance, screenshot path, skip or automatic-update policy changed.

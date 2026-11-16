@@ -1,18 +1,55 @@
 import { create } from '@bufbuild/protobuf';
+import RELEASE_SYNC from '@jitl/quickjs-wasmfile-release-sync';
 import { PresenceMatrixSchema } from '../../../../../conformance/gen/protoform/conformance/v1/conformance_pb';
 import { evaluateQuickJs } from './evaluator';
 
 declare const { expect, jest, test }: typeof import('bun:test');
 
-const quickJs = await import('quickjs-emscripten');
+const quickJs = await import('quickjs-emscripten-core');
+
+async function withGuestClock<T>(evaluate: () => Promise<T>, now = () => 0): Promise<T> {
+  const clock = jest.spyOn(performance, 'now').mockImplementation(now);
+  try {
+    return await evaluate();
+  } finally {
+    clock.mockRestore();
+  }
+}
+
+test.each([
+  { elapsed: 49, expected: { status: 'fulfilled', value: { total: { visible: true } } } },
+  {
+    elapsed: 50,
+    expected: { status: 'rejected', reason: new Error('Script failed, exceeded resources, or is incomplete') },
+  },
+])('the real guest deadline at $elapsed ms matches $expected.status', async ({ elapsed, expected }) => {
+  let clockReads = 0;
+  const [result] = await Promise.allSettled([
+    withGuestClock(
+      () =>
+        evaluateQuickJs({
+          fields: ['total'],
+          source:
+            '() => {let total=0;for(let i=0;i<10000;i++) total+=i;return {fields:{total:{visible:total===49995000}}}}',
+          values: {},
+        }),
+      () => {
+        clockReads += 1;
+        return clockReads === 1 ? 0 : elapsed;
+      }
+    ),
+  ]);
+  expect(result).toEqual(expected);
+  expect(clockReads).toBeGreaterThan(1);
+});
 
 test('context startup does not consume the guest execution budget', async () => {
-  const QuickJS = await quickJs.newQuickJSWASMModule(quickJs.RELEASE_SYNC);
+  const QuickJS = await quickJs.newQuickJSWASMModuleFromVariant(RELEASE_SYNC);
   const runtime = QuickJS.newRuntime();
   const createContext = runtime.newContext.bind(runtime);
   let elapsed = 0;
   const clock = jest.spyOn(performance, 'now').mockImplementation(() => elapsed);
-  const createModule = jest.spyOn(quickJs, 'newQuickJSWASMModule').mockResolvedValue(QuickJS);
+  const createModule = jest.spyOn(quickJs, 'newQuickJSWASMModuleFromVariant').mockResolvedValue(QuickJS);
   const createRuntime = jest.spyOn(QuickJS, 'newRuntime').mockReturnValue(runtime);
   const contextStartup = jest.spyOn(runtime, 'newContext').mockImplementation((...args) => {
     const context = createContext(...args);
@@ -32,16 +69,18 @@ test('context startup does not consume the guest execution budget', async () => 
 });
 
 test('each evaluation has independent WASM memory that cannot grow past 32 MiB', async () => {
-  const instantiate = quickJs.newQuickJSWASMModule;
+  const instantiate = quickJs.newQuickJSWASMModuleFromVariant;
   const memories: WebAssembly.Memory[] = [];
-  const createModule = jest.spyOn(quickJs, 'newQuickJSWASMModule').mockImplementation(async (...args) => {
+  const createModule = jest.spyOn(quickJs, 'newQuickJSWASMModuleFromVariant').mockImplementation(async (...args) => {
     const module = await instantiate(...args);
     memories.push(module.getWasmMemory());
     return module;
   });
   try {
-    const results = await Promise.all(
-      Array.from({ length: 2 }, () => evaluateQuickJs({ fields: [], source: '() => ({fields:{}})', values: {} }))
+    const results = await withGuestClock(() =>
+      Promise.all(
+        Array.from({ length: 2 }, () => evaluateQuickJs({ fields: [], source: '() => ({fields:{}})', values: {} }))
+      )
     );
     expect(results).toEqual([{}, {}]);
     expect(new Set(memories).size).toBe(2);
@@ -55,9 +94,9 @@ test('each evaluation has independent WASM memory that cannot grow past 32 MiB',
 });
 
 test('disposes the runtime if guest context creation fails', async () => {
-  const module = await quickJs.newQuickJSWASMModule(quickJs.RELEASE_SYNC);
+  const module = await quickJs.newQuickJSWASMModuleFromVariant(RELEASE_SYNC);
   const runtime = module.newRuntime();
-  const createModule = jest.spyOn(quickJs, 'newQuickJSWASMModule').mockResolvedValue(module);
+  const createModule = jest.spyOn(quickJs, 'newQuickJSWASMModuleFromVariant').mockResolvedValue(module);
   const createRuntime = jest.spyOn(module, 'newRuntime').mockReturnValue(runtime);
   const createContext = jest.spyOn(runtime, 'newContext').mockImplementation(() => {
     throw new Error('Context allocation failed');
@@ -81,11 +120,13 @@ test('disposes the runtime if guest context creation fails', async () => {
 
 test('evaluates explicit schema fields, including fields without current values', async () => {
   expect(
-    await evaluateQuickJs({
-      fields: ['kind', 'company'],
-      source: 'form => ({fields:{company:{visible: form.kind === "business"}}})',
-      values: { kind: 'business' },
-    })
+    await withGuestClock(() =>
+      evaluateQuickJs({
+        fields: ['kind', 'company'],
+        source: 'form => ({fields:{company:{visible: form.kind === "business"}}})',
+        values: { kind: 'business' },
+      })
+    )
   ).toEqual({ company: { visible: true } });
 });
 
@@ -162,11 +203,13 @@ test('nested snapshot limits reject live objects, unsafe properties, cycles, and
     })
   );
   expect(
-    await evaluateQuickJs({
-      fields: ['kind'],
-      source: 'form => ({fields:{kind:{visible: form.kind.nil === null && !("unset" in form.kind)}}})',
-      values: { kind: { nil: null, unset: undefined, empty: [], nested: {} } },
-    })
+    await withGuestClock(() =>
+      evaluateQuickJs({
+        fields: ['kind'],
+        source: 'form => ({fields:{kind:{visible: form.kind.nil === null && !("unset" in form.kind)}}})',
+        values: { kind: { nil: null, unset: undefined, empty: [], nested: {} } },
+      })
+    )
   ).toEqual({ kind: { visible: true } });
 });
 
@@ -180,16 +223,18 @@ test.each([
 });
 
 test('a guest runtime cannot leave globals for the next evaluation', async () => {
-  await evaluateQuickJs({ fields: [], source: '() => {globalThis.leaked = true;return {fields:{}}}', values: {} });
-  await Promise.resolve(
-    expect(
-      evaluateQuickJs({
-        fields: [],
-        source: '() => {if(typeof leaked !== "undefined") throw Error("leak"); return {fields:{}}}',
-        values: {},
-      })
-    ).resolves.toEqual({})
-  );
+  await withGuestClock(async () => {
+    await evaluateQuickJs({ fields: [], source: '() => {globalThis.leaked = true;return {fields:{}}}', values: {} });
+    await Promise.resolve(
+      expect(
+        evaluateQuickJs({
+          fields: [],
+          source: '() => {if(typeof leaked !== "undefined") throw Error("leak"); return {fields:{}}}',
+          values: {},
+        })
+      ).resolves.toEqual({})
+    );
+  });
 });
 
 test.each(
