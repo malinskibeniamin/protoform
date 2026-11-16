@@ -570,6 +570,12 @@ test('owned select/combobox parts preserve opt-in agent confirmation, read-back,
             <ComboboxList />
           </ComboboxContent>
         </Combobox>
+        <Combobox allowCustomValue defaultValue="Alpha" items={['Alpha', 'Beta']}>
+          <ComboboxInput aria-label="Custom project" />
+          <ComboboxContent>
+            <ComboboxList />
+          </ComboboxContent>
+        </Combobox>
       </>
     );
     await act(async () => {
@@ -584,6 +590,17 @@ test('owned select/combobox parts preserve opt-in agent confirmation, read-back,
     ).toBe(false);
     await expect.element(page.getByRole('combobox', { name: 'Agent project' })).toHaveValue('Alpha');
     approved = true;
+    expect(
+      (await session.agent.act({ steps: [{ ref: 'Agent project', action: 'setValue', args: ['Unknown project'] }] })).ok
+    ).toBe(false);
+    await expect.element(page.getByRole('combobox', { name: 'Agent project' })).toHaveValue('Alpha');
+    await act(async () => {
+      expect(
+        (await session.agent.act({ steps: [{ ref: 'Custom project', action: 'setValue', args: ['Unknown project'] }] }))
+          .ok
+      ).toBe(true);
+    });
+    await expect.element(page.getByRole('combobox', { name: 'Custom project' })).toHaveValue('Unknown project');
     await act(async () => {
       expect(
         (await session.agent.act({ steps: [{ ref: 'Agent project', action: 'setValue', args: ['Beta'] }] })).ok
@@ -592,6 +609,7 @@ test('owned select/combobox parts preserve opt-in agent confirmation, read-back,
     await expect.element(page.getByRole('combobox', { name: 'Agent project' })).toHaveValue('Beta');
     await session.history.undoSource('agent');
     await expect.element(page.getByRole('combobox', { name: 'Agent project' })).toHaveValue('Alpha');
+    await expect.element(page.getByRole('combobox', { name: 'Custom project' })).toHaveValue('Alpha');
     session.dispose();
     expect(
       (await session.agent.act({ steps: [{ ref: 'Agent project', action: 'setValue', args: ['Beta'] }] })).ok

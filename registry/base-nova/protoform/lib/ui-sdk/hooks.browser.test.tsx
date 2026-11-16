@@ -24,7 +24,7 @@ function FieldConnection() {
   const context = useFieldControl();
   return <output>{context === null ? 'No field connection' : 'Field connected'}</output>;
 }
-test('beta.2 public Field root cannot supply the renderer context required by useFieldControl', async () => {
+test('beta.5 public Field root cannot supply the renderer context required by useFieldControl', async () => {
   await render(
     <rawField.Root>
       <FieldConnection />

@@ -31,7 +31,7 @@ const navigation = createParts(withOptionSchema(navigationMenu), { root: 'nav', 
 function roles(html: string, role: string) {
   return html.split(`role="${role}"`).length - 1;
 }
-test('beta.2 public roots lack composed pre-mount label learning and native form projection', () => {
+test('beta.5 public roots lack composed pre-mount label learning and native form projection', () => {
   const children = createElement(
     Fragment,
     null,
@@ -127,7 +127,7 @@ test('beta.2 public roots lack composed pre-mount label learning and native form
     )
   ).toContain('value="b"');
 });
-test('beta.2 public content does not register SDK default data placement', () => {
+test('beta.5 public content does not register SDK default data placement', () => {
   const menuData = [{ value: 'new', label: 'New file' }];
   const native = renderToStaticMarkup(
     createElement(Menu, {
@@ -217,7 +217,7 @@ test('beta.2 public content does not register SDK default data placement', () =>
   );
   expect(roles(rawCombo, 'listbox')).toBeGreaterThan(roles(nativeCombo, 'listbox'));
 });
-test('beta.2 renderer features are declared in types but absent from bare core instances', () => {
+test('beta.5 renderer features are declared in types but absent from bare core instances', () => {
   expect(() =>
     renderToStaticMarkup(
       createElement(
@@ -281,7 +281,7 @@ test('beta.2 renderer features are declared in types but absent from bare core i
     )
   ).toThrow(TypeError);
 });
-test('beta.2 public menubar root does not connect SDK menu roots to its renderer context', () => {
+test('beta.5 public menubar root does not connect SDK menu roots to its renderer context', () => {
   const children = createElement(
     Fragment,
     null,
@@ -317,7 +317,7 @@ test('beta.2 public menubar root does not connect SDK menu roots to its renderer
   expect(roles(renderToStaticMarkup(createElement(Menubar, null, children)), 'menuitem')).toBe(2);
   expect(roles(renderToStaticMarkup(createElement(bar.Root, null, children)), 'menuitem')).toBe(0);
 });
-test('beta.2 navigation renderer owns item context and nested landmark selection', () => {
+test('beta.5 navigation renderer owns item context and nested landmark selection', () => {
   expect(() =>
     renderToStaticMarkup(
       createElement(
@@ -396,7 +396,7 @@ test('beta.2 navigation renderer owns item context and nested landmark selection
   expect(native.split('<nav').length - 1).toBe(1);
   expect(raw.split('<nav').length - 1).toBe(2);
 });
-test('beta.2 public hook types block tooltip composition and narrowed navigation callbacks', () => {
+test('beta.5 public hook types block tooltip composition and narrowed navigation callbacks', () => {
   const normalizedTooltip = withOptionSchema(tooltip);
   expectTypeOf<typeof normalizedTooltip>().not.toExtend<Primitive>();
   expectTypeOf<NavigationMenuOptions<'guides' | 'examples'>>().not.toExtend<

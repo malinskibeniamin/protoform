@@ -1,8 +1,20 @@
 # Protoform UI SDK bundle
 
 `@protoform/protoform-ui-sdk` installs themed React controls built on
-`@ui-sdk/react` and `@ui-sdk/core`, pinned to `0.1.0-beta.2`.
+`@ui-sdk/react` and `@ui-sdk/core`, pinned to `0.1.0-beta.5`.
 UI SDK is beta: review upgrades and copied source before adopting another release.
+
+## Beta.5 update
+
+Both SDK packages are pinned together to the newest published beta, not a moving npm tag.
+The [beta.3](https://github.com/vercel-labs/ui/releases/tag/%40ui-sdk/core%400.1.0-beta.3),
+[beta.4](https://github.com/vercel-labs/ui/releases/tag/%40ui-sdk/core%400.1.0-beta.4), and
+[beta.5](https://github.com/vercel-labs/ui/releases/tag/%40ui-sdk/core%400.1.0-beta.5) updates retain the public component entries.
+Owned Input/Textarea adapters now reject agent writes when read-only, expose required state without writable actions,
+and Combobox rejects unknown agent values unless custom values are explicitly enabled. Button presses accept their visible label.
+Regression tests exercise these changes through Protoform's controls and opt-in session, not a separate SDK implementation.
+The documented renderer exceptions remain reproduced on beta.5; no private API or package patch is introduced.
+External validation ownership, semantic-token styling, and explicit preference/agent enablement are unchanged.
 
 ## Breaking migration
 
@@ -51,8 +63,8 @@ styled locally with semantic tokens, not the optional upstream `web.css` theme.
 ## Provenance and licenses
 
 Behavior comes from the npm packages, not vendored implementation files. The upstream is
-[vercel-labs/ui](https://github.com/vercel-labs/ui), Apache-2.0, inspected at revision
-`8ff6bcf7100d48230a3fab8c72475d99316cc58a`. Package licenses ship with npm installations.
+[vercel-labs/ui](https://github.com/vercel-labs/ui), Apache-2.0, using the
+[beta.5 release](https://github.com/vercel-labs/ui/releases/tag/%40ui-sdk/core%400.1.0-beta.5). Package licenses ship with npm installations.
 The [version-matched docs](https://ui-sdk.dev/docs) also ship in `@ui-sdk/react/docs`.
 
 Existing presentation styles and non-behavioral compositions were adapted from MIT-licensed
@@ -101,11 +113,11 @@ The agreed boundary is React rendering owned by Protoform over upstream public c
 
 The first group covers Accordion, Avatar, Button, Calendar, Carousel, Collapsible, Dialog, AlertDialog, HoverCard, Input, Label, Popover, Progress, Resizable, ScrollArea, Separator, Slider, Switch, Tabs, and Textarea. Text adapters forward their initial values into native React markup as well as core options. Switch renders the core's native form input beside—not inside—its button. Plain Button bridges React events and asynchronous actions to the core's own pending-action API.
 
-The beta.2 optional-schema type mismatch also affects built-in primitives under exact optional properties. `withOptionSchema` retains each factory's existing schema object and supplies an empty schema only when absent. It does not replace state, slots, or behavior, and no installed package is patched.
+The beta.5 optional-schema type mismatch also affects built-in primitives under exact optional properties. `withOptionSchema` retains each factory's existing schema object and supplies an empty schema only when absent. It does not replace state, slots, or behavior, and no installed package is patched.
 
 A Button with both a custom `render` and an action callback retains the SDK React adapter: the direct bridge failed the installed router-link regression by canceling the first navigation as soon as the action became pending. The retained adapter preserves first navigation and blocks subsequent pending presses.
 
-Beta.2 requires bounded SDK renderer exceptions. In this release, core menu checkbox/radio parts and Select/Combobox extensions such as select-all are registered by renderer-only feature factories. Rendering their declared parts directly from the public primitives fails because the slot definition has not been registered. The package explicitly marks `@ui-sdk/core/renderer` as non-public and unstable. The agreed exception is to retain SDK React adapters only for demonstrated public-API gaps. No unstable renderer import is added here.
+Beta.5 requires bounded SDK renderer exceptions. In this release, core menu checkbox/radio parts and Select/Combobox extensions such as select-all are registered by renderer-only feature factories. Rendering their declared parts directly from the public primitives fails because the slot definition has not been registered. The package explicitly marks `@ui-sdk/core/renderer` as non-public and unstable. The agreed exception is to retain SDK React adapters only for demonstrated public-API gaps. No unstable renderer import is added here.
 
 External controller-connected Dialog, AlertDialog, and Popover triggers, and roots configured with those controllers, likewise retain their SDK React adapter: a raw core part has no root handle outside its root, and the public controller does not expose one. Retaining just the trigger is insufficient: the SDK React root also registers the controller-to-renderer handle needed by that trigger. Ordinary in-root triggers use owned adapters. Other popup parts use owned adapters with inherited/explicit React portal containers; Dialog and Popover content also render the public viewport slot when their resolved presentation is a sheet. Tooltip also has an additional optional-slot typing incompatibility beyond the shared schema mismatch.
 
@@ -113,7 +125,7 @@ The design-system linter recognizes only explicitly enumerated owned adapter imp
 
 Distinctive `core-*` adapter filenames and `primitive-schema.ts` prevent shadcn basename collisions with AutoForm fields and schema helpers. Local part exports use imported bindings so the CLI rewrites their custom host aliases correctly. Clean consumer installs verify the emitted source.
 
-Every existing control family has now been evaluated at the agreed boundary. Thirty-two of the 34 adopted SDK families have owned core-backed rendering parts; Menubar and Tooltip retain their SDK React renderer for the demonstrated boundaries below. This is not a claim that every part or root is independently renderable through beta.2’s public API.
+Every existing control family has now been evaluated at the agreed boundary. Thirty-two of the 34 adopted SDK families have owned core-backed rendering parts; Menubar and Tooltip retain their SDK React renderer for the demonstrated boundaries below. This is not a claim that every part or root is independently renderable through beta.5’s public API.
 
 The next group adds Radio/RadioGroup, OTPInput, Command, Drawer, and standalone Checkbox and Toggle. Radio renders each core native input beside its button; OTP forwards names and autofocus to its one native control, renders core slot characters, and keeps native validation/reset. Command’s owned parts preserve optional item values with stable React-generated identities and render text-match segments, explicit page scopes, shortcuts, and static/function empty content from core state. Root/list/data placement retains the SDK renderer boundary: a bare public core root renders no default data list, while a raw list inside an SDK root renders both that list and the SDK fallback, with duplicate IDs. The React placement and label helpers are not exported by the public primitive entry. Root, List, and Items therefore remain a stable SDK unit; switching root implementations only when data arrives was rejected because it resets an uncontrolled query. Other composed parts use owned adapters. Filtering, selection, page transitions, and pending actions remain upstream-owned. Drawer renders the public viewport around content and preserves public snap-point/handle behavior. External controller-connected Drawer roots, triggers, and outlets retain the same demonstrated renderer-handle connection exception as Dialog.
 
@@ -123,7 +135,7 @@ CheckboxGroup and ToggleGroup coordination retains the SDK React adapter togethe
 
 Menu, Select, Combobox, NavigationMenu, and Toast now have owned parts too. Select and Combobox own ordinary items, labels, inputs, indicators, groups, separators, status, clear buttons, arrows, explicit-string matched text, empty content, and value projection. Menu owns ordinary triggers/actions, separators, shortcuts, group identity/labels, and the context-key bridge. Navigation owns its list, triggers, links/icons, indicator, and viewport with explicit portal containers. Toast owns title/description rendering with explicit queue identity and React content. Presentation classes are unchanged.
 
-| Retained SDK renderer                                           | Reproduced beta.2 boundary                                                                                                                                                                                                                                                                    |
+| Retained SDK renderer                                           | Reproduced beta.5 boundary                                                                                                                                                                                                                                                                    |
 | --------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Menu root, content/data placement, and submenu connection       | A bare public root omits implicit data actions. Raw content inside an SDK root adds a second menu. Submenus require the opaque parent connection. Ordinary actions and group rendering stay owned.                                                                                            |
 | Menu checkbox/radio/context/icon features                       | Their type declarations include slots that a bare instance does not register. The registering feature factories are not publicly exported. Native feature parts coexist with owned ordinary parts.                                                                                            |
@@ -134,7 +146,7 @@ Menu, Select, Combobox, NavigationMenu, and Toast now have owned parts too. Sele
 | Toast region/item/action/close                                  | The renderer supplies current-toast context, default queue placement, and per-part async action/close overrides. The public action slot accepts a toast identity, not those overrides. Owned text receives typed React content from the region and passes the explicit identity to core.      |
 | Tooltip                                                         | After option-schema normalization, its shortcut slot’s optional-valued fields still fail the public Primitive constraint with exact optional properties. No cast, weakened compiler flag, or package patch is used.                                                                           |
 
-The public-boundary integration tests preserve the runtime reproductions and negative compiler contracts. Native browser tests cover the actual owned/retained combinations, not just bare slot markup. Shared option schemas may be required or optional on beta.2 factories; normalization preserves the original factory and schema identity in either case.
+The public-boundary integration tests preserve the runtime reproductions and negative compiler contracts. Native browser tests cover the actual owned/retained combinations, not just bare slot markup. Shared option schemas may be required or optional on beta.5 factories; normalization preserves the original factory and schema identity in either case.
 
 Beta.2’s native context trigger did not open on Shift+F10 or the context-menu key in the runtime probe. The adapter uses public `matchesShortcut` and `withSource` to forward a keyboard context-menu gesture through the native context trigger. Its contextmenu event uses the keyboard button value, preserving first-item focus. The SDK still owns positioning, active-opener identity, context presentation, focus, dismissal, and change cancellation; no local menu state or generated controller is introduced. Caller key cancellation, disabled triggers, supplied controllers/payloads, callback cancellation/source, sheet-to-context-popover resolution, and focus recovery remain application/SDK-owned and are covered in Chromium.
 
@@ -144,7 +156,7 @@ Beta.2 also leaves nonmatching manually composed Select/Combobox items visible w
 
 ## Public React hooks
 
-The pinned beta.2 package exports seven public React hooks. Protoform now directly uses all seven (distinct APIs, not invocation counts):
+The pinned beta.5 package exports seven public React hooks. Protoform now directly uses all seven (distinct APIs, not invocation counts):
 
 | Hook              | Real consuming surface                                                                                                         |
 | ----------------- | ------------------------------------------------------------------------------------------------------------------------------ |
@@ -160,4 +172,4 @@ The pinned beta.2 package exports seven public React hooks. Protoform now direct
 
 Install `@protoform/ui-sdk-hooks` for a live example at `/docs/blume-examples/registry/base-nova/protoform/demo/ui/sdk-hooks`. `AsyncOptionCombobox` is optional; it does not replace cached protobuf-provider queries. Its loader must honor `signal` and return SDK option objects, optionally with `hasMore`. The retry action lives inside the nonmodal popup, not behind its floating list. A public combobox controller restores input focus before the retry action unmounts; the persistent error message remains outside the popup. Pagination delegates to the SDK’s end-of-list `onLoadMore` behavior. Results remain server-ranked (`filter={false}`).
 
-Preferences are experimental and opt-in. Importing the module creates no preference, reads/writes no storage, and changes no global attributes or theme. Hosts explicitly create a preference and choose its storage/key. The demo does this only after Enable saved preferences, applies density only inside the example, and unsubscribes when stopped; saved values remain for later restoration. Server-rendered preference metadata uses `definedProps` to normalize beta.2’s optional-valued storage field without a cast. Supply a CSP nonce to the native `Preferences` component when required. `PreferenceSelect` preserves agent marks and original change source/event/reason, reflects cancellation, and uses native controlled-value read-back/history; stored preferences are not a transaction or a way to undo side effects.
+Preferences are experimental and opt-in. Importing the module creates no preference, reads/writes no storage, and changes no global attributes or theme. Hosts explicitly create a preference and choose its storage/key. The demo does this only after Enable saved preferences, applies density only inside the example, and unsubscribes when stopped; saved values remain for later restoration. Server-rendered preference metadata uses `definedProps` to normalize beta.5’s optional-valued storage field without a cast. Supply a CSP nonce to the native `Preferences` component when required. `PreferenceSelect` preserves agent marks and original change source/event/reason, reflects cancellation, and uses native controlled-value read-back/history; stored preferences are not a transaction or a way to undo side effects.

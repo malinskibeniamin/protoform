@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Rating, RatingStar } from '@/components/ui/rating';
+import { Textarea } from '@/components/ui/textarea';
 import { createAgentSession } from './session';
 
 function Controls() {
@@ -74,7 +75,13 @@ test('requires authorization and separate confirmation, exposes only declared ac
     expect((await confirm()).ok).toBe(false);
     await expect.element(page.getByLabel('Local save count')).toHaveText('0');
     approve = true;
-    expect((await confirm()).ok).toBe(true);
+    expect(
+      (
+        await session.agent.act({
+          steps: [{ ref: 'Apply local record', action: 'press', args: ['Apply local record'] }],
+        })
+      ).ok
+    ).toBe(true);
     await expect.element(page.getByLabel('Local save count')).toHaveText('1');
     await act(async () => {
       await session.agent.act({ steps: [{ ref: 'Session secret', action: 'setValue', args: ['replacement-secret'] }] });
@@ -91,6 +98,28 @@ test('requires authorization and separate confirmation, exposes only declared ac
     session.dispose();
   }
 });
+
+for (const { Control, label, value } of [
+  { Control: Input, label: 'Read-only title', value: 'Apollo' },
+  { Control: Textarea, label: 'Read-only notes', value: 'Local notes' },
+]) {
+  test(`${label} rejects agent writes and exposes required state without actions`, async () => {
+    const session = createAgentSession({ allow: () => true });
+    try {
+      await render(<Control aria-label={label} defaultValue={value} readOnly required />);
+      expect((await session.agent.act({ steps: [{ ref: label, action: 'setValue', args: ['Agent edit'] }] })).ok).toBe(
+        false
+      );
+      await expect.element(page.getByRole('textbox', { name: label })).toHaveValue(value);
+      const entry = session.agent.snapshot().find((control) => control.label === label);
+      expect(entry?.['disabled']).toBe(true);
+      expect(entry?.actions).toEqual([]);
+      expect(entry?.['required']).toBe(true);
+    } finally {
+      session.dispose();
+    }
+  });
+}
 
 test('observe, seek, staging and source undo preserve later human edits', async () => {
   const session = createAgentSession({ allow: () => true });
