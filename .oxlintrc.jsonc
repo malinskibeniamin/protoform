@@ -173,8 +173,8 @@
     "no-func-assign": "error",
     // Reviewed: enforce as an error, including nursery checks.
     "no-global-assign": "error",
-    // Reviewed no-implicit-coercion: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
-    "no-implicit-coercion": "off",
+    // Compatible with Biome and the TypeScript compiler contract.
+    "no-implicit-coercion": "error",
     // Reviewed: enforce as an error, including nursery checks.
     "no-implicit-globals": "error",
     // Reviewed: enforce as an error, including nursery checks.
@@ -334,7 +334,7 @@
     "no-useless-escape": "error",
     // Reviewed: enforce as an error, including nursery checks.
     "no-useless-rename": "error",
-    // Reviewed no-useless-return: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    // Strict noImplicitReturns requires explicit empty returns on optional-return control-flow paths.
     "no-useless-return": "off",
     // Reviewed: enforce as an error, including nursery checks.
     "no-var": "error",
@@ -355,8 +355,8 @@
     "one-var": ["error", "never"],
     // Reviewed: enforce as an error, including nursery checks.
     "operator-assignment": "error",
-    // Reviewed prefer-arrow-callback: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
-    "prefer-arrow-callback": "off",
+    // Compatible with Biome and the TypeScript compiler contract.
+    "prefer-arrow-callback": ["error", { "allowNamedFunctions": true }],
     // Reviewed: enforce as an error, including nursery checks.
     "prefer-const": "error",
     // Reviewed: enforce as an error, including nursery checks.
@@ -409,7 +409,7 @@
     "vars-on-top": "error",
     // Reviewed: enforce as an error, including nursery checks.
     "yoda": "error",
-    // Reviewed import/consistent-type-specifier-style: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    // A single preference conflicts with Biome: mixed imports use inline types, type-only imports use import type.
     "import/consistent-type-specifier-style": "off",
     // Reviewed: enforce as an error, including nursery checks.
     "import/default": "error",
@@ -419,8 +419,8 @@
     "import/exports-last": "off",
     // Reviewed import/extensions: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
     "import/extensions": "off",
-    // Reviewed import/first: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
-    "import/first": "off",
+    // Compatible with Biome and the TypeScript compiler contract.
+    "import/first": "error",
     // Reviewed import/group-exports: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
     "import/group-exports": "off",
     // Reviewed import/max-dependencies: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
@@ -429,8 +429,8 @@
     "import/named": "error",
     // Reviewed: enforce as an error, including nursery checks.
     "import/namespace": "error",
-    // Reviewed import/newline-after-import: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
-    "import/newline-after-import": "off",
+    // Compatible with Biome and the TypeScript compiler contract.
+    "import/newline-after-import": "error",
     // Reviewed: enforce as an error, including nursery checks.
     "import/no-absolute-path": "error",
     // Reviewed: enforce as an error, including nursery checks.
@@ -851,8 +851,8 @@
     "promise/no-return-in-finally": "error",
     // Reviewed: enforce as an error, including nursery checks.
     "promise/no-return-wrap": "error",
-    // Domain-specific resolver names avoid shadowing node:path resolve; constructors are checked for multiple resolution.
-    "promise/param-names": "off",
+    // Promise callbacks use resolve/reject; external resolver handles retain domain-specific names.
+    "promise/param-names": "error",
     // Reviewed promise/prefer-await-to-callbacks: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
     "promise/prefer-await-to-callbacks": "off",
     // Reviewed promise/prefer-await-to-then: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
@@ -1045,8 +1045,8 @@
     "typescript/adjacent-overload-signatures": "error",
     // Reviewed typescript/array-type: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
     "typescript/array-type": "off",
-    // React act returns a thenable even when its selected overload says void; Biome owns await checks with reviewed boundaries.
-    "typescript/await-thenable": "off",
+    // Require Promise-like values; mixed sync/async validator arrays are normalized with async callbacks.
+    "typescript/await-thenable": "error",
     // Reviewed: enforce as an error, including nursery checks.
     "typescript/ban-ts-comment": [
       "error",
@@ -1064,9 +1064,9 @@
     "typescript/class-literal-property-style": "error",
     // Reviewed: enforce as an error, including nursery checks.
     "typescript/consistent-generic-constructors": "error",
-    // Reviewed typescript/consistent-indexed-object-style: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    // Public dictionaries retain mergeable interfaces; anonymous lookup maps use Record.
     "typescript/consistent-indexed-object-style": "off",
-    // Reviewed typescript/consistent-return: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    // Strict TypeScript permits optional returns; this rule conflicts with no-useless-undefined.
     "typescript/consistent-return": "off",
     // Reviewed: enforce as an error, including nursery checks.
     "typescript/consistent-type-assertions": "error",
@@ -1102,10 +1102,10 @@
     "typescript/no-duplicate-type-constituents": "error",
     // Reviewed: enforce as an error, including nursery checks.
     "typescript/no-dynamic-delete": "error",
-    // Reviewed typescript/no-empty-interface: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
-    "typescript/no-empty-interface": "off",
-    // Reviewed typescript/no-empty-object-type: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
-    "typescript/no-empty-object-type": "off",
+    // Compatible with Biome and the TypeScript compiler contract.
+    "typescript/no-empty-interface": ["error", { "allowSingleExtends": true }],
+    // Compatible with Biome and the TypeScript compiler contract.
+    "typescript/no-empty-object-type": ["error", { "allowInterfaces": "with-single-extends" }],
     // Reviewed: enforce as an error, including nursery checks.
     "typescript/no-explicit-any": "error",
     // Reviewed: enforce as an error, including nursery checks.
@@ -1136,8 +1136,8 @@
     "typescript/no-meaningless-void-operator": "error",
     // Reviewed: enforce as an error, including nursery checks.
     "typescript/no-misused-new": "error",
-    // React/form APIs permit async callbacks in void positions; Biome and no-floating-promises cover unhandled async work.
-    "typescript/no-misused-promises": "off",
+    // Preserve async React/form callbacks; reject unawaited Promises in conditions and spreads.
+    "typescript/no-misused-promises": ["error", { "checksConditionals": true, "checksVoidReturn": false }],
     // Reviewed: enforce as an error, including nursery checks.
     "typescript/no-misused-spread": "error",
     // Reviewed: enforce as an error, including nursery checks.
@@ -1152,13 +1152,13 @@
     "typescript/no-non-null-assertion": "error",
     // Reviewed: enforce as an error, including nursery checks.
     "typescript/no-redundant-type-constituents": "error",
-    // Reviewed typescript/no-require-imports: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
-    "typescript/no-require-imports": "off",
+    // Compatible with Biome and the TypeScript compiler contract.
+    "typescript/no-require-imports": "error",
     // Reviewed: enforce as an error, including nursery checks.
     "typescript/no-restricted-types": "error",
     // Reviewed: enforce as an error, including nursery checks.
     "typescript/no-this-alias": "error",
-    // Reviewed typescript/no-unnecessary-boolean-literal-compare: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    // Biome strictBooleanExpressions requires explicit comparisons for nullable Boolean values.
     "typescript/no-unnecessary-boolean-literal-compare": "off",
     // Public components retain runtime guards for consumers with different declaration/runtime versions.
     "typescript/no-unnecessary-condition": "off",
@@ -1202,11 +1202,11 @@
     "typescript/no-useless-default-assignment": "error",
     // A standalone CLI may need explicit module scope; moduleDetection force also enforces that scope.
     "typescript/no-useless-empty-export": "off",
-    // Reviewed typescript/no-var-requires: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
-    "typescript/no-var-requires": "off",
+    // Compatible with Biome and the TypeScript compiler contract.
+    "typescript/no-var-requires": "error",
     // Reviewed: enforce as an error, including nursery checks.
     "typescript/no-wrapper-object-types": "error",
-    // Reviewed typescript/non-nullable-type-assertion-style: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    // This style requires non-null assertions, which both Biome and Oxlint forbid.
     "typescript/non-nullable-type-assertion-style": "off",
     // Reviewed: enforce as an error, including nursery checks.
     "typescript/only-throw-error": "error",
@@ -1271,8 +1271,8 @@
     "typescript/strict-boolean-expressions": "off",
     // Conflicts with expression callbacks accepted by React and the form libraries; promises are checked independently.
     "typescript/strict-void-return": "off",
-    // Biome useExhaustiveSwitchCases owns exhaustiveness, including runtime guards for public enum inputs.
-    "typescript/switch-exhaustiveness-check": "off",
+    // Check union coverage while preserving intentional default handlers for public enum inputs.
+    "typescript/switch-exhaustiveness-check": ["error", { "considerDefaultExhaustiveForUnions": true }],
     // Reviewed: enforce as an error, including nursery checks.
     "typescript/triple-slash-reference": "error",
     // Reviewed: enforce as an error, including nursery checks.
@@ -1335,10 +1335,10 @@
     "unicorn/no-array-reverse": "error",
     // Reviewed unicorn/no-array-sort: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
     "unicorn/no-array-sort": "off",
-    // Reviewed unicorn/no-await-expression-member: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
-    "unicorn/no-await-expression-member": "off",
-    // Reviewed unicorn/no-await-in-promise-methods: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
-    "unicorn/no-await-in-promise-methods": "off",
+    // Compatible with Biome and the TypeScript compiler contract.
+    "unicorn/no-await-expression-member": "error",
+    // Compatible with Biome and the TypeScript compiler contract.
+    "unicorn/no-await-in-promise-methods": "error",
     // Reviewed: enforce as an error, including nursery checks.
     "unicorn/no-confusing-array-with": "error",
     // Reviewed: enforce as an error, including nursery checks.
@@ -1423,7 +1423,7 @@
     "unicorn/no-useless-undefined": "off",
     // Reviewed: enforce as an error, including nursery checks.
     "unicorn/no-zero-fractions": "error",
-    // Reviewed unicorn/number-literal-case: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
+    // Oxlint requires uppercase hex digits, while Biome lowercases them; no Oxlint option exists.
     "unicorn/number-literal-case": "off",
     // Reviewed: enforce as an error, including nursery checks.
     "unicorn/numeric-separators-style": "error",
@@ -1467,8 +1467,8 @@
     "unicorn/prefer-event-target": "error",
     // Reviewed unicorn/prefer-export-from: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
     "unicorn/prefer-export-from": "off",
-    // Reviewed unicorn/prefer-global-this: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
-    "unicorn/prefer-global-this": "off",
+    // Compatible with Biome and the TypeScript compiler contract.
+    "unicorn/prefer-global-this": "error",
     // Reviewed: enforce as an error, including nursery checks.
     "unicorn/prefer-import-meta-properties": "error",
     // Reviewed: enforce as an error, including nursery checks.
@@ -1511,16 +1511,16 @@
     "unicorn/prefer-regexp-test": "error",
     // Reviewed: enforce as an error, including nursery checks.
     "unicorn/prefer-response-static-json": "error",
-    // Reviewed unicorn/prefer-set-has: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
-    "unicorn/prefer-set-has": "off",
+    // Compatible with Biome and the TypeScript compiler contract.
+    "unicorn/prefer-set-has": "error",
     // Reviewed: enforce as an error, including nursery checks.
     "unicorn/prefer-set-size": "error",
     // Reviewed: enforce as an error, including nursery checks.
     "unicorn/prefer-single-call": "error",
-    // Reviewed unicorn/prefer-spread: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
-    "unicorn/prefer-spread": "off",
-    // Reviewed unicorn/prefer-string-raw: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
-    "unicorn/prefer-string-raw": "off",
+    // Compatible with Biome and the TypeScript compiler contract.
+    "unicorn/prefer-spread": "error",
+    // Compatible with Biome and the TypeScript compiler contract.
+    "unicorn/prefer-string-raw": "error",
     // Reviewed: enforce as an error, including nursery checks.
     "unicorn/prefer-string-replace-all": "error",
     // Reviewed: enforce as an error, including nursery checks.
@@ -1553,8 +1553,8 @@
     "unicorn/switch-case-braces": "off",
     // Reviewed: enforce as an error, including nursery checks.
     "unicorn/switch-case-break-position": "error",
-    // Reviewed unicorn/text-encoding-identifier-case: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
-    "unicorn/text-encoding-identifier-case": "off",
+    // Compatible with Biome and the TypeScript compiler contract.
+    "unicorn/text-encoding-identifier-case": "error",
     // Reviewed: enforce as an error, including nursery checks.
     "unicorn/throw-new-error": "error",
     // Reviewed vitest/consistent-each-for: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.

@@ -318,7 +318,7 @@ test('organizes the docs sidebar by reader task', async ({ page }) => {
       }
       await expect(subgroup.locator(':scope > div > ul')).toBeVisible();
     }
-    await expect(section.getByRole('link')).toHaveText(Array.from(group.pages));
+    await expect(section.getByRole('link')).toHaveText([...group.pages]);
     await expect(section.getByRole('link').first()).toBeVisible();
   }
 
@@ -388,10 +388,16 @@ test('opens diagrams in an accessible full-viewport viewer', async ({ page }) =>
   await expect(viewer.locator('[data-diagram-preview] svg').first()).toBeVisible();
   const viewport = page.viewportSize();
   await expect
-    .poll(async () => (await viewer.boundingBox())?.width ?? 0)
+    .poll(async () => {
+      const bounds1 = await viewer.boundingBox();
+      return bounds1?.width ?? 0;
+    })
     .toBeGreaterThanOrEqual((viewport?.width ?? 0) - 2);
   await expect
-    .poll(async () => (await viewer.boundingBox())?.height ?? 0)
+    .poll(async () => {
+      const bounds2 = await viewer.boundingBox();
+      return bounds2?.height ?? 0;
+    })
     .toBeGreaterThanOrEqual((viewport?.height ?? 0) - 2);
 
   await page.keyboard.press('Escape');
@@ -553,7 +559,8 @@ test('uses a wider content column for the readiness dashboard', async ({ page })
 
   const article = page.locator('#blume-content > article');
   await expect(page.getByRole('progressbar', { name: 'Overall readiness' })).toBeVisible();
-  expect((await article.boundingBox())?.width).toBeGreaterThan(800);
+  const bounds3 = await article.boundingBox();
+  expect(bounds3?.width).toBeGreaterThan(800);
 });
 
 test('keeps the bookstore demo readable inside the docs column', async ({ page }) => {
@@ -768,7 +775,8 @@ for (const pageInfo of pages) {
       const projectId = page.getByRole('textbox', { name: 'Project ID' });
       await expect(projectId).toBeVisible();
       await expect(page.getByLabel('Region')).toHaveCount(0);
-      expect((await projectId.boundingBox())?.width).toBeGreaterThanOrEqual(200);
+      const bounds4 = await projectId.boundingBox();
+      expect(bounds4?.width).toBeGreaterThanOrEqual(200);
     });
   }
   if (pageInfo.name === 'kitchen-sink') {

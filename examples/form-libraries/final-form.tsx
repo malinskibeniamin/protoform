@@ -49,7 +49,7 @@ function mapSubmissionErrors(error: unknown) {
 }
 
 export function FinalFormExample({ baseUrl }: { baseUrl?: string }) {
-  const idPrefix = React.useId();
+  const prefixId = React.useId();
   const [profileId, setProfileId] = React.useState<string>();
   const client = createClient(FormExamplesService, createFormExamplesTransport(baseUrl));
 
@@ -68,7 +68,7 @@ export function FinalFormExample({ baseUrl }: { baseUrl?: string }) {
         } catch (error) {
           const submission = mapSubmissionErrors(error);
           if (submission.firstField) {
-            const fieldId = `${idPrefix}-${submission.firstField}`;
+            const fieldId = `${prefixId}-${submission.firstField}`;
             document.querySelector<HTMLElement>(`#${CSS.escape(fieldId)}`)?.focus();
           }
           return submission.errors;
@@ -90,12 +90,12 @@ export function FinalFormExample({ baseUrl }: { baseUrl?: string }) {
                   );
                   return (
                     <Field data-invalid={errors.length > 0}>
-                      <FieldLabel htmlFor={`${idPrefix}-${input.name}`} required>
+                      <FieldLabel htmlFor={`${prefixId}-${input.name}`} required>
                         Display name
                       </FieldLabel>
                       <Input
                         aria-invalid={errors.length > 0 || undefined}
-                        id={`${idPrefix}-${name}`}
+                        id={`${prefixId}-${name}`}
                         name={name}
                         onBlur={onBlur}
                         onChange={onChange}
@@ -117,12 +117,12 @@ export function FinalFormExample({ baseUrl }: { baseUrl?: string }) {
                   );
                   return (
                     <Field data-invalid={errors.length > 0}>
-                      <FieldLabel htmlFor={`${idPrefix}-${input.name}`} required>
+                      <FieldLabel htmlFor={`${prefixId}-${input.name}`} required>
                         Email
                       </FieldLabel>
                       <Input
                         aria-invalid={errors.length > 0 || undefined}
-                        id={`${idPrefix}-${name}`}
+                        id={`${prefixId}-${name}`}
                         name={name}
                         onBlur={onBlur}
                         onChange={onChange}

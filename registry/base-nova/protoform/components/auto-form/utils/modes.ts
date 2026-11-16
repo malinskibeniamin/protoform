@@ -4,7 +4,7 @@ export function normalizeModes(modes: AutoFormMode[] | undefined): AutoFormMode[
   const resolved = (modes && modes.length > 0 ? modes : ['advanced']).filter(
     (mode): mode is AutoFormMode => mode === 'simple' || mode === 'advanced' || mode === 'json'
   );
-  return resolved.length > 0 ? Array.from(new Set(resolved)) : ['advanced'];
+  return resolved.length > 0 ? [...new Set(resolved)] : ['advanced'];
 }
 
 export function resolveInitialMode(availableModes: AutoFormMode[], defaultMode?: AutoFormMode): AutoFormMode {

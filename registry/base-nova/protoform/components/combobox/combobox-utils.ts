@@ -30,5 +30,5 @@ export const groupOptions = (options: readonly ComboboxOption[]): GroupedOptions
       });
     }
   }
-  return Array.from(groups.values());
+  return [...groups.values()];
 };

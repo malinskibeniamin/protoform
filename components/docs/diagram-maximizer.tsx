@@ -34,7 +34,7 @@ function getDiagramLabel(target: HTMLElement): string {
 }
 
 function findDiagramTargets(root: ParentNode = document): HTMLElement[] {
-  return Array.from(root.querySelectorAll<HTMLElement>(DIAGRAM_SELECTOR)).filter((target) => {
+  return [...root.querySelectorAll<HTMLElement>(DIAGRAM_SELECTOR)].filter((target) => {
     if (target.closest('[data-diagram-dialog]')) {
       return false;
     }

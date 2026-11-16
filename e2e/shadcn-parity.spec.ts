@@ -41,7 +41,8 @@ test('defaults to TanStack Charts and keeps Recharts as an explicit fallback', a
 
 test('catalog basics support local creation and validated entry @cross-browser', async ({ page }) => {
   const list = page.getByRole('tablist', { name: 'Component categories' });
-  expect((await list.boundingBox())?.height).toBeLessThan(100);
+  const bounds1 = await list.boundingBox();
+  expect(bounds1?.height).toBeLessThan(100);
   await page.getByRole('button', { name: 'Create sample field' }).click();
   await expect(page.getByRole('status').filter({ hasText: 'A sample field was added.' })).toBeVisible();
   await page.getByRole('button', { name: 'Reset empty state' }).click();
@@ -167,7 +168,8 @@ for (const name of ['Basics', 'Overlays', 'Layout', 'Messages', 'Recipes']) {
   if (name === 'Messages') {
     checkScenario = async (page) => {
       const message = page.getByText('The schema passed its sample validation.', { exact: true });
-      expect((await message.boundingBox())?.width).toBeGreaterThan(150);
+      const bounds2 = await message.boundingBox();
+      expect(bounds2?.width).toBeGreaterThan(150);
       const event = page.getByText('Sample event 1: request validated.', { exact: true });
       await event.scrollIntoViewIfNeeded();
       await expect(event).toBeVisible();

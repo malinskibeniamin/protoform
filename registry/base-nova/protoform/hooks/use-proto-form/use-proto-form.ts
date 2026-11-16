@@ -95,7 +95,7 @@ export function useProtoForm<Desc extends DescMessage>(
     serverPathPrefix !== undefined && serverPathPrefix !== ''
       ? [serverPathPrefix, ...serverPathPrefixes]
       : serverPathPrefixes;
-  const sourceMessage = useRef(isMessage(rest.defaultValues, schema) ? rest.defaultValues : undefined);
+  const sourceMessageRef = useRef(isMessage(rest.defaultValues, schema) ? rest.defaultValues : undefined);
   const normalizeValues = (values: unknown) =>
     isMessage(values, schema) ? protoToFormValues(schema, values) : (values as ProtoFormShape<Desc>);
   const suppliedDefaults = rest.defaultValues;
@@ -105,7 +105,7 @@ export function useProtoForm<Desc extends DescMessage>(
       ? async () => {
           const values = await suppliedDefaults();
           if (isMessage(values, schema)) {
-            sourceMessage.current = values;
+            sourceMessageRef.current = values;
           }
           return normalizeValues(values);
         }
@@ -119,7 +119,7 @@ export function useProtoForm<Desc extends DescMessage>(
     defaultValues,
     mode,
     resolver: createProtoResolver(schema, conversionOptions, undefined, {
-      getSourceMessage: () => sourceMessage.current,
+      getSourceMessage: () => sourceMessageRef.current,
       raw: true,
       ...(validationScope === 'modified-fields'
         ? {
@@ -180,7 +180,7 @@ export function useProtoForm<Desc extends DescMessage>(
     try {
       const next = typeof values === 'function' ? values(form.getValues()) : values;
       if (isMessage(next, schema)) {
-        sourceMessage.current = next;
+        sourceMessageRef.current = next;
       }
       form.reset(next === undefined ? undefined : normalizeValues(next), keepStateOptions);
     } finally {
@@ -199,7 +199,7 @@ export function useProtoForm<Desc extends DescMessage>(
   };
   const createMessage = (values?: ProtoFormShape<Desc>): MessageShape<Desc> => {
     const raw = values ?? form.getValues();
-    return formValuesToProto(schema, raw, sourceMessage.current, conversionOptions);
+    return formValuesToProto(schema, raw, sourceMessageRef.current, conversionOptions);
   };
 
   const createUpdateMask = (): FieldMask =>

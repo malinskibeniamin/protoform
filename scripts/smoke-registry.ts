@@ -53,7 +53,8 @@ for (const name of expectedItems) {
       registryDependencies: z.array(z.string()).optional(),
     })
     .parse(JSON.parse(readFileSync(path, 'utf8')));
-  for (const dependency of item.dependencies ?? []) {
+  const dependencies = item.dependencies ?? [];
+  for (const dependency of dependencies) {
     if (
       (dependency === 'react-hook-form' || dependency.startsWith('react-hook-form@')) &&
       dependency !== 'react-hook-form@^7.92.0'

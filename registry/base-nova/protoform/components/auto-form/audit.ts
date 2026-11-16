@@ -22,7 +22,7 @@ export interface AutoFormAuditReport {
 }
 
 export function auditAutoFormConfigurations(targets: readonly AutoFormAuditTarget[]): AutoFormAuditReport {
-  const diagnostics = Array.from(targets)
+  const diagnostics = [...targets]
     .sort((left, right) => left.name.localeCompare(right.name))
     .flatMap(({ name, source, ...configuration }) =>
       inspectAutoFormConfiguration(configuration).map((diagnostic) => ({
@@ -59,7 +59,7 @@ function formatSarifReport(report: AutoFormAuditReport): string {
                 ],
               }
             : {}),
-          message: { text: diagnostic.target.concat(': ', diagnostic.message, ' (', diagnostic.path, ')') },
+          message: { text: `${diagnostic.target}: ${diagnostic.message} (${diagnostic.path})` },
           ruleId: diagnostic.code,
         })),
         tool: {

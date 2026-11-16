@@ -51,7 +51,7 @@ expect.extend({
     await target.page().addScriptTag({ content: bundle });
     const description = () =>
       target.evaluate((element) => {
-        const compute = window.__protoformAccessibleDescription;
+        const compute = globalThis.window.__protoformAccessibleDescription;
         if (typeof compute !== 'function') {
           throw new TypeError('Accessible description helper was not loaded');
         }

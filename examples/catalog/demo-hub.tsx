@@ -86,7 +86,7 @@ function modulePathFor(demo: DemoCatalogEntry): string {
 }
 
 function initialDemoSlug(demos: readonly DemoCatalogEntry[]): string {
-  const linkedSlug = typeof window === 'undefined' ? '' : window.location.hash.slice(1);
+  const linkedSlug = Reflect.get(globalThis, 'window') === undefined ? '' : globalThis.window.location.hash.slice(1);
   return demos.find((demo) => demo.slug === linkedSlug)?.slug ?? demos[0]?.slug ?? '';
 }
 
@@ -99,14 +99,14 @@ export function DemoHub({ category }: { category: DemoHubCategory }) {
   useEffect(
     function synchronizeDemoFromHash() {
       function handleHashChange() {
-        const linkedSlug = window.location.hash.slice(1);
+        const linkedSlug = globalThis.window.location.hash.slice(1);
         if (demos.some((demo) => demo.slug === linkedSlug)) {
           setSelectedSlug(linkedSlug);
         }
       }
 
-      window.addEventListener('hashchange', handleHashChange);
-      return () => window.removeEventListener('hashchange', handleHashChange);
+      globalThis.window.addEventListener('hashchange', handleHashChange);
+      return () => globalThis.window.removeEventListener('hashchange', handleHashChange);
     },
     [demos]
   );
@@ -128,7 +128,11 @@ export function DemoHub({ category }: { category: DemoHubCategory }) {
       return;
     }
     setSelectedSlug(value);
-    window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}#${value}`);
+    globalThis.window.history.replaceState(
+      null,
+      '',
+      `${globalThis.window.location.pathname}${globalThis.window.location.search}#${value}`
+    );
   }
 
   return (

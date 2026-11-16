@@ -50,7 +50,7 @@ import { protoPathToFormPath } from './proto-error-path.js';
 const TRAILING_FRACTION_ZEROES = /0+$/u;
 const TIMESTAMP_FRACTION = /\.(\d{1,9})/u;
 
-const PROTO_JSON_FALLBACK_TYPES = [
+const PROTO_JSON_FALLBACK_TYPES = new Set([
   TIMESTAMP_TYPE,
   DURATION_TYPE,
   FIELD_MASK_TYPE,
@@ -58,7 +58,7 @@ const PROTO_JSON_FALLBACK_TYPES = [
   VALUE_TYPE,
   LIST_VALUE_TYPE,
   ANY_TYPE,
-];
+]);
 
 export const PROTO_FORM_ROOT_ERROR_KEY = '__protoFormRoot__';
 
@@ -987,7 +987,7 @@ function normalizeIssuePath(
     }
 
     if (matchedField.fieldKind === 'message') {
-      if (isWrapperDesc(matchedField.message) || PROTO_JSON_FALLBACK_TYPES.includes(matchedField.message.typeName)) {
+      if (isWrapperDesc(matchedField.message) || PROTO_JSON_FALLBACK_TYPES.has(matchedField.message.typeName)) {
         return normalizedPath;
       }
       currentDesc = matchedField.message;
@@ -995,7 +995,7 @@ function normalizeIssuePath(
     }
 
     if (matchedField.fieldKind === 'list' && matchedField.listKind === 'message') {
-      if (isWrapperDesc(matchedField.message) || PROTO_JSON_FALLBACK_TYPES.includes(matchedField.message.typeName)) {
+      if (isWrapperDesc(matchedField.message) || PROTO_JSON_FALLBACK_TYPES.has(matchedField.message.typeName)) {
         return normalizedPath;
       }
       const nextSegment = issue.path[index + 1];
@@ -1030,10 +1030,10 @@ export interface ProtoValidationContext {
   validationMask?: FieldMask | undefined;
 }
 
-const SIGNED_32_SCALARS = [ScalarType.INT32, ScalarType.SINT32, ScalarType.SFIXED32];
-const UNSIGNED_32_SCALARS = [ScalarType.UINT32, ScalarType.FIXED32];
-const SIGNED_64_SCALARS = [ScalarType.INT64, ScalarType.SINT64, ScalarType.SFIXED64];
-const UNSIGNED_64_SCALARS = [ScalarType.UINT64, ScalarType.FIXED64];
+const SIGNED_32_SCALARS = new Set([ScalarType.INT32, ScalarType.SINT32, ScalarType.SFIXED32]);
+const UNSIGNED_32_SCALARS = new Set([ScalarType.UINT32, ScalarType.FIXED32]);
+const SIGNED_64_SCALARS = new Set([ScalarType.INT64, ScalarType.SINT64, ScalarType.SFIXED64]);
+const UNSIGNED_64_SCALARS = new Set([ScalarType.UINT64, ScalarType.FIXED64]);
 const SIGNED_32_MIN = -2_147_483_648;
 const SIGNED_32_MAX = 2_147_483_647;
 const UNSIGNED_32_MAX = 4_294_967_295;
@@ -1045,7 +1045,7 @@ function getScalarConversionIssue(scalar: ScalarType | undefined, value: unknown
   if (scalar === undefined || value === undefined || value === null || value === '') {
     return;
   }
-  if (SIGNED_32_SCALARS.includes(scalar)) {
+  if (SIGNED_32_SCALARS.has(scalar)) {
     const numericValue = normalizeNumberValue(value);
     if (
       numericValue === undefined ||
@@ -1056,7 +1056,7 @@ function getScalarConversionIssue(scalar: ScalarType | undefined, value: unknown
       return 'Enter a signed 32-bit integer.';
     }
   }
-  if (UNSIGNED_32_SCALARS.includes(scalar)) {
+  if (UNSIGNED_32_SCALARS.has(scalar)) {
     const numericValue = normalizeNumberValue(value);
     if (
       numericValue === undefined ||
@@ -1067,13 +1067,13 @@ function getScalarConversionIssue(scalar: ScalarType | undefined, value: unknown
       return 'Enter an unsigned 32-bit integer.';
     }
   }
-  if (SIGNED_64_SCALARS.includes(scalar)) {
+  if (SIGNED_64_SCALARS.has(scalar)) {
     const bigintValue = normalizeBigIntValue(value);
     if (bigintValue === undefined || bigintValue < SIGNED_64_MIN || bigintValue > SIGNED_64_MAX) {
       return 'Enter a signed 64-bit integer.';
     }
   }
-  if (!UNSIGNED_64_SCALARS.includes(scalar)) {
+  if (!UNSIGNED_64_SCALARS.has(scalar)) {
     return;
   }
   const bigintValue = normalizeBigIntValue(value);
@@ -1154,7 +1154,7 @@ function getFieldConversionIssues(
         break;
       }
       message = getMessageConversionIssue(field, value);
-      if (!PROTO_JSON_FALLBACK_TYPES.includes(field.message.typeName) && isPlainObject(value)) {
+      if (!PROTO_JSON_FALLBACK_TYPES.has(field.message.typeName) && isPlainObject(value)) {
         return getFormConversionIssues(field.message, value, path);
       }
       break;
@@ -1172,16 +1172,20 @@ function getFieldConversionIssues(
       const issues: NormalizedProtoIssue[] = message !== undefined && message !== '' ? [{ message, path }] : [];
       const valueField = cloneField(field, { fieldKind: field.mapKind, oneof: undefined });
       if (Array.isArray(value)) {
-        return issues.concat(
-          value.flatMap((entry, index) =>
+        return [
+          ...issues,
+          ...value.flatMap((entry, index) =>
             isPlainObject(entry) ? getFieldConversionIssues(valueField, entry['value'], [...path, index, 'value']) : []
-          )
-        );
+          ),
+        ];
       }
       return isPlainObject(value)
-        ? issues.concat(
-            Object.entries(value).flatMap(([key, entry]) => getFieldConversionIssues(valueField, entry, [...path, key]))
-          )
+        ? [
+            ...issues,
+            ...Object.entries(value).flatMap(([key, entry]) =>
+              getFieldConversionIssues(valueField, entry, [...path, key])
+            ),
+          ]
         : issues;
     }
     default:

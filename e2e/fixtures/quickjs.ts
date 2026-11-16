@@ -18,4 +18,4 @@ declare global {
   }
 }
 
-window.__protoformQuickJs = quickJs;
+globalThis.window.__protoformQuickJs = quickJs;

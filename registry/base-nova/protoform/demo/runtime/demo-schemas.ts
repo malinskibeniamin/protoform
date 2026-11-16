@@ -43,6 +43,7 @@ import {
   WellKnownRuleMatrixSchema,
 } from './gen/protoform/conformance/v1/conformance_pb.js';
 import { Editions2024MatrixSchema } from './gen/protoform/conformance/v1/editions_2024_pb.js';
+
 export type DemoSchemaKey =
   | 'any'
   | 'batch-create'

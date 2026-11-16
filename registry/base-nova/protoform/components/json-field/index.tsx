@@ -260,20 +260,20 @@ const JSONField = ({
     return JSON.stringify(initialValue, null, 2);
   });
 
-  const lastPublishedValue = useRef(value);
+  const lastPublishedValueRef = useRef(value);
 
   const publishValue = (parsed: JSONValue) => {
-    lastPublishedValue.current = parsed;
+    lastPublishedValueRef.current = parsed;
     onChange(parsed);
     setJSONError(undefined);
   };
 
   useEffect(
     function synchronizeExternalValue() {
-      if (Object.is(value, lastPublishedValue.current)) {
+      if (Object.is(value, lastPublishedValueRef.current)) {
         return;
       }
-      lastPublishedValue.current = value;
+      lastPublishedValueRef.current = value;
       setJSONError(undefined);
       let displayValue: JSONValue;
       if (showPlaceholder === true && hasEmptyValues(value, schema)) {
@@ -289,7 +289,7 @@ const JSONField = ({
   );
 
   const handleSwitchToFormMode = () => {
-    const invalidEditor = Array.from(containerRef.current?.querySelectorAll('textarea') ?? []).find(
+    const invalidEditor = [...(containerRef.current?.querySelectorAll('textarea') ?? [])].find(
       (textarea) => !textarea.checkValidity()
     );
     if (invalidEditor !== undefined) {
@@ -883,20 +883,20 @@ const JSONEditor = ({ value, onChange, error: externalError, label, onDraftChang
   const generatedId = React.useId();
   const editorId = id ?? generatedId;
   const containerRef = useRef<HTMLDivElement>(null);
-  const lastPublishedText = useRef<string | undefined>(undefined);
-  const previousValue = useRef(value);
+  const lastPublishedTextRef = useRef<string | undefined>(undefined);
+  const previousValueRef = useRef(value);
 
   useEffect(
     function synchronizeEditor() {
-      if (previousValue.current === value) {
+      if (previousValueRef.current === value) {
         return;
       }
-      previousValue.current = value;
-      if (value !== lastPublishedText.current && value !== editorContent) {
+      previousValueRef.current = value;
+      if (value !== lastPublishedTextRef.current && value !== editorContent) {
         setEditorContent(value);
         setInternalError(undefined);
       }
-      lastPublishedText.current = undefined;
+      lastPublishedTextRef.current = undefined;
     },
     [value, editorContent]
   );
@@ -911,7 +911,7 @@ const JSONEditor = ({ value, onChange, error: externalError, label, onDraftChang
       setInternalError(`Invalid JSON. ${error instanceof Error ? error.message : 'Check the syntax.'}`);
       return;
     }
-    lastPublishedText.current = JSON.stringify(parsed, null, 2);
+    lastPublishedTextRef.current = JSON.stringify(parsed, null, 2);
     setInternalError(undefined);
     onChange(parsed);
   };
@@ -1027,9 +1027,7 @@ interface JSONSchemaType {
     | ('string' | 'number' | 'integer' | 'boolean' | 'array' | 'object' | 'null')[];
 }
 
-interface JSONObject {
-  [key: string]: JSONValue;
-}
+type JSONObject = Record<string, JSONValue>;
 
 function updateValueAtPath(obj: JSONValue, path: string[], value: JSONValue): JSONValue {
   if (path.length === 0) {

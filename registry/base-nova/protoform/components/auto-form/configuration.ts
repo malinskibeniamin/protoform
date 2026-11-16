@@ -208,7 +208,8 @@ export function inspectAutoFormConfiguration<
   const activeRegistry = fieldRegistry ?? defaultRegistry;
   const diagnostics: AutoFormConfigurationDiagnostic[] = [...stepDiagnostic];
 
-  for (const path of Object.keys(fieldConfig ?? {})) {
+  const configuredPaths = Object.keys(fieldConfig ?? {});
+  for (const path of configuredPaths) {
     if (!validPaths.has(path)) {
       diagnostics.push({
         code: 'invalid-configuration-path',
