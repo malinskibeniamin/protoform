@@ -1518,6 +1518,11 @@
           "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-field.tsx",
           "type": "registry:lib",
           "target": "@lib/ui-sdk/adapters/core-field.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/control-layouts/index.tsx",
+          "type": "registry:lib",
+          "target": "@lib/control-layouts.tsx"
         }
       ],
       "devDependencies": ["@types/js-cookie@3.0.6"]
@@ -2202,6 +2207,11 @@
           "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-field.tsx",
           "type": "registry:lib",
           "target": "@lib/ui-sdk/adapters/core-field.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/control-layouts/index.tsx",
+          "type": "registry:lib",
+          "target": "@lib/control-layouts.tsx"
         },
         {
           "path": "registry/base-nova/protoform/UI_SDK_COMPONENTS.md",
@@ -4911,6 +4921,11 @@
           "path": "registry/base-nova/protoform/components/auto-form/shadcn-host.tsx",
           "type": "registry:component",
           "target": "@components/auto-form/shadcn-host.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/control-layouts/index.tsx",
+          "type": "registry:lib",
+          "target": "@lib/control-layouts.tsx"
         }
       ],
       "devDependencies": ["@types/js-cookie@3.0.6"]
@@ -5400,6 +5415,11 @@
           "path": "registry/base-nova/protoform/components/auto-form/shadcn-host.tsx",
           "type": "registry:component",
           "target": "@components/auto-form/shadcn-host.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/control-layouts/index.tsx",
+          "type": "registry:lib",
+          "target": "@lib/control-layouts.tsx"
         },
         {
           "path": "registry/base-nova/protoform/components/chart-tanstack/index.tsx",

@@ -8,6 +8,7 @@ import type {
   DefaultTooltipContentProps as RechartsPrimitiveDefaultTooltipContentProps,
   TooltipValueType,
 } from 'recharts';
+import { ChartTooltipLayout, ChartTooltipValueLayout } from '@/registry/base-nova/protoform/components/control-layouts';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
 
 type ChartTheme = 'light' | 'dark';
@@ -277,60 +278,50 @@ function ChartTooltipContent({
     return null;
   }
   const nestLabel = payload.length === 1 && indicator !== 'dot';
-  return (
-    <div
-      className={cn(
-        'grid min-w-32 items-start gap-1.5 rounded-lg border border-border/50 bg-background px-2.5 py-1.5 text-xs shadow-xl',
-        className
-      )}
-    >
-      {nestLabel === false && tooltipLabel}
-      <div className="grid gap-1.5">
-        {payload.map((item, index) => {
-          if (item.type === 'none') {
-            return null;
-          }
-          const key = String(nameKey ?? item.name ?? item.dataKey ?? 'value');
-          const itemConfig = getPayloadConfigFromPayload(config, item, key);
-          const indicatorColor = color ?? getPayloadFill(item.payload) ?? item.color;
-          return (
-            <div
-              className={cn(
-                'flex w-full flex-wrap items-stretch gap-2 [&>svg]:size-2.5 [&>svg]:text-muted-foreground',
-                indicator === 'dot' && 'items-center'
-              )}
-              key={item.graphicalItemId}
-            >
-              {typeof formatter === 'function' &&
-              item.value !== undefined &&
-              item.name !== undefined &&
-              item.name !== null ? (
-                formatter(item.value, item.name, item, index, payload)
-              ) : (
-                <>
-                  <ChartIndicator
-                    color={indicatorColor}
-                    hidden={hideIndicator}
-                    icon={itemConfig?.icon}
-                    indicator={indicator}
-                    nested={nestLabel}
-                  />
-                  <div
-                    className={cn('flex flex-1 justify-between leading-none', nestLabel ? 'items-end' : 'items-center')}
-                  >
-                    <div className="grid gap-1.5">
-                      {nestLabel ? tooltipLabel : null}
-                      <span className="text-muted-foreground">{itemConfig?.label ?? item.name}</span>
-                    </div>
-                    <ChartValue value={item.value} />
-                  </div>
-                </>
-              )}
-            </div>
-          );
-        })}
+  const rows = payload.map((item, index) => {
+    if (item.type === 'none') {
+      return null;
+    }
+    const key = String(nameKey ?? item.name ?? item.dataKey ?? 'value');
+    const itemConfig = getPayloadConfigFromPayload(config, item, key);
+    const indicatorColor = color ?? getPayloadFill(item.payload) ?? item.color;
+    return (
+      <div
+        className={cn(
+          'flex w-full flex-wrap items-stretch gap-2 [&>svg]:size-2.5 [&>svg]:text-muted-foreground',
+          indicator === 'dot' && 'items-center'
+        )}
+        key={item.graphicalItemId}
+      >
+        {typeof formatter === 'function' &&
+        item.value !== undefined &&
+        item.name !== undefined &&
+        item.name !== null ? (
+          formatter(item.value, item.name, item, index, payload)
+        ) : (
+          <>
+            <ChartIndicator
+              color={indicatorColor}
+              hidden={hideIndicator}
+              icon={itemConfig?.icon}
+              indicator={indicator}
+              nested={nestLabel}
+            />
+            <ChartTooltipValueLayout
+              label={nestLabel ? tooltipLabel : null}
+              name={itemConfig?.label ?? item.name}
+              nested={nestLabel}
+              value={<ChartValue value={item.value} />}
+            />
+          </>
+        )}
       </div>
-    </div>
+    );
+  });
+  return (
+    <ChartTooltipLayout className={className} label={nestLabel === false && tooltipLabel}>
+      {rows}
+    </ChartTooltipLayout>
   );
 }
 const ChartLegend = RechartsPrimitiveLegend;

@@ -2,7 +2,6 @@
 
 import { Braces, FileEdit, SpellCheck, Trash2 } from 'lucide-react';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
-
 import { Badge } from '@/components/ui/sdk/badge/index';
 import { Button } from '@/components/ui/sdk/button/index';
 import { type ComboboxOption, OptionCombobox } from '@/components/ui/sdk/combobox/index';
@@ -12,6 +11,13 @@ import { Label } from '@/components/ui/sdk/label/index';
 import { Textarea } from '@/components/ui/sdk/textarea/index';
 import { toast } from '@/components/ui/sdk/toast/index';
 import { Heading, Text } from '@/components/ui/sdk/typography/index';
+import {
+  JSONArrayCardLayout,
+  JSONArrayLayout,
+  JSONEditorLayout,
+  JSONPropertiesLayout,
+  JSONPropertyLayout,
+} from '@/registry/base-nova/protoform/components/control-layouts';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
@@ -21,6 +27,14 @@ function formatNumericValue(value: number) {
 
 const JSONCodeEditor = React.lazy(() =>
   import('./json-code-editor').then((module) => ({ default: module.JSONCodeEditor }))
+);
+
+const editorLoading = (
+  <div className="min-h-25 p-2.5">
+    <Text role="status" variant="small">
+      Loading JSON editor…
+    </Text>
+  </div>
 );
 
 function isJsonValue(value: unknown): value is JSONValue {
@@ -227,6 +241,23 @@ const hasEmptyValues = (value: JSONValue, schema: JSONSchemaType): boolean => {
   return false;
 };
 
+function isJSONOnlySchema(schema: JSONSchemaType): boolean {
+  return (
+    (schema.type === 'object' && (!schema.properties || Object.keys(schema.properties).length === 0)) ||
+    (schema.type === 'array' && !schema.items)
+  );
+}
+
+function initialJSONText(value: JSONValue, schema: JSONSchemaType, showPlaceholder: boolean): string {
+  if (showPlaceholder === true && hasEmptyValues(value, schema)) {
+    return JSON.stringify(generateExampleData(schema), null, 2);
+  }
+  if (value !== undefined) {
+    return JSON.stringify(value, null, 2);
+  }
+  return schema.type === 'array' ? '[]' : '{}';
+}
+
 const JSONField = ({
   schema,
   value,
@@ -248,22 +279,11 @@ const JSONField = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const controlId = (path: string[]) => `${instanceId}-${encodeURIComponent(JSON.stringify(path))}`;
   const controlLabel = (path: string[]) => [label, ...path].filter(Boolean).join('.') || 'Value';
-  const hasValue = value !== undefined;
   const [isJSONMode, setIsJSONMode] = useState(false);
   const [jsonError, setJSONError] = useState<string | undefined>(undefined);
   const [optionError, setOptionError] = useState<string | undefined>(undefined);
 
-  const [rawJSONValue, setRawJSONValue] = useState<string>(() => {
-    let initialValue: JSONValue;
-    if (showPlaceholder === true && hasEmptyValues(value, schema)) {
-      initialValue = generateExampleData(schema);
-    } else if (hasValue) {
-      initialValue = value;
-    } else {
-      initialValue = schema.type === 'array' ? [] : {};
-    }
-    return JSON.stringify(initialValue, null, 2);
-  });
+  const [rawJSONValue, setRawJSONValue] = useState<string>(() => initialJSONText(value, schema, showPlaceholder));
 
   const lastPublishedValue = useRef(value);
 
@@ -280,17 +300,9 @@ const JSONField = ({
       }
       lastPublishedValue.current = value;
       setJSONError(undefined);
-      let displayValue: JSONValue;
-      if (showPlaceholder === true && hasEmptyValues(value, schema)) {
-        displayValue = generateExampleData(schema);
-      } else if (hasValue) {
-        displayValue = value;
-      } else {
-        displayValue = schema.type === 'array' ? [] : {};
-      }
-      setRawJSONValue(JSON.stringify(displayValue, null, 2));
+      setRawJSONValue(initialJSONText(value, schema, showPlaceholder));
     },
-    [value, schema, showPlaceholder, hasValue]
+    [value, schema, showPlaceholder]
   );
 
   const handleSwitchToFormMode = () => {
@@ -312,15 +324,7 @@ const JSONField = ({
       publishValue(parsed);
       setIsJSONMode(false);
     } else {
-      let displayValue: JSONValue;
-      if (showPlaceholder === true && hasEmptyValues(value, schema)) {
-        displayValue = generateExampleData(schema);
-      } else if (hasValue) {
-        displayValue = value;
-      } else {
-        displayValue = schema.type === 'array' ? [] : {};
-      }
-      setRawJSONValue(JSON.stringify(displayValue, null, 2));
+      setRawJSONValue(initialJSONText(value, schema, showPlaceholder));
       setIsJSONMode(true);
     }
   };
@@ -578,31 +582,32 @@ const JSONField = ({
 
         const requiredFields = new Set(propSchema.required);
 
-        return (
-          <div className="space-y-2 p-3">
-            {Object.entries(propSchema.properties).map(([key, subSchema]) => (
-              <div key={key}>
-                <div className="mb-1 flex items-center gap-2">
-                  <Label htmlFor={controlId([...path, key])} variant="strong">
-                    {key}
-                    {requiredFields.has(key) && <span className="ml-1 text-destructive">*</span>}
-                  </Label>
-                  <Badge size="sm" variant="outline">
-                    {subSchema.type ?? 'unknown'}
-                  </Badge>
-                </div>
-                {renderFormFields(
-                  subSchema,
-                  getJSONProperty(currentValue, key),
-                  [...path, key],
-                  depth + 1,
-                  propSchema,
-                  key
-                )}
-              </div>
-            ))}
-          </div>
-        );
+        const fields = Object.entries(propSchema.properties).map(([key, subSchema]) => {
+          const caption = (
+            <>
+              <Label htmlFor={controlId([...path, key])} variant="strong">
+                {key}
+                {requiredFields.has(key) && <span className="ml-1 text-destructive">*</span>}
+              </Label>
+              <Badge size="sm" variant="outline">
+                {subSchema.type ?? 'unknown'}
+              </Badge>
+            </>
+          );
+          return (
+            <JSONPropertyLayout caption={caption} key={key}>
+              {renderFormFields(
+                subSchema,
+                getJSONProperty(currentValue, key),
+                [...path, key],
+                depth + 1,
+                propSchema,
+                key
+              )}
+            </JSONPropertyLayout>
+          );
+        });
+        return <JSONPropertiesLayout>{fields}</JSONPropertiesLayout>;
       }
       case 'array': {
         let arrayValue = Array.isArray(currentValue) ? currentValue : [];
@@ -618,89 +623,93 @@ const JSONField = ({
 
         if (isSimpleObject(itemSchema)) {
           const requiredItemFields = new Set(itemSchema.required);
+          const description =
+            propSchema.description !== undefined && propSchema.description !== '' ? (
+              <Text className="text-muted-foreground" variant="small">
+                {propSchema.description}
+              </Text>
+            ) : null;
+          const cards = arrayValue.map((item, index) => {
+            const itemTypeName =
+              [itemSchema.title, itemSchema.description, propertyName?.replace(TRAILING_S_REGEX, '')].find(Boolean) ??
+              'Item';
+            const itemDisplayName = itemTypeName.charAt(0).toUpperCase() + itemTypeName.slice(1);
+            const title = (
+              <Heading className="text-sm" level={4}>
+                {itemDisplayName} #{index + 1}
+              </Heading>
+            );
+            const removeAction = (
+              <Button
+                aria-label={`Remove ${controlLabel([...path, String(index)])}`}
+                className={arrayValue.length <= 1 ? 'invisible' : ''}
+                disabled={arrayValue.length <= 1}
+                onClick={() => {
+                  const newArray = [...arrayValue];
+                  newArray.splice(index, 1);
+                  handleFieldChange(path, newArray);
+                }}
+                size="sm"
+                type="button"
+                variant="outline"
+              >
+                <Trash2 className="size-4" />
+              </Button>
+            );
+            const fields =
+              itemSchema.type === 'object' && itemSchema.properties
+                ? Object.entries(itemSchema.properties).map(([key, subSchema]) => {
+                    const caption = (
+                      <>
+                        <Label htmlFor={controlId([...path, String(index), key])} variant="strong">
+                          {key}
+                        </Label>
+                        <Badge size="sm" variant="outline">
+                          {subSchema.type ?? 'unknown'}
+                        </Badge>
+                        {requiredItemFields.has(key) && <span className="ml-1 text-destructive">*</span>}
+                      </>
+                    );
+                    return (
+                      <JSONPropertyLayout arrayItem caption={caption} key={key}>
+                        {renderFormFields(
+                          subSchema,
+                          getJSONProperty(item, key),
+                          [...path, index.toString(), key],
+                          depth + 1,
+                          itemSchema,
+                          key
+                        )}
+                      </JSONPropertyLayout>
+                    );
+                  })
+                : renderFormFields(itemSchema, item, [...path, index.toString()], depth + 1);
+            return (
+              <JSONArrayCardLayout action={removeAction} key={index} title={title}>
+                {fields}
+              </JSONArrayCardLayout>
+            );
+          });
+          const addAction = (
+            <Button
+              className="w-full"
+              onClick={() => {
+                const defaultValue = getArrayItemDefault(itemSchema);
+                handleFieldChange(path, [...arrayValue, defaultValue]);
+              }}
+              size="sm"
+              type="button"
+              variant="dashed"
+            >
+              + Add{' '}
+              {[itemSchema.title, itemSchema.description, propertyName?.replace(TRAILING_S_REGEX, '')].find(Boolean) ??
+                'Item'}
+            </Button>
+          );
           return (
-            <div className="space-y-4">
-              {propSchema.description !== undefined && propSchema.description !== '' ? (
-                <Text className="text-muted-foreground" variant="small">
-                  {propSchema.description}
-                </Text>
-              ) : null}
-
-              <div className="space-y-4">
-                {arrayValue.map((item, index) => {
-                  const itemTypeName =
-                    [itemSchema?.title, itemSchema?.description, propertyName?.replace(TRAILING_S_REGEX, '')].find(
-                      Boolean
-                    ) ?? 'Item';
-                  const itemDisplayName = itemTypeName.charAt(0).toUpperCase() + itemTypeName.slice(1);
-
-                  return (
-                    <div className="rounded-lg border border-border bg-card p-4" key={index}>
-                      <div className="mb-3 flex items-center justify-between">
-                        <Heading className="text-sm" level={4}>
-                          {itemDisplayName} #{index + 1}
-                        </Heading>
-                        <Button
-                          aria-label={`Remove ${controlLabel([...path, String(index)])}`}
-                          className={arrayValue.length <= 1 ? 'invisible' : ''}
-                          disabled={arrayValue.length <= 1}
-                          onClick={() => {
-                            const newArray = [...arrayValue];
-                            newArray.splice(index, 1);
-                            handleFieldChange(path, newArray);
-                          }}
-                          size="sm"
-                          type="button"
-                          variant="outline"
-                        >
-                          <Trash2 className="size-4" />
-                        </Button>
-                      </div>
-                      <div className="space-y-3">
-                        {itemSchema?.type === 'object' && itemSchema.properties
-                          ? Object.entries(itemSchema.properties).map(([key, subSchema]) => (
-                              <div className="space-y-1" key={key}>
-                                <div className="flex items-center gap-2">
-                                  <Label htmlFor={controlId([...path, String(index), key])} variant="strong">
-                                    {key}
-                                  </Label>
-                                  <Badge size="sm" variant="outline">
-                                    {subSchema.type ?? 'unknown'}
-                                  </Badge>
-                                  {requiredItemFields.has(key) && <span className="ml-1 text-destructive">*</span>}
-                                </div>
-                                {renderFormFields(
-                                  subSchema,
-                                  getJSONProperty(item, key),
-                                  [...path, index.toString(), key],
-                                  depth + 1,
-                                  itemSchema,
-                                  key
-                                )}
-                              </div>
-                            ))
-                          : renderFormFields(itemSchema, item, [...path, index.toString()], depth + 1)}
-                      </div>
-                    </div>
-                  );
-                })}
-                <Button
-                  className="w-full"
-                  onClick={() => {
-                    const defaultValue = getArrayItemDefault(itemSchema);
-                    handleFieldChange(path, [...arrayValue, defaultValue]);
-                  }}
-                  size="sm"
-                  type="button"
-                  variant="dashed"
-                >
-                  + Add{' '}
-                  {[itemSchema?.title, itemSchema?.description, propertyName?.replace(TRAILING_S_REGEX, '')].find(
-                    Boolean
-                  ) ?? 'Item'}
-                </Button>
-              </div>
-            </div>
+            <JSONArrayLayout action={addAction} description={description}>
+              {cards}
+            </JSONArrayLayout>
           );
         }
 
@@ -733,9 +742,7 @@ const JSONField = ({
   };
   const handleFieldChangeEffect = React.useEffectEvent(handleFieldChange);
 
-  const shouldUseJSONMode =
-    (schema.type === 'object' && (!schema.properties || Object.keys(schema.properties).length === 0)) ||
-    (schema.type === 'array' && !schema.items);
+  const shouldUseJSONMode = isJSONOnlySchema(schema);
 
   if (shouldUseJSONMode && isJSONMode !== true) {
     setIsJSONMode(true);
@@ -941,55 +948,49 @@ const JSONEditor = ({ value, onChange, error: externalError, label, onDraftChang
     [displayError, errorId]
   );
 
+  const input = (
+    <Textarea
+      aria-hidden="true"
+      className="sr-only"
+      id={editorId}
+      onChange={(event) => handleEditorChange(event.currentTarget.value)}
+      onFocus={focusEditor}
+      onInvalid={(event) => {
+        event.preventDefault();
+        focusEditor();
+      }}
+      tabIndex={-1}
+      value={editorContent}
+    />
+  );
+
+  const editor = (
+    <JSONCodeEditor
+      error={displayError}
+      errorId={errorId}
+      id={editorId}
+      label={label}
+      onChange={handleEditorChange}
+      value={editorContent}
+    />
+  );
+  const feedback =
+    displayError !== undefined && displayError !== '' ? (
+      <Text className="mt-1 text-destructive" id={errorId} role="alert" variant="small">
+        {displayError}
+      </Text>
+    ) : null;
   return (
-    <div className="relative" ref={containerRef}>
-      <label className="sr-only" htmlFor={editorId}>
-        {label}
-      </label>
-      <div
-        className={cn(
-          'rounded-md border',
-          displayError !== undefined && displayError !== '' ? 'border-destructive' : 'border-border'
-        )}
-      >
-        <Textarea
-          aria-hidden="true"
-          className="sr-only"
-          id={editorId}
-          onChange={(event) => handleEditorChange(event.currentTarget.value)}
-          onFocus={focusEditor}
-          onInvalid={(event) => {
-            event.preventDefault();
-            focusEditor();
-          }}
-          tabIndex={-1}
-          value={editorContent}
-        />
-        <React.Suspense
-          fallback={
-            <div className="min-h-25 p-2.5">
-              <Text role="status" variant="small">
-                Loading JSON editor…
-              </Text>
-            </div>
-          }
-        >
-          <JSONCodeEditor
-            error={displayError}
-            errorId={errorId}
-            id={editorId}
-            label={label}
-            onChange={handleEditorChange}
-            value={editorContent}
-          />
-        </React.Suspense>
-      </div>
-      {displayError !== undefined && displayError !== '' ? (
-        <Text className="mt-1 text-destructive" id={errorId} role="alert" variant="small">
-          {displayError}
-        </Text>
-      ) : null}
-    </div>
+    <JSONEditorLayout
+      containerRef={containerRef}
+      editor={editor}
+      editorId={editorId}
+      error={displayError}
+      feedback={feedback}
+      input={input}
+      label={label}
+      loading={editorLoading}
+    />
   );
 };
 

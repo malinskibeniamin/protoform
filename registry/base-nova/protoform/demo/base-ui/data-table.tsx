@@ -144,6 +144,32 @@ export default function DataTableExample() {
   });
   const filterValue = table.getColumn('name')?.getFilterValue();
   const filter = typeof filterValue === 'string' ? filterValue : '';
+  const headerGroups = table.getHeaderGroups().map((group) => (
+    <TableRow key={group.id}>
+      {group.headers.map((header) => (
+        <TableHead aria-sort={sortDirection(header.column.getIsSorted())} key={header.id}>
+          {header.isPlaceholder === true ? null : <table.FlexRender header={header} />}
+        </TableHead>
+      ))}
+    </TableRow>
+  ));
+  const emptyRow = (
+    <TableRow>
+      <TableCell className="text-center" colSpan={table.getVisibleLeafColumns().length}>
+        No matching records.
+      </TableCell>
+    </TableRow>
+  );
+  const rows = table.getRowModel().rows.map((row) => (
+    <TableRow data-state={row.getIsSelected() === true ? 'selected' : undefined} key={row.id}>
+      {row.getVisibleCells().map((cell) => (
+        <TableCell key={cell.id}>
+          <table.FlexRender cell={cell} />
+        </TableCell>
+      ))}
+    </TableRow>
+  ));
+  const body = table.getRowModel().rows.length === 0 ? emptyRow : rows;
   return (
     <div className="min-w-0 space-y-4">
       <div className="flex min-w-0 flex-wrap items-center gap-2">
@@ -181,36 +207,8 @@ export default function DataTableExample() {
         </DropdownMenu>
       </div>
       <Table aria-label="Sample records">
-        <TableHeader>
-          {table.getHeaderGroups().map((group) => (
-            <TableRow key={group.id}>
-              {group.headers.map((header) => (
-                <TableHead aria-sort={sortDirection(header.column.getIsSorted())} key={header.id}>
-                  {header.isPlaceholder === true ? null : <table.FlexRender header={header} />}
-                </TableHead>
-              ))}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows.length === 0 ? (
-            <TableRow>
-              <TableCell className="text-center" colSpan={table.getVisibleLeafColumns().length}>
-                No matching records.
-              </TableCell>
-            </TableRow>
-          ) : (
-            table.getRowModel().rows.map((row) => (
-              <TableRow data-state={row.getIsSelected() === true ? 'selected' : undefined} key={row.id}>
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    <table.FlexRender cell={cell} />
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))
-          )}
-        </TableBody>
+        <TableHeader>{headerGroups}</TableHeader>
+        <TableBody>{body}</TableBody>
       </Table>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <output aria-label="Selected record count" className="text-sm">

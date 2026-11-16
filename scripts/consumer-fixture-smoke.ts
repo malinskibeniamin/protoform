@@ -526,6 +526,7 @@ async function assertOptionalAdapterInstalled(adapter: string) {
       'design-system/ui',
       'domain/runtime/utils',
       'domain/runtime/input-utils',
+      'domain/runtime/control-layouts.tsx',
       'features/hooks',
       'domain/runtime/base-ui-compat',
     ].map(async (path) => {

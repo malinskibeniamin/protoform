@@ -249,3 +249,14 @@ UI SDK imports are unstyled behavior primitives, not our styled design-system co
 `settings.shadcn.ignoreImports` excludes only `@ui-sdk/react` entries from component recognition.
 The design-system rules still recognize our local `@/components/ui` wrappers, and token/inline-style
 checks remain active on SDK primitives; positive and negative lint fixtures enforce that distinction.
+
+### Matching UI renderer policies
+
+The opt-in SDK copies inherit only existing React Doctor exemptions for the same default
+control owner. `newLintExceptions` maps literal SDK component `.tsx` paths to their Base UI
+counterparts before checking the existing rule and severity. SDK globs, other source roots,
+new rules, and global downgrades remain rejected. The forwarding/Motion exceptions name
+only diagnosed component files; neither foundation receives a new rule exemption.
+
+Duplicate presentation templates are shared by the two renderers instead of exempted.
+The templates accept rendered controls; they do not import either behavior library or own state.

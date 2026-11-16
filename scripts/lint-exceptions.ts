@@ -281,7 +281,21 @@ function scopeIsContained(candidate: readonly string[], previous: readonly strin
   );
 }
 
-function ownerCoversRule(candidate: ExceptionPolicy, owner: ExceptionPolicy, rule: string, level: string): boolean {
+const SDK_COMPONENT_SOURCE = /^registry\/ui-sdk\/protoform\/components\/(?:[a-z0-9-]+\/)*[a-z0-9.-]+\.tsx$/u;
+function componentPolicyOwner(file: string, selector: string): string {
+  if (file !== 'doctor.config.ts' || !SDK_COMPONENT_SOURCE.test(selector) || posix.normalize(selector) !== selector) {
+    return selector;
+  }
+  return selector.replace('registry/ui-sdk/protoform/components/', 'registry/base-nova/protoform/components/');
+}
+
+function ownerCoversRule(
+  file: string,
+  candidate: ExceptionPolicy,
+  owner: ExceptionPolicy,
+  rule: string,
+  level: string
+): boolean {
   const severity = new Map([
     ['off', 0],
     ['info', 1],
@@ -291,7 +305,10 @@ function ownerCoversRule(candidate: ExceptionPolicy, owner: ExceptionPolicy, rul
   return (
     previousLevel !== undefined &&
     (severity.get(level) ?? -1) >= (severity.get(previousLevel) ?? -1) &&
-    scopeIsContained(candidate.selectors, owner.selectors)
+    scopeIsContained(
+      candidate.selectors.map((selector) => componentPolicyOwner(file, selector)),
+      owner.selectors
+    )
   );
 }
 
@@ -378,7 +395,7 @@ export function newLintExceptions(file: string, source: string, baseline: string
         after.get(rule) === 'error' &&
         level === 'off' &&
         !previouslyScopedRules.has(rule);
-      if (!(adoptedRule || owners.some((owner) => ownerCoversRule(candidate, owner, rule, level)))) {
+      if (!(adoptedRule || owners.some((owner) => ownerCoversRule(file, candidate, owner, rule, level)))) {
         return true;
       }
     }

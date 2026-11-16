@@ -190,3 +190,48 @@ test('does not use global adoption to weaken a previously strict scoped rule', (
   });
   expect(newLintExceptions('.oxlintrc.jsonc', weakened, baseline)).toHaveLength(1);
 });
+
+test('carries only existing Doctor policies to literal SDK component counterparts', () => {
+  const baseline = `export default { rules: { 'react-doctor/no-eval': 'error' }, ignore: { overrides: [
+    { files: ['registry/base-nova/protoform/components/**'], rules: ['react-doctor/jsx-props-no-spreading'] },
+    { files: ['registry/base-nova/protoform/components/card/index.tsx'], rules: ['react-doctor/use-lazy-motion'] }
+  ] } };`;
+  const policy = (
+    path: string,
+    rule: string
+  ) => `export default { rules: { 'react-doctor/no-eval': 'error' }, ignore: { overrides: [
+    { files: ['${path}'], rules: ['${rule}'] }
+  ] } };`;
+  expect(
+    newLintExceptions(
+      'doctor.config.ts',
+      policy('registry/ui-sdk/protoform/components/card/index.tsx', 'react-doctor/use-lazy-motion'),
+      baseline
+    )
+  ).toEqual([]);
+  expect(
+    newLintExceptions(
+      'doctor.config.ts',
+      policy('registry/ui-sdk/protoform/components/rating/index.tsx', 'react-doctor/jsx-props-no-spreading'),
+      baseline
+    )
+  ).toEqual([]);
+  for (const [path, rule] of [
+    ['registry/ui-sdk/protoform/components/**', 'react-doctor/jsx-props-no-spreading'],
+    ['registry/ui-sdk/protoform/**', 'react-doctor/jsx-props-no-spreading'],
+    ['registry/ui-sdk/protoform/components/../lib/core.tsx', 'react-doctor/jsx-props-no-spreading'],
+    ['registry/ui-sdk/protoform/lib/core/index.tsx', 'react-doctor/jsx-props-no-spreading'],
+    ['registry/ui-sdk/protoform/components/badge/index.tsx', 'react-doctor/use-lazy-motion'],
+    ['registry/ui-sdk/protoform/components/card/index.tsx', 'react-doctor/no-eval'],
+    ['registry/other/protoform/components/card/index.tsx', 'react-doctor/use-lazy-motion'],
+  ] as const) {
+    expect(newLintExceptions('doctor.config.ts', policy(path, rule), baseline)).toHaveLength(1);
+  }
+  expect(
+    newLintExceptions(
+      '.oxlintrc.jsonc',
+      policy('registry/ui-sdk/protoform/components/card/index.tsx', 'react-doctor/use-lazy-motion'),
+      baseline
+    )
+  ).toHaveLength(1);
+});

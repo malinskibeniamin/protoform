@@ -5,6 +5,7 @@ import { CheckIcon, CopyIcon } from 'lucide-react';
 import { AnimatePresence, type HTMLMotionProps, motion } from 'motion/react';
 import React from 'react';
 
+import { ClipboardFeedback } from '@/registry/base-nova/protoform/components/control-layouts';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
 
 const buttonVariants = cva(
@@ -93,7 +94,7 @@ function CopyButton({
   };
 
   return (
-    <>
+    <ClipboardFeedback error={copyError}>
       <motion.button
         className={cn(buttonVariants({ size, variant }), className)}
         data-slot="copy-button"
@@ -116,12 +117,7 @@ function CopyButton({
         </AnimatePresence>
         {children}
       </motion.button>
-      {copyError ? (
-        <span aria-live="assertive" className="sr-only" role="alert">
-          {copyError}
-        </span>
-      ) : null}
-    </>
+    </ClipboardFeedback>
   );
 }
 

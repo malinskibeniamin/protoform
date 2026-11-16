@@ -93,6 +93,11 @@ Each control has one behavior owner; do not attach SDK behavior to a Base UI-con
 Renderer maps may supply an optional `Provider` for library-owned composition contexts, such as
 Base UI tooltip coordination, without coupling the form core to the library.
 
+Custom component maps use the updated renderer-neutral contract: text controls receive
+`onValueChange(string)`, and slots use names such as `Radio`, `CollapsiblePanel`, `SelectGroupLabel`,
+`TabsTab`, and `TabsPanel`. The supplied Base UI map translates these to native APIs. Existing
+application-owned maps must adopt this contract; raw control exports are not a drop-in map.
+
 Install `@protoform/ui-foundations` for a real Base UI form alongside an explicitly enabled SDK
 rating and agent sandbox. SDK items require a registry built from this revision; the older
 immutable preview snapshot below predates these additions.

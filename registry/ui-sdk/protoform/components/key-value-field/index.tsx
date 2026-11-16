@@ -2,10 +2,10 @@
 
 import { Plus, X } from 'lucide-react';
 import { type ReactNode, useId, useRef } from 'react';
-
 import { Button } from '@/components/ui/sdk/button/index';
 import { OptionCombobox, type OptionComboboxProps } from '@/components/ui/sdk/combobox/index';
 import { Input, type InputProps } from '@/components/ui/sdk/input/index';
+import { KeyValueLayout, KeyValueRowLayout } from '@/registry/base-nova/protoform/components/control-layouts';
 import { findDuplicateIndices, useInputListFocus } from '@/registry/base-nova/protoform/lib/input-utils';
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
@@ -119,58 +119,65 @@ function KeyValueRow({
   const isValueInvalid = Boolean(error?.value) || Boolean(pair.key && !pair.value);
   const keyError = isDuplicate ? 'Duplicate key' : error?.key;
 
-  return (
-    <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-2 @min-[28rem]/key-value:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]">
-      <div className="col-start-1 row-start-1 min-w-0 space-y-1">
-        <FieldRenderer
-          config={keyFieldProps}
-          disabled={disabled}
-          isInvalid={isKeyInvalid}
-          onChange={(val) => onKeyChange(index, val)}
-          testId={hasTestId ? `${testId}-key-${index}` : undefined}
-          value={pair.key}
-        />
-        <KeyValueError message={keyError} />
-      </div>
-      <div className="col-start-1 row-start-2 min-w-0 space-y-1 @min-[28rem]/key-value:col-start-2 @min-[28rem]/key-value:row-start-1">
-        <FieldRenderer
-          config={valueFieldProps}
-          disabled={disabled}
-          isInvalid={isValueInvalid}
-          onChange={(val) => onValueChange(index, val)}
-          testId={hasTestId ? `${testId}-value-${index}` : undefined}
-          value={pair.value}
-        />
-        <KeyValueError message={error?.value} />
-      </div>
+  const keyControl = (
+    <FieldRenderer
+      config={keyFieldProps}
+      disabled={disabled}
+      isInvalid={isKeyInvalid}
+      onChange={(val) => onKeyChange(index, val)}
+      testId={hasTestId ? `${testId}-key-${index}` : undefined}
+      value={pair.key}
+    />
+  );
+  const valueControl = (
+    <FieldRenderer
+      config={valueFieldProps}
+      disabled={disabled}
+      isInvalid={isValueInvalid}
+      onChange={(val) => onValueChange(index, val)}
+      testId={hasTestId ? `${testId}-value-${index}` : undefined}
+      value={pair.value}
+    />
+  );
+  const removeAction = (
+    <Button
+      aria-label="Delete key-value pair"
+      className="col-start-1 row-start-3 justify-self-end @min-[28rem]/key-value:col-start-3 @min-[28rem]/key-value:row-start-1"
+      data-testid={hasTestId ? `${testId}-delete-${index}` : undefined}
+      disabled={disabled}
+      onClick={() => onDelete(index)}
+      size="icon-sm"
+      type="button"
+      variant="ghost"
+    >
+      <X size={16} />
+    </Button>
+  );
+  const addAction =
+    onAdd && isLast ? (
       <Button
-        aria-label="Delete key-value pair"
-        className="col-start-1 row-start-3 justify-self-end @min-[28rem]/key-value:col-start-3 @min-[28rem]/key-value:row-start-1"
-        data-testid={hasTestId ? `${testId}-delete-${index}` : undefined}
+        className="col-span-full"
+        data-slot="add-button"
+        data-testid={hasTestId ? `${testId}-add` : undefined}
         disabled={disabled}
-        onClick={() => onDelete(index)}
-        size="icon-sm"
+        onClick={onAdd}
+        size="sm"
         type="button"
-        variant="ghost"
+        variant="outline"
       >
-        <X size={16} />
+        <Plus size={14} />
+        {addButtonLabel}
       </Button>
-      {onAdd && isLast ? (
-        <Button
-          className="col-span-full"
-          data-slot="add-button"
-          data-testid={hasTestId ? `${testId}-add` : undefined}
-          disabled={disabled}
-          onClick={onAdd}
-          size="sm"
-          type="button"
-          variant="outline"
-        >
-          <Plus size={14} />
-          {addButtonLabel}
-        </Button>
-      ) : null}
-    </div>
+    ) : null;
+  return (
+    <KeyValueRowLayout
+      addAction={addAction}
+      keyControl={keyControl}
+      keyError={<KeyValueError message={keyError} />}
+      removeAction={removeAction}
+      valueControl={valueControl}
+      valueError={<KeyValueError message={error?.value} />}
+    />
   );
 }
 
@@ -230,28 +237,14 @@ export function KeyValueField({
   };
 
   return (
-    <fieldset
-      aria-describedby={description ? descriptionId : undefined}
-      aria-labelledby={label ? labelId : undefined}
-      className="@container/key-value flex min-w-0 flex-col gap-2"
-      data-slot="key-value-field"
-      data-testid={testId}
-      ref={containerRef}
+    <KeyValueLayout
+      containerRef={containerRef}
+      description={description}
+      descriptionId={descriptionId}
+      label={label}
+      labelId={labelId}
+      testId={testId}
     >
-      {label || description ? (
-        <div className="flex flex-col gap-0.5">
-          {label ? (
-            <span className="text-sm leading-none font-medium select-none" id={labelId}>
-              {label}
-            </span>
-          ) : null}
-          {description ? (
-            <p className="text-sm text-muted-foreground" id={descriptionId}>
-              {description}
-            </p>
-          ) : null}
-        </div>
-      ) : null}
       {value.map((pair, index) => (
         <KeyValueRow
           addButtonLabel={addButtonLabel}
@@ -285,6 +278,6 @@ export function KeyValueField({
           {addButtonLabel}
         </Button>
       ) : null}
-    </fieldset>
+    </KeyValueLayout>
   );
 }
