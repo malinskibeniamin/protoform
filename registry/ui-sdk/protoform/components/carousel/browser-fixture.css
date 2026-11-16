@@ -1,0 +1,9 @@
+[data-slot='carousel'] {
+  inline-size: 18.75rem;
+}
+[data-slot='carousel-content'] {
+  display: flex;
+}
+[data-slot='carousel-item'] {
+  flex: 0 0 100%;
+}

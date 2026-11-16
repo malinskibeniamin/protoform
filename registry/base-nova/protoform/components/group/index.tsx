@@ -2,6 +2,7 @@
 import React, { createContext, useContext } from 'react';
 
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
+
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
 type GroupPosition = 'first' | 'middle' | 'last';

@@ -3,7 +3,7 @@ import { act, render } from '@rstest/browser-react';
 import { expect, test } from '@rstest/core';
 import { createDialogController } from '@ui-sdk/core/dialog';
 import { renderToString } from 'react-dom/server';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/sdk/button';
 import {
   Calendar,
   CalendarGrid,
@@ -12,12 +12,12 @@ import {
   CalendarWeekdays,
   CalendarWeeks,
   CalendarYearSelect,
-} from '@/components/ui/calendar';
-import { Dialog, DialogClose, DialogContent, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Popover, PopoverClose, PopoverContent, PopoverTitle, PopoverTrigger } from '@/components/ui/popover';
-import { Switch } from '@/components/ui/switch';
-import { Textarea } from '@/components/ui/textarea';
+} from '@/components/ui/sdk/calendar';
+import { Dialog, DialogClose, DialogContent, DialogTitle, DialogTrigger } from '@/components/ui/sdk/dialog';
+import { Input } from '@/components/ui/sdk/input';
+import { Popover, PopoverClose, PopoverContent, PopoverTitle, PopoverTrigger } from '@/components/ui/sdk/popover';
+import { Switch } from '@/components/ui/sdk/switch';
+import { Textarea } from '@/components/ui/sdk/textarea';
 
 test('owned text adapters preserve server values and native form edits and resets', async () => {
   const html = renderToString(

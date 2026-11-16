@@ -54,27 +54,48 @@ These are placeholder registry URLs. Merge the relevant keys into your existing 
 do not replace it. shadcn supports [custom namespaces](https://ui.shadcn.com/docs/registry/namespace)
 and resolves [alias-based targets](https://ui.shadcn.com/docs/registry/registry-item-json) from that configuration.
 
-### UI SDK controls
+### Base UI defaults
 
-The bundled UI now uses [UI SDK](https://ui-sdk.dev/docs), pinned to `0.1.0-beta.5`.
-This is a breaking migration, not a shadcn/Base UI compatibility layer.
+The default themed controls remain built on `@base-ui/react` 1.9.0. Install the Base UI bundle
+for the existing control APIs and appearance:
 
-For a complete themed installation:
+```bash
+bunx shadcn@latest add @protoform/protoform-shadcn-tanstack
+```
+
+Use `protoform-shadcn` for the Recharts variant. These bundles supply the default AutoForm
+entrypoint at `components/auto-form`; the form core and host entrypoint remain independent
+of either UI library. Host-owned Base UI controls can use the editable
+`protoform-shadcn-host` map (`shadcnHostComponents` from `auto-form/shadcn-host`), or an application-owned component map.
+
+### Optional UI SDK enhancements
+
+[UI SDK](https://ui-sdk.dev/docs) is pinned to `0.1.0-beta.5` and is additive, not a replacement
+for the Base UI defaults:
 
 ```bash
 bunx shadcn@latest add @protoform/protoform-ui-sdk-tanstack
 ```
 
-Use `protoform-ui-sdk` if you need the alternative Recharts module.
-For existing host-owned UI SDK controls, install `protoform` and `protoform-ui-sdk-host`, then
-pass `uiSdkHostComponents` from `auto-form/ui-sdk-host` to the host AutoForm entrypoint.
-Other design systems can still supply their own component map; core installs copy no primitives
-or theme tokens. Only controls exercised by a form need registration.
+Use `protoform-ui-sdk` for its Recharts variant. SDK controls install under the configured UI
+alias's `sdk/` directory without overwriting Base UI controls. Opt in per control or form:
 
-Native SDK APIs replace the old `asChild`, popup lifecycle, tabs, toggle-group, calendar,
-carousel, resizable-panel, and toast contracts. See the
-[bundle migration notes](registry/base-nova/protoform/UI_SDK_COMPONENTS.md).
-Tooltips need no provider: their native SDK behavior coordinates hover warm-up automatically.
+```tsx
+import { Rating, RatingStar } from "@/components/ui/sdk/rating";
+import { AutoForm, uiSdkComponents } from "@/components/ui/sdk/auto-form";
+```
+
+The SDK AutoForm entrypoint selects the SDK component map; the default AutoForm keeps Base UI.
+You can also pass `uiSdkComponents` explicitly to the headless host entrypoint. SDK native APIs
+apply only in that namespace: see the [SDK guide](registry/base-nova/protoform/UI_SDK_COMPONENTS.md).
+For host-owned SDK controls in the same `sdk/` namespace, use `protoform-ui-sdk-host`.
+Each control has one behavior owner; do not attach SDK behavior to a Base UI-controlled element.
+Renderer maps may supply an optional `Provider` for library-owned composition contexts, such as
+Base UI tooltip coordination, without coupling the form core to the library.
+
+Install `@protoform/ui-foundations` for a real Base UI form alongside an explicitly enabled SDK
+rating and agent sandbox. SDK items require a registry built from this revision; the older
+immutable preview snapshot below predates these additions.
 
 ### Opt-in agent bridge
 
@@ -91,7 +112,9 @@ registers WebMCP tools, or connects a model automatically.
 
 Install `@protoform/ui-sdk-agent-workbench` for the local, interactive example and see the
 [core and agent integration notes](registry/base-nova/protoform/UI_SDK_COMPONENTS.md#core-composition-and-agent-workbench).
-The example exercises real controls and AutoForm validation but saves only in memory.
+The example explicitly selects SDK controls and AutoForm, and saves only in memory.
+Base UI controls do not automatically acquire SDK agent actions. Authorization and human
+confirmation remain application-owned; no WebMCP tools register automatically.
 
 ## Flagship example
 
@@ -135,8 +158,10 @@ Useful items:
 | `use-proto-form`            | Native React Hook Form integration                               |
 | `use-proto-form-tanstack`   | Native TanStack Form integration                                 |
 | `protoform-react`           | React Hook Form AutoForm using a consumer-owned UI component map |
-| `protoform-ui-sdk-tanstack` | Recommended full UI source with TanStack Charts; no Recharts     |
+| `protoform-ui-sdk-tanstack` | Opt-in SDK controls with TanStack Charts; no Recharts            |
 | `protoform-ui-sdk`          | Explicit Recharts fallback with the existing chart API           |
+| `protoform-shadcn`          | Base UI default controls and AutoForm map                        |
+| `protoform-shadcn-tanstack` | Base UI defaults with TanStack Charts                            |
 | `protoform-ui-sdk-host`     | Editable adapter for host-owned UI SDK controls                  |
 | `auto-form-tanstack`        | TanStack Form AutoForm                                           |
 | `protoc-gen-protoform`      | Source-copy Buf plugin                                           |

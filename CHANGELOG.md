@@ -29,8 +29,8 @@ source snapshots.
 
 ### Changed
 
-- **Breaking:** all bundled interactive controls now use pinned UI SDK `0.1.0-beta.5` behaviors. The new registry items are `protoform-ui-sdk`, `protoform-ui-sdk-tanstack`, and `protoform-ui-sdk-host`; old shadcn/Base UI UI contracts are not retained. Native `render`, panel, array-selection, ISO-calendar, toast, and controller APIs replace the old ones. Renderer-boundary text controls now receive `onValueChange(string)`.
-- UI imports and targets honor the consumer's UI aliases. The themed bundles no longer install Base UI, shadcn React behaviors, cmdk, Embla, input-otp, DayPicker, or react-resizable-panels. Specialized chart and editor engines remain.
+- Base UI remains the default control foundation. Optional UI SDK `0.1.0-beta.5` controls, core-backed React adapters, hooks, and agent helpers install into a separate `sdk/` UI namespace. The default and SDK AutoForm entrypoints select independent maps over the same UI-neutral form engine; no control has two behavior owners.
+- UI imports and targets honor the consumer's UI aliases. The opt-in SDK bundles do not install Base UI, legacy shadcn React behaviors, cmdk, Embla, input-otp, DayPicker, or react-resizable-panels; the restored default bundle retains its original control foundation. Specialized chart and editor engines remain.
 - `protoform-ui-sdk-agent` is opt-in and exports `createAgent` without creating a bridge, registering browser tools, or granting actions automatically.
 
 - AutoForm core, its runtime provider, object sections, and string inputs compile under React Compiler without `"use no memo"`.

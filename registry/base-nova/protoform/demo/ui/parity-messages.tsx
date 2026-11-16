@@ -8,10 +8,10 @@ import {
   AttachmentDescription,
   AttachmentMedia,
   AttachmentTitle,
-} from '@/components/ui/attachment/index';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar/index';
-import { Bubble, BubbleContent, BubbleGroup } from '@/components/ui/bubble/index';
-import { Button } from '@/components/ui/button/index';
+} from '@/components/ui/sdk/attachment/index';
+import { Avatar, AvatarFallback } from '@/components/ui/sdk/avatar/index';
+import { Bubble, BubbleContent, BubbleGroup } from '@/components/ui/sdk/bubble/index';
+import { Button } from '@/components/ui/sdk/button/index';
 import {
   Message,
   MessageAvatar,
@@ -19,15 +19,15 @@ import {
   MessageFooter,
   MessageGroup,
   MessageHeader,
-} from '@/components/ui/message/index';
+} from '@/components/ui/sdk/message/index';
 import {
   MessageScroller,
   MessageScrollerButton,
   MessageScrollerContent,
   MessageScrollerItem,
   MessageScrollerViewport,
-} from '@/components/ui/message-scroller/index';
-import { Questionnaire } from '@/components/ui/questionnaire/index';
+} from '@/components/ui/sdk/message-scroller/index';
+import { Questionnaire } from '@/components/ui/sdk/questionnaire/index';
 import { ParitySection } from './parity-shared';
 
 const questions = [

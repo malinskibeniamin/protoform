@@ -1,9 +1,9 @@
-import '../../tooltip/browser-fixture.css';
+import '@/components/ui/sdk/tooltip/browser-fixture.css';
 import { page } from '@rstest/browser';
 import { render } from '@rstest/browser-react';
 import { afterEach, expect, rs, test } from '@rstest/core';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip/index';
-import { AutoForm } from '..';
+import { AutoForm } from '@/components/ui/sdk/auto-form';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/sdk/tooltip/index';
 import { createMockProvider } from '../__tests__/test-utils';
 
 afterEach(() => {

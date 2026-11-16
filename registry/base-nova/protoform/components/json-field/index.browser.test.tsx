@@ -4,13 +4,13 @@ import { act, cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
 
-import { Button } from '@/components/ui/button/index';
-import { Toaster, toast } from '@/components/ui/toast/index';
+import { Button } from '@/components/ui/button';
+import { Toaster, toast } from '@/components/ui/toast';
 
 import { JSONField, type JSONValue } from '.';
 
 afterEach(() => {
-  act(() => toast.dismiss());
+  act(() => toast.close());
   cleanup();
 });
 

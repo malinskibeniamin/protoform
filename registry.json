@@ -7,7 +7,7 @@
       "name": "protoform-ui-sdk-host",
       "type": "registry:component",
       "title": "Protoform host UI adapter",
-      "description": "Editable component map for host-owned UI SDK components. Does not copy primitives or modify theme tokens.",
+      "description": "Editable map for host-owned UI SDK controls under the sdk/ UI namespace. Installs no primitives and changes no Base UI defaults or theme.",
       "registryDependencies": ["@protoform/auto-form-core"],
       "files": [
         {
@@ -33,14 +33,15 @@
           "target": "~/LICENSES/protoform-MIT.txt",
           "type": "registry:file"
         }
-      ]
+      ],
+      "registryDependencies": []
     },
     {
       "name": "bookstore",
       "type": "registry:block",
       "title": "Bookstore RPC demo",
       "description": "Five live Book RPC flows: list, get, RHF stepper create with ISBN CEL, update masks with etags, and AutoForm delete.",
-      "registryDependencies": ["@protoform/protoform-ui-sdk", "@protoform/protoform-demo-runtime"],
+      "registryDependencies": ["@protoform/protoform-shadcn", "@protoform/protoform-demo-runtime"],
       "dependencies": [
         "@buf/googleapis_googleapis.bufbuild_es",
         "@bufbuild/protobuf",
@@ -834,8 +835,8 @@
     {
       "name": "protoform-ui-sdk",
       "type": "registry:block",
-      "title": "Protoform UI SDK defaults",
-      "description": "Complete themed Protoform UI built on UI SDK native behaviors. Breaking migration from the former shadcn/Base UI bundle.",
+      "title": "Opt-in Protoform UI SDK controls",
+      "description": "Optional SDK-native controls and AutoForm map under the sdk/ UI namespace. Preserves existing Base UI defaults.",
       "cssVars": {
         "theme": {
           "color-tooltip-detail": "oklch(0.145 0 0)",
@@ -884,199 +885,199 @@
       ],
       "files": [
         {
-          "path": "registry/base-nova/protoform/components/alert/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/alert/index.tsx",
           "type": "registry:component",
-          "target": "@ui/alert/index.tsx"
+          "target": "@ui/sdk/alert/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/badge/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/badge/index.tsx",
           "type": "registry:component",
-          "target": "@ui/badge/index.tsx"
+          "target": "@ui/sdk/badge/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/button/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/button/index.tsx",
           "type": "registry:component",
-          "target": "@ui/button/index.tsx"
+          "target": "@ui/sdk/button/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/calendar/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/calendar/index.tsx",
           "type": "registry:component",
-          "target": "@ui/calendar/index.tsx"
+          "target": "@ui/sdk/calendar/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/card/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/card/index.tsx",
           "type": "registry:component",
-          "target": "@ui/card/index.tsx"
+          "target": "@ui/sdk/card/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/checkbox/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/checkbox/index.tsx",
           "type": "registry:component",
-          "target": "@ui/checkbox/index.tsx"
+          "target": "@ui/sdk/checkbox/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/choicebox/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/choicebox/index.tsx",
           "type": "registry:component",
-          "target": "@ui/choicebox/index.tsx"
+          "target": "@ui/sdk/choicebox/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/collapsible/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/collapsible/index.tsx",
           "type": "registry:component",
-          "target": "@ui/collapsible/index.tsx"
+          "target": "@ui/sdk/collapsible/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/trace/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/trace/index.tsx",
           "type": "registry:component",
-          "target": "@ui/trace/index.tsx"
+          "target": "@ui/sdk/trace/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/code-block/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/code-block/index.tsx",
           "type": "registry:component",
-          "target": "@ui/code-block/index.tsx"
+          "target": "@ui/sdk/code-block/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/combobox/combobox-utils.ts",
+          "path": "registry/ui-sdk/protoform/components/combobox/combobox-utils.ts",
           "type": "registry:component",
-          "target": "@ui/combobox/combobox-utils.ts"
+          "target": "@ui/sdk/combobox/combobox-utils.ts"
         },
         {
-          "path": "registry/base-nova/protoform/components/combobox/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/combobox/index.tsx",
           "type": "registry:component",
-          "target": "@ui/combobox/index.tsx"
+          "target": "@ui/sdk/combobox/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/command/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/command/index.tsx",
           "type": "registry:component",
-          "target": "@ui/command/index.tsx"
+          "target": "@ui/sdk/command/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/copy-button/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/copy-button/index.tsx",
           "type": "registry:component",
-          "target": "@ui/copy-button/index.tsx"
+          "target": "@ui/sdk/copy-button/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/dialog/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/dialog/index.tsx",
           "type": "registry:component",
-          "target": "@ui/dialog/index.tsx"
+          "target": "@ui/sdk/dialog/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/field/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/field/index.tsx",
           "type": "registry:component",
-          "target": "@ui/field/index.tsx"
+          "target": "@ui/sdk/field/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/group/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/group/index.tsx",
           "type": "registry:component",
-          "target": "@ui/group/index.tsx"
+          "target": "@ui/sdk/group/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/input/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/input/index.tsx",
           "type": "registry:component",
-          "target": "@ui/input/index.tsx"
+          "target": "@ui/sdk/input/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/input-group/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/input-group/index.tsx",
           "type": "registry:component",
-          "target": "@ui/input-group/index.tsx"
+          "target": "@ui/sdk/input-group/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/json-field/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/json-field/index.tsx",
           "type": "registry:component",
-          "target": "@ui/json-field/index.tsx"
+          "target": "@ui/sdk/json-field/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/json-field/json-code-editor.tsx",
+          "path": "registry/ui-sdk/protoform/components/json-field/json-code-editor.tsx",
           "type": "registry:component",
-          "target": "@ui/json-field/json-code-editor.tsx"
+          "target": "@ui/sdk/json-field/json-code-editor.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/key-value-field/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/key-value-field/index.tsx",
           "type": "registry:component",
-          "target": "@ui/key-value-field/index.tsx"
+          "target": "@ui/sdk/key-value-field/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/label/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/label/index.tsx",
           "type": "registry:component",
-          "target": "@ui/label/index.tsx"
+          "target": "@ui/sdk/label/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/multi-select/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/multi-select/index.tsx",
           "type": "registry:component",
-          "target": "@ui/multi-select/index.tsx"
+          "target": "@ui/sdk/multi-select/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/popover/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/popover/index.tsx",
           "type": "registry:component",
-          "target": "@ui/popover/index.tsx"
+          "target": "@ui/sdk/popover/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/radio-group/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/radio-group/index.tsx",
           "type": "registry:component",
-          "target": "@ui/radio-group/index.tsx"
+          "target": "@ui/sdk/radio-group/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/select/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/select/index.tsx",
           "type": "registry:component",
-          "target": "@ui/select/index.tsx"
+          "target": "@ui/sdk/select/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/separator/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/separator/index.tsx",
           "type": "registry:component",
-          "target": "@ui/separator/index.tsx"
+          "target": "@ui/sdk/separator/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/slider/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/slider/index.tsx",
           "type": "registry:component",
-          "target": "@ui/slider/index.tsx"
+          "target": "@ui/sdk/slider/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/spinner/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/spinner/index.tsx",
           "type": "registry:component",
-          "target": "@ui/spinner/index.tsx"
+          "target": "@ui/sdk/spinner/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/switch/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/switch/index.tsx",
           "type": "registry:component",
-          "target": "@ui/switch/index.tsx"
+          "target": "@ui/sdk/switch/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/tabs/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/tabs/index.tsx",
           "type": "registry:component",
-          "target": "@ui/tabs/index.tsx"
+          "target": "@ui/sdk/tabs/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/tags/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/tags/index.tsx",
           "type": "registry:component",
-          "target": "@ui/tags/index.tsx"
+          "target": "@ui/sdk/tags/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/textarea/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/textarea/index.tsx",
           "type": "registry:component",
-          "target": "@ui/textarea/index.tsx"
+          "target": "@ui/sdk/textarea/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/toggle/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/toggle/index.tsx",
           "type": "registry:component",
-          "target": "@ui/toggle/index.tsx"
+          "target": "@ui/sdk/toggle/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/toggle-group/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/toggle-group/index.tsx",
           "type": "registry:component",
-          "target": "@ui/toggle-group/index.tsx"
+          "target": "@ui/sdk/toggle-group/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/toast/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/toast/index.tsx",
           "type": "registry:component",
-          "target": "@ui/toast/index.tsx"
+          "target": "@ui/sdk/toast/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/tooltip/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/tooltip/index.tsx",
           "type": "registry:component",
-          "target": "@ui/tooltip/index.tsx"
+          "target": "@ui/sdk/tooltip/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/typography/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/typography/index.tsx",
           "type": "registry:component",
-          "target": "@ui/typography/index.tsx"
+          "target": "@ui/sdk/typography/index.tsx"
         },
         {
           "path": "registry/base-nova/protoform/hooks/use-controllable-state/index.ts",
@@ -1094,14 +1095,14 @@
           "target": "@hooks/use-portal-container/index.ts"
         },
         {
-          "path": "registry/base-nova/protoform/components/auto-form/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/auto-form/index.tsx",
           "type": "registry:component",
-          "target": "@components/auto-form/index.tsx"
+          "target": "@ui/sdk/auto-form/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/auto-form/ui-sdk-components.ts",
+          "path": "registry/base-nova/protoform/components/auto-form/sdk-components.ts",
           "type": "registry:component",
-          "target": "@components/auto-form/ui-sdk-components.ts"
+          "target": "@components/auto-form/sdk-components.ts"
         },
         {
           "path": "registry/base-nova/protoform/lib/utils/index.tsx",
@@ -1124,174 +1125,174 @@
           "target": "~/LICENSES/protoform-ui-sdk-provenance.md"
         },
         {
-          "path": "registry/base-nova/protoform/components/accordion/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/accordion/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/accordion/index.tsx"
+          "target": "@ui/sdk/accordion/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/alert-dialog/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/alert-dialog/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/alert-dialog/index.tsx"
+          "target": "@ui/sdk/alert-dialog/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/aspect-ratio/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/aspect-ratio/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/aspect-ratio/index.tsx"
+          "target": "@ui/sdk/aspect-ratio/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/attachment/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/attachment/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/attachment/index.tsx"
+          "target": "@ui/sdk/attachment/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/avatar/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/avatar/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/avatar/index.tsx"
+          "target": "@ui/sdk/avatar/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/breadcrumb/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/breadcrumb/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/breadcrumb/index.tsx"
+          "target": "@ui/sdk/breadcrumb/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/bubble/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/bubble/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/bubble/index.tsx"
+          "target": "@ui/sdk/bubble/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/button-group/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/button-group/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/button-group/index.tsx"
+          "target": "@ui/sdk/button-group/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/carousel/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/carousel/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/carousel/index.tsx"
+          "target": "@ui/sdk/carousel/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/chart/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/chart/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/chart/index.tsx"
+          "target": "@ui/sdk/chart/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/context-menu/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/context-menu/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/context-menu/index.tsx"
+          "target": "@ui/sdk/context-menu/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/direction/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/direction/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/direction/index.tsx"
+          "target": "@ui/sdk/direction/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/drawer/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/drawer/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/drawer/index.tsx"
+          "target": "@ui/sdk/drawer/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/dropdown-menu/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/dropdown-menu/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/dropdown-menu/index.tsx"
+          "target": "@ui/sdk/dropdown-menu/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/empty/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/empty/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/empty/index.tsx"
+          "target": "@ui/sdk/empty/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/hover-card/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/hover-card/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/hover-card/index.tsx"
+          "target": "@ui/sdk/hover-card/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/input-otp/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/input-otp/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/input-otp/index.tsx"
+          "target": "@ui/sdk/input-otp/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/item/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/item/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/item/index.tsx"
+          "target": "@ui/sdk/item/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/kbd/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/kbd/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/kbd/index.tsx"
+          "target": "@ui/sdk/kbd/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/marker/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/marker/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/marker/index.tsx"
+          "target": "@ui/sdk/marker/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/menubar/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/menubar/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/menubar/index.tsx"
+          "target": "@ui/sdk/menubar/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/message/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/message/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/message/index.tsx"
+          "target": "@ui/sdk/message/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/message-scroller/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/message-scroller/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/message-scroller/index.tsx"
+          "target": "@ui/sdk/message-scroller/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/native-select/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/native-select/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/native-select/index.tsx"
+          "target": "@ui/sdk/native-select/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/navigation-menu/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/navigation-menu/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/navigation-menu/index.tsx"
+          "target": "@ui/sdk/navigation-menu/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/pagination/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/pagination/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/pagination/index.tsx"
+          "target": "@ui/sdk/pagination/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/progress/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/progress/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/progress/index.tsx"
+          "target": "@ui/sdk/progress/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/questionnaire/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/questionnaire/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/questionnaire/index.tsx"
+          "target": "@ui/sdk/questionnaire/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/resizable/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/resizable/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/resizable/index.tsx"
+          "target": "@ui/sdk/resizable/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/scroll-area/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/scroll-area/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/scroll-area/index.tsx"
+          "target": "@ui/sdk/scroll-area/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/sheet/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/sheet/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/sheet/index.tsx"
+          "target": "@ui/sdk/sheet/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/sidebar/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/sidebar/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/sidebar/index.tsx"
+          "target": "@ui/sdk/sidebar/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/skeleton/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/skeleton/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/skeleton/index.tsx"
+          "target": "@ui/sdk/skeleton/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/table/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/table/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/table/index.tsx"
+          "target": "@ui/sdk/table/index.tsx"
         },
         {
           "path": "registry/base-nova/protoform/hooks/use-mobile.ts",
@@ -1301,17 +1302,17 @@
         {
           "path": "registry/base-nova/protoform/demo/ui/date-picker.tsx",
           "type": "registry:component",
-          "target": "@ui/examples/date-picker.tsx"
+          "target": "@ui/sdk/examples/date-picker.tsx"
         },
         {
           "path": "registry/base-nova/protoform/demo/ui/data-table.tsx",
           "type": "registry:component",
-          "target": "@ui/examples/data-table.tsx"
+          "target": "@ui/sdk/examples/data-table.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/combobox/option-combobox.tsx",
+          "path": "registry/ui-sdk/protoform/components/combobox/option-combobox.tsx",
           "type": "registry:ui",
-          "target": "@ui/combobox/option-combobox.tsx"
+          "target": "@ui/sdk/combobox/option-combobox.tsx"
         },
         {
           "path": "registry/base-nova/protoform/lib/sdk-props.ts",
@@ -1324,19 +1325,19 @@
           "target": "@components/auto-form/ui-sdk-host.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/combobox/parts.tsx",
+          "path": "registry/ui-sdk/protoform/components/combobox/parts.tsx",
           "type": "registry:ui",
-          "target": "@ui/combobox/parts.tsx"
+          "target": "@ui/sdk/combobox/parts.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/rating/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/rating/index.tsx",
           "type": "registry:component",
-          "target": "@ui/rating/index.tsx"
+          "target": "@ui/sdk/rating/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/rating/primitive.ts",
+          "path": "registry/ui-sdk/protoform/components/rating/primitive.ts",
           "type": "registry:component",
-          "target": "@ui/rating/primitive.ts"
+          "target": "@ui/sdk/rating/primitive.ts"
         },
         {
           "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-accordion.tsx",
@@ -1504,14 +1505,14 @@
           "target": "@lib/ui-sdk/adapters/core-toast.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/async-option-combobox/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/async-option-combobox/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/async-option-combobox/index.tsx"
+          "target": "@ui/sdk/async-option-combobox/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/preferences/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/preferences/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/preferences/index.tsx"
+          "target": "@ui/sdk/preferences/index.tsx"
         },
         {
           "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-field.tsx",
@@ -1524,8 +1525,8 @@
     {
       "name": "protoform-ui-sdk-tanstack",
       "type": "registry:block",
-      "title": "Protoform UI with TanStack Charts",
-      "description": "Recommended full UI bundle with native TanStack Charts. Installs no Recharts code or dependency.",
+      "title": "Opt-in Protoform UI SDK controls with TanStack Charts",
+      "description": "Optional SDK-native controls and AutoForm map under the sdk/ UI namespace. Preserves existing Base UI defaults. Uses TanStack Charts instead of Recharts.",
       "cssVars": {
         "theme": {
           "color-tooltip-detail": "oklch(0.145 0 0)",
@@ -1573,199 +1574,199 @@
       ],
       "files": [
         {
-          "path": "registry/base-nova/protoform/components/alert/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/alert/index.tsx",
           "type": "registry:component",
-          "target": "@ui/alert/index.tsx"
+          "target": "@ui/sdk/alert/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/badge/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/badge/index.tsx",
           "type": "registry:component",
-          "target": "@ui/badge/index.tsx"
+          "target": "@ui/sdk/badge/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/button/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/button/index.tsx",
           "type": "registry:component",
-          "target": "@ui/button/index.tsx"
+          "target": "@ui/sdk/button/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/calendar/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/calendar/index.tsx",
           "type": "registry:component",
-          "target": "@ui/calendar/index.tsx"
+          "target": "@ui/sdk/calendar/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/card/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/card/index.tsx",
           "type": "registry:component",
-          "target": "@ui/card/index.tsx"
+          "target": "@ui/sdk/card/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/checkbox/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/checkbox/index.tsx",
           "type": "registry:component",
-          "target": "@ui/checkbox/index.tsx"
+          "target": "@ui/sdk/checkbox/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/choicebox/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/choicebox/index.tsx",
           "type": "registry:component",
-          "target": "@ui/choicebox/index.tsx"
+          "target": "@ui/sdk/choicebox/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/collapsible/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/collapsible/index.tsx",
           "type": "registry:component",
-          "target": "@ui/collapsible/index.tsx"
+          "target": "@ui/sdk/collapsible/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/trace/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/trace/index.tsx",
           "type": "registry:component",
-          "target": "@ui/trace/index.tsx"
+          "target": "@ui/sdk/trace/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/code-block/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/code-block/index.tsx",
           "type": "registry:component",
-          "target": "@ui/code-block/index.tsx"
+          "target": "@ui/sdk/code-block/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/combobox/combobox-utils.ts",
+          "path": "registry/ui-sdk/protoform/components/combobox/combobox-utils.ts",
           "type": "registry:component",
-          "target": "@ui/combobox/combobox-utils.ts"
+          "target": "@ui/sdk/combobox/combobox-utils.ts"
         },
         {
-          "path": "registry/base-nova/protoform/components/combobox/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/combobox/index.tsx",
           "type": "registry:component",
-          "target": "@ui/combobox/index.tsx"
+          "target": "@ui/sdk/combobox/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/command/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/command/index.tsx",
           "type": "registry:component",
-          "target": "@ui/command/index.tsx"
+          "target": "@ui/sdk/command/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/copy-button/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/copy-button/index.tsx",
           "type": "registry:component",
-          "target": "@ui/copy-button/index.tsx"
+          "target": "@ui/sdk/copy-button/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/dialog/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/dialog/index.tsx",
           "type": "registry:component",
-          "target": "@ui/dialog/index.tsx"
+          "target": "@ui/sdk/dialog/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/field/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/field/index.tsx",
           "type": "registry:component",
-          "target": "@ui/field/index.tsx"
+          "target": "@ui/sdk/field/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/group/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/group/index.tsx",
           "type": "registry:component",
-          "target": "@ui/group/index.tsx"
+          "target": "@ui/sdk/group/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/input/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/input/index.tsx",
           "type": "registry:component",
-          "target": "@ui/input/index.tsx"
+          "target": "@ui/sdk/input/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/input-group/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/input-group/index.tsx",
           "type": "registry:component",
-          "target": "@ui/input-group/index.tsx"
+          "target": "@ui/sdk/input-group/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/json-field/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/json-field/index.tsx",
           "type": "registry:component",
-          "target": "@ui/json-field/index.tsx"
+          "target": "@ui/sdk/json-field/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/json-field/json-code-editor.tsx",
+          "path": "registry/ui-sdk/protoform/components/json-field/json-code-editor.tsx",
           "type": "registry:component",
-          "target": "@ui/json-field/json-code-editor.tsx"
+          "target": "@ui/sdk/json-field/json-code-editor.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/key-value-field/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/key-value-field/index.tsx",
           "type": "registry:component",
-          "target": "@ui/key-value-field/index.tsx"
+          "target": "@ui/sdk/key-value-field/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/label/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/label/index.tsx",
           "type": "registry:component",
-          "target": "@ui/label/index.tsx"
+          "target": "@ui/sdk/label/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/multi-select/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/multi-select/index.tsx",
           "type": "registry:component",
-          "target": "@ui/multi-select/index.tsx"
+          "target": "@ui/sdk/multi-select/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/popover/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/popover/index.tsx",
           "type": "registry:component",
-          "target": "@ui/popover/index.tsx"
+          "target": "@ui/sdk/popover/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/radio-group/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/radio-group/index.tsx",
           "type": "registry:component",
-          "target": "@ui/radio-group/index.tsx"
+          "target": "@ui/sdk/radio-group/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/select/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/select/index.tsx",
           "type": "registry:component",
-          "target": "@ui/select/index.tsx"
+          "target": "@ui/sdk/select/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/separator/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/separator/index.tsx",
           "type": "registry:component",
-          "target": "@ui/separator/index.tsx"
+          "target": "@ui/sdk/separator/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/slider/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/slider/index.tsx",
           "type": "registry:component",
-          "target": "@ui/slider/index.tsx"
+          "target": "@ui/sdk/slider/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/spinner/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/spinner/index.tsx",
           "type": "registry:component",
-          "target": "@ui/spinner/index.tsx"
+          "target": "@ui/sdk/spinner/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/switch/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/switch/index.tsx",
           "type": "registry:component",
-          "target": "@ui/switch/index.tsx"
+          "target": "@ui/sdk/switch/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/tabs/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/tabs/index.tsx",
           "type": "registry:component",
-          "target": "@ui/tabs/index.tsx"
+          "target": "@ui/sdk/tabs/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/tags/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/tags/index.tsx",
           "type": "registry:component",
-          "target": "@ui/tags/index.tsx"
+          "target": "@ui/sdk/tags/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/textarea/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/textarea/index.tsx",
           "type": "registry:component",
-          "target": "@ui/textarea/index.tsx"
+          "target": "@ui/sdk/textarea/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/toggle/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/toggle/index.tsx",
           "type": "registry:component",
-          "target": "@ui/toggle/index.tsx"
+          "target": "@ui/sdk/toggle/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/toggle-group/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/toggle-group/index.tsx",
           "type": "registry:component",
-          "target": "@ui/toggle-group/index.tsx"
+          "target": "@ui/sdk/toggle-group/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/toast/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/toast/index.tsx",
           "type": "registry:component",
-          "target": "@ui/toast/index.tsx"
+          "target": "@ui/sdk/toast/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/tooltip/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/tooltip/index.tsx",
           "type": "registry:component",
-          "target": "@ui/tooltip/index.tsx"
+          "target": "@ui/sdk/tooltip/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/typography/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/typography/index.tsx",
           "type": "registry:component",
-          "target": "@ui/typography/index.tsx"
+          "target": "@ui/sdk/typography/index.tsx"
         },
         {
           "path": "registry/base-nova/protoform/hooks/use-controllable-state/index.ts",
@@ -1783,14 +1784,14 @@
           "target": "@hooks/use-portal-container/index.ts"
         },
         {
-          "path": "registry/base-nova/protoform/components/auto-form/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/auto-form/index.tsx",
           "type": "registry:component",
-          "target": "@components/auto-form/index.tsx"
+          "target": "@ui/sdk/auto-form/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/auto-form/ui-sdk-components.ts",
+          "path": "registry/base-nova/protoform/components/auto-form/sdk-components.ts",
           "type": "registry:component",
-          "target": "@components/auto-form/ui-sdk-components.ts"
+          "target": "@components/auto-form/sdk-components.ts"
         },
         {
           "path": "registry/base-nova/protoform/lib/utils/index.tsx",
@@ -1813,169 +1814,169 @@
           "target": "~/LICENSES/protoform-ui-sdk-provenance.md"
         },
         {
-          "path": "registry/base-nova/protoform/components/accordion/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/accordion/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/accordion/index.tsx"
+          "target": "@ui/sdk/accordion/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/alert-dialog/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/alert-dialog/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/alert-dialog/index.tsx"
+          "target": "@ui/sdk/alert-dialog/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/aspect-ratio/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/aspect-ratio/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/aspect-ratio/index.tsx"
+          "target": "@ui/sdk/aspect-ratio/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/attachment/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/attachment/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/attachment/index.tsx"
+          "target": "@ui/sdk/attachment/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/avatar/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/avatar/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/avatar/index.tsx"
+          "target": "@ui/sdk/avatar/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/breadcrumb/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/breadcrumb/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/breadcrumb/index.tsx"
+          "target": "@ui/sdk/breadcrumb/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/bubble/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/bubble/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/bubble/index.tsx"
+          "target": "@ui/sdk/bubble/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/button-group/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/button-group/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/button-group/index.tsx"
+          "target": "@ui/sdk/button-group/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/carousel/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/carousel/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/carousel/index.tsx"
+          "target": "@ui/sdk/carousel/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/context-menu/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/context-menu/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/context-menu/index.tsx"
+          "target": "@ui/sdk/context-menu/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/direction/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/direction/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/direction/index.tsx"
+          "target": "@ui/sdk/direction/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/drawer/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/drawer/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/drawer/index.tsx"
+          "target": "@ui/sdk/drawer/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/dropdown-menu/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/dropdown-menu/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/dropdown-menu/index.tsx"
+          "target": "@ui/sdk/dropdown-menu/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/empty/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/empty/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/empty/index.tsx"
+          "target": "@ui/sdk/empty/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/hover-card/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/hover-card/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/hover-card/index.tsx"
+          "target": "@ui/sdk/hover-card/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/input-otp/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/input-otp/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/input-otp/index.tsx"
+          "target": "@ui/sdk/input-otp/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/item/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/item/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/item/index.tsx"
+          "target": "@ui/sdk/item/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/kbd/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/kbd/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/kbd/index.tsx"
+          "target": "@ui/sdk/kbd/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/marker/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/marker/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/marker/index.tsx"
+          "target": "@ui/sdk/marker/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/menubar/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/menubar/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/menubar/index.tsx"
+          "target": "@ui/sdk/menubar/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/message/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/message/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/message/index.tsx"
+          "target": "@ui/sdk/message/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/message-scroller/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/message-scroller/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/message-scroller/index.tsx"
+          "target": "@ui/sdk/message-scroller/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/native-select/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/native-select/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/native-select/index.tsx"
+          "target": "@ui/sdk/native-select/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/navigation-menu/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/navigation-menu/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/navigation-menu/index.tsx"
+          "target": "@ui/sdk/navigation-menu/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/pagination/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/pagination/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/pagination/index.tsx"
+          "target": "@ui/sdk/pagination/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/progress/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/progress/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/progress/index.tsx"
+          "target": "@ui/sdk/progress/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/questionnaire/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/questionnaire/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/questionnaire/index.tsx"
+          "target": "@ui/sdk/questionnaire/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/resizable/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/resizable/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/resizable/index.tsx"
+          "target": "@ui/sdk/resizable/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/scroll-area/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/scroll-area/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/scroll-area/index.tsx"
+          "target": "@ui/sdk/scroll-area/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/sheet/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/sheet/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/sheet/index.tsx"
+          "target": "@ui/sdk/sheet/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/sidebar/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/sidebar/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/sidebar/index.tsx"
+          "target": "@ui/sdk/sidebar/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/skeleton/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/skeleton/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/skeleton/index.tsx"
+          "target": "@ui/sdk/skeleton/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/table/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/table/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/table/index.tsx"
+          "target": "@ui/sdk/table/index.tsx"
         },
         {
           "path": "registry/base-nova/protoform/hooks/use-mobile.ts",
@@ -1985,17 +1986,17 @@
         {
           "path": "registry/base-nova/protoform/demo/ui/date-picker.tsx",
           "type": "registry:component",
-          "target": "@ui/examples/date-picker.tsx"
+          "target": "@ui/sdk/examples/date-picker.tsx"
         },
         {
           "path": "registry/base-nova/protoform/demo/ui/data-table.tsx",
           "type": "registry:component",
-          "target": "@ui/examples/data-table.tsx"
+          "target": "@ui/sdk/examples/data-table.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/combobox/option-combobox.tsx",
+          "path": "registry/ui-sdk/protoform/components/combobox/option-combobox.tsx",
           "type": "registry:ui",
-          "target": "@ui/combobox/option-combobox.tsx"
+          "target": "@ui/sdk/combobox/option-combobox.tsx"
         },
         {
           "path": "registry/base-nova/protoform/lib/sdk-props.ts",
@@ -2008,19 +2009,19 @@
           "target": "@components/auto-form/ui-sdk-host.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/combobox/parts.tsx",
+          "path": "registry/ui-sdk/protoform/components/combobox/parts.tsx",
           "type": "registry:ui",
-          "target": "@ui/combobox/parts.tsx"
+          "target": "@ui/sdk/combobox/parts.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/rating/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/rating/index.tsx",
           "type": "registry:component",
-          "target": "@ui/rating/index.tsx"
+          "target": "@ui/sdk/rating/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/rating/primitive.ts",
+          "path": "registry/ui-sdk/protoform/components/rating/primitive.ts",
           "type": "registry:component",
-          "target": "@ui/rating/primitive.ts"
+          "target": "@ui/sdk/rating/primitive.ts"
         },
         {
           "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-accordion.tsx",
@@ -2188,14 +2189,14 @@
           "target": "@lib/ui-sdk/adapters/core-toast.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/async-option-combobox/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/async-option-combobox/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/async-option-combobox/index.tsx"
+          "target": "@ui/sdk/async-option-combobox/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/preferences/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/preferences/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/preferences/index.tsx"
+          "target": "@ui/sdk/preferences/index.tsx"
         },
         {
           "path": "registry/base-nova/protoform/lib/ui-sdk/adapters/core-field.tsx",
@@ -2208,14 +2209,14 @@
           "target": "~/LICENSES/protoform-ui-sdk-controls.md"
         },
         {
-          "path": "registry/base-nova/protoform/components/chart-tanstack/index.tsx",
+          "path": "registry/ui-sdk/protoform/components/chart-tanstack/index.tsx",
           "type": "registry:ui",
-          "target": "@ui/chart-tanstack/index.tsx"
+          "target": "@ui/sdk/chart-tanstack/index.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/chart-tanstack/chart-module.tsx",
+          "path": "registry/ui-sdk/protoform/components/chart-tanstack/chart-module.tsx",
           "type": "registry:ui",
-          "target": "@ui/chart-tanstack/chart-module.tsx"
+          "target": "@ui/sdk/chart-tanstack/chart-module.tsx"
         }
       ],
       "devDependencies": ["@types/js-cookie@3.0.6"]
@@ -2227,7 +2228,7 @@
       "description": "TanStack Form-native AutoForm with the complete native form API plus Protoform rendering and protobuf helpers.",
       "registryDependencies": [
         "@protoform/auto-form-core",
-        "@protoform/protoform-ui-sdk-host",
+        "@protoform/protoform-shadcn-host",
         "@protoform/use-proto-form-tanstack"
       ],
       "dependencies": ["@tanstack/react-form"],
@@ -2243,9 +2244,9 @@
           "target": "@components/auto-form/adapters/tanstack.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/auto-form/ui-sdk-components.ts",
+          "path": "registry/base-nova/protoform/components/auto-form/shadcn-ui-components.tsx",
           "type": "registry:component",
-          "target": "@components/auto-form/ui-sdk-components.ts"
+          "target": "@components/auto-form/shadcn-ui-components.tsx"
         }
       ]
     },
@@ -2256,7 +2257,7 @@
       "description": "Experimental AutoForm adapter for the React Hook Form v8 beta with its native form API plus Protoform rendering and protobuf helpers.",
       "registryDependencies": [
         "@protoform/auto-form-core",
-        "@protoform/protoform-ui-sdk-host",
+        "@protoform/protoform-shadcn-host",
         "@protoform/use-proto-form-v8"
       ],
       "dependencies": ["react-hook-form-v8@npm:react-hook-form@8.0.0-beta.5"],
@@ -2272,9 +2273,9 @@
           "target": "@components/auto-form/adapters/react-hook-form-v8.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/auto-form/ui-sdk-components.ts",
+          "path": "registry/base-nova/protoform/components/auto-form/shadcn-ui-components.tsx",
           "type": "registry:component",
-          "target": "@components/auto-form/ui-sdk-components.ts"
+          "target": "@components/auto-form/shadcn-ui-components.tsx"
         }
       ]
     },
@@ -2285,7 +2286,7 @@
       "description": "Experimental AutoForm adapter for the TanStack Form v2 alpha with native atoms, validator arrays, ArrayField state, and submit validation errors.",
       "registryDependencies": [
         "@protoform/auto-form-core",
-        "@protoform/protoform-ui-sdk-host",
+        "@protoform/protoform-shadcn-host",
         "@protoform/use-proto-form-tanstack-v2"
       ],
       "dependencies": ["@tanstack/react-form-v2@npm:@tanstack/react-form@2.0.0-alpha.3", "zod"],
@@ -2301,14 +2302,14 @@
           "target": "@components/auto-form/adapters/tanstack-v2.tsx"
         },
         {
-          "path": "registry/base-nova/protoform/components/auto-form/ui-sdk-components.ts",
-          "type": "registry:component",
-          "target": "@components/auto-form/ui-sdk-components.ts"
-        },
-        {
           "path": "registry/base-nova/protoform/lib/input-utils/index.ts",
           "type": "registry:lib",
           "target": "@lib/input-utils/index.ts"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/shadcn-ui-components.tsx",
+          "type": "registry:component",
+          "target": "@components/auto-form/shadcn-ui-components.tsx"
         }
       ]
     },
@@ -4401,7 +4402,7 @@
         {
           "path": "registry/base-nova/protoform/demo/ui/agent-workbench.tsx",
           "type": "registry:example",
-          "target": "@ui/examples/agent-workbench.tsx"
+          "target": "@ui/sdk/examples/agent-workbench.tsx"
         }
       ]
     },
@@ -4416,6 +4417,1032 @@
           "path": "registry/base-nova/protoform/demo/ui/sdk-hooks.tsx",
           "type": "registry:component",
           "target": "@components/protoform-examples/ui-sdk-hooks.tsx"
+        }
+      ]
+    },
+    {
+      "name": "protoform-shadcn",
+      "type": "registry:block",
+      "title": "Protoform shadcn defaults",
+      "description": "Official Base UI component catalog adapted for Protoform, with CodeMirror JSON editing and preserved source licenses.",
+      "cssVars": {
+        "theme": {
+          "color-tooltip-detail": "oklch(0.145 0 0)",
+          "color-tooltip-detail-foreground": "rgb(255 255 255)",
+          "color-sidebar": "var(--sidebar, var(--background))",
+          "color-sidebar-foreground": "var(--sidebar-foreground, var(--foreground))",
+          "color-sidebar-primary": "var(--sidebar-primary, var(--primary))",
+          "color-sidebar-primary-foreground": "var(--sidebar-primary-foreground, var(--primary-foreground))",
+          "color-sidebar-accent": "var(--sidebar-accent, var(--accent))",
+          "color-sidebar-accent-foreground": "var(--sidebar-accent-foreground, var(--accent-foreground))",
+          "color-sidebar-border": "var(--sidebar-border, var(--border))",
+          "color-sidebar-ring": "var(--sidebar-ring, var(--ring))",
+          "color-canvas": "Canvas",
+          "color-canvas-text": "CanvasText"
+        }
+      },
+      "registryDependencies": ["@protoform/protoform-react"],
+      "dependencies": [
+        "@base-ui/react@^1.9.0",
+        "@buf/googleapis_googleapis.bufbuild_es",
+        "@bufbuild/cel",
+        "@bufbuild/protobuf",
+        "@bufbuild/protovalidate@^1.3.0",
+        "@codemirror/lang-json",
+        "@codemirror/language",
+        "@codemirror/lint",
+        "@codemirror/view",
+        "@connectrpc/connect",
+        "@lezer/highlight",
+        "@standard-schema/spec",
+        "@tanstack/react-router",
+        "@uiw/react-codemirror",
+        "class-variance-authority",
+        "clsx",
+        "cmdk",
+        "date-fns",
+        "lucide-react",
+        "motion",
+        "react-day-picker",
+        "tailwind-merge",
+        "zod",
+        "@shadcn/react@0.3.1",
+        "@tanstack/react-table@9.3.1",
+        "embla-carousel-react@8.6.0",
+        "input-otp@1.5.0",
+        "js-cookie@3.0.8",
+        "react-is@19.3.1",
+        "react-resizable-panels@4.16.1",
+        "recharts@3.10.1",
+        "tw-animate-css@1.4.0"
+      ],
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/components/alert/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/alert/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/badge/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/badge/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/button/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/button/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/calendar/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/calendar/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/card/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/card/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/checkbox/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/checkbox/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/choicebox/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/choicebox/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/collapsible/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/collapsible/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/trace/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/trace/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/code-block/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/code-block/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/combobox/combobox-utils.ts",
+          "type": "registry:component",
+          "target": "@ui/combobox/combobox-utils.ts"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/combobox/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/combobox/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/command/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/command/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/copy-button/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/copy-button/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/dialog/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/dialog/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/field/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/field/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/group/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/group/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/input/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/input/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/input-group/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/input-group/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/json-field/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/json-field/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/json-field/json-code-editor.tsx",
+          "type": "registry:component",
+          "target": "@ui/json-field/json-code-editor.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/key-value-field/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/key-value-field/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/label/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/label/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/multi-select/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/multi-select/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/popover/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/popover/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/radio-group/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/radio-group/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/select/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/select/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/separator/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/separator/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/slider/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/slider/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/spinner/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/spinner/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/switch/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/switch/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/tabs/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/tabs/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/tags/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/tags/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/textarea/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/textarea/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/toggle/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/toggle/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/toggle-group/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/toggle-group/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/toast/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/toast/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/tooltip/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/tooltip/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/typography/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/typography/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/hooks/use-controllable-state/index.ts",
+          "type": "registry:hook",
+          "target": "@hooks/use-controllable-state/index.ts"
+        },
+        {
+          "path": "registry/base-nova/protoform/hooks/use-layout-effect/index.ts",
+          "type": "registry:hook",
+          "target": "@hooks/use-layout-effect/index.ts"
+        },
+        {
+          "path": "registry/base-nova/protoform/hooks/use-portal-container/index.ts",
+          "type": "registry:hook",
+          "target": "@hooks/use-portal-container/index.ts"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/base-ui-compat/index.tsx",
+          "type": "registry:lib",
+          "target": "@lib/base-ui-compat/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/index.tsx",
+          "type": "registry:component",
+          "target": "@components/auto-form/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/utils/index.tsx",
+          "type": "registry:lib",
+          "target": "@lib/utils/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/input-utils/index.ts",
+          "type": "registry:lib",
+          "target": "@lib/input-utils/index.ts"
+        },
+        {
+          "path": "LICENSES/shadcn-MIT.txt",
+          "type": "registry:file",
+          "target": "~/LICENSES/shadcn-MIT.txt"
+        },
+        {
+          "path": "registry/base-nova/protoform/SHADCN_COMPONENTS.md",
+          "type": "registry:file",
+          "target": "~/LICENSES/protoform-shadcn-provenance.md"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/accordion/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/accordion/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/alert-dialog/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/alert-dialog/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/aspect-ratio/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/aspect-ratio/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/attachment/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/attachment/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/avatar/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/avatar/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/breadcrumb/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/breadcrumb/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/bubble/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/bubble/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/button-group/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/button-group/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/carousel/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/carousel/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/chart/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/chart/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/context-menu/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/context-menu/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/direction/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/direction/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/drawer/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/drawer/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/dropdown-menu/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/dropdown-menu/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/empty/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/empty/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/hover-card/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/hover-card/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/input-otp/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/input-otp/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/item/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/item/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/kbd/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/kbd/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/marker/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/marker/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/menubar/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/menubar/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/message/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/message/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/message-scroller/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/message-scroller/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/native-select/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/native-select/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/navigation-menu/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/navigation-menu/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/pagination/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/pagination/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/progress/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/progress/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/questionnaire/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/questionnaire/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/resizable/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/resizable/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/scroll-area/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/scroll-area/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/sheet/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/sheet/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/sidebar/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/sidebar/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/skeleton/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/skeleton/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/table/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/table/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/hooks/use-mobile.ts",
+          "type": "registry:hook",
+          "target": "~/hooks/use-mobile.ts"
+        },
+        {
+          "path": "registry/base-nova/protoform/demo/base-ui/date-picker.tsx",
+          "type": "registry:component",
+          "target": "@ui/examples/date-picker.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/demo/base-ui/data-table.tsx",
+          "type": "registry:component",
+          "target": "@ui/examples/data-table.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/shadcn-ui-components.tsx",
+          "type": "registry:component",
+          "target": "@components/auto-form/shadcn-ui-components.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/shadcn-host.tsx",
+          "type": "registry:component",
+          "target": "@components/auto-form/shadcn-host.tsx"
+        }
+      ],
+      "devDependencies": ["@types/js-cookie@3.0.6"]
+    },
+    {
+      "name": "protoform-shadcn-tanstack",
+      "type": "registry:block",
+      "title": "Protoform shadcn defaults with TanStack Charts",
+      "description": "Official Base UI component catalog adapted for Protoform, with CodeMirror JSON editing and preserved source licenses. Uses TanStack Charts instead of Recharts.",
+      "cssVars": {
+        "theme": {
+          "color-tooltip-detail": "oklch(0.145 0 0)",
+          "color-tooltip-detail-foreground": "rgb(255 255 255)",
+          "color-sidebar": "var(--sidebar, var(--background))",
+          "color-sidebar-foreground": "var(--sidebar-foreground, var(--foreground))",
+          "color-sidebar-primary": "var(--sidebar-primary, var(--primary))",
+          "color-sidebar-primary-foreground": "var(--sidebar-primary-foreground, var(--primary-foreground))",
+          "color-sidebar-accent": "var(--sidebar-accent, var(--accent))",
+          "color-sidebar-accent-foreground": "var(--sidebar-accent-foreground, var(--accent-foreground))",
+          "color-sidebar-border": "var(--sidebar-border, var(--border))",
+          "color-sidebar-ring": "var(--sidebar-ring, var(--ring))",
+          "color-canvas": "Canvas",
+          "color-canvas-text": "CanvasText"
+        }
+      },
+      "registryDependencies": ["@protoform/protoform-react"],
+      "dependencies": [
+        "@base-ui/react@^1.9.0",
+        "@buf/googleapis_googleapis.bufbuild_es",
+        "@bufbuild/cel",
+        "@bufbuild/protobuf",
+        "@bufbuild/protovalidate@^1.3.0",
+        "@codemirror/lang-json",
+        "@codemirror/language",
+        "@codemirror/lint",
+        "@codemirror/view",
+        "@connectrpc/connect",
+        "@lezer/highlight",
+        "@standard-schema/spec",
+        "@tanstack/react-router",
+        "@uiw/react-codemirror",
+        "class-variance-authority",
+        "clsx",
+        "cmdk",
+        "date-fns",
+        "lucide-react",
+        "motion",
+        "react-day-picker",
+        "tailwind-merge",
+        "zod",
+        "@shadcn/react@0.3.1",
+        "@tanstack/react-table@9.3.1",
+        "embla-carousel-react@8.6.0",
+        "input-otp@1.5.0",
+        "js-cookie@3.0.8",
+        "react-resizable-panels@4.16.1",
+        "tw-animate-css@1.4.0",
+        "@tanstack/charts@1.1.0"
+      ],
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/components/alert/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/alert/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/badge/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/badge/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/button/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/button/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/calendar/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/calendar/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/card/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/card/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/checkbox/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/checkbox/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/choicebox/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/choicebox/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/collapsible/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/collapsible/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/trace/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/trace/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/code-block/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/code-block/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/combobox/combobox-utils.ts",
+          "type": "registry:component",
+          "target": "@ui/combobox/combobox-utils.ts"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/combobox/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/combobox/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/command/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/command/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/copy-button/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/copy-button/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/dialog/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/dialog/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/field/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/field/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/group/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/group/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/input/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/input/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/input-group/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/input-group/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/json-field/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/json-field/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/json-field/json-code-editor.tsx",
+          "type": "registry:component",
+          "target": "@ui/json-field/json-code-editor.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/key-value-field/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/key-value-field/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/label/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/label/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/multi-select/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/multi-select/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/popover/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/popover/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/radio-group/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/radio-group/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/select/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/select/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/separator/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/separator/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/slider/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/slider/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/spinner/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/spinner/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/switch/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/switch/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/tabs/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/tabs/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/tags/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/tags/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/textarea/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/textarea/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/toggle/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/toggle/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/toggle-group/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/toggle-group/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/toast/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/toast/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/tooltip/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/tooltip/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/typography/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/typography/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/hooks/use-controllable-state/index.ts",
+          "type": "registry:hook",
+          "target": "@hooks/use-controllable-state/index.ts"
+        },
+        {
+          "path": "registry/base-nova/protoform/hooks/use-layout-effect/index.ts",
+          "type": "registry:hook",
+          "target": "@hooks/use-layout-effect/index.ts"
+        },
+        {
+          "path": "registry/base-nova/protoform/hooks/use-portal-container/index.ts",
+          "type": "registry:hook",
+          "target": "@hooks/use-portal-container/index.ts"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/base-ui-compat/index.tsx",
+          "type": "registry:lib",
+          "target": "@lib/base-ui-compat/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/index.tsx",
+          "type": "registry:component",
+          "target": "@components/auto-form/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/utils/index.tsx",
+          "type": "registry:lib",
+          "target": "@lib/utils/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/input-utils/index.ts",
+          "type": "registry:lib",
+          "target": "@lib/input-utils/index.ts"
+        },
+        {
+          "path": "LICENSES/shadcn-MIT.txt",
+          "type": "registry:file",
+          "target": "~/LICENSES/shadcn-MIT.txt"
+        },
+        {
+          "path": "registry/base-nova/protoform/SHADCN_TANSTACK_COMPONENTS.md",
+          "type": "registry:file",
+          "target": "~/LICENSES/protoform-shadcn-provenance.md"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/accordion/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/accordion/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/alert-dialog/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/alert-dialog/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/aspect-ratio/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/aspect-ratio/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/attachment/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/attachment/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/avatar/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/avatar/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/breadcrumb/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/breadcrumb/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/bubble/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/bubble/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/button-group/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/button-group/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/carousel/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/carousel/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/context-menu/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/context-menu/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/direction/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/direction/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/drawer/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/drawer/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/dropdown-menu/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/dropdown-menu/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/empty/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/empty/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/hover-card/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/hover-card/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/input-otp/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/input-otp/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/item/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/item/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/kbd/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/kbd/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/marker/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/marker/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/menubar/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/menubar/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/message/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/message/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/message-scroller/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/message-scroller/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/native-select/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/native-select/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/navigation-menu/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/navigation-menu/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/pagination/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/pagination/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/progress/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/progress/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/questionnaire/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/questionnaire/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/resizable/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/resizable/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/scroll-area/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/scroll-area/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/sheet/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/sheet/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/sidebar/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/sidebar/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/skeleton/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/skeleton/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/table/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/table/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/hooks/use-mobile.ts",
+          "type": "registry:hook",
+          "target": "~/hooks/use-mobile.ts"
+        },
+        {
+          "path": "registry/base-nova/protoform/demo/base-ui/date-picker.tsx",
+          "type": "registry:component",
+          "target": "@ui/examples/date-picker.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/demo/base-ui/data-table.tsx",
+          "type": "registry:component",
+          "target": "@ui/examples/data-table.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/shadcn-ui-components.tsx",
+          "type": "registry:component",
+          "target": "@components/auto-form/shadcn-ui-components.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/shadcn-host.tsx",
+          "type": "registry:component",
+          "target": "@components/auto-form/shadcn-host.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/chart-tanstack/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/chart-tanstack/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/chart-tanstack/chart-module.tsx",
+          "type": "registry:ui",
+          "target": "@ui/chart-tanstack/chart-module.tsx"
+        }
+      ],
+      "devDependencies": ["@types/js-cookie@3.0.6"]
+    },
+    {
+      "name": "protoform-shadcn-host",
+      "type": "registry:lib",
+      "title": "Base UI host component map",
+      "description": "Editable map for host-owned Base UI controls. No primitives or theme are copied; specialized controls use application mappings.",
+      "registryDependencies": ["@protoform/auto-form-core"],
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/shadcn-host.tsx",
+          "type": "registry:component",
+          "target": "@components/auto-form/shadcn-host.tsx"
+        }
+      ]
+    },
+    {
+      "name": "ui-foundations",
+      "type": "registry:example",
+      "title": "Base UI defaults with opt-in SDK enhancements",
+      "description": "A real Base UI form alongside an isolated SDK rating and explicitly enabled agent session.",
+      "registryDependencies": [
+        "@protoform/protoform-shadcn",
+        "@protoform/protoform-ui-sdk",
+        "@protoform/protoform-ui-sdk-agent"
+      ],
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/ui/foundations.tsx",
+          "type": "registry:component",
+          "target": "@components/protoform-examples/ui-foundations.tsx"
         }
       ]
     }

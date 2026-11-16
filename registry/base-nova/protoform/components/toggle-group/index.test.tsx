@@ -6,14 +6,14 @@ import type { ComponentProps } from 'react';
 
 import { ToggleGroup, ToggleGroupItem } from '.';
 
-test('supports UI SDK multiple selection and cancelable change details', async () => {
+test('supports shadcn multiple selection and cancelable change details', async () => {
   const user = userEvent.setup();
   const onValueChange = rs.fn((value: string[], details: { cancel: () => void }) => {
     expect(value).toEqual(['bold']);
     details.cancel();
   });
   render(
-    <ToggleGroup multiple onValueChange={onValueChange}>
+    <ToggleGroup multiple onValueChange={onValueChange} spacing={0}>
       <ToggleGroupItem value="bold">Bold</ToggleGroupItem>
       <ToggleGroupItem value="italic">Italic</ToggleGroupItem>
     </ToggleGroup>
@@ -27,16 +27,16 @@ test('keeps the Protoform single-value API for string selections', async () => {
   const user = userEvent.setup();
   const onValueChange = rs.fn();
   render(
-    <ToggleGroup defaultValue={['left']} onValueChange={onValueChange}>
+    <ToggleGroup defaultValue="left" onValueChange={onValueChange} type="single">
       <ToggleGroupItem value="left">Left</ToggleGroupItem>
       <ToggleGroupItem value="right">Right</ToggleGroupItem>
     </ToggleGroup>
   );
-  await user.click(screen.getByRole('button', { name: 'Right' }));
-  expect(onValueChange).toHaveBeenCalledWith(['right'], expect.objectContaining({ reason: 'item-press' }));
+  await user.click(screen.getByRole('radio', { name: 'Right' }));
+  expect(onValueChange).toHaveBeenCalledWith('right');
 });
 
-test('supports standalone UI SDK items, render props and native events', async () => {
+test('supports standalone shadcn items, render props and native events', async () => {
   const user = userEvent.setup();
   const animations: string[] = [];
   const onPressedChange = rs.fn();
@@ -53,7 +53,7 @@ test('supports standalone UI SDK items, render props and native events', async (
   );
   const button = screen.getByRole('button', { name: 'Standalone emphasis' });
   await user.click(button);
-  expect(onPressedChange).toHaveBeenCalledWith(true, expect.objectContaining({ reason: 'press' }));
+  expect(onPressedChange).toHaveBeenCalledWith(true, expect.objectContaining({ reason: 'none' }));
   fireEvent.animationStart(button);
   expect(animations).toEqual(['animationstart']);
 });

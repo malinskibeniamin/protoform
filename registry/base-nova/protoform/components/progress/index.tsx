@@ -1,125 +1,73 @@
 'use client';
 
-import type React from 'react';
-import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
-import {
-  Progress as SDKProgress,
-  ProgressIndicator as SDKProgressIndicator,
-  ProgressLabel as SDKProgressLabel,
-  ProgressTrack as SDKProgressTrack,
-  ProgressValue as SDKProgressValue,
-} from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-progress';
+import { Progress as ProgressPrimitive } from '@base-ui/react/progress';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
-import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
-function Progress({
-  className,
-  testId,
-  variant,
-  size,
-  ...props
-}: UIProps<React.ComponentProps<typeof SDKProgress>> &
-  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+const ProgressLabelSpan = ProgressPrimitive.Label;
+
+function Progress({ className, children, value, ...props }: ProgressPrimitive.Root.Props) {
   return (
-    <SDKProgress
-      {...definedProps(props)}
-      className={(state) =>
-        cn('flex w-full flex-wrap gap-3', typeof className === 'function' ? className(state) : className)
-      }
-      data-size={size}
-      data-testid={testId ?? props['data-testid']}
-      data-variant={variant}
-    />
+    <ProgressPrimitive.Root
+      className={(state) => cn('flex flex-wrap gap-3', typeof className === 'function' ? className(state) : className)}
+      data-slot="progress"
+      value={value}
+      {...props}
+    >
+      {children}
+      <ProgressTrack>
+        <ProgressIndicator />
+      </ProgressTrack>
+    </ProgressPrimitive.Root>
   );
 }
-
-function ProgressIndicator({
-  className,
-  testId,
-  variant,
-  size,
-  ...props
-}: UIProps<React.ComponentProps<typeof SDKProgressIndicator>> &
-  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+function ProgressTrack({ className, ...props }: ProgressPrimitive.Track.Props) {
   return (
-    <SDKProgressIndicator
-      {...definedProps(props)}
-      className={(state) =>
-        cn(
-          'h-full bg-primary transition-all motion-reduce:transition-none',
-          typeof className === 'function' ? className(state) : className
-        )
-      }
-      data-size={size}
-      data-testid={testId ?? props['data-testid']}
-      data-variant={variant}
-    />
-  );
-}
-
-function ProgressLabel({
-  className,
-  testId,
-  variant,
-  size,
-  ...props
-}: UIProps<React.ComponentProps<typeof SDKProgressLabel>> &
-  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
-  return (
-    <SDKProgressLabel
-      {...definedProps(props)}
-      className={(state) => cn('text-sm font-medium', typeof className === 'function' ? className(state) : className)}
-      data-size={size}
-      data-testid={testId ?? props['data-testid']}
-      data-variant={variant}
-    />
-  );
-}
-
-function ProgressTrack({
-  className,
-  testId,
-  variant,
-  size,
-  ...props
-}: UIProps<React.ComponentProps<typeof SDKProgressTrack>> &
-  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
-  return (
-    <SDKProgressTrack
-      {...definedProps(props)}
+    <ProgressPrimitive.Track
       className={(state) =>
         cn(
           'relative flex h-1 w-full items-center overflow-x-hidden rounded-full bg-muted',
           typeof className === 'function' ? className(state) : className
         )
       }
-      data-size={size}
-      data-testid={testId ?? props['data-testid']}
-      data-variant={variant}
+      data-slot="progress-track"
+      {...props}
     />
   );
 }
-
-function ProgressValue({
-  className,
-  testId,
-  variant,
-  size,
-  ...props
-}: UIProps<React.ComponentProps<typeof SDKProgressValue>> &
-  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+function ProgressIndicator({ className, ...props }: ProgressPrimitive.Indicator.Props) {
   return (
-    <SDKProgressValue
-      {...definedProps(props)}
+    <ProgressPrimitive.Indicator
+      className={(state) =>
+        cn(
+          'h-full bg-primary transition-all motion-reduce:transition-none',
+          typeof className === 'function' ? className(state) : className
+        )
+      }
+      data-slot="progress-indicator"
+      {...props}
+    />
+  );
+}
+function ProgressLabel({ className, ...props }: ProgressPrimitive.Label.Props) {
+  return (
+    <ProgressLabelSpan
+      className={(state) => cn('text-sm font-medium', typeof className === 'function' ? className(state) : className)}
+      data-slot="progress-label"
+      {...props}
+    />
+  );
+}
+function ProgressValue({ className, ...props }: ProgressPrimitive.Value.Props) {
+  return (
+    <ProgressPrimitive.Value
       className={(state) =>
         cn(
           'ml-auto text-sm text-muted-foreground tabular-nums',
           typeof className === 'function' ? className(state) : className
         )
       }
-      data-size={size}
-      data-testid={testId ?? props['data-testid']}
-      data-variant={variant}
+      data-slot="progress-value"
+      {...props}
     />
   );
 }

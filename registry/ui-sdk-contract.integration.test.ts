@@ -7,12 +7,12 @@ import type { Combobox as SDKCombobox } from '@ui-sdk/react/combobox';
 import type { Select as SDKSelect } from '@ui-sdk/react/select';
 import { expectTypeOf } from 'expect-type';
 import { z } from 'zod';
-import type { CheckboxGroup } from './base-nova/protoform/components/checkbox';
-import type { Combobox } from './base-nova/protoform/components/combobox';
-import type { RadioGroup } from './base-nova/protoform/components/radio-group';
-import type { Select } from './base-nova/protoform/components/select';
-import type { Tabs } from './base-nova/protoform/components/tabs';
-import type { ToggleGroup } from './base-nova/protoform/components/toggle';
+import type { CheckboxGroup } from './ui-sdk/protoform/components/checkbox';
+import type { Combobox } from './ui-sdk/protoform/components/combobox';
+import type { RadioGroup } from './ui-sdk/protoform/components/radio-group';
+import type { Select } from './ui-sdk/protoform/components/select';
+import type { Tabs } from './ui-sdk/protoform/components/tabs';
+import type { ToggleGroup } from './ui-sdk/protoform/components/toggle';
 
 test('preserves the native generic roots instead of emulating their old API', () => {
   expectTypeOf<typeof Select>().toEqualTypeOf<typeof SDKSelect>();
@@ -30,7 +30,7 @@ test('preserves the native generic roots instead of emulating their old API', ()
   expectTypeOf<TabProps['value']>().toEqualTypeOf<'profile' | 'settings' | null | undefined>();
   expectTypeOf<Parameters<NonNullable<TabProps['onValueChange']>>[0]>().toEqualTypeOf<'profile' | 'settings' | null>();
 });
-test('ships pinned SDK packages and no superseded behavior packages', () => {
+test('ships pinned opt-in SDK packages without mixing Base UI into SDK controls', () => {
   const manifest = z
     .object({ dependencies: z.record(z.string(), z.string()) })
     .parse(JSON.parse(readFileSync('package.json', 'utf8')));
@@ -46,9 +46,9 @@ test('ships pinned SDK packages and no superseded behavior packages', () => {
     'react-day-picker',
     'react-resizable-panels',
   ]) {
-    expect(manifest.dependencies).not.toHaveProperty(name);
+    expect(typeof manifest.dependencies[name]).toBe('string');
   }
-  const root = 'registry/base-nova/protoform';
+  const root = 'registry/ui-sdk/protoform/components';
   const sourceFiles = readdirSync(root, { recursive: true }).filter(
     (file): file is string => typeof file === 'string' && /\.(?:ts|tsx)$/u.test(file)
   );

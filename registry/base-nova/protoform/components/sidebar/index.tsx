@@ -1,25 +1,18 @@
 'use client';
 
-import { mergeProps, type PartProps, renderElement } from '@ui-sdk/react/primitive';
-import { useShortcut, useShortcutHint } from '@ui-sdk/react/shortcuts';
+import { mergeProps } from '@base-ui/react/merge-props';
+import { useRender } from '@base-ui/react/use-render';
 import { cva, type VariantProps } from 'class-variance-authority';
 import Cookies from 'js-cookie';
 import { PanelLeftIcon } from 'lucide-react';
 import type { CSSProperties } from 'react';
 import React from 'react';
-import { Button } from '@/components/ui/button/index';
-import { Input } from '@/components/ui/input/index';
-import { Separator } from '@/components/ui/separator/index';
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetOverlay,
-  SheetTitle,
-} from '@/components/ui/sheet/index';
-import { Skeleton } from '@/components/ui/skeleton/index';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip/index';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Separator } from '@/components/ui/separator';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useIsMobile } from '@/registry/base-nova/protoform/hooks/use-mobile';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
 
@@ -83,7 +76,17 @@ function useSidebarState({
   };
   const toggleSidebar = () =>
     isMobile ? setOpenMobile((previousOpen) => !previousOpen) : setOpen((previousOpen) => !previousOpen);
-  useShortcut(`mod+${SIDEBAR_KEYBOARD_SHORTCUT}`, toggleSidebar, { description: 'Toggle sidebar' });
+  const toggleSidebarEvent = React.useEffectEvent(toggleSidebar);
+  React.useEffect(function synchronizeSidebar1() {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === SIDEBAR_KEYBOARD_SHORTCUT && (event.metaKey || event.ctrlKey)) {
+        event.preventDefault();
+        toggleSidebarEvent();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
   const state: SidebarContextProps['state'] = open === true ? 'expanded' : 'collapsed';
   return {
     state,
@@ -145,11 +148,6 @@ function Sidebar({
   collapsible?: 'offcanvas' | 'icon' | 'none';
 }) {
   const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
-  const mobileLayer = React.useRef<HTMLDivElement>(null);
-  useShortcut(isMobile && openMobile ? `mod+${SIDEBAR_KEYBOARD_SHORTCUT}` : null, () => setOpenMobile(false), {
-    layer: mobileLayer,
-    description: 'Close sidebar',
-  });
   if (collapsible === 'none') {
     return (
       <div
@@ -163,15 +161,15 @@ function Sidebar({
   }
   if (isMobile) {
     return (
-      <Sheet onOpenChange={setOpenMobile} open={openMobile} side={side} {...props}>
-        <SheetOverlay />
+      <Sheet onOpenChange={setOpenMobile} open={openMobile} {...props}>
         <SheetContent
           className="w-(--sidebar-width) [&>button]:hidden"
           data-mobile="true"
           data-sidebar="sidebar"
           data-slot="sidebar"
           dir={dir}
-          ref={mobileLayer}
+          showCloseButton={false}
+          side={side}
           style={mobileStyle}
           variant="sidebar"
         >
@@ -229,19 +227,16 @@ function Sidebar({
 }
 function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<typeof Button>) {
   const { toggleSidebar } = useSidebar();
-  const hint = useShortcutHint(`mod+${SIDEBAR_KEYBOARD_SHORTCUT}`);
   return (
     <Button
-      aria-keyshortcuts={hint.ariaKeyshortcuts}
       className={className}
       data-sidebar="trigger"
       data-slot="sidebar-trigger"
-      onClick={(event, details) => {
-        onClick?.(event, details);
+      onClick={(event) => {
+        onClick?.(event);
         toggleSidebar();
       }}
       size="icon-sm"
-      title={`Toggle Sidebar (${hint.text})`}
       type="button"
       variant="ghost"
       {...props}
@@ -251,7 +246,7 @@ function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<t
     </Button>
   );
 }
-function SidebarRail({ className, ...props }: React.ComponentProps<typeof Button>) {
+function SidebarRail({ className, ...props }: React.ComponentProps<'button'>) {
   const { toggleSidebar } = useSidebar();
   return (
     <Button
@@ -277,10 +272,11 @@ function SidebarRail({ className, ...props }: React.ComponentProps<typeof Button
     />
   );
 }
-function SidebarInset({ className, render, ...props }: PartProps<'main'>) {
-  return renderElement(
-    'main',
-    {
+function SidebarInset({ className, render, ...props }: useRender.ComponentProps<'main'>) {
+  return useRender({
+    defaultTagName: 'main',
+    render,
+    props: {
       ...props,
       className: cn(
         'relative flex w-full flex-1 flex-col bg-background md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow-sm md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-2',
@@ -288,8 +284,7 @@ function SidebarInset({ className, render, ...props }: PartProps<'main'>) {
       ),
       'data-slot': 'sidebar-inset',
     },
-    render
-  );
+  });
 }
 function SidebarInput({ className, ...props }: React.ComponentProps<typeof Input>) {
   return <Input className={cn('h-8 w-full', className)} data-sidebar="input" data-slot="sidebar-input" {...props} />;
@@ -348,52 +343,52 @@ function SidebarGroup({ className, ...props }: React.ComponentProps<'div'>) {
     />
   );
 }
-function SidebarGroupLabel({ className, render, ...props }: PartProps<'div'> & React.ComponentProps<'div'>) {
-  return renderElement(
-    'div',
-    {
-      ...mergeProps(
-        {
-          className: cn(
-            'flex h-8 shrink-0 items-center rounded-md px-2 text-xs font-medium text-sidebar-foreground/70 ring-sidebar-ring outline-hidden transition-all duration-200 ease-linear group-data-[collapsible=icon]:-mt-8 group-data-[collapsible=icon]:opacity-0 focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0',
-            className
-          ),
-        },
-        props
-      ),
-      'data-slot': 'sidebar-group-label',
-      'data-sidebar': 'group-label',
-    },
+function SidebarGroupLabel({
+  className,
+  render,
+  ...props
+}: useRender.ComponentProps<'div'> & React.ComponentProps<'div'>) {
+  return useRender({
+    defaultTagName: 'div',
+    props: mergeProps<'div'>(
+      {
+        className: cn(
+          'flex h-8 shrink-0 items-center rounded-md px-2 text-xs font-medium text-sidebar-foreground/70 ring-sidebar-ring outline-hidden transition-all duration-200 ease-linear group-data-[collapsible=icon]:-mt-8 group-data-[collapsible=icon]:opacity-0 focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0',
+          className
+        ),
+      },
+      props
+    ),
     render,
-    {
+    state: {
       slot: 'sidebar-group-label',
       sidebar: 'group-label',
-    }
-  );
-}
-function SidebarGroupAction({ className, render, ...props }: PartProps<'button'> & React.ComponentProps<'button'>) {
-  return renderElement(
-    'button',
-    {
-      ...mergeProps(
-        {
-          type: render === undefined ? 'button' : undefined,
-          className: cn(
-            'absolute top-3.5 right-3 flex aspect-square w-5 items-center justify-center rounded-md p-0 text-sidebar-foreground ring-sidebar-ring outline-hidden transition-transform group-data-[collapsible=icon]:hidden after:absolute after:-inset-2 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 md:after:hidden [&>svg]:size-4 [&>svg]:shrink-0',
-            className
-          ),
-        },
-        props
-      ),
-      'data-slot': 'sidebar-group-action',
-      'data-sidebar': 'group-action',
     },
+  });
+}
+function SidebarGroupAction({
+  className,
+  render,
+  ...props
+}: useRender.ComponentProps<'button'> & React.ComponentProps<'button'>) {
+  return useRender({
+    defaultTagName: 'button',
+    props: mergeProps<'button'>(
+      {
+        type: render === undefined ? 'button' : undefined,
+        className: cn(
+          'absolute top-3.5 right-3 flex aspect-square w-5 items-center justify-center rounded-md p-0 text-sidebar-foreground ring-sidebar-ring outline-hidden transition-transform group-data-[collapsible=icon]:hidden after:absolute after:-inset-2 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 md:after:hidden [&>svg]:size-4 [&>svg]:shrink-0',
+          className
+        ),
+      },
+      props
+    ),
     render,
-    {
+    state: {
       slot: 'sidebar-group-action',
       sidebar: 'group-action',
-    }
-  );
+    },
+  });
 }
 function SidebarGroupContent({ className, ...props }: React.ComponentProps<'div'>) {
   return (
@@ -454,41 +449,35 @@ function SidebarMenuButton({
   tooltip,
   className,
   ...props
-}: PartProps<'button'> &
+}: useRender.ComponentProps<'button'> &
   React.ComponentProps<'button'> & {
     isActive?: boolean;
     tooltip?: string | React.ComponentProps<typeof TooltipContent>;
   } & VariantProps<typeof sidebarMenuButtonVariants>) {
   const { isMobile, state } = useSidebar();
-  const comp = renderElement(
-    'button',
-    {
-      ...mergeProps(
-        {
-          type: render === undefined ? 'button' : undefined,
-          className: cn(
-            sidebarMenuButtonVariants({
-              variant,
-              size,
-            }),
-            className
-          ),
-        },
-        props
-      ),
-      'data-slot': 'sidebar-menu-button',
-      'data-sidebar': 'menu-button',
-      'data-size': size,
-      'data-active': isActive,
-    },
-    tooltip ? <TooltipTrigger render={render} /> : render,
-    {
+  const comp = useRender({
+    defaultTagName: 'button',
+    props: mergeProps<'button'>(
+      {
+        type: render === undefined ? 'button' : undefined,
+        className: cn(
+          sidebarMenuButtonVariants({
+            variant,
+            size,
+          }),
+          className
+        ),
+      },
+      props
+    ),
+    render: tooltip ? <TooltipTrigger render={render} /> : render,
+    state: {
       slot: 'sidebar-menu-button',
       sidebar: 'menu-button',
       size,
       active: isActive,
-    }
-  );
+    },
+  });
   if (!tooltip) {
     return comp;
   }
@@ -510,34 +499,30 @@ function SidebarMenuAction({
   render,
   showOnHover = false,
   ...props
-}: PartProps<'button'> &
+}: useRender.ComponentProps<'button'> &
   React.ComponentProps<'button'> & {
     showOnHover?: boolean;
   }) {
-  return renderElement(
-    'button',
-    {
-      ...mergeProps(
-        {
-          type: render === undefined ? 'button' : undefined,
-          className: cn(
-            'absolute top-1.5 right-1 flex aspect-square w-5 items-center justify-center rounded-md p-0 text-sidebar-foreground ring-sidebar-ring outline-hidden transition-transform group-data-[collapsible=icon]:hidden peer-hover/menu-button:text-sidebar-accent-foreground peer-data-[size=default]/menu-button:top-1.5 peer-data-[size=lg]/menu-button:top-2.5 peer-data-[size=sm]/menu-button:top-1 after:absolute after:-inset-2 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 md:after:hidden [&>svg]:size-4 [&>svg]:shrink-0',
-            showOnHover === true &&
-              'group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 peer-data-active/menu-button:text-sidebar-accent-foreground aria-expanded:opacity-100 md:opacity-0',
-            className
-          ),
-        },
-        props
-      ),
-      'data-slot': 'sidebar-menu-action',
-      'data-sidebar': 'menu-action',
-    },
+  return useRender({
+    defaultTagName: 'button',
+    props: mergeProps<'button'>(
+      {
+        type: render === undefined ? 'button' : undefined,
+        className: cn(
+          'absolute top-1.5 right-1 flex aspect-square w-5 items-center justify-center rounded-md p-0 text-sidebar-foreground ring-sidebar-ring outline-hidden transition-transform group-data-[collapsible=icon]:hidden peer-hover/menu-button:text-sidebar-accent-foreground peer-data-[size=default]/menu-button:top-1.5 peer-data-[size=lg]/menu-button:top-2.5 peer-data-[size=sm]/menu-button:top-1 after:absolute after:-inset-2 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 md:after:hidden [&>svg]:size-4 [&>svg]:shrink-0',
+          showOnHover === true &&
+            'group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 peer-data-active/menu-button:text-sidebar-accent-foreground aria-expanded:opacity-100 md:opacity-0',
+          className
+        ),
+      },
+      props
+    ),
     render,
-    {
+    state: {
       slot: 'sidebar-menu-action',
       sidebar: 'menu-action',
-    }
-  );
+    },
+  });
 }
 function SidebarMenuBadge({ className, ...props }: React.ComponentProps<'div'>) {
   return (
@@ -604,36 +589,30 @@ function SidebarMenuSubButton({
   isActive = false,
   className,
   ...props
-}: PartProps<'a'> &
+}: useRender.ComponentProps<'a'> &
   React.ComponentProps<'a'> & {
     size?: 'sm' | 'md';
     isActive?: boolean;
   }) {
-  return renderElement(
-    'a',
-    {
-      ...mergeProps(
-        {
-          className: cn(
-            'flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 text-sidebar-foreground ring-sidebar-ring outline-hidden group-data-[collapsible=icon]:hidden hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-active:bg-sidebar-accent data-active:text-sidebar-accent-foreground data-[size=md]:text-sm data-[size=sm]:text-xs [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:text-sidebar-accent-foreground',
-            className
-          ),
-        },
-        props
-      ),
-      'data-slot': 'sidebar-menu-sub-button',
-      'data-sidebar': 'menu-sub-button',
-      'data-size': size,
-      'data-active': isActive,
-    },
+  return useRender({
+    defaultTagName: 'a',
+    props: mergeProps<'a'>(
+      {
+        className: cn(
+          'flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 text-sidebar-foreground ring-sidebar-ring outline-hidden group-data-[collapsible=icon]:hidden hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-active:bg-sidebar-accent data-active:text-sidebar-accent-foreground data-[size=md]:text-sm data-[size=sm]:text-xs [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:text-sidebar-accent-foreground',
+          className
+        ),
+      },
+      props
+    ),
     render,
-    {
+    state: {
       slot: 'sidebar-menu-sub-button',
       sidebar: 'menu-sub-button',
       size,
       active: isActive,
-    }
-  );
+    },
+  });
 }
 
 export {

@@ -202,17 +202,17 @@ async function assertInstalled() {
       "import { AutoForm as ReactHookFormV8AutoForm } from './components/auto-form-react-hook-form-v8';",
       "import { AutoForm as TanStackAutoForm } from './components/auto-form-tanstack';",
       "import { AutoForm as TanStackV2AutoForm } from './components/auto-form-tanstack-v2';",
-      "import DatePickerExample from './components/ui/examples/date-picker';",
-      "import DataTableExample from './components/ui/examples/data-table';",
-      "import { CodeBlock, CodeBlockContent, CodeBlockCopyButton } from './components/ui/code-block';",
-      "import { Trace, TraceLine, TraceTitle, TraceCollapsible, TraceCollapsibleTrigger, TraceCollapsibleContent } from './components/ui/trace';",
-      "import { Button } from './components/ui/button';",
-      "import { Badge } from './components/ui/badge';",
-      "import { ChartStyle } from './components/ui/chart';",
-      "import { Combobox, ComboboxInput, ComboboxContent, ComboboxList, ComboboxItem } from './components/ui/combobox';",
-      "import { Select, SelectTrigger, SelectContent, SelectList, SelectItem } from './components/ui/select';",
-      "import { PopoverHeader, PopoverTitle, PopoverDescription } from './components/ui/popover';",
-      "import { ToggleGroup, ToggleGroupItem } from './components/ui/toggle-group';",
+      "import DatePickerExample from './components/ui/sdk/examples/date-picker';",
+      "import DataTableExample from './components/ui/sdk/examples/data-table';",
+      "import { CodeBlock, CodeBlockContent, CodeBlockCopyButton } from './components/ui/sdk/code-block';",
+      "import { Trace, TraceLine, TraceTitle, TraceCollapsible, TraceCollapsibleTrigger, TraceCollapsibleContent } from './components/ui/sdk/trace';",
+      "import { Button } from './components/ui/sdk/button';",
+      "import { Badge } from './components/ui/sdk/badge';",
+      "import { ChartStyle } from './components/ui/sdk/chart';",
+      "import { Combobox, ComboboxInput, ComboboxContent, ComboboxList, ComboboxItem } from './components/ui/sdk/combobox';",
+      "import { Select, SelectTrigger, SelectContent, SelectList, SelectItem } from './components/ui/sdk/select';",
+      "import { PopoverHeader, PopoverTitle, PopoverDescription } from './components/ui/sdk/popover';",
+      "import { ToggleGroup, ToggleGroupItem } from './components/ui/sdk/toggle-group';",
 
       "import { BookstoreDemo } from './components/protoform-bookstore/bookstore-demo';",
       "import { createLibraryService } from './components/protoform-bookstore/library-service';",
@@ -368,7 +368,24 @@ async function assertHostInstalled() {
   await $`bun install --cwd ${hostFixture}`;
   await $`bun add --cwd ${hostFixture} clsx tailwind-merge tailwindcss@4.3.3 @tailwindcss/vite@4.3.3`;
   await cp('scripts/fixtures/host-theme.css', join(hostFixture, 'app/globals.css'));
+  await $`bunx --no-install shadcn add @host/protoform-shadcn-tanstack --cwd ${hostFixture} --yes`;
+  const baseUIPaths = [
+    ...(await Array.fromAsync(new Glob('design-system/ui/**/*').scan({ cwd: hostFixture, onlyFiles: true }))),
+    'features/forms/auto-form/index.tsx',
+    'features/forms/auto-form/shadcn-ui-components.tsx',
+  ];
+  const baseUIBefore = await Promise.all(
+    baseUIPaths.map(async (path) => ({ path, content: await readFile(join(hostFixture, path), 'utf8') }))
+  );
   await $`bunx --no-install shadcn add @host/protoform-ui-sdk-tanstack --cwd ${hostFixture} --yes`;
+  await Promise.all(
+    baseUIBefore.map(async ({ path, content }) => {
+      if ((await readFile(join(hostFixture, path), 'utf8')) !== content) {
+        throw new Error(`SDK installation overwrote Base UI ${path}`);
+      }
+    })
+  );
+
   const hostPaths = [
     'components.json',
     'app/globals.css',
@@ -397,6 +414,7 @@ async function assertHostInstalled() {
     [
       'import { AutoForm } from "./features/forms/auto-form/host";',
       'import { uiSdkHostComponents } from "./features/forms/auto-form/ui-sdk-host";',
+      'import { shadcnHostComponents } from "./features/forms/auto-form/shadcn-host";',
       'import type { SchemaProvider } from "./domain/runtime/core";',
       'import { createAgent } from "./domain/runtime/ui-sdk/agent";',
       'import { createAgentSession } from "./domain/runtime/ui-sdk/session";',
@@ -405,6 +423,8 @@ async function assertHostInstalled() {
       'if (typeof createAgent !== "function" || typeof createAgentSession !== "function") throw new Error("Missing opt-in SDK agent factories");',
       'const html = renderToString(<AutoForm components={uiSdkHostComponents} schema={schema} modes={["simple"]} showSummary={false} withSubmit />);',
       'if (!html.includes("Host-owned UI") || !html.includes("data-testid=")) throw new Error("Installed host form did not render its value and test IDs");',
+      'const base = renderToString(<AutoForm components={shadcnHostComponents} schema={schema} modes={["simple"]} showSummary={false} withSubmit />);',
+      'if (!base.includes("Host-owned UI") || !base.includes("data-testid=")) throw new Error("Installed Base UI host map did not render its value and test IDs");',
     ].join('\n')
   );
   await $`bun run --cwd ${hostFixture} typecheck`;
@@ -452,10 +472,10 @@ async function assertTanStackInstalled() {
   if (rechartsPackage.test(graph)) {
     throw new Error('TanStack-only consumer resolved Recharts');
   }
-  if (existsSync(join(tanstackFixture, 'components/ui/chart/index.tsx'))) {
+  if (existsSync(join(tanstackFixture, 'components/ui/sdk/chart/index.tsx'))) {
     throw new Error('TanStack-only consumer installed the Recharts component');
   }
-  await access(join(tanstackFixture, 'components/ui/chart-tanstack/index.tsx'));
+  await access(join(tanstackFixture, 'components/ui/sdk/chart-tanstack/index.tsx'));
   await Promise.all(
     uiCatalog.components
       .filter((entry) => entry.name !== 'chart')
@@ -464,7 +484,7 @@ async function assertTanStackInstalled() {
   const chartSource = await readFile(join(root, 'scripts/fixtures/tanstack-chart-browser.tsx'), 'utf8');
   await writeFile(
     join(tanstackFixture, 'chart-browser.tsx'),
-    chartSource.replaceAll('@/components/ui/', './components/ui/')
+    chartSource.replaceAll('@/components/ui/sdk/', './components/ui/sdk/')
   );
   await $`bun add --cwd ${tanstackFixture} tailwindcss@4.3.3 @tailwindcss/vite@4.3.3`;
   const theme = await readFile(join(root, 'scripts/fixtures/host-theme.css'), 'utf8');
@@ -506,12 +526,14 @@ async function assertOptionalAdapterInstalled(adapter: string) {
       'design-system/ui',
       'domain/runtime/utils',
       'domain/runtime/input-utils',
-      'domain/runtime/ui-sdk/adapters',
+      'features/hooks',
+      'domain/runtime/base-ui-compat',
     ].map(async (path) => {
       await mkdir(join(adapterFixture, path, '..'), { recursive: true });
       await cp(join(hostFixture, path), join(adapterFixture, path), { recursive: true });
     })
   );
+  await rm(join(adapterFixture, 'design-system/ui/sdk'), { recursive: true, force: true });
   const manifest = packageSchema.parse(JSON.parse(await readFile(join(hostFixture, 'package.json'), 'utf8')));
   manifest.dependencies = Object.fromEntries(
     Object.entries(manifest.dependencies).filter(([name]) => !engines.includes(name))
@@ -520,8 +542,8 @@ async function assertOptionalAdapterInstalled(adapter: string) {
   await $`bun install --cwd ${adapterFixture}`;
   const registryItem = `@protoform/${adapter}`;
   await $`bunx --no-install shadcn add ${registryItem} --cwd ${adapterFixture} --yes`;
-  await access(join(adapterFixture, 'features/forms/auto-form/ui-sdk-host.tsx'));
-  await access(join(adapterFixture, 'domain/runtime/sdk-props.ts'));
+  await access(join(adapterFixture, 'features/forms/auto-form/shadcn-ui-components.tsx'));
+
   if (
     existsSync(join(adapterFixture, 'features/forms/auto-form/index.tsx')) ||
     existsSync(join(adapterFixture, 'features/forms/auto-form/adapters/react-hook-form.tsx'))
@@ -606,12 +628,32 @@ try {
     await $`bunx --no-install shadcn add @protoform/ui-sdk-agent-workbench --cwd ${fixture} --yes --overwrite`;
     await writeFile(
       join(fixture, 'agent-install-smoke.tsx'),
-      'import Workbench from "./components/ui/examples/agent-workbench"; if (typeof Workbench !== "function") throw new Error("Missing agent workbench");'
+      'import Workbench from "./components/ui/sdk/examples/agent-workbench"; if (typeof Workbench !== "function") throw new Error("Missing agent workbench");'
     );
     await $`bun run --cwd ${fixture} typecheck`;
     await $`bun ${join(fixture, 'agent-install-smoke.tsx')}`;
     console.log('Agent workbench installed and imported in a clean consumer before any other UI bundle');
     await $`bunx --no-install shadcn add @protoform/ui-sdk-hooks --cwd ${fixture} --yes --overwrite`;
+    const sdkPaths = await Array.fromAsync(new Glob('components/ui/sdk/**/*').scan({ cwd: fixture, onlyFiles: true }));
+    const sdkBefore = await Promise.all(
+      sdkPaths.map(async (path) => ({ path, content: await readFile(join(fixture, path), 'utf8') }))
+    );
+    await $`bunx --no-install shadcn add @protoform/ui-foundations --cwd ${fixture} --yes --overwrite`;
+    await Promise.all(
+      sdkBefore.map(async ({ path, content }) => {
+        if ((await readFile(join(fixture, path), 'utf8')) !== content) {
+          throw new Error(`Base UI installation overwrote SDK ${path}`);
+        }
+      })
+    );
+    await writeFile(
+      join(fixture, 'foundations-browser.tsx'),
+      'import { createRoot } from "react-dom/client"; import Foundations from "@/components/protoform-examples/ui-foundations"; const root = document.querySelector("#root"); if (!root) throw new Error("Missing root"); createRoot(root).render(<Foundations />);'
+    );
+    await writeFile(
+      join(fixture, 'foundations.html'),
+      '<html lang="en"><head><meta name="viewport" content="width=device-width, initial-scale=1" /><title>UI foundations</title><link rel="stylesheet" href="/app/globals.css" /></head><body><div id="root"></div><script type="module" src="/foundations-browser.tsx"></script></body></html>'
+    );
     await $`bunx --no-install shadcn add @protoform/bookstore --cwd ${fixture} --yes --overwrite`;
     await $`bunx --no-install shadcn add @protoform/auto-form-react-hook-form-v8 --cwd ${fixture} --yes --overwrite`;
     await $`bunx --no-install shadcn add @protoform/auto-form-tanstack --cwd ${fixture} --yes --overwrite`;
@@ -657,7 +699,7 @@ try {
     );
     await writeFile(
       join(fixture, 'agent-browser.tsx'),
-      'import { createRoot } from "react-dom/client"; import Workbench from "@/components/ui/examples/agent-workbench"; const root = document.querySelector("#root"); if (!root) throw new Error("Missing root"); createRoot(root).render(<Workbench />);'
+      'import { createRoot } from "react-dom/client"; import Workbench from "@/components/ui/sdk/examples/agent-workbench"; const root = document.querySelector("#root"); if (!root) throw new Error("Missing root"); createRoot(root).render(<Workbench />);'
     );
     await writeFile(
       join(fixture, 'agent.html'),

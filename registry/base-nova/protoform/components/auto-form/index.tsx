@@ -1,7 +1,7 @@
 'use client';
 
 import { AutoForm as HostAutoForm, type AutoFormProps as HostAutoFormProps } from './host';
-import { uiSdkComponents } from './ui-sdk-components';
+import { shadcnUIComponents } from './shadcn-ui-components';
 
 export type {
   ProtoformMessageCode,
@@ -44,6 +44,7 @@ export { defaultClassifyField } from './helpers';
 export type { AutoFormSubmissionProps } from './host';
 export type { AutoFormAppearance } from './layout-context';
 export { type FieldMatchContext, type FieldTypeDefinition, FieldTypeRegistry } from './registry';
+export { shadcnUIComponents } from './shadcn-ui-components';
 export { AutoFormSlot } from './slot';
 export type {
   AutoFormMode,
@@ -60,7 +61,6 @@ export type {
   FieldTypes,
 } from './types';
 export type { ProtoformUIComponentMap } from './ui-component-map';
-export { uiSdkComponents } from './ui-sdk-components';
 
 export type AutoFormProps<
   T extends Record<string, unknown> = Record<string, unknown>,
@@ -72,6 +72,6 @@ export type AutoFormProps<
 export function AutoForm<
   T extends Record<string, unknown> = Record<string, unknown>,
   TCustomFieldType extends string = never,
->({ components = uiSdkComponents, ...props }: AutoFormProps<T, TCustomFieldType>) {
+>({ components = shadcnUIComponents, ...props }: AutoFormProps<T, TCustomFieldType>) {
   return <HostAutoForm<T, TCustomFieldType> {...props} components={components} />;
 }

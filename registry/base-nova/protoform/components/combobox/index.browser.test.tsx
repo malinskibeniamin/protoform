@@ -3,18 +3,13 @@ import { render } from '@rstest/browser-react';
 import { expect, test } from '@rstest/core';
 import { useState } from 'react';
 
-import { OptionCombobox } from '.';
+import { Combobox } from '.';
 
 function CountryPicker() {
   const [value, setValue] = useState('');
   return (
     <>
-      <OptionCombobox
-        aria-label="Country"
-        onChange={setValue}
-        options={[{ label: 'Poland', value: 'PL' }]}
-        value={value}
-      />
+      <Combobox aria-label="Country" onChange={setValue} options={[{ label: 'Poland', value: 'PL' }]} value={value} />
       <output aria-label="Selected country">{value}</output>
     </>
   );

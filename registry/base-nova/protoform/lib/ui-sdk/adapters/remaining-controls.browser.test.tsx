@@ -5,7 +5,7 @@ import { createMenuController } from '@ui-sdk/core/menu';
 import { createNavigationMenuController } from '@ui-sdk/core/navigation-menu';
 import { useState } from 'react';
 import { renderToString } from 'react-dom/server';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/sdk/button';
 import {
   Combobox,
   ComboboxChip,
@@ -20,7 +20,7 @@ import {
   ComboboxSelectAll,
   ComboboxValue,
   OptionCombobox,
-} from '@/components/ui/combobox';
+} from '@/components/ui/sdk/combobox';
 import {
   Menu,
   MenuCheckboxItem,
@@ -35,8 +35,8 @@ import {
   MenuSubContent,
   MenuSubTrigger,
   MenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Menubar } from '@/components/ui/menubar';
+} from '@/components/ui/sdk/dropdown-menu';
+import { Menubar } from '@/components/ui/sdk/menubar';
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -45,7 +45,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
   NavigationMenuViewport,
-} from '@/components/ui/navigation-menu';
+} from '@/components/ui/sdk/navigation-menu';
 import {
   Select,
   SelectClear,
@@ -61,7 +61,7 @@ import {
   SelectSelectAll,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '@/components/ui/sdk/select';
 import {
   createToaster,
   Toast,
@@ -70,8 +70,8 @@ import {
   ToastDescription,
   ToastRegion,
   ToastTitle,
-} from '@/components/ui/toast';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+} from '@/components/ui/sdk/toast';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/sdk/tooltip';
 import { createAgentSession } from '@/registry/base-nova/protoform/lib/ui-sdk/session';
 
 function formData() {

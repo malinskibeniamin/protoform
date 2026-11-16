@@ -24,10 +24,13 @@ describe('protoform registry style', () => {
       })
       .parse(JSON.parse(readFileSync('registry.json', 'utf8')));
     const files = registry.items.flatMap((item) => item.files ?? []);
-    const externalFiles = files.filter((file) => !file.path.startsWith('registry/base-nova/protoform/'));
+    const externalFiles = files.filter(
+      (file) =>
+        !(file.path.startsWith('registry/base-nova/protoform/') || file.path.startsWith('registry/ui-sdk/protoform/'))
+    );
 
     expect(files.length).toBeGreaterThan(0);
-    expect(externalFiles).toEqual([
+    expect([...new Map(externalFiles.map((file) => [JSON.stringify(file), file])).values()]).toEqual([
       {
         path: 'LICENSE',
         target: '~/LICENSES/protoform-MIT.txt',
@@ -36,11 +39,6 @@ describe('protoform registry style', () => {
       {
         path: 'conformance/proto/protoform/conformance/v1/aip.proto',
         target: '~/proto/protoform/conformance/v1/aip.proto',
-        type: 'registry:file',
-      },
-      {
-        path: 'LICENSES/shadcn-MIT.txt',
-        target: '~/LICENSES/shadcn-MIT.txt',
         type: 'registry:file',
       },
       {

@@ -2,9 +2,9 @@
 
 import { CalendarIcon } from 'lucide-react';
 import { useState } from 'react';
-import { Button } from '@/components/ui/button/index';
-import { Calendar } from '@/components/ui/calendar/index';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover/index';
+import { Button } from '@/components/ui/sdk/button/index';
+import { Calendar } from '@/components/ui/sdk/calendar/index';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/sdk/popover/index';
 
 const SAMPLE_MONTH = '2026-10';
 function formatDate(value: string) {

@@ -1,33 +1,20 @@
 'use client';
 
 import { cva, type VariantProps } from 'class-variance-authority';
-import { createContext, createElement, useContext, useId, useMemo } from 'react';
+import { createContext, useContext, useId, useMemo } from 'react';
 
-import { Label } from '@/components/ui/label/index';
-import { Separator } from '@/components/ui/separator/index';
-import { definedProps } from '@/registry/base-nova/protoform/lib/sdk-props';
-import {
-  Field as SDKField,
-  FieldDescription as SDKFieldDescription,
-  FieldError as SDKFieldError,
-  FieldLabel as SDKFieldLabel,
-} from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-field';
+import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
+
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
 interface FieldContextValue {
   errorId: string | undefined;
   invalid: boolean;
-  managed: boolean;
-  within: boolean;
 }
 
-const FieldContext = createContext<FieldContextValue>({
-  within: false,
-  managed: false,
-  errorId: undefined,
-  invalid: false,
-});
+const FieldContext = createContext<FieldContextValue>({ errorId: undefined, invalid: false });
 
 export function useFieldContext() {
   return useContext(FieldContext);
@@ -98,52 +85,26 @@ const fieldVariants = cva('group/field flex w-full gap-3 data-[invalid=true]:tex
   },
 });
 
-function Field(
-  allProps: React.ComponentProps<'div'> &
-    VariantProps<typeof fieldVariants> &
-    SharedProps & {
-      invalid?: boolean;
-      disabled?: boolean;
-      name?: string;
-      validation?: 'native' | 'external';
-      'data-invalid'?: boolean | 'true' | 'false';
-    }
-) {
-  const {
-    className,
-    orientation = 'vertical',
-    invalid: invalidProp,
-    disabled,
-    name,
-    'data-invalid': dataInvalid,
-    testId,
-    validation,
-    ...props
-  } = allProps;
-  const invalid = invalidProp ?? (dataInvalid === true || dataInvalid === 'true');
+function Field({
+  className,
+  orientation = 'vertical',
+  testId,
+  ...props
+}: React.ComponentProps<'div'> & VariantProps<typeof fieldVariants> & SharedProps) {
+  const dataProps = props as Record<string, unknown>;
+  const invalid = dataProps['data-invalid'] === true || dataProps['data-invalid'] === 'true';
   const errorId = useId();
-  const managed = validation === 'native';
-  const ctx = useMemo(
-    () => ({ within: true, managed, errorId: !managed && invalid ? errorId : undefined, invalid }),
-    [invalid, errorId, managed]
-  );
+  const ctx = useMemo(() => ({ errorId: invalid ? errorId : undefined, invalid }), [invalid, errorId]);
 
-  const fieldProps = {
-    className: cn(fieldVariants({ orientation }), invalid ? 'text-destructive' : null, className),
-    'data-invalid': dataInvalid,
-    'data-orientation': orientation,
-    'data-slot': 'field',
-    'data-testid': testId,
-    ...props,
-  };
-  const nativeProps: React.ComponentProps<typeof SDKField> = {
-    ...fieldProps,
-    ...definedProps({ disabled, name, invalid: invalidProp }),
-    className: (state) => cn(fieldVariants({ orientation }), state.invalid ? 'text-destructive' : null, className),
-  };
   return (
     <FieldContext.Provider value={ctx}>
-      {managed ? createElement(SDKField, nativeProps) : createElement('div', fieldProps)}
+      <div
+        className={cn(fieldVariants({ orientation }), className)}
+        data-orientation={orientation}
+        data-slot="field"
+        data-testid={testId}
+        {...props}
+      />
     </FieldContext.Provider>
   );
 }
@@ -164,27 +125,7 @@ function FieldLabel({
   htmlFor,
   required,
   ...props
-}: Omit<React.ComponentProps<typeof Label>, 'children'> & { children?: React.ReactNode } & { required?: boolean }) {
-  const field = useContext(FieldContext);
-  const renderedProps = {
-    ...props,
-    ...definedProps({ htmlFor }),
-    className: cn('text-sm leading-none font-medium', className),
-    'data-slot': 'field-label',
-    children: (
-      <>
-        {children}
-        {required === true ? (
-          <span aria-hidden="true" className="text-destructive">
-            *
-          </span>
-        ) : null}
-      </>
-    ),
-  };
-  if (field.within && field.managed && htmlFor === undefined) {
-    return createElement(SDKFieldLabel, renderedProps);
-  }
+}: React.ComponentProps<typeof Label> & { required?: boolean }) {
   return (
     <Label className={className} data-slot="field-label" htmlFor={htmlFor} variant="field" {...props}>
       {children}
@@ -211,10 +152,8 @@ function FieldTitle({ className, ...props }: React.ComponentProps<'div'>) {
 }
 
 function FieldDescription({ className, testId, ...props }: React.ComponentProps<'div'> & SharedProps) {
-  const field = useContext(FieldContext);
-  const Component = field.within && field.managed ? SDKFieldDescription : 'div';
   return (
-    <Component
+    <div
       className={cn(
         'text-sm leading-normal font-normal text-muted-foreground group-has-data-[orientation=horizontal]/field:text-balance',
         'last:mt-0 nth-last-2:-mt-1 [&:is([data-variant=legend]+*)]:-mt-1.5',
@@ -264,7 +203,7 @@ function FieldError({
 }: React.ComponentProps<'div'> & {
   errors?: Array<{ message?: string } | undefined>;
 } & SharedProps) {
-  const { errorId, within, managed } = useContext(FieldContext);
+  const { errorId } = useContext(FieldContext);
   const content = useMemo(() => {
     if (children) {
       return children;
@@ -292,10 +231,8 @@ function FieldError({
     return null;
   }
 
-  const Component = within && managed ? SDKFieldError : 'div';
   return (
-    <Component
-      {...(within && managed ? { match: true } : {})}
+    <div
       className={cn('text-sm font-normal text-destructive', className)}
       data-slot="field-error"
       data-testid={testId}
@@ -304,7 +241,7 @@ function FieldError({
       {...props}
     >
       {content}
-    </Component>
+    </div>
   );
 }
 

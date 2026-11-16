@@ -1,112 +1,161 @@
-'use client';
+import { cva, type VariantProps } from 'class-variance-authority';
+import { Command as CommandPrimitive } from 'cmdk';
+import { ChevronRight, SearchIcon } from 'lucide-react';
+import React from 'react';
 
-import type React from 'react';
-import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
-import {
-  Command as SDKCommand,
-  CommandEmpty as SDKCommandEmpty,
-  CommandGroup as SDKCommandGroup,
-  CommandGroupLabel as SDKCommandGroupLabel,
-  CommandInput as SDKCommandInput,
-  CommandItem as SDKCommandItem,
-  CommandItemIcon as SDKCommandItemIcon,
-  CommandItems as SDKCommandItems,
-  CommandItemText as SDKCommandItemText,
-  CommandList as SDKCommandList,
-  CommandPage as SDKCommandPage,
-  CommandSeparator as SDKCommandSeparator,
-  CommandShortcut as SDKCommandShortcut,
-  CommandStatus as SDKCommandStatus,
-} from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-command';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Popover, PopoverAnchor, PopoverContent } from '@/components/ui/popover';
+import { Text } from '@/components/ui/typography';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
-import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
-const Command = SDKCommand;
+import type { FixedPositionContentProps, SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
-function CommandEmpty({
-  className,
-  testId,
-  variant,
-  size,
-  ...props
-}: UIProps<React.ComponentProps<typeof SDKCommandEmpty>> &
-  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+const commandVariants = cva('flex size-full flex-col overflow-hidden rounded-md bg-popover text-popover-foreground', {
+  defaultVariants: {
+    size: 'md',
+    variant: 'elevated',
+  },
+  variants: {
+    size: {
+      full: 'w-full',
+      lg: 'max-w-2xl min-w-[500px]',
+      md: 'max-w-lg min-w-[400px] md:min-w-[450px]',
+      sm: 'max-w-sm min-w-[300px]',
+    },
+    variant: {
+      dialog:
+        '**:data-[slot=command-input-wrapper]:h-12 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]]:px-2 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-input-wrapper]_svg]:size-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:size-5',
+      'multi-select': 'border !border-input px-1 shadow-md',
+      elevated: 'border !border-input shadow-md',
+      minimal: '',
+    },
+  },
+});
+
+interface CommandProps
+  extends React.ComponentProps<typeof CommandPrimitive>,
+    VariantProps<typeof commandVariants>,
+    SharedProps {}
+
+function Command({ className, variant, size, testId, ...props }: CommandProps) {
   return (
-    <SDKCommandEmpty
-      {...definedProps(props)}
-      className={(state) =>
-        cn('py-6 text-center text-sm', typeof className === 'function' ? className(state) : className)
-      }
-      data-size={size}
-      data-testid={testId ?? props['data-testid']}
-      data-variant={variant}
+    <CommandPrimitive
+      className={cn(commandVariants({ size, variant }), className)}
+      data-slot="command"
+      data-testid={testId}
+      {...props}
     />
   );
 }
 
-function CommandGroup({
-  className,
-  testId,
-  variant,
-  size,
-  ...props
-}: UIProps<React.ComponentProps<typeof SDKCommandGroup>> &
-  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
-  return (
-    <SDKCommandGroup
-      {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
-      data-size={size}
-      data-testid={testId ?? props['data-testid']}
-      data-variant={variant}
-    />
-  );
-}
+type CommandDialogProps = Omit<React.ComponentProps<typeof Dialog>, 'children'> &
+  Pick<FixedPositionContentProps, 'showOverlay' | 'container' | 'onOpenAutoFocus'> & {
+    title?: string;
+    description?: string;
+    className?: string;
+    children?: React.ReactNode;
+    showCloseButton?: boolean;
+  };
 
-function CommandGroupLabel({
+function CommandDialog({
+  title = 'Command Palette',
+  description = 'Search for a command to run...',
+  showCloseButton = false,
+  children,
+  showOverlay = true,
+  container,
   className,
-  testId,
-  variant,
-  size,
+  onOpenAutoFocus,
   ...props
-}: UIProps<React.ComponentProps<typeof SDKCommandGroupLabel>> &
-  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+}: CommandDialogProps) {
+  const openAutoFocusProps = typeof onOpenAutoFocus === 'function' ? { onOpenAutoFocus } : undefined;
+
   return (
-    <SDKCommandGroupLabel
-      {...definedProps(props)}
-      className={(state) =>
-        cn(
-          'px-2 py-1.5 text-xs font-medium text-muted-foreground',
-          typeof className === 'function' ? className(state) : className
-        )
-      }
-      data-size={size}
-      data-testid={testId ?? props['data-testid']}
-      data-variant={variant}
-    />
+    <Dialog {...props}>
+      <DialogHeader className="sr-only">
+        <DialogTitle>{title}</DialogTitle>
+        <DialogDescription>{description}</DialogDescription>
+      </DialogHeader>
+      <DialogContent
+        className={cn('overflow-hidden', container && 'absolute', className)}
+        container={container}
+        showCloseButton={showCloseButton}
+        showOverlay={showOverlay}
+        {...openAutoFocusProps}
+      >
+        <Command variant="dialog">{children}</Command>
+      </DialogContent>
+    </Dialog>
   );
 }
 
 function CommandInput({
   className,
   testId,
-  variant,
-  size,
   ...props
-}: UIProps<React.ComponentProps<typeof SDKCommandInput>> &
-  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+}: React.ComponentProps<typeof CommandPrimitive.Input> & SharedProps) {
   return (
-    <SDKCommandInput
-      {...definedProps(props)}
-      className={(state) =>
-        cn(
-          'h-11 w-full border-b border-border bg-transparent px-3 text-sm outline-none',
-          typeof className === 'function' ? className(state) : className
-        )
-      }
-      data-size={size}
-      data-testid={testId ?? props['data-testid']}
-      data-variant={variant}
+    <div className="flex h-9 items-center gap-2 border-b !border-input px-3" data-slot="command-input-wrapper">
+      <SearchIcon className="size-4 shrink-0 opacity-50" />
+      <CommandPrimitive.Input
+        className={cn(
+          'flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-hidden selection:bg-selected selection:text-selected-foreground placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50',
+          className
+        )}
+        data-slot="command-input"
+        data-testid={testId}
+        {...props}
+      />
+    </div>
+  );
+}
+
+function CommandList({
+  className,
+  variant,
+  ...props
+}: React.ComponentProps<typeof CommandPrimitive.List> & { variant?: 'multi-select' }) {
+  return (
+    <CommandPrimitive.List
+      className={cn(
+        'max-h-[300px] scroll-py-1 overflow-x-hidden overflow-y-auto',
+        variant === 'multi-select' && 'px-0 py-1',
+        className
+      )}
+      data-slot="command-list"
+      {...props}
+    />
+  );
+}
+
+function CommandEmpty({ ...props }: React.ComponentProps<typeof CommandPrimitive.Empty>) {
+  return <CommandPrimitive.Empty className="py-6 text-center text-sm" data-slot="command-empty" {...props} />;
+}
+
+function CommandGroup({
+  className,
+  testId,
+  ...props
+}: React.ComponentProps<typeof CommandPrimitive.Group> & SharedProps) {
+  return (
+    <CommandPrimitive.Group
+      className={cn(
+        'overflow-hidden p-1 text-foreground [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground',
+        className
+      )}
+      data-slot="command-group"
+      data-testid={testId}
+      {...props}
+    />
+  );
+}
+
+function CommandSeparator({ className, ...props }: React.ComponentProps<typeof CommandPrimitive.Separator>) {
+  return (
+    <CommandPrimitive.Separator
+      className={cn('-mx-1 h-px bg-border', className)}
+      data-slot="command-separator"
+      {...props}
     />
   );
 }
@@ -114,164 +163,173 @@ function CommandInput({
 function CommandItem({
   className,
   testId,
-  variant,
-  size,
   ...props
-}: UIProps<React.ComponentProps<typeof SDKCommandItem>> &
-  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+}: React.ComponentProps<typeof CommandPrimitive.Item> & SharedProps) {
   return (
-    <SDKCommandItem
-      {...definedProps(props)}
-      className={(state) =>
-        cn(
-          'relative flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-accent data-highlighted:text-accent-foreground',
-          typeof className === 'function' ? className(state) : className
-        )
-      }
-      data-size={size}
-      data-testid={testId ?? props['data-testid']}
-      data-variant={variant}
+    <CommandPrimitive.Item
+      className={cn(
+        "relative flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-[disabled=true]:pointer-events-none data-[disabled=true]:text-muted-foreground data-[disabled=true]:opacity-50 data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        className
+      )}
+      data-slot="command-item"
+      data-testid={testId}
+      {...props}
     />
   );
 }
 
-function CommandItemIcon({
-  className,
-  testId,
-  variant,
-  size,
-  ...props
-}: UIProps<React.ComponentProps<typeof SDKCommandItemIcon>> &
-  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+function CommandShortcut({ className, children, ...props }: React.ComponentProps<'span'>) {
   return (
-    <SDKCommandItemIcon
-      {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
-      data-size={size}
-      data-testid={testId ?? props['data-testid']}
-      data-variant={variant}
-    />
+    <Text
+      as="span"
+      className={cn('ml-auto text-xs tracking-widest text-muted-foreground', className)}
+      data-slot="command-shortcut"
+      {...props}
+    >
+      {children}
+    </Text>
   );
 }
 
-const CommandItems = SDKCommandItems;
+interface CommandSubContextType {
+  onOpenChange: (open: boolean) => void;
+  open: boolean;
+}
 
-function CommandItemText({
-  className,
-  testId,
-  variant,
-  size,
-  ...props
-}: UIProps<React.ComponentProps<typeof SDKCommandItemText>> &
-  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+const CommandSubContext = React.createContext<CommandSubContextType | undefined>(undefined);
+
+interface CommandSubProps {
+  children: React.ReactNode;
+  onOpenChange: (open: boolean) => void;
+  open: boolean;
+}
+
+function CommandSub({ open, onOpenChange, children }: CommandSubProps) {
+  const contextValue = React.useMemo(() => ({ onOpenChange, open }), [onOpenChange, open]);
   return (
-    <SDKCommandItemText
-      {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
-      data-size={size}
-      data-testid={testId ?? props['data-testid']}
-      data-variant={variant}
-    />
+    <CommandSubContext.Provider value={contextValue}>
+      <Popover onOpenChange={onOpenChange} open={open}>
+        {children}
+      </Popover>
+    </CommandSubContext.Provider>
   );
 }
 
-function CommandList({
-  className,
-  testId,
-  variant,
-  size,
-  ...props
-}: UIProps<React.ComponentProps<typeof SDKCommandList>> &
-  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+interface CommandSubTriggerProps extends React.ComponentProps<typeof CommandPrimitive.Item> {
+  inset?: boolean;
+}
+
+function CommandSubTrigger({ className, children, inset, ...props }: CommandSubTriggerProps) {
+  const ctx = React.useContext(CommandSubContext);
+
   return (
-    <SDKCommandList
-      {...definedProps(props)}
-      className={(state) =>
-        cn('max-h-72 overflow-auto p-1', typeof className === 'function' ? className(state) : className)
-      }
-      data-size={size}
-      data-testid={testId ?? props['data-testid']}
-      data-variant={variant}
-    />
+    <PopoverAnchor asChild>
+      <CommandPrimitive.Item
+        className={cn(
+          "relative flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-[disabled=true]:pointer-events-none data-[disabled=true]:text-muted-foreground data-[disabled=true]:opacity-50 data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+          inset === true && 'pl-8',
+          className
+        )}
+        data-slot="command-sub-trigger"
+        onSelect={() => ctx?.onOpenChange(true)}
+        {...props}
+      >
+        {children}
+        <ChevronRight className="ml-auto size-4" />
+      </CommandPrimitive.Item>
+    </PopoverAnchor>
   );
 }
 
-const CommandPage = SDKCommandPage;
+interface CommandSubContentProps {
+  children: React.ReactNode;
+  className?: string;
+}
 
-function CommandSeparator({
-  className,
-  testId,
-  variant,
-  size,
-  ...props
-}: UIProps<React.ComponentProps<typeof SDKCommandSeparator>> &
-  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+function CommandSubContent({ className, children }: CommandSubContentProps) {
   return (
-    <SDKCommandSeparator
-      {...definedProps(props)}
-      className={(state) =>
-        cn('-mx-1 my-1 h-px bg-border', typeof className === 'function' ? className(state) : className)
-      }
-      data-size={size}
-      data-testid={testId ?? props['data-testid']}
-      data-variant={variant}
-    />
+    <PopoverContent
+      align="start"
+      className={cn('w-fit p-0', className)}
+      initialFocus={false}
+      side="right"
+      sideOffset={4}
+    >
+      {children}
+    </PopoverContent>
   );
 }
 
-function CommandShortcut({
-  className,
-  testId,
-  variant,
-  size,
-  ...props
-}: UIProps<React.ComponentProps<typeof SDKCommandShortcut>> &
-  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
-  return (
-    <SDKCommandShortcut
-      {...definedProps(props)}
-      className={(state) =>
-        cn('ml-auto text-xs text-muted-foreground', typeof className === 'function' ? className(state) : className)
-      }
-      data-size={size}
-      data-testid={testId ?? props['data-testid']}
-      data-variant={variant}
-    />
-  );
+interface SimpleCommandProps extends SharedProps {
+  className?: string;
+  emptyMessage?: string;
+  groups: Array<{
+    heading?: string;
+    items: Array<{
+      icon?: React.ReactNode;
+      label: string;
+      shortcut?: string;
+      disabled?: boolean;
+      onSelect?: () => void;
+    }>;
+  }>;
+  placeholder?: string;
+  size?: 'sm' | 'md' | 'lg' | 'full';
 }
 
-function CommandStatus({
+function SimpleCommand({
+  placeholder = 'Type a command or search...',
+  emptyMessage = 'No results found.',
+  groups,
+  size = 'md',
   className,
   testId,
-  variant,
-  size,
-  ...props
-}: UIProps<React.ComponentProps<typeof SDKCommandStatus>> &
-  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+}: SimpleCommandProps) {
   return (
-    <SDKCommandStatus
-      {...definedProps(props)}
-      className={(state) => cn('', typeof className === 'function' ? className(state) : className)}
-      data-size={size}
-      data-testid={testId ?? props['data-testid']}
-      data-variant={variant}
-    />
+    <Command className={className} size={size} testId={testId}>
+      <CommandInput placeholder={placeholder} />
+      <CommandList>
+        <CommandEmpty>{emptyMessage}</CommandEmpty>
+        {groups.map((group, groupIndex) => (
+          <React.Fragment
+            key={group.heading !== undefined && group.heading !== '' ? group.heading : `group-${groupIndex}`}
+          >
+            {groupIndex > 0 && <CommandSeparator />}
+            <CommandGroup heading={group.heading}>
+              {group.items.map((item) => (
+                <CommandItem
+                  disabled={item.disabled ?? false}
+                  key={item.label}
+                  {...(item.onSelect ? { onSelect: item.onSelect } : {})}
+                >
+                  {item.icon}
+                  <Text as="span">{item.label}</Text>
+                  {item.shortcut !== undefined && item.shortcut !== '' ? (
+                    <CommandShortcut>{item.shortcut}</CommandShortcut>
+                  ) : null}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </React.Fragment>
+        ))}
+      </CommandList>
+    </Command>
   );
 }
 
 export {
   Command,
+  CommandDialog,
   CommandEmpty,
   CommandGroup,
-  CommandGroupLabel,
   CommandInput,
   CommandItem,
-  CommandItemIcon,
-  CommandItems,
-  CommandItemText,
   CommandList,
-  CommandPage,
   CommandSeparator,
   CommandShortcut,
-  CommandStatus,
+  CommandSub,
+  CommandSubContent,
+  CommandSubTrigger,
+  commandVariants,
+  SimpleCommand,
 };

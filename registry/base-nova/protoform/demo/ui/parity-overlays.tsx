@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Accordion, AccordionItem, AccordionPanel, AccordionTrigger } from '@/components/ui/accordion/index';
+import { Accordion, AccordionItem, AccordionPanel, AccordionTrigger } from '@/components/ui/sdk/accordion/index';
 import {
   AlertDialog,
   AlertDialogBackdrop,
@@ -10,9 +10,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/alert-dialog/index';
-import { Button } from '@/components/ui/button/index';
-import { MenuContextTrigger } from '@/components/ui/context-menu/index';
+} from '@/components/ui/sdk/alert-dialog/index';
+import { Button } from '@/components/ui/sdk/button/index';
+import { MenuContextTrigger } from '@/components/ui/sdk/context-menu/index';
 import {
   Drawer,
   DrawerBackdrop,
@@ -23,10 +23,10 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from '@/components/ui/drawer/index';
-import { Menu, MenuCheckboxItem, MenuContent, MenuItem, MenuTrigger } from '@/components/ui/dropdown-menu/index';
-import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card/index';
-import { Menubar } from '@/components/ui/menubar/index';
+} from '@/components/ui/sdk/drawer/index';
+import { Menu, MenuCheckboxItem, MenuContent, MenuItem, MenuTrigger } from '@/components/ui/sdk/dropdown-menu/index';
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/sdk/hover-card/index';
+import { Menubar } from '@/components/ui/sdk/menubar/index';
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -34,7 +34,7 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-} from '@/components/ui/navigation-menu/index';
+} from '@/components/ui/sdk/navigation-menu/index';
 import {
   Pagination,
   PaginationContent,
@@ -42,7 +42,7 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from '@/components/ui/pagination/index';
+} from '@/components/ui/sdk/pagination/index';
 import {
   Sheet,
   SheetClose,
@@ -53,7 +53,7 @@ import {
   SheetOverlay,
   SheetTitle,
   SheetTrigger,
-} from '@/components/ui/sheet/index';
+} from '@/components/ui/sdk/sheet/index';
 import { ParitySection } from './parity-shared';
 
 export function OverlayExamples() {

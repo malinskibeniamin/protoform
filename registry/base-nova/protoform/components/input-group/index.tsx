@@ -3,10 +3,11 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 import React from 'react';
 
-import { Button } from '@/components/ui/button/index';
-import { Input } from '@/components/ui/input/index';
-import { Textarea } from '@/components/ui/textarea/index';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
+
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
 function InputGroup({ className, testId, ...props }: React.ComponentProps<'div'> & SharedProps) {
@@ -119,11 +120,7 @@ function InputGroupText({ className, ...props }: React.ComponentProps<'span'>) {
   );
 }
 
-function InputGroupInput({
-  className,
-  testId,
-  ...props
-}: React.ComponentProps<'input'> & { onValueChange?: (value: string) => void } & SharedProps) {
+function InputGroupInput({ className, testId, ...props }: React.ComponentProps<'input'> & SharedProps) {
   return (
     <div className="flex-1">
       <Input className={className} data-slot="input-group-control" testId={testId} variant="group" {...props} />

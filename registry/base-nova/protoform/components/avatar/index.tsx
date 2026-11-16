@@ -1,26 +1,18 @@
 'use client';
 
+import { Avatar as AvatarPrimitive } from '@base-ui/react/avatar';
 import type React from 'react';
-import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
-import {
-  Avatar as SDKAvatar,
-  AvatarFallback as SDKAvatarFallback,
-  AvatarImage as SDKAvatarImage,
-} from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-avatar';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
-import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
 function Avatar({
   className,
-  testId,
-  variant,
   size = 'default',
   ...props
-}: UIProps<React.ComponentProps<typeof SDKAvatar>> &
-  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+}: AvatarPrimitive.Root.Props & {
+  size?: 'default' | 'sm' | 'lg';
+}) {
   return (
-    <SDKAvatar
-      {...definedProps(props)}
+    <AvatarPrimitive.Root
       className={(state) =>
         cn(
           'group/avatar relative flex size-8 shrink-0 rounded-full select-none after:absolute after:inset-0 after:rounded-full after:border after:border-border after:mix-blend-darken data-[size=lg]:size-10 data-[size=sm]:size-6 dark:after:mix-blend-lighten',
@@ -28,60 +20,39 @@ function Avatar({
         )
       }
       data-size={size}
-      data-testid={testId ?? props['data-testid']}
-      data-variant={variant}
+      data-slot="avatar"
+      {...props}
     />
   );
 }
-
-function AvatarFallback({
-  className,
-  testId,
-  variant,
-  size,
-  ...props
-}: UIProps<React.ComponentProps<typeof SDKAvatarFallback>> &
-  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+function AvatarImage({ className, ...props }: AvatarPrimitive.Image.Props) {
   return (
-    <SDKAvatarFallback
-      {...definedProps(props)}
-      className={(state) =>
-        cn(
-          'flex size-full items-center justify-center rounded-full bg-muted text-sm text-muted-foreground group-data-[size=sm]/avatar:text-xs',
-          typeof className === 'function' ? className(state) : className
-        )
-      }
-      data-size={size}
-      data-testid={testId ?? props['data-testid']}
-      data-variant={variant}
-    />
-  );
-}
-
-function AvatarImage({
-  className,
-  testId,
-  variant,
-  size,
-  ...props
-}: UIProps<React.ComponentProps<typeof SDKAvatarImage>> &
-  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
-  return (
-    <SDKAvatarImage
-      {...definedProps(props)}
+    <AvatarPrimitive.Image
       className={(state) =>
         cn(
           'aspect-square size-full rounded-full object-cover',
           typeof className === 'function' ? className(state) : className
         )
       }
-      data-size={size}
-      data-testid={testId ?? props['data-testid']}
-      data-variant={variant}
+      data-slot="avatar-image"
+      {...props}
     />
   );
 }
-
+function AvatarFallback({ className, ...props }: AvatarPrimitive.Fallback.Props) {
+  return (
+    <AvatarPrimitive.Fallback
+      className={(state) =>
+        cn(
+          'flex size-full items-center justify-center rounded-full bg-muted text-sm text-muted-foreground group-data-[size=sm]/avatar:text-xs',
+          typeof className === 'function' ? className(state) : className
+        )
+      }
+      data-slot="avatar-fallback"
+      {...props}
+    />
+  );
+}
 function AvatarBadge({ className, ...props }: React.ComponentProps<'span'>) {
   return (
     <span

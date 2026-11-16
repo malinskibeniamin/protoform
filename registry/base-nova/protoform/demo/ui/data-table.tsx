@@ -17,12 +17,12 @@ import {
 } from '@tanstack/react-table';
 import { MoreHorizontalIcon } from 'lucide-react';
 import { useState } from 'react';
-import { Button } from '@/components/ui/button/index';
-import { Checkbox } from '@/components/ui/checkbox/index';
-import { Menu, MenuCheckboxItem, MenuContent, MenuItem, MenuTrigger } from '@/components/ui/dropdown-menu/index';
-import { Field } from '@/components/ui/field/index';
-import { Input } from '@/components/ui/input/index';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table/index';
+import { Button } from '@/components/ui/sdk/button/index';
+import { Checkbox } from '@/components/ui/sdk/checkbox/index';
+import { Menu, MenuCheckboxItem, MenuContent, MenuItem, MenuTrigger } from '@/components/ui/sdk/dropdown-menu/index';
+import { Field } from '@/components/ui/sdk/field/index';
+import { Input } from '@/components/ui/sdk/input/index';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/sdk/table/index';
 
 const features = tableFeatures({
   columnFilteringFeature,

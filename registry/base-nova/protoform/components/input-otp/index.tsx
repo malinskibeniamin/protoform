@@ -1,104 +1,78 @@
 'use client';
 
-import type React from 'react';
-import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
-import {
-  OTPInput as SDKOTPInput,
-  OTPInputGroup as SDKOTPInputGroup,
-  OTPInputSeparator as SDKOTPInputSeparator,
-  OTPInputSlot as SDKOTPInputSlot,
-} from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-otp-input';
+import { OTPInput, OTPInputContext } from 'input-otp';
+import { MinusIcon } from 'lucide-react';
+import React from 'react';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
-import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
-function OTPInput({
+function InputOTP({
   className,
-  testId,
-  variant,
-  size,
+  containerClassName,
   ...props
-}: UIProps<React.ComponentProps<typeof SDKOTPInput>> &
-  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+}: React.ComponentProps<typeof OTPInput> & {
+  containerClassName?: string;
+}) {
   return (
-    <SDKOTPInput
-      {...definedProps(props)}
-      className={(state) =>
-        cn('flex min-w-0 items-center gap-2', typeof className === 'function' ? className(state) : className)
-      }
-      data-size={size}
-      data-testid={testId ?? props['data-testid']}
-      data-variant={variant}
+    <OTPInput
+      className={cn('disabled:cursor-not-allowed', className)}
+      containerClassName={cn('flex items-center has-disabled:opacity-50', containerClassName)}
+      data-slot="input-otp"
+      spellCheck={false}
+      {...props}
     />
   );
 }
-
-function OTPInputGroup({
-  className,
-  testId,
-  variant,
-  size,
-  ...props
-}: UIProps<React.ComponentProps<typeof SDKOTPInputGroup>> &
-  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+function InputOTPGroup({ className, ...props }: React.ComponentProps<'div'>) {
   return (
-    <SDKOTPInputGroup
-      {...definedProps(props)}
-      className={(state) =>
-        cn('flex min-w-0 items-center', typeof className === 'function' ? className(state) : className)
-      }
-      data-size={size}
-      data-testid={testId ?? props['data-testid']}
-      data-variant={variant}
+    <div
+      className={cn(
+        'flex items-center rounded-lg has-aria-invalid:border-destructive has-aria-invalid:ring-3 has-aria-invalid:ring-destructive/20 dark:has-aria-invalid:ring-destructive/40',
+        className
+      )}
+      data-slot="input-otp-group"
+      {...props}
     />
   );
 }
-
-function OTPInputSeparator({
-  children = '−',
+function InputOTPSlot({
+  index,
   className,
-  testId,
-  variant,
-  size,
   ...props
-}: UIProps<React.ComponentProps<typeof SDKOTPInputSeparator>> &
-  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+}: React.ComponentProps<'div'> & {
+  index: number;
+}) {
+  const inputOTPContext = React.useContext(OTPInputContext);
+  const { char, hasFakeCaret, isActive } = inputOTPContext?.slots[index] ?? {};
   return (
-    <SDKOTPInputSeparator
-      {...definedProps(props)}
-      className={(state) =>
-        cn('px-1 text-muted-foreground', typeof className === 'function' ? className(state) : className)
-      }
-      data-size={size}
-      data-testid={testId ?? props['data-testid']}
-      data-variant={variant}
+    <div
+      className={cn(
+        'relative flex size-8 items-center justify-center border-y border-r border-input text-sm transition-all outline-none first:rounded-l-lg first:border-l last:rounded-r-lg aria-invalid:border-destructive data-[active=true]:z-10 data-[active=true]:border-ring data-[active=true]:ring-3 data-[active=true]:ring-ring/50 data-[active=true]:aria-invalid:border-destructive data-[active=true]:aria-invalid:ring-destructive/20 motion-reduce:transition-none dark:bg-input/30 dark:data-[active=true]:aria-invalid:ring-destructive/40',
+        className
+      )}
+      data-active={isActive}
+      data-slot="input-otp-slot"
+      {...props}
     >
-      {children}
-    </SDKOTPInputSeparator>
+      {char}
+      {hasFakeCaret === true && (
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+          <div className="h-4 w-px animate-caret-blink bg-foreground duration-1000 motion-reduce:animate-none" />
+        </div>
+      )}
+    </div>
   );
 }
-
-function OTPInputSlot({
-  className,
-  testId,
-  variant,
-  size,
-  ...props
-}: UIProps<React.ComponentProps<typeof SDKOTPInputSlot>> &
-  SharedProps & { variant?: string | undefined; size?: string | undefined }) {
+function InputOTPSeparator({ ...props }: React.ComponentProps<'div'>) {
   return (
-    <SDKOTPInputSlot
-      {...definedProps(props)}
-      className={(state) =>
-        cn(
-          'relative flex size-8 min-w-0 items-center justify-center border border-input text-sm first:rounded-l-md last:rounded-r-md data-active:ring-2 data-active:ring-ring',
-          typeof className === 'function' ? className(state) : className
-        )
-      }
-      data-size={size}
-      data-testid={testId ?? props['data-testid']}
-      data-variant={variant}
-    />
+    <div
+      aria-hidden="true"
+      className="flex items-center [&_svg:not([class*='size-'])]:size-4"
+      data-slot="input-otp-separator"
+      {...props}
+    >
+      <MinusIcon aria-hidden="true" />
+    </div>
   );
 }
 
-export { OTPInput, OTPInputGroup, OTPInputSeparator, OTPInputSlot };
+export { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot };

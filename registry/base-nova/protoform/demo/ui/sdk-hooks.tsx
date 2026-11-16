@@ -1,12 +1,12 @@
 import { usePreference } from '@ui-sdk/react/preferences';
 import { useMemo, useState } from 'react';
-import { AsyncOptionCombobox } from '@/components/ui/async-option-combobox';
-import { Button } from '@/components/ui/button';
-import type { ComboboxOption } from '@/components/ui/combobox';
-import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
-import { createLocalStorage, createPreference, PreferenceSelect, Preferences } from '@/components/ui/preferences';
-import { Textarea } from '@/components/ui/textarea';
+import { AsyncOptionCombobox } from '@/components/ui/sdk/async-option-combobox';
+import { Button } from '@/components/ui/sdk/button';
+import type { ComboboxOption } from '@/components/ui/sdk/combobox';
+import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/sdk/field';
+import { Input } from '@/components/ui/sdk/input';
+import { createLocalStorage, createPreference, PreferenceSelect, Preferences } from '@/components/ui/sdk/preferences';
+import { Textarea } from '@/components/ui/sdk/textarea';
 import { definedProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 
 export const client = 'only';

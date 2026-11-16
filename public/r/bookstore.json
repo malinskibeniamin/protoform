@@ -12,7 +12,7 @@
     "react-hook-form@^7.92.0"
   ],
   "registryDependencies": [
-    "@protoform/protoform-ui-sdk",
+    "@protoform/protoform-shadcn",
     "@protoform/protoform-demo-runtime"
   ],
   "files": [

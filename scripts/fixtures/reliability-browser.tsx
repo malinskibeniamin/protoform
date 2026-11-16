@@ -1,6 +1,6 @@
 import { StrictMode, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { AutoForm } from '@/registry/base-nova/protoform/components/auto-form';
+import { AutoForm } from '@/components/ui/sdk/auto-form';
 import type { SchemaProvider } from '@/registry/base-nova/protoform/components/auto-form/core-types';
 import type { DataProviderRequest } from '@/registry/base-nova/protoform/components/auto-form/data-providers';
 

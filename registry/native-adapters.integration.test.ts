@@ -140,8 +140,8 @@ describe('build-time UI adapter registry', () => {
   test('offers the complete TanStack UI bundle without installing Recharts', () => {
     const tanstack = item('protoform-ui-sdk-tanstack');
     const recharts = item('protoform-ui-sdk');
-    const chartPath = 'registry/base-nova/protoform/components/chart/index.tsx';
-    const tanstackPath = 'registry/base-nova/protoform/components/chart-tanstack/index.tsx';
+    const chartPath = 'registry/ui-sdk/protoform/components/chart/index.tsx';
+    const tanstackPath = 'registry/ui-sdk/protoform/components/chart-tanstack/index.tsx';
     expect(filePaths(tanstack)).toEqual(
       expect.arrayContaining(
         filePaths(recharts).filter(
@@ -189,7 +189,7 @@ describe('build-time UI adapter registry', () => {
   test('splits core, React, and optional shadcn capabilities', () => {
     const core = item('protoform-core');
     const react = item('protoform-react');
-    const shadcn = item('protoform-ui-sdk');
+    const shadcn = item('protoform-shadcn');
 
     expect(core.registryDependencies).toEqual(['@protoform/use-proto-form']);
     expect(filePaths(core).some((path) => path.includes('/components/'))).toBe(false);
@@ -331,11 +331,11 @@ describe('build-time UI adapter registry', () => {
 });
 
 describe('native form adapter registry entries', () => {
-  test('ships the legacy shadcn map only with explicit legacy adapters', () => {
-    const componentMapPath = 'registry/base-nova/protoform/components/auto-form/ui-sdk-components.ts';
+  test('ships the Base UI map only with explicit Base UI adapters', () => {
+    const componentMapPath = 'registry/base-nova/protoform/components/auto-form/shadcn-ui-components.tsx';
 
     for (const adapterName of [
-      'protoform-ui-sdk',
+      'protoform-shadcn',
       'auto-form-react-hook-form-v8',
       'auto-form-tanstack',
       'auto-form-tanstack-v2',
@@ -381,7 +381,7 @@ describe('native form adapter registry entries', () => {
     expect(tanstackHook.dependencies).not.toContain('react-hook-form');
     expect(tanstackAutoForm.registryDependencies).toEqual([
       '@protoform/auto-form-core',
-      '@protoform/protoform-ui-sdk-host',
+      '@protoform/protoform-shadcn-host',
       '@protoform/use-proto-form-tanstack',
     ]);
     expect(tanstackAutoForm.dependencies).toContain('@tanstack/react-form');
@@ -400,7 +400,7 @@ describe('native form adapter registry entries', () => {
     expect(tanstackHook.dependencies).not.toContain('react-hook-form');
     expect(tanstackAutoForm.registryDependencies).toEqual([
       '@protoform/auto-form-core',
-      '@protoform/protoform-ui-sdk-host',
+      '@protoform/protoform-shadcn-host',
       '@protoform/use-proto-form-tanstack-v2',
     ]);
     expect(tanstackAutoForm.dependencies).toContain(packageAlias);
@@ -420,7 +420,7 @@ describe('native form adapter registry entries', () => {
     expect(reactHookFormHook.dependencies).not.toContain('@hookform/resolvers');
     expect(reactHookFormAutoForm.registryDependencies).toEqual([
       '@protoform/auto-form-core',
-      '@protoform/protoform-ui-sdk-host',
+      '@protoform/protoform-shadcn-host',
       '@protoform/use-proto-form-v8',
     ]);
     expect(reactHookFormAutoForm.dependencies).toContain(packageAlias);

@@ -74,6 +74,7 @@ describe('registry-only distribution', () => {
       '~/LICENSES/shadcn-MIT.txt',
       '~/LICENSES/protoform-ui-sdk-provenance.md',
       '~/LICENSES/protoform-ui-sdk-controls.md',
+      '~/LICENSES/protoform-shadcn-provenance.md',
     ]);
   });
 

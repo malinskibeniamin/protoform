@@ -2,8 +2,8 @@ import { page } from '@rstest/browser';
 import { render } from '@rstest/browser-react';
 import { expect, test } from '@rstest/core';
 import { useState } from 'react';
+import { AutoForm } from '@/components/ui/sdk/auto-form';
 import { createAgentSession } from '@/registry/base-nova/protoform/lib/ui-sdk/session';
-import { AutoForm } from '..';
 import type { SchemaProvider } from '../core-types';
 
 const schema: SchemaProvider = {

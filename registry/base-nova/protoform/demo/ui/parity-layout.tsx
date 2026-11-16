@@ -3,7 +3,7 @@ import { scaleBand } from '@tanstack/charts/scales/band';
 import { scaleLinear } from '@tanstack/charts/scales/linear';
 import { tooltip } from '@tanstack/charts/tooltip';
 import { lazy, Suspense, useId, useState } from 'react';
-import { Button } from '@/components/ui/button/index';
+import { Button } from '@/components/ui/sdk/button/index';
 import {
   Carousel,
   CarouselContent,
@@ -11,12 +11,12 @@ import {
   CarouselNext,
   CarouselPrevious,
   CarouselViewport,
-} from '@/components/ui/carousel/index';
-import { TanStackChart } from '@/components/ui/chart-tanstack/index';
-import { Field, FieldLabel } from '@/components/ui/field/index';
-import { Input } from '@/components/ui/input/index';
-import { Resizable, ResizableHandle, ResizablePanel } from '@/components/ui/resizable/index';
-import { ScrollArea, ScrollAreaViewport } from '@/components/ui/scroll-area/index';
+} from '@/components/ui/sdk/carousel/index';
+import { TanStackChart } from '@/components/ui/sdk/chart-tanstack/index';
+import { Field, FieldLabel } from '@/components/ui/sdk/field/index';
+import { Input } from '@/components/ui/sdk/input/index';
+import { Resizable, ResizableHandle, ResizablePanel } from '@/components/ui/sdk/resizable/index';
+import { ScrollArea, ScrollAreaViewport } from '@/components/ui/sdk/scroll-area/index';
 import {
   Select,
   SelectContent,
@@ -24,7 +24,7 @@ import {
   SelectList,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select/index';
+} from '@/components/ui/sdk/select/index';
 import {
   Sidebar,
   SidebarContent,
@@ -37,7 +37,7 @@ import {
   SidebarMenuItem,
   SidebarProvider,
   SidebarTrigger,
-} from '@/components/ui/sidebar/index';
+} from '@/components/ui/sdk/sidebar/index';
 import {
   Table,
   TableBody,
@@ -46,7 +46,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table/index';
+} from '@/components/ui/sdk/table/index';
 import { ParitySection } from './parity-shared';
 
 const requests = [

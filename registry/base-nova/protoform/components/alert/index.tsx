@@ -3,6 +3,7 @@ import { InfoIcon } from 'lucide-react';
 import React from 'react';
 
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
+
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
 const alertVariants = cva(

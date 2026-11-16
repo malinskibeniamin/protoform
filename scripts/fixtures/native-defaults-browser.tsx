@@ -8,8 +8,8 @@ import {
 } from '@bufbuild/protobuf/wkt';
 import { type ComponentProps, StrictMode, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/sdk/button';
+import { Input } from '@/components/ui/sdk/input';
 import { useProtoForm } from '@/registry/base-nova/protoform/hooks/use-proto-form';
 import { useProtoForm as useProtoFormV8 } from '@/registry/base-nova/protoform/hooks/use-proto-form-v8';
 

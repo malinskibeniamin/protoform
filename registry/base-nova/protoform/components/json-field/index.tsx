@@ -3,16 +3,17 @@
 import { Braces, FileEdit, SpellCheck, Trash2 } from 'lucide-react';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
-import { Badge } from '@/components/ui/badge/index';
-import { Button } from '@/components/ui/button/index';
-import { type ComboboxOption, OptionCombobox } from '@/components/ui/combobox/index';
-import { CopyButton } from '@/components/ui/copy-button/index';
-import { Input } from '@/components/ui/input/index';
-import { Label } from '@/components/ui/label/index';
-import { Textarea } from '@/components/ui/textarea/index';
-import { toast } from '@/components/ui/toast/index';
-import { Heading, Text } from '@/components/ui/typography/index';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Combobox, type ComboboxOption } from '@/components/ui/combobox';
+import { CopyButton } from '@/components/ui/copy-button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { toast } from '@/components/ui/toast';
+import { Heading, Text } from '@/components/ui/typography';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
+
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
 const JSONCodeEditor = React.lazy(() =>
@@ -378,7 +379,7 @@ const JSONField = ({
           })();
 
           return (
-            <OptionCombobox
+            <Combobox
               aria-label={controlLabel(path)}
               creatable
               id={controlId(path)}
@@ -422,7 +423,7 @@ const JSONField = ({
           }));
 
           return (
-            <OptionCombobox
+            <Combobox
               aria-label={controlLabel(path)}
               creatable
               id={controlId(path)}
@@ -452,7 +453,7 @@ const JSONField = ({
           }));
 
           return (
-            <OptionCombobox
+            <Combobox
               aria-label={controlLabel(path)}
               creatable
               id={controlId(path)}
@@ -812,7 +813,7 @@ const JSONField = ({
             <CopyButton
               content={JSON.stringify(value, null, 2)}
               onCopy={() =>
-                toast({
+                toast.add({
                   description: 'The JSON data was copied to your clipboard.',
                   title: 'JSON copied',
                   type: 'success',

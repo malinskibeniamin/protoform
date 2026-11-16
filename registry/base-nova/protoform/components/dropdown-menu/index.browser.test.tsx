@@ -2,9 +2,9 @@ import { afterEach, expect, test } from '@rstest/core';
 import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { Button } from '@/components/ui/button/index';
+import { Button } from '@/components/ui/button';
 import { PortalContainerProvider } from '@/registry/base-nova/protoform/hooks/use-portal-container';
-import { Menu, MenuContent, MenuItem, MenuTrigger } from '.';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '.';
 
 afterEach(cleanup);
 
@@ -15,12 +15,12 @@ test('keeps menu output inside the configured Protoform portal container', async
   try {
     render(
       <PortalContainerProvider value={portalContainer}>
-        <Menu>
-          <MenuTrigger render={<Button type="button">Record actions</Button>} />
-          <MenuContent>
-            <MenuItem>Duplicate record</MenuItem>
-          </MenuContent>
-        </Menu>
+        <DropdownMenu>
+          <DropdownMenuTrigger render={<Button type="button">Record actions</Button>} />
+          <DropdownMenuContent>
+            <DropdownMenuItem>Duplicate record</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </PortalContainerProvider>,
       { container: portalContainer }
     );

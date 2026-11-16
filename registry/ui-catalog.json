@@ -7,285 +7,285 @@
   "components": [
     {
       "name": "accordion",
-      "installPath": "components/ui/accordion/index.tsx"
+      "installPath": "components/ui/sdk/accordion/index.tsx"
     },
     {
       "name": "alert",
-      "installPath": "components/ui/alert/index.tsx"
+      "installPath": "components/ui/sdk/alert/index.tsx"
     },
     {
       "name": "alert-dialog",
-      "installPath": "components/ui/alert-dialog/index.tsx"
+      "installPath": "components/ui/sdk/alert-dialog/index.tsx"
     },
     {
       "name": "aspect-ratio",
-      "installPath": "components/ui/aspect-ratio/index.tsx"
+      "installPath": "components/ui/sdk/aspect-ratio/index.tsx"
     },
     {
       "name": "attachment",
-      "installPath": "components/ui/attachment/index.tsx"
+      "installPath": "components/ui/sdk/attachment/index.tsx"
     },
     {
       "name": "avatar",
-      "installPath": "components/ui/avatar/index.tsx"
+      "installPath": "components/ui/sdk/avatar/index.tsx"
     },
     {
       "name": "badge",
-      "installPath": "components/ui/badge/index.tsx"
+      "installPath": "components/ui/sdk/badge/index.tsx"
     },
     {
       "name": "breadcrumb",
-      "installPath": "components/ui/breadcrumb/index.tsx"
+      "installPath": "components/ui/sdk/breadcrumb/index.tsx"
     },
     {
       "name": "bubble",
-      "installPath": "components/ui/bubble/index.tsx"
+      "installPath": "components/ui/sdk/bubble/index.tsx"
     },
     {
       "name": "button",
-      "installPath": "components/ui/button/index.tsx"
+      "installPath": "components/ui/sdk/button/index.tsx"
     },
     {
       "name": "button-group",
-      "installPath": "components/ui/button-group/index.tsx"
+      "installPath": "components/ui/sdk/button-group/index.tsx"
     },
     {
       "name": "calendar",
-      "installPath": "components/ui/calendar/index.tsx"
+      "installPath": "components/ui/sdk/calendar/index.tsx"
     },
     {
       "name": "card",
-      "installPath": "components/ui/card/index.tsx"
+      "installPath": "components/ui/sdk/card/index.tsx"
     },
     {
       "name": "carousel",
-      "installPath": "components/ui/carousel/index.tsx"
+      "installPath": "components/ui/sdk/carousel/index.tsx"
     },
     {
       "name": "chart",
-      "installPath": "components/ui/chart/index.tsx"
+      "installPath": "components/ui/sdk/chart/index.tsx"
     },
     {
       "name": "checkbox",
-      "installPath": "components/ui/checkbox/index.tsx"
+      "installPath": "components/ui/sdk/checkbox/index.tsx"
     },
     {
       "name": "code-block",
-      "installPath": "components/ui/code-block/index.tsx"
+      "installPath": "components/ui/sdk/code-block/index.tsx"
     },
     {
       "name": "collapsible",
-      "installPath": "components/ui/collapsible/index.tsx"
+      "installPath": "components/ui/sdk/collapsible/index.tsx"
     },
     {
       "name": "combobox",
-      "installPath": "components/ui/combobox/index.tsx"
+      "installPath": "components/ui/sdk/combobox/index.tsx"
     },
     {
       "name": "command",
-      "installPath": "components/ui/command/index.tsx"
+      "installPath": "components/ui/sdk/command/index.tsx"
     },
     {
       "name": "context-menu",
-      "installPath": "components/ui/context-menu/index.tsx"
+      "installPath": "components/ui/sdk/context-menu/index.tsx"
     },
     {
       "name": "dialog",
-      "installPath": "components/ui/dialog/index.tsx"
+      "installPath": "components/ui/sdk/dialog/index.tsx"
     },
     {
       "name": "direction",
-      "installPath": "components/ui/direction/index.tsx"
+      "installPath": "components/ui/sdk/direction/index.tsx"
     },
     {
       "name": "drawer",
-      "installPath": "components/ui/drawer/index.tsx"
+      "installPath": "components/ui/sdk/drawer/index.tsx"
     },
     {
       "name": "dropdown-menu",
-      "installPath": "components/ui/dropdown-menu/index.tsx"
+      "installPath": "components/ui/sdk/dropdown-menu/index.tsx"
     },
     {
       "name": "empty",
-      "installPath": "components/ui/empty/index.tsx"
+      "installPath": "components/ui/sdk/empty/index.tsx"
     },
     {
       "name": "field",
-      "installPath": "components/ui/field/index.tsx"
+      "installPath": "components/ui/sdk/field/index.tsx"
     },
     {
       "name": "hover-card",
-      "installPath": "components/ui/hover-card/index.tsx"
+      "installPath": "components/ui/sdk/hover-card/index.tsx"
     },
     {
       "name": "input",
-      "installPath": "components/ui/input/index.tsx"
+      "installPath": "components/ui/sdk/input/index.tsx"
     },
     {
       "name": "input-group",
-      "installPath": "components/ui/input-group/index.tsx"
+      "installPath": "components/ui/sdk/input-group/index.tsx"
     },
     {
       "name": "input-otp",
-      "installPath": "components/ui/input-otp/index.tsx"
+      "installPath": "components/ui/sdk/input-otp/index.tsx"
     },
     {
       "name": "item",
-      "installPath": "components/ui/item/index.tsx"
+      "installPath": "components/ui/sdk/item/index.tsx"
     },
     {
       "name": "kbd",
-      "installPath": "components/ui/kbd/index.tsx"
+      "installPath": "components/ui/sdk/kbd/index.tsx"
     },
     {
       "name": "label",
-      "installPath": "components/ui/label/index.tsx"
+      "installPath": "components/ui/sdk/label/index.tsx"
     },
     {
       "name": "marker",
-      "installPath": "components/ui/marker/index.tsx"
+      "installPath": "components/ui/sdk/marker/index.tsx"
     },
     {
       "name": "menubar",
-      "installPath": "components/ui/menubar/index.tsx"
+      "installPath": "components/ui/sdk/menubar/index.tsx"
     },
     {
       "name": "message",
-      "installPath": "components/ui/message/index.tsx"
+      "installPath": "components/ui/sdk/message/index.tsx"
     },
     {
       "name": "message-scroller",
-      "installPath": "components/ui/message-scroller/index.tsx"
+      "installPath": "components/ui/sdk/message-scroller/index.tsx"
     },
     {
       "name": "native-select",
-      "installPath": "components/ui/native-select/index.tsx"
+      "installPath": "components/ui/sdk/native-select/index.tsx"
     },
     {
       "name": "navigation-menu",
-      "installPath": "components/ui/navigation-menu/index.tsx"
+      "installPath": "components/ui/sdk/navigation-menu/index.tsx"
     },
     {
       "name": "pagination",
-      "installPath": "components/ui/pagination/index.tsx"
+      "installPath": "components/ui/sdk/pagination/index.tsx"
     },
     {
       "name": "popover",
-      "installPath": "components/ui/popover/index.tsx"
+      "installPath": "components/ui/sdk/popover/index.tsx"
     },
     {
       "name": "progress",
-      "installPath": "components/ui/progress/index.tsx"
+      "installPath": "components/ui/sdk/progress/index.tsx"
     },
     {
       "name": "questionnaire",
-      "installPath": "components/ui/questionnaire/index.tsx"
+      "installPath": "components/ui/sdk/questionnaire/index.tsx"
     },
     {
       "name": "radio-group",
-      "installPath": "components/ui/radio-group/index.tsx"
+      "installPath": "components/ui/sdk/radio-group/index.tsx"
     },
     {
       "name": "resizable",
-      "installPath": "components/ui/resizable/index.tsx"
+      "installPath": "components/ui/sdk/resizable/index.tsx"
     },
     {
       "name": "scroll-area",
-      "installPath": "components/ui/scroll-area/index.tsx"
+      "installPath": "components/ui/sdk/scroll-area/index.tsx"
     },
     {
       "name": "select",
-      "installPath": "components/ui/select/index.tsx"
+      "installPath": "components/ui/sdk/select/index.tsx"
     },
     {
       "name": "separator",
-      "installPath": "components/ui/separator/index.tsx"
+      "installPath": "components/ui/sdk/separator/index.tsx"
     },
     {
       "name": "sheet",
-      "installPath": "components/ui/sheet/index.tsx"
+      "installPath": "components/ui/sdk/sheet/index.tsx"
     },
     {
       "name": "sidebar",
-      "installPath": "components/ui/sidebar/index.tsx"
+      "installPath": "components/ui/sdk/sidebar/index.tsx"
     },
     {
       "name": "skeleton",
-      "installPath": "components/ui/skeleton/index.tsx"
+      "installPath": "components/ui/sdk/skeleton/index.tsx"
     },
     {
       "name": "slider",
-      "installPath": "components/ui/slider/index.tsx"
+      "installPath": "components/ui/sdk/slider/index.tsx"
     },
     {
       "name": "spinner",
-      "installPath": "components/ui/spinner/index.tsx"
+      "installPath": "components/ui/sdk/spinner/index.tsx"
     },
     {
       "name": "switch",
-      "installPath": "components/ui/switch/index.tsx"
+      "installPath": "components/ui/sdk/switch/index.tsx"
     },
     {
       "name": "table",
-      "installPath": "components/ui/table/index.tsx"
+      "installPath": "components/ui/sdk/table/index.tsx"
     },
     {
       "name": "tabs",
-      "installPath": "components/ui/tabs/index.tsx"
+      "installPath": "components/ui/sdk/tabs/index.tsx"
     },
     {
       "name": "textarea",
-      "installPath": "components/ui/textarea/index.tsx"
+      "installPath": "components/ui/sdk/textarea/index.tsx"
     },
     {
       "name": "toast",
-      "installPath": "components/ui/toast/index.tsx"
+      "installPath": "components/ui/sdk/toast/index.tsx"
     },
     {
       "name": "toggle",
-      "installPath": "components/ui/toggle/index.tsx"
+      "installPath": "components/ui/sdk/toggle/index.tsx"
     },
     {
       "name": "toggle-group",
-      "installPath": "components/ui/toggle-group/index.tsx"
+      "installPath": "components/ui/sdk/toggle-group/index.tsx"
     },
     {
       "name": "tooltip",
-      "installPath": "components/ui/tooltip/index.tsx"
+      "installPath": "components/ui/sdk/tooltip/index.tsx"
     },
     {
       "name": "trace",
-      "installPath": "components/ui/trace/index.tsx"
+      "installPath": "components/ui/sdk/trace/index.tsx"
     },
     {
       "name": "rating",
       "docs": "https://ui-sdk.dev/docs/core",
-      "installPath": "components/ui/rating/index.tsx"
+      "installPath": "components/ui/sdk/rating/index.tsx"
     },
     {
       "name": "async-option-combobox",
-      "installPath": "components/ui/async-option-combobox/index.tsx"
+      "installPath": "components/ui/sdk/async-option-combobox/index.tsx"
     },
     {
       "name": "preferences",
-      "installPath": "components/ui/preferences/index.tsx"
+      "installPath": "components/ui/sdk/preferences/index.tsx"
     }
   ],
   "compositions": [
     {
       "name": "typography",
       "docs": "https://ui.shadcn.com/docs/components/base/typography",
-      "installPath": "components/ui/typography/index.tsx"
+      "installPath": "components/ui/sdk/typography/index.tsx"
     },
     {
       "name": "date-picker",
       "docs": "https://ui.shadcn.com/docs/components/base/date-picker",
-      "installPath": "components/ui/examples/date-picker.tsx"
+      "installPath": "components/ui/sdk/examples/date-picker.tsx"
     },
     {
       "name": "data-table",
       "docs": "https://ui.shadcn.com/docs/components/base/data-table",
-      "installPath": "components/ui/examples/data-table.tsx"
+      "installPath": "components/ui/sdk/examples/data-table.tsx"
     }
   ]
 }

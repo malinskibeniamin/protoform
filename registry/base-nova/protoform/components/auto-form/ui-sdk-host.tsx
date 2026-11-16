@@ -1,22 +1,22 @@
 'use client';
 
 import React from 'react';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert/index';
-import { Button } from '@/components/ui/button/index';
-import { Calendar } from '@/components/ui/calendar/index';
-import { Checkbox } from '@/components/ui/checkbox/index';
-import { Collapsible, CollapsiblePanel, CollapsibleTrigger } from '@/components/ui/collapsible/index';
-import { Field, FieldContent, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field/index';
-import { Input } from '@/components/ui/input/index';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/sdk/alert/index';
+import { Button } from '@/components/ui/sdk/button/index';
+import { Calendar } from '@/components/ui/sdk/calendar/index';
+import { Checkbox } from '@/components/ui/sdk/checkbox/index';
+import { Collapsible, CollapsiblePanel, CollapsibleTrigger } from '@/components/ui/sdk/collapsible/index';
+import { Field, FieldContent, FieldDescription, FieldError, FieldLabel } from '@/components/ui/sdk/field/index';
+import { Input } from '@/components/ui/sdk/input/index';
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupButton,
   InputGroupInput,
   InputGroupText,
-} from '@/components/ui/input-group/index';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover/index';
-import { Radio, RadioGroup, RadioIndicator } from '@/components/ui/radio-group/index';
+} from '@/components/ui/sdk/input-group/index';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/sdk/popover/index';
+import { Radio, RadioGroup, RadioIndicator } from '@/components/ui/sdk/radio-group/index';
 import {
   Select,
   SelectContent,
@@ -26,14 +26,14 @@ import {
   SelectList,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select/index';
-import { Slider } from '@/components/ui/slider/index';
-import { Switch } from '@/components/ui/switch/index';
-import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/tabs/index';
-import { Textarea } from '@/components/ui/textarea/index';
-import { Toggle } from '@/components/ui/toggle/index';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group/index';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip/index';
+} from '@/components/ui/sdk/select/index';
+import { Slider } from '@/components/ui/sdk/slider/index';
+import { Switch } from '@/components/ui/sdk/switch/index';
+import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/sdk/tabs/index';
+import { Textarea } from '@/components/ui/sdk/textarea/index';
+import { Toggle } from '@/components/ui/sdk/toggle/index';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/sdk/toggle-group/index';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/sdk/tooltip/index';
 import { definedProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import type { ProtoformUIComponentMap } from './ui-component-map';
 import type { ProtoformUIProps } from './ui-props';

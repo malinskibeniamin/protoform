@@ -17,8 +17,8 @@ import {
 import { AutoFormFieldComponentRegistry } from '../fields';
 import { formSpacing } from '../form-spacing';
 import { OneofWrapper } from '../renderers/oneof';
+import { shadcnUIComponents } from '../shadcn-ui-components';
 import { Input, ProtoformUIProvider } from '../ui-components';
-import { uiSdkComponents } from '../ui-sdk-components';
 
 function withAutoFormContext(children: React.ReactNode) {
   const value: AutoFormContextValue = {
@@ -40,7 +40,7 @@ function withAutoFormContext(children: React.ReactNode) {
     },
   };
   return (
-    <ProtoformUIProvider components={uiSdkComponents}>
+    <ProtoformUIProvider components={shadcnUIComponents}>
       <AutoFormContext.Provider value={value}>{children}</AutoFormContext.Provider>
     </ProtoformUIProvider>
   );
@@ -206,10 +206,11 @@ describe('fieldWrapper', () => {
 
     const helpButton = screen.getByRole('button', { name: 'Help for Name' });
     expect(helpButton.className).toContain('focus-visible:ring-3');
+    expect(helpButton).toHaveAttribute('data-slot', 'help-trigger');
     expect(helpButton.querySelector('svg')).toHaveAttribute('fill', 'none');
     expect(screen.getByTestId('test-field-name')).toHaveAttribute('data-layout', 'split');
     expect(screen.getByRole('button', { name: 'Help for Replicas' })).toBeVisible();
-    expect(screen.getByText('Choose between 1 and 12 replicas.')).not.toBeVisible();
+    expect(screen.queryByText('Choose between 1 and 12 replicas.')).not.toBeInTheDocument();
   });
 });
 
@@ -227,7 +228,7 @@ describe('arrayWrapper', () => {
     unmount();
 
     render(
-      <ProtoformUIProvider components={uiSdkComponents}>
+      <ProtoformUIProvider components={shadcnUIComponents}>
         <ArrayElementWrapper index={0} onRemove={() => undefined} testId="item-0">
           first
         </ArrayElementWrapper>

@@ -1,14 +1,14 @@
 import { renderElement } from '@ui-sdk/react/primitive';
 import { type ComponentProps, type CSSProperties, type MouseEvent, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { AlertDialog, AlertDialogClose, AlertDialogContent, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogClose, DialogContent, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Resizable, ResizableHandle, ResizablePanel } from '@/components/ui/resizable';
-import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Slider, SliderControl, SliderIndicator, SliderThumb, SliderTrack } from '@/components/ui/slider';
-import { Toggle } from '@/components/ui/toggle';
-import { AutoForm } from '@/registry/base-nova/protoform/components/auto-form';
+import { AlertDialog, AlertDialogClose, AlertDialogContent, AlertDialogTitle } from '@/components/ui/sdk/alert-dialog';
+import { AutoForm } from '@/components/ui/sdk/auto-form';
+import { Button } from '@/components/ui/sdk/button';
+import { Dialog, DialogClose, DialogContent, DialogTitle, DialogTrigger } from '@/components/ui/sdk/dialog';
+import { Resizable, ResizableHandle, ResizablePanel } from '@/components/ui/sdk/resizable';
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sdk/sheet';
+import { Slider, SliderControl, SliderIndicator, SliderThumb, SliderTrack } from '@/components/ui/sdk/slider';
+import { Toggle } from '@/components/ui/sdk/toggle';
 import type { SchemaProvider } from '@/registry/base-nova/protoform/components/auto-form/core-types';
 
 const schema: SchemaProvider = {

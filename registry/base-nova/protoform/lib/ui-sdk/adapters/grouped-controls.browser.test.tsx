@@ -4,8 +4,8 @@ import { expect, test } from '@rstest/core';
 import { createDrawerController } from '@ui-sdk/core/drawer';
 import { createElement, useState } from 'react';
 import { renderToString } from 'react-dom/server';
-import { Button } from '@/components/ui/button';
-import { Checkbox, CheckboxGroup } from '@/components/ui/checkbox';
+import { Button } from '@/components/ui/sdk/button';
+import { Checkbox, CheckboxGroup } from '@/components/ui/sdk/checkbox';
 import {
   Command,
   CommandEmpty,
@@ -14,7 +14,7 @@ import {
   CommandItemText,
   CommandList,
   CommandPage,
-} from '@/components/ui/command';
+} from '@/components/ui/sdk/command';
 import {
   Drawer,
   DrawerClose,
@@ -23,10 +23,10 @@ import {
   DrawerOutlet,
   DrawerTitle,
   DrawerTrigger,
-} from '@/components/ui/drawer';
-import { OTPInput, OTPInputGroup, OTPInputSlot } from '@/components/ui/input-otp';
-import { Radio, RadioGroup } from '@/components/ui/radio-group';
-import { Toggle, ToggleGroup } from '@/components/ui/toggle';
+} from '@/components/ui/sdk/drawer';
+import { OTPInput, OTPInputGroup, OTPInputSlot } from '@/components/ui/sdk/input-otp';
+import { Radio, RadioGroup } from '@/components/ui/sdk/radio-group';
+import { Toggle, ToggleGroup } from '@/components/ui/sdk/toggle';
 import { definedProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 import { createAgentSession } from '@/registry/base-nova/protoform/lib/ui-sdk/session';
 

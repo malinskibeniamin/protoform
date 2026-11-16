@@ -4,10 +4,10 @@ import { expect, test } from '@rstest/core';
 import { stageChanges } from '@ui-sdk/react/history';
 import { type ObservedChange, observe } from '@ui-sdk/react/observe';
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Rating, RatingStar } from '@/components/ui/rating';
-import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/sdk/button';
+import { Input } from '@/components/ui/sdk/input';
+import { Rating, RatingStar } from '@/components/ui/sdk/rating';
+import { Textarea } from '@/components/ui/sdk/textarea';
 import { createAgentSession } from './session';
 
 function Controls() {

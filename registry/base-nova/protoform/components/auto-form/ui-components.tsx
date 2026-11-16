@@ -15,7 +15,12 @@ export function ProtoformUIProvider({
   children: React.ReactNode;
   components: ProtoformUIComponentMap;
 }) {
-  return <ProtoformUIContext.Provider value={components}>{children}</ProtoformUIContext.Provider>;
+  const Provider = components.Provider ?? React.Fragment;
+  return (
+    <ProtoformUIContext.Provider value={components}>
+      <Provider>{children}</Provider>
+    </ProtoformUIContext.Provider>
+  );
 }
 
 export function useProtoformUIComponents(): ProtoformUIComponentMap {

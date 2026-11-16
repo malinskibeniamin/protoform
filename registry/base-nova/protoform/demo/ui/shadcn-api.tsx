@@ -3,12 +3,12 @@
 import { RotateCcwIcon } from 'lucide-react';
 import { useId, useState } from 'react';
 
-import { Alert, AlertAction, AlertDescription, AlertTitle } from '@/components/ui/alert/index';
-import { Badge } from '@/components/ui/badge/index';
-import { Button } from '@/components/ui/button/index';
-import { ChartStyle } from '@/components/ui/chart/index';
-import { Checkbox } from '@/components/ui/checkbox/index';
-import { Collapsible, CollapsiblePanel, CollapsibleTrigger } from '@/components/ui/collapsible/index';
+import { Alert, AlertAction, AlertDescription, AlertTitle } from '@/components/ui/sdk/alert/index';
+import { Badge } from '@/components/ui/sdk/badge/index';
+import { Button } from '@/components/ui/sdk/button/index';
+import { ChartStyle } from '@/components/ui/sdk/chart/index';
+import { Checkbox } from '@/components/ui/sdk/checkbox/index';
+import { Collapsible, CollapsiblePanel, CollapsibleTrigger } from '@/components/ui/sdk/collapsible/index';
 import {
   Combobox,
   ComboboxChip,
@@ -21,8 +21,8 @@ import {
   ComboboxList,
   ComboboxValue,
   OptionCombobox,
-} from '@/components/ui/combobox/index';
-import { Field, FieldLabel } from '@/components/ui/field/index';
+} from '@/components/ui/sdk/combobox/index';
+import { Field, FieldLabel } from '@/components/ui/sdk/field/index';
 import {
   Popover,
   PopoverContent,
@@ -30,7 +30,7 @@ import {
   PopoverHeader,
   PopoverTitle,
   PopoverTrigger,
-} from '@/components/ui/popover/index';
+} from '@/components/ui/sdk/popover/index';
 import {
   Select,
   SelectContent,
@@ -38,10 +38,10 @@ import {
   SelectList,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select/index';
-import { Slider } from '@/components/ui/slider/index';
-import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/tabs/index';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group/index';
+} from '@/components/ui/sdk/select/index';
+import { Slider } from '@/components/ui/sdk/slider/index';
+import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/sdk/tabs/index';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/sdk/toggle-group/index';
 
 export const client = 'only';
 

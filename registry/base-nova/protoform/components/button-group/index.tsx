@@ -1,8 +1,9 @@
 'use client';
 
-import { mergeProps, type PartProps, renderElement } from '@ui-sdk/react/primitive';
+import { mergeProps } from '@base-ui/react/merge-props';
+import { useRender } from '@base-ui/react/use-render';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { Separator } from '@/components/ui/separator/index';
+import { Separator } from '@/components/ui/separator';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
 
 const buttonGroupVariants = cva(
@@ -26,37 +27,34 @@ function ButtonGroup({
   orientation = 'horizontal',
   render,
   ...props
-}: PartProps<'div'> & VariantProps<typeof buttonGroupVariants>) {
-  return renderElement(
-    'div',
-    {
-      ...mergeProps({ role: 'group', className: cn(buttonGroupVariants({ orientation }), className) }, props),
+}: useRender.ComponentProps<'div'> & VariantProps<typeof buttonGroupVariants>) {
+  return useRender({
+    defaultTagName: 'div',
+    render,
+    props: {
+      ...mergeProps<'div'>({ role: 'group', className: cn(buttonGroupVariants({ orientation }), className) }, props),
       'data-orientation': orientation,
       'data-slot': 'button-group',
     },
-    render
-  );
+  });
 }
-function ButtonGroupText({ className, render, ...props }: PartProps<'div'>) {
-  return renderElement(
-    'div',
-    {
-      ...mergeProps(
-        {
-          className: cn(
-            "flex items-center gap-2 rounded-lg border bg-muted px-2.5 text-sm font-medium [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4",
-            className
-          ),
-        },
-        props
-      ),
-      'data-slot': 'button-group-text',
-    },
+function ButtonGroupText({ className, render, ...props }: useRender.ComponentProps<'div'>) {
+  return useRender({
+    defaultTagName: 'div',
+    props: mergeProps<'div'>(
+      {
+        className: cn(
+          "flex items-center gap-2 rounded-lg border bg-muted px-2.5 text-sm font-medium [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4",
+          className
+        ),
+      },
+      props
+    ),
     render,
-    {
+    state: {
       slot: 'button-group-text',
-    }
-  );
+    },
+  });
 }
 function ButtonGroupSeparator({
   className,

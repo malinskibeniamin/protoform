@@ -1,0 +1,407 @@
+{
+  "upstream": {
+    "repository": "https://github.com/shadcn-ui/ui",
+    "revision": "ba1503c64472b82256d9de95e2e62c5901a38e8b",
+    "catalog": "https://ui.shadcn.com/docs/components",
+    "style": "base-nova",
+    "retrieved": "2026-10-21",
+    "excluded": "Legacy sonner is not in the current Base UI catalog; AI Elements, blocks and other primitive families are separate."
+  },
+  "components": [
+    {
+      "name": "accordion",
+      "path": "apps/v4/registry/bases/base/ui/accordion.tsx",
+      "blob": "182ccd8e3e872fc0b0a24bb72c0469b6a5857b16",
+      "installPath": "components/ui/accordion/index.tsx"
+    },
+    {
+      "name": "alert",
+      "path": "apps/v4/registry/bases/base/ui/alert.tsx",
+      "blob": "e9aa02f381ef6e588cfb57696f76703c0f7c4ceb",
+      "installPath": "components/ui/alert/index.tsx"
+    },
+    {
+      "name": "alert-dialog",
+      "path": "apps/v4/registry/bases/base/ui/alert-dialog.tsx",
+      "blob": "ab1dc757812bf207ee16691f265470b78ce56d40",
+      "installPath": "components/ui/alert-dialog/index.tsx"
+    },
+    {
+      "name": "aspect-ratio",
+      "path": "apps/v4/registry/bases/base/ui/aspect-ratio.tsx",
+      "blob": "ebe2783654a6ce3240b2bd3a4bdb80b07c26cf8f",
+      "installPath": "components/ui/aspect-ratio/index.tsx"
+    },
+    {
+      "name": "attachment",
+      "path": "apps/v4/registry/bases/base/ui/attachment.tsx",
+      "blob": "be31b4b73bb15e7e080e0b63681a8cae1793261e",
+      "installPath": "components/ui/attachment/index.tsx"
+    },
+    {
+      "name": "avatar",
+      "path": "apps/v4/registry/bases/base/ui/avatar.tsx",
+      "blob": "d46f2e9392747cd065e6e760092a7a2b500b4634",
+      "installPath": "components/ui/avatar/index.tsx"
+    },
+    {
+      "name": "badge",
+      "path": "apps/v4/registry/bases/base/ui/badge.tsx",
+      "blob": "10a7f676f81090c851211f363057238d5906e2ca",
+      "installPath": "components/ui/badge/index.tsx"
+    },
+    {
+      "name": "breadcrumb",
+      "path": "apps/v4/registry/bases/base/ui/breadcrumb.tsx",
+      "blob": "e0a0a2f1f55e4bba083ddf7a44f85bd34ce91804",
+      "installPath": "components/ui/breadcrumb/index.tsx"
+    },
+    {
+      "name": "bubble",
+      "path": "apps/v4/registry/bases/base/ui/bubble.tsx",
+      "blob": "0b5a88bcce7ee588094c255e823d69950f841138",
+      "installPath": "components/ui/bubble/index.tsx"
+    },
+    {
+      "name": "button",
+      "path": "apps/v4/registry/bases/base/ui/button.tsx",
+      "blob": "2007374034d564bb926915baa057e500cab631a4",
+      "installPath": "components/ui/button/index.tsx"
+    },
+    {
+      "name": "button-group",
+      "path": "apps/v4/registry/bases/base/ui/button-group.tsx",
+      "blob": "9bdfea8e85060ffbc302fab7dad64ca761b4b073",
+      "installPath": "components/ui/button-group/index.tsx"
+    },
+    {
+      "name": "calendar",
+      "path": "apps/v4/registry/bases/base/ui/calendar.tsx",
+      "blob": "568ab9fd00a03d1651d1b42cb8915eed282cf1a4",
+      "installPath": "components/ui/calendar/index.tsx"
+    },
+    {
+      "name": "card",
+      "path": "apps/v4/registry/bases/base/ui/card.tsx",
+      "blob": "2062884f29a8044fa48edf86605182eca29f8716",
+      "installPath": "components/ui/card/index.tsx"
+    },
+    {
+      "name": "carousel",
+      "path": "apps/v4/registry/bases/base/ui/carousel.tsx",
+      "blob": "67bb25fa3ad927545ee1b80189cd7e9c9c3ca96a",
+      "installPath": "components/ui/carousel/index.tsx"
+    },
+    {
+      "name": "chart",
+      "path": "apps/v4/registry/bases/base/ui/chart.tsx",
+      "blob": "fa460c956066fbc5720ebe4203ba7353628201d5",
+      "installPath": "components/ui/chart/index.tsx"
+    },
+    {
+      "name": "checkbox",
+      "path": "apps/v4/registry/bases/base/ui/checkbox.tsx",
+      "blob": "ecf58adc56fd11b95c5962e3e6482fad5c27ebb1",
+      "installPath": "components/ui/checkbox/index.tsx"
+    },
+    {
+      "name": "code-block",
+      "path": "apps/v4/registry/bases/base/ui/code-block.tsx",
+      "blob": "ecb191d6122e9011a6cf2b172bf283f2e1524341",
+      "installPath": "components/ui/code-block/index.tsx"
+    },
+    {
+      "name": "collapsible",
+      "path": "apps/v4/registry/bases/base/ui/collapsible.tsx",
+      "blob": "488fb33af5107a94791ef3235ee58861e3ed6855",
+      "installPath": "components/ui/collapsible/index.tsx"
+    },
+    {
+      "name": "combobox",
+      "path": "apps/v4/registry/bases/base/ui/combobox.tsx",
+      "blob": "8fc7ae799f00cec1cf4efa6ab8509717f64a7a91",
+      "installPath": "components/ui/combobox/index.tsx"
+    },
+    {
+      "name": "command",
+      "path": "apps/v4/registry/bases/base/ui/command.tsx",
+      "blob": "21dd5593478db868a6a566af6b2914fd1dfbc96f",
+      "installPath": "components/ui/command/index.tsx"
+    },
+    {
+      "name": "context-menu",
+      "path": "apps/v4/registry/bases/base/ui/context-menu.tsx",
+      "blob": "3fc2b82c358ed8f592a6a13539bb051c9d978d19",
+      "installPath": "components/ui/context-menu/index.tsx"
+    },
+    {
+      "name": "dialog",
+      "path": "apps/v4/registry/bases/base/ui/dialog.tsx",
+      "blob": "8c68524ade906dc3754769729ae3cbcb1b9d7b55",
+      "installPath": "components/ui/dialog/index.tsx"
+    },
+    {
+      "name": "direction",
+      "path": "apps/v4/registry/bases/base/ui/direction.tsx",
+      "blob": "d8cf134614ac38b4fbc6c902e6e2cf770ba389c1",
+      "installPath": "components/ui/direction/index.tsx"
+    },
+    {
+      "name": "drawer",
+      "path": "apps/v4/registry/bases/base/ui/drawer.tsx",
+      "blob": "bebe3a912626745d7567982acd7b2465504e59c1",
+      "installPath": "components/ui/drawer/index.tsx"
+    },
+    {
+      "name": "dropdown-menu",
+      "path": "apps/v4/registry/bases/base/ui/dropdown-menu.tsx",
+      "blob": "4c4543e2954441c012d3a7dc1d850e99613f5651",
+      "installPath": "components/ui/dropdown-menu/index.tsx"
+    },
+    {
+      "name": "empty",
+      "path": "apps/v4/registry/bases/base/ui/empty.tsx",
+      "blob": "6a49a9813c02e2ce2548402e1a63b05de550bace",
+      "installPath": "components/ui/empty/index.tsx"
+    },
+    {
+      "name": "field",
+      "path": "apps/v4/registry/bases/base/ui/field.tsx",
+      "blob": "d58e0d29dbfe52053a21eff0b837f571b278f1ef",
+      "installPath": "components/ui/field/index.tsx"
+    },
+    {
+      "name": "hover-card",
+      "path": "apps/v4/registry/bases/base/ui/hover-card.tsx",
+      "blob": "f76bbaa239c8907d8935521f20e940bb4e3a40ff",
+      "installPath": "components/ui/hover-card/index.tsx"
+    },
+    {
+      "name": "input",
+      "path": "apps/v4/registry/bases/base/ui/input.tsx",
+      "blob": "06c96abffafcd0fbbedb24778f0c2f668e1b2109",
+      "installPath": "components/ui/input/index.tsx"
+    },
+    {
+      "name": "input-group",
+      "path": "apps/v4/registry/bases/base/ui/input-group.tsx",
+      "blob": "cb328462c7c372f1b22342b25d396704d87247c1",
+      "installPath": "components/ui/input-group/index.tsx"
+    },
+    {
+      "name": "input-otp",
+      "path": "apps/v4/registry/bases/base/ui/input-otp.tsx",
+      "blob": "9680970c7bfcf40588b8c69123b2d02a1e2699b6",
+      "installPath": "components/ui/input-otp/index.tsx"
+    },
+    {
+      "name": "item",
+      "path": "apps/v4/registry/bases/base/ui/item.tsx",
+      "blob": "ebdb220dcada0975388fbf2b095b1db61c5d8413",
+      "installPath": "components/ui/item/index.tsx"
+    },
+    {
+      "name": "kbd",
+      "path": "apps/v4/registry/bases/base/ui/kbd.tsx",
+      "blob": "1fc8d9c188183e3df985d9a1f454ca692186790f",
+      "installPath": "components/ui/kbd/index.tsx"
+    },
+    {
+      "name": "label",
+      "path": "apps/v4/registry/bases/base/ui/label.tsx",
+      "blob": "3b0886ba1826c80e7c6e0c22b699a43cb6df5bc9",
+      "installPath": "components/ui/label/index.tsx"
+    },
+    {
+      "name": "marker",
+      "path": "apps/v4/registry/bases/base/ui/marker.tsx",
+      "blob": "4fcf772c96f7649cea01ad6f7a688a521a817a42",
+      "installPath": "components/ui/marker/index.tsx"
+    },
+    {
+      "name": "menubar",
+      "path": "apps/v4/registry/bases/base/ui/menubar.tsx",
+      "blob": "ac05ba9b8ef04ea55c038d8b6eb244a8c0f323ef",
+      "installPath": "components/ui/menubar/index.tsx"
+    },
+    {
+      "name": "message",
+      "path": "apps/v4/registry/bases/base/ui/message.tsx",
+      "blob": "ae7aef393f0714997c632fdac0755ce9d830f965",
+      "installPath": "components/ui/message/index.tsx"
+    },
+    {
+      "name": "message-scroller",
+      "path": "apps/v4/registry/bases/base/ui/message-scroller.tsx",
+      "blob": "37268f119d3298c7c428bda0751c2af32f0ada9e",
+      "installPath": "components/ui/message-scroller/index.tsx"
+    },
+    {
+      "name": "native-select",
+      "path": "apps/v4/registry/bases/base/ui/native-select.tsx",
+      "blob": "273a3bc8ea586d4d525c7d3da108c65810894e93",
+      "installPath": "components/ui/native-select/index.tsx"
+    },
+    {
+      "name": "navigation-menu",
+      "path": "apps/v4/registry/bases/base/ui/navigation-menu.tsx",
+      "blob": "54bf3f8c29ab48b087a62dce4bcbe8ede7ab6418",
+      "installPath": "components/ui/navigation-menu/index.tsx"
+    },
+    {
+      "name": "pagination",
+      "path": "apps/v4/registry/bases/base/ui/pagination.tsx",
+      "blob": "b1f8b1df96e8a29f8f799c190cf545544607d2a5",
+      "installPath": "components/ui/pagination/index.tsx"
+    },
+    {
+      "name": "popover",
+      "path": "apps/v4/registry/bases/base/ui/popover.tsx",
+      "blob": "808aa62dc13b4b9c37efbe9c676c09b8e06c0738",
+      "installPath": "components/ui/popover/index.tsx"
+    },
+    {
+      "name": "progress",
+      "path": "apps/v4/registry/bases/base/ui/progress.tsx",
+      "blob": "43df6eb11e1c55ad939e24dc408042efa6fe8f93",
+      "installPath": "components/ui/progress/index.tsx"
+    },
+    {
+      "name": "questionnaire",
+      "path": "apps/v4/registry/bases/base/ui/questionnaire.tsx",
+      "blob": "59de4ea25facd1a4514a192eb08d6fe7987ca14e",
+      "installPath": "components/ui/questionnaire/index.tsx"
+    },
+    {
+      "name": "radio-group",
+      "path": "apps/v4/registry/bases/base/ui/radio-group.tsx",
+      "blob": "1293df6fbc4dde4dcd15cb60aacb734031844164",
+      "installPath": "components/ui/radio-group/index.tsx"
+    },
+    {
+      "name": "resizable",
+      "path": "apps/v4/registry/bases/base/ui/resizable.tsx",
+      "blob": "76d7a0e2dc9e2ea70b7d01bc286f7cde64fbe6c8",
+      "installPath": "components/ui/resizable/index.tsx"
+    },
+    {
+      "name": "scroll-area",
+      "path": "apps/v4/registry/bases/base/ui/scroll-area.tsx",
+      "blob": "a7acc33718ff8d558e276048c9cc191d8d0d5b2b",
+      "installPath": "components/ui/scroll-area/index.tsx"
+    },
+    {
+      "name": "select",
+      "path": "apps/v4/registry/bases/base/ui/select.tsx",
+      "blob": "2cb76c117197336324cfaed1300e92ca65273b40",
+      "installPath": "components/ui/select/index.tsx"
+    },
+    {
+      "name": "separator",
+      "path": "apps/v4/registry/bases/base/ui/separator.tsx",
+      "blob": "d69c13426761105ab42e5a6bd364dc54bd70f78c",
+      "installPath": "components/ui/separator/index.tsx"
+    },
+    {
+      "name": "sheet",
+      "path": "apps/v4/registry/bases/base/ui/sheet.tsx",
+      "blob": "72669ad9cb812dcbf389f8be6e8157eaa8023479",
+      "installPath": "components/ui/sheet/index.tsx"
+    },
+    {
+      "name": "sidebar",
+      "path": "apps/v4/registry/bases/base/ui/sidebar.tsx",
+      "blob": "1ca3356406a02d78b828f8ade02a420f19b40e55",
+      "installPath": "components/ui/sidebar/index.tsx"
+    },
+    {
+      "name": "skeleton",
+      "path": "apps/v4/registry/bases/base/ui/skeleton.tsx",
+      "blob": "0439455a951949f8a75be48fa2c8b8e9f3d8b0f2",
+      "installPath": "components/ui/skeleton/index.tsx"
+    },
+    {
+      "name": "slider",
+      "path": "apps/v4/registry/bases/base/ui/slider.tsx",
+      "blob": "2e55a9a0fc07b66fc86ce1df33c86c2501939088",
+      "installPath": "components/ui/slider/index.tsx"
+    },
+    {
+      "name": "spinner",
+      "path": "apps/v4/registry/bases/base/ui/spinner.tsx",
+      "blob": "2a91bf988618e87a3698133b0bd971a00ec3f61b",
+      "installPath": "components/ui/spinner/index.tsx"
+    },
+    {
+      "name": "switch",
+      "path": "apps/v4/registry/bases/base/ui/switch.tsx",
+      "blob": "753fd22a92536c103d3ff4c4c6171d48f428ead7",
+      "installPath": "components/ui/switch/index.tsx"
+    },
+    {
+      "name": "table",
+      "path": "apps/v4/registry/bases/base/ui/table.tsx",
+      "blob": "160cf7aa14b8467a777eb2405053d2d968f641b9",
+      "installPath": "components/ui/table/index.tsx"
+    },
+    {
+      "name": "tabs",
+      "path": "apps/v4/registry/bases/base/ui/tabs.tsx",
+      "blob": "2b39bbfe73883fcb8a6630e0d6af953ed0b08f49",
+      "installPath": "components/ui/tabs/index.tsx"
+    },
+    {
+      "name": "textarea",
+      "path": "apps/v4/registry/bases/base/ui/textarea.tsx",
+      "blob": "8b8d3f1c6cc7c66c2fab2e050164f355a655b6c9",
+      "installPath": "components/ui/textarea/index.tsx"
+    },
+    {
+      "name": "toast",
+      "path": "apps/v4/registry/bases/base/ui/toast.tsx",
+      "blob": "0c9dfc0a76eeacfde789c4beed5f4eea2666c686",
+      "installPath": "components/ui/toast/index.tsx"
+    },
+    {
+      "name": "toggle",
+      "path": "apps/v4/registry/bases/base/ui/toggle.tsx",
+      "blob": "b058b4d0e74ccc7de2258b63a77f0136bb391b11",
+      "installPath": "components/ui/toggle/index.tsx"
+    },
+    {
+      "name": "toggle-group",
+      "path": "apps/v4/registry/bases/base/ui/toggle-group.tsx",
+      "blob": "f2d9475eaaa1132ea00efd113a415dac46cd2bb3",
+      "installPath": "components/ui/toggle-group/index.tsx"
+    },
+    {
+      "name": "tooltip",
+      "path": "apps/v4/registry/bases/base/ui/tooltip.tsx",
+      "blob": "8fbd22dacb65913e7e31cde7ad800dce6f889116",
+      "installPath": "components/ui/tooltip/index.tsx"
+    },
+    {
+      "name": "trace",
+      "path": "apps/v4/registry/bases/base/ui/trace.tsx",
+      "blob": "dd8676567bd72d32ba695470e797eaf8c66af900",
+      "installPath": "components/ui/trace/index.tsx"
+    }
+  ],
+  "compositions": [
+    {
+      "name": "typography",
+      "docs": "https://ui.shadcn.com/docs/components/base/typography",
+      "installPath": "components/ui/typography/index.tsx"
+    },
+    {
+      "name": "date-picker",
+      "docs": "https://ui.shadcn.com/docs/components/base/date-picker",
+      "installPath": "components/ui/examples/date-picker.tsx"
+    },
+    {
+      "name": "data-table",
+      "docs": "https://ui.shadcn.com/docs/components/base/data-table",
+      "installPath": "components/ui/examples/data-table.tsx"
+    }
+  ]
+}

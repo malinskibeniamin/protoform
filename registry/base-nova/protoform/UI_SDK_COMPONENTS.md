@@ -3,6 +3,10 @@
 `@protoform/protoform-ui-sdk` installs themed React controls built on
 `@ui-sdk/react` and `@ui-sdk/core`, pinned to `0.1.0-beta.5`.
 UI SDK is beta: review upgrades and copied source before adopting another release.
+This is an opt-in enhancement bundle. Base UI remains the default control foundation; the
+form core remains UI-independent. SDK controls install to the configured UI alias under `sdk/`.
+Use the SDK AutoForm entrypoint or pass its component map explicitly. SDK sessions expose
+SDK controls only; they do not automatically add agent actions to Base UI controls.
 
 ## Beta.5 update
 
@@ -16,9 +20,10 @@ Regression tests exercise these changes through Protoform's controls and opt-in 
 The documented renderer exceptions remain reproduced on beta.5; no private API or package patch is introduced.
 External validation ownership, semantic-token styling, and explicit preference/agent enablement are unchanged.
 
-## Breaking migration
+## Explicit SDK APIs
 
-This bundle replaces `protoform-shadcn`; it is not shadcn/Base UI API-compatible.
+This bundle sits alongside `protoform-shadcn`; it does not replace or overwrite it.
+Its APIs are SDK-native rather than shadcn/Base UI-compatible.
 The source-distribution mechanism is still the shadcn registry CLI.
 Existing theme tokens, protobuf conversion, validation, form engines, and the UI-independent
 host entrypoint remain separate from UI implementation.
@@ -109,7 +114,8 @@ The agent marks constrain the UI SDK bridge, not arbitrary same-origin code or b
 
 ## Owned React adapters
 
-The agreed boundary is React rendering owned by Protoform over upstream public core component primitives, not locally rewritten state/behavior compositions. Adapter source lives in `lib/ui-sdk/adapters`; semantic-token styling stays in the component modules.
+The agreed boundary is React rendering owned by Protoform over upstream public core component primitives, not locally rewritten state/behavior compositions. Adapter source lives in `lib/ui-sdk/adapters`; semantic-token styling lives in `registry/ui-sdk/protoform/components`.
+Default Base UI controls live separately under `registry/base-nova/protoform/components`.
 
 The first group covers Accordion, Avatar, Button, Calendar, Carousel, Collapsible, Dialog, AlertDialog, HoverCard, Input, Label, Popover, Progress, Resizable, ScrollArea, Separator, Slider, Switch, Tabs, and Textarea. Text adapters forward their initial values into native React markup as well as core options. Switch renders the core's native form input beside—not inside—its button. Plain Button bridges React events and asynchronous actions to the core's own pending-action API.
 

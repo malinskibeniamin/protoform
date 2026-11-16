@@ -1,6 +1,7 @@
 'use client';
 
-import { mergeProps, type PartProps, renderElement } from '@ui-sdk/react/primitive';
+import { mergeProps } from '@base-ui/react/merge-props';
+import { useRender } from '@base-ui/react/use-render';
 import { cva, type VariantProps } from 'class-variance-authority';
 import type React from 'react';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
@@ -23,30 +24,26 @@ function Marker({
   variant = 'default',
   render,
   ...props
-}: PartProps<'div'> & VariantProps<typeof markerVariants>) {
-  return renderElement(
-    'div',
-    {
-      ...mergeProps(
-        {
-          className: cn(
-            markerVariants({
-              variant,
-              className,
-            })
-          ),
-        },
-        props
-      ),
-      'data-slot': 'marker',
-      'data-variant': variant,
-    },
+}: useRender.ComponentProps<'div'> & VariantProps<typeof markerVariants>) {
+  return useRender({
+    defaultTagName: 'div',
+    props: mergeProps<'div'>(
+      {
+        className: cn(
+          markerVariants({
+            variant,
+            className,
+          })
+        ),
+      },
+      props
+    ),
     render,
-    {
+    state: {
       slot: 'marker',
       variant,
-    }
-  );
+    },
+  });
 }
 function MarkerIcon({ className, ...props }: React.ComponentProps<'span'>) {
   return (

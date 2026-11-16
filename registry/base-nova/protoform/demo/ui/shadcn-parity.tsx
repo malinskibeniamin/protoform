@@ -1,5 +1,5 @@
 import { lazy, Suspense, useId } from 'react';
-import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/tabs/index';
+import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/sdk/tabs/index';
 import { FoundationExamples } from './parity-foundations';
 import { OverlayExamples } from './parity-overlays';
 

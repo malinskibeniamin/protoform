@@ -1,23 +1,63 @@
-import { expect, test } from '@rstest/core';
+import { describe, expect, test } from '@rstest/core';
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { Tabs, TabsList, TabsPanel, TabsTab } from '.';
+import React from 'react';
 
-test('navigates native SDK tabs and links their panels', async () => {
-  const user = userEvent.setup();
-  render(
-    <Tabs defaultValue="one">
-      <TabsList aria-label="Sections">
-        <TabsTab value="one">One</TabsTab>
-        <TabsTab value="two">Two</TabsTab>
+import { Tabs, TabsList, TabsTrigger } from './index';
+
+function Example({ columns }: { columns: number }) {
+  return (
+    <Tabs defaultValue="first">
+      <TabsList aria-label="Sections" columns={columns} layout="equal">
+        <TabsTrigger value="first">First</TabsTrigger>
+        <TabsTrigger value="second">Second</TabsTrigger>
       </TabsList>
-      <TabsPanel value="one">First panel</TabsPanel>
-      <TabsPanel value="two">Second panel</TabsPanel>
     </Tabs>
   );
-  await user.click(screen.getByRole('tab', { name: 'One' }));
-  await user.keyboard('{ArrowRight}');
-  expect(screen.getByRole('tab', { name: 'Two' })).toHaveFocus();
-  expect(screen.getByRole('tab', { name: 'Two' })).toHaveAttribute('aria-selected', 'true');
-  expect(screen.getByRole('tabpanel', { name: 'Two' })).toHaveTextContent('Second panel');
+}
+
+describe('tabsList equal layout', () => {
+  test('preserves data attributes for non-string tab values', () => {
+    render(
+      <Tabs defaultValue>
+        <TabsList aria-label="Boolean values">
+          <TabsTrigger value>Enabled</TabsTrigger>
+          <TabsTrigger value={false}>Disabled</TabsTrigger>
+        </TabsList>
+      </Tabs>
+    );
+    expect(screen.getByRole('tab', { name: 'Enabled' })).toHaveAttribute('data-value', 'true');
+  });
+
+  test('resolves shadcn style callbacks together with column metadata', () => {
+    render(
+      <Tabs defaultValue="one">
+        {React.createElement(
+          TabsList,
+          {
+            'aria-label': 'State styles',
+            className: (state) => (state.orientation === 'horizontal' ? 'horizontal-list' : 'vertical-list'),
+            columns: 2,
+            style: (state) => ({ opacity: state.orientation === 'horizontal' ? 1 : 0.5 }),
+          },
+          <TabsTrigger value="one">One</TabsTrigger>
+        )}
+      </Tabs>
+    );
+    expect(screen.getByRole('tablist', { name: 'State styles' })).toHaveClass('horizontal-list');
+    expect(screen.getByRole('tablist', { name: 'State styles' })).toHaveStyle({ opacity: '1', '--tabs-columns': '2' });
+  });
+
+  test('applies the requested column count and updates it', () => {
+    const { rerender } = render(<Example columns={2} />);
+
+    expect(screen.getByRole('tablist', { name: 'Sections' })).toHaveStyle({
+      '--tabs-columns': '2',
+    });
+
+    rerender(<Example columns={3} />);
+
+    expect(screen.getByRole('tablist', { name: 'Sections' })).toHaveStyle({
+      '--tabs-columns': '3',
+    });
+  });
 });

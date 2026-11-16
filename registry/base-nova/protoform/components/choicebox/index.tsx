@@ -1,10 +1,13 @@
+import { Radio as RadioGroupPrimitive } from '@base-ui/react/radio';
 import { Circle } from 'lucide-react';
 import { AnimatePresence, motion, type Transition } from 'motion/react';
 import { type ComponentProps, forwardRef, type HTMLAttributes } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, type CardProps, CardTitle } from '@/components/ui/card/index';
-import { RadioGroup } from '@/components/ui/radio-group/index';
-import { RadioIndicator, Radio as RadioPrimitive } from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-radio';
+
+import { Card, CardContent, CardDescription, CardHeader, type CardProps, CardTitle } from '@/components/ui/card';
+import { RadioGroup } from '@/components/ui/radio-group';
+import { renderWithDataState } from '@/registry/base-nova/protoform/lib/base-ui-compat';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
+
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
 const DEFAULT_TRANSITION = { damping: 16, stiffness: 200, type: 'spring' } satisfies Transition;
@@ -12,25 +15,31 @@ const DEFAULT_TRANSITION = { damping: 16, stiffness: 200, type: 'spring' } satis
 export type ChoiceboxProps = ComponentProps<typeof RadioGroup> & SharedProps;
 
 export const Choicebox = ({ className, testId, ...props }: ChoiceboxProps) => (
-  <RadioGroup className={cn('w-full', className)} data-testid={testId ?? props['data-testid']} {...props} />
+  <RadioGroup className={cn('w-full', className)} data-testid={testId} {...props} />
 );
 
-export type ChoiceboxItemProps = ComponentProps<typeof RadioPrimitive> & SharedProps & Partial<Pick<CardProps, 'size'>>;
+export type ChoiceboxItemProps = ComponentProps<typeof RadioGroupPrimitive.Root> &
+  SharedProps &
+  Partial<Pick<CardProps, 'size'>>;
 
 export const ChoiceboxItem = forwardRef<HTMLButtonElement, ChoiceboxItemProps>(
   ({ className, children, testId, size, ...props }, ref) => (
-    <RadioPrimitive {...props} className="group" ref={ref}>
-      {(state) => (
-        <Card
-          className={cn('flex cursor-pointer flex-row items-start justify-between text-left', className)}
-          data-testid={testId ?? props['data-testid']}
-          size={size}
-          variant="choice"
-        >
-          {[children].map((content) => (typeof content === 'function' ? content(state) : content))}
-        </Card>
-      )}
-    </RadioPrimitive>
+    <RadioGroupPrimitive.Root
+      {...props}
+      className="group"
+      nativeButton
+      ref={ref}
+      render={renderWithDataState('button')}
+    >
+      <Card
+        className={cn('flex cursor-pointer flex-row items-start justify-between text-left', className)}
+        data-testid={testId}
+        size={size}
+        variant="choice"
+      >
+        {children}
+      </Card>
+    </RadioGroupPrimitive.Root>
   )
 );
 
@@ -66,7 +75,7 @@ export const ChoiceboxItemContent = ({ className, ...props }: ChoiceboxItemConte
   <CardContent className={className} variant="selection-indicator" {...props} />
 );
 
-export type ChoiceboxItemIndicatorProps = ComponentProps<typeof RadioIndicator> & {
+export type ChoiceboxItemIndicatorProps = ComponentProps<typeof RadioGroupPrimitive.Indicator> & {
   transition?: Transition;
 };
 
@@ -75,7 +84,7 @@ export const ChoiceboxItemIndicator = ({
   transition = DEFAULT_TRANSITION,
   ...props
 }: ChoiceboxItemIndicatorProps) => (
-  <RadioIndicator
+  <RadioGroupPrimitive.Indicator
     className={cn('flex items-center justify-center data-[unchecked]:hidden', className)}
     data-slot="radio-group-indicator"
     {...props}
@@ -92,5 +101,5 @@ export const ChoiceboxItemIndicator = ({
         <Circle className="size-2.5 fill-current text-current" />
       </motion.div>
     </AnimatePresence>
-  </RadioIndicator>
+  </RadioGroupPrimitive.Indicator>
 );

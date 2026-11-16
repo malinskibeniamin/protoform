@@ -1,8 +1,8 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 import React from 'react';
-import { definedProps } from '@/registry/base-nova/protoform/lib/sdk-props';
-import { Textarea as SDKTextarea } from '@/registry/base-nova/protoform/lib/ui-sdk/adapters/core-textarea';
+
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
+
 import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
 
 const textareaVariants = cva(
@@ -34,26 +34,12 @@ const textareaVariants = cva(
 
 interface TextareaProps extends React.ComponentProps<'textarea'>, VariantProps<typeof textareaVariants>, SharedProps {}
 
-function TextareaPrimitive({
-  value,
-  defaultValue,
-  onSubmit: _onSubmit,
-  ...props
-}: React.ComponentProps<'textarea'> & { onValueChange?: React.ComponentProps<typeof SDKTextarea>['onValueChange'] }) {
-  return (
-    <SDKTextarea
-      {...definedProps(props)}
-      {...(value === undefined ? {} : { value: String(value) })}
-      {...(defaultValue === undefined ? {} : { defaultValue: String(defaultValue) })}
-    />
-  );
-}
 const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
   ({ className, size, resize, variant, testId, ...props }, ref) => (
-    <TextareaPrimitive
+    <textarea
       className={cn(textareaVariants({ resize, size, variant }), className)}
       data-slot="textarea"
-      data-testid={testId ?? props['data-testid']}
+      data-testid={testId}
       ref={ref}
       {...props}
     />

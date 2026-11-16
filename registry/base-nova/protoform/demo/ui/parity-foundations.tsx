@@ -1,7 +1,7 @@
 import { CheckIcon, FileTextIcon, FolderIcon } from 'lucide-react';
 import { useId, useState } from 'react';
-import { AspectRatio } from '@/components/ui/aspect-ratio/index';
-import { Avatar, AvatarBadge, AvatarFallback, AvatarGroup, AvatarGroupCount } from '@/components/ui/avatar/index';
+import { AspectRatio } from '@/components/ui/sdk/aspect-ratio/index';
+import { Avatar, AvatarBadge, AvatarFallback, AvatarGroup, AvatarGroupCount } from '@/components/ui/sdk/avatar/index';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -9,9 +9,9 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb/index';
-import { Button } from '@/components/ui/button/index';
-import { ButtonGroup } from '@/components/ui/button-group/index';
+} from '@/components/ui/sdk/breadcrumb/index';
+import { Button } from '@/components/ui/sdk/button/index';
+import { ButtonGroup } from '@/components/ui/sdk/button-group/index';
 import {
   Empty,
   EmptyContent,
@@ -19,8 +19,8 @@ import {
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
-} from '@/components/ui/empty/index';
-import { OTPInput, OTPInputGroup, OTPInputSeparator, OTPInputSlot } from '@/components/ui/input-otp/index';
+} from '@/components/ui/sdk/empty/index';
+import { OTPInput, OTPInputGroup, OTPInputSeparator, OTPInputSlot } from '@/components/ui/sdk/input-otp/index';
 import {
   Item,
   ItemActions,
@@ -29,19 +29,19 @@ import {
   ItemGroup,
   ItemMedia,
   ItemTitle,
-} from '@/components/ui/item/index';
-import { Kbd, KbdGroup } from '@/components/ui/kbd/index';
-import { Label } from '@/components/ui/label/index';
-import { Marker, MarkerContent, MarkerIcon } from '@/components/ui/marker/index';
-import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select/index';
+} from '@/components/ui/sdk/item/index';
+import { Kbd, KbdGroup } from '@/components/ui/sdk/kbd/index';
+import { Label } from '@/components/ui/sdk/label/index';
+import { Marker, MarkerContent, MarkerIcon } from '@/components/ui/sdk/marker/index';
+import { NativeSelect, NativeSelectOption } from '@/components/ui/sdk/native-select/index';
 import {
   Progress,
   ProgressIndicator,
   ProgressLabel,
   ProgressTrack,
   ProgressValue,
-} from '@/components/ui/progress/index';
-import { Skeleton } from '@/components/ui/skeleton/index';
+} from '@/components/ui/sdk/progress/index';
+import { Skeleton } from '@/components/ui/sdk/skeleton/index';
 import { ParitySection } from './parity-shared';
 
 export function FoundationExamples({ headingId }: { headingId: string }) {

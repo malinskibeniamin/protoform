@@ -15,10 +15,14 @@ the fixtures and local registry port are shared. `--host-only` skips the older b
 
 The host fixture uses `new-york`, an independently configured `@host` registry namespace, and
 separate nested aliases for UI, components, hooks, and library files. Before installing Protoform,
-it records the contents of the existing UI SDK control files, the host stylesheet, utilities, and
-`components.json`. After installation it verifies byte equality and that no extra primitives appeared.
+it first installs Base UI defaults, records their control files and default AutoForm entrypoint,
+then adds the isolated SDK bundle and checks byte equality. It records both foundations, the host
+stylesheet, utilities, and `components.json` before installing the SDK host map and agent helper,
+and verifies that no existing control changed and no extra primitives appeared. The primary
+consumer checks the reverse order: adding Base UI after SDK must leave SDK files unchanged.
 It then typechecks and server-renders the installed AutoForm, not repository source aliases.
-The other fixtures typecheck core-only and themed UI SDK installs, including the experimental form engines.
+The other fixtures typecheck core-only and themed SDK installs, plus Base UI-backed alternate
+form engines. The SDK agent workbench must first install and import in a clean consumer without Base UI.
 
 ## Browser coverage
 
@@ -59,4 +63,20 @@ Previous screenshot baselines must be reviewed against the current native UI SDK
 
 The installed `ui-sdk-agent-workbench` example runs at `/agent.html` in the full consumer fixture. `scripts/agent-consumer.browser.spec.ts` covers explicit enablement, snapshot/query/act, controlled callback cancellation, custom primitive actions, secret/hidden marks, human approval and rejection, actual AutoForm validation/submission, asynchronous source propagation, staging/revert, seek/replay, source-specific undo, and repeated session disposal. A browser-provided WebMCP registration spy must remain untouched. `e2e/agent-workbench.spec.ts` separately exercises the built Blume example at 1280px, 390px, and 320px in light/dark modes: the docs preview's intrinsic sizing must not widen the page, even after long snapshot output, and approval controls must remain in the viewport.
 
-`registry/base-nova/protoform/components/rating/rating.browser.test.tsx` exercises the framework-free primitive with SDK `mount`, `checkPattern`, `checkServer`, and `checkDirection`, including strict SDK warnings, keyboard selection, announcements, argument bounds, and cancellation. `lib/ui-sdk/session.browser.test.tsx` tests the application's policy/lifecycle seam, not a reimplementation of SDK internals. UI history does not undo submitted side effects.
+`registry/ui-sdk/protoform/components/rating/rating.browser.test.tsx` exercises the framework-free primitive with SDK `mount`, `checkPattern`, `checkServer`, and `checkDirection`, including strict SDK warnings, keyboard selection, announcements, argument bounds, and cancellation. `lib/ui-sdk/session.browser.test.tsx` tests the application's policy/lifecycle seam, not a reimplementation of SDK internals. UI history does not undo submitted side effects.
+
+## Default and optional foundation isolation
+
+`registry/ui-foundations.integration.test.ts` builds actual module graphs: default AutoForm must
+include Base UI without SDK, explicit SDK AutoForm must include SDK without Base UI, and the
+headless core and host must include neither. The Base UI map supplies its tooltip provider through
+the optional renderer-map `Provider`; a regression test preserves input identity and edits across
+map updates.
+
+`ui-foundations` installs a real default Base UI form beside an explicitly enabled SDK rating.
+`scripts/foundations-consumer.browser.spec.ts` exercises the installed example in both host-browser
+profiles; `e2e/ui-foundations.spec.ts` checks the built docs example at 1280px, 390px, and 320px in
+light/dark modes. They cover invalid submission and recovery, Base UI selection and saved values,
+SDK agent read-back, refusal to edit the Base UI form, SDK-only history undo, and stop/re-enable.
+SDK actions do not automatically cover Base UI controls. Keep each control and nested popup flow
+on one foundation; cross-library shortcuts and modal coordination remain application-owned.

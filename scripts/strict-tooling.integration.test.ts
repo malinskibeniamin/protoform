@@ -153,7 +153,7 @@ const {} = {};
         { encoding: 'utf8', timeout: 10_000 }
       );
       expect(valid.error).toBeUndefined();
-      expect(valid.status).toBe(0);
+      expect(valid.status, valid.stdout + valid.stderr).toBe(0);
     } finally {
       rmSync(directory, { recursive: true, force: true });
     }
@@ -193,7 +193,7 @@ export function Field() {
       const valid = spawnSync(resolve('node_modules/.bin/biome'), args, { encoding: 'utf8', timeout: 10_000 });
       expect(valid.error).toBeUndefined();
       expect(valid.stdout + valid.stderr).not.toContain('lint/a11y/noLabelWithoutControl');
-      expect(valid.status).toBe(0);
+      expect(valid.status, valid.stdout + valid.stderr).toBe(0);
     } finally {
       rmSync(directory, { recursive: true, force: true });
     }

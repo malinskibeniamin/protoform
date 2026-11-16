@@ -1,6 +1,7 @@
 'use client';
 
-import { mergeProps, type PartProps, renderElement } from '@ui-sdk/react/primitive';
+import { mergeProps } from '@base-ui/react/merge-props';
+import { useRender } from '@base-ui/react/use-render';
 import { ChevronRightIcon, MoreHorizontalIcon } from 'lucide-react';
 import type React from 'react';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
@@ -20,23 +21,20 @@ function BreadcrumbList({ className, ...props }: React.ComponentProps<'ol'>) {
 function BreadcrumbItem({ className, ...props }: React.ComponentProps<'li'>) {
   return <li className={cn('inline-flex items-center gap-1', className)} data-slot="breadcrumb-item" {...props} />;
 }
-function BreadcrumbLink({ className, render, ...props }: PartProps<'a'>) {
-  return renderElement(
-    'a',
-    {
-      ...mergeProps(
-        {
-          className: cn('transition-colors hover:text-foreground', className),
-        },
-        props
-      ),
-      'data-slot': 'breadcrumb-link',
-    },
+function BreadcrumbLink({ className, render, ...props }: useRender.ComponentProps<'a'>) {
+  return useRender({
+    defaultTagName: 'a',
+    props: mergeProps<'a'>(
+      {
+        className: cn('transition-colors hover:text-foreground', className),
+      },
+      props
+    ),
     render,
-    {
+    state: {
       slot: 'breadcrumb-link',
-    }
-  );
+    },
+  });
 }
 function BreadcrumbPage({ className, ...props }: React.ComponentProps<'span'>) {
   return (
