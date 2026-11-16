@@ -21,7 +21,8 @@ test('starts a real server and closes it after the run', async () => {
       timeout: 5000,
     },
   ]);
-  expect(await (await fetch(url)).text()).toBe('ready');
+  const response1 = await fetch(url);
+  expect(await response1.text()).toBe('ready');
   await close();
   await expect(fetch(url)).rejects.toThrow();
 });
@@ -56,7 +57,8 @@ test('closes descendants even when their parent exits first during shutdown', { 
       timeout: 5000,
     },
   ]);
-  const descendantPid = Number(await (await fetch(url)).text());
+  const response2 = await fetch(url);
+  const descendantPid = Number(await response2.text());
   try {
     await close();
     await expect(fetch(url)).rejects.toThrow();
@@ -78,7 +80,8 @@ test('accepts a vanished process group reported as EPERM without hiding live per
       timeout: 5000,
     },
   ]);
-  const pid = Number(await (await fetch(url)).text());
+  const response3 = await fetch(url);
+  const pid = Number(await response3.text());
   const kill = process.kill.bind(process);
   const denied = Object.assign(new Error('kill EPERM'), { code: 'EPERM' });
   let probePermissionFailure = false;
@@ -90,7 +93,8 @@ test('accepts a vanished process group reported as EPERM without hiding live per
   });
   try {
     await expect(close()).rejects.toThrow(`kill EPERM; live test-server group ${pid}:`);
-    expect(await (await fetch(url)).text()).toBe(String(pid));
+    const response4 = await fetch(url);
+    expect(await response4.text()).toBe(String(pid));
     signal.mockImplementation((target, action) => {
       if (target === -pid && action === 0) {
         probePermissionFailure = true;
@@ -120,7 +124,8 @@ test('retries a transient permission response while still closing the owned serv
       timeout: 5000,
     },
   ]);
-  const pid = Number(await (await fetch(url)).text());
+  const response5 = await fetch(url);
+  const pid = Number(await response5.text());
   const kill = process.kill.bind(process);
   let pending = true;
   const signal = rs.spyOn(process, 'kill').mockImplementation((target, action) => {

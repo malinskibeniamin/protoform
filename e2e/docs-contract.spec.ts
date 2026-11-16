@@ -15,7 +15,8 @@ test('publishes every permanent legacy redirect without losing its fragment', as
   expect(new Set(redirects.map((redirect) => redirect.from)).size).toBe(redirects.length);
   const rulesResponse = await request.get('/_redirects');
   expect(rulesResponse.ok()).toBe(true);
-  const rules = (await rulesResponse.text()).trim().split('\n');
+  const responseText1 = await rulesResponse.text();
+  const rules = responseText1.trim().split('\n');
   for (const redirect of demoRedirects) {
     const from = `/docs${redirect.from}`;
     const to = `/docs${redirect.to}`;
@@ -28,7 +29,8 @@ test('publishes every permanent legacy redirect without losing its fragment', as
       const to = `/docs/protobuf-examples${extension}`;
       expect(redirects).toContainEqual({ from, status: 308, to });
       expect(rules).toContain(`${from} ${to} 308`);
-      expect((await request.get(to)).ok()).toBe(true);
+      const resolvedValues2 = await request.get(to);
+      expect(resolvedValues2.ok()).toBe(true);
     })
   );
 });
@@ -109,7 +111,8 @@ test('publishes complete search assets for every configured language', async ({ 
     ['pagefind.js', 'wasm.en.pagefind', 'wasm.pl.pagefind', 'wasm.unknown.pagefind'].map(async (asset) => {
       const response = await request.get(`/pagefind/${asset}`);
       expect(response.ok()).toBe(true);
-      expect((await response.body()).byteLength, asset).toBeGreaterThan(0);
+      const responseBody3 = await response.body();
+      expect(responseBody3.byteLength, asset).toBeGreaterThan(0);
     })
   );
 });
@@ -117,7 +120,7 @@ test('publishes complete search assets for every configured language', async ({ 
 for (const locale of ['en', 'zh', 'zh-TW', 'pl']) {
   for (const hub of demoHubs) {
     test(`serves machine-readable ${hub.slug} for ${locale}`, async ({ request }) => {
-      const localePrefix = locale === 'en' ? '' : locale.concat('/');
+      const localePrefix = locale === 'en' ? '' : `${locale}/`;
       const route = `/docs/${localePrefix}${hub.slug}`;
       const response = await request.get(`/api/docs/pages${route}.json`);
       expect(response.ok()).toBe(true);
@@ -128,7 +131,8 @@ for (const locale of ['en', 'zh', 'zh-TW', 'pl']) {
       expect(page.route).toBe(route);
       const markdown = await request.get(`${route}.md`);
       expect(markdown.ok()).toBe(true);
-      expect((await markdown.text()).trim().length).toBeGreaterThan(0);
+      const responseText4 = await markdown.text();
+      expect(responseText4.trim().length).toBeGreaterThan(0);
     });
   }
 }

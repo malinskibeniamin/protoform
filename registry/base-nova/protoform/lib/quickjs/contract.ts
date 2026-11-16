@@ -69,12 +69,13 @@ function copyObject(
     throw new Error('Invalid or oversized snapshot object');
   }
   const result: Record<string, QuickJsValue> = {};
-  for (const key of keys.sort((a, b) => {
+  keys.sort((a, b) => {
     if (a < b) {
       return -1;
     }
     return a > b ? 1 : 0;
-  })) {
+  });
+  for (const key of keys) {
     spendText(budget, key.length);
     if (reservedNames.has(key) || key === '$typeName' || key === '$unknown') {
       throw new Error('Reserved snapshot property');
@@ -162,7 +163,8 @@ export function parseQuickJsRequest(value: unknown): QuickJsRequest {
   }
   const fields: string[] = [];
   const allowedFields = new Set<string>();
-  for (const field of value['fields']) {
+  const requestedFields = value['fields'];
+  for (const field of requestedFields) {
     if (typeof field !== 'string' || !fieldName.test(field) || reservedNames.has(field) || allowedFields.has(field)) {
       throw new Error('Invalid or duplicate field name');
     }

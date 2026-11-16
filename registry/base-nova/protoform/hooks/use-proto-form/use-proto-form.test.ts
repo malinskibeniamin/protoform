@@ -220,7 +220,7 @@ describe('useProtoForm — createMessage', () => {
     const editedBytes = toBinary(AutoFormExampleSchema, message);
     expect(message.age).toBe(26);
     expect(message.$unknown).toEqual(parsedDefaultValues.$unknown);
-    expect(Array.from(editedBytes.slice(-unknownFieldBytes.length))).toEqual(unknownFieldBytes);
+    expect([...editedBytes].slice(-unknownFieldBytes.length)).toEqual(unknownFieldBytes);
   });
 
   test('builds a protobuf message from current form values', () => {

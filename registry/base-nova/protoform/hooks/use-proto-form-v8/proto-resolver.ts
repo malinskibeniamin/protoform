@@ -46,14 +46,15 @@ function validateFieldsNatively(errors: Record<string, FieldError>, options: Res
       validateFieldNatively(field.ref, path, errors);
       continue;
     }
-    for (const ref of field?.refs ?? []) {
+    const fieldRefs = field?.refs ?? [];
+    for (const ref of fieldRefs) {
       validateFieldNatively(ref, path, errors);
     }
   }
 }
 
 function isFieldArrayRoot(names: string[], path: string): boolean {
-  const escapedPath = path.replaceAll(/[[\]]/gu, '').replaceAll(/[.*+?^${}()|[\]\\]/gu, '\\$&');
+  const escapedPath = path.replaceAll(/[[\]]/gu, '').replaceAll(/[.*+?^${}()|[\]\\]/gu, String.raw`\$&`);
   return names.some((name) => new RegExp(`^${escapedPath}\\.\\d+`, 'u').exec(name.replaceAll(/[[\]]/gu, '')));
 }
 

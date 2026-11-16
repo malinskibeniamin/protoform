@@ -6,7 +6,7 @@ import type { ProtoformUIProps } from './ui-props';
 
 export type { ComboboxOption, ProtoformUIComponentMap } from './ui-component-map';
 
-const ProtoformUIContext = React.createContext<ProtoformUIComponentMap | undefined>(undefined);
+const ProtoformUiContext = React.createContext<ProtoformUIComponentMap | undefined>(undefined);
 
 export function ProtoformUIProvider({
   children,
@@ -15,11 +15,11 @@ export function ProtoformUIProvider({
   children: React.ReactNode;
   components: ProtoformUIComponentMap;
 }) {
-  return <ProtoformUIContext.Provider value={components}>{children}</ProtoformUIContext.Provider>;
+  return <ProtoformUiContext.Provider value={components}>{children}</ProtoformUiContext.Provider>;
 }
 
 export function useProtoformUIComponents(): ProtoformUIComponentMap {
-  const components = React.use(ProtoformUIContext);
+  const components = React.use(ProtoformUiContext);
   if (components === undefined) {
     throw new Error('ProtoformUIProvider is required to render Protoform controls.');
   }

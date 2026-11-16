@@ -166,6 +166,39 @@ export function safeNarrow(value: unknown) {
 
 test.each([
   {
+    path: 'scripts/biome-hardening-probe.ts',
+    group: 'complexity',
+    rule: 'useMaxParams',
+    invalid:
+      'export function collect(a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number) { return [a, b, c, d, e, f, g, h]; }',
+    valid:
+      'export function collect(a: number, b: number, c: number, d: number, e: number, f: number, g: number) { return [a, b, c, d, e, f, g]; }',
+  },
+  {
+    path: 'scripts/biome-hardening-probe.ts',
+    group: 'style',
+    rule: 'useGlobalThis',
+    invalid: 'export const location = window.location;',
+    valid: 'export const location = globalThis.window.location;',
+  },
+  {
+    path: 'components/biome-hardening-probe.tsx',
+    group: 'nursery',
+    rule: 'useReactNamingConvention',
+    invalid: "import { useRef } from 'react'; export function useValue() { const value = useRef(0); return value; }",
+    valid:
+      "import { useRef } from 'react'; export function useValue() { const valueRef = useRef(0); return valueRef; }",
+  },
+  {
+    path: 'scripts/biome-hardening-probe.ts',
+    group: 'nursery',
+    rule: 'noUnreadableForOfExpression',
+    invalid:
+      'export function visit(values: string[] | undefined) { for (const value of values ?? []) { console.log(value); } }',
+    valid:
+      'export function visit(values: string[] | undefined) { const selected = values ?? []; for (const value of selected) { console.log(value); } }',
+  },
+  {
     path: 'scripts/biome-patch-probe.ts',
     group: 'nursery',
     rule: 'noInvalidFetchOptions',

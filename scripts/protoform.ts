@@ -71,16 +71,17 @@ async function loadAuditTargets(configPath: string): Promise<AutoFormAuditTarget
   const candidate: unknown =
     ('default' in module ? module.default : undefined) ?? ('auditTargets' in module ? module.auditTargets : undefined);
   if (!(Array.isArray(candidate) && candidate.every(isAuditTarget))) {
-    throw new TypeError(configPath.concat(' must export an AutoFormAuditTarget array as default or auditTargets.'));
+    throw new TypeError(`${configPath} must export an AutoFormAuditTarget array as default or auditTargets.`);
   }
   return candidate;
 }
 
 export async function runProtoformCli(arguments_: readonly string[]): Promise<0 | 1> {
   const parsed = parseProtoformCliArguments(arguments_);
-  const targets = (await Promise.all(parsed.configPaths.map(loadAuditTargets))).flat();
+  const resolvedValues1 = await Promise.all(parsed.configPaths.map(loadAuditTargets));
+  const targets = resolvedValues1.flat();
   const report = auditAutoFormConfigurations(targets);
-  process.stdout.write(formatAutoFormAuditReport(report, parsed.format).concat('\n'));
+  process.stdout.write(`${formatAutoFormAuditReport(report, parsed.format)}\n`);
   return report.diagnostics.some((diagnostic) => diagnostic.severity === 'error') ? 1 : 0;
 }
 
@@ -90,7 +91,7 @@ if (import.meta.main) {
       process.exitCode = exitCode;
     })
     .catch((error: unknown) => {
-      process.stderr.write((error instanceof Error ? error.message : String(error)).concat('\n'));
+      process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
       process.exitCode = 1;
     });
 }

@@ -79,7 +79,7 @@ function requirementExplanation(requirement: ReadinessRequirement): string {
 }
 
 export function ReadinessDashboard() {
-  const categoryIdPrefix = useId();
+  const categoryPrefixId = useId();
   const categoryReadinessHeadingId = useId();
   const capabilityLedgerHeadingId = useId();
   const readinessSearchId = useId();
@@ -308,9 +308,9 @@ export function ReadinessDashboard() {
                 return null;
               }
               return (
-                <section aria-labelledby={`${categoryIdPrefix}-${category.id}`} key={category.id}>
+                <section aria-labelledby={`${categoryPrefixId}-${category.id}`} key={category.id}>
                   <div className="mb-3 flex flex-wrap items-baseline justify-between gap-3 border-b pb-2">
-                    <h3 className="m-0 text-xl font-semibold" id={`${categoryIdPrefix}-${category.id}`}>
+                    <h3 className="m-0 text-xl font-semibold" id={`${categoryPrefixId}-${category.id}`}>
                       {category.title}
                     </h3>
                     <a

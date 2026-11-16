@@ -6,9 +6,8 @@ import type { AutoFormFormRenderProps } from '../auto-form-core';
 
 type FormValues = Record<string, unknown>;
 
-export type AutoFormSubmissionProps = Omit<FormProps<FormValues>, 'children' | 'control' | 'render'> & {
-  [attribute: `data-${string}`]: string | number | boolean | undefined;
-};
+export type AutoFormSubmissionProps = Omit<FormProps<FormValues>, 'children' | 'control' | 'render'> &
+  Record<`data-${string}`, string | number | boolean | undefined>;
 
 class RejectedAutoFormSubmissionError extends Error {
   override name = 'RejectedAutoFormSubmissionError';
@@ -26,7 +25,7 @@ export function ReactHookFormSubmission({
   options,
 }: AutoFormFormRenderProps & { options: AutoFormSubmissionProps }) {
   const form = useFormContext<FormValues, unknown, FormValues>();
-  const inFlight = useRef<boolean>(false);
+  const inFlightRef = useRef<boolean>(false);
   const mounted = useSyncExternalStore(
     subscribeToHydration,
     () => true,
@@ -70,14 +69,14 @@ export function ReactHookFormSubmission({
           noValidate={options.noValidate ?? mounted}
           onSubmit={async (event) => {
             event.preventDefault();
-            if (inFlight.current) {
+            if (inFlightRef.current) {
               return;
             }
-            inFlight.current = true;
+            inFlightRef.current = true;
             await Promise.resolve(submit(event))
               .catch(reportSubmissionError)
               .finally(() => {
-                inFlight.current = false;
+                inFlightRef.current = false;
               });
           }}
         >

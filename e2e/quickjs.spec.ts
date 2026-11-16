@@ -8,7 +8,7 @@ test('real WASM worker rejects runaway code, bounded memory pressure, and recurs
   page,
 }) => {
   const result = await page.evaluate(async () => {
-    const { evaluateQuickJsInWorker } = window.__protoformQuickJs;
+    const { evaluateQuickJsInWorker } = globalThis.window.__protoformQuickJs;
     const request = {
       fields: ['kind', 'company'],
       source: 'form => ({fields:{company:{visible:form.kind === "business"}}})',
@@ -28,10 +28,9 @@ test('real WASM worker rejects runaway code, bounded memory pressure, and recurs
         '() => {const data = new ArrayBuffer(40 * 1024 * 1024); return {fields:{company:{visible:data.byteLength > 0}}}}',
         '() => {const recurse = () => recurse() + 1; return {fields:{company:{visible:recurse() > 0}}}}',
       ].map((source) =>
-        evaluateQuickJsInWorker({ ...request, source }).then(
-          () => false,
-          () => true
-        )
+        evaluateQuickJsInWorker({ ...request, source })
+          .then(() => false)
+          .catch(() => true)
       )
     );
     await frame;
@@ -48,20 +47,19 @@ test('real WASM worker rejects runaway code, bounded memory pressure, and recurs
 
 test('cancellation and watchdog terminate unfinished workers', async ({ page }) => {
   const messages = await page.evaluate(async () => {
-    const { evaluateQuickJsInWorker } = window.__protoformQuickJs;
+    const { evaluateQuickJsInWorker } = globalThis.window.__protoformQuickJs;
     const request = { fields: [], source: '() => ({fields:{}})', values: {} };
     const controller = new AbortController();
     const running = evaluateQuickJsInWorker(request, { signal: controller.signal });
     controller.abort();
-    const cancelled = await running.then(
-      () => 'unexpected success',
-      (error: unknown) => {
+    const cancelled = await running
+      .then(() => 'unexpected success')
+      .catch((error: unknown) => {
         if (!(error instanceof Error)) {
           throw error;
         }
         return error.message;
-      }
-    );
+      });
     const timedOut = await evaluateQuickJsInWorker(request, {
       createWorker: () => {
         const url = URL.createObjectURL(new Blob(['onmessage = () => {};'], { type: 'text/javascript' }));
@@ -70,15 +68,14 @@ test('cancellation and watchdog terminate unfinished workers', async ({ page }) 
         return worker;
       },
       timeoutMs: 25,
-    }).then(
-      () => 'unexpected success',
-      (error: unknown) => {
+    })
+      .then(() => 'unexpected success')
+      .catch((error: unknown) => {
         if (!(error instanceof Error)) {
           throw error;
         }
         return error.message;
-      }
-    );
+      });
     return [cancelled, timedOut];
   });
   expect(messages).toEqual(['QuickJS evaluation cancelled', 'QuickJS worker timed out']);
@@ -88,7 +85,7 @@ test('controller preserves drafts through repeated worker failures and gates exa
   page,
 }) => {
   const result = await page.evaluate(async () => {
-    const { createQuickJsController } = window.__protoformQuickJs;
+    const { createQuickJsController } = globalThis.window.__protoformQuickJs;
     const controller = createQuickJsController();
     const request = {
       fields: ['kind', 'company'],
@@ -141,7 +138,7 @@ test('controller preserves drafts through repeated worker failures and gates exa
 
 test('form bindings cross the real worker with nested values, metadata, and failure recovery', async ({ page }) => {
   const result = await page.evaluate(async () => {
-    const { createQuickJsFormRequest, createQuickJsController } = window.__protoformQuickJs;
+    const { createQuickJsFormRequest, createQuickJsController } = globalThis.window.__protoformQuickJs;
     const request = createQuickJsFormRequest({
       schema: {
         fields: [
@@ -193,7 +190,7 @@ test('form bindings cross the real worker with nested values, metadata, and fail
 test('order review aggregates duplicate lines against form-shaped inventory in the real worker', async ({ page }) => {
   const result = await page.evaluate(async () => {
     const { createQuickJsFormRequest, createQuickJsController, orderReviewRule, quickJsFieldConfig } =
-      window.__protoformQuickJs;
+      globalThis.window.__protoformQuickJs;
     const values = {
       backorderNote: 'Retain this draft',
       customerToken: 'host-only',

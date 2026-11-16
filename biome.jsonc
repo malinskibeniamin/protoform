@@ -173,7 +173,8 @@
         "useFlatMap": "error",
         "useIndexOf": "error",
         "useLiteralKeys": "off",
-        "useMaxParams": "off",
+        // Bound internal APIs without rewriting stable protobuf/UI callback contracts.
+        "useMaxParams": { "level": "error", "options": { "max": 7 } },
         "useNumericLiterals": "error",
         "useOptionalChain": "error",
         "useRegexLiterals": "error",
@@ -469,8 +470,8 @@
         // Svelte is not used.
         "noSvelteInternal": "off",
         "noTanstackQueryRestDestructuring": "error",
-        // Simple nullish fallbacks and indexed schema fields are readable loop inputs.
-        "noUnreadableForOfExpression": "off",
+        // Name nontrivial iterable expressions before entering a loop.
+        "noUnreadableForOfExpression": "error",
         "noUnsafeReturn": "error",
         "noUselessSplice": "error",
         // Vue is not used.
@@ -571,8 +572,8 @@
         // Preserve the existing host-theme cascade.
         "useLayeredStyles": "off",
         "useModernMathApis": "error",
-        // New naming policy is separate from this dependency upgrade.
-        "useReactNamingConvention": "off",
+        // React contexts, refs and state follow the naming contract of their producing API.
+        "useReactNamingConvention": "error",
         "useVueBaseImport": "error",
         "noBaseToString": "error",
         "noExtendNative": "error",
@@ -634,6 +635,7 @@
         },
         "usePromiseRejectErrors": "error",
         "useReactCompiler": "error",
+        // forwardRef render functions must remain expressions; declarations are enforced elsewhere.
         "useReactFunctionComponentDefinition": "off",
         "useRegexpExec": "error",
         "useStrictBooleanExpressions": "error",
@@ -756,6 +758,7 @@
         "noExportedImports": "error",
         "noHeadElement": "error",
         "noHexColors": "error",
+        // React Doctor requires shorthand true props; enabling the opposite notation creates an unsatisfiable gate.
         "noImplicitBoolean": "off",
         "noIncrementDecrement": "error",
         "noInferrableTypes": "error",
@@ -840,7 +843,7 @@
         },
         "useForOf": "error",
         "useFragmentSyntax": "error",
-        "useGlobalThis": "off",
+        "useGlobalThis": "error",
         "useGraphqlNamingConvention": "error",
         "useGroupedAccessorPairs": "error",
         "useImportType": "error",

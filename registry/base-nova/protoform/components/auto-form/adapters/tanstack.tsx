@@ -123,17 +123,17 @@ function TanStackArrayController({
   const value = useSelector(form.store, (state) => getPathInObject(state.values, name.split('.')));
   const arrayValue: unknown[] = Array.isArray(value) ? value : [];
   const collectionId = React.useId();
-  const nextItemId = React.useRef(0);
-  const keys = React.useRef<string[]>([]);
+  const nextItemIdRef = React.useRef(0);
+  const keysRef = React.useRef<string[]>([]);
 
   React.useEffect(
     function syncArrayKeys() {
-      while (keys.current.length < arrayValue.length) {
-        nextItemId.current += 1;
-        keys.current.push(`${collectionId}-${nextItemId.current}`);
+      while (keysRef.current.length < arrayValue.length) {
+        nextItemIdRef.current += 1;
+        keysRef.current.push(`${collectionId}-${nextItemIdRef.current}`);
       }
-      if (keys.current.length > arrayValue.length) {
-        keys.current.length = arrayValue.length;
+      if (keysRef.current.length > arrayValue.length) {
+        keysRef.current.length = arrayValue.length;
       }
     },
     [arrayValue.length, collectionId]
@@ -141,16 +141,16 @@ function TanStackArrayController({
 
   return children({
     append: (item) => {
-      nextItemId.current += 1;
-      keys.current.push(`${collectionId}-${nextItemId.current}`);
+      nextItemIdRef.current += 1;
+      keysRef.current.push(`${collectionId}-${nextItemIdRef.current}`);
       form.setFieldValue(name, [...arrayValue, item]);
     },
     items: arrayValue.map((item, index) => ({
-      key: keys.current[index] ?? `auto-form-item-${index}`,
+      key: keysRef.current[index] ?? `auto-form-item-${index}`,
       value: item,
     })),
     remove: (index) => {
-      keys.current.splice(index, 1);
+      keysRef.current.splice(index, 1);
       form.setFieldValue(
         name,
         arrayValue.filter((_, itemIndex) => itemIndex !== index)
@@ -290,7 +290,7 @@ export function TanStackEngine({ children, defaultValues, formOptions, values, o
   const cleanValuesRef = React.useRef<FormValues>(defaultValues);
   const [validationErrors, setValidationErrors] = React.useState<SchemaValidationError[]>([]);
   const [submitError, setSubmitError] = React.useState<string>();
-  const fieldRefs = React.useRef(new Map<string, HTMLElement>());
+  const fieldsRef = React.useRef(new Map<string, HTMLElement>());
   const fieldErrors = React.useMemo(() => validationErrorsByPath(validationErrors), [validationErrors]);
   const dirtyFields = dirtyFieldsFromMeta(state.fieldMeta);
   const isDirty = !formValuesEqual(state.values, cleanValuesRef.current);
@@ -340,9 +340,9 @@ export function TanStackEngine({ children, defaultValues, formOptions, values, o
   }, []);
   const registerRef = React.useCallback((name: string, element: HTMLElement | null) => {
     if (element) {
-      fieldRefs.current.set(name, element);
+      fieldsRef.current.set(name, element);
     } else {
-      fieldRefs.current.delete(name);
+      fieldsRef.current.delete(name);
     }
   }, []);
   const contextValue = React.useMemo<TanStackEngineContextValue>(
@@ -357,7 +357,7 @@ export function TanStackEngine({ children, defaultValues, formOptions, values, o
     dirtyFields,
     errors,
     FieldController: TanStackFieldController,
-    focus: (path) => fieldRefs.current.get(path)?.focus(),
+    focus: (path) => fieldsRef.current.get(path)?.focus(),
     getFieldInvalid: (path) =>
       (state.fieldMeta[path]?.errors.length ?? 0) > 0 || (fieldErrors.get(path)?.length ?? 0) > 0,
     getValues: () => form.state.values,
@@ -405,7 +405,7 @@ export function TanStackEngine({ children, defaultValues, formOptions, values, o
     },
     trigger: async (paths) => {
       const results = paths
-        ? await Promise.all(paths.map((path) => form.validateField(path, 'submit')))
+        ? await Promise.all(paths.map(async (path) => form.validateField(path, 'submit')))
         : await form.validateAllFields('submit');
       return results.flat().length === 0;
     },

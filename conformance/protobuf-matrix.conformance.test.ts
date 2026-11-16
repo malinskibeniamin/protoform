@@ -81,7 +81,7 @@ describe('protobuf scalar conformance', () => {
 
     expect(edited.int32Value).toBe(2);
     expect(edited.$unknown).toEqual(parsed.$unknown);
-    expect(Array.from(editedBytes.slice(-unknownFieldBytes.length))).toEqual(unknownFieldBytes);
+    expect([...editedBytes].slice(-unknownFieldBytes.length)).toEqual(unknownFieldBytes);
   });
 
   test('round-trips explicit and implicit boolean values', async () => {
@@ -227,7 +227,7 @@ describe('protobuf collection conformance', () => {
       throw new Error('Expected the repeated scalar matrix to validate.');
     }
     expect(result.value.flags).toEqual([true, false]);
-    expect(result.value.blobs.map((value) => Array.from(value))).toEqual([
+    expect(result.value.blobs.map((value) => [...value])).toEqual([
       [1, 2, 3],
       [4, 5],
     ]);

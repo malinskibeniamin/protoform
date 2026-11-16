@@ -235,10 +235,10 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
   renderForm,
 }: AutoFormContentProps<T, TNativeForm, TCustomFieldType>) {
   const testIdPrefix = resolveAutoFormTestIdPrefix(testId);
-  const submitController = React.useRef<AbortController | undefined>(undefined);
-  const submissionInFlight = React.useRef(false);
-  const validationController = React.useRef<AbortController | undefined>(undefined);
-  const initializedForm = React.useRef<unknown>(undefined);
+  const submitControllerRef = React.useRef<AbortController | undefined>(undefined);
+  const submissionInFlightRef = React.useRef(false);
+  const validationControllerRef = React.useRef<AbortController | undefined>(undefined);
+  const initializedFormRef = React.useRef<unknown>(undefined);
   const advancedFields = mergeFieldOverrides(resolvedSchema.parsedSchema.fields, fieldConfigOverrides);
   const simpleFields = deriveSimpleFields(advancedFields, classifyField);
   const protoMessageUi = resolvedSchema.protoDesc ? getProtoMessageUiConfig(resolvedSchema.protoDesc) : undefined;
@@ -253,10 +253,10 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
   const [currentStepIndex, setCurrentStepIndex] = React.useState(() =>
     stepper ? initialStepIndex(stepper.steps, stepper.defaultStep) : 0
   );
-  const previousStepIndex = React.useRef(currentStepIndex);
+  const previousStepIndexRef = React.useRef(currentStepIndex);
   const [isAdvancing, setIsAdvancing] = React.useState(false);
-  const previousLifecycleValues = React.useRef(engine.values);
-  const hasSubmitted = React.useRef(false);
+  const previousLifecycleValuesRef = React.useRef(engine.values);
+  const hasSubmittedRef = React.useRef(false);
   const submitLabel = formatProtoformMessage(formatMessage, 'auto_form.submit', {}, 'Submit');
   const submittingLabel = formatProtoformMessage(formatMessage, 'auto_form.submitting', {}, 'Submitting…');
 
@@ -265,16 +265,16 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
   }
 
   React.useEffect(() => {
-    if (initializedForm.current !== engine.nativeForm) {
-      initializedForm.current = engine.nativeForm;
+    if (initializedFormRef.current !== engine.nativeForm) {
+      initializedFormRef.current = engine.nativeForm;
       onFormInit?.(engine.nativeForm as TNativeForm);
     }
   }, [engine.nativeForm, onFormInit]);
 
   React.useEffect(function abortAsyncWorkOnUnmount() {
     return () => {
-      submitController.current?.abort();
-      validationController.current?.abort();
+      submitControllerRef.current?.abort();
+      validationControllerRef.current?.abort();
     };
   }, []);
 
@@ -298,21 +298,21 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
   }
 
   function activeValidationMode(): AutoFormValidationMode | AutoFormRevalidationMode {
-    return hasSubmitted.current ? revalidationMode : validationMode;
+    return hasSubmittedRef.current ? revalidationMode : validationMode;
   }
 
   function beginSubmit() {
-    submitController.current?.abort();
-    validationController.current?.abort();
+    submitControllerRef.current?.abort();
+    validationControllerRef.current?.abort();
     const controller = new AbortController();
-    submitController.current = controller;
+    submitControllerRef.current = controller;
     return controller;
   }
 
   function beginValidation() {
-    validationController.current?.abort();
+    validationControllerRef.current?.abort();
     const controller = new AbortController();
-    validationController.current = controller;
+    validationControllerRef.current = controller;
     return controller;
   }
 
@@ -331,11 +331,11 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
   const runLifecycleValidationEffect = React.useEffectEvent(runLifecycleValidation);
 
   React.useEffect(() => {
-    if (previousLifecycleValues.current === engine.values) {
+    if (previousLifecycleValuesRef.current === engine.values) {
       return;
     }
-    previousLifecycleValues.current = engine.values;
-    const lifecycleMode = hasSubmitted.current ? revalidationMode : validationMode;
+    previousLifecycleValuesRef.current = engine.values;
+    const lifecycleMode = hasSubmittedRef.current ? revalidationMode : validationMode;
     if (lifecycleMode === 'change') {
       runLifecycleValidationEffect(engine.values).catch((error: unknown) => {
         engine.setRootError(error instanceof Error ? error.message : 'Validation failed.');
@@ -409,17 +409,17 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
   }
 
   async function handleSubmit(submittedValues: Record<string, unknown>) {
-    if (submissionInFlight.current) {
+    if (submissionInFlightRef.current) {
       return false;
     }
-    submissionInFlight.current = true;
+    submissionInFlightRef.current = true;
     return await runSubmission(submittedValues).finally(() => {
-      submissionInFlight.current = false;
+      submissionInFlightRef.current = false;
     });
   }
 
   async function runSubmission(submittedValues: Record<string, unknown>) {
-    hasSubmitted.current = true;
+    hasSubmittedRef.current = true;
     const controller = beginSubmit();
     engine.clearErrors(['root', PROTO_FORM_ROOT_ERROR_KEY]);
 
@@ -440,7 +440,7 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
   }
 
   function handleStepBack() {
-    validationController.current?.abort();
+    validationControllerRef.current?.abort();
     setIsAdvancing(false);
     setCurrentStepIndex((index) => Math.max(0, index - 1));
   }
@@ -491,7 +491,7 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
   }
 
   function finishStepAdvance(controller: AbortController) {
-    if (validationController.current === controller && !controller.signal.aborted) {
+    if (validationControllerRef.current === controller && !controller.signal.aborted) {
       setIsAdvancing(false);
     }
   }
@@ -532,10 +532,10 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
   }, [advancedFields, currentStepIndex, engine.errors, stepper]);
 
   React.useEffect(() => {
-    if (!stepper || previousStepIndex.current === currentStepIndex) {
+    if (!stepper || previousStepIndexRef.current === currentStepIndex) {
       return;
     }
-    previousStepIndex.current = currentStepIndex;
+    previousStepIndexRef.current = currentStepIndex;
     const step = stepper.steps[currentStepIndex];
     const firstField = step ? fieldsForStep(advancedFields, stepper.steps, step.id)[0] : undefined;
     if (firstField) {

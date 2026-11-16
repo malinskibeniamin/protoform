@@ -116,8 +116,6 @@ function tanStackRegistryWrapper(): string {
   return `${generatedSourceHeader}
 'use client';
 
-export const client = 'only';
-
 import { formatSubmittedValue } from '@/registry/base-nova/protoform/demo/runtime/format-submitted-value';
 import { useId, useState } from 'react';
 
@@ -139,6 +137,8 @@ function errorMessage(error: unknown): string | undefined {
   }
   return undefined;
 }
+
+export const client = 'only';
 
 export function TanstackFormDemo() {
   const emailId = useId();
@@ -214,8 +214,6 @@ function formikRegistryWrapper(): string {
   return `${generatedSourceHeader}
 'use client';
 
-export const client = 'only';
-
 import { createFormikValidator } from '../../lib/core/form-library-adapters';
 import { createProtoFormSchema } from '../../lib/protobuf-provider';
 import { formatSubmittedValue } from '@/registry/base-nova/protoform/demo/runtime/format-submitted-value';
@@ -235,6 +233,8 @@ interface EmailValues {
 
 const schema = createProtoFormSchema<EmailValues, typeof EmailContractSchema>(EmailContractSchema);
 const validate = createFormikValidator(schema);
+
+export const client = 'only';
 
 export function FormikDemo() {
   const emailId = useId();
@@ -293,8 +293,6 @@ function finalFormRegistryWrapper(): string {
   return `${generatedSourceHeader}
 'use client';
 
-export const client = 'only';
-
 import { createFinalFormValidator } from '../../lib/core/form-library-adapters';
 import { createProtoFormSchema } from '../../lib/protobuf-provider';
 import { formatSubmittedValue } from '@/registry/base-nova/protoform/demo/runtime/format-submitted-value';
@@ -314,6 +312,8 @@ interface EmailValues {
 
 const schema = createProtoFormSchema<EmailValues, typeof EmailContractSchema>(EmailContractSchema);
 const validate = createFinalFormValidator(schema);
+
+export const client = 'only';
 
 export function FinalFormDemo() {
   const emailId = useId();
@@ -389,10 +389,10 @@ function reactHookFormRegistryWrapper(demo: DemoCatalogEntry): string {
   return `${generatedSourceHeader}
 'use client';
 
-export const client = 'only';
-
 import { CatalogFormDemo } from '@/registry/base-nova/protoform/demo/runtime/catalog-form-demo';
 ${methodImport}
+
+export const client = 'only';
 
 export function ${wrapperName(demo.slug)}() {
   return <CatalogFormDemo description="${jsxText(demo.tryIt)}"${methodProp} schemaKey="${demo.schemaKey}" />;
@@ -492,7 +492,7 @@ function generateRegistryRuntime(): string[] {
   const schemaKeys = [...new Set(demoCatalog.map((demo) => demo.schemaKey))].toSorted((left, right) =>
     left < right ? -1 : Number(left > right)
   );
-  const schemaType = `export type DemoSchemaKey =\n${schemaKeys
+  const schemaType = `\nexport type DemoSchemaKey =\n${schemaKeys
     .map((key) => `  | ${JSON.stringify(key)}`)
     .join('\n')};`;
   const schemaSource = readFileSync(join(root, 'examples/catalog/demo-schemas.ts'), 'utf8')

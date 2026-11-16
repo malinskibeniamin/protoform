@@ -48,7 +48,8 @@ function checkNoSuppressions(): void {
   const violations: string[] = [];
 
   for (const path of sourceFiles) {
-    for (const directive of findForbiddenDirectives(readFileSync(path, 'utf8'))) {
+    const directives = findForbiddenDirectives(readFileSync(path, 'utf8'));
+    for (const directive of directives) {
       violations.push(`${path}: ${directive}`);
     }
   }
