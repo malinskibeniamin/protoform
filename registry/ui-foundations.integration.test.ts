@@ -4,46 +4,6 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { expect, test } from '@rstest/core';
 import { z } from 'zod';
-import { Alert } from '@/components/ui/alert';
-import { AspectRatio } from '@/components/ui/aspect-ratio';
-import { Card } from '@/components/ui/card';
-import { CopyButton } from '@/components/ui/copy-button';
-import { Empty } from '@/components/ui/empty';
-import { Group } from '@/components/ui/group';
-import { Kbd } from '@/components/ui/kbd';
-import { Message } from '@/components/ui/message';
-import { Alert as SDKAlert } from '@/components/ui/sdk/alert';
-import { AspectRatio as SDKAspectRatio } from '@/components/ui/sdk/aspect-ratio';
-import { Card as SDKCard } from '@/components/ui/sdk/card';
-import { CopyButton as SDKCopyButton } from '@/components/ui/sdk/copy-button';
-import { Empty as SDKEmpty } from '@/components/ui/sdk/empty';
-import { Group as SDKGroup } from '@/components/ui/sdk/group';
-import { Kbd as SDKKbd } from '@/components/ui/sdk/kbd';
-import { Message as SDKMessage } from '@/components/ui/sdk/message';
-import { Skeleton as SDKSkeleton } from '@/components/ui/sdk/skeleton';
-import { Spinner as SDKSpinner } from '@/components/ui/sdk/spinner';
-import { Heading as SDKHeading } from '@/components/ui/sdk/typography';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Spinner } from '@/components/ui/spinner';
-import { Heading } from '@/components/ui/typography';
-
-test('foundation-independent controls share their implementation across both public entrypoints', () => {
-  for (const [base, sdk] of [
-    [Alert, SDKAlert],
-    [AspectRatio, SDKAspectRatio],
-    [Card, SDKCard],
-    [CopyButton, SDKCopyButton],
-    [Empty, SDKEmpty],
-    [Group, SDKGroup],
-    [Kbd, SDKKbd],
-    [Message, SDKMessage],
-    [Skeleton, SDKSkeleton],
-    [Spinner, SDKSpinner],
-    [Heading, SDKHeading],
-  ]) {
-    expect(sdk).toBe(base);
-  }
-});
 
 const metadata = z.object({ inputs: z.record(z.string(), z.unknown()) });
 function packagesFor(entry: string | string[]) {
@@ -73,22 +33,33 @@ test('default AutoForm bundles Base UI but not UI SDK', () => {
   expect(files.some((file) => file.includes('node_modules/@base-ui/'))).toBe(true);
   expect(files.some((file) => file.includes('node_modules/@ui-sdk/'))).toBe(false);
 });
-test('explicit SDK AutoForm bundles UI SDK but not Base UI', () => {
-  const files = packagesFor('registry/ui-sdk/protoform/components/auto-form/index.tsx');
-  expect(files.some((file) => file.includes('node_modules/@ui-sdk/'))).toBe(true);
-  expect(files.some((file) => file.includes('node_modules/@base-ui/'))).toBe(false);
-});
-test.each([
-  ['base-nova', '@base-ui/', '@ui-sdk/'],
-  ['ui-sdk', '@ui-sdk/', '@base-ui/'],
-])('the complete %s catalog preserves its UI engine isolation', (foundation, own, other) => {
-  const root = `registry/${foundation}/protoform/components`;
+test('the entire standard control catalog bundles no SDK runtime', () => {
+  const root = 'registry/base-nova/protoform/components';
   const entries = readdirSync(root, { withFileTypes: true })
-    .filter((entry) => entry.isDirectory())
+    .filter((entry) => entry.isDirectory() && entry.name !== 'auto-form')
     .map((entry) => join(root, entry.name, 'index.tsx'))
-    .filter(existsSync);
-  expect(entries.length).toBeGreaterThan(0);
+    .filter((entry) => existsSync(entry));
+  expect(entries.length).toBeGreaterThan(50);
   const files = packagesFor(entries);
-  expect(files.some((file) => file.includes(`node_modules/${own}`))).toBe(true);
-  expect(files.some((file) => file.includes(`node_modules/${other}`))).toBe(false);
+  expect(files.some((file) => file.includes('node_modules/@base-ui/'))).toBe(true);
+  expect(files.some((file) => file.includes('node_modules/@ui-sdk/'))).toBe(false);
+});
+test('the SDK enhancement namespace contains no parallel replacements for canonical controls', () => {
+  const base = 'registry/base-nova/protoform/components';
+  const sdk = 'registry/ui-sdk/protoform/components';
+  const enhancements = readdirSync(sdk, { withFileTypes: true }).filter((entry) => entry.isDirectory());
+  expect(enhancements.map((entry) => entry.name).sort()).toEqual(['async-option-combobox', 'preferences', 'rating']);
+  for (const entry of enhancements) {
+    expect(existsSync(join(base, entry.name))).toBe(false);
+  }
+});
+
+test('there is no alternate SDK AutoForm or full-catalog registry bundle', () => {
+  const manifest = z
+    .object({ items: z.array(z.object({ name: z.string() })) })
+    .parse(JSON.parse(readFileSync('registry.json', 'utf8')));
+  expect(manifest.items.map((item: { name: string }) => item.name)).not.toContain('protoform-ui-sdk');
+  expect(manifest.items.map((item: { name: string }) => item.name)).not.toContain('protoform-ui-sdk-tanstack');
+  expect(manifest.items.map((item: { name: string }) => item.name)).not.toContain('protoform-ui-sdk-host');
+  expect(existsSync('registry/base-nova/protoform/components/auto-form/sdk-components.ts')).toBe(false);
 });

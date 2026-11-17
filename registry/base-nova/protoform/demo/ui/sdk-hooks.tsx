@@ -1,12 +1,14 @@
 import { usePreference } from '@ui-sdk/react/preferences';
-import { useMemo, useState } from 'react';
+import { useShortcut, useShortcutHint } from '@ui-sdk/react/shortcuts';
+import { useId, useMemo, useRef, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import type { ComboboxOption } from '@/components/ui/combobox';
+import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Kbd } from '@/components/ui/kbd';
 import { AsyncOptionCombobox } from '@/components/ui/sdk/async-option-combobox';
-import { Button } from '@/components/ui/sdk/button';
-import type { ComboboxOption } from '@/components/ui/sdk/combobox';
-import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/sdk/field';
-import { Input } from '@/components/ui/sdk/input';
 import { createLocalStorage, createPreference, PreferenceSelect, Preferences } from '@/components/ui/sdk/preferences';
-import { Textarea } from '@/components/ui/sdk/textarea';
+import { Textarea } from '@/components/ui/textarea';
 import { definedProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 
 export const client = 'only';
@@ -52,22 +54,43 @@ export default function SDKHooksExample() {
   const [project, setProject] = useState('');
   const [preferencesEnabled, setPreferencesEnabled] = useState(false);
   const [invalid, setInvalid] = useState(false);
+  const titleRef = useRef<HTMLInputElement>(null);
+  const fieldId = useId();
+  const hint = useShortcutHint('mod+shift+k');
+  useShortcut('mod+shift+k', () => titleRef.current?.focus(), { description: 'Focus project title' });
   return (
     <div className="w-full max-w-xl space-y-6" data-testid="sdk-hooks-example">
       <h1 className="text-2xl font-semibold">SDK hooks in real controls</h1>
-      <Field invalid={invalid} name="project" validation="native">
-        <FieldLabel>Project title</FieldLabel>
-        <FieldDescription>Labels, descriptions, and errors connect through SDK Field.</FieldDescription>
-        <Input placeholder="Name your project" required />
-        <FieldError>{invalid === true ? 'Choose a longer project title.' : null}</FieldError>
+      <Field data-invalid={invalid}>
+        <FieldLabel htmlFor={`${fieldId}-title`}>Project title</FieldLabel>
+        <FieldDescription id={`${fieldId}-description`}>
+          Base UI owns field behavior; SDK adds loading, shortcuts, and preferences.
+        </FieldDescription>
+        <Input
+          aria-describedby={invalid === true ? `${fieldId}-error ${fieldId}-description` : `${fieldId}-description`}
+          aria-invalid={invalid}
+          id={`${fieldId}-title`}
+          name="project"
+          placeholder="Name your project"
+          ref={titleRef}
+          required
+        />
+        {invalid === true ? (
+          <FieldError id={`${fieldId}-error`} role="alert">
+            Choose a longer project title.
+          </FieldError>
+        ) : null}
       </Field>
       <Button onClick={() => setInvalid(invalid !== true)} type="button" variant="outline">
         Toggle field error
       </Button>
-      <Field name="notes" validation="native">
-        <FieldLabel>Project notes</FieldLabel>
-        <Textarea placeholder="Describe the project" />
+      <Field>
+        <FieldLabel htmlFor={`${fieldId}-notes`}>Project notes</FieldLabel>
+        <Textarea id={`${fieldId}-notes`} placeholder="Describe the project" />
       </Field>
+      <p>
+        Focus project title: <Kbd aria-keyshortcuts={hint.ariaKeyshortcuts}>{hint.text}</Kbd>
+      </p>
       <section className="space-y-3">
         <h2 className="font-semibold">Async project options</h2>
         <p>Local paged data; type “error” to try failure recovery.</p>

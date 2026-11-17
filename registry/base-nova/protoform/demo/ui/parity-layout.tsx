@@ -3,28 +3,14 @@ import { scaleBand } from '@tanstack/charts/scales/band';
 import { scaleLinear } from '@tanstack/charts/scales/linear';
 import { tooltip } from '@tanstack/charts/tooltip';
 import { lazy, Suspense, useId, useState } from 'react';
-import { Button } from '@/components/ui/sdk/button/index';
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-  CarouselViewport,
-} from '@/components/ui/sdk/carousel/index';
-import { TanStackChart } from '@/components/ui/sdk/chart-tanstack/index';
-import { Field, FieldLabel } from '@/components/ui/sdk/field/index';
-import { Input } from '@/components/ui/sdk/input/index';
-import { Resizable, ResizableHandle, ResizablePanel } from '@/components/ui/sdk/resizable/index';
-import { ScrollArea, ScrollAreaViewport } from '@/components/ui/sdk/scroll-area/index';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectList,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/sdk/select/index';
+import { Button } from '@/components/ui/button';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+import { TanStackChart } from '@/components/ui/chart-tanstack';
+import { Field, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   Sidebar,
   SidebarContent,
@@ -37,16 +23,8 @@ import {
   SidebarMenuItem,
   SidebarProvider,
   SidebarTrigger,
-} from '@/components/ui/sdk/sidebar/index';
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/sdk/table/index';
+} from '@/components/ui/sidebar';
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ParitySection } from './parity-shared';
 
 const requests = [
@@ -107,27 +85,25 @@ export default function LayoutExamples() {
         </SidebarProvider>
       </ParitySection>
       <ParitySection title="Resizable">
-        <Resizable className="min-h-48" orientation="horizontal">
-          <ResizablePanel defaultSize={50} minSize="20%">
+        <ResizablePanelGroup className="min-h-48" orientation="horizontal">
+          <ResizablePanel defaultSize="50%" minSize="20%">
             <div className="flex h-full items-center justify-center p-3 text-sm">Form</div>
           </ResizablePanel>
-          <ResizableHandle aria-label="Resize form and preview" />
-          <ResizablePanel defaultSize={50} minSize="20%">
+          <ResizableHandle aria-label="Resize form and preview" withHandle />
+          <ResizablePanel defaultSize="50%" minSize="20%">
             <div className="flex h-full items-center justify-center p-3 text-sm">Preview</div>
           </ResizablePanel>
-        </Resizable>
+        </ResizablePanelGroup>
       </ParitySection>
       <ParitySection title="Scroll area">
         <ScrollArea aria-label="Sample request log" className="h-48">
-          <ScrollAreaViewport>
-            <div className="space-y-3 p-3">
-              {logEntries.map((entry) => (
-                <p className="text-sm" key={entry}>
-                  {entry}
-                </p>
-              ))}
-            </div>
-          </ScrollAreaViewport>
+          <div className="space-y-3 p-3">
+            {logEntries.map((entry) => (
+              <p className="text-sm" key={entry}>
+                {entry}
+              </p>
+            ))}
+          </div>
         </ScrollArea>
       </ParitySection>
       <ParitySection title="Table">
@@ -152,24 +128,22 @@ export default function LayoutExamples() {
         </Table>
       </ParitySection>
       <ParitySection title="Carousel">
-        <Carousel aria-label="Schema previews" className="relative mx-8 min-w-0">
-          <CarouselViewport>
-            <CarouselContent>
-              <CarouselItem>
-                <div className="space-y-3 p-3">
-                  <p className="text-sm">Profile schema</p>
-                  <Field>
-                    <Input aria-label="Slide note" defaultValue="Editable note" />
-                  </Field>
-                </div>
-              </CarouselItem>
-              <CarouselItem>
-                <div className="flex min-h-24 items-center justify-center p-3 text-sm">Address schema</div>
-              </CarouselItem>
-            </CarouselContent>
-          </CarouselViewport>
-          <CarouselPrevious aria-label="Previous schema" />
-          <CarouselNext aria-label="Next schema" />
+        <Carousel aria-label="Schema previews" className="mx-8 min-w-0">
+          <CarouselContent>
+            <CarouselItem>
+              <div className="space-y-3 p-3">
+                <p className="text-sm">Profile schema</p>
+                <Field>
+                  <Input aria-label="Slide note" defaultValue="Editable note" />
+                </Field>
+              </div>
+            </CarouselItem>
+            <CarouselItem>
+              <div className="flex min-h-24 items-center justify-center p-3 text-sm">Address schema</div>
+            </CarouselItem>
+          </CarouselContent>
+          <CarouselPrevious />
+          <CarouselNext />
         </Carousel>
       </ParitySection>
       <ParitySection title="Chart">
@@ -191,10 +165,8 @@ export default function LayoutExamples() {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectList>
-                <SelectItem value="tanstack">TanStack Charts (recommended)</SelectItem>
-                <SelectItem value="recharts">Recharts fallback</SelectItem>
-              </SelectList>
+              <SelectItem value="tanstack">TanStack Charts (recommended)</SelectItem>
+              <SelectItem value="recharts">Recharts fallback</SelectItem>
             </SelectContent>
           </Select>
         </Field>

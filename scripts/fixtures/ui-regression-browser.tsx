@@ -1,14 +1,13 @@
-import { renderElement } from '@ui-sdk/react/primitive';
-import { type ComponentProps, type CSSProperties, type MouseEvent, useRef, useState } from 'react';
+import { type ComponentProps, type CSSProperties, createElement, type MouseEvent, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { AlertDialog, AlertDialogClose, AlertDialogContent, AlertDialogTitle } from '@/components/ui/sdk/alert-dialog';
-import { AutoForm } from '@/components/ui/sdk/auto-form';
-import { Button } from '@/components/ui/sdk/button';
-import { Dialog, DialogClose, DialogContent, DialogTitle, DialogTrigger } from '@/components/ui/sdk/dialog';
-import { Resizable, ResizableHandle, ResizablePanel } from '@/components/ui/sdk/resizable';
-import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sdk/sheet';
-import { Slider, SliderControl, SliderIndicator, SliderThumb, SliderTrack } from '@/components/ui/sdk/slider';
-import { Toggle } from '@/components/ui/sdk/toggle';
+import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogClose, DialogContent, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Slider } from '@/components/ui/slider';
+import { Toggle } from '@/components/ui/toggle';
+import { AutoForm } from '@/registry/base-nova/protoform/components/auto-form';
 import type { SchemaProvider } from '@/registry/base-nova/protoform/components/auto-form/core-types';
 
 const schema: SchemaProvider = {
@@ -37,7 +36,7 @@ const sidebarTheme: CSSProperties & { '--sidebar': string; '--sidebar-foreground
 };
 
 function RouterLink({ href, onClick, onNavigate, ...props }: ComponentProps<'a'> & { onNavigate: () => void }) {
-  return renderElement('a', {
+  return createElement('a', {
     ...props,
     href,
     onClick(event: MouseEvent<HTMLAnchorElement>) {
@@ -55,7 +54,7 @@ function App() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
   const [submitted, setSubmitted] = useState('');
-  const finishActionRef = useRef<() => void>(() => undefined);
+  const [pending, setPending] = useState(false);
   const navigate = () => setNavigations((count) => count + 1);
   return (
     <main className="mx-auto max-w-xl space-y-6 p-6">
@@ -80,18 +79,11 @@ function App() {
         <Slider aria-label="Vertical level" defaultValue={25} orientation="vertical" />
         <Slider aria-label="Vertical range" defaultValue={[25, 75]} orientation="vertical" />
         <div className="w-40 self-center">
-          <Slider aria-label="Composed level" defaultValue={40}>
-            <SliderControl>
-              <SliderTrack>
-                <SliderIndicator />
-                <SliderThumb aria-label="Composed level" index={0} />
-              </SliderTrack>
-            </SliderControl>
-          </Slider>
+          <Slider aria-label="Composed level" defaultValue={40} />
         </div>
       </section>
       <section aria-label="Vertical panels">
-        <Resizable className="h-52" orientation="vertical">
+        <ResizablePanelGroup className="h-52" orientation="vertical">
           <ResizablePanel defaultSize={50} minSize={20}>
             Top panel
           </ResizablePanel>
@@ -99,24 +91,31 @@ function App() {
           <ResizablePanel defaultSize={50} minSize={20}>
             Bottom panel
           </ResizablePanel>
-        </Resizable>
+        </ResizablePanelGroup>
       </section>
       <section aria-label="Router buttons" className="flex flex-wrap gap-2">
-        <Button render={<RouterLink href="/enabled" onNavigate={navigate} />}>Enabled route</Button>
-        <Button disabled render={<RouterLink href="/disabled" onNavigate={navigate} />}>
+        <Button nativeButton={false} render={<RouterLink href="/enabled" onNavigate={navigate} />} role="link">
+          Enabled route
+        </Button>
+        <Button
+          disabled
+          nativeButton={false}
+          render={<RouterLink href="/disabled" onNavigate={navigate} />}
+          role="link"
+        >
           Disabled route
         </Button>
         <Button
-          onClick={() =>
-            new Promise<void>((resolve) => {
-              finishActionRef.current = resolve;
-            })
-          }
+          aria-busy={pending}
+          isLoading={pending}
+          nativeButton={false}
+          onClick={() => setPending(true)}
           render={<RouterLink href="/pending" onNavigate={navigate} />}
+          role="link"
         >
           Pending route
         </Button>
-        <Button onClick={() => finishActionRef.current()}>Finish action</Button>
+        <Button onClick={() => setPending(false)}>Finish action</Button>
         <output aria-label="Route navigations">{navigations}</output>
       </section>
       <Dialog>
@@ -133,7 +132,14 @@ function App() {
       <AlertDialog onOpenChange={setConfirmOpen} open={confirmOpen}>
         <AlertDialogContent>
           <AlertDialogTitle>Confirm changes</AlertDialogTitle>
-          <AlertDialogClose action={() => setConfirmed(true)}>Confirm record</AlertDialogClose>
+          <AlertDialogAction
+            onClick={() => {
+              setConfirmed(true);
+              setConfirmOpen(false);
+            }}
+          >
+            Confirm record
+          </AlertDialogAction>
         </AlertDialogContent>
       </AlertDialog>
       <Sheet>

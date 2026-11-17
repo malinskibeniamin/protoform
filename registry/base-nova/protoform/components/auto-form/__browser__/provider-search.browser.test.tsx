@@ -3,8 +3,6 @@ import { render } from '@rstest/browser-react';
 import { expect, test } from '@rstest/core';
 import { useState } from 'react';
 import { SimpleMultiSelect as BaseMultiSelect } from '@/components/ui/multi-select';
-import { AutoForm as SDKForm } from '@/components/ui/sdk/auto-form';
-import { SimpleMultiSelect as SDKMultiSelect } from '@/components/ui/sdk/multi-select';
 import { AutoForm } from '..';
 import type { SchemaProvider } from '../core-types';
 
@@ -46,7 +44,6 @@ function ProviderForm({ Form }: { Form: typeof AutoForm }) {
 
 for (const { name, Form, SimpleMultiSelect, triggerRole } of [
   { name: 'Base UI', Form: AutoForm, SimpleMultiSelect: BaseMultiSelect, triggerRole: 'button' },
-  { name: 'UI SDK', Form: SDKForm, SimpleMultiSelect: SDKMultiSelect, triggerRole: 'combobox' },
 ] as const) {
   test(`${name} keeps provider-ranked results visible and submits their IDs`, async () => {
     await render(<ProviderForm Form={Form} />);

@@ -1,5 +1,5 @@
 import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/sdk/chart/index';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 
 const chartConfig = { total: { label: 'Requests', color: 'var(--primary)' } };
 

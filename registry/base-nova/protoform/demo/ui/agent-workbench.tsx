@@ -1,17 +1,12 @@
-import { createInputController } from '@ui-sdk/core/input';
 import { agentTools } from '@ui-sdk/react/agent';
 import { stageChanges } from '@ui-sdk/react/history';
-import { elementOf, observe, withSource } from '@ui-sdk/react/observe';
-import { useEffect, useId, useMemo, useRef, useState } from 'react';
-import { AutoForm, AutoFormSlot } from '@/components/ui/sdk/auto-form';
-import { Button } from '@/components/ui/sdk/button';
-import { Dialog, DialogBackdrop, DialogContent, DialogTitle } from '@/components/ui/sdk/dialog';
-import { Field, FieldLabel } from '@/components/ui/sdk/field';
-import { Input } from '@/components/ui/sdk/input';
+import { elementOf, observe } from '@ui-sdk/react/observe';
+import type { ComponentProps } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 import { Rating, RatingStar } from '@/components/ui/sdk/rating';
-import { Select, SelectContent, SelectItem, SelectList, SelectTrigger, SelectValue } from '@/components/ui/sdk/select';
-import { Switch } from '@/components/ui/sdk/switch';
-import type { SchemaProvider } from '@/registry/base-nova/protoform/components/auto-form/core-types';
 import { createAgentSession } from '@/registry/base-nova/protoform/lib/ui-sdk/session';
 
 export const client = 'only';
@@ -21,114 +16,70 @@ interface Confirmation {
   finish: (approved: boolean) => void;
   message: string;
 }
-const regions = [
-  { value: 'eu', label: 'Europe' },
-  { value: 'us', label: 'North America' },
-];
-const schema: SchemaProvider = {
-  getDefaultValues: () => ({ title: 'Example record' }),
-  parseSchema: () => ({
-    fields: [{ key: 'title', type: 'string', required: true, fieldConfig: { label: 'Record title' } }],
-  }),
-  validateSchema: (values) =>
-    typeof values['title'] === 'string' && values['title'].trim().length >= 3
-      ? { success: true, data: values }
-      : { success: false, errors: [{ path: ['title'], message: 'Use at least three characters' }] },
+type ScoreProps = Pick<ComponentProps<typeof Rating>, 'value' | 'defaultValue' | 'onValueChange'> & {
+  label: string;
+  confirmation?: string;
+  secret?: boolean;
 };
+function Score({ label, value, defaultValue, onValueChange, confirmation, secret }: ScoreProps) {
+  return (
+    <div className="space-y-2">
+      <p>{label}</p>
+      <Rating
+        aria-label={label}
+        data-agent-confirm={confirmation}
+        data-agent-secret={secret}
+        defaultValue={defaultValue}
+        onValueChange={onValueChange}
+        value={value}
+      >
+        {[1, 2, 3, 4, 5].map((star) => (
+          <RatingStar aria-label={`${star} of 5 stars`} key={star} value={String(star)}>
+            ★
+          </RatingStar>
+        ))}
+      </Rating>
+    </div>
+  );
+}
 function Settings() {
-  const [name, setName] = useState('Apollo');
-  const [region, setRegion] = useState<string | null>('eu');
-  const [digest, setDigest] = useState(false);
-  const fieldId = useId();
   const [confidence, setConfidence] = useState(2);
+  const [approval, setApproval] = useState(0);
   const [saved, setSaved] = useState('Not saved');
-  const status = useMemo(() => createInputController(), []);
   return (
     <div className="space-y-4">
-      <Field className="gap-2">
-        <FieldLabel htmlFor={`${fieldId}-name`}>Project name</FieldLabel>
-        <Input
-          aria-label="Project name"
-          id={`${fieldId}-name`}
-          onValueChange={(value, details) => {
-            if (details.source === 'agent' && value === 'Restricted') {
-              details.cancel();
-              return;
-            }
-            setName(value);
-          }}
-          value={name}
-        />
-      </Field>
-      <Field className="gap-2">
-        <FieldLabel htmlFor={`${fieldId}-region`}>Region</FieldLabel>
-        <Select items={regions} onValueChange={setRegion} value={region}>
-          <SelectTrigger aria-label="Region" id={`${fieldId}-region`}>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectList>
-              {regions.map((entry) => (
-                <SelectItem key={entry.value} value={entry.value}>
-                  {entry.label}
-                </SelectItem>
-              ))}
-            </SelectList>
-          </SelectContent>
-        </Select>
-      </Field>
-      <Field orientation="horizontal">
-        <Switch aria-label="Weekly digest" checked={digest} id={`${fieldId}-digest`} onCheckedChange={setDigest} />
-        <FieldLabel htmlFor={`${fieldId}-digest`}>Weekly digest</FieldLabel>
-      </Field>
-      <div className="space-y-2">
-        <p>Review confidence</p>
-        <Rating aria-label="Review confidence" onValueChange={setConfidence} value={confidence}>
-          {[1, 2, 3, 4, 5].map((value) => (
-            <RatingStar aria-label={`${value} of 5 stars`} key={value} value={String(value)}>
-              ★
-            </RatingStar>
-          ))}
-        </Rating>
-      </div>
-      <Field className="gap-2">
-        <FieldLabel htmlFor={`${fieldId}-secret`}>Access token (synthetic)</FieldLabel>
-        <Input aria-label="Access token" data-agent-secret defaultValue="demo-secret" id={`${fieldId}-secret`} />
-      </Field>
+      <label className="block space-y-2">
+        Human project name
+        <Input aria-label="Human project name" defaultValue="Apollo" />
+      </label>
+      <p>Base UI owns ordinary controls. Only the additional SDK ratings below expose declared agent actions.</p>
+      <Score
+        label="Review confidence"
+        onValueChange={(value, details) => {
+          if (details.source === 'agent' && value === 5) {
+            details.cancel();
+            return;
+          }
+          setConfidence(value);
+        }}
+        value={confidence}
+      />
+      <Score
+        confirmation="Changes the local approval level; no save or network request"
+        label="Approval level"
+        onValueChange={setApproval}
+        value={approval}
+      />
+      <Score defaultValue={1} label="Secret score" secret />
       <section data-agent-hidden>
-        <Field className="gap-2">
-          <FieldLabel htmlFor={`${fieldId}-private`}>Private note</FieldLabel>
-          <Input aria-label="Private note" defaultValue="human-only-note" id={`${fieldId}-private`} />
-        </Field>
+        <Score defaultValue={2} label="Private score" />
       </section>
-      <AutoForm
-        modes={['advanced']}
-        onSubmit={(values) => setSaved(JSON.stringify(values))}
-        schema={schema}
-        showSummary={false}
-      >
-        <AutoFormSlot after="title">
-          <Button data-agent-confirm="Saves this example record locally; no network request" type="submit">
-            Save local form
-          </Button>
-        </AutoFormSlot>
-      </AutoForm>
+      <Button onClick={() => setSaved(JSON.stringify({ confidence, approval }))} type="button">
+        Save local record
+      </Button>
       <output aria-label="Saved local record" className="block break-all">
         {saved}
       </output>
-      <Field className="gap-2">
-        <FieldLabel htmlFor={`${fieldId}-status`}>Async status</FieldLabel>
-        <Input aria-label="Async status" controller={status} defaultValue="Ready" id={`${fieldId}-status`} />
-      </Field>
-      <Button
-        onClick={async (_event, { source }) => {
-          await Promise.resolve();
-          withSource(source, () => status.setValue('Refreshed'));
-        }}
-        variant="outline"
-      >
-        Refresh local status
-      </Button>
     </div>
   );
 }
@@ -161,9 +112,7 @@ export default function AgentWorkbench() {
   }, [session]);
   function enable() {
     const next = createAgentSession({
-      allow: (step) =>
-        panelRef.current?.contains(elementOf(step.ref)) === true &&
-        ['setValue', 'setChecked', 'press'].includes(step.action),
+      allow: (step) => panelRef.current?.contains(elementOf(step.ref)) === true && step.action === 'setValue',
       history: { within: () => panelRef.current },
       confirm: (step, { signal }) =>
         new Promise<boolean>((resolve) => {
@@ -224,7 +173,7 @@ export default function AgentWorkbench() {
       <h1 className="text-2xl font-semibold">UI SDK agent workbench</h1>
       <p>
         This local tool runner uses the real bridge, not an LLM or a backend. Nothing registers WebMCP tools. Enable
-        explicitly; disabling resets the example.
+        explicitly; disabling resets the example. Base UI controls are never exposed as SDK agent targets.
       </p>
       <AgentCommands
         busy={busy}
@@ -265,7 +214,6 @@ export default function AgentWorkbench() {
         }}
         open={confirmation !== null}
       >
-        <DialogBackdrop />
         <DialogContent data-agent-hidden>
           <div className="space-y-4 p-4">
             <DialogTitle>Approve agent action</DialogTitle>
@@ -296,6 +244,7 @@ interface AgentCommandsProps {
   run: (action: (session: Session) => unknown) => Promise<void>;
 }
 function AgentCommands({ busy, enabled, enable, disable, run, preview, onPreview }: AgentCommandsProps) {
+  const unavailable = !enabled || busy;
   return (
     <section aria-label="Agent controls" className="flex flex-wrap gap-2" data-agent-hidden>
       <Button disabled={enabled} onClick={enable}>
@@ -304,79 +253,69 @@ function AgentCommands({ busy, enabled, enable, disable, run, preview, onPreview
       <Button disabled={!enabled} onClick={disable} variant="outline">
         Disable agent
       </Button>
-      <Button disabled={!enabled || busy} onClick={() => run((current) => current.agent.snapshot())} variant="outline">
+      <Button disabled={unavailable} onClick={() => run((current) => current.agent.snapshot())} variant="outline">
         Inspect UI
       </Button>
-      <Button disabled={!enabled || busy} onClick={() => run(() => agentTools)} variant="outline">
+      <Button disabled={unavailable} onClick={() => run(() => agentTools)} variant="outline">
         Inspect tool schemas
       </Button>
       <Button
-        disabled={!enabled || busy}
-        onClick={() => run((current) => current.agent.query({ within: 'Region' }))}
+        disabled={unavailable}
+        onClick={() => run((current) => current.agent.query({ within: 'Review confidence' }))}
         variant="outline"
       >
-        Find regions
+        Find ratings
       </Button>
       <Button
-        disabled={!enabled || busy}
+        disabled={unavailable}
         onClick={() =>
-          run((current) =>
-            current.agent.act({
-              steps: [
-                { ref: 'Project name', action: 'setValue', args: ['Atlas'] },
-                { ref: 'Region', action: 'setValue', args: ['us'] },
-                { ref: 'Weekly digest', action: 'setChecked', args: [true] },
-                { ref: 'Review confidence', action: 'setValue', args: [4] },
-                { ref: 'Record title', action: 'setValue', args: ['Agent draft'] },
-              ],
-            })
-          )
+          run((current) => current.agent.act({ steps: [{ ref: 'Review confidence', action: 'setValue', args: [4] }] }))
         }
       >
         Fill sample
       </Button>
       <Button
-        disabled={!enabled || busy}
+        disabled={unavailable}
         onClick={() =>
-          run((current) =>
-            current.agent.act({ steps: [{ ref: 'Project name', action: 'setValue', args: ['Restricted'] }] })
-          )
+          run((current) => current.agent.act({ steps: [{ ref: 'Review confidence', action: 'setValue', args: [5] }] }))
         }
         variant="outline"
       >
         Try refused value
       </Button>
       <Button
-        disabled={!enabled || busy}
+        disabled={unavailable}
         onClick={() =>
           run((current) =>
-            current.agent.act({ steps: [{ ref: 'Access token', action: 'setValue', args: ['replacement-token'] }] })
+            current.agent.act({ steps: [{ ref: 'Human project name', action: 'setValue', args: ['Agent edit'] }] })
           )
+        }
+        variant="outline"
+      >
+        Try Base UI edit
+      </Button>
+      <Button
+        disabled={unavailable}
+        onClick={() =>
+          run((current) => current.agent.act({ steps: [{ ref: 'Secret score', action: 'setValue', args: [3] }] }))
         }
         variant="outline"
       >
         Fill secret
       </Button>
       <Button
-        disabled={!enabled || busy}
-        onClick={() => run((current) => current.agent.act({ steps: [{ ref: 'Save local form', action: 'press' }] }))}
-      >
-        Ask agent to save
-      </Button>
-      <Button
-        disabled={!enabled || busy}
+        disabled={unavailable}
         onClick={() =>
-          run((current) => current.agent.act({ steps: [{ ref: 'Refresh local status', action: 'press' }] }))
+          run((current) => current.agent.act({ steps: [{ ref: 'Approval level', action: 'setValue', args: [3] }] }))
         }
-        variant="outline"
       >
-        Run async action
+        Ask agent to approve
       </Button>
       <Button
-        disabled={!enabled || preview !== null || busy}
+        disabled={unavailable || preview !== null}
         onClick={() =>
           run(async (current) => {
-            const staged = await stageChanges(current.agent, [{ ref: 'Project name', value: 'Preview name' }]);
+            const staged = await stageChanges(current.agent, [{ ref: 'Review confidence', value: 3 }]);
             if (!current.signal.aborted) {
               onPreview(staged);
             }
@@ -402,18 +341,18 @@ function AgentCommands({ busy, enabled, enable, disable, run, preview, onPreview
       >
         Revert preview
       </Button>
-      <Button disabled={!enabled || busy} onClick={() => run((current) => current.history.seek(0))} variant="outline">
+      <Button disabled={unavailable} onClick={() => run((current) => current.history.seek(0))} variant="outline">
         Seek to start
       </Button>
       <Button
-        disabled={!enabled || busy}
+        disabled={unavailable}
         onClick={() => run((current) => current.history.seek(current.history.entries().length))}
         variant="outline"
       >
         Replay history
       </Button>
       <Button
-        disabled={!enabled || busy}
+        disabled={unavailable}
         onClick={() => run((current) => current.history.undoSource('agent'))}
         variant="outline"
       >

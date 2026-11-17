@@ -4,8 +4,8 @@ import { scaleLinear } from '@tanstack/charts/scales/linear';
 import { tooltip } from '@tanstack/charts/tooltip';
 import { useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Button } from '@/components/ui/sdk/button';
-import { TanStackChart } from '@/components/ui/sdk/chart-tanstack';
+import { Button } from '@/components/ui/button';
+import { TanStackChart } from '@/components/ui/chart-tanstack';
 
 interface RequestRow {
   day: string;

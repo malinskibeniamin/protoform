@@ -1,21 +1,20 @@
 import { useState } from 'react';
-import { Accordion, AccordionItem, AccordionPanel, AccordionTrigger } from '@/components/ui/sdk/accordion/index';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import {
   AlertDialog,
-  AlertDialogBackdrop,
-  AlertDialogClose,
+  AlertDialogAction,
+  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/sdk/alert-dialog/index';
-import { Button } from '@/components/ui/sdk/button/index';
-import { MenuContextTrigger } from '@/components/ui/sdk/context-menu/index';
+} from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
+import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from '@/components/ui/context-menu';
 import {
   Drawer,
-  DrawerBackdrop,
   DrawerClose,
   DrawerContent,
   DrawerDescription,
@@ -23,10 +22,16 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from '@/components/ui/sdk/drawer/index';
-import { Menu, MenuCheckboxItem, MenuContent, MenuItem, MenuTrigger } from '@/components/ui/sdk/dropdown-menu/index';
-import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/sdk/hover-card/index';
-import { Menubar } from '@/components/ui/sdk/menubar/index';
+} from '@/components/ui/drawer';
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
+import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarTrigger } from '@/components/ui/menubar';
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -34,7 +39,7 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-} from '@/components/ui/sdk/navigation-menu/index';
+} from '@/components/ui/navigation-menu';
 import {
   Pagination,
   PaginationContent,
@@ -42,7 +47,7 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from '@/components/ui/sdk/pagination/index';
+} from '@/components/ui/pagination';
 import {
   Sheet,
   SheetClose,
@@ -50,10 +55,9 @@ import {
   SheetDescription,
   SheetFooter,
   SheetHeader,
-  SheetOverlay,
   SheetTitle,
   SheetTrigger,
-} from '@/components/ui/sdk/sheet/index';
+} from '@/components/ui/sheet';
 import { ParitySection } from './parity-shared';
 
 export function OverlayExamples() {
@@ -68,11 +72,11 @@ export function OverlayExamples() {
         <Accordion>
           <AccordionItem value="advanced">
             <AccordionTrigger>Advanced validation</AccordionTrigger>
-            <AccordionPanel>Validation remains owned by your form schema.</AccordionPanel>
+            <AccordionContent>Validation remains owned by your form schema.</AccordionContent>
           </AccordionItem>
           <AccordionItem disabled value="disabled">
             <AccordionTrigger>Unavailable section</AccordionTrigger>
-            <AccordionPanel>Not interactive.</AccordionPanel>
+            <AccordionContent>Not interactive.</AccordionContent>
           </AccordionItem>
         </Accordion>
       </ParitySection>
@@ -94,15 +98,14 @@ export function OverlayExamples() {
                 </Button>
               }
             />
-            <AlertDialogBackdrop />
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle>Remove this sample record?</AlertDialogTitle>
                 <AlertDialogDescription>The sample can be restored. No server request is sent.</AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogClose>Cancel</AlertDialogClose>
-                <AlertDialogClose
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
                   onClick={() => {
                     setDeleted(true);
                     setConfirmOpen(false);
@@ -110,7 +113,7 @@ export function OverlayExamples() {
                   variant="destructive"
                 >
                   Confirm removal
-                </AlertDialogClose>
+                </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
@@ -125,7 +128,6 @@ export function OverlayExamples() {
               </Button>
             }
           />
-          <SheetOverlay />
           <SheetContent>
             <SheetHeader>
               <SheetTitle>Field details</SheetTitle>
@@ -145,7 +147,7 @@ export function OverlayExamples() {
         </Sheet>
       </ParitySection>
       <ParitySection title="Drawer">
-        <Drawer>
+        <Drawer showSwipeHandle>
           <DrawerTrigger
             render={
               <Button type="button" variant="outline">
@@ -153,7 +155,6 @@ export function OverlayExamples() {
               </Button>
             }
           />
-          <DrawerBackdrop />
           <DrawerContent>
             <DrawerHeader>
               <DrawerTitle>Form preview</DrawerTitle>
@@ -173,44 +174,46 @@ export function OverlayExamples() {
         </Drawer>
       </ParitySection>
       <ParitySection title="Dropdown menu">
-        <Menu>
-          <MenuTrigger
+        <DropdownMenu>
+          <DropdownMenuTrigger
             render={
               <Button type="button" variant="outline">
                 Schema actions
               </Button>
             }
           />
-          <MenuContent>
-            <MenuItem onClick={() => setActivity('Sample schema duplicated.')}>Duplicate schema</MenuItem>
-            <MenuCheckboxItem checked={showDetails} onCheckedChange={setShowDetails} value="bookmarks">
+          <DropdownMenuContent>
+            <DropdownMenuItem onClick={() => setActivity('Sample schema duplicated.')}>
+              Duplicate schema
+            </DropdownMenuItem>
+            <DropdownMenuCheckboxItem checked={showDetails} onCheckedChange={setShowDetails}>
               Show metadata
-            </MenuCheckboxItem>
-            <MenuItem disabled>Publish unavailable</MenuItem>
-          </MenuContent>
-        </Menu>
+            </DropdownMenuCheckboxItem>
+            <DropdownMenuItem disabled>Publish unavailable</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
         <p className="text-sm">Metadata: {showDetails === true ? 'shown' : 'hidden'}</p>
       </ParitySection>
       <ParitySection title="Context menu">
-        <Menu>
+        <ContextMenu>
           <div className="rounded-md border border-dashed p-3 text-center text-sm">
-            <MenuContextTrigger className="flex min-h-24 items-center justify-center">
+            <ContextMenuTrigger className="flex min-h-24 items-center justify-center">
               Right-click for sample field actions
-            </MenuContextTrigger>
+            </ContextMenuTrigger>
           </div>
-          <MenuContent>
-            <MenuItem onClick={() => setActivity('Sample field duplicated.')}>Duplicate field</MenuItem>
-          </MenuContent>
-        </Menu>
+          <ContextMenuContent>
+            <ContextMenuItem onClick={() => setActivity('Sample field duplicated.')}>Duplicate field</ContextMenuItem>
+          </ContextMenuContent>
+        </ContextMenu>
       </ParitySection>
       <ParitySection title="Menubar">
         <Menubar>
-          <Menu>
-            <MenuTrigger>Sample file</MenuTrigger>
-            <MenuContent>
-              <MenuItem onClick={() => setActivity('New sample form created.')}>New form</MenuItem>
-            </MenuContent>
-          </Menu>
+          <MenubarMenu>
+            <MenubarTrigger>Sample file</MenubarTrigger>
+            <MenubarContent>
+              <MenubarItem onClick={() => setActivity('New sample form created.')}>New form</MenubarItem>
+            </MenubarContent>
+          </MenubarMenu>
         </Menubar>
       </ParitySection>
       <ParitySection title="Navigation menu">

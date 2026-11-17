@@ -1,13 +1,13 @@
 import { page } from '@rstest/browser';
 import { act, render } from '@rstest/browser-react';
 import { expect, test } from '@rstest/core';
+import { Button } from '@ui-sdk/react/button';
 import { stageChanges } from '@ui-sdk/react/history';
+import { Input } from '@ui-sdk/react/input';
 import { type ObservedChange, observe } from '@ui-sdk/react/observe';
+import { Textarea } from '@ui-sdk/react/textarea';
 import { useState } from 'react';
-import { Button } from '@/components/ui/sdk/button';
-import { Input } from '@/components/ui/sdk/input';
 import { Rating, RatingStar } from '@/components/ui/sdk/rating';
-import { Textarea } from '@/components/ui/sdk/textarea';
 import { createAgentSession } from './session';
 
 function Controls() {

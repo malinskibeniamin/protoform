@@ -13,13 +13,12 @@ test('installed hooks connect field errors and recover asynchronous paged option
   await page.getByRole('button', { name: 'Toggle field error' }).click();
   await expect(title).toHaveAttribute('aria-invalid', 'true');
   await expect(page.getByRole('alert')).toHaveText('Choose a longer project title.');
-  await expect(page.getByRole('status').filter({ hasText: 'Choose a longer project title.' })).toHaveText(
-    'Choose a longer project title.'
-  );
   await page.getByRole('button', { name: 'Toggle field error' }).click();
   await expect(page.getByRole('alert')).toHaveCount(0);
   await expect(title).not.toHaveAttribute('aria-invalid', 'true');
-  await expect(title).toHaveAccessibleDescription('Labels, descriptions, and errors connect through SDK Field.');
+  await expect(title).toHaveAccessibleDescription(
+    'Base UI owns field behavior; SDK adds loading, shortcuts, and preferences.'
+  );
   await expect(title).toHaveValue('Atlas 🌊');
   const input = page.getByRole('combobox', { name: 'Search projects' });
   await input.fill('A');
@@ -33,6 +32,7 @@ test('installed hooks connect field errors and recover asynchronous paged option
   await expect(input).toHaveAttribute('aria-activedescendant', firstId);
   await input.press('ArrowDown');
   await expect(input).toHaveAttribute('aria-activedescendant', lastId);
+  await page.getByRole('button', { name: 'Load more options' }).click();
   await input.press('ArrowDown');
   await expect(page.getByRole('option', { name: 'Aurora', exact: true })).toBeVisible();
   await page.getByRole('option', { name: 'Aurora', exact: true }).click();

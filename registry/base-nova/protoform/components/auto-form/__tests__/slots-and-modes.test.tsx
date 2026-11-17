@@ -1,6 +1,5 @@
 import { afterEach, describe, expect, rs } from '@rstest/core';
 import { cleanup, render, screen, within } from '@testing-library/react';
-import { AutoForm as SDKAutoForm } from '@/components/ui/sdk/auto-form';
 import { AutoForm, AutoFormSlot } from '..';
 import { createMockProvider } from './test-utils';
 
@@ -70,9 +69,3 @@ function requireRow(value: Element | undefined): HTMLElement {
   }
   return value;
 }
-
-test('keeps form-mode presentation metadata across the UI SDK host boundary', () => {
-  render(<SDKAutoForm modes={['advanced', 'json']} schema={schema} />);
-  expect(screen.getByRole('tablist')).toHaveAttribute('data-variant', 'underline');
-  expect(screen.getByRole('tab', { name: ADVANCED_TAB })).toHaveAttribute('data-variant', 'underline');
-});

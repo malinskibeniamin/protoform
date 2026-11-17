@@ -29,8 +29,8 @@ source snapshots.
 
 ### Changed
 
-- Base UI remains the default control foundation. Optional UI SDK `0.1.0-beta.5` controls, core-backed React adapters, hooks, and agent helpers install into a separate `sdk/` UI namespace. The default and SDK AutoForm entrypoints select independent maps over the same UI-neutral form engine; no control has two behavior owners.
-- UI imports and targets honor the consumer's UI aliases. The opt-in SDK bundles do not install Base UI, legacy shadcn React behaviors, cmdk, Embla, input-otp, DayPicker, or react-resizable-panels; the restored default bundle retains its original control foundation. Specialized chart and editor engines remain.
+- Consolidated one Base UI control catalog. Removed the unreleased full SDK replacement catalog, alternate AutoForm map, and renderer adapters. SDK beta.5 remains only for core-composed Rating, async loading over native Combobox, opt-in preferences over native Select, shortcuts, and explicit agent sessions.
+- The default catalog install includes the targeted additions; existing canonical controls may add `protoform-sdk-enhancements`. No native control has two behavior owners. SDK Field/all-hooks adoption and agent actions on replacement controls are retired, not silently mapped to different APIs.
 - `protoform-ui-sdk-agent` is opt-in and exports `createAgent` without creating a bridge, registering browser tools, or granting actions automatically.
 
 - AutoForm core, its runtime provider, object sections, and string inputs compile under React Compiler without `"use no memo"`.
@@ -75,7 +75,6 @@ source snapshots.
 - Slots keep their children's React keys instead of keying them by position.
 - Changing `defaultMode` after mount switches mode in the same render instead of after an effect.
 - A required oneof with one available variant keeps its field test id on its section, as other oneofs do.
-- `protoform-ui-sdk` and `protoform-examples` install `@types/prismjs`, so a strict consumer type-checks `json-field` without adding the types by hand.
 
 ### Compatibility
 

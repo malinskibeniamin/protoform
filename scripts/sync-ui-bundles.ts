@@ -44,28 +44,12 @@ for (const { name, directory, documentation, target } of [
     documentation: 'SHADCN',
     target: '@ui',
   },
-  {
-    name: 'protoform-ui-sdk',
-    directory: 'registry/ui-sdk/protoform/components',
-    documentation: 'UI_SDK',
-    target: '@ui/sdk',
-  },
 ]) {
   const fallback = registry.items.find((item) => item.name === name);
   if (fallback === undefined) {
     throw new Error(`Missing ${name} fallback UI bundle`);
   }
   const root = 'registry/base-nova/protoform';
-  const notices: NonNullable<Registry['items'][number]['files']> =
-    name === 'protoform-ui-sdk'
-      ? [
-          {
-            path: `${root}/UI_SDK_COMPONENTS.md`,
-            type: 'registry:file',
-            target: '~/LICENSES/protoform-ui-sdk-controls.md',
-          },
-        ]
-      : [];
   const bundle = {
     ...structuredClone(fallback),
     name: `${name}-tanstack`,
@@ -89,7 +73,6 @@ for (const { name, directory, documentation, target } of [
             ? { ...file, path: `${root}/${documentation}_TANSTACK_COMPONENTS.md` }
             : file
         ),
-      ...notices,
       {
         path: `${directory}/chart-tanstack/index.tsx`,
         type: 'registry:ui',

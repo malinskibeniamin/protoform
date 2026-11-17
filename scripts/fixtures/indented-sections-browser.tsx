@@ -1,5 +1,5 @@
 import { createRoot } from 'react-dom/client';
-import { AutoForm } from '@/components/ui/sdk/auto-form';
+import { AutoForm } from '@/registry/base-nova/protoform/components/auto-form';
 import type { SchemaProvider } from '@/registry/base-nova/protoform/components/auto-form/core-types';
 
 const schema: SchemaProvider = {

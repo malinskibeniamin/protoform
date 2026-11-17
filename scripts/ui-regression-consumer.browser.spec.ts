@@ -12,12 +12,12 @@ test('toggle sizes and outline groups survive installation and form adaptation',
   await expect.soft(small).toHaveCSS('height', '32px');
   await expect.soft(large).toHaveCSS('height', '40px');
   await expect.soft(small).toHaveCSS('border-top-width', '1px');
-  const email = page.getByRole('button', { name: 'Email', exact: true });
-  await expect.soft(email).toHaveCSS('border-top-width', '1px');
-  await expect(email).toHaveAttribute('aria-pressed', 'true');
+  const email = page.getByRole('radio', { name: 'Email', exact: true });
+  await expect.soft(page.getByRole('radiogroup', { name: 'Delivery' })).toHaveCSS('border-top-width', '1px');
+  await expect(email).toBeChecked();
   await email.focus();
   await page.keyboard.press('ArrowRight');
-  const sms = page.getByRole('button', { name: 'SMS', exact: true });
+  const sms = page.getByRole('radio', { name: 'SMS', exact: true });
   await expect(sms).toBeFocused();
   await page.keyboard.press('Space');
   await page.getByRole('switch').click();
@@ -35,30 +35,35 @@ test('vertical and composed sliders keep visible tracks and correctly positioned
       const track = slider.locator('[data-slot="slider-track"]');
       const bounds = await track.boundingBox();
       expect.soft(bounds?.height).toBeGreaterThan(150);
-      expect.soft(bounds?.width).toBe(6);
+      expect.soft(bounds?.width).toBe(4);
       const centered = await track.evaluate((rail) => {
         const railBounds = rail.getBoundingClientRect();
-        return [...rail.querySelectorAll('[data-slot="slider-thumb"]')].every((thumb) => {
-          const thumbBounds = thumb.getBoundingClientRect();
-          return (
-            Math.abs(thumbBounds.x + thumbBounds.width / 2 - railBounds.x - railBounds.width / 2) <= 1 &&
-            thumbBounds.y >= railBounds.y &&
-            thumbBounds.bottom <= railBounds.bottom
-          );
-        });
+        const thumbs = rail.closest('[data-slot="slider"]')?.querySelectorAll('[data-slot="slider-thumb"]');
+        return (
+          thumbs !== undefined &&
+          thumbs.length > 0 &&
+          [...thumbs].every((thumb) => {
+            const thumbBounds = thumb.getBoundingClientRect();
+            return (
+              Math.abs(thumbBounds.x + thumbBounds.width / 2 - railBounds.x - railBounds.width / 2) <= 1 &&
+              thumbBounds.y >= railBounds.y &&
+              thumbBounds.bottom <= railBounds.bottom
+            );
+          })
+        );
       });
       expect.soft(centered).toBe(true);
     })
   );
   const level = page.getByRole('slider', { name: 'Vertical level', exact: true });
   await level.press('ArrowUp');
-  await expect(level).toHaveValue('26');
+  await expect(level).toHaveAttribute('aria-valuenow', '26');
   const composed = page.getByRole('slider', { name: 'Composed level', exact: true });
-  const track = page.locator('[data-slot="slider-track"]').filter({ has: composed });
-  await expect.soft(track).toHaveCSS('height', '6px');
+  const track = page.locator('[data-slot="slider"]').filter({ has: composed }).locator('[data-slot="slider-track"]');
+  await expect.soft(track).toHaveCSS('height', '4px');
   await expect.soft(track).not.toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
   await composed.press('End');
-  await expect(composed).toHaveValue('100');
+  await expect(composed).toHaveAttribute('aria-valuenow', '100');
 });
 
 test('vertical resize handles span the panels and remain keyboard operable', async ({ page }) => {
@@ -66,9 +71,10 @@ test('vertical resize handles span the panels and remain keyboard operable', asy
   await expect(handle).toHaveAttribute('aria-orientation', 'horizontal');
   const bounds = await handle.boundingBox();
   expect.soft(bounds?.width).toBeGreaterThan(200);
-  expect.soft(bounds?.height).toBe(4);
+  expect.soft(bounds?.height).toBe(1);
+  const before = await handle.getAttribute('aria-valuenow');
   await handle.press('ArrowDown');
-  await expect(handle).toHaveAttribute('aria-valuenow', '51');
+  await expect(handle).not.toHaveAttribute('aria-valuenow', before ?? '');
 });
 
 test('disabled and pending router links cannot navigate through composed button handlers', async ({ page }) => {

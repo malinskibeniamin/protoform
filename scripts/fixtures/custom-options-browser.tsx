@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { JSONField, type JSONValue } from '@/components/ui/sdk/json-field';
+import { JSONField, type JSONValue } from '@/components/ui/json-field';
 
 let attempts = 0;
 

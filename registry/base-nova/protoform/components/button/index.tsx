@@ -19,7 +19,7 @@ const buttonVariants = cva(
     'cursor-pointer',
     'data-[slot=help-trigger]:rounded-full data-[slot=help-trigger]:text-muted-foreground data-[slot=help-trigger]:shadow-none data-[slot=help-trigger]:hover:text-foreground',
     'disabled:pointer-events-none disabled:cursor-not-allowed',
-    'disabled:opacity-50',
+    'disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:cursor-not-allowed aria-disabled:opacity-50',
     'focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50',
     'aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20',
     'dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40',

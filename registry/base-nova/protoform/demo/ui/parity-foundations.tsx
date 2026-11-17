@@ -1,7 +1,8 @@
+import { REGEXP_ONLY_DIGITS } from 'input-otp';
 import { CheckIcon, FileTextIcon, FolderIcon } from 'lucide-react';
 import { useId, useState } from 'react';
-import { AspectRatio } from '@/components/ui/sdk/aspect-ratio/index';
-import { Avatar, AvatarBadge, AvatarFallback, AvatarGroup, AvatarGroupCount } from '@/components/ui/sdk/avatar/index';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
+import { Avatar, AvatarBadge, AvatarFallback, AvatarGroup, AvatarGroupCount } from '@/components/ui/avatar';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -9,39 +10,19 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from '@/components/ui/sdk/breadcrumb/index';
-import { Button } from '@/components/ui/sdk/button/index';
-import { ButtonGroup } from '@/components/ui/sdk/button-group/index';
-import {
-  Empty,
-  EmptyContent,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from '@/components/ui/sdk/empty/index';
-import { OTPInput, OTPInputGroup, OTPInputSeparator, OTPInputSlot } from '@/components/ui/sdk/input-otp/index';
-import {
-  Item,
-  ItemActions,
-  ItemContent,
-  ItemDescription,
-  ItemGroup,
-  ItemMedia,
-  ItemTitle,
-} from '@/components/ui/sdk/item/index';
-import { Kbd, KbdGroup } from '@/components/ui/sdk/kbd/index';
-import { Label } from '@/components/ui/sdk/label/index';
-import { Marker, MarkerContent, MarkerIcon } from '@/components/ui/sdk/marker/index';
-import { NativeSelect, NativeSelectOption } from '@/components/ui/sdk/native-select/index';
-import {
-  Progress,
-  ProgressIndicator,
-  ProgressLabel,
-  ProgressTrack,
-  ProgressValue,
-} from '@/components/ui/sdk/progress/index';
-import { Skeleton } from '@/components/ui/sdk/skeleton/index';
+} from '@/components/ui/breadcrumb';
+import { Button } from '@/components/ui/button';
+import { ButtonGroup } from '@/components/ui/button-group';
+import { DirectionProvider } from '@/components/ui/direction';
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
+import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from '@/components/ui/input-otp';
+import { Item, ItemActions, ItemContent, ItemDescription, ItemGroup, ItemMedia, ItemTitle } from '@/components/ui/item';
+import { Kbd, KbdGroup } from '@/components/ui/kbd';
+import { Label } from '@/components/ui/label';
+import { Marker, MarkerContent, MarkerIcon } from '@/components/ui/marker';
+import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select';
+import { Progress, ProgressLabel, ProgressValue } from '@/components/ui/progress';
+import { Skeleton } from '@/components/ui/skeleton';
 import { ParitySection } from './parity-shared';
 
 export function FoundationExamples({ headingId }: { headingId: string }) {
@@ -93,9 +74,6 @@ export function FoundationExamples({ headingId }: { headingId: string }) {
         <Progress value={progress}>
           <ProgressLabel>Sample completion</ProgressLabel>
           <ProgressValue />
-          <ProgressTrack>
-            <ProgressIndicator />
-          </ProgressTrack>
         </Progress>
         <Button
           disabled={progress === 100}
@@ -122,19 +100,19 @@ export function FoundationExamples({ headingId }: { headingId: string }) {
       </ParitySection>
       <ParitySection title="Input OTP">
         <Label htmlFor={parityCodeId}>Verification code</Label>
-        <OTPInput id={parityCodeId} maxLength={6} onValueChange={setCode} pattern="digits" value={code}>
-          <OTPInputGroup>
-            <OTPInputSlot index={0} />
-            <OTPInputSlot index={1} />
-            <OTPInputSlot index={2} />
-          </OTPInputGroup>
-          <OTPInputSeparator />
-          <OTPInputGroup>
-            <OTPInputSlot index={3} />
-            <OTPInputSlot index={4} />
-            <OTPInputSlot index={5} />
-          </OTPInputGroup>
-        </OTPInput>
+        <InputOTP id={parityCodeId} maxLength={6} onChange={setCode} pattern={REGEXP_ONLY_DIGITS} value={code}>
+          <InputOTPGroup>
+            <InputOTPSlot index={0} />
+            <InputOTPSlot index={1} />
+            <InputOTPSlot index={2} />
+          </InputOTPGroup>
+          <InputOTPSeparator />
+          <InputOTPGroup>
+            <InputOTPSlot index={3} />
+            <InputOTPSlot index={4} />
+            <InputOTPSlot index={5} />
+          </InputOTPGroup>
+        </InputOTP>
         <output aria-label="Entered code">{code.length === 0 ? 'Enter six digits.' : `Entered: ${code}`}</output>
       </ParitySection>
       <ParitySection title="Button group and keyboard hints">
@@ -222,10 +200,11 @@ export function FoundationExamples({ headingId }: { headingId: string }) {
           </MarkerIcon>
           <MarkerContent>Revision 2</MarkerContent>
         </Marker>
-
-        <div className="rounded-md border p-3 text-sm" dir="rtl">
-          مرحبا — Protoform
-        </div>
+        <DirectionProvider direction="rtl">
+          <div className="rounded-md border p-3 text-sm" dir="rtl">
+            مرحبا — Protoform
+          </div>
+        </DirectionProvider>
       </ParitySection>
     </div>
   );

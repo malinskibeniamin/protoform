@@ -24,12 +24,10 @@ const expectedItems = [
   'protoform-shadcn',
   'protoform-shadcn-tanstack',
   'protoform-shadcn-host',
-  'protoform-ui-sdk',
+  'protoform-sdk-enhancements',
   'protoform-ui-presentation',
   'protoform-recharts-presentation',
   'protoform-tanstack-charts-presentation',
-  'protoform-ui-sdk-tanstack',
-  'protoform-ui-sdk-host',
   'protoform-ui-sdk-agent',
   'ui-sdk-agent-workbench',
   'ui-sdk-hooks',
@@ -119,28 +117,14 @@ if (
 
 const protoformShadcn = dependencyItemSchema.parse(JSON.parse(readFileSync('public/r/protoform-shadcn.json', 'utf8')));
 if (
-  protoformShadcn.registryDependencies?.length !== 3 ||
+  protoformShadcn.registryDependencies?.length !== 4 ||
   !protoformShadcn.registryDependencies.includes('@protoform/protoform-react') ||
   !protoformShadcn.registryDependencies.includes('@protoform/protoform-ui-presentation') ||
   !protoformShadcn.registryDependencies.includes('@protoform/protoform-recharts-presentation') ||
+  !protoformShadcn.registryDependencies.includes('@protoform/protoform-sdk-enhancements') ||
   !protoformShadcn.files?.some((file) => file.target === '@ui/button/index.tsx')
 ) {
   throw new Error('protoform-shadcn must install optional Base UI defaults through the configured ui alias');
-}
-
-const sdkBundle = dependencyItemSchema.parse(JSON.parse(readFileSync('public/r/protoform-ui-sdk.json', 'utf8')));
-const defaultTargets = new Set(
-  protoformShadcn.files
-    ?.map((file) => file.target)
-    .filter(
-      (target) => target !== undefined && (target.startsWith('@ui/') || target === '@components/auto-form/index.tsx')
-    )
-);
-if (
-  sdkBundle.files?.some((file) => file.target !== undefined && defaultTargets.has(file.target)) ||
-  !sdkBundle.files?.some((file) => file.target === '@ui/sdk/auto-form/index.tsx')
-) {
-  throw new Error('SDK controls and AutoForm must install separately from Base UI defaults');
 }
 
 const reactHookFormV8Alias = 'react-hook-form-v8@npm:react-hook-form@8.0.0-beta.5';

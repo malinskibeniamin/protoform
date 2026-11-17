@@ -7,15 +7,19 @@ import { extname, join, resolve as resolvePath } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { $, Glob } from 'bun';
 import { z } from 'zod';
-import uiCatalog from '../registry/ui-catalog.json' with { type: 'json' };
+import shadcnCatalog from '../registry/shadcn-catalog.json' with { type: 'json' };
 
 const root = resolvePath(fileURLToPath(new URL('..', import.meta.url)));
 const fixture = join(root, '.tmp', 'consumer-fixture');
 const hostFixture = join(root, '.tmp', 'host-consumer-fixture');
 const coreFixture = join(root, '.tmp', 'core-consumer-fixture');
 const tanstackFixture = join(root, '.tmp', 'tanstack-consumer-fixture');
-const adapterFixture = join(root, '.tmp', 'adapter-consumer-fixture');
 const publicDir = join(root, 'public');
+const queryVersion = z
+  .object({ version: z.string() })
+  .parse(
+    JSON.parse(await readFile(fileURLToPath(import.meta.resolve('@tanstack/react-query/package.json')), 'utf8'))
+  ).version;
 const leadingSlashes = /^\/+/u;
 const registryPort = Number(process.env['PROTOFORM_REGISTRY_PORT'] ?? '48741');
 if (!Number.isInteger(registryPort) || registryPort < 1 || registryPort > 65_535) {
@@ -52,6 +56,7 @@ async function createFixture() {
           '@types/react': 'latest',
           '@types/react-dom': 'latest',
         },
+        overrides: { '@tanstack/react-query': queryVersion, '@tanstack/query-core': queryVersion },
         name: 'protoform-consumer-fixture',
         private: true,
         scripts: { typecheck: 'tsc --noEmit' },
@@ -164,10 +169,13 @@ async function assertInstalled() {
     'hooks/use-proto-form-v8/index.ts',
     'lib/core/index.ts',
     'lib/protobuf-provider/index.ts',
-    ...uiCatalog.components.map((component) => component.installPath),
-    ...uiCatalog.compositions.map((composition) => composition.installPath),
+    ...shadcnCatalog.components.map((component) => component.installPath),
+    ...shadcnCatalog.compositions.map((composition) => composition.installPath),
+    'components/ui/sdk/rating/index.tsx',
+    'components/ui/sdk/async-option-combobox/index.tsx',
+    'components/ui/sdk/preferences/index.tsx',
     'LICENSES/shadcn-MIT.txt',
-    'LICENSES/protoform-ui-sdk-provenance.md',
+    'LICENSES/protoform-shadcn-provenance.md',
     'LICENSES/protoform-MIT.txt',
     'proto/protoform/conformance/v1/aip.proto',
   ];
@@ -182,7 +190,7 @@ async function assertInstalled() {
   const notices = [
     ['LICENSES/protoform-MIT.txt', 'LICENSE'],
     ['LICENSES/shadcn-MIT.txt', 'LICENSES/shadcn-MIT.txt'],
-    ['LICENSES/protoform-ui-sdk-provenance.md', 'registry/base-nova/protoform/UI_SDK_COMPONENTS.md'],
+    ['LICENSES/protoform-shadcn-provenance.md', 'registry/base-nova/protoform/SHADCN_COMPONENTS.md'],
   ] as const;
   await Promise.all(
     notices.map(async ([installedPath, repositoryPath]) => {
@@ -202,17 +210,18 @@ async function assertInstalled() {
       "import { AutoForm as ReactHookFormV8AutoForm } from './components/auto-form-react-hook-form-v8';",
       "import { AutoForm as TanStackAutoForm } from './components/auto-form-tanstack';",
       "import { AutoForm as TanStackV2AutoForm } from './components/auto-form-tanstack-v2';",
-      "import DatePickerExample from './components/ui/sdk/examples/date-picker';",
-      "import DataTableExample from './components/ui/sdk/examples/data-table';",
-      "import { CodeBlock, CodeBlockContent, CodeBlockCopyButton } from './components/ui/sdk/code-block';",
-      "import { Trace, TraceLine, TraceTitle, TraceCollapsible, TraceCollapsibleTrigger, TraceCollapsibleContent } from './components/ui/sdk/trace';",
-      "import { Button } from './components/ui/sdk/button';",
-      "import { Badge } from './components/ui/sdk/badge';",
-      "import { ChartStyle } from './components/ui/sdk/chart';",
-      "import { Combobox, ComboboxInput, ComboboxContent, ComboboxList, ComboboxItem } from './components/ui/sdk/combobox';",
-      "import { Select, SelectTrigger, SelectContent, SelectList, SelectItem } from './components/ui/sdk/select';",
-      "import { PopoverHeader, PopoverTitle, PopoverDescription } from './components/ui/sdk/popover';",
-      "import { ToggleGroup, ToggleGroupItem } from './components/ui/sdk/toggle-group';",
+      "import DatePickerExample from './components/ui/examples/date-picker';",
+      "import DataTableExample from './components/ui/examples/data-table';",
+      "import { CodeBlock, CodeBlockContent, CodeBlockCopyButton } from './components/ui/code-block';",
+      "import { Trace, TraceLine, TraceTitle, TraceCollapsible, TraceCollapsibleTrigger, TraceCollapsibleContent } from './components/ui/trace';",
+      "import { Button } from './components/ui/button';",
+      "import { Badge } from './components/ui/badge';",
+      "import { ChartStyle } from './components/ui/chart';",
+      "import { Combobox, ComboboxInput, ComboboxContent, ComboboxList, ComboboxItem } from './components/ui/combobox';",
+      "import { Select, SelectTrigger, SelectContent, SelectItem } from './components/ui/select';",
+      "import { PopoverHeader, PopoverTitle, PopoverDescription } from './components/ui/popover';",
+      "import { tabsListVariants } from './components/ui/tabs';",
+      "import { ToggleGroup, ToggleGroupItem } from './components/ui/toggle-group';",
 
       "import { BookstoreDemo } from './components/protoform-bookstore/bookstore-demo';",
       "import { createLibraryService } from './components/protoform-bookstore/library-service';",
@@ -225,8 +234,9 @@ async function assertInstalled() {
       '',
       'const bundledUi = <Trace><TraceLine><TraceTitle>Request</TraceTitle></TraceLine><TraceCollapsible><TraceCollapsibleTrigger>Details</TraceCollapsibleTrigger><TraceCollapsibleContent><CodeBlock><CodeBlockCopyButton value="source" /><CodeBlockContent lineNumbers wrap>source</CodeBlockContent></CodeBlock></TraceCollapsibleContent></TraceCollapsible></Trace>;',
       'void bundledUi;',
-      'const uiSdkApi = <><Button render={<span />} size="default" variant="default" /><Badge render={<span />} variant="link">Link</Badge><ChartStyle id="installed-chart" config={{ example: { color: "var(--primary)" } }} /><Combobox items={["one", "two"]}><ComboboxInput /><ComboboxContent><ComboboxList>{["one","two"].map(item => <ComboboxItem key={item} value={item}>{item}</ComboboxItem>)}</ComboboxList></ComboboxContent></Combobox><Select defaultValue={1} onValueChange={(value, details) => { const number: number | null = value; details.cancel(); void number; }}><SelectTrigger /><SelectContent><SelectList><SelectItem value={1}>One</SelectItem></SelectList></SelectContent></Select><ToggleGroup multiple defaultValue={["bold"]}><ToggleGroupItem value="bold">Bold</ToggleGroupItem></ToggleGroup><PopoverHeader><PopoverTitle>Details</PopoverTitle><PopoverDescription>Description</PopoverDescription></PopoverHeader></>;',
-      'void uiSdkApi;',
+      'const shadcnApi = <><Button render={<span />} nativeButton={false} size="default" variant="default" /><Badge render={<span />} variant="link">Link</Badge><ChartStyle id="installed-chart" config={{ example: { color: "var(--primary)" } }} /><Combobox items={["one", "two"]}><ComboboxInput /><ComboboxContent><ComboboxList>{(item: string) => <ComboboxItem key={item} value={item}>{item}</ComboboxItem>}</ComboboxList></ComboboxContent></Combobox><Select defaultValue={1} onValueChange={(value, details) => { const number: number | null = value; details.cancel(); void number; }}><SelectTrigger /><SelectContent><SelectItem value={1}>One</SelectItem></SelectContent></Select><ToggleGroup multiple defaultValue={["bold"]}><ToggleGroupItem value="bold">Bold</ToggleGroupItem></ToggleGroup><PopoverHeader><PopoverTitle>Details</PopoverTitle><PopoverDescription>Description</PopoverDescription></PopoverHeader></>;',
+      'void shadcnApi;',
+      'tabsListVariants({ variant: "line" });',
 
       'const compositions = <><DatePickerExample /><DataTableExample /></>;',
       'void compositions;',
@@ -369,23 +379,6 @@ async function assertHostInstalled() {
   await $`bun add --cwd ${hostFixture} clsx tailwind-merge tailwindcss@4.3.5 @tailwindcss/vite@4.3.5`;
   await cp('scripts/fixtures/host-theme.css', join(hostFixture, 'app/globals.css'));
   await $`bunx --no-install shadcn add @host/protoform-shadcn-tanstack --cwd ${hostFixture} --yes`;
-  const baseUIPaths = [
-    ...(await Array.fromAsync(new Glob('design-system/ui/**/*').scan({ cwd: hostFixture, onlyFiles: true }))),
-    'features/forms/auto-form/index.tsx',
-    'features/forms/auto-form/shadcn-ui-components.tsx',
-  ];
-  const baseUIBefore = await Promise.all(
-    baseUIPaths.map(async (path) => ({ path, content: await readFile(join(hostFixture, path), 'utf8') }))
-  );
-  await $`bunx --no-install shadcn add @host/protoform-ui-sdk-tanstack --cwd ${hostFixture} --yes`;
-  await Promise.all(
-    baseUIBefore.map(async ({ path, content }) => {
-      if ((await readFile(join(hostFixture, path), 'utf8')) !== content) {
-        throw new Error(`SDK installation overwrote Base UI ${path}`);
-      }
-    })
-  );
-
   const hostPaths = [
     'components.json',
     'app/globals.css',
@@ -395,7 +388,7 @@ async function assertHostInstalled() {
   const before = await Promise.all(
     hostPaths.map(async (path) => [path, await readFile(join(hostFixture, path), 'utf8')] as const)
   );
-  await $`bunx --no-install shadcn add @protoform/protoform @protoform/protoform-ui-sdk-host @protoform/protoform-ui-sdk-agent --cwd ${hostFixture} --yes`;
+  await $`bunx --no-install shadcn add @protoform/protoform @protoform/protoform-shadcn-host --cwd ${hostFixture} --yes`;
   await Promise.all(
     before.map(async ([path, content]) => {
       if ((await readFile(join(hostFixture, path), 'utf8')) !== content) {
@@ -413,23 +406,12 @@ async function assertHostInstalled() {
     join(hostFixture, 'consumer-smoke.tsx'),
     [
       'import { AutoForm } from "./features/forms/auto-form/host";',
-      'import { uiSdkHostComponents } from "./features/forms/auto-form/ui-sdk-host";',
-      'import { Card as BaseCard } from "./design-system/ui/card";',
-      'import { Card as SDKCard } from "./design-system/ui/sdk/card";',
-      'import { useGroup as useBaseGroup } from "./design-system/ui/group";',
-      'import { useGroup as useSDKGroup } from "./design-system/ui/sdk/group";',
       'import { shadcnHostComponents } from "./features/forms/auto-form/shadcn-host";',
       'import type { SchemaProvider } from "./domain/runtime/core";',
-      'import { createAgent } from "./domain/runtime/ui-sdk/agent";',
-      'import { createAgentSession } from "./domain/runtime/ui-sdk/session";',
       'import { renderToString } from "react-dom/server";',
-      'if (BaseCard !== SDKCard || useBaseGroup !== useSDKGroup) throw new Error("Foundations installed duplicate shared presentation implementations");',
       'const schema: SchemaProvider<{ title: string }> = { getDefaultValues: () => ({ title: "Host-owned UI" }), parseSchema: () => ({ fields: [{ key: "title", type: "string", required: true }] }), validateSchema: (values) => ({ data: values, success: true }) };',
-      'if (typeof createAgent !== "function" || typeof createAgentSession !== "function") throw new Error("Missing opt-in SDK agent factories");',
-      'const html = renderToString(<AutoForm components={uiSdkHostComponents} schema={schema} modes={["simple"]} showSummary={false} withSubmit />);',
+      'const html = renderToString(<AutoForm components={shadcnHostComponents} schema={schema} modes={["simple"]} showSummary={false} withSubmit />);',
       'if (!html.includes("Host-owned UI") || !html.includes("data-testid=")) throw new Error("Installed host form did not render its value and test IDs");',
-      'const base = renderToString(<AutoForm components={shadcnHostComponents} schema={schema} modes={["simple"]} showSummary={false} withSubmit />);',
-      'if (!base.includes("Host-owned UI") || !base.includes("data-testid=")) throw new Error("Installed Base UI host map did not render its value and test IDs");',
     ].join('\n')
   );
   await $`bun run --cwd ${hostFixture} typecheck`;
@@ -448,7 +430,7 @@ async function assertHostInstalled() {
       'import React from "react";',
       'import { createRoot } from "react-dom/client";',
       'import { AutoForm } from "./features/forms/auto-form/host";',
-      'import { uiSdkHostComponents } from "./features/forms/auto-form/ui-sdk-host";',
+      'import { shadcnHostComponents } from "./features/forms/auto-form/shadcn-host";',
       'import type { SchemaProvider } from "./domain/runtime/core";',
       'import { Button } from "./design-system/ui/button";',
       'const schema: SchemaProvider<{title:string}> = { getDefaultValues: () => ({ title: "" }), parseSchema: () => ({ fields: [{ key: "title", type: "string", required: true }, { key: "choice", type: "select", required: true, options: [["first", "First"], ["second", "Second"], ["third", "Third"], ["fourth", "Fourth"]] }] }), validateSchema: (values) => values.title.trim() ? ({success:true,data:values}) : ({success:false,errors:[{path:["title"],message:"Enter a title"}]}) };',
@@ -456,40 +438,40 @@ async function assertHostInstalled() {
       'const [missing,setMissing] = React.useState(false);',
       'const [submitted,setSubmitted] = React.useState("");',
       'const [selection,setSelection] = React.useState<string | null>(null);',
-      'const {Select,SelectTrigger,SelectValue,SelectContent,SelectItem} = uiSdkHostComponents;',
-      'const {Input: _input, ...rest} = uiSdkHostComponents;',
-      'const components = missing ? rest : uiSdkHostComponents;',
-      'return <main className="mx-auto max-w-2xl space-y-6 px-6 py-10"><h1 className="text-2xl font-semibold tracking-tight">Protobuf forms. Your design system.</h1><p className="text-sm text-muted-foreground">UI SDK controls · custom registry namespace · host-owned theme</p><Button onClick={()=>setMissing(!missing)} type="button">{missing ? "Restore input" : "Remove input"}</Button><AutoForm components={components} schema={schema} modes={["simple"]} showSummary={false} withSubmit onSubmit={(values)=>setSubmitted(values.title)} /><output className="block text-sm" aria-label="Submitted title">{submitted}</output><section className="space-y-3 border-t pt-6" aria-label="Nullable selection"><h2 className="text-sm font-medium">Nullable selection</h2><Select items={[{value:null,label:"Not set"},{value:"null",label:"Literal null"}]} value={selection} onValueChange={setSelection}><SelectTrigger aria-label="Nullable selection"><SelectValue /></SelectTrigger><SelectContent><SelectItem value={null}>Not set</SelectItem><SelectItem value="null">Literal null</SelectItem></SelectContent></Select><output className="block text-sm text-muted-foreground" aria-label="Selected value">{JSON.stringify(selection)}</output></section></main>;',
+      'const {Select,SelectTrigger,SelectValue,SelectContent,SelectItem} = shadcnHostComponents;',
+      'const {Input: _input, ...rest} = shadcnHostComponents;',
+      'const components = missing ? rest : shadcnHostComponents;',
+      'return <main className="mx-auto max-w-2xl space-y-6 px-6 py-10"><h1 className="text-2xl font-semibold tracking-tight">Protobuf forms. Your design system.</h1><p className="text-sm text-muted-foreground">new-york primitives · custom registry namespace · no base-nova theme</p><Button onClick={()=>setMissing(!missing)} type="button">{missing ? "Restore input" : "Remove input"}</Button><AutoForm components={components} schema={schema} modes={["simple"]} showSummary={false} withSubmit onSubmit={(values)=>setSubmitted(values.title)} /><output className="block text-sm" aria-label="Submitted title">{submitted}</output><section className="space-y-3 border-t pt-6" aria-label="Nullable selection"><h2 className="text-sm font-medium">Nullable selection</h2><Select items={[{value:null,label:"Not set"},{value:"null",label:"Literal null"}]} value={selection} onValueChange={setSelection}><SelectTrigger aria-label="Nullable selection"><SelectValue /></SelectTrigger><SelectContent><SelectItem value={null}>Not set</SelectItem><SelectItem value="null">Literal null</SelectItem></SelectContent></Select><output className="block text-sm text-muted-foreground" aria-label="Selected value">{JSON.stringify(selection)}</output></section></main>;',
       '}',
       'const root = document.getElementById("root"); if (!root) throw new Error("Missing root"); createRoot(root).render(<App />);',
     ].join('\n')
   );
   await $`bun run --cwd ${hostFixture} typecheck`;
   console.log(
-    `Host registry fixture passed with UI SDK, custom aliases, and ${afterPaths.length} unchanged primitive files: ${hostFixture}`
+    `Host registry fixture passed with new-york, custom aliases, and ${afterPaths.length} unchanged primitive files: ${hostFixture}`
   );
 }
 
 async function assertTanStackInstalled() {
   await $`bun install --cwd ${tanstackFixture}`;
-  await $`bunx --no-install shadcn add @protoform/protoform-ui-sdk-tanstack --cwd ${tanstackFixture} --yes --overwrite`;
+  await $`bunx --no-install shadcn add @protoform/protoform-shadcn-tanstack --cwd ${tanstackFixture} --yes --overwrite`;
   const graph = await $`bun pm --cwd ${tanstackFixture} ls --all`.quiet().text();
   if (rechartsPackage.test(graph)) {
     throw new Error('TanStack-only consumer resolved Recharts');
   }
-  if (existsSync(join(tanstackFixture, 'components/ui/sdk/chart/index.tsx'))) {
+  if (existsSync(join(tanstackFixture, 'components/ui/chart/index.tsx'))) {
     throw new Error('TanStack-only consumer installed the Recharts component');
   }
-  await access(join(tanstackFixture, 'components/ui/sdk/chart-tanstack/index.tsx'));
+  await access(join(tanstackFixture, 'components/ui/chart-tanstack/index.tsx'));
   await Promise.all(
-    uiCatalog.components
+    shadcnCatalog.components
       .filter((entry) => entry.name !== 'chart')
       .map((component) => access(join(tanstackFixture, component.installPath)))
   );
   const chartSource = await readFile(join(root, 'scripts/fixtures/tanstack-chart-browser.tsx'), 'utf8');
   await writeFile(
     join(tanstackFixture, 'chart-browser.tsx'),
-    chartSource.replaceAll('@/components/ui/sdk/', './components/ui/sdk/')
+    chartSource.replaceAll('@/components/ui/', './components/ui/')
   );
   await $`bun add --cwd ${tanstackFixture} tailwindcss@4.3.5 @tailwindcss/vite@4.3.5`;
   const theme = await readFile(join(root, 'scripts/fixtures/host-theme.css'), 'utf8');
@@ -509,86 +491,6 @@ async function assertTanStackInstalled() {
   console.log(`Full TanStack UI consumer installed and typechecked without Recharts: ${tanstackFixture}`);
 }
 
-async function assertOptionalAdapterInstalled(adapter: string) {
-  const packageSchema = z.looseObject({ dependencies: z.record(z.string(), z.string()) });
-  const engines = new Set([
-    'react-hook-form',
-    'react-hook-form-v8',
-    '@hookform/resolvers',
-    '@tanstack/react-form',
-    '@tanstack/react-form-v2',
-  ]);
-  await rm(adapterFixture, { force: true, recursive: true });
-  await mkdir(adapterFixture, { recursive: true });
-  await Promise.all(
-    [
-      'components.json',
-      'tsconfig.json',
-      '.npmrc',
-      'app',
-      'lib/utils.ts',
-      'hooks/use-mobile.ts',
-      'design-system/ui',
-      'domain/runtime/utils',
-      'domain/runtime/input-utils',
-      'features/hooks',
-      'domain/runtime/base-ui-compat',
-    ].map(async (path) => {
-      await mkdir(join(adapterFixture, path, '..'), { recursive: true });
-      await cp(join(hostFixture, path), join(adapterFixture, path), { recursive: true });
-    })
-  );
-  await rm(join(adapterFixture, 'design-system/ui/sdk'), { recursive: true, force: true });
-  const manifest = packageSchema.parse(JSON.parse(await readFile(join(hostFixture, 'package.json'), 'utf8')));
-  manifest.dependencies = Object.fromEntries(
-    Object.entries(manifest.dependencies).filter(([name]) => !engines.has(name))
-  );
-  await writeFile(join(adapterFixture, 'package.json'), JSON.stringify(manifest, null, 2));
-  await $`bun install --cwd ${adapterFixture}`;
-  const registryItem = `@protoform/${adapter}`;
-  await $`bunx --no-install shadcn add ${registryItem} --cwd ${adapterFixture} --yes`;
-  await access(join(adapterFixture, 'features/forms/auto-form/shadcn-ui-components.tsx'));
-
-  if (
-    existsSync(join(adapterFixture, 'features/forms/auto-form/index.tsx')) ||
-    existsSync(join(adapterFixture, 'features/forms/auto-form/adapters/react-hook-form.tsx'))
-  ) {
-    throw new Error(`Optional ${adapter} install pulled in the default form engine`);
-  }
-  await writeFile(
-    join(adapterFixture, 'consumer-smoke.tsx'),
-    [
-      `import { AutoForm } from "./features/forms/${adapter}";`,
-      'import { renderToString } from "react-dom/server";',
-      'import type { SchemaProvider } from "./domain/runtime/core";',
-      'const schema: SchemaProvider = { getDefaultValues: () => ({ title: "Standalone adapter" }), parseSchema: () => ({ fields: [{ key: "title", type: "string", required: true }] }), validateSchema: (values) => ({ data: values, success: true }) };',
-      'const html = renderToString(<AutoForm schema={schema} modes={["simple"]} showSummary={false} withSubmit />);',
-      'if (!html.includes("Standalone adapter")) throw new Error("Installed adapter did not render its default value");',
-    ].join('\n')
-  );
-  await $`bun run --cwd ${adapterFixture} typecheck`;
-  await $`bun ${join(adapterFixture, 'consumer-smoke.tsx')}`;
-  console.log(`Isolated optional adapter installed and rendered without the default engine: ${adapter}`);
-}
-
-async function assertOptionalAdaptersInstalled() {
-  await assertOptionalAdapterInstalled('auto-form-tanstack');
-  await assertOptionalAdapterInstalled('auto-form-tanstack-v2');
-  await assertOptionalAdapterInstalled('auto-form-react-hook-form-v8');
-}
-
-if (process.argv.includes('--adapters-only')) {
-  const server = await servePublic();
-  try {
-    await assertOptionalAdaptersInstalled();
-  } finally {
-    await new Promise<void>((resolve, reject) => {
-      server.close((error) => (error ? reject(error) : resolve()));
-    });
-  }
-  process.exit(0);
-}
-
 await createFixture();
 await rm(coreFixture, { force: true, recursive: true });
 await cp(fixture, coreFixture, { recursive: true });
@@ -598,7 +500,6 @@ const server = await servePublic();
 try {
   await rm(hostFixture, { force: true, recursive: true });
   await assertHostInstalled();
-  await assertOptionalAdaptersInstalled();
   if (!process.argv.includes('--host-only')) {
     await assertTanStackInstalled();
     await $`bun install --cwd ${coreFixture}`;
@@ -630,40 +531,43 @@ try {
     console.log(`Optional QuickJS consumer install and worker build passed: ${coreFixture}`);
 
     await $`bun install --cwd ${fixture}`;
-    await $`bunx --no-install shadcn add @protoform/ui-sdk-agent-workbench --cwd ${fixture} --yes --overwrite`;
-    await writeFile(
-      join(fixture, 'agent-install-smoke.tsx'),
-      'import Workbench from "./components/ui/sdk/examples/agent-workbench"; if (typeof Workbench !== "function") throw new Error("Missing agent workbench");'
-    );
-    await $`bun run --cwd ${fixture} typecheck`;
-    await $`bun ${join(fixture, 'agent-install-smoke.tsx')}`;
-    console.log('Agent workbench installed and imported in a clean consumer before any other UI bundle');
-    await $`bunx --no-install shadcn add @protoform/ui-sdk-hooks --cwd ${fixture} --yes --overwrite`;
-    const sdkPaths = await Array.fromAsync(new Glob('components/ui/sdk/**/*').scan({ cwd: fixture, onlyFiles: true }));
-    const sdkBefore = await Promise.all(
-      sdkPaths.map(async (path) => ({ path, content: await readFile(join(fixture, path), 'utf8') }))
-    );
-    await $`bunx --no-install shadcn add @protoform/ui-foundations --cwd ${fixture} --yes --overwrite`;
-    await Promise.all(
-      sdkBefore.map(async ({ path, content }) => {
-        if ((await readFile(join(fixture, path), 'utf8')) !== content) {
-          throw new Error(`Base UI installation overwrote SDK ${path}`);
-        }
-      })
-    );
-    await writeFile(
-      join(fixture, 'foundations-browser.tsx'),
-      'import { createRoot } from "react-dom/client"; import Foundations from "@/components/protoform-examples/ui-foundations"; const root = document.querySelector("#root"); if (!root) throw new Error("Missing root"); createRoot(root).render(<Foundations />);'
-    );
-    await writeFile(
-      join(fixture, 'foundations.html'),
-      '<html lang="en"><head><meta name="viewport" content="width=device-width, initial-scale=1" /><title>UI foundations</title><link rel="stylesheet" href="/app/globals.css" /></head><body><div id="root"></div><script type="module" src="/foundations-browser.tsx"></script></body></html>'
-    );
     await $`bunx --no-install shadcn add @protoform/bookstore --cwd ${fixture} --yes --overwrite`;
     await $`bunx --no-install shadcn add @protoform/auto-form-react-hook-form-v8 --cwd ${fixture} --yes --overwrite`;
     await $`bunx --no-install shadcn add @protoform/auto-form-tanstack --cwd ${fixture} --yes --overwrite`;
     await $`bunx --no-install shadcn add @protoform/auto-form-tanstack-v2 --cwd ${fixture} --yes --overwrite`;
     await assertInstalled();
+    await Promise.all(
+      [
+        { name: 'custom-options', source: 'custom-options-browser.tsx' },
+        { name: 'ui-regression', source: 'ui-regression-browser.tsx' },
+      ].map(async ({ name, source }) => {
+        const content = await readFile(join(root, 'scripts/fixtures', source), 'utf8');
+        await writeFile(join(fixture, source), content.replaceAll('@/registry/base-nova/protoform/', './'));
+        await writeFile(
+          join(fixture, `${name}.html`),
+          `<html lang="en"><head><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Native control regression</title><link rel="stylesheet" href="/app/globals.css" /></head><body><div id="root"></div><script type="module" src="/${source}"></script></body></html>`
+        );
+      })
+    );
+
+    await $`bunx --no-install shadcn add @protoform/ui-sdk-agent-workbench @protoform/ui-sdk-hooks @protoform/ui-foundations --cwd ${fixture} --yes`;
+    await Promise.all(
+      [
+        ['agent', '@/components/ui/sdk/examples/agent-workbench'],
+        ['hooks', '@/components/protoform-examples/ui-sdk-hooks'],
+        ['foundations', '@/components/protoform-examples/ui-foundations'],
+      ].map(async ([name, component]) => {
+        await writeFile(
+          join(fixture, `${name}-browser.tsx`),
+          `import { createRoot } from 'react-dom/client'; import Example from '${component}'; const root = document.getElementById('root'); if (!root) throw new Error('Missing root'); createRoot(root).render(<Example />);`
+        );
+        await writeFile(
+          join(fixture, `${name}.html`),
+          `<html lang="en"><head><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Optional SDK enhancement</title><link rel="stylesheet" href="/app/globals.css" /></head><body><div id="root"></div><script type="module" src="/${name}-browser.tsx"></script></body></html>`
+        );
+      })
+    );
+
     await $`bun add --cwd ${fixture} tailwindcss@4.3.5 @tailwindcss/vite@4.3.5`;
     const browserSource = await readFile(join(root, 'scripts/fixtures/reliability-browser.tsx'), 'utf8');
     await writeFile(
@@ -689,39 +593,14 @@ try {
       '<html lang="en"><head><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Indented sections</title><link rel="stylesheet" href="/app/globals.css" /></head><body><div id="root"></div><script type="module" src="/indented-sections-browser.tsx"></script></body></html>'
     );
     await cp(join(root, 'scripts/fixtures/custom-options-browser.tsx'), join(fixture, 'custom-options-browser.tsx'));
-    const uiRegressionSource = await readFile(join(root, 'scripts/fixtures/ui-regression-browser.tsx'), 'utf8');
-    await writeFile(
-      join(fixture, 'ui-regression-browser.tsx'),
-      uiRegressionSource.replaceAll('@/registry/base-nova/protoform/', './')
-    );
-    await writeFile(
-      join(fixture, 'ui-regression.html'),
-      '<html lang="en"><head><meta name="viewport" content="width=device-width, initial-scale=1" /><title>UI regression checks</title><link rel="stylesheet" href="/app/globals.css" /></head><body><div id="root"></div><script type="module" src="/ui-regression-browser.tsx"></script></body></html>'
-    );
     await writeFile(
       join(fixture, 'custom-options.html'),
       '<html lang="en"><head><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Custom option creation</title><link rel="stylesheet" href="/app/globals.css" /></head><body><div id="root"></div><script type="module" src="/custom-options-browser.tsx"></script></body></html>'
     );
-    await writeFile(
-      join(fixture, 'agent-browser.tsx'),
-      'import { createRoot } from "react-dom/client"; import Workbench from "@/components/ui/sdk/examples/agent-workbench"; const root = document.querySelector("#root"); if (!root) throw new Error("Missing root"); createRoot(root).render(<Workbench />);'
-    );
-    await writeFile(
-      join(fixture, 'agent.html'),
-      '<html lang="en"><head><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Agent workbench</title><link rel="stylesheet" href="/app/globals.css" /></head><body><div id="root"></div><script type="module" src="/agent-browser.tsx"></script></body></html>'
-    );
-    await writeFile(
-      join(fixture, 'hooks-browser.tsx'),
-      'import { createRoot } from "react-dom/client"; import Hooks from "@/components/protoform-examples/ui-sdk-hooks"; const root = document.querySelector("#root"); if (!root) throw new Error("Missing root"); createRoot(root).render(<Hooks />);'
-    );
-    await writeFile(
-      join(fixture, 'hooks.html'),
-      '<html lang="en"><head><meta name="viewport" content="width=device-width, initial-scale=1" /><title>SDK hooks</title><link rel="stylesheet" href="/app/globals.css" /></head><body><div id="root"></div><script type="module" src="/hooks-browser.tsx"></script></body></html>'
-    );
     const theme = await readFile(join(root, 'scripts/fixtures/host-theme.css'), 'utf8');
     await writeFile(
       join(fixture, 'app/globals.css'),
-      `${theme}\n@source "../components";\n@source "../reliability-browser.tsx";\n@source "../native-defaults-browser.tsx";\n@source "../custom-options-browser.tsx";\n@source "../indented-sections-browser.tsx";\n@source "../ui-regression-browser.tsx";\n`
+      `${theme}\n@source "../components";\n@source "../reliability-browser.tsx";\n@source "../native-defaults-browser.tsx";\n@source "../custom-options-browser.tsx";\n@source "../ui-regression-browser.tsx";\n@source "../indented-sections-browser.tsx";\n`
     );
     await writeFile(
       join(fixture, 'index.html'),

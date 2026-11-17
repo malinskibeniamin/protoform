@@ -1,10 +1,9 @@
 'use client';
 
 import type { Preference } from '@ui-sdk/core';
-import { withSource } from '@ui-sdk/core/observe';
 import { usePreference } from '@ui-sdk/react/preferences';
 import type { ComponentProps } from 'react';
-import { Select, SelectContent, SelectItem, SelectList, SelectTrigger, SelectValue } from '@/components/ui/sdk/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { definedProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 
 export type { Preference, PreferenceOptions } from '@ui-sdk/core';
@@ -24,11 +23,15 @@ export function PreferenceSelect<Value extends string>({
   const state = usePreference(preference);
   return (
     <Select
-      items={[...preference.values]}
+      items={preference.values.map((value) => ({ label: value, value }))}
       onValueChange={(value, details) => {
         if (value !== null) {
-          const accepted = withSource(details.source, () =>
-            preference.set(value, definedProps({ event: details.event, reason: details.reason }))
+          const accepted = preference.set(
+            value,
+            definedProps({
+              event: details.event,
+              reason: 'item-press' as const,
+            })
           );
           if (!accepted && preference.get().value !== value) {
             details.cancel();
@@ -41,13 +44,11 @@ export function PreferenceSelect<Value extends string>({
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
-        <SelectList>
-          {preference.values.map((value) => (
-            <SelectItem key={value} value={value}>
-              {value}
-            </SelectItem>
-          ))}
-        </SelectList>
+        {preference.values.map((value) => (
+          <SelectItem key={value} value={value}>
+            {value}
+          </SelectItem>
+        ))}
       </SelectContent>
     </Select>
   );

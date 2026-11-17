@@ -15,10 +15,10 @@
 - **Modification intent**: A field the user intentionally changed after the edit baseline. The intent remains even when the current value equals the baseline again.
 - **Partial-edit validation**: Validation that reports field issues only for modification intent while retaining message-level issues that cannot be attributed safely.
 - **UI component map**: The host-owned controls used by Protoform renderers. Only controls exercised by a form need registration; implementations and their theme remain consumer-owned.
-- **UI SDK adapter**: A registry source file that maps Protoform's UI boundary to the consumer's local UI SDK component aliases without copying implementations.
+- **SDK enhancement**: A targeted opt-in addition to the canonical Base UI catalog: Rating, asynchronous option loading, or persistent preferences. It does not replace standard controls or attach a second behavior owner.
 
 - **Host AutoForm entrypoint**: The protobuf-driven form renderer with an explicit UI component map and no bundled primitive implementations.
-- **UI SDK bundle**: The opt-in themed UI, separate from the theme-independent host installation.
+- **Control catalog**: The single Base UI-backed catalog installed by `protoform-shadcn`; targeted SDK enhancements are included as a child registry item, not a parallel catalog.
 - **Chart backend**: The library and native chart-definition API used to render a UI chart, independent of the form engine and protobuf renderer.
 - **Rule snapshot**: A copied, JSON-safe subset of form values explicitly selected by the host for a QuickJS rule. It is not a protobuf message or the submission payload.
 - **Rule field catalog**: The schema-derived top-level presentation targets, independent of value presence or exposure. Guest metadata contains only each target's form type and required flag, not provider-private data.

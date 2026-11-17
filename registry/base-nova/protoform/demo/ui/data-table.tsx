@@ -17,12 +17,18 @@ import {
 } from '@tanstack/react-table';
 import { MoreHorizontalIcon } from 'lucide-react';
 import { useState } from 'react';
-import { Button } from '@/components/ui/sdk/button/index';
-import { Checkbox } from '@/components/ui/sdk/checkbox/index';
-import { Menu, MenuCheckboxItem, MenuContent, MenuItem, MenuTrigger } from '@/components/ui/sdk/dropdown-menu/index';
-import { Field } from '@/components/ui/sdk/field/index';
-import { Input } from '@/components/ui/sdk/input/index';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/sdk/table/index';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Field } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 const features = tableFeatures({
   columnFilteringFeature,
@@ -53,20 +59,20 @@ function SampleRecordActions({ record }: { record: SampleRecord }) {
   const [showDetails, setShowDetails] = useState(false);
   return (
     <div className="space-y-2">
-      <Menu>
-        <MenuTrigger
+      <DropdownMenu>
+        <DropdownMenuTrigger
           render={
             <Button aria-label={`Actions for ${record.name}`} size="icon-sm" type="button" variant="ghost">
               <MoreHorizontalIcon />
             </Button>
           }
         />
-        <MenuContent>
-          <MenuItem onClick={() => setShowDetails(showDetails !== true)}>
+        <DropdownMenuContent>
+          <DropdownMenuItem onClick={() => setShowDetails(showDetails !== true)}>
             {showDetails === true ? 'Hide details' : 'Show details'}
-          </MenuItem>
-        </MenuContent>
-      </Menu>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
       {showDetails === true ? (
         <p className="text-sm">
           {record.name}: {record.status}
@@ -137,32 +143,6 @@ export default function DataTableExample() {
   });
   const filterValue = table.getColumn('name')?.getFilterValue();
   const filter = typeof filterValue === 'string' ? filterValue : '';
-  const headerGroups = table.getHeaderGroups().map((group) => (
-    <TableRow key={group.id}>
-      {group.headers.map((header) => (
-        <TableHead aria-sort={sortDirection(header.column.getIsSorted())} key={header.id}>
-          {header.isPlaceholder === true ? null : <table.FlexRender header={header} />}
-        </TableHead>
-      ))}
-    </TableRow>
-  ));
-  const emptyRow = (
-    <TableRow>
-      <TableCell className="text-center" colSpan={table.getVisibleLeafColumns().length}>
-        No matching records.
-      </TableCell>
-    </TableRow>
-  );
-  const rows = table.getRowModel().rows.map((row) => (
-    <TableRow data-state={row.getIsSelected() === true ? 'selected' : undefined} key={row.id}>
-      {row.getVisibleCells().map((cell) => (
-        <TableCell key={cell.id}>
-          <table.FlexRender cell={cell} />
-        </TableCell>
-      ))}
-    </TableRow>
-  ));
-  const body = table.getRowModel().rows.length === 0 ? emptyRow : rows;
   return (
     <div className="min-w-0 space-y-4">
       <div className="flex min-w-0 flex-wrap items-center gap-2">
@@ -175,40 +155,67 @@ export default function DataTableExample() {
             value={filter}
           />
         </Field>
-        <Menu>
-          <MenuTrigger
+        <DropdownMenu>
+          <DropdownMenuTrigger
             render={
               <Button type="button" variant="outline">
                 Visible columns
               </Button>
             }
           />
-          <MenuContent>
+          <DropdownMenuContent>
             {table
               .getAllColumns()
               .filter((column) => column.getCanHide())
               .map((column) => (
-                <MenuCheckboxItem
+                <DropdownMenuCheckboxItem
                   checked={column.getIsVisible()}
                   key={column.id}
                   onCheckedChange={(checked) => column.toggleVisibility(checked)}
-                  value={column.id}
                 >
                   {column.id}
-                </MenuCheckboxItem>
+                </DropdownMenuCheckboxItem>
               ))}
-          </MenuContent>
-        </Menu>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
       <Table aria-label="Sample records">
-        <TableHeader>{headerGroups}</TableHeader>
-        <TableBody>{body}</TableBody>
+        <TableHeader>
+          {table.getHeaderGroups().map((group) => (
+            <TableRow key={group.id}>
+              {group.headers.map((header) => (
+                <TableHead aria-sort={sortDirection(header.column.getIsSorted())} key={header.id}>
+                  {header.isPlaceholder === true ? null : <table.FlexRender header={header} />}
+                </TableHead>
+              ))}
+            </TableRow>
+          ))}
+        </TableHeader>
+        <TableBody>
+          {table.getRowModel().rows.length === 0 ? (
+            <TableRow>
+              <TableCell className="text-center" colSpan={table.getVisibleLeafColumns().length}>
+                No matching records.
+              </TableCell>
+            </TableRow>
+          ) : (
+            table.getRowModel().rows.map((row) => (
+              <TableRow data-state={row.getIsSelected() === true ? 'selected' : undefined} key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id}>
+                    <table.FlexRender cell={cell} />
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))
+          )}
+        </TableBody>
       </Table>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <output aria-label="Selected record count" className="text-sm">
           {table.getSelectedRowModel().rows.length} selected
         </output>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex gap-2">
           <Button
             disabled={table.getCanPreviousPage() !== true}
             onClick={() => table.previousPage()}

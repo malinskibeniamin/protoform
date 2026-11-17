@@ -2,18 +2,15 @@
 
 import { CalendarIcon } from 'lucide-react';
 import { useState } from 'react';
-import { Button } from '@/components/ui/sdk/button/index';
-import { Calendar } from '@/components/ui/sdk/calendar/index';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/sdk/popover/index';
+import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
-const SAMPLE_MONTH = '2026-10';
-function formatDate(value: string) {
-  return DATE_FORMAT.format(new Date(`${value}T12:00:00`));
-}
+const SAMPLE_MONTH = new Date(2026, 9, 1);
 const DATE_FORMAT = new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' });
 
 export default function DatePickerExample() {
-  const [selected, setSelected] = useState<string | null>(null);
+  const [selected, setSelected] = useState<Date | undefined>();
   const [open, setOpen] = useState(false);
   return (
     <div className="space-y-3">
@@ -22,7 +19,7 @@ export default function DatePickerExample() {
           render={
             <Button type="button" variant="outline">
               <CalendarIcon />
-              {selected === null ? 'Choose sample date' : formatDate(selected)}
+              {selected === undefined ? 'Choose sample date' : DATE_FORMAT.format(selected)}
             </Button>
           }
         />
@@ -30,18 +27,18 @@ export default function DatePickerExample() {
           <Calendar
             defaultMonth={SAMPLE_MONTH}
             mode="single"
-            onValueChange={(date) => {
-              setSelected(typeof date === 'string' ? date : null);
-              if (typeof date === 'string') {
+            onSelect={(date) => {
+              setSelected(date);
+              if (date !== undefined) {
                 setOpen(false);
               }
             }}
-            value={selected}
+            selected={selected}
           />
         </PopoverContent>
       </Popover>
       <output aria-label="Selected sample date" className="block text-sm">
-        {selected === null ? 'No date selected.' : `Selected: ${formatDate(selected)}`}
+        {selected === undefined ? 'No date selected.' : `Selected: ${DATE_FORMAT.format(selected)}`}
       </output>
     </div>
   );

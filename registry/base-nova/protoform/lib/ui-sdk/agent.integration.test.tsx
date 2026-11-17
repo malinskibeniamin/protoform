@@ -1,10 +1,10 @@
 import { afterEach, expect, test } from '@rstest/core';
 import { act, cleanup, render, screen, waitFor } from '@testing-library/react';
+import { Button } from '@ui-sdk/react/button';
+import { Input } from '@ui-sdk/react/input';
+import { Select, SelectContent, SelectItem, SelectList, SelectTrigger, SelectValue } from '@ui-sdk/react/select';
+import { Switch } from '@ui-sdk/react/switch';
 import { useState } from 'react';
-import { Button } from '@/components/ui/sdk/button/index';
-import { Input } from '@/components/ui/sdk/input/index';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/sdk/select/index';
-import { Switch } from '@/components/ui/sdk/switch/index';
 import { createAgent } from './agent';
 
 const agent = createAgent();
@@ -22,8 +22,10 @@ function Settings() {
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="private">Private</SelectItem>
-          <SelectItem value="internal">Internal</SelectItem>
+          <SelectList>
+            <SelectItem value="private">Private</SelectItem>
+            <SelectItem value="internal">Internal</SelectItem>
+          </SelectList>
         </SelectContent>
       </Select>
       <Switch aria-label="Weekly digest" checked={digest} onCheckedChange={setDigest} />

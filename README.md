@@ -68,45 +68,33 @@ entrypoint at `components/auto-form`; the form core and host entrypoint remain i
 of either UI library. Host-owned Base UI controls can use the editable
 `protoform-shadcn-host` map (`shadcnHostComponents` from `auto-form/shadcn-host`), or an application-owned component map.
 
-### Optional UI SDK enhancements
+### Targeted UI SDK enhancements
 
-[UI SDK](https://ui-sdk.dev/docs) is pinned to `0.1.0-beta.5` and is additive, not a replacement
-for the Base UI defaults:
-
-```bash
-bunx shadcn@latest add @protoform/protoform-ui-sdk-tanstack
-```
-
-Use `protoform-ui-sdk` for its Recharts variant. SDK controls install under the configured UI
-alias's `sdk/` directory without overwriting Base UI controls. Opt in per control or form:
+There is **one control catalog**: Base UI controls, plus a small SDK capability layer included
+in the same install. UI SDK is pinned to `0.1.0-beta.5`; it does not replace ordinary controls.
 
 ```tsx
+import { AutoForm } from "@/components/auto-form";
 import { Rating, RatingStar } from "@/components/ui/sdk/rating";
-import { AutoForm, uiSdkComponents } from "@/components/ui/sdk/auto-form";
+import { AsyncOptionCombobox } from "@/components/ui/sdk/async-option-combobox";
+import { PreferenceSelect } from "@/components/ui/sdk/preferences";
 ```
 
-The SDK AutoForm entrypoint selects the SDK component map; the default AutoForm keeps Base UI.
-You can also pass `uiSdkComponents` explicitly to the headless host entrypoint. SDK native APIs
-apply only in that namespace: see the [SDK guide](registry/base-nova/protoform/UI_SDK_COMPONENTS.md).
-For host-owned SDK controls in the same `sdk/` namespace, use `protoform-ui-sdk-host`.
-Each control has one behavior owner; do not attach SDK behavior to a Base UI-controlled element.
-Renderer maps may supply an optional `Provider` for library-owned composition contexts, such as
-Base UI tooltip coordination, without coupling the form core to the library.
+Rating is a distinct core-composed primitive. Async loading and persistent preferences enhance
+the existing Base UI Combobox/Select, which keep sole ownership of their UI behavior. Preferences
+and agent sessions must be enabled explicitly. For applications that already have the canonical
+controls, `protoform-sdk-enhancements` installs only these additions and helpers.
 
-Both full bundles reuse one React presentation layer under the UI alias's private `shared/`
-directory. Appearance-only controls, style variants, and JSON/key-value editor logic have one
-implementation; each public namespace binds its own behavior primitives. These helpers stay
-inside ordinary UI-scoped Tailwind sources. Chart-specific dependencies remain separate, so
-the TanStack variants do not install Recharts.
+The former full `protoform-ui-sdk[-tanstack]` bundles, SDK host map, SDK AutoForm entrypoint,
+and replacement controls are removed. Their native SDK APIs are not silently aliased to Base UI.
+See the [scope and migration guide](registry/base-nova/protoform/UI_SDK_COMPONENTS.md).
 
-Custom component maps use the updated renderer-neutral contract: text controls receive
-`onValueChange(string)`, and slots use names such as `Radio`, `CollapsiblePanel`, `SelectGroupLabel`,
-`TabsTab`, and `TabsPanel`. The supplied Base UI map translates these to native APIs. Existing
-application-owned maps must adopt this contract; raw control exports are not a drop-in map.
+The form core and engine adapters remain headless. The canonical map supplies Base UI behavior;
+application-owned maps use the existing renderer-neutral contract (`onValueChange(string)` and
+neutral part names). UI presentation and composite editor logic live once under the configured
+UI alias's private `shared/` directory, inside normal UI-scoped Tailwind sources.
 
-Install `@protoform/ui-foundations` for a real Base UI form alongside an explicitly enabled SDK
-rating and agent sandbox. SDK items require a registry built from this revision; the older
-immutable preview snapshot below predates these additions.
+Install `@protoform/ui-foundations` for a native form alongside a scoped, opt-in Rating agent.
 
 ### Opt-in agent bridge
 
@@ -122,8 +110,8 @@ and experimental history APIs come from their native package entries. Nothing cr
 registers WebMCP tools, or connects a model automatically.
 
 Install `@protoform/ui-sdk-agent-workbench` for the local, interactive example and see the
-[core and agent integration notes](registry/base-nova/protoform/UI_SDK_COMPONENTS.md#core-composition-and-agent-workbench).
-The example explicitly selects SDK controls and AutoForm, and saves only in memory.
+[core and agent integration notes](registry/base-nova/protoform/UI_SDK_COMPONENTS.md#safety-boundary).
+The example exposes only SDK Rating actions; its ordinary controls and local save remain Base UI-owned.
 Base UI controls do not automatically acquire SDK agent actions. Authorization and human
 confirmation remain application-owned; no WebMCP tools register automatically.
 
@@ -169,11 +157,8 @@ Useful items:
 | `use-proto-form`            | Native React Hook Form integration                               |
 | `use-proto-form-tanstack`   | Native TanStack Form integration                                 |
 | `protoform-react`           | React Hook Form AutoForm using a consumer-owned UI component map |
-| `protoform-ui-sdk-tanstack` | Opt-in SDK controls with TanStack Charts; no Recharts            |
-| `protoform-ui-sdk`          | Explicit Recharts fallback with the existing chart API           |
 | `protoform-shadcn`          | Base UI default controls and AutoForm map                        |
 | `protoform-shadcn-tanstack` | Base UI defaults with TanStack Charts                            |
-| `protoform-ui-sdk-host`     | Editable adapter for host-owned UI SDK controls                  |
 | `auto-form-tanstack`        | TanStack Form AutoForm                                           |
 | `protoc-gen-protoform`      | Source-copy Buf plugin                                           |
 | `bookstore`                 | Complete five-RPC example                                        |
