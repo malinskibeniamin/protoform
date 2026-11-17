@@ -22,7 +22,6 @@ export function wrapStringChild(
 }
 
 export interface SharedProps {
-  'data-testid'?: string | undefined;
   testId?: string | undefined;
 }
 

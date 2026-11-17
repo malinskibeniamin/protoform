@@ -7,25 +7,19 @@ import { getDemoSchema } from '@/registry/base-nova/protoform/demo/runtime/demo-
 import { AutoForm, shadcnUIComponents } from '..';
 import { createMockProvider } from './test-utils';
 
-function ConsumerInput({
-  testId,
-  onValueChange,
-  ...props
-}: React.ComponentProps<'input'> & { testId?: string; onValueChange?: (value: string) => void }) {
-  return <input data-testid={testId} {...props} onChange={(event) => onValueChange?.(event.target.value)} />;
+function ConsumerInput({ testId, ...props }: React.ComponentProps<'input'> & { testId?: string }) {
+  return <input data-testid={testId} {...props} />;
 }
 
 function ConsumerTextarea({
   testId,
-  onValueChange,
   resize: _resize,
   ...props
 }: React.ComponentProps<'textarea'> & {
   testId?: string;
-  onValueChange?: (value: string) => void;
   resize?: string;
 }) {
-  return <textarea data-testid={testId} {...props} onChange={(event) => onValueChange?.(event.target.value)} />;
+  return <textarea data-testid={testId} {...props} />;
 }
 
 const components = {

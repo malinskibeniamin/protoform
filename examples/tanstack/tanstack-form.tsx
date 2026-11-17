@@ -132,7 +132,7 @@ export function TanStackFormExample({ baseUrl }: { baseUrl?: string }) {
       </form.Subscribe>
 
       {profileId ? (
-        <Alert aria-label="Created profile" role="status">
+        <Alert role="status">
           <AlertTitle>Profile created</AlertTitle>
           <AlertDescription>{profileId}</AlertDescription>
         </Alert>

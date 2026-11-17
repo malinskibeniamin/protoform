@@ -2,8 +2,15 @@
 import { createParts } from '@ui-sdk/react/primitive';
 import type { ComponentProps } from 'react';
 import { rating } from '@/components/ui/sdk/rating/primitive';
-import { stateClassName } from '@/components/ui/shared/state-class-name';
 import { definedProps, type UIProps } from '@/registry/base-nova/protoform/lib/sdk-props';
+import { cn } from '@/registry/base-nova/protoform/lib/utils';
+
+function stateClassName<State>(
+  classes: string,
+  className: string | ((state: State) => string | undefined) | undefined
+) {
+  return (state: State) => cn(classes, typeof className === 'function' ? className(state) : className);
+}
 
 const parts = createParts(rating, { root: 'div', star: 'button' });
 export function Rating({ className, ...props }: UIProps<ComponentProps<typeof parts.Root>>) {

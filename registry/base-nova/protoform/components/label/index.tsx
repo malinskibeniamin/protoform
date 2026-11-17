@@ -1,8 +1,6 @@
 import React from 'react';
 
-import { cn } from '@/registry/base-nova/protoform/lib/utils';
-
-import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
+import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
 const Label = React.forwardRef<
   HTMLLabelElement,

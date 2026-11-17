@@ -2,7 +2,7 @@ import { describe, expect } from '@rstest/core';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type React from 'react';
-import { Input as BundledInput } from '@/components/ui/input/index';
+import { Input as BundledInput } from '@/components/ui/input';
 import { AutoFormContext, type AutoFormContextValue } from '../context';
 import type { ParsedField } from '../core-types';
 import {
@@ -206,7 +206,6 @@ describe('fieldWrapper', () => {
 
     const helpButton = screen.getByRole('button', { name: 'Help for Name' });
     expect(helpButton.className).toContain('focus-visible:ring-3');
-    expect(helpButton).toHaveAttribute('data-slot', 'help-trigger');
     expect(helpButton.querySelector('svg')).toHaveAttribute('fill', 'none');
     expect(screen.getByTestId('test-field-name')).toHaveAttribute('data-layout', 'split');
     expect(screen.getByRole('button', { name: 'Help for Replicas' })).toBeVisible();

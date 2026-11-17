@@ -1,13 +1,11 @@
 'use client';
 
-import type { VariantProps } from 'class-variance-authority';
+import { cva, type VariantProps } from 'class-variance-authority';
 import { createContext, useContext, useId, useMemo } from 'react';
 
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { fieldVariants } from '@/components/ui/shared/field-variants';
-import { cn } from '@/registry/base-nova/protoform/lib/utils';
-import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
+import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
 interface FieldContextValue {
   errorId: string | undefined;
@@ -19,6 +17,71 @@ const FieldContext = createContext<FieldContextValue>({ errorId: undefined, inva
 export function useFieldContext() {
   return useContext(FieldContext);
 }
+
+function FieldSet({ className, testId, ...props }: React.ComponentProps<'fieldset'> & SharedProps) {
+  return (
+    <fieldset
+      className={cn(
+        'flex flex-col gap-6',
+        'has-[>[data-slot=checkbox-group]]:gap-3 has-[>[data-slot=radio-group]]:gap-3',
+        className
+      )}
+      data-slot="field-set"
+      data-testid={testId}
+      {...props}
+    />
+  );
+}
+
+function FieldLegend({
+  className,
+  variant = 'legend',
+  ...props
+}: React.ComponentProps<'legend'> & { variant?: 'legend' | 'label' }) {
+  return (
+    <legend
+      className={cn('mb-3 font-medium', 'data-[variant=legend]:text-base', 'data-[variant=label]:text-sm', className)}
+      data-slot="field-legend"
+      data-variant={variant}
+      {...props}
+    />
+  );
+}
+
+function FieldGroup({ className, testId, ...props }: React.ComponentProps<'div'> & SharedProps) {
+  return (
+    <div
+      className={cn(
+        'group/field-group @container/field-group flex w-full flex-col gap-7 data-[slot=checkbox-group]:gap-3 [&>[data-slot=field-group]]:gap-4',
+        className
+      )}
+      data-slot="field-group"
+      data-testid={testId}
+      {...props}
+    />
+  );
+}
+
+const fieldVariants = cva('group/field flex w-full gap-3 data-[invalid=true]:text-destructive', {
+  defaultVariants: {
+    orientation: 'vertical',
+  },
+  variants: {
+    orientation: {
+      horizontal: [
+        'flex-row items-center',
+        '[&>[data-slot=field-label]]:flex-auto',
+        'has-[>[data-slot=field-content]]:items-start has-[>[data-slot=field-content]]:[&>[role=checkbox],[role=radio]]:mt-px',
+      ],
+      responsive: [
+        'flex-col @md/field-group:flex-row @md/field-group:items-center [&>*]:w-full @md/field-group:[&>*]:w-auto [&>.sr-only]:w-auto',
+        '@md/field-group:[&>[data-slot=field-label]]:flex-auto',
+        '@md/field-group:has-[>[data-slot=field-content]]:items-start @md/field-group:has-[>[data-slot=field-content]]:[&>[role=checkbox],[role=radio]]:mt-px',
+      ],
+      vertical: ['flex-col [&>*]:w-full [&>.sr-only]:w-auto'],
+    },
+  },
+});
 
 function Field({
   className,
@@ -44,6 +107,16 @@ function Field({
   );
 }
 
+function FieldContent({ className, ...props }: React.ComponentProps<'div'>) {
+  return (
+    <div
+      className={cn('group/field-content flex flex-1 flex-col gap-1.5 leading-snug', className)}
+      data-slot="field-content"
+      {...props}
+    />
+  );
+}
+
 function FieldLabel({
   className,
   children,
@@ -60,6 +133,19 @@ function FieldLabel({
         </span>
       ) : null}
     </Label>
+  );
+}
+
+function FieldTitle({ className, ...props }: React.ComponentProps<'div'>) {
+  return (
+    <div
+      className={cn(
+        'flex w-fit items-center gap-2 text-sm leading-snug font-medium group-data-[disabled=true]/field:opacity-50',
+        className
+      )}
+      data-slot="field-label"
+      {...props}
+    />
   );
 }
 
@@ -158,10 +244,14 @@ function FieldError({
 }
 
 export {
+  Field,
   FieldContent,
+  FieldDescription,
+  FieldError,
   FieldGroup,
+  FieldLabel,
   FieldLegend,
+  FieldSeparator,
   FieldSet,
   FieldTitle,
-} from '@/components/ui/shared/field';
-export { Field, FieldDescription, FieldError, FieldLabel, FieldSeparator };
+};

@@ -2,9 +2,7 @@ import { Switch as SwitchPrimitive } from '@base-ui/react/switch';
 import type React from 'react';
 
 import { renderWithDataState } from '@/registry/base-nova/protoform/lib/base-ui-compat';
-import { cn } from '@/registry/base-nova/protoform/lib/utils';
-
-import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
+import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
 type SwitchProps = React.ComponentProps<typeof SwitchPrimitive.Root> &
   SharedProps & {

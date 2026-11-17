@@ -102,7 +102,9 @@ test('async option pagination appends results and unmount aborts an active load'
   const input = page.getByRole('combobox', { name: 'Remote project' });
   await input.fill('pages');
   await expect.element(page.getByRole('option', { name: 'Project 0' })).toBeVisible();
-  await page.getByRole('button', { name: 'Load more options' }).click();
+  await input.press('Tab');
+  await expect.element(page.getByRole('button', { name: 'Load more options' })).toBeFocused();
+  await page.getByRole('button', { name: 'Load more options' }).press('Enter');
   await expect
     .poll(() => load.mock.calls.map(([query, context]) => [query, context.page]))
     .toEqual([

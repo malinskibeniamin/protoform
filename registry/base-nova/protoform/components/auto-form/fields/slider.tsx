@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
-
 import type { AutoFormFieldProps } from '../core-types';
 import { getFieldUiConfig } from '../helpers';
 import type { FieldTypeDefinition } from '../registry';
@@ -57,8 +56,8 @@ function SliderFieldComponent({ error, field, id, inputProps, label: fieldLabel 
         max={max}
         min={min}
         onBlur={inputProps['onBlur']}
-        onValueChange={(nextInputValue) => {
-          const nextValue = nextInputValue;
+        onChange={(event) => {
+          const nextValue = event.target.value;
           inputProps['onValueChange'](nextValue === '' ? min : Number(nextValue));
         }}
         placeholder={getFieldUiConfig(field).placeholder}

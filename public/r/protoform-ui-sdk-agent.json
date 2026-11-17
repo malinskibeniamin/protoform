@@ -12,12 +12,6 @@
   ],
   "files": [
     {
-      "path": "registry/base-nova/protoform/lib/ui-sdk/agent.ts",
-      "content": "import { createAgent as sdkCreateAgent } from '@ui-sdk/react/agent';\n\nexport const createAgent = sdkCreateAgent;\nexport type { AgentAction, AgentComponent, AgentStep, ObservedChange } from '@ui-sdk/react/agent';\n",
-      "type": "registry:lib",
-      "target": "@lib/ui-sdk/agent.ts"
-    },
-    {
       "path": "registry/base-nova/protoform/lib/ui-sdk/session.ts",
       "content": "import { createAgent, type ObservedChange } from '@ui-sdk/react/agent';\nimport { createHistory, type HistoryOptions } from '@ui-sdk/react/history';\n\ntype AgentOptions = NonNullable<Parameters<typeof createAgent>[0]>;\ntype AgentPolicy = NonNullable<AgentOptions['allow']>;\nexport interface AgentSessionOptions {\n  allow: AgentPolicy;\n  confirm?: AgentPolicy;\n  history?: HistoryOptions;\n  onChange?: (change: ObservedChange) => void;\n  timeout?: number;\n}\n\nexport function createAgentSession(options: AgentSessionOptions) {\n  const lifetime = new AbortController();\n  const agent = createAgent({\n    ...(options.timeout === undefined ? {} : { timeout: options.timeout }),\n    allow: async (step, context) => {\n      const signal = AbortSignal.any([context.signal, lifetime.signal]);\n      if (signal.aborted || !(await options.allow(step, { signal }))) {\n        return false;\n      }\n      if (signal.aborted) {\n        return false;\n      }\n      if (step.confirm !== undefined) {\n        const { confirm } = options;\n        if (confirm === undefined) {\n          return false;\n        }\n        const approved = await Promise.resolve(confirm(step, { signal }));\n        if (approved !== true) {\n          return false;\n        }\n      }\n      return !signal.aborted;\n    },\n  });\n  const history = createHistory(agent, options.history);\n  const stop = options.onChange === undefined ? undefined : agent.subscribe(options.onChange);\n  return {\n    agent,\n    history,\n    signal: lifetime.signal,\n    dispose() {\n      lifetime.abort();\n      stop?.();\n      history.destroy();\n    },\n  };\n}\n",
       "type": "registry:lib",

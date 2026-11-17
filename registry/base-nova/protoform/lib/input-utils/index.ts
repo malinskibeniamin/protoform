@@ -164,7 +164,7 @@ export function useInputListFocus(containerRef: RefObject<HTMLElement | null>) {
         const input = row?.querySelector<HTMLElement>('input, [role="combobox"]');
         input?.focus();
       } else {
-        const addButton = containerRef.current.querySelector<HTMLElement>('[data-list-add], [data-slot="add-button"]');
+        const addButton = containerRef.current.querySelector<HTMLElement>('[data-slot="add-button"]');
         addButton?.focus();
       }
     }

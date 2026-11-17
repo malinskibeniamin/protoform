@@ -8,7 +8,7 @@ Name new worktrees `beniamin-malinski/ticket-name-if-any/feature-description`.
 
 Keep `@base-ui/react` as the default UI foundation under `components/*`. Keep the form core and engine adapters independent of either UI library. Only targeted SDK additions (Rating, async loading, preferences) live under `registry/ui-sdk/protoform/components/*` and install to the configured UI alias under `sdk/`; they must not overwrite default Base UI controls or attach a second behavior owner to them. There is one canonical AutoForm and one Base UI control catalog. Do not restore SDK replacements or an alternate SDK AutoForm map. Async loading/preferences reuse native controls; only distinct additions may own SDK UI behavior.
 
-Share foundation-independent React presentation and composite-editor logic in `lib/presentation`, reached through `@/components/ui/shared/*`. Its registry dependency installs one copy under the configured UI alias's `shared/` directory, keeping styles inside UI-scoped Tailwind sources. Reuse canonical controls, layouts, and variants; never copy them into an SDK replacement namespace.
+Keep existing controls, presentation ownership, form contracts, and registry structure intact. Add SDK capabilities through small opt-in leaf items, not architectural rewrites. Share a helper only when there are genuine reusable consumers; do not relocate existing controls to create speculative sharing.
 
 ## UI SDK
 

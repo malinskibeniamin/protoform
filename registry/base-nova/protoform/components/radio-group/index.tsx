@@ -5,9 +5,7 @@ import { AnimatePresence, type HTMLMotionProps, motion, type Transition } from '
 import type React from 'react';
 
 import { splitMotionProps } from '@/registry/base-nova/protoform/lib/base-ui-compat';
-import { cn } from '@/registry/base-nova/protoform/lib/utils';
-
-import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
+import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
 const DEFAULT_TRANSITION = { duration: 0.15 } satisfies Transition;
 

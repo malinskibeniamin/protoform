@@ -2,9 +2,7 @@
 
 import { Slider as SliderPrimitive } from '@base-ui/react/slider';
 
-import { cn } from '@/registry/base-nova/protoform/lib/utils';
-
-import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
+import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
 type SliderProps<Value extends number | readonly number[] = number[]> = SliderPrimitive.Root.Props<Value> & SharedProps;
 

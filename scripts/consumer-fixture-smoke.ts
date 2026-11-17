@@ -171,9 +171,6 @@ async function assertInstalled() {
     'lib/protobuf-provider/index.ts',
     ...shadcnCatalog.components.map((component) => component.installPath),
     ...shadcnCatalog.compositions.map((composition) => composition.installPath),
-    'components/ui/sdk/rating/index.tsx',
-    'components/ui/sdk/async-option-combobox/index.tsx',
-    'components/ui/sdk/preferences/index.tsx',
     'LICENSES/shadcn-MIT.txt',
     'LICENSES/protoform-shadcn-provenance.md',
     'LICENSES/protoform-MIT.txt',
@@ -368,7 +365,7 @@ async function assertHostInstalled() {
   config['aliases']['ui'] = '@/design-system/ui';
   config['aliases']['lib'] = '@/domain/runtime';
   config['aliases']['hooks'] = '@/features/hooks';
-  config['registries']['@host'] = `${registryOrigin}/r/{name}.json`;
+  config['registries']['@host'] = 'https://ui.shadcn.com/r/styles/new-york/{name}.json';
   await writeFile(join(hostFixture, 'components.json'), JSON.stringify(config, null, 2));
   await mkdir(join(hostFixture, 'lib'), { recursive: true });
   await writeFile(
@@ -378,7 +375,27 @@ async function assertHostInstalled() {
   await $`bun install --cwd ${hostFixture}`;
   await $`bun add --cwd ${hostFixture} clsx tailwind-merge tailwindcss@4.3.5 @tailwindcss/vite@4.3.5`;
   await cp('scripts/fixtures/host-theme.css', join(hostFixture, 'app/globals.css'));
-  await $`bunx --no-install shadcn add @host/protoform-shadcn-tanstack --cwd ${hostFixture} --yes`;
+  const controls = [
+    'alert',
+    'button',
+    'calendar',
+    'checkbox',
+    'collapsible',
+    'field',
+    'input',
+    'input-group',
+    'popover',
+    'radio-group',
+    'select',
+    'slider',
+    'switch',
+    'tabs',
+    'textarea',
+    'toggle',
+    'toggle-group',
+    'tooltip',
+  ].map((name) => `@host/${name}`);
+  await $`bunx --no-install shadcn add ${controls} --cwd ${hostFixture} --yes`;
   const hostPaths = [
     'components.json',
     'app/globals.css',
@@ -441,7 +458,7 @@ async function assertHostInstalled() {
       'const {Select,SelectTrigger,SelectValue,SelectContent,SelectItem} = shadcnHostComponents;',
       'const {Input: _input, ...rest} = shadcnHostComponents;',
       'const components = missing ? rest : shadcnHostComponents;',
-      'return <main className="mx-auto max-w-2xl space-y-6 px-6 py-10"><h1 className="text-2xl font-semibold tracking-tight">Protobuf forms. Your design system.</h1><p className="text-sm text-muted-foreground">new-york primitives · custom registry namespace · no base-nova theme</p><Button onClick={()=>setMissing(!missing)} type="button">{missing ? "Restore input" : "Remove input"}</Button><AutoForm components={components} schema={schema} modes={["simple"]} showSummary={false} withSubmit onSubmit={(values)=>setSubmitted(values.title)} /><output className="block text-sm" aria-label="Submitted title">{submitted}</output><section className="space-y-3 border-t pt-6" aria-label="Nullable selection"><h2 className="text-sm font-medium">Nullable selection</h2><Select items={[{value:null,label:"Not set"},{value:"null",label:"Literal null"}]} value={selection} onValueChange={setSelection}><SelectTrigger aria-label="Nullable selection"><SelectValue /></SelectTrigger><SelectContent><SelectItem value={null}>Not set</SelectItem><SelectItem value="null">Literal null</SelectItem></SelectContent></Select><output className="block text-sm text-muted-foreground" aria-label="Selected value">{JSON.stringify(selection)}</output></section></main>;',
+      'return <main className="mx-auto max-w-2xl space-y-6 px-6 py-10"><h1 className="text-2xl font-semibold tracking-tight">Protobuf forms. Your design system.</h1><p className="text-sm text-muted-foreground">new-york primitives · custom registry namespace · no base-nova theme</p><Button onClick={()=>setMissing(!missing)} type="button">{missing ? "Restore input" : "Remove input"}</Button><AutoForm components={components} schema={schema} modes={["simple"]} showSummary={false} withSubmit onSubmit={(values)=>setSubmitted(values.title)} /><output className="block text-sm" aria-label="Submitted title">{submitted}</output><section className="space-y-3 border-t pt-6" aria-label="Nullable selection"><h2 className="text-sm font-medium">Nullable selection</h2><Select value={selection} onValueChange={setSelection}><SelectTrigger aria-label="Nullable selection"><SelectValue /></SelectTrigger><SelectContent><SelectItem value={null}>Not set</SelectItem><SelectItem value="null">Literal null</SelectItem></SelectContent></Select><output className="block text-sm text-muted-foreground" aria-label="Selected value">{JSON.stringify(selection)}</output></section></main>;',
       '}',
       'const root = document.getElementById("root"); if (!root) throw new Error("Missing root"); createRoot(root).render(<App />);',
     ].join('\n')
@@ -477,7 +494,7 @@ async function assertTanStackInstalled() {
   const theme = await readFile(join(root, 'scripts/fixtures/host-theme.css'), 'utf8');
   await writeFile(
     join(tanstackFixture, 'app/globals.css'),
-    `${theme}\n@source "../components";\n@source "../chart-browser.tsx";\n:root { --chart-1: rgb(147 51 234); }\n`
+    `@layer ui-sdk;\n${theme}\n@source "../components";\n@source "../chart-browser.tsx";\n:root { --chart-1: rgb(147 51 234); }\n`
   );
   await writeFile(
     join(tanstackFixture, 'index.html'),
@@ -536,27 +553,27 @@ try {
     await $`bunx --no-install shadcn add @protoform/auto-form-tanstack --cwd ${fixture} --yes --overwrite`;
     await $`bunx --no-install shadcn add @protoform/auto-form-tanstack-v2 --cwd ${fixture} --yes --overwrite`;
     await assertInstalled();
+    const canonicalPaths = [
+      ...(await Array.fromAsync(new Glob('components/ui/**/*').scan({ cwd: fixture, onlyFiles: true }))),
+      ...(await Array.fromAsync(new Glob('components/auto-form/**/*').scan({ cwd: fixture, onlyFiles: true }))),
+      'lib/utils/index.tsx',
+    ];
+    const canonicalSources = await Promise.all(
+      canonicalPaths.map(async (path) => ({ path, content: await readFile(join(fixture, path), 'utf8') }))
+    );
+    await $`bunx --no-install shadcn add @protoform/ui-sdk-agent-workbench @protoform/ui-sdk-hooks --cwd ${fixture} --yes`;
     await Promise.all(
-      [
-        { name: 'custom-options', source: 'custom-options-browser.tsx' },
-        { name: 'ui-regression', source: 'ui-regression-browser.tsx' },
-      ].map(async ({ name, source }) => {
-        const content = await readFile(join(root, 'scripts/fixtures', source), 'utf8');
-        await writeFile(join(fixture, source), content.replaceAll('@/registry/base-nova/protoform/', './'));
-        await writeFile(
-          join(fixture, `${name}.html`),
-          `<html lang="en"><head><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Native control regression</title><link rel="stylesheet" href="/app/globals.css" /></head><body><div id="root"></div><script type="module" src="/${source}"></script></body></html>`
-        );
+      canonicalSources.map(async ({ path, content }) => {
+        if ((await readFile(join(fixture, path), 'utf8')) !== content) {
+          throw new Error(`SDK enhancement modified canonical source ${path}`);
+        }
       })
     );
-
-    await $`bunx --no-install shadcn add @protoform/ui-sdk-agent-workbench @protoform/ui-sdk-hooks @protoform/ui-foundations --cwd ${fixture} --yes`;
     await Promise.all(
       [
-        ['agent', '@/components/ui/sdk/examples/agent-workbench'],
-        ['hooks', '@/components/protoform-examples/ui-sdk-hooks'],
-        ['foundations', '@/components/protoform-examples/ui-foundations'],
-      ].map(async ([name, component]) => {
+        { name: 'agent', component: '@/components/protoform-examples/ui-sdk-agent-workbench' },
+        { name: 'hooks', component: '@/components/protoform-examples/ui-sdk-hooks' },
+      ].map(async ({ name, component }) => {
         await writeFile(
           join(fixture, `${name}-browser.tsx`),
           `import { createRoot } from 'react-dom/client'; import Example from '${component}'; const root = document.getElementById('root'); if (!root) throw new Error('Missing root'); createRoot(root).render(<Example />);`
@@ -567,7 +584,6 @@ try {
         );
       })
     );
-
     await $`bun add --cwd ${fixture} tailwindcss@4.3.5 @tailwindcss/vite@4.3.5`;
     const browserSource = await readFile(join(root, 'scripts/fixtures/reliability-browser.tsx'), 'utf8');
     await writeFile(
@@ -600,7 +616,7 @@ try {
     const theme = await readFile(join(root, 'scripts/fixtures/host-theme.css'), 'utf8');
     await writeFile(
       join(fixture, 'app/globals.css'),
-      `${theme}\n@source "../components";\n@source "../reliability-browser.tsx";\n@source "../native-defaults-browser.tsx";\n@source "../custom-options-browser.tsx";\n@source "../ui-regression-browser.tsx";\n@source "../indented-sections-browser.tsx";\n`
+      `@layer ui-sdk;\n${theme}\n@source "../components";\n@source "../reliability-browser.tsx";\n@source "../native-defaults-browser.tsx";\n@source "../custom-options-browser.tsx";\n@source "../indented-sections-browser.tsx";\n`
     );
     await writeFile(
       join(fixture, 'index.html'),

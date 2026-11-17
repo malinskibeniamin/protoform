@@ -156,7 +156,7 @@ export function FinalFormExample({ baseUrl }: { baseUrl?: string }) {
             </Button>
 
             {profileId ? (
-              <Alert aria-label="Created profile" role="status">
+              <Alert role="status">
                 <AlertTitle>Profile created</AlertTitle>
                 <AlertDescription>{profileId}</AlertDescription>
               </Alert>

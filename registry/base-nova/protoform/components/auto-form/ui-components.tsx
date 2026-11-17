@@ -15,12 +15,7 @@ export function ProtoformUIProvider({
   children: React.ReactNode;
   components: ProtoformUIComponentMap;
 }) {
-  const Provider = components.Provider ?? React.Fragment;
-  return (
-    <ProtoformUiContext.Provider value={components}>
-      <Provider>{children}</Provider>
-    </ProtoformUiContext.Provider>
-  );
+  return <ProtoformUiContext.Provider value={components}>{children}</ProtoformUiContext.Provider>;
 }
 
 export function useProtoformUIComponents(): ProtoformUIComponentMap {
@@ -73,7 +68,7 @@ export const ChoiceboxItemHeader = createUIComponent('ChoiceboxItemHeader');
 export const ChoiceboxItemIndicator = createUIComponent('ChoiceboxItemIndicator');
 export const ChoiceboxItemTitle = createUIComponent('ChoiceboxItemTitle');
 export const Collapsible = createUIComponent('Collapsible');
-export const CollapsiblePanel = createUIComponent('CollapsiblePanel');
+export const CollapsibleContent = createUIComponent('CollapsibleContent');
 export const CollapsibleTrigger = createUIComponent('CollapsibleTrigger');
 export const Combobox = createUIComponent('Combobox', true);
 export const CopyButton = createUIComponent('CopyButton');
@@ -95,21 +90,21 @@ export const Popover = createUIComponent('Popover');
 export const PopoverContent = createUIComponent('PopoverContent');
 export const PopoverTrigger = createUIComponent('PopoverTrigger');
 export const RadioGroup = createUIComponent('RadioGroup');
-export const Radio = createUIComponent('Radio');
+export const RadioGroupItem = createUIComponent('RadioGroupItem');
 export const Select = createUIComponent('Select');
 export const SelectContent = createUIComponent('SelectContent');
 export const SelectGroup = createUIComponent('SelectGroup');
 export const SelectItem = createUIComponent('SelectItem');
-export const SelectGroupLabel = createUIComponent('SelectGroupLabel');
+export const SelectLabel = createUIComponent('SelectLabel');
 export const SelectTrigger = createUIComponent('SelectTrigger', true);
 export const SelectValue = createUIComponent('SelectValue');
 export const SimpleMultiSelect = createUIComponent('SimpleMultiSelect', true);
 export const Slider = createUIComponent('Slider');
 export const Switch = createUIComponent('Switch');
 export const Tabs = createUIComponent('Tabs');
-export const TabsPanel = createUIComponent('TabsPanel');
+export const TabsContent = createUIComponent('TabsContent');
 export const TabsList = createUIComponent('TabsList');
-export const TabsTab = createUIComponent('TabsTab');
+export const TabsTrigger = createUIComponent('TabsTrigger');
 export const Text = createUIComponent('Text');
 export const Textarea = createUIComponent('Textarea', true);
 export const Toggle = createUIComponent('Toggle');
@@ -117,4 +112,5 @@ export const ToggleGroup = createUIComponent('ToggleGroup');
 export const ToggleGroupItem = createUIComponent('ToggleGroupItem');
 export const Tooltip = createUIComponent('Tooltip');
 export const TooltipContent = createUIComponent('TooltipContent');
+export const TooltipProvider = createUIComponent('TooltipProvider');
 export const TooltipTrigger = createUIComponent('TooltipTrigger');

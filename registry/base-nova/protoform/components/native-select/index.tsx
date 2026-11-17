@@ -2,6 +2,7 @@
 
 import { useRender } from '@base-ui/react/use-render';
 import { ChevronDownIcon } from 'lucide-react';
+import type React from 'react';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
 
 type NativeSelectProps = Omit<useRender.ComponentProps<'select'>, 'size'> & {
@@ -36,9 +37,13 @@ function NativeSelect({ render, className, size = 'default', ...props }: NativeS
     </div>
   );
 }
+function NativeSelectOption({ className, ...props }: React.ComponentProps<'option'>) {
+  return <option className={cn('bg-canvas text-canvas-text', className)} data-slot="native-select-option" {...props} />;
+}
+function NativeSelectOptGroup({ className, ...props }: React.ComponentProps<'optgroup'>) {
+  return (
+    <optgroup className={cn('bg-canvas text-canvas-text', className)} data-slot="native-select-optgroup" {...props} />
+  );
+}
 
-export {
-  NativeSelectOptGroup,
-  NativeSelectOption,
-} from '@/components/ui/shared/native-select';
-export { NativeSelect };
+export { NativeSelect, NativeSelectOptGroup, NativeSelectOption };

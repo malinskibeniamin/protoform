@@ -5,9 +5,7 @@ import { AnimatePresence, type HTMLMotionProps, motion, type Transition } from '
 import React from 'react';
 
 import { asChildToRender, asChildTrigger, splitMotionProps } from '@/registry/base-nova/protoform/lib/base-ui-compat';
-import { cn } from '@/registry/base-nova/protoform/lib/utils';
-
-import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
+import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
 const DEFAULT_TRANSITION = { damping: 22, stiffness: 150, type: 'spring' } satisfies Transition;
 

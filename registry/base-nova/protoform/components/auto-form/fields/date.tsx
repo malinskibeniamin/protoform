@@ -42,22 +42,20 @@ function DateFieldComponent({ error, field, id, inputProps, label }: AutoFormFie
           disabled={inputProps['disabled']}
           id={id}
           onBlur={inputProps['onBlur']}
-          onValueChange={(nextInputValue) => inputProps['onValueChange'](nextInputValue)}
+          onChange={(event) => inputProps['onValueChange'](event.target.value)}
           placeholder={placeholder !== undefined && placeholder !== '' ? placeholder : 'YYYY-MM-DD'}
           testId={`${controlTestId}-input`}
           value={value}
         />
         <InputGroupAddon align="inline-end">
-          <PopoverTrigger
-            render={
-              <InputGroupButton
-                aria-label={`Open calendar for ${getControlLabel(label, field)}`}
-                disabled={inputProps['disabled']}
-                testId={`${controlTestId}-calendar`}
-              />
-            }
-          >
-            <CalendarIcon className="size-4" />
+          <PopoverTrigger asChild>
+            <InputGroupButton
+              aria-label={`Open calendar for ${getControlLabel(label, field)}`}
+              disabled={inputProps['disabled']}
+              testId={`${controlTestId}-calendar`}
+            >
+              <CalendarIcon className="size-4" />
+            </InputGroupButton>
           </PopoverTrigger>
         </InputGroupAddon>
       </InputGroup>
@@ -105,9 +103,7 @@ function TimestampFieldComponent({ error, field, id, inputProps, label }: AutoFo
           aria-invalid={Boolean(error)}
           disabled={inputProps['disabled']}
           onBlur={inputProps['onBlur']}
-          onValueChange={(nextInputValue) =>
-            inputProps['onValueChange'](buildTimestampValue(dateValue, nextInputValue))
-          }
+          onChange={(event) => inputProps['onValueChange'](buildTimestampValue(dateValue, event.target.value))}
           placeholder="HH:mm"
           testId={testIds.controlPart('time-input')}
           value={timeValue}

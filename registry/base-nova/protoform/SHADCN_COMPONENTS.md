@@ -4,9 +4,6 @@ The bundle covers all 66 entries in the pinned official Base UI catalog. Compile
 
 Code Block and Trace are included in `@protoform/protoform-shadcn` under `components/ui/code-block` and `components/ui/trace`. They are read-only presentation primitives; the JSON editor continues to use CodeMirror. No trace collection, network request or AI dependency is added.
 
-The default AutoForm uses this Base UI map. Targeted SDK additions live in `sdk/` and require explicit imports. There is no alternate SDK control catalog or AutoForm. The headless form core
-imports neither foundation; no Base UI control has SDK behavior attached.
-
 ## Source and license
 
 Adapted from shadcn/ui (MIT), retrieved 2026-10-21 with the installed shadcn CLI 4.22.1:
@@ -38,7 +35,7 @@ Coverage is pinned to the same upstream revision above: 63 primitive components 
 
 The same imports accept the pinned official component props and exports, with the compatibility details below for overlapping Protoform convenience APIs. Existing theme defaults remain. The 34 additional components use the official base-nova source with local imports, Lucide icons, React Compiler-compatible state, named lifecycle callbacks, native semantic markup, safe default action button types and the existing scoped portal provider. Carousel editing keys remain native; custom chart formatters receive the complete typed tooltip payload. Sidebar cookie persistence uses js-cookie instead of direct document.cookie access. Optional charts and questionnaire/message-scroller runtime dependencies are imported only by their owning modules; examples lazy-load the heavier groups.
 
-New runtime/consumer dependencies: @shadcn/react 0.3.1, @tanstack/react-table 9.3.1 (Data Table guide), embla-carousel-react 8.6.0, input-otp 1.5.0, js-cookie 3.0.8, react-is 19.3.1 (Recharts peer), react-resizable-panels 4.24.0, recharts 3.10.1. @types/js-cookie 3.0.6 is installed for copied TypeScript compilation. They are additional installation/maintenance cost, not a performance improvement. Their package licenses remain in the installed packages; the upstream source-copy MIT notice continues to ship unchanged.
+New runtime/consumer dependencies: @shadcn/react 0.3.1, @tanstack/react-table 9.3.1 (Data Table guide), embla-carousel-react 8.6.0, input-otp 1.5.0, js-cookie 3.0.8, react-is 19.3.1 (Recharts peer), react-resizable-panels 4.14.8, recharts 3.8.0. @types/js-cookie 3.0.6 is installed for copied TypeScript compilation. They are additional installation/maintenance cost, not a performance improvement. Their package licenses remain in the installed packages; the upstream source-copy MIT notice continues to ship unchanged.
 
 ### Catalog adaptation details
 

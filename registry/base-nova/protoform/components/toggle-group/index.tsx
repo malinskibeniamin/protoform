@@ -10,9 +10,7 @@ import type { CSSProperties } from 'react';
 import React from 'react';
 import type { GroupContextValue, GroupPosition } from '@/components/ui/group';
 import { splitMotionProps } from '@/registry/base-nova/protoform/lib/base-ui-compat';
-import { cn } from '@/registry/base-nova/protoform/lib/utils';
-
-import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
+import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
 const DEFAULT_TRANSITION = { bounce: 0, damping: 25, stiffness: 200, type: 'spring' } satisfies Transition;
 

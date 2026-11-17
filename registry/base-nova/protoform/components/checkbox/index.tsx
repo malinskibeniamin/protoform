@@ -7,9 +7,7 @@ import type React from 'react';
 import { useState } from 'react';
 
 import { splitMotionProps } from '@/registry/base-nova/protoform/lib/base-ui-compat';
-import { cn } from '@/registry/base-nova/protoform/lib/utils';
-
-import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
+import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
 const pathDrawClassName =
   '[stroke-dasharray:1] [stroke-dashoffset:1] opacity-0 transition-[stroke-dashoffset,opacity] duration-200 ease-out data-[visible=true]:[stroke-dashoffset:0] data-[visible=true]:opacity-100 data-[visible=true]:delay-100';

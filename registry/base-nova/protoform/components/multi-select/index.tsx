@@ -10,8 +10,12 @@ import { TagsValue } from '@/components/ui/tags';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useControllableState } from '@/registry/base-nova/protoform/hooks/use-controllable-state';
 import { usePortalContainer } from '@/registry/base-nova/protoform/hooks/use-portal-container';
-import { cn } from '@/registry/base-nova/protoform/lib/utils';
-import type { PortalContentProps, PortalRootProps, SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
+import {
+  cn,
+  type PortalContentProps,
+  type PortalRootProps,
+  type SharedProps,
+} from '@/registry/base-nova/protoform/lib/utils';
 
 export interface MultiSelectOptionItem {
   label?: React.ReactNode | undefined;
@@ -569,7 +573,6 @@ type SimpleMultiSelectProps = React.AriaAttributes &
   Pick<PortalContentProps, 'container' | 'onOpenAutoFocus'> & {
     id?: string;
     options: MultiSelectOption[] | string[];
-    filter?: MultiSelectProps['filter'];
     value?: readonly string[];
     onValueChange?: (value: string[]) => void;
     onSearch?: ((query: string) => void) | undefined;
@@ -603,7 +606,6 @@ function SimpleMultiSelect({
   onOpenAutoFocus,
   testId,
   emptyState = 'No items found',
-  filter,
   ...ariaProps
 }: SimpleMultiSelectProps) {
   const normalizedOptions = options.map((option) =>
@@ -613,7 +615,6 @@ function SimpleMultiSelect({
     <MultiSelect
       defaultOpen={defaultOpen}
       disabled={disabled}
-      filter={filter}
       items={flattenMultiSelectOptions(normalizedOptions)}
       maxCount={maxCount}
       onOpenChange={onOpenChange}

@@ -18,7 +18,7 @@ function BytesFieldComponent({ error, field, id, inputProps }: AutoFormFieldProp
       disabled={inputProps['disabled']}
       id={id}
       onBlur={inputProps['onBlur']}
-      onValueChange={(nextInputValue) => inputProps['onValueChange'](nextInputValue)}
+      onChange={(event) => inputProps['onValueChange'](event.target.value)}
       placeholder={placeholder !== undefined && placeholder !== '' ? placeholder : 'Base64 payload'}
       resize="vertical"
       testId={testIds.control}

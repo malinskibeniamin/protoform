@@ -2,7 +2,6 @@
 
 import type React from 'react';
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
-
 import { formSpacing } from './form-spacing';
 import { FormDepthProvider, headingLevelForDepth, useFormDepth } from './layout-context';
 import { Button, FieldLabel, Heading, Text } from './ui-components';

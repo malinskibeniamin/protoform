@@ -12,6 +12,4 @@ export interface ComboboxOption {
   value: string;
 }
 
-export type ProtoformUIComponentMap = Partial<Record<keyof import('./ui-props').ProtoformUIProps, UIComponent>> & {
-  Provider?: React.ComponentType<React.PropsWithChildren>;
-};
+export type ProtoformUIComponentMap = Partial<Record<keyof import('./ui-props').ProtoformUIProps, UIComponent>>;

@@ -6,9 +6,7 @@ import { type ComponentProps, forwardRef, type HTMLAttributes } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, type CardProps, CardTitle } from '@/components/ui/card';
 import { RadioGroup } from '@/components/ui/radio-group';
 import { renderWithDataState } from '@/registry/base-nova/protoform/lib/base-ui-compat';
-import { cn } from '@/registry/base-nova/protoform/lib/utils';
-
-import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
+import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
 const DEFAULT_TRANSITION = { damping: 16, stiffness: 200, type: 'spring' } satisfies Transition;
 

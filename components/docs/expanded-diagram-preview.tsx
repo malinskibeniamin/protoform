@@ -34,6 +34,7 @@ export function ExpandedDiagramPreview({ target }: { target: HTMLElement }) {
       data-diagram-preview=""
       data-testid="diagram-preview"
       ref={previewRef}
+      spacing="none"
     />
   );
 }

@@ -24,14 +24,6 @@ const expectedItems = [
   'protoform-shadcn',
   'protoform-shadcn-tanstack',
   'protoform-shadcn-host',
-  'protoform-sdk-enhancements',
-  'protoform-ui-presentation',
-  'protoform-recharts-presentation',
-  'protoform-tanstack-charts-presentation',
-  'protoform-ui-sdk-agent',
-  'ui-sdk-agent-workbench',
-  'ui-sdk-hooks',
-  'ui-foundations',
   'auto-form-react-hook-form-v8',
   'auto-form-tanstack',
   'auto-form-tanstack-v2',
@@ -117,14 +109,11 @@ if (
 
 const protoformShadcn = dependencyItemSchema.parse(JSON.parse(readFileSync('public/r/protoform-shadcn.json', 'utf8')));
 if (
-  protoformShadcn.registryDependencies?.length !== 4 ||
-  !protoformShadcn.registryDependencies.includes('@protoform/protoform-react') ||
-  !protoformShadcn.registryDependencies.includes('@protoform/protoform-ui-presentation') ||
-  !protoformShadcn.registryDependencies.includes('@protoform/protoform-recharts-presentation') ||
-  !protoformShadcn.registryDependencies.includes('@protoform/protoform-sdk-enhancements') ||
-  !protoformShadcn.files?.some((file) => file.target === '@ui/button/index.tsx')
+  protoformShadcn.registryDependencies?.length !== 1 ||
+  protoformShadcn.registryDependencies[0] !== '@protoform/protoform-react' ||
+  !protoformShadcn.files?.some((file) => file.target === '~/components/ui/button/index.tsx')
 ) {
-  throw new Error('protoform-shadcn must install optional Base UI defaults through the configured ui alias');
+  throw new Error('protoform-shadcn must install optional defaults through the configured ui alias');
 }
 
 const reactHookFormV8Alias = 'react-hook-form-v8@npm:react-hook-form@8.0.0-beta.5';

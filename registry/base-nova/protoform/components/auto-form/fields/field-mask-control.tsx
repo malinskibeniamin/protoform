@@ -22,8 +22,8 @@ function FieldMaskFieldComponent({ error, field, id, inputProps }: AutoFormField
         disabled={inputProps['disabled']}
         id={id}
         onBlur={inputProps['onBlur']}
-        onValueChange={(nextInputValue) => {
-          const paths = nextInputValue
+        onChange={(event) => {
+          const paths = event.target.value
             .split(FIELD_MASK_PATH_SPLIT_PATTERN)
             .map((entry) => entry.trim())
             .filter(Boolean);

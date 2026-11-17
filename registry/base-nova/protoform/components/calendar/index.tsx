@@ -5,9 +5,7 @@ import React from 'react';
 import { type DayButton, DayPicker, getDefaultClassNames, type Locale } from 'react-day-picker';
 
 import { Button, buttonVariants } from '@/components/ui/button';
-import { cn } from '@/registry/base-nova/protoform/lib/utils';
-
-import type { SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
+import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
 const CalendarLocaleContext = React.createContext<Partial<Locale> | undefined>(undefined);
 

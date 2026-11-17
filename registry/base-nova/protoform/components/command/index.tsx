@@ -6,9 +6,7 @@ import React from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Popover, PopoverAnchor, PopoverContent } from '@/components/ui/popover';
 import { Text } from '@/components/ui/typography';
-import { cn } from '@/registry/base-nova/protoform/lib/utils';
-
-import type { FixedPositionContentProps, SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
+import { cn, type FixedPositionContentProps, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
 const commandVariants = cva('flex size-full flex-col overflow-hidden rounded-md bg-popover text-popover-foreground', {
   defaultVariants: {

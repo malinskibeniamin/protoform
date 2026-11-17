@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -38,12 +40,14 @@ function Heading({ level, ...props }: ProtoformUIProps['Heading']) {
   const Tag = `h${level}` as const;
   return <Tag {...props} />;
 }
+
 function Text({ as: Tag = 'p', variant: _variant, ...props }: ProtoformUIProps['Text']) {
   return <Tag {...props} />;
 }
+
 function CopyButton({ content, size, variant, ...props }: ProtoformUIProps['CopyButton']) {
-  const [error, setError] = React.useState<string | undefined>(undefined);
-  const [copiedContent, setCopiedContent] = React.useState<string | undefined>(undefined);
+  const [error, setError] = React.useState<string>();
+  const [copiedContent, setCopiedContent] = React.useState<string>();
   async function copy() {
     try {
       await navigator.clipboard.writeText(content);
@@ -61,157 +65,116 @@ function CopyButton({ content, size, variant, ...props }: ProtoformUIProps['Copy
         onClick={copy}
         size={size === 'default' ? undefined : size}
         type="button"
-        variant={variant === 'help' ? 'ghost' : variant}
+        variant={variant === 'default' ? undefined : variant}
       />
-      {error === undefined ? null : <span role="alert">{error}</span>}
+      {error ? <span role="alert">{error}</span> : null}
       <span aria-live="polite">{copiedContent === content ? 'Copied' : ''}</span>
     </span>
   );
 }
 
-function legacyTestIds(Component: React.ElementType) {
-  return function LegacyControl(props: Record<string, unknown>) {
-    return React.createElement(Component, {
-      ...props,
-      ...(props['data-testid'] === undefined ? {} : { testId: props['data-testid'] }),
-    });
-  };
+function HostSelect({ children, disabled, items, onValueChange, value }: ProtoformUIProps['Select']) {
+  return (
+    <Select
+      disabled={disabled}
+      onValueChange={(next) => {
+        if (typeof next !== 'string') {
+          return;
+        }
+        const decoded: unknown = JSON.parse(next);
+        if (decoded === null || typeof decoded === 'string') {
+          onValueChange(decoded);
+        } else {
+          throw new TypeError('Invalid Protoform selection');
+        }
+      }}
+      value={value === null && items && items.every((item) => item.value !== null) ? '' : JSON.stringify(value)}
+    >
+      {children}
+    </Select>
+  );
 }
 
-function FormButton({ variant, ...props }: ProtoformUIProps['Button']) {
-  return (
-    <Button
-      {...props}
-      variant={variant === 'help' ? 'ghost' : variant}
-      {...(variant === 'help' ? { 'data-slot': 'help-trigger' } : {})}
-    />
-  );
-}
-
-function TextInput({ onValueChange, onChange, ...props }: ProtoformUIProps['Input']) {
-  return (
-    <Input
-      {...props}
-      onChange={(event) => {
-        onChange?.(event);
-        if (!event.defaultPrevented) {
-          onValueChange?.(event.currentTarget.value);
-        }
-      }}
-    />
-  );
-}
-function GroupTextInput({ onValueChange, onChange, ...props }: ProtoformUIProps['InputGroupInput']) {
-  return (
-    <InputGroupInput
-      {...props}
-      onChange={(event) => {
-        onChange?.(event);
-        if (!event.defaultPrevented) {
-          onValueChange?.(event.currentTarget.value);
-        }
-      }}
-    />
-  );
-}
-function TextareaInput({ onValueChange, onChange, ...props }: ProtoformUIProps['Textarea']) {
-  return (
-    <Textarea
-      {...props}
-      onChange={(event) => {
-        onChange?.(event);
-        if (!event.defaultPrevented) {
-          onValueChange?.(event.currentTarget.value);
-        }
-      }}
-    />
-  );
-}
-const SelectionLabelContext = React.createContext<React.ReactNode>(undefined);
-function FormSelect({ children, disabled, items, onValueChange, value }: ProtoformUIProps['Select']) {
-  return (
-    <SelectionLabelContext value={items.find((item) => item.value === value)?.label}>
-      <Select
-        disabled={disabled ?? false}
-        items={items.map((item) => ({ label: item.label, value: JSON.stringify(item.value) }))}
-        onValueChange={(next) => {
-          if (typeof next !== 'string') {
-            return;
-          }
-          const decoded: unknown = JSON.parse(next);
-          if (decoded === null || typeof decoded === 'string') {
-            onValueChange(decoded);
-          } else {
-            throw new TypeError('Invalid Protoform selection');
-          }
-        }}
-        value={value === null && items.every((item) => item.value !== null) ? null : JSON.stringify(value)}
-      >
-        {children}
-      </Select>
-    </SelectionLabelContext>
-  );
-}
-function FormSelectItem({ value, ...props }: ProtoformUIProps['SelectItem']) {
+function HostSelectItem({ value, ...props }: ProtoformUIProps['SelectItem']) {
   return <SelectItem {...props} value={JSON.stringify(value)} />;
 }
-function FormSelectValue({ children, placeholder, testId, ...props }: ProtoformUIProps['SelectValue']) {
-  const label = React.useContext(SelectionLabelContext);
+
+function HostRadioItem({
+  children,
+  disabled,
+  id,
+  value,
+  'data-testid': testId,
+  'aria-label': ariaLabel,
+}: ProtoformUIProps['RadioGroupItem']) {
   return (
-    <div {...props} data-testid={testId ?? props['data-testid']}>
-      <SelectValue placeholder={placeholder}>{label ?? children ?? placeholder}</SelectValue>
-    </div>
+    <label className="flex items-center gap-2" htmlFor={id}>
+      <RadioGroupItem aria-label={ariaLabel} data-testid={testId} disabled={disabled} id={id} value={value} />
+      {children}
+    </label>
   );
+}
+
+function HostTextarea({ resize: _resize, ...props }: ProtoformUIProps['Textarea']) {
+  return <Textarea {...props} />;
+}
+
+function HostTabsList({ variant: _variant, ...props }: ProtoformUIProps['TabsList']) {
+  return <TabsList {...props} />;
+}
+
+function HostTabsTrigger({ variant: _variant, ...props }: ProtoformUIProps['TabsTrigger']) {
+  return React.createElement(TabsTrigger, props);
 }
 
 export const shadcnHostComponents = {
-  Provider: TooltipProvider,
-  Alert: legacyTestIds(Alert),
-  AlertDescription: legacyTestIds(AlertDescription),
-  AlertTitle: legacyTestIds(AlertTitle),
-  Button: legacyTestIds(FormButton),
-  Calendar: legacyTestIds(Calendar),
-  Checkbox: legacyTestIds(Checkbox),
-  Collapsible: legacyTestIds(Collapsible),
-  CollapsiblePanel: legacyTestIds(CollapsibleContent),
-  CollapsibleTrigger: legacyTestIds(CollapsibleTrigger),
-  CopyButton: legacyTestIds(CopyButton),
-  Field: legacyTestIds(Field),
-  FieldContent: legacyTestIds(FieldContent),
-  FieldDescription: legacyTestIds(FieldDescription),
-  FieldError: legacyTestIds(FieldError),
-  FieldLabel: legacyTestIds(FieldLabel),
-  Heading: legacyTestIds(Heading),
-  Input: legacyTestIds(TextInput),
-  InputGroup: legacyTestIds(InputGroup),
-  InputGroupAddon: legacyTestIds(InputGroupAddon),
-  InputGroupButton: legacyTestIds(InputGroupButton),
-  InputGroupInput: legacyTestIds(GroupTextInput),
-  InputGroupText: legacyTestIds(InputGroupText),
-  Popover: legacyTestIds(Popover),
-  PopoverContent: legacyTestIds(PopoverContent),
-  PopoverTrigger: legacyTestIds(PopoverTrigger),
-  RadioGroup: legacyTestIds(RadioGroup),
-  Radio: legacyTestIds(RadioGroupItem),
-  Select: legacyTestIds(FormSelect),
-  SelectContent: legacyTestIds(SelectContent),
-  SelectGroup: legacyTestIds(SelectGroup),
-  SelectItem: legacyTestIds(FormSelectItem),
-  SelectGroupLabel: legacyTestIds(SelectLabel),
-  SelectTrigger: legacyTestIds(SelectTrigger),
-  SelectValue: legacyTestIds(FormSelectValue),
-  Slider: legacyTestIds(Slider),
-  Switch: legacyTestIds(Switch),
-  Tabs: legacyTestIds(Tabs),
-  TabsPanel: legacyTestIds(TabsContent),
-  TabsList: legacyTestIds(TabsList),
-  TabsTab: legacyTestIds(TabsTrigger),
-  Text: legacyTestIds(Text),
-  Textarea: legacyTestIds(TextareaInput),
-  Toggle: legacyTestIds(Toggle),
-  ToggleGroup: legacyTestIds(ToggleGroup),
-  ToggleGroupItem: legacyTestIds(ToggleGroupItem),
-  Tooltip: legacyTestIds(Tooltip),
-  TooltipContent: legacyTestIds(TooltipContent),
-  TooltipTrigger: legacyTestIds(TooltipTrigger),
+  Alert,
+  AlertDescription,
+  AlertTitle,
+  Button,
+  Calendar,
+  Checkbox,
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+  CopyButton,
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+  Heading,
+  Input,
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+  InputGroupText,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  RadioGroup,
+  RadioGroupItem: HostRadioItem,
+  Select: HostSelect,
+  SelectContent,
+  SelectGroup,
+  SelectItem: HostSelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+  Slider,
+  Switch,
+  Tabs,
+  TabsContent,
+  TabsList: HostTabsList,
+  TabsTrigger: HostTabsTrigger,
+  Text,
+  Textarea: HostTextarea,
+  Toggle,
+  ToggleGroup,
+  ToggleGroupItem,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
 } satisfies ProtoformUIComponentMap;

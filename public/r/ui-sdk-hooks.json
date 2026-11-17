@@ -4,7 +4,7 @@
   "title": "UI SDK hook integrations",
   "description": "Field accessibility, asynchronous options and opt-in saved preferences.",
   "registryDependencies": [
-    "@protoform/protoform-shadcn"
+    "@protoform/protoform-sdk-enhancements"
   ],
   "files": [
     {

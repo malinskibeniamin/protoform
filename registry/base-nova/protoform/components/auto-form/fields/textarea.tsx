@@ -16,7 +16,7 @@ function TextareaFieldComponent({ error, field, id, inputProps }: AutoFormFieldP
       disabled={inputProps['disabled']}
       id={id}
       onBlur={inputProps['onBlur']}
-      onValueChange={(nextInputValue) => inputProps['onValueChange'](nextInputValue)}
+      onChange={(event) => inputProps['onValueChange'](event.target.value)}
       placeholder={getFieldUiConfig(field).placeholder}
       resize="vertical"
       testId={testIds.control}

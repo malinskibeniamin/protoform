@@ -3,7 +3,6 @@
   "name": "protoform-license",
   "title": "Protoform license",
   "description": "The Protoform MIT license distributed with copied Protoform source.",
-  "registryDependencies": [],
   "files": [
     {
       "path": "LICENSE",

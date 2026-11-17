@@ -281,35 +281,7 @@ function scopeIsContained(candidate: readonly string[], previous: readonly strin
   );
 }
 
-const SDK_COMPONENT_SOURCE = /^registry\/ui-sdk\/protoform\/components\/(?:[a-z0-9-]+\/)*[a-z0-9.-]+\.tsx$/u;
-const SHARED_COMPONENT_SOURCE = /^registry\/base-nova\/protoform\/lib\/presentation\/([a-z0-9-]+)\.(?:ts|tsx)$/u;
-function componentPolicyOwner(file: string, selector: string): string {
-  if (posix.normalize(selector) !== selector) {
-    return selector;
-  }
-  if (file === 'doctor.config.ts' && SDK_COMPONENT_SOURCE.test(selector)) {
-    return selector.replace('registry/ui-sdk/protoform/components/', 'registry/base-nova/protoform/components/');
-  }
-  if (!['doctor.config.ts', 'biome.jsonc', '.oxlintrc.jsonc', 'shadcn-lint.jsonc'].includes(file)) {
-    return selector;
-  }
-  const component = SHARED_COMPONENT_SOURCE.exec(selector)?.[1];
-  if (component === undefined) {
-    return selector;
-  }
-  const owner = ['json-model', 'json-controls', 'json-editor', 'json-code-editor'].includes(component)
-    ? 'json-field'
-    : component;
-  return `registry/base-nova/protoform/components/${owner}/index.tsx`;
-}
-
-function ownerCoversRule(
-  file: string,
-  candidate: ExceptionPolicy,
-  owner: ExceptionPolicy,
-  rule: string,
-  level: string
-): boolean {
+function ownerCoversRule(candidate: ExceptionPolicy, owner: ExceptionPolicy, rule: string, level: string): boolean {
   const severity = new Map([
     ['off', 0],
     ['info', 1],
@@ -319,10 +291,7 @@ function ownerCoversRule(
   return (
     previousLevel !== undefined &&
     (severity.get(level) ?? -1) >= (severity.get(previousLevel) ?? -1) &&
-    scopeIsContained(
-      candidate.selectors.map((selector) => componentPolicyOwner(file, selector)),
-      owner.selectors
-    )
+    scopeIsContained(candidate.selectors, owner.selectors)
   );
 }
 
@@ -383,13 +352,23 @@ const APPROVED_BIOME_2_6_EXCEPTIONS = JSON.stringify({
   ],
 });
 
+const APPROVED_SDK_RENDERERS = `export default { overrides: [{
+  files: [
+    "registry/ui-sdk/protoform/components/async-option-combobox/index.tsx",
+    "registry/ui-sdk/protoform/components/preferences/index.tsx",
+    "registry/ui-sdk/protoform/components/rating/index.tsx",
+  ],
+  rules: ['react-doctor/jsx-props-no-spreading'],
+}] };`;
+
 export function newLintExceptions(file: string, source: string, baseline: string): string[] {
   const previous = exceptionPolicies(file, baseline);
   const previouslyScopedRules = new Set(
     exceptionPolicies(file, baseline, false).flatMap((scope) => [...scope.rules.keys()])
   );
   const approved = file === 'biome.jsonc' ? exceptionPolicies(file, APPROVED_BIOME_2_6_EXCEPTIONS) : [];
-  const owners = [...previous, ...approved];
+  const rendererPolicies = file === 'doctor.config.ts' ? exceptionPolicies(file, APPROVED_SDK_RENDERERS) : [];
+  const owners = [...previous, ...approved, ...rendererPolicies];
   const fingerprints = new Set(owners.map((entry) => entry.fingerprint));
   const before = configPolicies(file, baseline);
   const after = configPolicies(file, source);
@@ -409,7 +388,7 @@ export function newLintExceptions(file: string, source: string, baseline: string
         after.get(rule) === 'error' &&
         level === 'off' &&
         !previouslyScopedRules.has(rule);
-      if (!(adoptedRule || owners.some((owner) => ownerCoversRule(file, candidate, owner, rule, level)))) {
+      if (!(adoptedRule || owners.some((owner) => ownerCoversRule(candidate, owner, rule, level)))) {
         return true;
       }
     }

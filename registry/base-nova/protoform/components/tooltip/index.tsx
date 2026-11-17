@@ -5,9 +5,7 @@ import React from 'react';
 
 import { usePortalContainer } from '@/registry/base-nova/protoform/hooks/use-portal-container';
 import { asChildToRender, useMirroredOpen } from '@/registry/base-nova/protoform/lib/base-ui-compat';
-import { cn } from '@/registry/base-nova/protoform/lib/utils';
-
-import type { PortalContentProps, SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
+import { cn, type PortalContentProps, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
 interface TooltipContextType {
   isOpen: boolean;

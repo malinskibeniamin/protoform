@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Button } from '@/components/ui/button/index';
+import { Button } from '@/components/ui/button';
 
 export function DeleteSubmitButton({
   disabled,

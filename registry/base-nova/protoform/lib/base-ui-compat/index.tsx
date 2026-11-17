@@ -295,7 +295,7 @@ type SlotCloneProps = {
   children: React.ReactNode;
 } & React.HTMLAttributes<HTMLElement>;
 
-function SlotClone({ ref: forwardedRef, ...props }: SlotCloneProps & { ref?: React.Ref<HTMLElement> | undefined }) {
+const SlotClone = React.forwardRef<HTMLElement, SlotCloneProps>(function renderSlotClone(props, forwardedRef) {
   const { children, ...slotProps } = props;
 
   if (!React.isValidElement(children)) {
@@ -311,7 +311,7 @@ function SlotClone({ ref: forwardedRef, ...props }: SlotCloneProps & { ref?: Rea
   const childRef = getElementRef(element) as React.Ref<HTMLElement> | undefined;
   merged['ref'] = forwardedRef ? composeRefs(forwardedRef, childRef) : childRef;
   return React.cloneElement(element, merged);
-}
+});
 
 const SLOTTABLE_IDENTIFIER = Symbol.for('protoform.slottable');
 
@@ -334,7 +334,7 @@ function isSlottable(child: React.ReactNode): child is React.ReactElement<{ chil
   );
 }
 
-export function Slot({ ref: forwardedRef, ...props }: SlotProps & { ref?: React.Ref<HTMLElement> | undefined }) {
+export const Slot = React.forwardRef<HTMLElement, SlotProps>(function renderSlot(props, forwardedRef) {
   const { children, ...slotProps } = props;
   const childrenArray = React.Children.toArray(children);
   const slottable = childrenArray.find(isSlottable);
@@ -363,7 +363,7 @@ export function Slot({ ref: forwardedRef, ...props }: SlotProps & { ref?: React.
       {children}
     </SlotClone>
   );
-}
+});
 Slot.displayName = 'Slot';
 
 type NativeMotionEvent = 'onAnimationStart' | 'onDrag' | 'onDragEnd' | 'onDragStart';

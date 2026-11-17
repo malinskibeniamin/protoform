@@ -11,9 +11,7 @@ import {
   renderWithDataState,
   warnDeprecatedProp,
 } from '@/registry/base-nova/protoform/lib/base-ui-compat';
-import { cn } from '@/registry/base-nova/protoform/lib/utils';
-
-import type { FixedPositionContentProps, SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
+import { cn, type FixedPositionContentProps, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
 type DialogRootProps = React.ComponentProps<typeof DialogPrimitive.Root> & SharedProps;
 

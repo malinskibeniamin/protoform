@@ -7,9 +7,7 @@ import React from 'react';
 import { useGroup } from '@/components/ui/group';
 import { usePortalContainer } from '@/registry/base-nova/protoform/hooks/use-portal-container';
 import { renderWithDataState } from '@/registry/base-nova/protoform/lib/base-ui-compat';
-import { cn } from '@/registry/base-nova/protoform/lib/utils';
-
-import type { PortalContentProps, SharedProps } from '@/registry/base-nova/protoform/lib/utils/index';
+import { cn, type PortalContentProps, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
 type SelectRootProps<Value = string, Multiple extends boolean | undefined = false> = SelectPrimitive.Root.Props<
   Value,

@@ -192,7 +192,7 @@ export function StringLikeInput({
           id={id}
           name={controlProps.name}
           onBlur={controlProps.onBlur}
-          onValueChange={(nextInputValue) => controlProps.onValueChange(nextInputValue)}
+          onChange={(event) => controlProps.onValueChange(event.target.value)}
           placeholder={placeholder}
           ref={inputRef}
           testId={`${testId}-input`}
@@ -211,7 +211,7 @@ export function StringLikeInput({
       id={id}
       name={controlProps.name}
       onBlur={controlProps.onBlur}
-      onValueChange={(nextInputValue) => controlProps.onValueChange(nextInputValue)}
+      onChange={(event) => controlProps.onValueChange(event.target.value)}
       placeholder={placeholder}
       ref={inputRef}
       testId={testId}

@@ -1,5 +1,7 @@
 # Host-owned registry verification
 
+## Reproduce
+
 ```bash
 bun install --frozen-lockfile
 bun run registry:build
@@ -7,48 +9,57 @@ bun run registry:consumer-smoke
 bun run registry:host-browser
 ```
 
-The locked shadcn CLI installs disposable consumers under `.tmp/`. Network access is required;
-run the consumer smoke serially because its fixtures and registry port are shared. Isolated
-consumer fixtures resolve Query and Query Core to the repository-tested version, avoiding
-partially published npm releases; production dependency ranges are unchanged.
+The consumer smoke uses the repository's locked shadcn CLI. It creates disposable fixtures under
+`.tmp/` and requires network access for the host registry and npm dependencies. Run it serially:
+the fixtures and local registry port are shared. `--host-only` skips the older bundles when iterating.
 
-There is one Base UI control catalog. The host fixture uses a `new-york` theme, an independent
-`@host` registry namespace, and nested aliases for UI, hooks, components, and library files.
-Installing the headless form/host map must not modify its existing controls, theme, utilities,
-or `components.json`. Installed source is typechecked and server-rendered without repository
-source aliases. The host stylesheet disables implicit Tailwind source discovery: presentation
-helpers must compile through the normal UI source roots.
-
-Other fixtures verify core-only installs, standalone alternate form engines, the native catalog,
-and the TanStack chart variant without Recharts. The primary consumer additionally installs the
-targeted SDK examples, not another full UI library.
+The host fixture uses `new-york`, an independently configured `@host` registry namespace, and
+separate nested aliases for UI, components, hooks, and library files. Before installing Protoform,
+it records the contents of 20 existing upstream UI files, the host stylesheet, utilities, and
+`components.json`. After installation it verifies byte equality and that no extra primitives appeared.
+It then typechecks and server-renders the installed AutoForm, not repository source aliases.
+The other fixtures typecheck core-only and legacy installs, including the experimental form engines.
 
 ## Browser coverage
 
-Chromium desktop/mobile host journeys exercise real computed styles, placeholder/selection,
-validation and recovery, submission, missing-map errors and recovery, nullable values, focus,
-and absence of uncaught errors. Existing native screenshot baselines remain authoritative.
+Chromium at 1100×800 and 390×844:
 
-`registry/ui-foundations.integration.test.ts` builds real module graphs: the headless core/host
-include neither UI engine; default AutoForm includes Base UI but not SDK runtime. The entire
-standard control catalog is also bundled to reject accidental SDK runtime imports. A directory
-and registry contract rejects parallel SDK replacements and alternate SDK AutoForm bundles.
-The pinned native compiler contracts continue to cover the original Base UI public API.
+- Computed host theme color and full-width input: fail if CSS is missing.
+- Required select placeholder and selection.
+- Submit through the host's input and button.
+- Remove a required UI mapping; show the missing component by name.
+- Restore the mapping with the same schema; recover without remounting the entire app.
+- Empty submission, visible validation feedback, correction, and successful resubmission.
+- Distinguish an unset selection from the literal string `"null"`.
+- No uncaught browser errors. React's development error-boundary report during the intentional
+  missing-component step is expected.
 
-`ui-foundations` renders a real Base UI form beside an explicitly enabled SDK Rating. Its
-installed and built journeys check native validation/submission, scoped agent read-back,
-refusal to edit Base UI controls, Rating-only undo, and repeated stop/re-enable.
+| Desktop                                                                                                     | Mobile                                                                                                               |
+| ----------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| ![Host form](../../scripts/__screenshots__/host-consumer.browser.spec.ts/desktop/host-ui.png)               | ![Host form on mobile](../../scripts/__screenshots__/host-consumer.browser.spec.ts/mobile/host-ui.png)               |
+| ![Missing mapping](../../scripts/__screenshots__/host-consumer.browser.spec.ts/desktop/missing-control.png) | ![Missing mapping on mobile](../../scripts/__screenshots__/host-consumer.browser.spec.ts/mobile/missing-control.png) |
 
-`ui-sdk-agent-workbench` has a shared real-page journey for installed and built examples. It
-checks declared Rating actions, Base UI refusal, cancellation, secret/hidden redaction, separate
-human approval/rejection, staging/revert, seek/replay, source undo preserving human edits,
-saved-output preservation, pending-confirmation abort, and disposal. A WebMCP registration spy
-must remain untouched. SDK agent/helper tests may use upstream SDK primitives directly to
-exercise external consumers; those are not copied into the shipped catalog.
+These are new-host-entrypoint baselines, not screenshots of a redesigned legacy form. The fixture's
+Tailwind v4 stylesheet and neutral theme are consumer-owned and are not shipped by Protoform.
+The Vite Tailwind plugin compiles both installed primitives and Protoform classes; the browser imports
+the stylesheet. The original handwritten-CSS snapshots were inadequate styling evidence and are replaced.
 
-The Rating primitive retains SDK pattern, server, direction, keyboard, announcement, and
-argument-validation checks. Async loading retains stale-request cancellation, retry, pagination,
-and unmount abort coverage. Preferences retain explicit storage restoration and cancellation.
-Base UI owns their actual Combobox/Select interaction. Persistence and agent sessions remain
-opt-in; history never reverses network side effects. Cross-library modal/shortcut coordination
-and application action authorization remain application-owned.
+## Scope and limitations
+
+- This draft's host entrypoint uses React Hook Form v7. The existing experimental/TanStack AutoForm
+  entrypoints keep their legacy maps; hook-only installations remain independent of UI.
+- The supplied adapter targets Radix-style shadcn APIs. A Base UI or bespoke registry may need its
+  own adapter; matching component names alone does not prove matching behavior.
+- Specialized combobox, multiselect, choicebox, JSON, and key/value controls need explicit host
+  mappings or custom field renderers. They are not silently replaced with weaker controls.
+- No existing consumer files are deleted. Migration of previously copied UI remains a reviewed,
+  consumer-owned operation.
+- No primitive implementations or themes were changed. Most extra source-file changes are import
+  paths needed to support independently nested aliases. The internal field-mask renderer was renamed
+  to avoid shadcn confusing it with the protobuf field-mask helper during import rewriting.
+
+## Opt-in SDK additions
+
+The primary consumer installs SDK examples after canonical controls and requires existing UI/AutoForm source to remain byte-identical. Both chart backends and the separate host registry retain their original install checks. Fixtures pin Query/Core to the repository-tested version to avoid partially published npm tarballs.
+
+Installed and built agent journeys cover explicit enablement, Rating read-back, refused Base UI edits, cancellation, redaction, human approval, staging, seek/replay, source undo, and disposal. A registration spy rejects automatic WebMCP. Async options retain retry, cancellation, and pagination checks; preferences require explicit storage. Rating retains SDK pattern/server/direction checks. Existing native screenshot baselines and tolerances remain unchanged.
