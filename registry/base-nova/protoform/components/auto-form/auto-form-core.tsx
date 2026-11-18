@@ -77,6 +77,7 @@ export const ShadcnAutoFormFieldComponents = AutoFormFieldComponentRegistry;
 export type AutoFormEngineRender = (props: {
   children: (engine: AutoFormEngine) => React.ReactNode;
   defaultValues: Record<string, unknown>;
+  parsedSchema: ResolvedSchema['parsedSchema'];
   validateSchema: (values: Record<string, unknown>, signal: AbortSignal) => Promise<ValidatedFormValues>;
   values?: Record<string, unknown> | undefined;
 }) => React.ReactNode;
@@ -717,6 +718,7 @@ function AutoFormCoreInner<T extends Record<string, unknown>, TNativeForm, TCust
       <AutoFormContent<T, TNativeForm, TCustomFieldType> {...props} engine={engine} resolvedSchema={resolvedSchema} />
     ),
     defaultValues: initialDefaultValues,
+    parsedSchema: resolvedSchema.parsedSchema,
     validateSchema: async (submittedValues, signal) => {
       try {
         return normalizeSchemaValidation(await resolvedSchema.provider.validateSchema(submittedValues, { signal }));

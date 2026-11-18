@@ -155,6 +155,8 @@ async function assertInstalled() {
     'hooks/use-proto-form/index.ts',
     'components/auto-form/index.tsx',
     'components/auto-form-react-hook-form-v8/index.tsx',
+    'components/auto-form-formisch/index.tsx',
+    'hooks/use-proto-form-formisch/index.ts',
     'components/auto-form/adapters/react-hook-form-v8.tsx',
     'components/auto-form-tanstack/index.tsx',
     'components/auto-form-tanstack-v2/index.tsx',
@@ -198,6 +200,10 @@ async function assertInstalled() {
     join(fixture, 'consumer-smoke.tsx'),
     [
       "import { AutoForm, defaultRegistry, type AutoFormProps, type FieldTypes } from './components/auto-form';",
+      "import { AutoForm as FormischAutoForm } from './components/auto-form-formisch';",
+      "import { useProtoForm as useProtoFormFormisch } from './hooks/use-proto-form-formisch';",
+      "import { Field as FormischField, Form as FormischForm } from '@formisch/react';",
+      "import { object, string } from 'valibot';",
       "import { AutoForm as ReactHookFormV8AutoForm } from './components/auto-form-react-hook-form-v8';",
       "import { AutoForm as TanStackAutoForm } from './components/auto-form-tanstack';",
       "import { AutoForm as TanStackV2AutoForm } from './components/auto-form-tanstack-v2';",
@@ -279,6 +285,13 @@ async function assertInstalled() {
       '    schema={schema}',
       '  />',
       ');',
+      'function FormischHookSmoke() {',
+      '  const form = useProtoFormFormisch(BookSchema, { schema: object({ displayName: string() }) });',
+      "  return <FormischForm of={form} onSubmit={(message) => { const title: string = message.displayName; console.log(title); }}><FormischField of={form} path={['displayName']}>{(field) => <input {...field.props} value={field.input ?? ''} />}</FormischField></FormischForm>;",
+      '}',
+      'const generatedFormisch = <FormischAutoForm schema={BookSchema} withSubmit />;',
+      'void FormischHookSmoke;',
+      'void generatedFormisch;',
       'function TanStackV2HookSmoke() {',
       '  const form = useProtoFormV2(BookSchema, {',
       "    defaultValues: { displayName: '', isbn: '', note: '' },",
@@ -546,6 +559,7 @@ try {
     await $`bunx --no-install shadcn add @protoform/auto-form-react-hook-form-v8 --cwd ${fixture} --yes --overwrite`;
     await $`bunx --no-install shadcn add @protoform/auto-form-tanstack --cwd ${fixture} --yes --overwrite`;
     await $`bunx --no-install shadcn add @protoform/auto-form-tanstack-v2 --cwd ${fixture} --yes --overwrite`;
+    await $`bunx --no-install shadcn add @protoform/auto-form-formisch @protoform/use-proto-form-formisch --cwd ${fixture} --yes --overwrite`;
     await assertInstalled();
     await $`bun add --cwd ${fixture} tailwindcss@4.3.5 @tailwindcss/vite@4.3.5`;
     const browserSource = await readFile(join(root, 'scripts/fixtures/reliability-browser.tsx'), 'utf8');

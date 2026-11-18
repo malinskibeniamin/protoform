@@ -25,10 +25,15 @@
       "zh": "b0a565e3d9cfe3b0",
       "zh-TW": "b0a565e3d9cfe3b0"
     },
+    "content/docs/(build-forms)/formisch.mdx": {
+      "pl": "62fb5422023b592e",
+      "zh": "62fb5422023b592e",
+      "zh-TW": "62fb5422023b592e"
+    },
     "content/docs/(build-forms)/meta.ts": {
-      "pl": "7ddda87b57179cdd",
-      "zh": "7ddda87b57179cdd",
-      "zh-TW": "7ddda87b57179cdd"
+      "pl": "3b75dc2998f740ed",
+      "zh": "3b75dc2998f740ed",
+      "zh-TW": "3b75dc2998f740ed"
     },
     "content/docs/(build-forms)/oneof-edge-cases.mdx": {
       "pl": "c7b5ff5d2a9adc93",

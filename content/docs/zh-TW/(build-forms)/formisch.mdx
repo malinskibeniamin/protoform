@@ -1,0 +1,98 @@
+---
+title: Formisch
+description: "保留原生 Formisch 欄位，或根據 protobuf 描述元產生 AutoForm。"
+---
+
+使用 Formisch 管理狀態，並用 [shadcn 欄位](https://ui.shadcn.com/docs/forms/formisch) 呈現表單。Protoform 會先透過 Protovalidate 驗證 protobuf 訊息，再將訊息交給送出處理函式。
+
+## 保留原生 Formisch 欄位
+
+```bash
+bunx shadcn@latest add @protoform/use-proto-form-formisch
+```
+
+傳入 protobuf 描述元及你在 Formisch 中使用的 Valibot 結構定義。它會定義輸入結構，並先執行驗證與 Valibot 轉換。接著，Formisch 的原生 `Form` 會將已驗證的 protobuf 訊息傳給 `onSubmit`，而非原始輸入。
+
+```tsx
+import { Field as FormischField, Form } from "@formisch/react";
+import * as v from "valibot";
+import { Button } from "@/components/ui/button";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { useProtoForm } from "@/hooks/use-proto-form-formisch";
+import { SignupRequestSchema, type SignupRequest } from "@/gen/example/v1/signup_pb";
+
+const inputSchema = v.object({ email: v.pipe(v.string(), v.trim()) });
+
+export function SignupForm({ save }: { save: (message: SignupRequest) => Promise<void> }) {
+  const form = useProtoForm(SignupRequestSchema, {
+    schema: inputSchema,
+    initialInput: { email: "" },
+  });
+
+  return (
+    <Form
+      of={form}
+      onSubmit={async (message) => {
+        try {
+          await save(message);
+        } catch (error) {
+          const result = form.setServerErrors(error);
+          if (!result.handled || result.unmapped.length > 0) throw error;
+        }
+      }}
+    >
+      <FormischField of={form} path={["email"]}>
+        {(field) => (
+          <Field data-invalid={field.errors !== null}>
+            <FieldLabel htmlFor="signup-email">Email</FieldLabel>
+            <Input
+              {...field.props}
+              id="signup-email"
+              type="email"
+              autoComplete="email"
+              value={field.input ?? ""}
+              aria-invalid={field.errors !== null}
+              aria-describedby={field.errors ? "signup-email-error" : undefined}
+            />
+            {field.errors && <FieldError id="signup-email-error">{field.errors.join(" ")}</FieldError>}
+          </Field>
+        )}
+      </FormischField>
+      {form.errors && <FieldError role="alert">{form.errors.join(" ")}</FieldError>}
+      <Button type="submit" disabled={form.isSubmitting}>Create account</Button>
+    </Form>
+  );
+}
+```
+
+使用 Formisch 的 `getInput` 與 `reset` 操作表單狀態。這個 hook 也提供 `createUpdateMask()`，用於比較目前的原始輸入與掛載時的基準值；以及 `createMessage(values)`，用於轉換指定的表單值而不進行驗證。切換描述元、輸入結構定義或編輯記錄時，請重新掛載表單。
+
+## 產生 AutoForm
+
+請將 Formisch 介接器與 [Protoform shadcn 控制項](/docs/registry-install) 一起安裝。
+
+```bash
+bunx shadcn@latest add @protoform/protoform-shadcn-tanstack @protoform/auto-form-formisch
+```
+
+```tsx
+import { AutoForm } from "@/components/auto-form-formisch";
+import { SignupRequestSchema, type SignupRequest } from "@/gen/example/v1/signup_pb";
+
+export function GeneratedSignupForm({ save }: { save: (message: SignupRequest) => Promise<void> }) {
+  return (
+    <AutoForm<SignupRequest>
+      schema={SignupRequestSchema}
+      onSubmit={save}
+      validationMode="blur"
+      revalidationMode="change"
+      withSubmit
+    />
+  );
+}
+```
+
+AutoForm 會根據描述元推導 Formisch 的欄位結構，你不必再撰寫一份結構定義。它採用共用的 AutoForm 呈現與驗證流程。`onFormInit` 與 `onSubmit` 會提供原生 Formisch store，`onSubmit` 的第三個引數則提供引擎輔助函式、更新遮罩及取消訊號。由產生的表單負責送出；請使用送出按鈕或底層表單的 `requestSubmit()`，不要使用 Formisch 的 `submit(store)`。
+
+oneof 所選分支的值會整體儲存，因此切換分支不會留下舊值。請使用產生的控制項，或以程式碼替換整個 oneof 選擇。
