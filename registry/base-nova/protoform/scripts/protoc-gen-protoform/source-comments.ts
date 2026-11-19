@@ -6,11 +6,11 @@ export interface ProtoAnnotationEntry {
   value: string;
 }
 
-function sourceFileMessages(message: DescMessage): DescMessage[] {
+function sourceFileMessages(message: DescMessage) {
   const messages: DescMessage[] = [];
   const visited = new Set<string>();
 
-  function visit(current: DescMessage): void {
+  function visit(current: DescMessage) {
     if (current.file !== message.file || visited.has(current.typeName)) {
       return;
     }
@@ -35,18 +35,18 @@ function sourceFileMessages(message: DescMessage): DescMessage[] {
   return messages;
 }
 
-function sourceComment(desc: Parameters<typeof getComments>[0]): string | undefined {
+function sourceComment(desc: Parameters<typeof getComments>[0]) {
   const comment = getComments(desc).leading?.trim();
   return comment || undefined;
 }
 
-export function getProtoAnnotationEntries(message: DescMessage): {
-  fields: ProtoAnnotationEntry[];
-  messages: ProtoAnnotationEntry[];
-  oneofs: ProtoAnnotationEntry[];
-} {
+export function getProtoAnnotationEntries(message: DescMessage) {
   const messages = sourceFileMessages(message);
-  return {
+  const annotations: {
+    fields: ProtoAnnotationEntry[];
+    messages: ProtoAnnotationEntry[];
+    oneofs: ProtoAnnotationEntry[];
+  } = {
     fields: messages.flatMap((nested) =>
       nested.fields.flatMap((field) => {
         const comment = sourceComment(field);
@@ -78,4 +78,5 @@ export function getProtoAnnotationEntries(message: DescMessage): {
       })
     ),
   };
+  return annotations;
 }

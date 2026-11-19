@@ -1,0 +1,715 @@
+import { mkdir } from 'node:fs/promises';
+import { join } from 'node:path';
+import { beforeAll, expect } from '@rstest/playwright';
+import type { Page } from 'playwright';
+import { test } from '../scripts/e2e.test-utils';
+
+const screenshotDir = 'artifacts/screenshots';
+const productionComplexChunkPattern = /\/_astro\/complex-form\.[^/]+\.js$/u;
+const focusedExamplePaths = [
+  '/docs/bare-bones-form',
+  '/docs/two-step-form',
+  '/docs/cel-re2-form',
+  '/docs/oneof-form',
+  '/docs/server-error-form',
+  '/docs/aip-resource-form',
+] as const;
+const wideDemoExamples = [
+  {
+    label: 'bookstore workspace',
+    path: '/docs/bookstore',
+    selector: '#blume-content article > [data-bookstore-workspace]',
+  },
+  {
+    label: 'direct island',
+    path: '/docs/bare-bones-form',
+    selector: '#blume-content article > div:has(> astro-island)',
+  },
+] as const;
+async function inOrder<T>(items: readonly T[], execute: (item: T) => Promise<void>) {
+  let sequence = Promise.resolve();
+  for (const item of items) {
+    sequence = sequence.then(() => execute(item));
+  }
+  await sequence;
+}
+
+interface DocsPage {
+  diagram?: boolean;
+  heading: string;
+  name: string;
+  path: string;
+}
+
+const sidebarSections = [
+  'Start here',
+  'Examples',
+  'Feature examples',
+  'AIP examples',
+  'Build forms',
+  'Validation and APIs',
+  'Migrations',
+  'Production',
+  'Reference',
+] as const;
+
+const pages: DocsPage[] = [
+  { diagram: true, heading: 'Protoform', name: 'docs-home', path: '/docs' },
+  {
+    heading: 'Bare-bones form',
+    name: 'bare-bones-form',
+    path: '/docs/bare-bones-form',
+  },
+  {
+    heading: 'Two-step form',
+    name: 'two-step-form',
+    path: '/docs/two-step-form',
+  },
+  {
+    diagram: true,
+    heading: 'Complex end-to-end example',
+    name: 'complex-example',
+    path: '/docs/complex-example',
+  },
+  {
+    diagram: true,
+    heading: 'Kitchen sink',
+    name: 'kitchen-sink',
+    path: '/docs/kitchen-sink',
+  },
+  {
+    diagram: true,
+    heading: 'Deeply nested form',
+    name: 'deeply-nested',
+    path: '/docs/deeply-nested',
+  },
+  {
+    heading: 'CEL and RE2 form',
+    name: 'cel-re2-form',
+    path: '/docs/cel-re2-form',
+  },
+  {
+    heading: 'Oneof form',
+    name: 'oneof-form',
+    path: '/docs/oneof-form',
+  },
+  {
+    diagram: true,
+    heading: 'Server-error form',
+    name: 'server-error-form',
+    path: '/docs/server-error-form',
+  },
+  {
+    heading: 'AIP resource form',
+    name: 'aip-resource-form',
+    path: '/docs/aip-resource-form',
+  },
+  {
+    diagram: true,
+    heading: 'TanStack Form',
+    name: 'tanstack-form',
+    path: '/docs/tanstack-form',
+  },
+  {
+    diagram: true,
+    heading: 'Formik',
+    name: 'formik',
+    path: '/docs/formik',
+  },
+  {
+    diagram: true,
+    heading: 'Final Form',
+    name: 'final-form',
+    path: '/docs/final-form',
+  },
+  {
+    heading: 'Production readiness',
+    name: 'production-readiness',
+    path: '/docs/production-readiness',
+  },
+];
+
+beforeAll(async () => {
+  await mkdir(screenshotDir, { recursive: true });
+});
+
+for (const scenario of [
+  { colorScheme: 'light', locale: 'en', name: 'desktop-light', search: 'Search', width: 1280 },
+  { colorScheme: 'dark', locale: 'en', name: 'desktop-dark', search: 'Search', width: 1280 },
+  { colorScheme: 'light', locale: 'en', name: 'mobile-light', search: 'Search', width: 390 },
+  { colorScheme: 'light', locale: 'pl', name: 'polish-light', search: 'Szukaj', width: 1280 },
+] as const) {
+  test(`keeps docs navigation usable: ${scenario.name}`, async ({ page }) => {
+    await page.setViewportSize({ height: 844, width: scenario.width });
+    await page.emulateMedia({ colorScheme: scenario.colorScheme, reducedMotion: 'reduce' });
+    const localePrefix = scenario.locale === 'en' ? '' : `${scenario.locale}/`;
+    await page.goto(`/docs/${localePrefix}getting-started`);
+    await page.evaluate(() => document.fonts.ready);
+    await expect(page.locator('header')).toHaveScreenshot(`blume-header-${scenario.name}.png`);
+
+    await page.getByRole('button', { exact: true, name: scenario.search }).focus();
+    await page.keyboard.press('Enter');
+    await expect(page.getByRole('combobox')).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(page.getByRole('combobox')).toBeHidden();
+    await expect(page.getByRole('button', { exact: true, name: scenario.search })).toBeFocused();
+  });
+}
+
+test('organizes the docs sidebar by reader task', async ({ page }) => {
+  await page.goto('/docs/getting-started');
+
+  const sidebar = page.locator('aside[aria-label="Primary"] nav');
+  const groups = sidebar.locator(':scope > ul > li > details');
+
+  await expect(groups.locator(':scope > summary')).toHaveText([...sidebarSections]);
+
+  const startHere = groups.nth(sidebarSections.indexOf('Start here'));
+  await expect(startHere).toHaveAttribute('open', '');
+  await expect(startHere.getByRole('link', { name: 'Getting started' })).toHaveAttribute('aria-current', 'page');
+
+  const buildForms = groups.nth(sidebarSections.indexOf('Build forms'));
+  await buildForms.locator(':scope > summary').click();
+  await expect(buildForms.getByRole('link', { exact: true, name: 'Formisch' })).toBeVisible();
+
+  const reference = groups.nth(sidebarSections.indexOf('Reference'));
+  const referenceToggle = reference.locator(':scope > summary');
+  await referenceToggle.press('Space');
+  await expect(reference).toHaveAttribute('open', '');
+  await referenceToggle.press('Enter');
+  await expect(reference).not.toHaveAttribute('open', '');
+  await referenceToggle.press('Enter');
+  await expect(reference.getByRole('link', { exact: true, name: 'Overview' })).toBeVisible();
+  await reference.getByRole('link', { exact: true, name: 'Overview' }).click();
+  await expect(page).toHaveURL(/\/docs\/reference$/u);
+  await expect(page.getByRole('heading', { name: 'Protoform bookstore Connect API' })).toBeVisible();
+
+  const examples = groups.nth(sidebarSections.indexOf('Examples'));
+  await examples.locator(':scope > summary').click();
+  await examples.getByRole('link', { exact: true, name: 'Bare-bones form' }).click();
+  await expect(page).toHaveURL(/\/docs\/bare-bones-form$/u);
+  await expect(page.getByRole('heading', { exact: true, name: 'Bare-bones form' })).toBeVisible();
+});
+
+test('syntax-highlights protobuf field declarations', async ({ page }) => {
+  await page.goto('/docs/complex-example');
+
+  const proto = page.locator('pre[data-language="proto"]', {
+    hasText: 'project_id',
+  });
+  const projectField = proto.locator('.line', { hasText: 'project_id' });
+
+  await expect(proto).toBeVisible();
+  expect(await projectField.locator(':scope > span').count()).toBeGreaterThan(1);
+});
+
+test('syntax-highlights standalone CEL expressions', async ({ page }) => {
+  await page.goto('/docs/kitchen-sink');
+
+  const cel = page.locator('pre[data-title="CEL"]', {
+    hasText: 'this.services.size() >= 2',
+  });
+  const firstLine = cel.locator('.line').first();
+
+  await expect(cel).toBeVisible();
+  await expect(cel.locator('.blume-lang-icon')).toBeHidden();
+  expect(await firstLine.locator(':scope > span').count()).toBeGreaterThan(1);
+});
+
+test('opens diagrams in an accessible full-viewport viewer', async ({ page }) => {
+  await page.route('**/docs', async (route) => {
+    const response = await route.fetch();
+    await route.fulfill({
+      headers: { ...response.headers(), 'permissions-policy': 'fullscreen=()' },
+      response,
+    });
+  });
+  await page.goto('/docs');
+  expect(await page.evaluate(() => document.fullscreenEnabled)).toBe(false);
+
+  const diagram = page.locator('blume-mermaid').first();
+  await expect(diagram.locator(':scope > div:not([data-diagram-controls]) svg').first()).toBeVisible();
+  const maximize = page.getByRole('button', {
+    name: 'View diagram full screen',
+  });
+  await expect(maximize).toBeVisible();
+
+  await maximize.click();
+
+  const viewer = page.getByRole('dialog', { name: 'Diagram' });
+  await expect(viewer).toBeVisible();
+  await expect(viewer.locator('[data-diagram-preview] svg').first()).toBeVisible();
+  const viewport = page.viewportSize();
+  await expect
+    .poll(async () => {
+      const bounds1 = await viewer.boundingBox();
+      return bounds1?.width ?? 0;
+    })
+    .toBeGreaterThanOrEqual((viewport?.width ?? 0) - 2);
+  await expect
+    .poll(async () => {
+      const bounds2 = await viewer.boundingBox();
+      return bounds2?.height ?? 0;
+    })
+    .toBeGreaterThanOrEqual((viewport?.height ?? 0) - 2);
+
+  await page.keyboard.press('Escape');
+  await expect(viewer).toBeHidden();
+  await expect(maximize).toBeFocused();
+});
+
+test('complex example exposes its loading state', async ({ page }) => {
+  let delayedExampleChunk = false;
+  let releaseExampleChunk: (() => void) | undefined;
+  const exampleChunkGate = new Promise<void>((resolve) => {
+    releaseExampleChunk = resolve;
+  });
+
+  await page.route('**/*', async (route) => {
+    const requestPath = new URL(route.request().url()).pathname;
+    if (
+      !delayedExampleChunk &&
+      (requestPath.includes('/examples/complex/complex-form') || productionComplexChunkPattern.test(requestPath))
+    ) {
+      delayedExampleChunk = true;
+      await exampleChunkGate;
+    }
+    await route.continue();
+  });
+
+  try {
+    await page.goto('/docs/complex-example', {
+      waitUntil: 'domcontentloaded',
+    });
+    await expect(page.getByRole('status', { name: 'Loading complex example' })).toBeVisible();
+    expect(delayedExampleChunk).toBe(true);
+  } finally {
+    releaseExampleChunk?.();
+  }
+
+  await expect(page.getByRole('textbox', { name: 'Project ID' })).toBeVisible({
+    timeout: 30_000,
+  });
+});
+
+test('keeps the complex stepper usable at a narrow viewport', async ({ browserName, page }) => {
+  await page.setViewportSize({ height: 844, width: 390 });
+  await page.goto('/docs/complex-example');
+
+  const projectId = page.getByRole('textbox', { name: 'Project ID' });
+  await expect(projectId).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByRole('navigation', { name: 'Form progress' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Continue' })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(
+    true
+  );
+
+  await page.screenshot({
+    fullPage: true,
+    path: join(screenshotDir, `${browserName}-complex-example-mobile.png`),
+  });
+});
+
+test('adapts five-step progress without wrapping', async ({ page }) => {
+  await page.setViewportSize({ height: 900, width: 390 });
+  await page.goto('/docs/kitchen-sink');
+
+  const progress = page.getByRole('navigation', { name: 'Form progress' });
+  await expect(page.getByText('Step 1 of 5')).toBeVisible();
+
+  const markers = progress.locator('[data-slot="step-marker"]');
+  const labels = progress.locator('[data-slot="step-label"]');
+  await expect(markers).toHaveCount(5);
+  await expect(labels).toHaveCount(5);
+  await expect(labels.first()).toBeHidden();
+
+  const narrowMarkerTops = await markers.evaluateAll((elements) =>
+    elements.map((element) => element.getBoundingClientRect().top)
+  );
+  expect(new Set(narrowMarkerTops).size).toBe(1);
+
+  await page.setViewportSize({ height: 900, width: 800 });
+  await expect(labels.first()).toBeVisible();
+  const mediumMarker = await markers.first().boundingBox();
+  const mediumLabel = await labels.first().boundingBox();
+  expect(mediumMarker).not.toBeNull();
+  expect(mediumLabel).not.toBeNull();
+  expect(mediumLabel?.y).toBeGreaterThan((mediumMarker?.y ?? 0) + (mediumMarker?.height ?? 0));
+
+  await page.setViewportSize({ height: 900, width: 1440 });
+  await progress.evaluate((element) => {
+    element.style.width = '65rem';
+  });
+  const wideMarker = await markers.first().boundingBox();
+  const wideLabel = await labels.first().boundingBox();
+  expect(wideMarker).not.toBeNull();
+  expect(wideLabel).not.toBeNull();
+  expect(Math.abs((wideLabel?.y ?? 0) - (wideMarker?.y ?? 0))).toBeLessThan(8);
+  await progress.evaluate((element) => {
+    element.style.removeProperty('width');
+  });
+
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(
+    true
+  );
+});
+
+test('positions vertical progress above or beside its panel', async ({ page }) => {
+  await page.setViewportSize({ height: 900, width: 390 });
+  await page.goto('/docs/two-step-form');
+
+  const progress = page.getByRole('navigation', { name: 'Form progress' });
+  const panel = page.getByRole('region', { name: 'Name' });
+  await expect(progress).toHaveAttribute('data-orientation', 'vertical');
+
+  const narrowProgress = await progress.boundingBox();
+  const narrowPanel = await panel.boundingBox();
+  expect(narrowProgress).not.toBeNull();
+  expect(narrowPanel).not.toBeNull();
+  expect(narrowProgress?.y).toBeLessThan(narrowPanel?.y ?? 0);
+
+  await page.setViewportSize({ height: 900, width: 1440 });
+  const wideProgress = await progress.boundingBox();
+  const widePanel = await panel.boundingBox();
+  expect(wideProgress).not.toBeNull();
+  expect(widePanel).not.toBeNull();
+  expect(wideProgress?.x).toBeLessThan(widePanel?.x ?? 0);
+  expect(Math.abs((wideProgress?.y ?? 0) - (widePanel?.y ?? 0))).toBeLessThan(2);
+});
+
+for (const path of focusedExamplePaths) {
+  test(`keeps ${path} inside a mobile viewport`, async ({ page }) => {
+    await page.setViewportSize({ height: 844, width: 390 });
+    await page.goto(path);
+    await expect(page.locator('h1')).toBeVisible();
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth),
+      path
+    ).toBe(true);
+  });
+}
+
+test('keeps the Standard Schema guide inside a mobile viewport', async ({ browserName, page }) => {
+  await page.setViewportSize({ height: 844, width: 390 });
+  await page.goto('/docs/standard-schema');
+
+  await expect(page.getByRole('heading', { level: 1, name: 'Standard Schema' })).toBeVisible();
+  await expect(page.getByRole('table').first()).toBeVisible();
+  await expect(page.locator('blume-mermaid svg').first()).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(
+    true
+  );
+
+  await page.screenshot({
+    fullPage: true,
+    path: join(screenshotDir, `${browserName}-standard-schema-mobile.png`),
+  });
+});
+
+test('uses a wider content column for the readiness dashboard', async ({ page }) => {
+  await page.setViewportSize({ height: 1000, width: 1600 });
+  await page.goto('/docs/production-readiness');
+
+  const article = page.locator('#blume-content > article');
+  await expect(page.getByRole('progressbar', { name: 'Overall readiness' })).toBeVisible();
+  const bounds3 = await article.boundingBox();
+  expect(bounds3?.width).toBeGreaterThan(800);
+});
+
+test('keeps the bookstore demo readable inside the docs column', async ({ page }) => {
+  await page.setViewportSize({ height: 1000, width: 1440 });
+  await page.goto('/docs/bookstore');
+
+  const heading = page.getByRole('heading', { name: 'Protoform library' });
+  await expect(heading).toBeVisible();
+  const headingBox = await heading.boundingBox();
+  expect(headingBox?.width).toBeGreaterThan(200);
+
+  const source = page.getByRole('tabpanel');
+  await expect(source).toContainText('syntax = "proto3"');
+  const sourceBox = await source.boundingBox();
+  expect(sourceBox?.x).toBeGreaterThan((headingBox?.x ?? 0) + 200);
+  const sourceColors = await source.evaluate((element) => {
+    const parent = element.parentElement;
+    const code = element.querySelector('code');
+    if (!(parent && code)) {
+      throw new Error('Expected a source panel with highlighted code.');
+    }
+    return { background: getComputedStyle(parent).backgroundColor, foreground: getComputedStyle(code).color };
+  });
+  expect(sourceColors.foreground).not.toBe(sourceColors.background);
+});
+
+test('syntax-highlights every bookstore source language', async ({ page }) => {
+  await page.goto('/docs/bookstore');
+
+  const source = page.getByRole('tabpanel');
+  const cases = [
+    {
+      file: 'aip.proto',
+      line: 'syntax = "proto3"',
+    },
+    {
+      file: 'aip_pb.ts',
+      line: 'import type',
+    },
+    {
+      file: 'create-book-form.tsx',
+      line: 'export function CreateBookForm',
+    },
+  ] as const;
+
+  await inOrder(cases, async ({ file, line }) => {
+    await page.getByRole('tab', { name: file }).click();
+    const highlightedLine = source.locator('.line', { hasText: line }).first();
+    await expect(highlightedLine).toBeVisible();
+    expect.soft(await highlightedLine.locator(':scope > span').count(), file).toBeGreaterThan(1);
+  });
+});
+
+for (const example of wideDemoExamples) {
+  test(`gives each ${example.label} more room than the prose column`, async ({ page }) => {
+    await page.setViewportSize({ height: 1000, width: 1600 });
+    await page.goto(example.path);
+
+    const prose = page.locator('#blume-content > article');
+    const demo = page.locator(example.selector).first();
+    await expect(demo).toBeVisible();
+
+    const proseBox = await prose.boundingBox();
+    const demoBox = await demo.boundingBox();
+
+    expect.soft(demoBox?.width, example.path).toBeGreaterThan((proseBox?.width ?? 0) + 200);
+    expect.soft(demoBox?.x, example.path).toBeGreaterThanOrEqual(0);
+    expect.soft((demoBox?.x ?? 0) + (demoBox?.width ?? 0), example.path).toBeLessThanOrEqual(1600);
+  });
+}
+
+test('shows line numbers in component code previews', async ({ page }) => {
+  await page.goto('/docs/bookstore');
+
+  const source = page.locator('pre.blume-source').first();
+  await expect(source.locator('.line').first()).toBeVisible();
+  expect(
+    await source.evaluate((element) => {
+      const code = element.querySelector('code');
+      const line = element.querySelector('.line');
+      if (!(code && line)) {
+        throw new Error('Expected highlighted source lines');
+      }
+      const lineNumber = getComputedStyle(line, '::before');
+
+      return {
+        content: lineNumber.content,
+        increment: lineNumber.counterIncrement,
+        reset: getComputedStyle(code).counterReset,
+      };
+    })
+  ).toEqual({
+    content: 'counter(line)',
+    increment: 'line 1',
+    reset: 'line 0',
+  });
+});
+
+test('shows the Profile v3 evidence roadmap', async ({ page }) => {
+  await page.goto('/docs/production-readiness');
+
+  await expect(page.getByRole('heading', { name: 'How to maintain the evidence' })).toBeVisible();
+  await expect(page.getByText('Consumer deployment matrix')).toBeVisible();
+  await expect(page.getByText('Schema evolution and drafts')).toBeVisible();
+  await expect(page.getByText('Security and misuse resistance')).toBeVisible();
+});
+
+test('keeps readiness areas readable with enlarged text', async ({ page }) => {
+  await page.setViewportSize({ height: 1000, width: 1440 });
+  await page.goto('/docs/production-readiness');
+  await expect(page.getByRole('progressbar', { name: 'Overall readiness' })).toBeVisible();
+
+  const verifiedCheck = page.getByRole('button', {
+    name: 'String fields: Verified',
+  });
+  await verifiedCheck.hover();
+  await expect(page.getByRole('tooltip')).toContainText('maps $key into the stable field model');
+  await page.mouse.move(0, 0);
+  const serviceCheck = page.getByRole('button', {
+    name: 'Service and RPC descriptors: Verified',
+  });
+  await serviceCheck.focus();
+  await expect(page.getByRole('tooltip')).toContainText('Generated service methods now expose request descriptors');
+
+  await page.evaluate(() => {
+    document.documentElement.style.fontSize = '200%';
+  });
+
+  const area = page.getByRole('region', { name: 'Readiness by area' });
+  const cards = area.locator('article');
+  await expect(cards).toHaveCount(5);
+  expect(
+    await cards.evaluateAll((elements) =>
+      elements
+        .filter((element) => element.scrollWidth > element.clientWidth)
+        .map((element) => element.querySelector('h3')?.textContent)
+    )
+  ).toEqual([]);
+});
+
+for (const pageInfo of pages) {
+  const scenarioChecks: Array<(page: Page) => Promise<void>> = [];
+  if (pageInfo.diagram === true) {
+    scenarioChecks.push(async (page) => {
+      await expect(page.locator('blume-mermaid svg').first()).toBeVisible();
+      await expect(page.locator('pre', { hasText: 'flowchart TD' })).toHaveCount(0);
+    });
+  }
+  if (pageInfo.name === 'bare-bones-form') {
+    scenarioChecks.push(async (page) => {
+      await page.getByRole('textbox', { name: 'Name' }).fill('Ada');
+      await page.getByRole('button', { name: 'Submit' }).click();
+      await expect(page.getByRole('status')).toContainText('Submitted: Ada');
+    });
+  }
+  if (pageInfo.name === 'two-step-form') {
+    scenarioChecks.push(async (page) => {
+      await expect(page.getByText('Step 1 of 2')).toBeVisible();
+      await page.getByRole('textbox', { name: 'Name' }).fill('Ada');
+      await page.getByRole('button', { name: 'Continue' }).click();
+      await expect(page.getByText('Step 2 of 2')).toBeVisible();
+      await page.getByRole('textbox', { name: 'Email' }).fill('ada@example.com');
+      await page.getByRole('button', { name: 'Submit' }).click();
+      await expect(page.getByRole('status')).toContainText('Submitted: Ada, ada@example.com');
+    });
+  }
+  if (pageInfo.name === 'cel-re2-form') {
+    scenarioChecks.push(async (page) => {
+      await page.getByRole('textbox', { name: 'Project ID' }).fill('Not valid');
+      await page.getByRole('button', { name: 'Submit' }).click();
+      await expect(
+        page.getByRole('alert').filter({ hasText: 'Use lowercase letters, digits, and hyphens.' })
+      ).toBeVisible();
+    });
+  }
+  if (pageInfo.name === 'oneof-form') {
+    scenarioChecks.push(async (page) => {
+      await page.getByRole('combobox', { name: 'Contact' }).click();
+      await page.getByRole('option', { name: 'Phone' }).click();
+      await page.getByRole('textbox', { name: 'Phone' }).fill('+442079460000');
+      await expect(page.getByRole('textbox', { name: 'Email' })).toHaveCount(0);
+      await page.getByRole('button', { name: 'Submit' }).click();
+      await expect(page.getByRole('status')).toContainText('Submitted phone: +442079460000');
+    });
+  }
+  if (pageInfo.name === 'server-error-form') {
+    scenarioChecks.push(async (page) => {
+      await page.getByRole('textbox', { name: 'Display Name' }).fill('Ada Lovelace');
+      const email = page.getByRole('textbox', { name: 'Email' });
+      await email.fill('ada@blocked.example');
+      await page.getByRole('button', { name: 'Submit' }).click();
+      await expect(page.getByText('Use an email address from an approved domain.')).toBeVisible();
+      await expect(email).toHaveAttribute('aria-invalid', 'true');
+    });
+  }
+  if (pageInfo.name === 'aip-resource-form') {
+    scenarioChecks.push(async (page) => {
+      const displayName = page.getByRole('textbox', { name: 'Display Name' });
+      await displayName.fill('Grace Hopper');
+      await page.getByRole('textbox', { name: 'Biography' }).fill('Compiler pioneer');
+      await page.getByRole('button', { name: 'Submit' }).click();
+      await expect(page.getByRole('status')).toContainText('Update mask: display_name, biography');
+    });
+  }
+  if (pageInfo.name === 'complex-example') {
+    scenarioChecks.push(async (page) => {
+      const projectId = page.getByRole('textbox', { name: 'Project ID' });
+      await expect(projectId).toBeVisible();
+      await expect(page.getByLabel('Region')).toHaveCount(0);
+      const bounds4 = await projectId.boundingBox();
+      expect(bounds4?.width).toBeGreaterThanOrEqual(200);
+    });
+  }
+  if (pageInfo.name === 'kitchen-sink') {
+    scenarioChecks.push(async (page) => {
+      await expect(
+        page.getByRole('heading', {
+          name: 'Production deployment kitchen sink',
+        })
+      ).toBeVisible();
+      await expect(page.getByRole('navigation', { name: 'Form progress' })).toBeVisible();
+      await expect(page.getByText('Step 1 of 5')).toBeVisible();
+    });
+  }
+  if (pageInfo.name === 'deeply-nested') {
+    scenarioChecks.push(async (page) => {
+      await expect(
+        page.getByRole('heading', {
+          name: 'Configure a platform blueprint',
+        })
+      ).toBeVisible();
+      await expect(page.getByLabel('Destination Cidr', { exact: false })).toBeVisible();
+      await expect(page.getByRole('heading', { name: 'Network 1' })).toBeVisible();
+      await expect(page.getByRole('heading', { name: 'Route 1' })).toBeVisible();
+      await expect(page.getByRole('heading', { name: 'Value' })).toHaveCount(0);
+      await expect(page.getByRole('button', { name: 'Add Routes' })).toBeVisible();
+    });
+  }
+  if (pageInfo.name === 'tanstack-form') {
+    scenarioChecks.push(async (page) => {
+      await expect(page.getByRole('textbox', { name: 'Display name' })).toBeVisible();
+      await page.getByRole('button', { name: 'Create profile' }).click();
+      await expect(page.getByText('Enter a value.')).toHaveCount(2);
+    });
+  }
+  if (pageInfo.name === 'formik') {
+    scenarioChecks.push(async (page) => {
+      await expect(page.getByRole('textbox', { name: 'Display name' })).toBeVisible();
+      await expect(page.getByRole('status', { name: 'Loading Formik example' })).toHaveCount(0);
+    });
+  }
+  if (pageInfo.name === 'final-form') {
+    scenarioChecks.push(async (page) => {
+      await expect(page.getByRole('textbox', { name: 'Display name' })).toBeVisible();
+      await expect(page.getByRole('status', { name: 'Loading Final Form example' })).toHaveCount(0);
+    });
+  }
+  if (pageInfo.name === 'production-readiness') {
+    scenarioChecks.push(async (page) => {
+      await expect(page.getByRole('progressbar', { name: 'Overall readiness' })).toBeVisible();
+      await expect(page.getByText('100%', { exact: true }).first()).toBeVisible();
+      await expect(
+        page.getByRole('button', {
+          name: 'Service and RPC descriptors: Verified',
+        })
+      ).toBeVisible();
+      await page.getByRole('button', { exact: true, name: 'All' }).click();
+      const ledger = page.getByRole('region', { name: 'Capability ledger' });
+      const proto2Groups = ledger.getByRole('heading', {
+        name: 'Proto2 groups and extensions',
+      });
+      await page.getByPlaceholder('Search checks').fill('Proto2 groups and extensions');
+      await expect(proto2Groups).toBeVisible();
+      await page.getByPlaceholder('Search checks').fill('Service and RPC descriptors');
+      await expect(proto2Groups).toHaveCount(0);
+      await expect(ledger.getByRole('heading', { name: 'Service and RPC descriptors' })).toBeVisible();
+    });
+  }
+  test(`hydrates and renders docs screenshot: ${pageInfo.name}`, async ({ browserName, page }) => {
+    const consoleErrors: string[] = [];
+    page.on('console', (message) => {
+      if (message.type() === 'error') {
+        consoleErrors.push(message.text());
+      }
+    });
+    await page.goto(pageInfo.path);
+    await expect(page.locator('h1', { hasText: pageInfo.heading }).first()).toBeVisible();
+    await inOrder(scenarioChecks, (check) => check(page));
+
+    await page.screenshot({
+      fullPage: true,
+      path: join(screenshotDir, `${browserName}-${pageInfo.name}.png`),
+    });
+    const unexpectedConsoleErrors = consoleErrors.filter(
+      (message) => !(pageInfo.name === 'server-error-form' && message.includes('server responded with a status of 400'))
+    );
+    expect(unexpectedConsoleErrors).toEqual([]);
+  });
+}

@@ -13,7 +13,7 @@ interface ProfileValues {
   displayName: string;
 }
 
-function failingSchema(): StandardSchemaV1<ProfileValues, ProfileValues> {
+function failingSchema() {
   return {
     '~standard': {
       validate: () => ({
@@ -31,7 +31,7 @@ function failingSchema(): StandardSchemaV1<ProfileValues, ProfileValues> {
         ],
       }),
       vendor: 'test',
-      version: 1,
+      version: 1 as const,
     },
   };
 }

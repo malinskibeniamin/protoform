@@ -53,15 +53,12 @@ function validateFieldsNatively(errors: Record<string, FieldError>, options: Res
   }
 }
 
-function isFieldArrayRoot(names: string[], path: string): boolean {
+function isFieldArrayRoot(names: string[], path: string) {
   const escapedPath = path.replaceAll(/[[\]]/gu, '').replaceAll(/[.*+?^${}()|[\]\\]/gu, String.raw`\$&`);
   return names.some((name) => new RegExp(`^${escapedPath}\\.\\d+`, 'u').exec(name.replaceAll(/[[\]]/gu, '')));
 }
 
-function toNestErrors(
-  flatErrors: Record<string, FieldError>,
-  options: ResolverOptions<FormValues>
-): FieldErrors<FormValues> {
+function toNestErrors(flatErrors: Record<string, FieldError>, options: ResolverOptions<FormValues>) {
   if (options.shouldUseNativeValidation === true) {
     validateFieldsNatively(flatErrors, options);
   }
@@ -89,10 +86,10 @@ export function createProtoResolver<Desc extends DescMessage>(
   desc: Desc,
   options: ProtoFormOptions = {},
   source?: MessageShape<Desc>
-): ProtoResolver<Desc> {
+) {
   const standardSchema = createDescriptorAwareStandardSchema(desc, options);
 
-  return async (values, _context, resolverOptions, currentSource = source) => {
+  const resolver: ProtoResolver<Desc> = async (values, _context, resolverOptions, currentSource = source) => {
     const validationResult = await validateFormValuesAgainstProtoSchema(
       desc,
       values,
@@ -165,8 +162,10 @@ export function createProtoResolver<Desc extends DescMessage>(
       values: {},
     };
   };
+  return resolver;
 }
 
-function firstRef(refs: unknown): unknown {
-  return Array.isArray(refs) ? refs[0] : undefined;
+function firstRef(refs: unknown) {
+  const ref: unknown = Array.isArray(refs) ? refs[0] : undefined;
+  return ref;
 }

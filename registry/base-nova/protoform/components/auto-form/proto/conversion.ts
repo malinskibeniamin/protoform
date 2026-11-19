@@ -11,7 +11,8 @@ export {
   protoToFormValues,
 } from '@/registry/base-nova/protoform/lib/protobuf-provider/provider';
 
-export function getProtoJsonSchema(field: ParsedField): Record<string, unknown> {
+export function getProtoJsonSchema(field: ParsedField): Record<string, unknown>;
+export function getProtoJsonSchema(field: ParsedField) {
   const hints = getFieldHints(field);
 
   switch (hints?.jsonKind) {
@@ -34,17 +35,11 @@ export function isProtoMapEntries(value: unknown): value is ProtoMapFormEntry[] 
   return Array.isArray(value);
 }
 
-export function resolveProtoSourceMessage<Desc extends DescMessage>(
-  desc: Desc,
-  ...candidates: unknown[]
-): MessageShape<Desc> | undefined {
+export function resolveProtoSourceMessage<Desc extends DescMessage>(desc: Desc, ...candidates: unknown[]) {
   return candidates.find((candidate): candidate is MessageShape<Desc> => isMessage(candidate, desc));
 }
 
-export function normalizeProtoInitialValues(
-  desc: DescMessage,
-  values?: Partial<Record<string, unknown>>
-): Record<string, unknown> | undefined {
+export function normalizeProtoInitialValues(desc: DescMessage, values?: Partial<Record<string, unknown>>) {
   if (!values) {
     return;
   }

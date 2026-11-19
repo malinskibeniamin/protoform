@@ -9,6 +9,7 @@ export default defineConfig({
   include: [
     'registry/**/*.integration.test.ts',
     'examples/**/*.integration.test.ts',
+    'readiness/**/*.integration.test.ts',
     'scripts/**/*.integration.test.ts',
   ],
   plugins: [pluginReact({ reactCompiler: { compilationMode: 'infer', panicThreshold: 'all_errors', target: '19' } })],

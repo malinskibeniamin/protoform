@@ -3,7 +3,7 @@ import { definePlaywrightConfig } from '@rstest/playwright/config';
 
 export default defineConfig({
   name: 'quickjs',
-  include: ['e2e/quickjs.spec.ts'],
+  include: ['e2e/quickjs.e2e.test.ts'],
   extends: definePlaywrightConfig({
     contextOptions: { baseURL: 'http://127.0.0.1:55124' },
     trace: 'retain-on-failure',

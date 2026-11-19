@@ -144,7 +144,7 @@ function verified(
   testName: string,
   level: ReadinessLevel = required,
   description?: string
-): VerifiedRequirement {
+) {
   return {
     category,
     description,
@@ -153,7 +153,7 @@ function verified(
     level,
     status: 'verified',
     title,
-  };
+  } satisfies ReadinessRequirement;
 }
 
 function excluded(
@@ -162,8 +162,8 @@ function excluded(
   title: string,
   status: ExcludedRequirement['status'],
   rationale: string
-): ExcludedRequirement {
-  return { category, id, level: required, rationale, status, title };
+) {
+  return { category, id, level: required, rationale, status, title } satisfies ExcludedRequirement;
 }
 
 function optional(
@@ -173,7 +173,7 @@ function optional(
   file: string,
   testName: string,
   description?: string
-): OptionalRequirement {
+) {
   return {
     category,
     description,
@@ -182,7 +182,7 @@ function optional(
     level: recommended,
     status: 'optional',
     title,
-  };
+  } satisfies ReadinessRequirement;
 }
 
 const protobufRequirements: readonly ReadinessRequirement[] = [
@@ -716,14 +716,14 @@ const celRequirements: readonly ReadinessRequirement[] = [
     'cel.strings',
     'String functions and regular expressions',
     'conformance/cel-language.conformance.test.ts',
-    'supports string and bytes operations'
+    'supports string operations'
   ),
   verified(
     'cel',
     'cel.bytes',
     'Bytes literals and operations',
-    'conformance/cel-language.conformance.test.ts',
-    'supports string and bytes operations'
+    'conformance/cel-protobuf.conformance.test.ts',
+    'evaluates protobuf messages, enums, presence, collections, bytes, and temporal values'
   ),
   verified(
     'cel',
@@ -877,13 +877,13 @@ function aipVerified(
   testName: string,
   description?: string,
   standardState: AipStandardState = 'approved'
-): VerifiedRequirement {
+) {
   return {
     ...verified('aip', `aip.${number}`, `AIP-${number} ${title}`, file, testName, required, description),
     evidenceScope: 'client',
     sourceUrl: `https://google.aip.dev/${number}`,
     standardState,
-  };
+  } satisfies ReadinessRequirement;
 }
 
 function aipExcluded(
@@ -892,13 +892,13 @@ function aipExcluded(
   status: ExcludedRequirement['status'],
   rationale: string,
   standardState: AipStandardState = 'approved'
-): ExcludedRequirement {
+) {
   return {
     ...excluded('aip', `aip.${number}`, `AIP-${number} ${title}`, status, rationale),
     evidenceScope: 'external',
     sourceUrl: `https://google.aip.dev/${number}`,
     standardState,
-  };
+  } satisfies ReadinessRequirement;
 }
 
 const aipRequirements: readonly ReadinessRequirement[] = [
@@ -1227,7 +1227,7 @@ const aipRequirements: readonly ReadinessRequirement[] = [
   aipVerified(
     182,
     'External software dependencies',
-    'scripts/host-consumer.browser.spec.ts',
+    'scripts/host-consumer.browser.test.ts',
     'host primitives submit, report errors, and recover without a theme dependency',
     'An installed source-copy consumer runs with host-supplied primitives and public runtime dependencies.',
     'reviewing'
@@ -1391,7 +1391,7 @@ const productionRequirements: readonly ReadinessRequirement[] = [
     'production',
     'production.react-hook-form',
     'React Hook Form integration',
-    'registry/base-nova/protoform/components/auto-form/__tests__/proto-forms.test.tsx',
+    'registry/base-nova/protoform/components/auto-form/index.test.tsx',
     'renders registered descriptions and submits protobuf-shaped output'
   ),
   verified(
@@ -1405,28 +1405,28 @@ const productionRequirements: readonly ReadinessRequirement[] = [
     'production',
     'production.formik',
     'Formik integration',
-    'examples/form-libraries/form-libraries.test.tsx',
+    'examples/form-libraries/formik-form.test.tsx',
     'validates with Formik and submits a typed protobuf message'
   ),
   verified(
     'production',
     'production.final-form',
     'Final Form integration',
-    'examples/form-libraries/form-libraries.test.tsx',
+    'examples/form-libraries/final-form.test.tsx',
     'validates with Final Form and submits a typed protobuf message'
   ),
   verified(
     'production',
     'production.auto-form',
     'Descriptor-driven AutoForm',
-    'registry/base-nova/protoform/components/auto-form/__tests__/proto-forms.test.tsx',
+    'registry/base-nova/protoform/components/auto-form/index.test.tsx',
     'shows protobuf field-level and message-level validation feedback'
   ),
   verified(
     'production',
     'production.stepper',
     'Semantic linear steppers',
-    'registry/base-nova/protoform/components/auto-form/__tests__/stepper.test.tsx',
+    'registry/base-nova/protoform/components/auto-form/stepper.test.tsx',
     'renders one step at a time with semantic progress, linear navigation, and a final-step summary'
   ),
   verified(
@@ -1440,7 +1440,7 @@ const productionRequirements: readonly ReadinessRequirement[] = [
     'production',
     'production.submit-failures',
     'Submission failures remain visible',
-    'registry/base-nova/protoform/components/auto-form/__tests__/resilience.test.tsx',
+    'registry/base-nova/protoform/components/auto-form/index.resilience.test.tsx',
     'shows a root error when onSubmit throws or rejects'
   ),
   verified(
@@ -1454,35 +1454,35 @@ const productionRequirements: readonly ReadinessRequirement[] = [
     'production',
     'production.accessibility',
     'Automated accessibility',
-    'e2e/accessibility.spec.ts',
+    'e2e/accessibility.e2e.test.ts',
     'has no serious accessibility violations across representative form states'
   ),
   verified(
     'production',
     'production.keyboard',
     'Keyboard-only workflows',
-    'registry/base-nova/protoform/components/auto-form/__tests__/stepper.test.tsx',
+    'registry/base-nova/protoform/components/auto-form/stepper.test.tsx',
     'completes validation recovery and every step using only the keyboard'
   ),
   verified(
     'production',
     'production.browser-workflows',
     'Chromium end-to-end workflows',
-    'e2e/demo-catalog.spec.ts',
+    'e2e/demo-catalog.e2e.test.ts',
     'publishes focused feature and AIP catalogs with working live forms'
   ),
   verified(
     'production',
     'production.narrow-viewport',
     'Narrow viewport layout',
-    'e2e/docs-screenshots.spec.ts',
+    'e2e/docs-screenshots.e2e.test.ts',
     'keeps the complex stepper usable at a narrow viewport'
   ),
   verified(
     'production',
     'production.ssr-hydration',
     'SSR and hydration',
-    'e2e/docs-screenshots.spec.ts',
+    'e2e/docs-screenshots.e2e.test.ts',
     'hydrates and renders docs screenshot:'
   ),
   verified(
@@ -1496,21 +1496,21 @@ const productionRequirements: readonly ReadinessRequirement[] = [
     'production',
     'production.cancellation',
     'Async cancellation and stale responses',
-    'registry/base-nova/protoform/components/auto-form/__tests__/resilience.test.tsx',
+    'registry/base-nova/protoform/components/auto-form/index.resilience.test.tsx',
     'aborts superseded and unmounted submit contexts and active provider validation'
   ),
   verified(
     'production',
     'production.registry-dependencies',
     'Registry dependency contract',
-    'scripts/host-consumer.browser.spec.ts',
+    'scripts/host-consumer.browser.test.ts',
     'host primitives submit, report errors, and recover without a theme dependency'
   ),
   verified(
     'production',
     'production.performance',
     'Real AutoForm browser performance budget',
-    'registry/base-nova/protoform/components/auto-form/__browser__/performance.browser.test.tsx',
+    'registry/base-nova/protoform/components/auto-form/index.performance.browser.test.tsx',
     'renders, types, validates, and steps through a real $fields-field AutoForm',
     recommended
   ),
@@ -1539,8 +1539,8 @@ export const readinessRequirements: readonly ReadinessRequirement[] = [
   ...productionRequirements,
 ];
 
-export function getReadinessSummary(requirements: readonly ReadinessRequirement[]): ReadinessSummary {
-  const count = (status: ReadinessRequirement['status']): number =>
+export function getReadinessSummary(requirements: readonly ReadinessRequirement[]) {
+  const count = (status: ReadinessRequirement['status']) =>
     requirements.filter((requirement) => requirement.status === status).length;
   const verifiedCount = count('verified');
   const missingCount = count('missing');

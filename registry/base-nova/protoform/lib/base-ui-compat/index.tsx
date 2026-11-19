@@ -12,7 +12,7 @@ interface AsChildInput {
   children?: React.ReactNode | undefined;
 }
 
-export function asChildToRender<P extends AsChildInput>(props: P): Omit<P, 'asChild'> {
+export function asChildToRender<P extends AsChildInput>(props: P) {
   const { asChild, children, ...rest } = props;
   if (asChild === true && React.isValidElement(children)) {
     return { ...rest, render: children } as unknown as Omit<P, 'asChild'>;
@@ -20,7 +20,7 @@ export function asChildToRender<P extends AsChildInput>(props: P): Omit<P, 'asCh
   return { ...rest, children } as Omit<P, 'asChild'>;
 }
 
-function compatStateAttrs(state: CompatState | undefined): Record<string, string> {
+function compatStateAttrs(state: CompatState | undefined) {
   const attrs: Record<string, string> = {};
   if (state && typeof state.open === 'boolean') {
     attrs['data-state'] = state.open === true ? 'open' : 'closed';
@@ -38,7 +38,8 @@ function compatStateAttrs(state: CompatState | undefined): Record<string, string
   return attrs;
 }
 
-export function asChildTrigger<P extends AsChildInput>(props: P): Omit<P, 'asChild'> & { nativeButton?: boolean } {
+export function asChildTrigger<P extends AsChildInput>(props: P): Omit<P, 'asChild'> & { nativeButton?: boolean };
+export function asChildTrigger<P extends AsChildInput>(props: P) {
   const base = asChildToRender(props);
   if (props.asChild !== true) {
     return base;
@@ -53,7 +54,8 @@ export function asChildTrigger<P extends AsChildInput>(props: P): Omit<P, 'asChi
   return base;
 }
 
-function rendersNonButton(element: React.ReactElement): boolean {
+function rendersNonButton(element: React.ReactElement): boolean;
+function rendersNonButton(element: React.ReactElement) {
   if (typeof element.type === 'string') {
     return element.type !== 'button';
   }
@@ -73,32 +75,31 @@ export interface CompatState {
 
 export function renderWithDataState<S extends CompatState = CompatState>(
   Element: keyof React.JSX.IntrinsicElements = 'div'
-): ComponentRenderFnCompat<HTMLPropsCompat, S> {
-  return function renderDataState(props, state) {
+) {
+  const renderDataState: ComponentRenderFnCompat<HTMLPropsCompat, S> = function renderDataState(props, state) {
     return React.createElement(Element, { ...props, ...compatStateAttrs(state) });
   };
+  return renderDataState;
 }
 
-export function narrowOpenChange<Details>(
-  handler: ((open: boolean) => void) | undefined
-): ((open: boolean, details: Details) => void) | undefined {
+export function narrowOpenChange<Details>(handler: ((open: boolean) => void) | undefined) {
   if (!handler) {
     return;
   }
-  return (open: boolean) => {
+  const handleOpenChange: ((open: boolean, details: Details) => void) | undefined = (open: boolean) => {
     handler(open);
   };
+  return handleOpenChange;
 }
 
-export function narrowCallback<Value, Details>(
-  handler: ((value: Value) => void) | undefined
-): ((value: Value, details: Details) => void) | undefined {
+export function narrowCallback<Value, Details>(handler: ((value: Value) => void) | undefined) {
   if (!handler) {
     return;
   }
-  return (value: Value) => {
+  const handleChange: ((value: Value, details: Details) => void) | undefined = (value: Value) => {
     handler(value);
   };
+  return handleChange;
 }
 
 export type BaseUIMouseEvent<T = HTMLElement> = React.MouseEvent<T> & {
@@ -134,9 +135,16 @@ export function renderDescription({
   asChild,
   children,
   className,
+  fallbackClassName,
+  dataSlot,
+}: DescriptionRenderProps): React.ReactElement;
+export function renderDescription({
+  asChild,
+  children,
+  className,
   fallbackClassName = 'text-muted-foreground text-sm',
   dataSlot,
-}: DescriptionRenderProps): React.ReactElement {
+}: DescriptionRenderProps) {
   if (asChild === true && React.isValidElement<{ 'data-slot'?: string }>(children)) {
     if (!(dataSlot !== undefined && dataSlot !== '')) {
       return children;
@@ -152,7 +160,7 @@ export function renderDescription({
 
 const warnedKeys = new Set<string>();
 
-function isProductionRuntime(): boolean {
+function isProductionRuntime() {
   const processValue: unknown = Reflect.get(globalThis, 'process');
   if (!(typeof processValue === 'object' && processValue !== null)) {
     return false;
@@ -163,7 +171,7 @@ function isProductionRuntime(): boolean {
   );
 }
 
-export function devWarnOnce(key: string, _message: string): void {
+export function devWarnOnce(key: string, _message: string) {
   if (isProductionRuntime()) {
     return;
   }
@@ -173,11 +181,11 @@ export function devWarnOnce(key: string, _message: string): void {
   warnedKeys.add(key);
 }
 
-export function resetDevWarnings(): void {
+export function resetDevWarnings() {
   warnedKeys.clear();
 }
 
-export function warnDeprecatedProp(component: string, prop: string, value: unknown, guidance: string): void {
+export function warnDeprecatedProp(component: string, prop: string, value: unknown, guidance: string) {
   if (value === undefined) {
     return;
   }
@@ -191,7 +199,7 @@ export function resolveKeepMounted(
   component: string,
   forceMount: boolean | undefined,
   keepMounted: boolean | undefined
-): boolean | undefined {
+) {
   if (forceMount === true) {
     warnDeprecatedProp(
       component,
@@ -213,27 +221,28 @@ type SlotElement = React.ReactElement & { ref?: React.Ref<HTMLElement> };
 type EventHandler = (...args: unknown[]) => unknown;
 const EVENT_HANDLER_KEY_PATTERN = /^on[A-Z]/u;
 
-function isEventHandlerKey(key: string): boolean {
+function isEventHandlerKey(key: string) {
   return EVENT_HANDLER_KEY_PATTERN.test(key);
 }
 
-function readHandler(source: object, key: string): EventHandler | undefined {
+function readHandler(source: object, key: string) {
   const value: unknown = Reflect.get(source, key);
   return typeof value === 'function' ? (value as EventHandler) : undefined;
 }
 
-function readString(source: object, key: string): string | undefined {
+function readString(source: object, key: string) {
   const value: unknown = Reflect.get(source, key);
   return typeof value === 'string' ? value : undefined;
 }
 
-function readStyle(source: object): React.CSSProperties | undefined {
+function readStyle(source: object) {
   const value: unknown = Reflect.get(source, 'style');
-  return value !== null && typeof value === 'object' ? value : undefined;
+  const style: React.CSSProperties | undefined = value !== null && typeof value === 'object' ? value : undefined;
+  return style;
 }
 
-function composeRefs<T>(...refs: Array<React.Ref<T> | undefined>): React.RefCallback<T> {
-  return (value: T) => {
+function composeRefs<T>(...refs: Array<React.Ref<T> | undefined>) {
+  const result: React.RefCallback<T> = (value: T) => {
     for (const ref of refs) {
       if (!ref) {
         continue;
@@ -245,9 +254,10 @@ function composeRefs<T>(...refs: Array<React.Ref<T> | undefined>): React.RefCall
       }
     }
   };
+  return result;
 }
 
-function getElementRef(element: React.ReactElement): React.Ref<unknown> | undefined {
+function getElementRef(element: React.ReactElement) {
   const refFromProps: unknown = Reflect.get(element.props ?? {}, 'ref');
   if (refFromProps !== undefined) {
     return refFromProps as React.Ref<unknown>;
@@ -255,7 +265,7 @@ function getElementRef(element: React.ReactElement): React.Ref<unknown> | undefi
   return (element as SlotElement).ref;
 }
 
-function mergeSlotProps(slotProps: object, childProps: object): Record<string, unknown> {
+function mergeSlotProps(slotProps: object, childProps: object) {
   const merged: Record<string, unknown> = { ...slotProps, ...childProps };
 
   const slotClass = readString(slotProps, 'className');

@@ -150,7 +150,7 @@ const validUpdateBook = {
   validateOnly: false,
 };
 
-function buildDefaults(schemaKey: DemoSchemaKey): Record<string, unknown> {
+function buildDefaults(schemaKey: DemoSchemaKey) {
   switch (schemaKey) {
     case 'any':
       return {
@@ -428,11 +428,12 @@ function buildDefaults(schemaKey: DemoSchemaKey): Record<string, unknown> {
   }
 }
 
-export function getDemoSchema(schemaKey: DemoSchemaKey): DemoSchema {
+export function getDemoSchema(schemaKey: DemoSchemaKey) {
   const schema = schemas[schemaKey];
 
-  return {
+  const demo: DemoSchema = {
     defaultValues: create(schema, buildDefaults(schemaKey)),
     schema,
   };
+  return demo;
 }

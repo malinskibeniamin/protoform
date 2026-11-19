@@ -31,11 +31,11 @@ const CODE_LABELS: Record<number, string> = {
   [Code.Unauthenticated]: 'unauthenticated',
 };
 
-export function grpcCodeLabel(code: number): string {
+export function grpcCodeLabel(code: number) {
   return CODE_LABELS[code] ?? `code_${code}`;
 }
 
-export function formatConnectError(error: unknown): string {
+export function formatConnectError(error: unknown) {
   if (error instanceof ConnectError) {
     const violations = extractFieldViolations(error);
     const { code, rawMessage } = error;
@@ -64,7 +64,7 @@ export interface FieldViolation {
   field: string;
 }
 
-export function extractFieldViolations(error: ConnectError): FieldViolation[] {
+export function extractFieldViolations(error: ConnectError) {
   const violations: FieldViolation[] = [];
   try {
     for (const badRequest of error.findDetails(BadRequestSchema)) {
@@ -78,15 +78,7 @@ export function extractFieldViolations(error: ConnectError): FieldViolation[] {
   return violations;
 }
 
-export function formatToastErrorMessage({
-  action,
-  entity,
-  error,
-}: {
-  action: string;
-  entity: string;
-  error: unknown;
-}): string {
+export function formatToastErrorMessage({ action, entity, error }: { action: string; entity: string; error: unknown }) {
   return `Failed to ${action} ${entity}: ${formatConnectError(error)}`;
 }
 
@@ -140,14 +132,14 @@ const MAPPED_DETAIL_TYPES: ReadonlySet<string> = new Set([
   RetryInfoSchema.typeName,
 ]);
 
-function connectDetailTypeName(detail: ConnectError['details'][number]): string | undefined {
+function connectDetailTypeName(detail: ConnectError['details'][number]) {
   if ('desc' in detail) {
     return detail.desc.typeName;
   }
   return detail.type || undefined;
 }
 
-export function extractConnectErrorContext(error: unknown): ConnectErrorContext {
+export function extractConnectErrorContext(error: unknown) {
   const context: ConnectErrorContext = {
     helpLinks: [],
     preconditionViolations: [],

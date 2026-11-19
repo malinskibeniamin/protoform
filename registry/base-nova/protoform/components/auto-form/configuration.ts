@@ -74,17 +74,15 @@ const BUILT_IN_RENDERER_TYPES: Readonly<Record<string, readonly string[]>> = {
   url: ['string'],
 };
 
-function collectFields(
-  fields: ParsedField[],
-  path: readonly string[] = []
-): Array<{ field: ParsedField; path: string }> {
-  return fields.flatMap((field) => {
+function collectFields(fields: ParsedField[], path: readonly string[] = []) {
+  const entries: Array<{ field: ParsedField; path: string }> = fields.flatMap((field) => {
     const fieldPath = [...path, field.key];
     return [{ field, path: fieldPath.join('.') }, ...collectFields(field.schema ?? [], fieldPath)];
   });
+  return entries;
 }
 
-function resolvedRenderer(field: ParsedField, registry: FieldTypeRegistry<string>): string {
+function resolvedRenderer(field: ParsedField, registry: FieldTypeRegistry<string>) {
   const configured = getFieldUiConfig(field).control;
   if (configured !== undefined && configured !== '') {
     return configured;
@@ -92,7 +90,7 @@ function resolvedRenderer(field: ParsedField, registry: FieldTypeRegistry<string
   return registry.resolve(field, buildFieldMatchContext(field))?.name ?? resolveRenderFieldType(field);
 }
 
-function hasRenderer(field: ParsedField, renderer: string, registry: FieldTypeRegistry<string>): boolean {
+function hasRenderer(field: ParsedField, renderer: string, registry: FieldTypeRegistry<string>) {
   if (STRUCTURAL_FIELD_TYPES.has(field.type) && renderer === field.type) {
     return true;
   }
@@ -107,7 +105,7 @@ function fieldDiagnostics(
   path: string,
   registry: FieldTypeRegistry<string>,
   dataProviders: DataProviderRegistry | undefined
-): AutoFormConfigurationDiagnostic[] {
+) {
   const diagnostics: AutoFormConfigurationDiagnostic[] = [];
   const renderer = resolvedRenderer(field, registry);
   if (!hasRenderer(field, renderer, registry)) {
@@ -173,7 +171,7 @@ export function inspectAutoFormConfiguration<
   fieldRegistry,
   dataProviders,
   stepper,
-}: InspectAutoFormConfigurationInput<T, TCustomFieldType>): AutoFormConfigurationDiagnostic[] {
+}: InspectAutoFormConfigurationInput<T, TCustomFieldType>) {
   const stepConfigurationError = stepper ? getStepConfigurationError(stepper.steps, stepper.defaultStep) : undefined;
   const stepDiagnostic: AutoFormConfigurationDiagnostic[] =
     stepConfigurationError !== undefined && stepConfigurationError !== ''
@@ -191,7 +189,7 @@ export function inspectAutoFormConfiguration<
   try {
     resolvedSchema = resolveSchema(schema, protoConversionOptionsFromFieldConfig(fieldConfig));
   } catch (error) {
-    return [
+    const result: AutoFormConfigurationDiagnostic[] = [
       ...stepDiagnostic,
       {
         cause: error,
@@ -201,6 +199,7 @@ export function inspectAutoFormConfiguration<
         severity: 'error',
       },
     ];
+    return result;
   }
   const fields = mergeFieldOverrides(resolvedSchema.parsedSchema.fields, fieldConfig);
   const flattenedFields = collectFields(fields);
@@ -237,5 +236,8 @@ export function inspectAutoFormConfiguration<
     }
   }
 
-  return diagnostics.sort((left, right) => left.path.localeCompare(right.path) || left.code.localeCompare(right.code));
+  const result: AutoFormConfigurationDiagnostic[] = diagnostics.sort(
+    (left, right) => left.path.localeCompare(right.path) || left.code.localeCompare(right.code)
+  );
+  return result;
 }

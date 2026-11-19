@@ -48,7 +48,7 @@ import type { ProtoFormShape } from './form-values.js';
 import { protoPathToFormPath } from './proto-error-path.js';
 
 const TRAILING_FRACTION_ZEROES = /0+$/u;
-const TIMESTAMP_FRACTION = /\.(\d{1,9})/u;
+const TIMESTAMP_FRACTION = /\.(?<fraction>\d{1,9})/u;
 
 const PROTO_JSON_FALLBACK_TYPES = new Set([
   TIMESTAMP_TYPE,
@@ -87,21 +87,21 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
 
-function requireMessage<Desc extends DescMessage>(value: unknown, desc: Desc): MessageShape<Desc> {
+function requireMessage<Desc extends DescMessage>(value: unknown, desc: Desc) {
   if (!isMessage(value, desc)) {
     throw new TypeError(`Expected a ${desc.typeName} message.`);
   }
   return value;
 }
 
-function requireMessageFields(value: unknown): AnyObject {
+function requireMessageFields(value: unknown) {
   if (!isPlainObject(value)) {
     throw new TypeError('Expected protobuf message fields to be an object.');
   }
   return value;
 }
 
-function readOneofSelection(value: unknown): { case: string; value: unknown } | undefined {
+function readOneofSelection(value: unknown) {
   if (value === undefined || value === null) {
     return;
   }
@@ -116,7 +116,7 @@ function readOneofSelection(value: unknown): { case: string; value: unknown } | 
   return { case: selectedCase, value: selection['value'] };
 }
 
-function toDateTimeLocalValue(timestamp: MessageShape<typeof TimestampSchema> | undefined): string | undefined {
+function toDateTimeLocalValue(timestamp: MessageShape<typeof TimestampSchema> | undefined) {
   if (!timestamp) {
     return;
   }
@@ -140,8 +140,8 @@ function toDateTimeLocalValue(timestamp: MessageShape<typeof TimestampSchema> | 
   return `${year}-${month}-${day}T${hours}:${minutes}${secondsPart}`;
 }
 
-function objectHasValues(value: Record<string, unknown>): boolean {
-  return Object.values(value).some((entry) => {
+function objectHasValues(value: Record<string, unknown>) {
+  const result: boolean = Object.values(value).some((entry) => {
     if (entry === undefined || entry === null) {
       return false;
     }
@@ -156,6 +156,7 @@ function objectHasValues(value: Record<string, unknown>): boolean {
     }
     return true;
   });
+  return result;
 }
 
 function isJsonValue(value: unknown): value is JsonValue {
@@ -171,14 +172,14 @@ function isJsonValue(value: unknown): value is JsonValue {
   return isPlainObject(value) && Object.values(value).every(isJsonValue);
 }
 
-function requireJsonValue(value: unknown): JsonValue {
+function requireJsonValue(value: unknown) {
   if (!isJsonValue(value)) {
     throw new TypeError('Expected a JSON-compatible value.');
   }
   return value;
 }
 
-function messageFieldToFormValue(field: Extract<DescField, { fieldKind: 'message' }>, value: unknown): unknown {
+function messageFieldToFormValue(field: Extract<DescField, { fieldKind: 'message' }>, value: unknown) {
   const hasValue = Boolean(value);
   if (isWrapperDesc(field.message)) {
     const wrappedScalar = field.message.fields[0]?.scalar;
@@ -242,7 +243,7 @@ function messageFieldToFormValue(field: Extract<DescField, { fieldKind: 'message
   }
 }
 
-function fieldToFormValue(field: DescField, value: unknown): unknown {
+function fieldToFormValue(field: DescField, value: unknown) {
   switch (field.fieldKind) {
     case 'scalar': {
       if (field.scalar === ScalarType.BYTES) {
@@ -276,7 +277,7 @@ function fieldToFormValue(field: DescField, value: unknown): unknown {
   }
 }
 
-function listItemToFormValue(field: ListField, value: unknown): unknown {
+function listItemToFormValue(field: ListField, value: unknown) {
   const hasValue = Boolean(value);
   if (field.listKind === 'message' && hasValue) {
     if (isWrapperDesc(field.message)) {
@@ -296,7 +297,7 @@ function listItemToFormValue(field: ListField, value: unknown): unknown {
   return value;
 }
 
-function mapValueToFormValue(field: MapField, value: unknown): unknown {
+function mapValueToFormValue(field: MapField, value: unknown) {
   const hasValue = Boolean(value);
   if (field.mapKind === 'message' && hasValue) {
     if (isWrapperDesc(field.message)) {
@@ -316,7 +317,7 @@ function mapValueToFormValue(field: MapField, value: unknown): unknown {
   return value;
 }
 
-function mapKeyToFormValue(field: MapField, key: string): string | number | boolean {
+function mapKeyToFormValue(field: MapField, key: string) {
   if (field.mapKey === ScalarType.BOOL) {
     return key === 'true';
   }
@@ -326,7 +327,7 @@ function mapKeyToFormValue(field: MapField, key: string): string | number | bool
   return Number(key);
 }
 
-function messageToFormValues(desc: DescMessage, value: AnyObject): Record<string, unknown> {
+function messageToFormValues(desc: DescMessage, value: AnyObject) {
   const result: Record<string, unknown> = {};
 
   for (const member of desc.members) {
@@ -354,15 +355,12 @@ function messageToFormValues(desc: DescMessage, value: AnyObject): Record<string
   return result;
 }
 
-export function protoToFormValues<Desc extends DescMessage>(
-  desc: Desc,
-  value?: MessageShape<Desc>
-): ProtoFormShape<Desc> {
+export function protoToFormValues<Desc extends DescMessage>(desc: Desc, value?: MessageShape<Desc>) {
   const baseValue = (value ?? create(desc)) as AnyObject;
   return messageToFormValues(desc, baseValue) as ProtoFormShape<Desc>;
 }
 
-function normalizeBooleanValue(value: unknown): boolean | undefined {
+function normalizeBooleanValue(value: unknown) {
   if (value === undefined || value === null || value === '') {
     return;
   }
@@ -378,7 +376,7 @@ function normalizeBooleanValue(value: unknown): boolean | undefined {
   return Boolean(value);
 }
 
-function normalizeNumberValue(value: unknown): number | undefined {
+function normalizeNumberValue(value: unknown) {
   if (value === undefined || value === null || value === '') {
     return;
   }
@@ -389,7 +387,7 @@ function normalizeNumberValue(value: unknown): number | undefined {
   return Number.isNaN(parsed) ? undefined : parsed;
 }
 
-function normalizeFloatingPointValue(value: unknown): number | undefined {
+function normalizeFloatingPointValue(value: unknown) {
   if (value === undefined || value === null || value === '') {
     return;
   }
@@ -403,7 +401,7 @@ function normalizeFloatingPointValue(value: unknown): number | undefined {
   return Number.isNaN(parsed) ? undefined : parsed;
 }
 
-function normalizeBigIntValue(value: unknown): bigint | undefined {
+function normalizeBigIntValue(value: unknown) {
   if (value === undefined || value === null || value === '') {
     return;
   }
@@ -413,17 +411,19 @@ function normalizeBigIntValue(value: unknown): bigint | undefined {
   if (typeof value === 'number' && Number.isSafeInteger(value)) {
     return BigInt(value);
   }
-  if (typeof value === 'string') {
-    try {
-      return BigInt(value);
-    } catch {
-      return undefined;
-    }
+  if (typeof value !== 'string') {
+    return;
   }
-  return undefined;
+  let normalized: bigint;
+  try {
+    normalized = BigInt(value);
+  } catch {
+    return;
+  }
+  return normalized;
 }
 
-function normalizeScalarValue(field: DescField, value: unknown): unknown {
+function normalizeScalarValue(field: DescField, value: unknown) {
   if (field.scalar === ScalarType.STRING) {
     if (typeof value === 'string') {
       return value;
@@ -459,7 +459,7 @@ function normalizeMessageFieldValue(
   value: unknown,
   options: ProtoConversionOptions,
   path: readonly string[]
-): unknown {
+) {
   if (isWrapperDesc(field.message)) {
     const wrappedScalar = field.message.fields[0]?.scalar;
     const wrappedField = cloneField(field, {
@@ -472,11 +472,11 @@ function normalizeMessageFieldValue(
   switch (field.message.typeName) {
     case TIMESTAMP_TYPE:
       if (typeof value !== 'string' || value === '') {
-        return undefined;
+        return;
       }
       {
         const timestamp = timestampFromDate(new Date(value));
-        const fraction = TIMESTAMP_FRACTION.exec(value)?.[1];
+        const fraction = TIMESTAMP_FRACTION.exec(value)?.groups?.['fraction'];
         if (fraction !== undefined && fraction !== '') {
           timestamp.nanos = Number(fraction.padEnd(9, '0'));
         }
@@ -528,7 +528,7 @@ function listItemToProtoValue(
   value: unknown,
   options: ProtoConversionOptions,
   path: readonly string[]
-): unknown {
+) {
   if (field.listKind === 'scalar') {
     return normalizeScalarValue(
       cloneField(field, {
@@ -552,7 +552,7 @@ function mapValueToProtoValue(
   value: unknown,
   options: ProtoConversionOptions,
   path: readonly string[]
-): unknown {
+) {
   if (field.mapKind === 'scalar') {
     return normalizeScalarValue(
       cloneField(field, {
@@ -576,23 +576,19 @@ function repeatedListEntries(
   value: unknown,
   options: ProtoConversionOptions,
   path: readonly string[]
-): unknown[] {
+) {
   if (!Array.isArray(value)) {
     return [];
   }
+  const entries: unknown[] = value;
   const policy = options.emptyRepeatedStringPolicies?.[path.join('.')];
   if (field.listKind !== 'scalar' || field.scalar !== ScalarType.STRING || policy === 'preserve') {
-    return value;
+    return entries;
   }
-  return value.filter((entry) => typeof entry !== 'string' || entry.trim().length > 0);
+  return entries.filter((entry) => typeof entry !== 'string' || entry.trim().length > 0);
 }
 
-function fieldToProtoValue(
-  field: DescField,
-  value: unknown,
-  options: ProtoConversionOptions,
-  path: readonly string[]
-): unknown {
+function fieldToProtoValue(field: DescField, value: unknown, options: ProtoConversionOptions, path: readonly string[]) {
   switch (field.fieldKind) {
     case 'scalar':
       return normalizeScalarValue(field, value);
@@ -635,7 +631,7 @@ function messageToProtoInit(
   value: AnyObject,
   options: ProtoConversionOptions,
   path: readonly string[]
-): Record<string, unknown> {
+) {
   const result: Record<string, unknown> = {};
 
   for (const member of desc.members) {
@@ -675,7 +671,7 @@ export function formValuesToProtoInit<Desc extends DescMessage>(
   desc: Desc,
   values: Record<string, unknown>,
   options: ProtoConversionOptions = {}
-): MessageInitShape<Desc> {
+) {
   return messageToProtoInit(desc, values, options, []) as MessageInitShape<Desc>;
 }
 
@@ -688,7 +684,7 @@ function knownMessageValuesEqual(
   left: AnyObject,
   right: AnyObject,
   preserveTimestampPrecision: boolean
-): boolean {
+) {
   if (!(isMessage(left, desc) && isMessage(right, desc))) {
     return false;
   }
@@ -715,7 +711,7 @@ function preserveRepeatedMessageUnknownFields(
   target: unknown[],
   source: unknown[],
   preserveTimestampPrecision: boolean
-): void {
+) {
   const matchedSourceIndexes = new Set<number>();
   const matchedTargetIndexes = new Set<number>();
 
@@ -778,7 +774,7 @@ function preserveFieldUnknownFields(
   target: unknown,
   source: unknown,
   preserveTimestampPrecision: boolean
-): void {
+) {
   switch (field.fieldKind) {
     case 'message':
       if (isPlainObject(target) && isPlainObject(source)) {
@@ -813,7 +809,7 @@ function preserveMessageUnknownFields(
   target: AnyObject,
   source: AnyObject,
   preserveTimestampPrecision = false
-): void {
+) {
   if (
     preserveTimestampPrecision &&
     isMessage(target, TimestampSchema) &&
@@ -870,7 +866,7 @@ export function preserveProtoMessageSource<Desc extends DescMessage>(
   desc: Desc,
   target: MessageShape<Desc>,
   source?: MessageShape<Desc>
-): MessageShape<Desc> {
+) {
   if (!source) {
     return target;
   }
@@ -884,7 +880,7 @@ export function formValuesToProto<Desc extends DescMessage>(
   values: Record<string, unknown>,
   source?: MessageShape<Desc>,
   options: ProtoConversionOptions = {}
-): MessageShape<Desc> {
+) {
   const message = create(desc, formValuesToProtoInit(desc, values, options));
   if (source) {
     preserveMessageUnknownFields(desc, message, source, true);
@@ -895,8 +891,13 @@ export function formValuesToProto<Desc extends DescMessage>(
 export function protoFormValuesToPayload<Desc extends DescMessage>(
   desc: Desc,
   values: Record<string, unknown>,
+  options?: ProtoConversionOptions
+): unknown;
+export function protoFormValuesToPayload<Desc extends DescMessage>(
+  desc: Desc,
+  values: Record<string, unknown>,
   options: ProtoConversionOptions = {}
-): unknown {
+) {
   try {
     const init = formValuesToProtoInit(desc, values, options);
     const message = create(desc, init);
@@ -910,23 +911,18 @@ export function protoFormValuesToPayload<Desc extends DescMessage>(
   }
 }
 
-export function protoPayloadToFormValues<Desc extends DescMessage>(
-  desc: Desc,
-  payload: unknown
-): FormValues | undefined {
+export function protoPayloadToFormValues<Desc extends DescMessage>(desc: Desc, payload: unknown) {
+  let formValues: FormValues;
   try {
     const message = fromJson(desc, requireJsonValue(payload ?? {}));
-    return protoToFormValues(desc, message);
+    formValues = protoToFormValues(desc, message);
   } catch {
-    return undefined;
+    return;
   }
+  return formValues;
 }
 
-function normalizeIssuePath(
-  desc: DescMessage,
-  issue: SchemaIssue,
-  values: Record<string, unknown>
-): (string | number)[] {
+function normalizeIssuePath(desc: DescMessage, issue: SchemaIssue, values: Record<string, unknown>) {
   if (!issue.path || issue.path.length === 0) {
     return [];
   }
@@ -1041,7 +1037,7 @@ const SIGNED_64_MIN = -9_223_372_036_854_775_808n;
 const SIGNED_64_MAX = 9_223_372_036_854_775_807n;
 const UNSIGNED_64_MAX = 18_446_744_073_709_551_615n;
 
-function getScalarConversionIssue(scalar: ScalarType | undefined, value: unknown): string | undefined {
+function getScalarConversionIssue(scalar: ScalarType | undefined, value: unknown) {
   if (scalar === undefined || value === undefined || value === null || value === '') {
     return;
   }
@@ -1082,7 +1078,7 @@ function getScalarConversionIssue(scalar: ScalarType | undefined, value: unknown
     : undefined;
 }
 
-function getMessageConversionIssue(field: MessageField, value: unknown): string | undefined {
+function getMessageConversionIssue(field: MessageField, value: unknown) {
   if (value === undefined || value === null || value === '') {
     return;
   }
@@ -1114,15 +1110,16 @@ function getMessageConversionIssue(field: MessageField, value: unknown): string 
   if (valueBase64 === undefined || valueBase64 === '') {
     return;
   }
+  let issue: string | undefined;
   try {
     base64Decode(valueBase64);
   } catch {
-    return 'Enter valid base64 data.';
+    issue = 'Enter valid base64 data.';
   }
-  return undefined;
+  return issue;
 }
 
-function getMapConversionIssue(value: unknown): string | undefined {
+function getMapConversionIssue(value: unknown) {
   if (!Array.isArray(value)) {
     return;
   }
@@ -1140,7 +1137,8 @@ function getFieldConversionIssues(
   field: DescField,
   value: unknown,
   path: Array<string | number>
-): NormalizedProtoIssue[] {
+): NormalizedProtoIssue[];
+function getFieldConversionIssues(field: DescField, value: unknown, path: Array<string | number>) {
   let message: string | undefined;
   switch (field.fieldKind) {
     case 'scalar':
@@ -1198,8 +1196,8 @@ function getFormConversionIssues(
   desc: DescMessage,
   values: Record<string, unknown>,
   path: Array<string | number> = []
-): NormalizedProtoIssue[] {
-  return desc.members.flatMap((member) => {
+) {
+  const result: NormalizedProtoIssue[] = desc.members.flatMap((member) => {
     if (member.kind === 'oneof') {
       const selection = values[member.localName];
       if (selection === undefined || selection === null) {
@@ -1219,12 +1217,13 @@ function getFormConversionIssues(
     }
     return getFieldConversionIssues(member, values[member.localName], [...path, member.localName]);
   });
+  return result;
 }
 
-function toFailureResult(error: unknown): {
-  readonly issues: readonly NormalizedProtoIssue[];
-} {
-  return {
+function toFailureResult(error: unknown) {
+  const failure: {
+    readonly issues: readonly NormalizedProtoIssue[];
+  } = {
     issues: [
       {
         message: error instanceof Error ? error.message : 'Failed to validate protobuf form values.',
@@ -1232,6 +1231,7 @@ function toFailureResult(error: unknown): {
       },
     ],
   };
+  return failure;
 }
 
 function normalizeValidationResult<Desc extends DescMessage>(
@@ -1240,7 +1240,7 @@ function normalizeValidationResult<Desc extends DescMessage>(
   validationResult: StandardSchemaV1.Result<MessageValidType<Desc>>,
   fallbackValue: MessageShape<Desc>,
   context: ProtoValidationContext
-): NormalizedProtoValidationResult<MessageValidType<Desc>> {
+) {
   if (validationResult.issues) {
     const issues = filterValidationIssues(
       desc,
@@ -1251,11 +1251,15 @@ function normalizeValidationResult<Desc extends DescMessage>(
       context.validationMask
     );
     if (issues.length === 0) {
-      return { value: fallbackValue as MessageValidType<Desc> };
+      const result: NormalizedProtoValidationResult<MessageValidType<Desc>> = {
+        value: fallbackValue as MessageValidType<Desc>,
+      };
+      return result;
     }
-    return {
+    const result: NormalizedProtoValidationResult<MessageValidType<Desc>> = {
       issues,
     };
+    return result;
   }
 
   return validationResult;
@@ -1265,7 +1269,7 @@ function filterValidationIssues(
   desc: DescMessage,
   issues: readonly NormalizedProtoIssue[],
   validationMask?: FieldMask
-): readonly NormalizedProtoIssue[] {
+) {
   if (!validationMask || validationMask.paths.includes('*')) {
     return issues;
   }
@@ -1291,12 +1295,20 @@ export function validateFormValuesAgainstProtoSchema<Desc extends DescMessage>(
   desc: Desc,
   values: Record<string, unknown>,
   schema: StandardSchemaV1<MessageShape<Desc>, MessageValidType<Desc>>,
+  options?: ProtoConversionOptions,
+  source?: MessageShape<Desc>,
+  context?: ProtoValidationContext
+):
+  | NormalizedProtoValidationResult<MessageValidType<Desc>>
+  | Promise<NormalizedProtoValidationResult<MessageValidType<Desc>>>;
+export function validateFormValuesAgainstProtoSchema<Desc extends DescMessage>(
+  desc: Desc,
+  values: Record<string, unknown>,
+  schema: StandardSchemaV1<MessageShape<Desc>, MessageValidType<Desc>>,
   options: ProtoConversionOptions = {},
   source?: MessageShape<Desc>,
   context: ProtoValidationContext = {}
-):
-  | NormalizedProtoValidationResult<MessageValidType<Desc>>
-  | Promise<NormalizedProtoValidationResult<MessageValidType<Desc>>> {
+) {
   try {
     const conversionIssues = filterValidationIssues(
       desc,

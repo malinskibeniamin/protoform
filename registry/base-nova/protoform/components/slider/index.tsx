@@ -6,9 +6,9 @@ import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
 type SliderProps<Value extends number | readonly number[] = number[]> = SliderPrimitive.Root.Props<Value> & SharedProps;
 
-function getThumbLabel(label: string | undefined, count: number, index: number): string | undefined {
+function getThumbLabel(label: string | undefined, count: number, index: number) {
   if (!(label !== undefined && label !== '')) {
-    return undefined;
+    return;
   }
   return count === 1 ? label : `${label} ${index + 1}`;
 }

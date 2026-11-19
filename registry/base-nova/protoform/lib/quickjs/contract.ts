@@ -24,22 +24,23 @@ interface SnapshotBudget {
   remainingText: number;
 }
 
-function spendText(budget: SnapshotBudget, length: number): void {
+function spendText(budget: SnapshotBudget, length: number) {
   budget.remainingText -= length;
   if (budget.remainingText < 0) {
     throw new Error('Input too large');
   }
 }
 
-function readDataProperty(value: object, key: PropertyKey): unknown {
+function readDataProperty(value: object, key: PropertyKey) {
   const descriptor = Object.getOwnPropertyDescriptor(value, key);
   if (!(descriptor && 'value' in descriptor)) {
     throw new Error('Expected snapshot data properties');
   }
-  return descriptor.value;
+  const data: unknown = descriptor.value;
+  return data;
 }
 
-function copyArray(value: unknown[], depth: number, budget: SnapshotBudget): QuickJsValue[] {
+function copyArray(value: unknown[], depth: number, budget: SnapshotBudget) {
   if (
     value.length > budget.remaining ||
     Object.keys(value).length !== value.length ||
@@ -55,11 +56,7 @@ function copyArray(value: unknown[], depth: number, budget: SnapshotBudget): Qui
   return result;
 }
 
-function copyObject(
-  value: Record<string, unknown>,
-  depth: number,
-  budget: SnapshotBudget
-): Record<string, QuickJsValue> {
+function copyObject(value: Record<string, unknown>, depth: number, budget: SnapshotBudget) {
   const prototype: unknown = Object.getPrototypeOf(value);
   if (prototype !== Object.prototype && prototype !== null) {
     throw new Error('Expected plain snapshot objects');
@@ -88,7 +85,7 @@ function copyObject(
   return result;
 }
 
-function copyValue(value: unknown, depth: number, budget: SnapshotBudget): QuickJsValue {
+function copyValue(value: unknown, depth: number, budget: SnapshotBudget) {
   budget.remaining -= 1;
   if (depth > depthLimit || budget.remaining < 0) {
     throw new Error('Snapshot structure limit exceeded');
@@ -112,7 +109,7 @@ function copyValue(value: unknown, depth: number, budget: SnapshotBudget): Quick
   throw new Error('Expected JSON-safe snapshot values');
 }
 
-function parseFieldMetadata(entry: unknown, rawEntry: unknown): QuickJsFieldInfo[string] {
+function parseFieldMetadata(entry: unknown, rawEntry: unknown) {
   if (
     !isRecord(rawEntry) ||
     Object.keys(rawEntry).length !== 2 ||
@@ -127,13 +124,9 @@ function parseFieldMetadata(entry: unknown, rawEntry: unknown): QuickJsFieldInfo
   return { required: entry['required'], type: entry['type'] };
 }
 
-function parseFieldInfo(
-  rawInfo: unknown,
-  allowedFields: Set<string>,
-  budget: SnapshotBudget
-): QuickJsFieldInfo | undefined {
+function parseFieldInfo(rawInfo: unknown, allowedFields: Set<string>, budget: SnapshotBudget) {
   if (rawInfo === undefined) {
-    return undefined;
+    return;
   }
   if (!isRecord(rawInfo) || Object.keys(rawInfo).some((key) => !allowedFields.has(key))) {
     throw new Error('Expected known field metadata');
@@ -149,7 +142,7 @@ function parseFieldInfo(
   return fieldInfo;
 }
 
-export function parseQuickJsRequest(value: unknown): QuickJsRequest {
+export function parseQuickJsRequest(value: unknown) {
   if (
     !isRecord(value) ||
     typeof value['source'] !== 'string' ||
@@ -186,10 +179,11 @@ export function parseQuickJsRequest(value: unknown): QuickJsRequest {
   if (JSON.stringify([values, fieldInfo ?? {}]).length > QUICKJS_TEXT_LIMIT) {
     throw new Error('Input too large');
   }
-  return { ...(fieldInfo ? { fieldInfo } : {}), fields, source: value['source'], values };
+  const request: QuickJsRequest = { ...(fieldInfo ? { fieldInfo } : {}), fields, source: value['source'], values };
+  return request;
 }
 
-export function parseQuickJsPresentation(value: unknown, fields: string[]): QuickJsPresentation {
+export function parseQuickJsPresentation(value: unknown, fields: string[]) {
   if (!isRecord(value)) {
     throw new Error('Expected presentation object');
   }

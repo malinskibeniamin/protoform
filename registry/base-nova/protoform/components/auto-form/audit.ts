@@ -21,7 +21,7 @@ export interface AutoFormAuditReport {
   version: 1;
 }
 
-export function auditAutoFormConfigurations(targets: readonly AutoFormAuditTarget[]): AutoFormAuditReport {
+export function auditAutoFormConfigurations(targets: readonly AutoFormAuditTarget[]) {
   const diagnostics = [...targets]
     .sort((left, right) => left.name.localeCompare(right.name))
     .flatMap(({ name, source, ...configuration }) =>
@@ -35,10 +35,11 @@ export function auditAutoFormConfigurations(targets: readonly AutoFormAuditTarge
       }))
     );
 
-  return { diagnostics, version: 1 };
+  const report: AutoFormAuditReport = { diagnostics, version: 1 };
+  return report;
 }
 
-function formatSarifReport(report: AutoFormAuditReport): string {
+function formatSarifReport(report: AutoFormAuditReport) {
   const codes = [...new Set(report.diagnostics.map((diagnostic) => diagnostic.code))].sort((left, right) =>
     left < right ? -1 : Number(left > right)
   );
@@ -76,6 +77,6 @@ function formatSarifReport(report: AutoFormAuditReport): string {
   return JSON.stringify(sarif, null, 2);
 }
 
-export function formatAutoFormAuditReport(report: AutoFormAuditReport, format: AutoFormAuditFormat): string {
+export function formatAutoFormAuditReport(report: AutoFormAuditReport, format: AutoFormAuditFormat) {
   return format === 'sarif' ? formatSarifReport(report) : JSON.stringify(report, null, 2);
 }

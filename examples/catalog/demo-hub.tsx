@@ -81,11 +81,11 @@ for (const [path, load] of Object.entries(demoSourceModules)) {
   );
 }
 
-function modulePathFor(demo: DemoCatalogEntry): string {
+function modulePathFor(demo: DemoCatalogEntry) {
   return `../../registry/base-nova/protoform/demo/catalog/${demo.slug}.tsx`;
 }
 
-function initialDemoSlug(demos: readonly DemoCatalogEntry[]): string {
+function initialDemoSlug(demos: readonly DemoCatalogEntry[]) {
   const linkedSlug = Reflect.get(globalThis, 'window') === undefined ? '' : globalThis.window.location.hash.slice(1);
   return demos.find((demo) => demo.slug === linkedSlug)?.slug ?? demos[0]?.slug ?? '';
 }

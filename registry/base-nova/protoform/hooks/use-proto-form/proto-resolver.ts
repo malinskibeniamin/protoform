@@ -37,10 +37,10 @@ export function createProtoResolver<Desc extends DescMessage>(
   options: ProtoFormOptions = {},
   source?: MessageShape<Desc>,
   protoResolverOptions: ProtoResolverOptions<Desc, boolean> = {}
-): Resolver<FormValues, unknown, FormValues> {
+) {
   const standardSchema = createDescriptorAwareStandardSchema(desc, options);
 
-  return async (values, _context, resolverOptions) => {
+  const resolver: Resolver<FormValues, unknown, FormValues> = async (values, _context, resolverOptions) => {
     const validationResult = await validateFormValuesAgainstProtoSchema(
       desc,
       values,
@@ -116,4 +116,5 @@ export function createProtoResolver<Desc extends DescMessage>(
       values: {},
     };
   };
+  return resolver;
 }

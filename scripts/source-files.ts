@@ -4,11 +4,11 @@ import generatedSources from './generated-sources.json' with { type: 'json' };
 
 const generated = new Set(generatedSources);
 
-export function isGeneratedSource(path: string): boolean {
+export function isGeneratedSource(path: string) {
   return generated.has(path);
 }
 
-export function authoredFiles(): string[] {
+export function authoredFiles() {
   return [
     ...new Set(
       execFileSync('git', ['ls-files', '--cached', '--others', '--exclude-standard', '-z'], {

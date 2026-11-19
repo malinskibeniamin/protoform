@@ -88,7 +88,7 @@ export type {
   FieldTypes,
 } from '../auto-form/types';
 
-function toHookFormMode(mode: AutoFormValidationMode): 'onBlur' | 'onChange' | 'onSubmit' {
+function toHookFormMode(mode: AutoFormValidationMode) {
   switch (mode) {
     case 'blur':
       return 'onBlur';

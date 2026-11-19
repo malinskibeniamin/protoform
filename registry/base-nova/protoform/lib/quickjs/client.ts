@@ -12,11 +12,8 @@ export interface QuickJsOptions {
   timeoutMs?: number;
 }
 
-export function evaluateQuickJsInWorker(
-  request: QuickJsRequest,
-  options: QuickJsOptions = {}
-): Promise<QuickJsPresentation> {
-  return new Promise((resolve, reject) => {
+export function evaluateQuickJsInWorker(request: QuickJsRequest, options: QuickJsOptions = {}) {
+  return new Promise<QuickJsPresentation>((resolve, reject) => {
     const snapshot = parseQuickJsRequest(request);
     const timeout = options.timeoutMs ?? 5000;
     if (!Number.isFinite(timeout) || timeout < 1 || timeout > 10_000) {

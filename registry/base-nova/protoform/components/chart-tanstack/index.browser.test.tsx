@@ -1,4 +1,4 @@
-import { afterEach, expect, rs, test } from '@rstest/core';
+import { afterEach, expect, test } from '@rstest/core';
 import { barY, type ChartRenderContext, defineChart } from '@tanstack/charts';
 import { scaleBand } from '@tanstack/charts/scales/band';
 import { scaleLinear } from '@tanstack/charts/scales/linear';
@@ -23,7 +23,7 @@ const definition = defineChart({
 
 test('renders native definitions and preserves keyboard selection callbacks', async () => {
   const user = userEvent.setup();
-  const onSelect = rs.fn();
+  const selected = Promise.withResolvers<unknown>();
   render(
     <TanStackChart
       ariaLabel="Requests by day"
@@ -33,7 +33,7 @@ test('renders native definitions and preserves keyboard selection callbacks', as
         expectTypeOf(point?.datum).toEqualTypeOf<(typeof rows)[number] | undefined>();
         expectTypeOf(point?.xValue).toEqualTypeOf<string | undefined>();
         expectTypeOf(point?.yValue).toEqualTypeOf<number | undefined>();
-        onSelect(point);
+        selected.resolve(point);
       }}
       width={320}
     />
@@ -42,35 +42,37 @@ test('renders native definitions and preserves keyboard selection callbacks', as
   expect(chart).toHaveTextContent('Mon');
   await user.tab();
   await user.keyboard('{Home}{ArrowRight}{Enter}');
-  await waitFor(() => expect(onSelect).toHaveBeenCalledWith(expect.objectContaining({ datum: rows[1] })));
+  expect(await selected.promise).toMatchObject({ datum: rows[1] });
   expect(await screen.findByRole('status', { name: /Tue/u })).toHaveTextContent('18');
   await user.keyboard('{Escape}');
   await waitFor(() => expect(screen.queryByRole('status', { name: /Tue/u })).toBeNull());
 });
 
 test('updates native scenes and clears removed data without stale marks', async () => {
-  let values: number[] = [];
-  const recordValues = (context: ChartRenderContext<(typeof rows)[number], string, number>) => {
-    values = context.scene.points.map((point) => point.datum.total);
+  let rendered = Promise.withResolvers<number[]>();
+  const handleRender = (context: ChartRenderContext<(typeof rows)[number], string, number>) => {
+    rendered.resolve(context.scene.points.map((point) => point.datum.total));
   };
   const { rerender } = render(
     <TanStackChart
       ariaLabel="Requests by day"
       definition={definition}
       height={200}
-      onRender={recordValues}
+      onRender={handleRender}
       width={320}
     />
   );
-  await waitFor(() => expect(values).toEqual([12, 18, 9]));
+  expect(await rendered.promise).toEqual([12, 18, 9]);
+  rendered = Promise.withResolvers<number[]>();
   const updated = defineChart({
     marks: [barY([{ day: 'Thu', total: 24 }], { x: 'day', y: 'total' })],
     scales: { x: { scale: scaleBand }, y: { scale: scaleLinear } },
   });
   rerender(
-    <TanStackChart ariaLabel="Requests by day" definition={updated} height={200} onRender={recordValues} width={320} />
+    <TanStackChart ariaLabel="Requests by day" definition={updated} height={200} onRender={handleRender} width={320} />
   );
-  await waitFor(() => expect(values).toEqual([24]));
+  expect(await rendered.promise).toEqual([24]);
+  rendered = Promise.withResolvers<number[]>();
   expect(screen.queryByText('Mon')).toBeNull();
   const noRows: typeof rows = [];
   const empty = defineChart({
@@ -78,8 +80,8 @@ test('updates native scenes and clears removed data without stale marks', async 
     scales: { x: { scale: scaleBand }, y: { scale: scaleLinear } },
   });
   rerender(
-    <TanStackChart ariaLabel="Requests by day" definition={empty} height={200} onRender={recordValues} width={320} />
+    <TanStackChart ariaLabel="Requests by day" definition={empty} height={200} onRender={handleRender} width={320} />
   );
-  await waitFor(() => expect(values).toEqual([]));
+  expect(await rendered.promise).toEqual([]);
   expect(screen.queryByText('Thu')).toBeNull();
 });

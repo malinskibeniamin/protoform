@@ -506,8 +506,10 @@ export type MultiSelectOption = Partial<MultiSelectItemData> | MultiSelectOption
 function findMultiSelectOption(
   options: MultiSelectOption[] | undefined,
   value: string
-): MultiSelectOptionItem | undefined {
+): MultiSelectOptionItem | undefined;
+function findMultiSelectOption(options: MultiSelectOption[] | undefined, value: string) {
   const availableOptions = options ?? [];
+  let match: MultiSelectOptionItem | undefined;
   for (const option of availableOptions) {
     if ('type' in option) {
       continue;
@@ -515,15 +517,18 @@ function findMultiSelectOption(
     if ('children' in option) {
       const found = findMultiSelectOption(option.children, value);
       if (found) {
-        return found;
+        match = found;
+        break;
       }
     } else if (option.value === value) {
-      return { ...option, value };
+      match = { ...option, value };
+      break;
     }
   }
-  return undefined;
+  return match;
 }
-function renderMultiSelectOptions(list: MultiSelectOption[], visibleValues?: Set<string>): React.ReactNode {
+function renderMultiSelectOptions(list: MultiSelectOption[], visibleValues?: Set<string>): React.ReactNode;
+function renderMultiSelectOptions(list: MultiSelectOption[], visibleValues?: Set<string>) {
   if (visibleValues?.size === 0) {
     return null;
   }
@@ -556,8 +561,8 @@ function FilteredMultiSelectOptions({ options }: { options: MultiSelectOption[] 
   const filtered = ComboboxPrimitive.useFilteredItems<MultiSelectItemData>();
   return renderMultiSelectOptions(options, new Set(filtered.map((item) => item.value)));
 }
-function flattenMultiSelectOptions(options: MultiSelectOption[]): MultiSelectItemData[] {
-  return options.flatMap((option) => {
+function flattenMultiSelectOptions(options: MultiSelectOption[]) {
+  const result: MultiSelectItemData[] = options.flatMap((option) => {
     if ('type' in option) {
       return [];
     }
@@ -566,6 +571,7 @@ function flattenMultiSelectOptions(options: MultiSelectOption[]): MultiSelectIte
     }
     return option.value === undefined ? [] : [{ ...option, value: option.value }];
   });
+  return result;
 }
 type SimpleMultiSelectProps = React.AriaAttributes &
   PortalRootProps &

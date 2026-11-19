@@ -69,7 +69,7 @@ function useInputState(value: InputProps['value'], defaultValue: InputProps['def
   return { setShowPassword, setValue: setInternalValue, showPassword, value: internalValue };
 }
 
-function dispatchInputChange(input: HTMLInputElement | null, newValue: string): void {
+function dispatchInputChange(input: HTMLInputElement | null, newValue: string) {
   if (!input) {
     return;
   }

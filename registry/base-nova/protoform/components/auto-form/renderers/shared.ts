@@ -6,16 +6,16 @@ import { getLabel, getPathInObject } from '../field-utils';
 import { getFieldUiConfig, isRecord, resolveRenderFieldType } from '../helpers';
 import type { DeprecatedFieldPolicy } from '../types';
 
-export function isDeprecatedField(field: ParsedField): boolean {
+export function isDeprecatedField(field: ParsedField) {
   return getFieldHints(field)?.deprecated === true;
 }
 
-export function isFieldHidden(field: ParsedField, policy: DeprecatedFieldPolicy): boolean {
+export function isFieldHidden(field: ParsedField, policy: DeprecatedFieldPolicy) {
   const customData = (field.fieldConfig?.customData ?? {}) as Record<string, unknown>;
   return Boolean(customData['hidden']) || (policy === 'hide' && isDeprecatedField(field));
 }
 
-export function cloneFieldWithDisabled(field: ParsedField, disabled: boolean): ParsedField {
+export function cloneFieldWithDisabled(field: ParsedField, disabled: boolean) {
   if (!disabled) {
     return field;
   }
@@ -60,7 +60,7 @@ export function useFieldPresentation(field: ParsedField, path: string[], inherit
   };
 }
 
-export function cloneFieldForCompactRow(field: ParsedField): ParsedField {
+export function cloneFieldForCompactRow(field: ParsedField) {
   const label = getLabel(field);
 
   const existingCustomData = (field.fieldConfig?.customData ?? {}) as Record<string, unknown>;
@@ -69,7 +69,7 @@ export function cloneFieldForCompactRow(field: ParsedField): ParsedField {
   const placeholder = typeof value === 'string' ? value : undefined;
   const fallbackPlaceholder = field.type === 'select' || field.type === 'boolean' ? undefined : label;
 
-  return {
+  const compactField: ParsedField = {
     ...field,
     fieldConfig: {
       ...field.fieldConfig,
@@ -90,9 +90,10 @@ export function cloneFieldForCompactRow(field: ParsedField): ParsedField {
       label: '',
     },
   };
+  return compactField;
 }
 
-export function getRenderedLabel(field: ParsedField): string {
+export function getRenderedLabel(field: ParsedField) {
   if (typeof field.fieldConfig?.label === 'string') {
     return field.fieldConfig.label;
   }
@@ -100,7 +101,7 @@ export function getRenderedLabel(field: ParsedField): string {
   return getLabel(field);
 }
 
-export function isComplexCollectionField(field: ParsedField | undefined): boolean {
+export function isComplexCollectionField(field: ParsedField | undefined) {
   if (!field) {
     return false;
   }

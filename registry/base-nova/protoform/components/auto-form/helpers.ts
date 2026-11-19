@@ -7,12 +7,13 @@ import type { AutoFormOptionGroup, AutoFormOptionItem, AutoFormUiRule, FieldType
 export const NUMERIC_OPTION_PATTERN = /^-?\d+$/u;
 export const FIELD_MASK_PATH_SPLIT_PATTERN = /[\n,]/u;
 
-export const SECRET_FIELD_PATTERN = /(password|secret|token|api[_-]?key|private[_-]?key|credential)/iu;
-export const CONSENT_FIELD_PATTERN = /(accept|agree|consent|terms|policy|opt[-_ ]?in)/iu;
-export const URL_FIELD_PATTERN = /(url|uri|website|homepage|link)/iu;
-export const EMAIL_FIELD_PATTERN = /(email|e-mail)/iu;
-export const CURRENCY_FIELD_PATTERN = /(amount|price|cost|balance|budget|revenue|salary|subtotal|total)/iu;
-export const LONG_TEXT_FIELD_PATTERN = /(bio|description|details|notes?|summary|message|comment)/iu;
+export const SECRET_FIELD_PATTERN = /(?<secretKeyword>password|secret|token|api[_-]?key|private[_-]?key|credential)/iu;
+export const CONSENT_FIELD_PATTERN = /(?<consentKeyword>accept|agree|consent|terms|policy|opt[-_ ]?in)/iu;
+export const URL_FIELD_PATTERN = /(?<urlKeyword>url|uri|website|homepage|link)/iu;
+export const EMAIL_FIELD_PATTERN = /(?<emailKeyword>email|e-mail)/iu;
+export const CURRENCY_FIELD_PATTERN =
+  /(?<currencyKeyword>amount|price|cost|balance|budget|revenue|salary|subtotal|total)/iu;
+export const LONG_TEXT_FIELD_PATTERN = /(?<longTextKeyword>bio|description|details|notes?|summary|message|comment)/iu;
 
 export function isRecord(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -22,7 +23,7 @@ function isStringRecord(value: unknown): value is Record<string, string> {
   return isRecord(value) && Object.values(value).every((entry) => typeof entry === 'string');
 }
 
-function toUiRules(value: unknown): AutoFormUiRule[] | undefined {
+function toUiRules(value: unknown) {
   if (!Array.isArray(value)) {
     return;
   }
@@ -44,20 +45,21 @@ function toUiRules(value: unknown): AutoFormUiRule[] | undefined {
   return rules.length > 0 ? rules : undefined;
 }
 
-function toOptionItem(value: unknown): AutoFormOptionItem | undefined {
+function toOptionItem(value: unknown) {
   if (!isRecord(value) || typeof value['value'] !== 'string') {
     return;
   }
 
-  return {
+  const result: AutoFormOptionItem | undefined = {
     icon: value['icon'] as AutoFormOptionItem['icon'],
     label:
       typeof value['label'] === 'string' || typeof value['label'] === 'number' ? String(value['label']) : undefined,
     value: value['value'],
   };
+  return result;
 }
 
-function toOptionGroups(value: unknown): AutoFormOptionGroup[] | undefined {
+function toOptionGroups(value: unknown) {
   if (!Array.isArray(value)) {
     return;
   }
@@ -94,7 +96,7 @@ interface AnnotatedUi {
   dropzone?: unknown;
 }
 
-function isComplexFieldType(type: unknown): boolean {
+function isComplexFieldType(type: unknown) {
   return type === 'array' || type === 'map' || type === 'object';
 }
 
@@ -103,7 +105,7 @@ function deriveAnnotatedControl(
   protoUi: AnnotatedUi | undefined,
   nested: AnnotatedUi | undefined,
   direct: AnnotatedUi | undefined
-): FieldTypes | undefined {
+) {
   if (isComplexFieldType(fieldType)) {
     return;
   }
@@ -112,31 +114,15 @@ function deriveAnnotatedControl(
     (ui) => typeof ui?.dataProvider === 'string' && ui.dataProvider !== ''
   );
   if (hasDataProvider) {
-    return 'dataProviderSelect';
+    return 'dataProviderSelect' as const;
   }
 
   const dropzone = direct?.dropzone === true || nested?.dropzone === true || protoUi?.dropzone === true;
   const control = direct?.control ?? nested?.control ?? protoUi?.control;
-  if (dropzone && control === 'json') {
-    return 'dropzone-json';
-  }
-  return undefined;
+  return dropzone && control === 'json' ? ('dropzone-json' as const) : undefined;
 }
 
-export function getFieldUiConfig<TFieldType extends string = string>(
-  field: ParsedField<TFieldType>
-): {
-  control?: FieldTypes<TFieldType> | undefined;
-  placeholder?: string | undefined;
-  example?: string | undefined;
-  help?: string | undefined;
-  description?: string | undefined;
-  visibleWhen?: AutoFormUiRule[] | undefined;
-  disabledWhen?: AutoFormUiRule[] | undefined;
-  summaryLabel?: string | undefined;
-  optionGroups?: AutoFormOptionGroup[] | undefined;
-  optionLabels?: Record<string, string> | undefined;
-} {
+export function getFieldUiConfig<TFieldType extends string = string>(field: ParsedField<TFieldType>) {
   const protoUi = getFieldHints(field);
   const customData = isRecord(field.fieldConfig?.customData) ? field.fieldConfig.customData : undefined;
   const nestedUi = customData && isRecord(customData['ui']) ? customData['ui'] : undefined;
@@ -176,7 +162,18 @@ export function getFieldUiConfig<TFieldType extends string = string>(
 
   const annotatedControl = deriveAnnotatedControl(field.type, protoUi, nested, direct);
 
-  return {
+  const config: {
+    control?: FieldTypes<TFieldType> | undefined;
+    placeholder?: string | undefined;
+    example?: string | undefined;
+    help?: string | undefined;
+    description?: string | undefined;
+    visibleWhen?: AutoFormUiRule[] | undefined;
+    disabledWhen?: AutoFormUiRule[] | undefined;
+    summaryLabel?: string | undefined;
+    optionGroups?: AutoFormOptionGroup[] | undefined;
+    optionLabels?: Record<string, string> | undefined;
+  } = {
     ...protoUi,
     ...nested,
     ...direct,
@@ -206,9 +203,11 @@ export function getFieldUiConfig<TFieldType extends string = string>(
     summaryLabel: [direct?.summaryLabel, nested?.summaryLabel].find(Boolean) ?? protoUi?.summaryLabel,
     visibleWhen: [direct?.visibleWhen, nested?.visibleWhen].find(Boolean) ?? toUiRules(protoUi?.visibleWhen),
   };
+  return config;
 }
 
-export function getRootErrorMessage(rootError: unknown): string | undefined {
+export function getRootErrorMessage(rootError: unknown): string | undefined;
+export function getRootErrorMessage(rootError: unknown) {
   const hasRootError = Boolean(rootError);
   if (!hasRootError) {
     return;
@@ -218,21 +217,21 @@ export function getRootErrorMessage(rootError: unknown): string | undefined {
     return rootError;
   }
 
-  if (typeof rootError === 'object' && rootError !== null) {
-    const message: unknown = Reflect.get(rootError, 'message');
-    if (typeof message === 'string') {
-      return message;
-    }
-
-    return Object.values(rootError)
-      .map((value) => getRootErrorMessage(value))
-      .filter((entry): entry is string => Boolean(entry))
-      .join('\n');
+  if (typeof rootError !== 'object' || rootError === null) {
+    return;
   }
-  return undefined;
+  const message: unknown = Reflect.get(rootError, 'message');
+  if (typeof message === 'string') {
+    return message;
+  }
+
+  return Object.values(rootError)
+    .map((value) => getRootErrorMessage(value))
+    .filter((entry): entry is string => Boolean(entry))
+    .join('\n');
 }
 
-export function getFieldErrorMessage(errors: unknown, path: string[], collection = false): string | undefined {
+export function getFieldErrorMessage(errors: unknown, path: string[], collection = false) {
   const nestedError = isRecord(errors) ? getPathInObject(errors, path) : undefined;
   if (nestedError === null || typeof nestedError !== 'object') {
     return;
@@ -249,7 +248,8 @@ export function getFieldErrorMessage(errors: unknown, path: string[], collection
   return typeof rootMessage === 'string' ? rootMessage : undefined;
 }
 
-export function createEmptyFieldValue(field: ParsedField | undefined): unknown {
+export function createEmptyFieldValue(field: ParsedField | undefined): unknown;
+export function createEmptyFieldValue(field: ParsedField | undefined) {
   if (!field) {
     return;
   }
@@ -274,7 +274,7 @@ export function createEmptyFieldValue(field: ParsedField | undefined): unknown {
           ? Number(firstOptionValue) || firstOptionValue
           : undefined;
       }
-      return undefined;
+      return;
     case 'fieldMask':
       return [];
     case 'json':
@@ -300,7 +300,7 @@ export function createEmptyFieldValue(field: ParsedField | undefined): unknown {
   }
 }
 
-function isKeyValueScalarField(field: ParsedField | undefined): boolean {
+function isKeyValueScalarField(field: ParsedField | undefined) {
   if (!field) {
     return false;
   }
@@ -311,7 +311,7 @@ function isKeyValueScalarField(field: ParsedField | undefined): boolean {
   );
 }
 
-function isSimpleKeyValueLikeObject(field: ParsedField | undefined): boolean {
+function isSimpleKeyValueLikeObject(field: ParsedField | undefined) {
   if (!(field?.type === 'object' && field.schema?.length === 2)) {
     return false;
   }
@@ -328,7 +328,8 @@ function isSimpleKeyValueLikeObject(field: ParsedField | undefined): boolean {
 
 export function resolveRenderFieldType<TFieldType extends string = string>(
   field: ParsedField<TFieldType>
-): FieldTypes<TFieldType> {
+): FieldTypes<TFieldType>;
+export function resolveRenderFieldType<TFieldType extends string = string>(field: ParsedField<TFieldType>) {
   const uiConfig = getFieldUiConfig(field);
   if (uiConfig.control !== undefined && uiConfig.control !== '') {
     return uiConfig.control;
@@ -409,7 +410,7 @@ export function resolveRenderFieldType<TFieldType extends string = string>(
   return field.type as FieldTypes<TFieldType>;
 }
 
-function buildRangeHint(field: ParsedField): string | undefined {
+function buildRangeHint(field: ParsedField) {
   const min = field.fieldConfig?.inputProps?.['min'];
   const max = field.fieldConfig?.inputProps?.['max'];
 
@@ -419,13 +420,10 @@ function buildRangeHint(field: ParsedField): string | undefined {
   if (Number.isFinite(min)) {
     return `Accepted minimum: ${min}.`;
   }
-  if (Number.isFinite(max)) {
-    return `Accepted maximum: ${max}.`;
-  }
-  return undefined;
+  return Number.isFinite(max) ? `Accepted maximum: ${max}.` : undefined;
 }
 
-function buildFallbackHelp(field: ParsedField): string {
+function buildFallbackHelp(field: ParsedField) {
   const renderType = resolveRenderFieldType(field);
   const hasPattern = Boolean(field.fieldConfig?.inputProps?.['pattern']);
   const hints = [
@@ -444,7 +442,7 @@ function buildFallbackHelp(field: ParsedField): string {
   return hints ?? '';
 }
 
-export function getFieldHelpText(field: ParsedField): string {
+export function getFieldHelpText(field: ParsedField) {
   const uiConfig = getFieldUiConfig(field);
   const descriptionText = getFieldDescriptionText(field);
 
@@ -462,7 +460,7 @@ export function getFieldHelpText(field: ParsedField): string {
   return tooltip;
 }
 
-export function getFieldDocsUrl(field: ParsedField): string | undefined {
+export function getFieldDocsUrl(field: ParsedField) {
   const customData = field.fieldConfig?.customData;
   if (!(customData && typeof customData === 'object')) {
     return;
@@ -471,13 +469,10 @@ export function getFieldDocsUrl(field: ParsedField): string | undefined {
     return customData['docsUrl'];
   }
   const { ui } = customData;
-  if (isRecord(ui) && typeof ui['docsUrl'] === 'string' && ui['docsUrl'] !== '') {
-    return ui['docsUrl'];
-  }
-  return undefined;
+  return isRecord(ui) && typeof ui['docsUrl'] === 'string' && ui['docsUrl'] !== '' ? ui['docsUrl'] : undefined;
 }
 
-export function getFieldDescriptionText(field: ParsedField): string | undefined {
+export function getFieldDescriptionText(field: ParsedField) {
   const uiConfig = getFieldUiConfig(field);
 
   if (uiConfig.description !== undefined && uiConfig.description !== '') {
@@ -498,12 +493,12 @@ export function getFieldDescriptionText(field: ParsedField): string | undefined 
   return fallback.length > 0 ? fallback : undefined;
 }
 
-function hasSimpleRequiredCount(field: ParsedField): boolean {
+function hasSimpleRequiredCount(field: ParsedField) {
   const hints = getFieldHints(field);
   return (hints?.minItems ?? 0) > 0 || (hints?.minPairs ?? 0) > 0;
 }
 
-export function defaultClassifyField(field: ParsedField): 'simple' | 'advanced' {
+export function defaultClassifyField(field: ParsedField) {
   const customData = isRecord(field.fieldConfig?.customData) ? field.fieldConfig.customData : undefined;
   if (customData?.['advanced'] === true) {
     return 'advanced';
@@ -516,8 +511,12 @@ export function defaultClassifyField(field: ParsedField): 'simple' | 'advanced' 
 
 export function deriveSimpleFields<TFieldType extends string = string>(
   fields: ParsedField<TFieldType>[] | undefined,
+  classifyField?: (field: ParsedField<TFieldType>) => 'simple' | 'advanced'
+): ParsedField<TFieldType>[];
+export function deriveSimpleFields<TFieldType extends string = string>(
+  fields: ParsedField<TFieldType>[] | undefined,
   classifyField: (field: ParsedField<TFieldType>) => 'simple' | 'advanced' = defaultClassifyField
-): ParsedField<TFieldType>[] {
+) {
   if (!fields) {
     return [];
   }
@@ -558,8 +557,8 @@ export function deriveSimpleFields<TFieldType extends string = string>(
   );
 }
 
-export function collectLeafFieldPaths(fields: ParsedField[], path: string[] = []): string[] {
-  return fields.flatMap((field) => {
+export function collectLeafFieldPaths(fields: ParsedField[], path: string[] = []) {
+  const paths: string[] = fields.flatMap((field) => {
     const nextPath = [...path, field.key];
     const renderType = resolveRenderFieldType(field);
 
@@ -571,9 +570,11 @@ export function collectLeafFieldPaths(fields: ParsedField[], path: string[] = []
 
     return [nextPath.join('.')];
   });
+  return paths;
 }
 
-export function filterFieldsByPaths(fields: ParsedField[], paths: string[], currentPath: string[] = []): ParsedField[] {
+export function filterFieldsByPaths(fields: ParsedField[], paths: string[], currentPath?: string[]): ParsedField[];
+export function filterFieldsByPaths(fields: ParsedField[], paths: string[], currentPath: string[] = []) {
   if (paths.length === 0) {
     return [];
   }
@@ -604,7 +605,7 @@ export function filterFieldsByPaths(fields: ParsedField[], paths: string[], curr
   );
 }
 
-export function projectValuesToFields(values: Record<string, unknown>, fields: ParsedField[]): Record<string, unknown> {
+export function projectValuesToFields(values: Record<string, unknown>, fields: ParsedField[]) {
   const projected: Record<string, unknown> = {};
 
   for (const field of fields) {
@@ -624,7 +625,8 @@ export function projectValuesToFields(values: Record<string, unknown>, fields: P
   return projected;
 }
 
-export function isMeaningfulValue(value: unknown): boolean {
+export function isMeaningfulValue(value: unknown): boolean;
+export function isMeaningfulValue(value: unknown) {
   if (value === undefined || value === null) {
     return false;
   }
@@ -640,7 +642,7 @@ export function isMeaningfulValue(value: unknown): boolean {
   return true;
 }
 
-export function stringifySummaryValue(value: unknown): string {
+export function stringifySummaryValue(value: unknown) {
   if (value === undefined || value === null) {
     return '—';
   }
@@ -661,8 +663,9 @@ export function stringifySummaryValue(value: unknown): string {
 
 export function flattenSummaryEntries(
   payload: unknown,
-  prefix = ''
-): Array<{ key: string; value: unknown; isComplex: boolean }> {
+  prefix?: string
+): Array<{ key: string; value: unknown; isComplex: boolean }>;
+export function flattenSummaryEntries(payload: unknown, prefix = '') {
   if (!isRecord(payload)) {
     return [];
   }
@@ -692,7 +695,7 @@ export function isValidationSuccess(
   return validation.success;
 }
 
-export function normalizeKeyValueEntries(value: unknown): Array<{ key: string; value: string }> {
+export function normalizeKeyValueEntries(value: unknown) {
   if (!Array.isArray(value)) {
     return [];
   }
@@ -709,22 +712,20 @@ export function normalizeKeyValueEntries(value: unknown): Array<{ key: string; v
   });
 }
 
-export function denormalizeKeyValueEntries(
-  entries: Array<{ key: string; value: string }>,
-  field: ParsedField
-): Array<{ key: unknown; value: unknown }> {
+export function denormalizeKeyValueEntries(entries: Array<{ key: string; value: string }>, field: ParsedField) {
   const valueField =
     field.type === 'map'
       ? field.schema?.[1]
       : field.schema?.[0]?.schema?.find((candidate) => candidate.key === 'value');
 
-  return entries.map((entry) => ({
+  const convertedEntries: Array<{ key: unknown; value: unknown }> = entries.map((entry) => ({
     key: entry.key,
     value: normalizeCollectionScalar(entry.value, valueField),
   }));
+  return convertedEntries;
 }
 
-function normalizeCollectionScalar(value: string, field: ParsedField | undefined): unknown {
+function normalizeCollectionScalar(value: string, field: ParsedField | undefined) {
   if (!field) {
     return value;
   }

@@ -75,10 +75,7 @@ function appendProtoValidator<
   Values extends FormValues,
   Desc extends DescMessage,
   TValidators extends FormValidators<Values>,
->(
-  validators: TValidators | undefined,
-  validator: ProtoFormValidator<Values, Desc>
-): ProtoFormValidators<Values, Desc, TValidators> {
+>(validators: TValidators | undefined, validator: ProtoFormValidator<Values, Desc>) {
   return [...(validators ?? []), validator] as ProtoFormValidators<Values, Desc, TValidators>;
 }
 
@@ -87,10 +84,7 @@ export function useProtoForm<
   Values extends FormValues,
   const TValidators extends FormValidators<Values> = [],
   TSubmitReturn = unknown,
->(
-  schema: Desc,
-  options: UseProtoFormOptions<Values, Desc, TValidators, TSubmitReturn>
-): UseProtoFormReturn<Values, Desc, TValidators, TSubmitReturn> {
+>(schema: Desc, options: UseProtoFormOptions<Values, Desc, TValidators, TSubmitReturn>) {
   const { emptyRepeatedStringPolicies, formatMessage, validators, ...nativeOptions } = options;
   const conversionOptions: ProtoFormOptions = {
     emptyRepeatedStringPolicies,
@@ -132,7 +126,7 @@ export function useProtoForm<
     Reflect.apply(form.setFieldValue, form, [path, { case: oneofCase, value }, updateOptions]);
   };
 
-  return Object.assign(form, {
+  const protoForm: UseProtoFormReturn<Values, Desc, TValidators, TSubmitReturn> = Object.assign(form, {
     createMessage: (values?: Values) =>
       formValuesToProto(schema, values ?? form.state.values, sourceMessage, conversionOptions),
     createUpdateMask: () =>
@@ -144,4 +138,5 @@ export function useProtoForm<
       ),
     setOneofValue,
   });
+  return protoForm;
 }

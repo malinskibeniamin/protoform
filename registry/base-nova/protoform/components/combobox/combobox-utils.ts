@@ -6,12 +6,12 @@ export interface GroupedOptions {
   readonly testId?: string | undefined;
 }
 
-export const resolveLabel = (options: readonly ComboboxOption[], value: string): string => {
+export const resolveLabel = (options: readonly ComboboxOption[], value: string) => {
   const opt = options.find((o) => o.value === value);
   return opt?.label ?? value;
 };
 
-export const groupOptions = (options: readonly ComboboxOption[]): GroupedOptions[] | undefined => {
+export const groupOptions = (options: readonly ComboboxOption[]) => {
   if (options.every((option) => !option.group)) {
     return;
   }

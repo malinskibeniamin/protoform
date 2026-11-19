@@ -8,7 +8,11 @@ import { AttachmentAction } from '.';
 test('does not submit the surrounding form when an attachment action runs', async () => {
   const user = userEvent.setup();
   const onAction = rs.fn();
-  const onSubmit = rs.fn((event: SubmitEvent<HTMLFormElement>) => event.preventDefault());
+  let submissions = 0;
+  function onSubmit(event: SubmitEvent<HTMLFormElement>) {
+    event.preventDefault();
+    submissions += 1;
+  }
   render(
     <form onSubmit={onSubmit}>
       <AttachmentAction onClick={onAction}>Retry upload</AttachmentAction>
@@ -16,5 +20,5 @@ test('does not submit the surrounding form when an attachment action runs', asyn
   );
   await user.click(screen.getByRole('button', { name: 'Retry upload' }));
   expect(onAction).toHaveBeenCalledTimes(1);
-  expect(onSubmit).not.toHaveBeenCalled();
+  expect(submissions).toBe(0);
 });

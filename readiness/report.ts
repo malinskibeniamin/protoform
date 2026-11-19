@@ -3,7 +3,7 @@ import { getReadinessSummary, type ReadinessCategory, type ReadinessRequirement 
 export function formatReadinessReport(
   requirements: readonly ReadinessRequirement[],
   categories: readonly ReadinessCategory[]
-): string {
+) {
   const summary = getReadinessSummary(requirements);
   const requiredSummary = getReadinessSummary(requirements.filter((requirement) => requirement.level === 'required'));
   const lines = [

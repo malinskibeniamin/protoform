@@ -4,7 +4,7 @@ Independent compiler fixtures for the 63 official Base UI primitives, pinned to 
 
 These declarations derive from the official source, not Protoform implementations. MIT; the full upstream notice is in ../../LICENSES/shadcn-MIT.txt. They are test-only: not included in any installed registry item. No runtime source or additional dependency ships with these fixtures.
 
-../shadcn-api-contract.test.ts checks all 388 exports: 385 callable APIs, two exported types and the toast manager. Component assertions require every official prop object to be accepted by the local implementation, while allowing additional Protoform props. Other functions and public types preserve their signatures. Root source and test typechecks execute these compiler assertions; running the unit file alone does not prove type compatibility. Generic inference and runtime semantics have separate public-component tests and installed-consumer probes.
+The generated `part-*.typecheck.ts` files check all 388 exports: 385 callable APIs, two exported types and the toast manager. Component assertions require every official prop object to be accepted by the local implementation, while allowing additional Protoform props. Other functions and public types preserve their signatures. Root source and test typechecks execute these compiler assertions; there are no runtime test cases for these compiler assertions. Generic inference and runtime semantics have separate public-component tests and installed-consumer probes.
 
 ## Reproduction
 
@@ -15,6 +15,8 @@ bunx --no-install shadcn view $(bun -e 'const c = await Bun.file("registry/shadc
 bun scripts/generate-shadcn-api-contracts.ts .context/shadcn-source.json
 bun run type:check
 ```
+
+To regenerate only the compiler assertions from the checked-in pinned declarations, use `bun scripts/generate-shadcn-api-contracts.ts --assertions-only`.
 
 The generator rejects any input whose SHA-256 differs from source-digests.json. It performs no network requests. A moving registry may no longer serve the pinned source: recover the archived matching input rather than silently changing digests. An upstream refresh requires reviewing the source revision, input hashes, complete contract diff, adapters, installed-consumer smoke and browser behavior together.
 

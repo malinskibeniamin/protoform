@@ -2,7 +2,7 @@ export function isPromiseLike<T>(value: T | Promise<T>): value is Promise<T> {
   return value !== null && typeof value === 'object' && 'then' in value;
 }
 
-export function safeStringify(value: unknown): string {
+export function safeStringify(value: unknown) {
   try {
     return JSON.stringify(
       value,

@@ -33,7 +33,7 @@ interface HighlightBounds {
   width: number;
 }
 
-function boundsEqual(a: HighlightBounds | null, b: HighlightBounds | null): boolean {
+function boundsEqual(a: HighlightBounds | null, b: HighlightBounds | null) {
   if (a === b) {
     return true;
   }
@@ -46,7 +46,7 @@ function boundsEqual(a: HighlightBounds | null, b: HighlightBounds | null): bool
 type TabsRenderProp = React.ComponentProps<typeof TabsPrimitive.Tab>['render'];
 type TabsRenderFn = Extract<NonNullable<TabsRenderProp>, (...args: never[]) => React.ReactElement>;
 
-function dataStateFromBaseUi(state: { active?: boolean; hidden?: boolean }): Record<string, unknown> {
+function dataStateFromBaseUi(state: { active?: boolean; hidden?: boolean }) {
   const attrs: Record<string, unknown> = {};
   if (typeof state.active === 'boolean') {
     attrs['data-state'] = state.active === true ? 'active' : 'inactive';
@@ -56,7 +56,7 @@ function dataStateFromBaseUi(state: { active?: boolean; hidden?: boolean }): Rec
   return attrs;
 }
 
-function renderTabWithActiveState(Element: 'button' | 'div', userRender?: TabsRenderProp): TabsRenderFn {
+function renderTabWithActiveState(Element: 'button' | 'div', userRender?: TabsRenderProp) {
   const render: TabsRenderFn = (props, state) => {
     const mergedProps = { ...props, ...dataStateFromBaseUi(state) };
     if (userRender === null) {

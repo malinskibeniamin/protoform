@@ -27,7 +27,7 @@ function paths(
         path?: readonly (PropertyKey | { key: PropertyKey })[] | undefined;
       }[]
     | undefined
-): string[][] {
+) {
   return (issues ?? []).map((issue) =>
     (issue.path ?? []).map((segment) =>
       String(typeof segment === 'object' && segment !== null && 'key' in segment ? segment.key : segment)
@@ -111,22 +111,6 @@ describe('cel validation conformance', () => {
     expect(paths(standardResult.issues)).toContainEqual(['booleanValue']);
   });
 
-  test('preserves a dynamic field CEL error string and stable form path', async () => {
-    const result = await createProtoFormSchema(CelRuleMatrixSchema)['~standard'].validate({
-      ...validForm,
-      stringValue: 'bad',
-    });
-
-    expect(result.issues).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          message: 'received bad',
-          path: ['stringValue'],
-        }),
-      ])
-    );
-  });
-
   test('preserves nested and repeated message CEL paths including every index', async () => {
     const result = await createProtoFormSchema(CelRuleMatrixSchema)['~standard'].validate({
       ...validForm,
@@ -145,14 +129,12 @@ describe('cel validation conformance', () => {
       secondMessageValue: 'bad',
       stringValue: 'bad',
     });
-    const messages = (result.issues ?? []).map((issue) => issue.message);
-
-    expect(messages).toEqual(
+    expect(result.issues).toEqual(
       expect.arrayContaining([
-        'boolean field rule failed',
-        'received bad',
-        'first message rule failed',
-        'second message rule failed',
+        { message: 'boolean field rule failed', path: ['booleanValue'] },
+        { message: 'received bad', path: ['stringValue'] },
+        { message: 'first message rule failed', path: [] },
+        { message: 'second message rule failed', path: [] },
       ])
     );
     expect(result.issues).toHaveLength(4);

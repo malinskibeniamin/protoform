@@ -8,7 +8,7 @@ const TS_EXPECT_ERROR = ['@ts', 'expect', 'error'].join('-');
 
 const lintReport = z.object({ diagnostics: z.array(z.object({ code: z.string() })) });
 
-function lintCodes(source: string, fileName = 'example.ts'): string[] {
+function lintCodes(source: string, fileName = 'example.ts') {
   mkdirSync('.tmp', { recursive: true });
   const directory = mkdtempSync(resolve('.tmp/comment-policy-'));
   try {

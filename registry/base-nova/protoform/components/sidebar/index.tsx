@@ -56,7 +56,7 @@ function useSidebarState({
   defaultOpen: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
-}): SidebarContextProps {
+}) {
   const isMobile = useIsMobile();
   const [openMobile, setOpenMobile] = React.useState(false);
   const [uncontrolledOpen, setUncontrolledOpen] = React.useState(defaultOpen);
@@ -88,7 +88,7 @@ function useSidebarState({
     return () => globalThis.window.removeEventListener('keydown', handleKeyDown);
   }, []);
   const state: SidebarContextProps['state'] = open === true ? 'expanded' : 'collapsed';
-  return {
+  const result: SidebarContextProps = {
     state,
     open,
     setOpen,
@@ -97,6 +97,7 @@ function useSidebarState({
     setOpenMobile,
     toggleSidebar,
   };
+  return result;
 }
 function SidebarProvider({
   defaultOpen = true,

@@ -35,18 +35,6 @@ describe('useProtoFormDefaults', () => {
 });
 
 describe('useProtoForm', () => {
-  test('returns form instance with all proto helpers', () => {
-    const { result } = renderHook(() => useProtoForm(AutoFormExampleSchema, { defaultValues: defaults() }));
-
-    expect(result.current.register).toBeDefined();
-    expect(result.current.handleSubmit).toBeDefined();
-    expect(result.current.formState).toBeDefined();
-    expect(result.current.createMessage).toBeDefined();
-    expect(result.current.createUpdateMask).toBeDefined();
-    expect(result.current.setOneofValue).toBeDefined();
-    expect(result.current.getNestedErrors).toBeDefined();
-  });
-
   test('reflects invalid state when mode enables continuous validation', async () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
@@ -60,7 +48,7 @@ describe('useProtoForm', () => {
     });
   });
 
-  test('produces field-level errors for invalid values', async () => {
+  test('reports field-level errors and clears them when values become valid', async () => {
     const { result } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: defaults({ username: 'ab' }),
@@ -68,36 +56,22 @@ describe('useProtoForm', () => {
       })
     );
 
-    await act(async () => {
-      await result.current.trigger();
-    });
+    await Promise.resolve(
+      act(async () => {
+        await result.current.trigger();
+      })
+    );
 
     await waitFor(() => {
-      expect(result.current.formState.errors.username).toBeDefined();
       expect(result.current.formState.errors.username?.message).toMatch(/3/u);
     });
-  });
 
-  test('clears errors when values become valid', async () => {
-    const { result } = renderHook(() =>
-      useProtoForm(AutoFormExampleSchema, {
-        defaultValues: defaults({ username: 'ab' }),
-        mode: 'all',
+    await Promise.resolve(
+      act(async () => {
+        result.current.setValue('username', 'valid_user');
+        await result.current.trigger();
       })
     );
-
-    await act(async () => {
-      await result.current.trigger();
-    });
-
-    await waitFor(() => {
-      expect(result.current.formState.errors.username).toBeDefined();
-    });
-
-    await act(async () => {
-      result.current.setValue('username', 'valid_user');
-      await result.current.trigger();
-    });
 
     await waitFor(() => {
       expect(result.current.formState.errors.username).toBeUndefined();
@@ -246,10 +220,12 @@ describe('useProtoForm — createMessage', () => {
       })
     );
 
-    await act(async () => {
-      result.current.setOneofValue('preferredContact', 'preferredPhone', '+1555');
-      await result.current.trigger();
-    });
+    await Promise.resolve(
+      act(async () => {
+        result.current.setOneofValue('preferredContact', 'preferredPhone', '+1555');
+        await result.current.trigger();
+      })
+    );
 
     const message = result.current.createMessage();
     const json = toJson(AutoFormExampleSchema, message);
@@ -314,9 +290,11 @@ describe('useProtoForm — nested messages', () => {
       })
     );
 
-    await act(async () => {
-      await result.current.trigger();
-    });
+    await Promise.resolve(
+      act(async () => {
+        await result.current.trigger();
+      })
+    );
 
     await waitFor(() => {
       const { errors } = result.current.formState;
@@ -363,10 +341,12 @@ describe('useProtoForm — oneof fields', () => {
       })
     );
 
-    await act(async () => {
-      result.current.setOneofValue('preferredContact', 'preferredPhone', '+1234567890');
-      await result.current.trigger();
-    });
+    await Promise.resolve(
+      act(async () => {
+        result.current.setOneofValue('preferredContact', 'preferredPhone', '+1234567890');
+        await result.current.trigger();
+      })
+    );
 
     const message = result.current.createMessage();
     expect(message.preferredContact.case).toBe('preferredPhone');
@@ -410,9 +390,11 @@ describe('useProtoForm — getNestedErrors', () => {
       })
     );
 
-    await act(async () => {
-      await result.current.trigger();
-    });
+    await Promise.resolve(
+      act(async () => {
+        await result.current.trigger();
+      })
+    );
 
     await waitFor(() => {
       const errors = result.current.getNestedErrors('shippingAddress');
@@ -435,18 +417,20 @@ describe('unknown oneof edit sources', () => {
       const { result } = renderHook(() => useProtoForm(AutoFormExampleSchema, { defaultValues: suppliedDefaults }));
       expect(result.current.formState.errors.root).toBeUndefined();
       await waitFor(() => expect(result.current.getValues('username')).toBe('valid_user'));
-      await act(async () => {
-        if (baseline === 'reset') {
-          result.current.reset(source);
-        }
-        if (baseline === 'reset callback') {
-          result.current.reset((values) => ({ ...values, username: 'reset_user' }));
-        }
-        result.current.setOneofValue('preferredContact', 'preferredEmail', 'forms@example.com', {
-          shouldValidate: false,
-        });
-        await result.current.handleSubmit(onSubmit)();
-      });
+      await Promise.resolve(
+        act(async () => {
+          if (baseline === 'reset') {
+            result.current.reset(source);
+          }
+          if (baseline === 'reset callback') {
+            result.current.reset((values) => ({ ...values, username: 'reset_user' }));
+          }
+          result.current.setOneofValue('preferredContact', 'preferredEmail', 'forms@example.com', {
+            shouldValidate: false,
+          });
+          await result.current.handleSubmit(onSubmit)();
+        })
+      );
       await waitFor(() => expect(result.current.formState.errors.root?.message).toContain('unknown wire fields'));
       expect(onSubmit).not.toHaveBeenCalled();
       expect(() => result.current.createMessage()).toThrow(/unknown wire fields/u);

@@ -88,7 +88,7 @@ async function reportMismatch(
   actual: Buffer | undefined,
   diff: Buffer | undefined,
   failure: string
-): Promise<never> {
+) {
   const key = createHash('sha256').update(referencePath).digest('hex').slice(0, 12);
   const artifact = join('.rstest', 'screenshots', key, basename(referencePath));
   await mkdir(dirname(artifact), { recursive: true });
@@ -105,14 +105,14 @@ export async function matchScreenshot(
   target: ScreenshotTarget,
   referencePath: string,
   { update = false, timeout = 10_000 }: { update?: boolean; timeout?: number } = {}
-): Promise<void> {
+) {
   const expected = await readReference(referencePath, update);
   const deadline = Date.now() + timeout;
   let previous: Buffer | undefined;
   let actual: Buffer | undefined;
   let failure = 'Screenshot did not become pixel-stable';
   let diff: Buffer | undefined;
-  async function poll(): Promise<void> {
+  async function poll() {
     if (Date.now() >= deadline) {
       return reportMismatch(referencePath, actual, diff, failure);
     }

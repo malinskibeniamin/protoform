@@ -113,7 +113,7 @@ function updateChartColors(element: HTMLElement, config: ChartConfig, applied: M
   }
 }
 
-function applyChartColors(element: HTMLElement, config: ChartConfig): ChartColorRestoration {
+function applyChartColors(element: HTMLElement, config: ChartConfig) {
   const applied = new Map<string, string>();
   updateChartColors(element, config, applied);
   const addedClasses =
@@ -393,11 +393,10 @@ function ChartLegendContent({
     </div>
   );
 }
-function getPayloadFill(payload: unknown): string | undefined {
-  if (typeof payload === 'object' && payload !== null && 'fill' in payload && typeof payload.fill === 'string') {
-    return payload.fill;
-  }
-  return undefined;
+function getPayloadFill(payload: unknown) {
+  return typeof payload === 'object' && payload !== null && 'fill' in payload && typeof payload.fill === 'string'
+    ? payload.fill
+    : undefined;
 }
 function getPayloadConfigFromPayload(config: ChartConfig, payload: unknown, key: string) {
   if (typeof payload !== 'object' || payload === null) {

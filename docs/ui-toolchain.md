@@ -3,13 +3,14 @@
 Run `bun run lint:fix` and `bun run type:check` before submitting changes. CI also runs component,
 conformance, browser, registry-consumer and documentation tests.
 
-## Reviewed versions (updated 2026-11-16)
+## Reviewed versions (updated 2026-11-19)
 
 | Tool            | Version             | Responsibility                                     |
 | --------------- | ------------------- | -------------------------------------------------- |
 | Bun             | 1.4.4               | Package manager; pinned across workflows           |
 | Blume           | 2.2.7               | Astro/MDX checking, builds and audits              |
-| Ultracite       | 8.2.1               | Shared conventions and safe edit hooks             |
+| Ultracite       | 8.3.1               | Shared conventions and safe edit hooks             |
+| Landmines       | 0.1.1               | Tests, module boundaries, comments and inference   |
 | Biome           | 2.6.8               | General linting and source formatting              |
 | Oxlint          | 1.94.0              | Additional syntax, import, promise and test checks |
 | oxlint-tsgolint | 7.0.2007            | Type-aware linting and compiler diagnostics        |
@@ -143,6 +144,57 @@ selectors remain valid for ordered collection tests; underscore conventions and 
 minimum animation durations add noise here. Loop expressions now use named inputs before iteration. `Iterator.zip` remains unavailable
 in the project's Node 26 runtime.
 Other disabled additions target frameworks the project does not use.
+
+### Landmines and Ultracite 8.3
+
+The existing Biome core, React, Astro, Playwright, TanStack and type-aware presets now resolve to
+Ultracite 8.3.1. Biome keeps its previous automatic import style: mixed imports can inline their
+type specifiers, while pure type imports erase at runtime. Oxlint still rejects type-only
+specifiers that would emit an empty side-effect import. No lint severity was lowered to reconcile
+the preset's new separated-import default.
+
+Landmines 0.1.1 runs in the main Oxlint pass, not a separate check developers can forget.
+Oxlint 1.94 JSONC cannot extend a JavaScript preset. The checked-in JSONC mirrors
+`ultracite/oxlint/landmines`; `lint:rules` compares its plugin registrations and rule options with
+the installed preset and independently enumerates every rule exported by the four plugins.
+All ten rules must be errors, and scoped Landmines overrides are rejected.
+
+| Namespace             | Rules                                                                                       |
+| --------------------- | ------------------------------------------------------------------------------------------- |
+| `landmines-testing`   | `no-test-doubles`, `strict-msw`, `no-fixed-sleep`, `no-unsignaled-poll`, `no-flake-masking` |
+| `landmines-structure` | `colocated-tests`, `test-file-names`, `package-exports`                                     |
+| `landmines-style`     | `no-comments`                                                                               |
+| `landmines-types`     | `no-explicit-return-types`                                                                  |
+
+The stricter existing no-comment and no-suppression checks remain active. Native form code keeps
+its explicit public contracts through typed bindings, typed results, and type-only overloads
+instead of coercing narrowed values or unpinning declarations.
+
+**Detection limits.** Landmines 0.1.1 recognizes Jest and Vitest replacement APIs, but does not
+consistently recognize Rstest or Bun. `lint:tests` adds checks for direct Rstest module/global
+replacements and function-double factories, and Bun's `mock(implementation)` and `mock.module`.
+The supplement also checks direct Rstest retry/timeout configuration and polling on recorders
+through `rs.waitFor`. Its CLI regression exercises actual runner import names, aliases, helper
+discovery and accepted observation calls. It is not a whole-program data-flow analyzer.
+
+Landmines' colocation rule resolves imports into conventional package `src/` roots. The local
+check also resolves runtime imports using the repository's TypeScript configuration and requires
+adjacency when it can identify a single implementation owner. It does not guess owners for
+multi-module workflows, E2E, or conformance suites.
+
+The existing Rstest **project** deadlines are separate from per-test timeout bumps and are not
+recognized by upstream's config visitor. Do not raise them to hide a failing test. Use explicit
+readiness, real HTTP responses, and native browser assertions instead.
+
+Oxlint now owns three orphaned Ultracite core checks: named capture groups, references to
+deprecated APIs, and confusing use of void results. Void-only shorthand and callbacks with void
+contracts stay valid because their callers discard the result; using a void result as a value
+still fails. No file is excluded from these rules.
+
+[AGENTS.md](../AGENTS.md) is the shared instruction entry point. Claude and Copilot have pointers to
+the same rules. CI runs the same checked-in commands for all contributors: neither an AI-specific
+hook nor an editor extension is necessary for enforcement. See the
+[adoption and coverage record](verification/landmines-migration.md).
 
 ### Biome 2.6.4 additions
 
@@ -280,6 +332,9 @@ required CI checks and review policy changes at the repository-hosting layer.
 
 ## Upstream evidence
 
+- [Landmines source and rule reference](https://github.com/interfere-inc/landmines)
+- [Ultracite 8.3.0 Landmines preset](https://www.ultracite.ai/changelog/ultracite-8-3-0)
+- [Ultracite 8.3.1 patch](https://www.ultracite.ai/changelog/ultracite-8-3-1)
 - [Biome 2.6.8 release notes](https://github.com/biomejs/biome/releases/tag/%40biomejs%2Fbiome%402.6.8)
 - [Biome 2.6.7 release notes](https://github.com/biomejs/biome/releases/tag/%40biomejs%2Fbiome%402.6.7)
 - [Biome 2.6.6 release notes](https://github.com/biomejs/biome/releases/tag/%40biomejs%2Fbiome%402.6.6)

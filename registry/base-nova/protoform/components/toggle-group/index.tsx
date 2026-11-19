@@ -197,7 +197,7 @@ function ToggleGroup(props: ToggleGroupProps) {
   return <OfficialToggleGroup {...props} />;
 }
 
-function toValueArray(v: string | string[] | undefined): string[] | undefined {
+function toValueArray(v: string | string[] | undefined) {
   if (v === undefined) {
     return;
   }
@@ -309,7 +309,7 @@ function LegacyToggleGroup({
     return isHorizontal ? { ...transition, height: snap, top: snap } : { ...transition, left: snap, width: snap };
   }, [transition, isHorizontal]);
 
-  const getPosition = (index: number): GroupPosition | undefined => {
+  const getPosition = (index: number) => {
     if (attached !== true || childCount === 1) {
       return;
     }

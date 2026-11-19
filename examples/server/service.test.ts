@@ -12,6 +12,7 @@ import {
   UpdateBookRequestSchema,
 } from '../../conformance/gen/protoform/conformance/v1/aip_pb.js';
 import { BookState } from '../../registry/base-nova/protoform/demo/runtime/gen/protoform/conformance/v1/aip_pb.js';
+import { captureRejection } from '../../registry/base-nova/protoform/lib/core/rejection.test-utils';
 import {
   CloudProvider,
   SubmitBasicFormRequestSchema,
@@ -21,11 +22,11 @@ import { createLibraryService, formExamplesService } from './service.js';
 
 declare const { describe, expect, test }: typeof import('bun:test');
 
-async function expectConnectCode(action: () => unknown, code: Code): Promise<void> {
-  await Promise.resolve(expect(Promise.resolve().then(action)).rejects.toMatchObject({ code }));
+async function expectConnectCode(action: () => unknown, code: Code) {
+  expect(await captureRejection(Promise.resolve().then(action))).toMatchObject({ code });
 }
 
-function captureConnectError(action: () => unknown): ConnectError {
+function captureConnectError(action: () => unknown) {
   try {
     action();
   } catch (error) {

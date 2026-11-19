@@ -47,10 +47,7 @@ export type FormischProtoFormOptions<Schema extends InputSchema, Desc extends De
   sourceMessage?: MessageShape<Desc> | undefined;
 };
 
-function issuePath(
-  values: FormValues,
-  path: NormalizedProtoIssue['path']
-): [IssuePathItem, ...IssuePathItem[]] | undefined {
+function issuePath(values: FormValues, path: NormalizedProtoIssue['path']) {
   let input: unknown = values;
   const items: IssuePathItem[] = [];
   for (const key of path) {
@@ -62,7 +59,8 @@ function issuePath(
     input = value;
   }
   const [first, ...rest] = items;
-  return first ? [first, ...rest] : undefined;
+  const segments: [IssuePathItem, ...IssuePathItem[]] | undefined = first ? [first, ...rest] : undefined;
+  return segments;
 }
 
 export function createFormischProtoSchema<Desc extends DescMessage, Schema extends InputSchema>(
@@ -101,7 +99,7 @@ function hasInputPath(values: FormValues, path: RequiredPath) {
 
 const ARRAY_INDEX = /^\d+$/u;
 
-function writeServerFieldError(form: FormStore, path: RequiredPath, message: string): boolean {
+function writeServerFieldError(form: FormStore, path: RequiredPath, message: string) {
   const previous = getDeepErrorEntries(form).find(
     (entry) => entry.path.length === path.length && entry.path.every((key, index) => key === path[index])
   )?.errors;

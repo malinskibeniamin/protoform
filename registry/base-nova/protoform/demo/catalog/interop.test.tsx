@@ -1,5 +1,5 @@
 import { afterEach, describe, expect } from '@rstest/core';
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { FinalFormDemo } from './final-form.js';
@@ -13,7 +13,7 @@ describe.each([
   ['Formik', FormikDemo],
   ['Final Form', FinalFormDemo],
 ] as const)('%s registry demo', (engine, Demo) => {
-  test('keeps labels and input state independent across multiple mounted instances', async () => {
+  test('routes labels, edits, and submission to the correct mounted instance', async () => {
     const user = userEvent.setup();
     render(
       <>
@@ -32,16 +32,16 @@ describe.each([
     await user.type(second, 'second@example.com');
     expect(first).toHaveValue('');
     expect(second).toHaveValue('second@example.com');
-  });
-
-  test('validates and submits a typed protobuf value', async () => {
-    const user = userEvent.setup();
-    render(<Demo />);
-
-    expect(screen.getByText(`${engine} interop`)).toBeInTheDocument();
-    await user.type(screen.getByRole('textbox', { name: 'Email' }), 'ada@example.com');
-    await user.click(screen.getByRole('button', { name: new RegExp(`Validate with ${engine}`, 'iu') }));
-
-    expect(await screen.findByRole('status')).toHaveTextContent('ada@example.com');
+    const buttons = screen.getAllByRole('button', { name: new RegExp(`Validate with ${engine}`, 'iu') });
+    const [firstButton, secondButton] = buttons;
+    const firstDemo = firstButton?.closest('form')?.parentElement;
+    const secondDemo = secondButton?.closest('form')?.parentElement;
+    if (!(firstDemo && secondDemo && secondButton)) {
+      throw new Error('Expected a submit action for each mounted form.');
+    }
+    await user.click(secondButton);
+    const output = await screen.findByRole('status');
+    expect(output).toHaveTextContent('second@example.com');
+    expect(within(firstDemo).queryByRole('status')).not.toBeInTheDocument();
   });
 });

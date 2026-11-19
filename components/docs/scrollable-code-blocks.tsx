@@ -5,11 +5,11 @@ import React from 'react';
 const CODE_BLOCK_SELECTOR = '.prose pre > code';
 const MANAGED_ATTRIBUTE = 'data-keyboard-scrollable';
 
-function isScrollable(element: HTMLElement): boolean {
+function isScrollable(element: HTMLElement) {
   return element.scrollWidth > element.clientWidth || element.scrollHeight > element.clientHeight;
 }
 
-export function syncScrollableCodeBlocks(root: ParentNode = document): void {
+export function syncScrollableCodeBlocks(root: ParentNode = document) {
   for (const code of root.querySelectorAll<HTMLElement>(CODE_BLOCK_SELECTOR)) {
     if (isScrollable(code)) {
       if (code.tabIndex < 0) {

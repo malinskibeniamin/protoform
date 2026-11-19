@@ -6,7 +6,7 @@ const homeHtml = readFileSync(join(outputDirectory, 'index.html'), 'utf8');
 const llmsPath = join(outputDirectory, 'llms.txt');
 const llms = readFileSync(llmsPath, 'utf8');
 
-function requiredMeta(pattern: RegExp, label: string): string {
+function requiredMeta(pattern: RegExp, label: string) {
   const value = homeHtml.match(pattern)?.[1];
   if (!value) {
     throw new Error(`Built home page is missing ${label}`);
@@ -14,9 +14,9 @@ function requiredMeta(pattern: RegExp, label: string): string {
   return value;
 }
 
-const title = requiredMeta(/<title>([^<]+)<\/title>/u, 'a title');
-const description = requiredMeta(/<meta content="([^"]+)" name="description"/u, 'a meta description');
-const canonical = requiredMeta(/<link href="([^"]+)" rel="canonical"/u, 'a canonical URL');
+const title = requiredMeta(/<title>(?<value>[^<]+)<\/title>/u, 'a title');
+const description = requiredMeta(/<meta content="(?<value>[^"]+)" name="description"/u, 'a meta description');
+const canonical = requiredMeta(/<link href="(?<value>[^"]+)" rel="canonical"/u, 'a canonical URL');
 
 if (!llms.includes(`](${canonical})`)) {
   writeFileSync(llmsPath, `${llms.trimEnd()}\n\n## Home\n\n- [${title}](${canonical}): ${description}\n`);

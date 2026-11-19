@@ -1,14 +1,15 @@
+import { once } from 'node:events';
 import {
   type Operation,
   OperationSchema,
 } from '@buf/googleapis_googleapis.bufbuild_es/google/longrunning/operations_pb.js';
 import { RetryInfoSchema } from '@buf/googleapis_googleapis.bufbuild_es/google/rpc/error_details_pb.js';
 import { StatusSchema } from '@buf/googleapis_googleapis.bufbuild_es/google/rpc/status_pb.js';
-import { create, type DescMethod } from '@bufbuild/protobuf';
+import { create } from '@bufbuild/protobuf';
 import { AnySchema, MethodOptions_IdempotencyLevel } from '@bufbuild/protobuf/wkt';
 import { Code, ConnectError } from '@connectrpc/connect';
-
 import { FormExamplesService } from '../../../../../examples/gen/protoform/examples/v1/forms_pb.js';
+import { captureRejection } from '../core/rejection.test-utils';
 import {
   getProtoPartialResult,
   getProtoPolicyPreviewPlan,
@@ -19,13 +20,13 @@ import {
   runProtoOperation,
 } from './aip-client-workflow.js';
 
-declare const { describe, expect, jest, test }: typeof import('bun:test');
+declare const { describe, expect, test }: typeof import('bun:test');
 
-function operation(name: string, done = false, result: Operation['result'] = { case: undefined }): Operation {
+function operation(name: string, done = false, result: Operation['result'] = { case: undefined }) {
   return create(OperationSchema, { done, name, result });
 }
 
-function method(idempotency: MethodOptions_IdempotencyLevel): DescMethod {
+function method(idempotency: MethodOptions_IdempotencyLevel) {
   return {
     ...FormExamplesService.method.submitBasicForm,
     idempotency,
@@ -35,23 +36,22 @@ function method(idempotency: MethodOptions_IdempotencyLevel): DescMethod {
 describe('runProtoOperation', () => {
   test('polls named AIP-151 operations until success or a terminal google.rpc.Status failure', async () => {
     const updates: boolean[] = [];
-    const poll = jest.fn(async () =>
-      operation('operations/123', true, {
-        case: 'response',
-        value: create(AnySchema),
-      })
-    );
-
+    const requests: Array<{ name: string; signal: AbortSignal }> = [];
     const result = await runProtoOperation({
       onProgress: (current) => {
         updates.push(current.done);
       },
-      poll,
-      sleep: async () => undefined,
+      poll: (name, signal) => {
+        requests.push({ name, signal });
+        return Promise.resolve(operation(name, true, { case: 'response', value: create(AnySchema) }));
+      },
+      pollIntervalMs: 0,
       start: async () => operation('operations/123'),
     });
 
-    expect(poll).toHaveBeenCalledWith('operations/123', expect.any(AbortSignal));
+    expect(requests).toHaveLength(1);
+    expect(requests[0]?.name).toBe('operations/123');
+    expect(requests[0]?.signal).toBeInstanceOf(AbortSignal);
     expect(updates).toEqual([false, true]);
     expect(result.done).toBe(true);
 
@@ -60,32 +60,40 @@ describe('runProtoOperation', () => {
       message: 'The import source is no longer available.',
     });
 
-    await Promise.resolve(
-      expect(
+    expect(
+      await captureRejection(
         runProtoOperation({
           poll: async () => operation('operations/unused'),
           start: async () => operation('operations/123', true, { case: 'error', value: status }),
         })
-      ).rejects.toEqual<unknown>(expect.any(ProtoOperationError))
-    );
+      )
+    ).toBeInstanceOf(ProtoOperationError);
   });
 
   test('cancels the remote operation when the caller aborts', async () => {
     const controller = new AbortController();
-    const cancel = jest.fn(async () => undefined);
+    const pending = Promise.withResolvers<undefined>();
+    const canceled: string[] = [];
+    const result = runProtoOperation({
+      cancel: (name) => {
+        canceled.push(name);
+        return Promise.resolve();
+      },
+      poll: async (name, signal) => {
+        pending.resolve(undefined);
+        await once(signal, 'abort');
+        signal.throwIfAborted();
+        return operation(name);
+      },
+      pollIntervalMs: 0,
+      signal: controller.signal,
+      start: async () => operation('operations/123'),
+    });
 
-    await Promise.resolve(
-      expect(
-        runProtoOperation({
-          cancel,
-          poll: async () => operation('operations/123'),
-          signal: controller.signal,
-          sleep: async () => controller.abort(),
-          start: async () => operation('operations/123'),
-        })
-      ).rejects.toMatchObject({ name: 'AbortError' })
-    );
-    expect(cancel).toHaveBeenCalledWith('operations/123');
+    await pending.promise;
+    controller.abort();
+    expect(await captureRejection(result)).toMatchObject({ name: 'AbortError' });
+    expect(canceled).toEqual(['operations/123']);
   });
 });
 

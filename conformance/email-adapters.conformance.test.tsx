@@ -1,5 +1,5 @@
 import { expect, rs } from '@rstest/core';
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { TanStackFormExample } from '../examples/tanstack/tanstack-form.js';
@@ -32,10 +32,9 @@ test('rejects malformed email through every supported form adapter', async () =>
       withSubmit
     />
   );
-  const reactHookFormEmail = screen.getByLabelText(EMAIL_PATTERN);
   fireEvent.submit(screen.getByTestId('autoform'));
 
-  await waitFor(() => expect(reactHookFormEmail).toHaveAttribute('aria-invalid', 'true'));
+  expect(await screen.findByLabelText(EMAIL_PATTERN, { selector: '[aria-invalid="true"]' })).toBeVisible();
   expect(onSubmit).not.toHaveBeenCalled();
   reactHookForm.unmount();
 
@@ -48,10 +47,7 @@ test('rejects malformed email through every supported form adapter', async () =>
   if (!tanStackForm) {
     throw new Error('Expected the TanStack submit button to belong to a form.');
   }
-  await act(async () => {
-    fireEvent.submit(tanStackForm);
-    await Promise.resolve();
-  });
+  fireEvent.submit(tanStackForm);
 
-  await waitFor(() => expect(screen.getByLabelText(EMAIL_PATTERN)).toHaveAttribute('aria-invalid', 'true'));
+  expect(await screen.findByLabelText(EMAIL_PATTERN, { selector: '[aria-invalid="true"]' })).toBeVisible();
 });

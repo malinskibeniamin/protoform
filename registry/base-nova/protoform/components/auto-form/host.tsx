@@ -29,7 +29,7 @@ export type AutoFormProps<T extends FormValues = FormValues, TCustomFieldType ex
 
 export type { AutoFormSubmissionProps } from './adapters/react-hook-form-submission';
 
-function toHookFormMode(mode: AutoFormValidationMode): 'onBlur' | 'onChange' | 'onSubmit' {
+function toHookFormMode(mode: AutoFormValidationMode) {
   switch (mode) {
     case 'blur':
       return 'onBlur';

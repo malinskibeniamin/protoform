@@ -19,7 +19,7 @@ import { kebab_case } from './gen/protoform/conformance/v1/predefined_pb.js';
 
 type ValidationResult = Awaited<ReturnType<ReturnType<typeof createProtoFormSchema>['~standard']['validate']>>;
 
-function paths(result: ValidationResult): string[][] {
+function paths(result: ValidationResult) {
   return (result.issues ?? []).map((issue) => (issue.path ?? []).map(String));
 }
 
@@ -33,7 +33,7 @@ async function expectInvalid(schema: ReturnType<typeof createProtoFormSchema>, f
   expect(paths(result), `${field} accepted ${String(value)}`).toContainEqual([field]);
 }
 
-function bytes(value: string | readonly number[]): string {
+function bytes(value: string | readonly number[]) {
   return base64Encode(typeof value === 'string' ? new TextEncoder().encode(value) : Uint8Array.from(value));
 }
 

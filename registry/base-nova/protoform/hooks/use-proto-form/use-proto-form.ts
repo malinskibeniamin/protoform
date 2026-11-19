@@ -72,10 +72,7 @@ export type UseProtoFormReturn<Desc extends DescMessage> = Omit<UseFormReturn<Pr
   clearServerErrorContext: () => void;
 };
 
-export function useProtoForm<Desc extends DescMessage>(
-  schema: Desc,
-  options?: UseProtoFormOptions<Desc>
-): UseProtoFormReturn<Desc> {
+export function useProtoForm<Desc extends DescMessage>(schema: Desc, options?: UseProtoFormOptions<Desc>) {
   'use no memo';
 
   const {
@@ -197,12 +194,12 @@ export function useProtoForm<Desc extends DescMessage>(
       suppressModifiedTrackingRef.current = false;
     }
   };
-  const createMessage = (values?: ProtoFormShape<Desc>): MessageShape<Desc> => {
+  const createMessage = (values?: ProtoFormShape<Desc>) => {
     const raw = values ?? form.getValues();
     return formValuesToProto(schema, raw, sourceMessageRef.current, conversionOptions);
   };
 
-  const createUpdateMask = (): FieldMask =>
+  const createUpdateMask = () =>
     createDirtyUpdateMask(
       schema,
       validationScope === 'modified-fields' ? modifiedFieldsRef.current : dirtyFields,
@@ -231,7 +228,7 @@ export function useProtoForm<Desc extends DescMessage>(
     });
   };
 
-  const getNestedErrors = <T = Record<string, { message?: string }>>(path: string): NestedErrors<T> | undefined => {
+  const getNestedErrors = <T = Record<string, { message?: string }>>(path: string) => {
     const segments = path.split('.');
     let current: unknown = formErrors;
     for (const segment of segments) {
@@ -287,7 +284,7 @@ export function useProtoForm<Desc extends DescMessage>(
     return { context, handled, unmapped };
   };
 
-  return {
+  const protoForm: UseProtoFormReturn<Desc> = {
     ...form,
     clearServerErrorContext,
     createMessage,
@@ -301,12 +298,10 @@ export function useProtoForm<Desc extends DescMessage>(
     setValue,
     setValues,
   };
+  return protoForm;
 }
 
-export function useProtoFormDefaults<Desc extends DescMessage>(
-  schema: Desc,
-  init?: MessageInitShape<Desc>
-): MessageShape<Desc> {
+export function useProtoFormDefaults<Desc extends DescMessage>(schema: Desc, init?: MessageInitShape<Desc>) {
   return create(schema, init);
 }
 
@@ -314,7 +309,7 @@ function restoreDefaultSection<Desc extends DescMessage>(
   form: UseFormReturn<ProtoFormShape<Desc>>,
   name: FieldPath<ProtoFormShape<Desc>>,
   options: Parameters<UseFormReturn<ProtoFormShape<Desc>>['resetField']>[1]
-): void {
+) {
   if (options?.defaultValue !== undefined) {
     return;
   }
@@ -326,7 +321,7 @@ function restoreDefaultSection<Desc extends DescMessage>(
   }
 }
 
-function stripPrefix(field: string, prefixes: readonly string[]): string {
+function stripPrefix(field: string, prefixes: readonly string[]) {
   for (const prefix of prefixes) {
     if (!prefix) {
       continue;
@@ -339,7 +334,7 @@ function stripPrefix(field: string, prefixes: readonly string[]): string {
   return field;
 }
 
-function setModifiedPath(target: ModifiedFieldTree, path: string): void {
+function setModifiedPath(target: ModifiedFieldTree, path: string) {
   const segments = path.match(/[^.[\]]+/gu) ?? [];
   let current = target;
   for (const [index, segment] of segments.entries()) {
@@ -362,7 +357,7 @@ function setModifiedPath(target: ModifiedFieldTree, path: string): void {
   }
 }
 
-function clearModifiedPath(target: ModifiedFieldTree, path: string): void {
+function clearModifiedPath(target: ModifiedFieldTree, path: string) {
   const segments = path.match(/[^.[\]]+/gu) ?? [];
   const [segment, ...rest] = segments;
   if (!segment) {

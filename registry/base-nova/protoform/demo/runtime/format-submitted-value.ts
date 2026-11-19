@@ -1,4 +1,4 @@
-export function formatSubmittedValue(value: Record<string, unknown>): string {
+export function formatSubmittedValue(value: Record<string, unknown>) {
   return JSON.stringify(
     value,
     (_key, nestedValue: unknown) => {

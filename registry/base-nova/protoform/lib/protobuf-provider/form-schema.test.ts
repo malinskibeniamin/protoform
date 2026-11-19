@@ -5,7 +5,7 @@ import { AutoFormExampleSchema } from './gen/auto-form-example_pb.js';
 
 declare const { expect, test }: typeof import('bun:test');
 
-function buildValidProtoFormValues(): Record<string, unknown> {
+function buildValidProtoFormValues() {
   return {
     accessTier: 3,
     age: 34,

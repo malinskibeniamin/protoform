@@ -7,7 +7,7 @@ export function createQuickJsFormRequest(options: {
   schema: ParsedSchema;
   valueFields: readonly string[];
   values: FormValues;
-}): ReviewedQuickJsRequest {
+}) {
   const fields = options.schema.fields.map((field) => field.key);
   const knownFields = new Set(fields);
   const values: FormValues = {};
@@ -32,10 +32,11 @@ export function createQuickJsFormRequest(options: {
     options.schema.fields.map((field) => [field.key, { required: field.required, type: field.type }])
   );
   const snapshot = parseQuickJsRequest({ fieldInfo, fields, source: options.rule.source, values });
-  return {
+  const request: ReviewedQuickJsRequest = {
     ...(snapshot.fieldInfo ? { fieldInfo: snapshot.fieldInfo } : {}),
     fields: snapshot.fields,
     rule: { ...options.rule },
     values: snapshot.values,
   };
+  return request;
 }

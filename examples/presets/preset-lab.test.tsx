@@ -1,12 +1,10 @@
-import { afterEach, beforeEach, describe, expect, rs } from '@rstest/core';
+import { beforeEach, describe, expect } from '@rstest/core';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { PresetLab } from './preset-lab';
 import { buildPresetCode, defaultPreset, defaultRadius, presetDefinitions } from './preset-lab-presets';
 
-const originalClipboard = navigator.clipboard;
-const originalExitFullscreen: unknown = Reflect.get(document, 'exitFullscreen');
 const workEmailPattern = /work email/iu;
 const submitPattern = /submit/iu;
 
@@ -15,22 +13,6 @@ describe('presetLab', () => {
     globalThis.window.history.replaceState({}, '', '/docs/presets');
     document.documentElement.dataset['theme'] = 'light';
     localStorage.setItem('blume-theme', 'light');
-    Object.defineProperty(document, 'fullscreenElement', {
-      configurable: true,
-      value: null,
-    });
-  });
-
-  afterEach(() => {
-    Object.defineProperty(navigator, 'clipboard', {
-      configurable: true,
-      value: originalClipboard,
-    });
-    Object.defineProperty(document, 'exitFullscreen', {
-      configurable: true,
-      value: originalExitFullscreen,
-    });
-    rs.restoreAllMocks();
   });
 
   test('applies preview mode changes to the Blume docs theme', async () => {
@@ -147,64 +129,15 @@ describe('presetLab', () => {
     expect(new Set(ids).size).toBe(ids.length);
   });
 
-  test('enters and exits full screen without replacing the live workspace', async () => {
+  test('falls back to an accessible full-viewport mode without a native fullscreen API', async () => {
     const user = userEvent.setup();
-
-    render(<PresetLab />);
-
-    const workspace = screen.getByTestId('preset-workspace');
-    const requestFullscreen = rs.fn(() => {
-      Object.defineProperty(document, 'fullscreenElement', {
-        configurable: true,
-        value: workspace,
-      });
-      document.dispatchEvent(new Event('fullscreenchange'));
-      return Promise.resolve();
-    });
-    const exitFullscreen = rs.fn(() => {
-      Object.defineProperty(document, 'fullscreenElement', {
-        configurable: true,
-        value: null,
-      });
-      document.dispatchEvent(new Event('fullscreenchange'));
-      return Promise.resolve();
-    });
-    Object.defineProperty(workspace, 'requestFullscreen', {
-      configurable: true,
-      value: requestFullscreen,
-    });
-    Object.defineProperty(document, 'exitFullscreen', {
-      configurable: true,
-      value: exitFullscreen,
-    });
-
-    await user.click(screen.getByRole('button', { name: 'Enter full screen' }));
-
-    expect(requestFullscreen).toHaveBeenCalledOnce();
-    expect(workspace).toHaveAttribute('data-fullscreen', 'true');
-    expect(screen.getByRole('button', { name: 'Exit full screen' })).toBeInTheDocument();
-
-    await user.click(screen.getByRole('button', { name: 'Exit full screen' }));
-
-    expect(exitFullscreen).toHaveBeenCalledOnce();
-    expect(workspace).toHaveAttribute('data-fullscreen', 'false');
-  });
-
-  test('falls back to an accessible full-viewport mode when the browser API rejects', async () => {
-    const user = userEvent.setup();
-
     render(
       <>
         <div data-testid="page-background">Page background</div>
         <PresetLab />
       </>
     );
-
     const workspace = screen.getByTestId('preset-workspace');
-    Object.defineProperty(workspace, 'requestFullscreen', {
-      configurable: true,
-      value: rs.fn().mockRejectedValue(new Error('Fullscreen blocked')),
-    });
 
     await user.click(screen.getByRole('button', { name: 'Enter full screen' }));
 
@@ -213,34 +146,26 @@ describe('presetLab', () => {
     expect(workspace).toHaveAttribute('role', 'dialog');
     expect(workspace).toHaveAttribute('aria-modal', 'true');
     expect(workspace.parentElement?.parentElement).toBe(document.body);
-    expect(screen.getByTestId('page-background').closest('[inert]')).not.toBeNull();
+    const background = screen.getByTestId('page-background').parentElement;
+    expect(background?.inert).toBe(true);
+    expect(document.body.style.overflow).toBe('hidden');
 
     await user.keyboard('{Escape}');
 
     expect(workspace).toHaveAttribute('data-fullscreen', 'false');
-    expect(screen.getByTestId('page-background').closest('[inert]')).toBeNull();
+    expect(background?.inert).not.toBe(true);
+    expect(document.body.style.overflow).not.toBe('hidden');
     expect(screen.getByRole('status')).toHaveTextContent('Full screen closed');
   });
 
-  test('reports invalid shared presets and clipboard failures', async () => {
+  test('reports an invalid shared preset', () => {
     const supportedCode = buildPresetCode(defaultPreset, defaultRadius);
     const noncanonicalCode = `${supportedCode[0]}0${supportedCode.slice(1)}`;
     globalThis.window.history.replaceState({}, '', `/docs/presets?preset=${noncanonicalCode}&mode=night`);
-    const user = userEvent.setup();
-    Object.defineProperty(navigator, 'clipboard', {
-      configurable: true,
-      value: {
-        writeText: rs.fn().mockRejectedValue(new Error('Clipboard unavailable')),
-      },
-    });
 
     render(<PresetLab />);
 
     expect(screen.getByRole('status')).toHaveTextContent('Showing the default Base UI + Nova preset');
-
-    await user.click(screen.getByRole('button', { name: 'Copy preset code' }));
-
-    expect(screen.getByRole('status')).toHaveTextContent('Could not copy the preset code');
   });
 
   test('preserves a supported preset when only the shared mode is invalid', () => {

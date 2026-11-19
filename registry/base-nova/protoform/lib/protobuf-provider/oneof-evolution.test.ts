@@ -1,4 +1,4 @@
-import { create, createFileRegistry, type DescMessage, fromBinary, toBinary } from '@bufbuild/protobuf';
+import { create, createFileRegistry, fromBinary, toBinary } from '@bufbuild/protobuf';
 import {
   FieldMaskSchema,
   FileDescriptorProtoSchema,
@@ -12,7 +12,7 @@ import { createDescriptorAwareStandardSchema } from './validation-schema.js';
 
 declare const { describe, expect, test }: typeof import('bun:test');
 
-function evolutionSchema(future: boolean, name = 'Choice'): DescMessage {
+function evolutionSchema(future: boolean, name = 'Choice') {
   const registry = createFileRegistry(
     create(FileDescriptorProtoSchema, {
       name: 'oneof_evolution.proto',

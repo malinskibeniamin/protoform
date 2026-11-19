@@ -8,10 +8,11 @@ import { ToggleGroup, ToggleGroupItem } from '.';
 
 test('supports shadcn multiple selection and cancelable change details', async () => {
   const user = userEvent.setup();
-  const onValueChange = rs.fn((value: string[], details: { cancel: () => void }) => {
-    expect(value).toEqual(['bold']);
+  const changes: string[][] = [];
+  function onValueChange(value: string[], details: { cancel: () => void }) {
+    changes.push(value);
     details.cancel();
-  });
+  }
   render(
     <ToggleGroup multiple onValueChange={onValueChange} spacing={0}>
       <ToggleGroupItem value="bold">Bold</ToggleGroupItem>
@@ -19,7 +20,7 @@ test('supports shadcn multiple selection and cancelable change details', async (
     </ToggleGroup>
   );
   await user.click(screen.getByRole('button', { name: 'Bold' }));
-  expect(onValueChange).toHaveBeenCalledTimes(1);
+  expect(changes).toEqual([['bold']]);
   expect(screen.getByRole('button', { name: 'Bold' })).toHaveAttribute('aria-pressed', 'false');
 });
 

@@ -1,6 +1,6 @@
 import { spawn, spawnSync } from 'node:child_process';
 import { once } from 'node:events';
-import { existsSync } from 'node:fs';
+import { watch } from 'node:fs';
 import { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { expect, test } from '@rstest/core';
@@ -55,7 +55,7 @@ test('rejects unknown suites before running tests', () => {
   expect(result.stderr).toContain('Unknown test suite: not-a-suite');
 });
 
-test('reports SIGINT as an interrupted run, not success or an assertion failure', { timeout: 20_000 }, async () => {
+test('reports SIGINT as an interrupted run, not success or an assertion failure', async () => {
   const directory = await mkdtemp(resolve('.tmp/runner-cli-signal-'));
   const ready = join(directory, 'ready');
   await writeFile(
@@ -67,18 +67,30 @@ test('reports SIGINT as an interrupted run, not success or an assertion failure'
     config,
     `export default { root: ${JSON.stringify(directory)}, include: ['fixture.test.ts'], pool: { maxWorkers: 1 }, testEnvironment: 'node', testTimeout: 15000 };`
   );
+  const readySignal = Promise.withResolvers();
+  const watcher = watch(directory, (_, filename) => {
+    if (filename === 'ready') {
+      readySignal.resolve(undefined);
+    }
+  });
   const runner = spawn(process.execPath, ['scripts/run-tests.ts', 'node', '--config', config], {
     stdio: 'pipe',
     env: { ...process.env, PROTOFORM_TEST_READY: ready },
   });
   const exited: Promise<unknown[]> = once(runner, 'exit');
   try {
-    await expect.poll(() => existsSync(ready), { timeout: 5000 }).toBe(true);
+    await Promise.race([
+      readySignal.promise,
+      exited.then(() => {
+        throw new Error('Runner exited before registering its test');
+      }),
+    ]);
     runner.kill('SIGINT');
     const [code, signal] = await exited;
     expect(signal).toBe(null);
     expect(code).toBe(130);
   } finally {
+    watcher.close();
     if (runner.exitCode === null && runner.signalCode === null) {
       runner.kill('SIGTERM');
       await exited;

@@ -1,14 +1,8 @@
 import { newQuickJSWASMModule, newVariant, RELEASE_SYNC } from 'quickjs-emscripten';
 
-import {
-  isRecord,
-  parseQuickJsPresentation,
-  parseQuickJsRequest,
-  QUICKJS_TEXT_LIMIT,
-  type QuickJsPresentation,
-} from './contract';
+import { isRecord, parseQuickJsPresentation, parseQuickJsRequest, QUICKJS_TEXT_LIMIT } from './contract';
 
-export async function evaluateQuickJs(request: unknown): Promise<QuickJsPresentation> {
+export async function evaluateQuickJs(request: unknown) {
   const { source, values, fields, fieldInfo } = parseQuickJsRequest(request);
   const input = JSON.stringify(values);
   if (source.length > QUICKJS_TEXT_LIMIT || input.length > QUICKJS_TEXT_LIMIT) {

@@ -28,15 +28,18 @@ bun run quality:gate
 ## Test runners
 
 - `bun test` or `bun run test:unit`: pure unit contracts in isolated Bun workers. `bunfig.toml`
-  excludes DOM, process/network integration, conformance, and browser suites.
-- `bun run test:integration`: Rstest Node integration and Happy DOM rendering projects.
+  excludes DOM, process/network integration, conformance, and browser suites. Compiler-only
+  `.typecheck.ts` fixtures run in `bun run type:check`, not in Bun.
+- `bun run test:integration`: Rstest Node integration and DOM rendering projects. Most UI tests use Happy DOM;
+  JSDOM runs cases that need Node Fetch interoperability or hit Happy DOM's animation
+  cancellation bug. The setup registers matchers without overriding browser globals.
   The `.integration.test.ts` suffix identifies process, artifact, and network contracts;
   the hook-rendering `use-proto-form.test.ts` is explicitly assigned to the DOM project.
 - `bun run test:conformance`: schema/CEL/Protobuf and form-adapter conformance in Happy DOM.
 - `bun run test:browser`: real Chromium component tests, including native keyboard/focus,
-  timestamp precision and large-form interactions. Simulated-DOM shims never replace native browser APIs.
+  timestamp precision and large-form interactions. The `.browser.test.tsx` infix selects this runner.
 - `bun run test:e2e`: Rstest's Playwright integration against the built, running docs application
-  and Connect server, not component mounts. Chromium is the supported automated engine;
+  and Connect server, not component mounts. Files use `.e2e.test.ts`. Chromium is the supported automated engine;
   Firefox and WebKit are intentionally no longer in the supported test matrix.
 - `bun run registry:host-browser`: desktop/mobile installed-consumer applications. First run
   `bun run registry:consumer-smoke` to install the real source-copy fixtures.

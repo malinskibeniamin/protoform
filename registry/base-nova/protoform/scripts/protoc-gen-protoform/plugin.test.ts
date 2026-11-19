@@ -2,7 +2,6 @@ import { readFileSync } from 'node:fs';
 import { create, fromBinary } from '@bufbuild/protobuf';
 import {
   CodeGeneratorRequestSchema,
-  type CodeGeneratorResponse,
   CodeGeneratorResponse_Feature,
   FileDescriptorSetSchema,
 } from '@bufbuild/protobuf/wkt';
@@ -10,7 +9,7 @@ import { pluginVersion, protocGenProtoform } from './plugin.js';
 
 declare const { expect, test }: typeof import('bun:test');
 
-function runPluginOnTracerProto(): CodeGeneratorResponse {
+function runPluginOnTracerProto() {
   const bytes = readFileSync(new URL('testdata/tracer.binpb', import.meta.url));
   const fileDescriptorSet = fromBinary(FileDescriptorSetSchema, bytes);
   const request = create(CodeGeneratorRequestSchema, {

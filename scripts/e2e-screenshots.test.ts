@@ -3,7 +3,7 @@ import { compareScreenshotBuffers, screenshotPlatform } from './e2e-screenshots'
 
 declare const { expect, test }: typeof import('bun:test');
 
-function image(width: number, height: number, changedPixel = false): Buffer {
+function image(width: number, height: number, changedPixel = false) {
   const png = new PNG({ width, height });
   png.data.fill(255);
   if (changedPixel) {

@@ -1,7 +1,9 @@
 [test]
 pathIgnorePatterns = [
   "**/*.test.tsx",
-  "**/*.spec.ts",
+  "**/*.e2e.test.ts",
+  "**/*.dom.test.ts",
+  "scripts/*.browser.test.ts",
   "**/*.integration.test.ts",
   "conformance/**",
   "registry/base-nova/protoform/hooks/use-proto-form/use-proto-form.test.ts",

@@ -177,7 +177,7 @@ function setErrorAtPath(target: Record<string, unknown>, path: string[], message
   }
 }
 
-function validationErrorsByPath(errors: SchemaValidationError[]): Map<string, string[]> {
+function validationErrorsByPath(errors: SchemaValidationError[]) {
   const byPath = new Map<string, string[]>();
   for (const error of errors) {
     if (error.path.length === 0) {
@@ -217,7 +217,8 @@ function dirtyFieldsFromMeta(fieldMeta: Record<string, { isDefaultValue?: boolea
   return dirtyFields;
 }
 
-function formValuesEqual(left: unknown, right: unknown): boolean {
+function formValuesEqual(left: unknown, right: unknown): boolean;
+function formValuesEqual(left: unknown, right: unknown) {
   if (Object.is(left, right)) {
     return true;
   }

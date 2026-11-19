@@ -13,7 +13,7 @@ interface TooltipContextType {
 
 const TooltipContext = React.createContext<TooltipContextType | undefined>(undefined);
 
-const useTooltip = (): TooltipContextType => {
+const useTooltip = () => {
   const context = React.useContext(TooltipContext);
   if (context === undefined) {
     throw new Error('useTooltip must be used within a Tooltip');

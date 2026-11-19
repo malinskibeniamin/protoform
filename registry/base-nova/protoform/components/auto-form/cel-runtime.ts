@@ -40,7 +40,7 @@ class CelCostLimitError extends Error {
   }
 }
 
-function childExpressions(expr: CelExpr): CelExpr[] {
+function childExpressions(expr: CelExpr) {
   switch (expr.exprKind.case) {
     case 'callExpr':
       return expr.exprKind.value.target
@@ -82,16 +82,17 @@ function childExpressions(expr: CelExpr): CelExpr[] {
   }
 }
 
-function maximumExpressionId(expr: CelExpr): bigint {
-  return childExpressions(expr).reduce((maximum, child) => {
+function maximumExpressionId(expr: CelExpr) {
+  const result: bigint = childExpressions(expr).reduce((maximum, child) => {
     const childMaximum = maximumExpressionId(child);
     return childMaximum > maximum ? childMaximum : maximum;
   }, expr.id);
+  return result;
 }
 
-function constantPathSegment(expr: CelExpr): string | undefined {
+function constantPathSegment(expr: CelExpr) {
   if (expr.exprKind.case !== 'constExpr') {
-    return undefined;
+    return;
   }
 
   const constant = expr.exprKind.value.constantKind;
@@ -109,7 +110,7 @@ function constantPathSegment(expr: CelExpr): string | undefined {
     case 'nullValue':
     case 'timestampValue':
     case undefined:
-      return undefined;
+      return;
     default: {
       const exhaustive: never = constant;
       return exhaustive;
@@ -117,7 +118,8 @@ function constantPathSegment(expr: CelExpr): string | undefined {
   }
 }
 
-function attributePath(expr: CelExpr): string | undefined {
+function attributePath(expr: CelExpr): string | undefined;
+function attributePath(expr: CelExpr) {
   switch (expr.exprKind.case) {
     case 'identExpr':
       return expr.exprKind.value.name;
@@ -129,7 +131,7 @@ function attributePath(expr: CelExpr): string | undefined {
     case 'callExpr': {
       const call = expr.exprKind.value;
       if (call.function !== INDEX_FUNCTION || call.args.length !== 2) {
-        return undefined;
+        return;
       }
       const parent = call.args[0] ? attributePath(call.args[0]) : undefined;
       const segment = call.args[1] ? constantPathSegment(call.args[1]) : undefined;
@@ -142,7 +144,7 @@ function attributePath(expr: CelExpr): string | undefined {
     case 'listExpr':
     case 'structExpr':
     case undefined:
-      return undefined;
+      return;
     default: {
       const exhaustive: never = expr.exprKind;
       return exhaustive;
@@ -150,7 +152,7 @@ function attributePath(expr: CelExpr): string | undefined {
   }
 }
 
-function replaceWithIdentifier(expr: CelExpr, name: string): void {
+function replaceWithIdentifier(expr: CelExpr, name: string) {
   expr.exprKind = {
     case: 'identExpr',
     value: {
@@ -164,7 +166,7 @@ function replaceUnknownAttributes(
   expr: CelExpr,
   unknownAttributes: ReadonlySet<string>,
   unknownBindings: Map<string, string>
-): void {
+) {
   const path = attributePath(expr);
   if (path !== undefined && path !== '' && unknownAttributes.has(path)) {
     let name = [...unknownBindings].find(([, value]) => value === path)?.[0];
@@ -181,7 +183,7 @@ function replaceUnknownAttributes(
   }
 }
 
-function createCostCall(template: CelExpr, id: bigint): CelExpr {
+function createCostCall(template: CelExpr, id: bigint) {
   const expr = structuredClone(template);
   expr.id = id;
   expr.exprKind = {
@@ -195,7 +197,7 @@ function createCostCall(template: CelExpr, id: bigint): CelExpr {
   return expr;
 }
 
-function createBooleanConstant(template: CelExpr, id: bigint, value: boolean): CelExpr {
+function createBooleanConstant(template: CelExpr, id: bigint, value: boolean) {
   const expr = structuredClone(template);
   expr.id = id;
   expr.exprKind = {
@@ -208,7 +210,7 @@ function createBooleanConstant(template: CelExpr, id: bigint, value: boolean): C
   return expr;
 }
 
-function instrumentCost(expr: CelExpr, nextExpressionId: () => bigint): void {
+function instrumentCost(expr: CelExpr, nextExpressionId: () => bigint) {
   for (const child of childExpressions(expr)) {
     instrumentCost(child, nextExpressionId);
   }
@@ -229,7 +231,7 @@ function instrumentCost(expr: CelExpr, nextExpressionId: () => bigint): void {
   };
 }
 
-function* errorCauseNodes(value: unknown): Generator<object> {
+function* errorCauseNodes(value: unknown) {
   const pending: unknown[] = [value];
   const visited = new Set<object>();
   while (pending.length > 0) {
@@ -249,7 +251,7 @@ function* errorCauseNodes(value: unknown): Generator<object> {
   }
 }
 
-function collectUnknownAttributes(value: unknown, attributes: Set<string>): void {
+function collectUnknownAttributes(value: unknown, attributes: Set<string>) {
   for (const current of errorCauseNodes(value)) {
     if (isCelError(current) && current.message.startsWith(UNKNOWN_ERROR_PREFIX)) {
       attributes.add(current.message.slice(UNKNOWN_ERROR_PREFIX.length));
@@ -257,26 +259,25 @@ function collectUnknownAttributes(value: unknown, attributes: Set<string>): void
   }
 }
 
-function findCostLimitError(value: unknown): CelCostLimitError | undefined {
+function findCostLimitError(value: unknown) {
+  let limitError: CelCostLimitError | undefined;
   for (const current of errorCauseNodes(value)) {
     if (current instanceof CelCostLimitError) {
-      return current;
+      limitError = current;
+      break;
     }
   }
-  return undefined;
+  return limitError;
 }
 
-function validateMaxCost(value: number): number {
+function validateMaxCost(value: number) {
   if (!(Number.isSafeInteger(value) && value > 0)) {
     throw new RangeError('CEL maxCost must be a positive safe integer.');
   }
   return value;
 }
 
-export function compileCelExpression(
-  expression: string,
-  options: CompileCelExpressionOptions = {}
-): CompiledCelExpression {
+export function compileCelExpression(expression: string, options: CompileCelExpressionOptions = {}) {
   const maxCost = validateMaxCost(options.maxCost ?? DEFAULT_CEL_MAX_COST);
   const parsed = parse(expression);
   if (!parsed.expr) {
@@ -296,7 +297,7 @@ export function compileCelExpression(
   instrumentCost(expr, nextExpressionId);
 
   let activeBudget: EvaluationBudget | undefined;
-  const consumeCost = celFunc(COST_FUNCTION, [], CelScalar.BOOL, (): boolean => {
+  const consumeCost = celFunc(COST_FUNCTION, [], CelScalar.BOOL, () => {
     if (!activeBudget) {
       throw new Error('CEL cost meter used outside an evaluation.');
     }
@@ -308,7 +309,7 @@ export function compileCelExpression(
   });
   const evaluate = plan(celEnv({ funcs: [consumeCost] }), expr);
 
-  return (bindings = {}) => {
+  const resolvedResult: CompiledCelExpression = (bindings = {}) => {
     const budget: EvaluationBudget = { cost: 0, limit: maxCost };
     activeBudget = budget;
     try {
@@ -348,4 +349,5 @@ export function compileCelExpression(
       activeBudget = undefined;
     }
   };
+  return resolvedResult;
 }

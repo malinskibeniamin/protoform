@@ -16,7 +16,7 @@ function hasKey<Key extends PropertyKey>(value: object, key: Key): value is Reco
   return key in value;
 }
 
-function errorsForField(fields: object, fieldName: string): unknown[] {
+function errorsForField(fields: object, fieldName: string) {
   if (!hasKey(fields, fieldName)) {
     return [];
   }
@@ -74,14 +74,20 @@ describe('tanStack useProtoForm', () => {
       })
     );
 
-    await act(async () => {
-      await result.current.handleSubmit();
-    });
+    await Promise.resolve(
+      act(async () => {
+        await result.current.handleSubmit();
+      })
+    );
 
     expect(onSubmit).not.toHaveBeenCalled();
     expect(result.current.getAllErrors().fields.username?.errors).not.toHaveLength(0);
 
-    const nativeValidator = rs.fn(() => 'Native validation failed.');
+    let nativeValidations = 0;
+    function nativeValidator() {
+      nativeValidations += 1;
+      return 'Native validation failed.';
+    }
     const { result: composed } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: {
@@ -95,11 +101,13 @@ describe('tanStack useProtoForm', () => {
       })
     );
 
-    await act(async () => {
-      await composed.current.handleSubmit();
-    });
+    await Promise.resolve(
+      act(async () => {
+        await composed.current.handleSubmit();
+      })
+    );
 
-    expect(nativeValidator).toHaveBeenCalledTimes(1);
+    expect(nativeValidations).toBe(1);
     expect(onSubmit).not.toHaveBeenCalled();
   });
 

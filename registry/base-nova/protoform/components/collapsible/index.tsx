@@ -15,7 +15,7 @@ interface CollapsibleContextType {
 
 const CollapsibleContext = React.createContext<boolean | undefined>(undefined);
 
-const useCollapsible = (): CollapsibleContextType => {
+const useCollapsible: () => CollapsibleContextType = () => {
   const context = React.useContext(CollapsibleContext);
   if (context === undefined) {
     throw new Error('useCollapsible must be used within a Collapsible');

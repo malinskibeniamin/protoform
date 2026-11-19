@@ -1,14 +1,14 @@
 import { formatProtoformMessage, type ProtoformMessageFormatter } from '../core/messages.js';
 
-const REGEX_ERROR_PATTERN = /regex pattern\s*`([^`]+)`/u;
-const MIN_LEN_PATTERN = /^value length must be at least (\d+)/u;
-const MAX_LEN_PATTERN = /^value length must be at most (\d+)/u;
-const MIN_ITEMS_PATTERN = /^(?:value )?must contain at least (\d+)(?: item(?:\(s\)|s)?)?/u;
-const MAX_ITEMS_PATTERN = /^(?:value )?must contain at most (\d+)(?: item(?:\(s\)|s)?)?/u;
-const GTE_PATTERN = /^value must be greater than or equal to ([\d.]+)/u;
-const LTE_PATTERN = /^value must be less than or equal to ([\d.]+)/u;
-const GT_PATTERN = /^value must be greater than ([\d.]+)/u;
-const LT_PATTERN = /^value must be less than ([\d.]+)/u;
+const REGEX_ERROR_PATTERN = /regex pattern\s*`(?<pattern>[^`]+)`/u;
+const MIN_LEN_PATTERN = /^value length must be at least (?<limit>\d+)/u;
+const MAX_LEN_PATTERN = /^value length must be at most (?<limit>\d+)/u;
+const MIN_ITEMS_PATTERN = /^(?:value )?must contain at least (?<limit>\d+)(?: item(?:\(s\)|s)?)?/u;
+const MAX_ITEMS_PATTERN = /^(?:value )?must contain at most (?<limit>\d+)(?: item(?:\(s\)|s)?)?/u;
+const GTE_PATTERN = /^value must be greater than or equal to (?<limit>[\d.]+)/u;
+const LTE_PATTERN = /^value must be less than or equal to (?<limit>[\d.]+)/u;
+const GT_PATTERN = /^value must be greater than (?<limit>[\d.]+)/u;
+const LT_PATTERN = /^value must be less than (?<limit>[\d.]+)/u;
 
 interface PatternDescription {
   description: string;
@@ -44,7 +44,7 @@ const KNOWN_PATTERNS: Record<string, PatternDescription> = {
 
 const GENERIC_MESSAGES = new Set(['value is required', 'exactly one field is required in oneof']);
 
-export function isGenericValidationMessage(message: string): boolean {
+export function isGenericValidationMessage(message: string) {
   if (GENERIC_MESSAGES.has(message)) {
     return true;
   }
@@ -67,31 +67,26 @@ export function isGenericValidationMessage(message: string): boolean {
   return false;
 }
 
-function humanizeLengthConstraint(message: string, formatter?: ProtoformMessageFormatter): string | undefined {
-  const minLenMatch = MIN_LEN_PATTERN.exec(message);
-  if (minLenMatch?.[1]) {
-    const limit = Number(minLenMatch[1]);
+function humanizeLengthConstraint(message: string, formatter?: ProtoformMessageFormatter) {
+  const minLength = MIN_LEN_PATTERN.exec(message)?.groups?.['limit'];
+  if (minLength !== undefined && minLength !== '') {
+    const limit = Number(minLength);
     return limit === 1
       ? formatProtoformMessage(formatter, 'validation.required', {}, 'This field is required.')
       : formatProtoformMessage(formatter, 'validation.min_length', { limit }, `Must be at least ${limit} characters.`);
   }
-  const maxLenMatch = MAX_LEN_PATTERN.exec(message);
-  if (maxLenMatch?.[1]) {
-    const limit = Number(maxLenMatch[1]);
-    return formatProtoformMessage(
-      formatter,
-      'validation.max_length',
-      { limit },
-      `Must be at most ${limit} characters.`
-    );
+  const maxLength = MAX_LEN_PATTERN.exec(message)?.groups?.['limit'];
+  if (maxLength === undefined || maxLength === '') {
+    return;
   }
-  return undefined;
+  const limit = Number(maxLength);
+  return formatProtoformMessage(formatter, 'validation.max_length', { limit }, `Must be at most ${limit} characters.`);
 }
 
-function humanizeItemConstraint(message: string, formatter?: ProtoformMessageFormatter): string | undefined {
-  const minItemsMatch = MIN_ITEMS_PATTERN.exec(message);
-  if (minItemsMatch?.[1]) {
-    const limit = Number(minItemsMatch[1]);
+function humanizeItemConstraint(message: string, formatter?: ProtoformMessageFormatter) {
+  const minItems = MIN_ITEMS_PATTERN.exec(message)?.groups?.['limit'];
+  if (minItems !== undefined && minItems !== '') {
+    const limit = Number(minItems);
     return formatProtoformMessage(
       formatter,
       'validation.min_items',
@@ -99,75 +94,60 @@ function humanizeItemConstraint(message: string, formatter?: ProtoformMessageFor
       limit === 1 ? 'Add at least one item.' : `Add at least ${limit} items.`
     );
   }
-  const maxItemsMatch = MAX_ITEMS_PATTERN.exec(message);
-  if (maxItemsMatch?.[1]) {
-    const limit = Number(maxItemsMatch[1]);
-    return formatProtoformMessage(
-      formatter,
-      'validation.max_items',
-      { limit },
-      limit === 1 ? 'At most one item is allowed.' : `At most ${limit} items are allowed.`
-    );
-  }
-  return undefined;
-}
-
-function humanizeNumericBound(message: string, formatter?: ProtoformMessageFormatter): string | undefined {
-  const gteMatch = GTE_PATTERN.exec(message);
-  if (gteMatch?.[1]) {
-    return formatProtoformMessage(
-      formatter,
-      'validation.greater_than_or_equal',
-      { limit: gteMatch[1] },
-      `Must be ${gteMatch[1]} or greater.`
-    );
-  }
-  const lteMatch = LTE_PATTERN.exec(message);
-  if (lteMatch?.[1]) {
-    return formatProtoformMessage(
-      formatter,
-      'validation.less_than_or_equal',
-      { limit: lteMatch[1] },
-      `Must be ${lteMatch[1]} or less.`
-    );
-  }
-  const gtMatch = GT_PATTERN.exec(message);
-  if (gtMatch?.[1]) {
-    return formatProtoformMessage(
-      formatter,
-      'validation.greater_than',
-      { limit: gtMatch[1] },
-      `Must be greater than ${gtMatch[1]}.`
-    );
-  }
-  const ltMatch = LT_PATTERN.exec(message);
-  if (ltMatch?.[1]) {
-    return formatProtoformMessage(
-      formatter,
-      'validation.less_than',
-      { limit: ltMatch[1] },
-      `Must be less than ${ltMatch[1]}.`
-    );
-  }
-  return undefined;
-}
-
-function humanizeRegexError(message: string, formatter?: ProtoformMessageFormatter): string | undefined {
-  const regexMatch = REGEX_ERROR_PATTERN.exec(message);
-  if (!regexMatch?.[1]) {
+  const maxItems = MAX_ITEMS_PATTERN.exec(message)?.groups?.['limit'];
+  if (maxItems === undefined || maxItems === '') {
     return;
   }
-  const known = KNOWN_PATTERNS[regexMatch[1]];
-  const fallback = known ? `${known.description}. Example: ${known.example}` : message;
+  const limit = Number(maxItems);
   return formatProtoformMessage(
     formatter,
-    'validation.pattern',
-    { example: known?.example ?? '', pattern: regexMatch[1] },
-    fallback
+    'validation.max_items',
+    { limit },
+    limit === 1 ? 'At most one item is allowed.' : `At most ${limit} items are allowed.`
   );
 }
 
-export function humanizeValidationError(message: string, formatter?: ProtoformMessageFormatter): string {
+function humanizeNumericBound(message: string, formatter?: ProtoformMessageFormatter) {
+  const gte = GTE_PATTERN.exec(message)?.groups?.['limit'];
+  if (gte !== undefined && gte !== '') {
+    return formatProtoformMessage(
+      formatter,
+      'validation.greater_than_or_equal',
+      { limit: gte },
+      `Must be ${gte} or greater.`
+    );
+  }
+  const lte = LTE_PATTERN.exec(message)?.groups?.['limit'];
+  if (lte !== undefined && lte !== '') {
+    return formatProtoformMessage(
+      formatter,
+      'validation.less_than_or_equal',
+      { limit: lte },
+      `Must be ${lte} or less.`
+    );
+  }
+  const gt = GT_PATTERN.exec(message)?.groups?.['limit'];
+  if (gt !== undefined && gt !== '') {
+    return formatProtoformMessage(formatter, 'validation.greater_than', { limit: gt }, `Must be greater than ${gt}.`);
+  }
+  const lt = LT_PATTERN.exec(message)?.groups?.['limit'];
+  if (lt === undefined || lt === '') {
+    return;
+  }
+  return formatProtoformMessage(formatter, 'validation.less_than', { limit: lt }, `Must be less than ${lt}.`);
+}
+
+function humanizeRegexError(message: string, formatter?: ProtoformMessageFormatter) {
+  const pattern = REGEX_ERROR_PATTERN.exec(message)?.groups?.['pattern'];
+  if (pattern === undefined || pattern === '') {
+    return;
+  }
+  const known = KNOWN_PATTERNS[pattern];
+  const fallback = known ? `${known.description}. Example: ${known.example}` : message;
+  return formatProtoformMessage(formatter, 'validation.pattern', { example: known?.example ?? '', pattern }, fallback);
+}
+
+export function humanizeValidationError(message: string, formatter?: ProtoformMessageFormatter) {
   if (message === 'value is required') {
     return formatProtoformMessage(formatter, 'validation.required', {}, 'Enter a value.');
   }
@@ -186,7 +166,7 @@ export function humanizeValidationError(message: string, formatter?: ProtoformMe
 
 export const SERVER_FIELD_ERROR_FALLBACK = 'Review this value and try again.';
 
-export function humanizeServerFieldError(description: string, formatter?: ProtoformMessageFormatter): string {
+export function humanizeServerFieldError(description: string, formatter?: ProtoformMessageFormatter) {
   const message = description.trim();
   return message
     ? humanizeValidationError(message, formatter)

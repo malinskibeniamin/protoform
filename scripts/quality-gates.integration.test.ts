@@ -6,7 +6,7 @@ import { z } from 'zod';
 
 const reportSchema = z.object({ diagnostics: z.array(z.object({ code: z.string().optional() })) });
 
-function lint(source: string): { codes: string[]; status: number | null } {
+function lint(source: string) {
   mkdirSync(resolve('.tmp'), { recursive: true });
   const directory = mkdtempSync(resolve('.tmp/quality-probe-'));
   try {

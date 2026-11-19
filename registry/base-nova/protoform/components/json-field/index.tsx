@@ -28,7 +28,7 @@ function isJsonValue(value: unknown): value is JSONValue {
   return typeof value === 'object' && Object.values(value).every(isJsonValue);
 }
 
-function parseJson(source: string): JSONValue {
+function parseJson(source: string) {
   const value: unknown = JSON.parse(source);
   if (!isJsonValue(value)) {
     throw new TypeError('Invalid JSON value');
@@ -38,7 +38,7 @@ function parseJson(source: string): JSONValue {
 
 const TRAILING_S_REGEX = /s$/u;
 
-function jsonEditorLabel(propertyName: string | undefined, path: string[]): string {
+function jsonEditorLabel(propertyName: string | undefined, path: string[]) {
   const name = propertyName ?? path.at(-1) ?? 'value';
   return `${name.charAt(0).toUpperCase()}${name.slice(1)} JSON`;
 }
@@ -71,25 +71,25 @@ type JSONFieldProps = {
 
 const SIMPLE_JSON_TYPES = new Set(['string', 'number', 'integer', 'boolean', 'null']);
 
-function getJSONProperty(value: JSONValue, key: string): JSONValue {
+function getJSONProperty(value: JSONValue, key: string) {
   return typeof value === 'object' && value !== null && !Array.isArray(value) ? value[key] : undefined;
 }
 
-function withJSONDefault(value: JSONValue, fallback: JSONValue): JSONValue {
+function withJSONDefault(value: JSONValue, fallback: JSONValue) {
   if (value === undefined) {
     return fallback;
   }
   return value;
 }
 
-const isTypeSupported = (type: JSONSchemaType['type'], supportedTypes: ReadonlySet<string>): boolean => {
+const isTypeSupported = (type: JSONSchemaType['type'], supportedTypes: ReadonlySet<string>) => {
   if (Array.isArray(type)) {
     return type.every((t) => supportedTypes.has(t));
   }
   return typeof type === 'string' && supportedTypes.has(type);
 };
 
-const isSimpleObject = (schema: JSONSchemaType): boolean => {
+const isSimpleObject = (schema: JSONSchemaType) => {
   if (schema.type !== undefined && isTypeSupported(schema.type, SIMPLE_JSON_TYPES)) {
     return true;
   }
@@ -117,7 +117,7 @@ function getStringInputType(format: string | undefined) {
   }
 }
 
-const getArrayItemDefault = (schema: JSONSchemaType): JSONValue => {
+const getArrayItemDefault = (schema: JSONSchemaType) => {
   if ('default' in schema && schema.default !== undefined) {
     return schema.default;
   }
@@ -141,7 +141,7 @@ const getArrayItemDefault = (schema: JSONSchemaType): JSONValue => {
   }
 };
 
-const generateExampleData = (schema: JSONSchemaType): JSONValue => {
+const generateExampleData: (schema: JSONSchemaType) => JSONValue = (schema: JSONSchemaType) => {
   if ('default' in schema && schema.default !== undefined) {
     return schema.default;
   }
@@ -181,7 +181,7 @@ const generateExampleData = (schema: JSONSchemaType): JSONValue => {
   }
 };
 
-const hasEmptyValues = (value: JSONValue, schema: JSONSchemaType): boolean => {
+const hasEmptyValues = (value: JSONValue, schema: JSONSchemaType) => {
   if (value === undefined) {
     return true;
   }
@@ -343,7 +343,7 @@ const JSONField = ({
     depth = 0,
     parentSchema?: JSONSchemaType,
     propertyName?: string
-  ): React.ReactNode => {
+  ) => {
     if (depth >= maxDepth && (propSchema.type === 'object' || propSchema.type === 'array')) {
       const emptyValue = propSchema.type === 'array' ? [] : {};
       return (
@@ -1029,7 +1029,7 @@ interface JSONSchemaType {
 
 type JSONObject = Record<string, JSONValue>;
 
-function updateValueAtPath(obj: JSONValue, path: string[], value: JSONValue): JSONValue {
+function updateValueAtPath(obj: JSONValue, path: string[], value: JSONValue) {
   if (path.length === 0) {
     return value;
   }
@@ -1048,7 +1048,7 @@ function updateValueAtPath(obj: JSONValue, path: string[], value: JSONValue): JS
   return mutableObj;
 }
 
-function updateArray(array: JSONValue[], path: string[], value: JSONValue): JSONValue[] {
+function updateArray(array: JSONValue[], path: string[], value: JSONValue) {
   const [index, ...restPath] = path;
   const arrayIndex = Number(index);
 
@@ -1077,7 +1077,7 @@ function updateArray(array: JSONValue[], path: string[], value: JSONValue): JSON
   return newArray;
 }
 
-function updateObject(obj: JSONObject, path: string[], value: JSONValue): JSONObject {
+function updateObject(obj: JSONObject, path: string[], value: JSONValue) {
   const [key, ...restPath] = path;
 
   if (typeof key !== 'string') {

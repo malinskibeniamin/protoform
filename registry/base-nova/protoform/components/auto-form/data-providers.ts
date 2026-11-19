@@ -58,10 +58,7 @@ export interface ResolvedDataProvider {
 export type DataProviderRegistration = DataProvider | DataProviderDefinition;
 export type DataProviderRegistry = Record<string, DataProviderRegistration>;
 
-export function resolveDataProvider(
-  registry: DataProviderRegistry | undefined,
-  id: string | undefined
-): ResolvedDataProvider | undefined {
+export function resolveDataProvider(registry: DataProviderRegistry | undefined, id: string | undefined) {
   if (!(registry && id !== undefined && id !== '')) {
     return;
   }
@@ -70,22 +67,24 @@ export function resolveDataProvider(
     return;
   }
   if (typeof registration === 'function') {
-    return {
+    const provider: ResolvedDataProvider | undefined = {
       component: getHookProviderComponent(registration),
       dependencies: [],
       staleSelection: 'preserve',
     };
+    return provider;
   }
-  return {
+  const provider: ResolvedDataProvider | undefined = {
     component: registration.component ?? getHookProviderComponent(registration.useProvider),
     dependencies: registration.dependencies ?? [],
     staleSelection: registration.staleSelection ?? 'preserve',
   };
+  return provider;
 }
 
 const hookProviderComponents = new WeakMap<DataProvider, DataProviderComponent>();
 
-function getHookProviderComponent(useProvider: DataProvider): DataProviderComponent {
+function getHookProviderComponent(useProvider: DataProvider) {
   const cached = hookProviderComponents.get(useProvider);
   if (cached) {
     return cached;
@@ -98,15 +97,12 @@ function getHookProviderComponent(useProvider: DataProvider): DataProviderCompon
   return HookDataProvider;
 }
 
-export function getStaleSelections(
-  options: readonly DataProviderOption[],
-  selectedValues: readonly string[]
-): string[] {
+export function getStaleSelections(options: readonly DataProviderOption[], selectedValues: readonly string[]) {
   const availableValues = new Set(options.map((option) => option.value));
   return selectedValues.filter((value) => !availableValues.has(value));
 }
 
-export function useDataProviderSignal(requestKey: string): AbortSignal {
+export function useDataProviderSignal(requestKey: string) {
   const [state, setState] = React.useState(() => ({ controller: new AbortController(), key: requestKey }));
 
   const replaceProviderSignal = React.useEffectEvent((key: string) => {
@@ -190,10 +186,7 @@ export function useProviderOptions({
   return { renderedOptions, staleSelections };
 }
 
-function mergeProviderOptions(
-  currentOptions: DataProviderOption[],
-  pageOptions: readonly DataProviderOption[]
-): DataProviderOption[] {
+function mergeProviderOptions(currentOptions: DataProviderOption[], pageOptions: readonly DataProviderOption[]) {
   const merged = new Map(currentOptions.map((option) => [option.value, option]));
   for (const option of pageOptions) {
     merged.set(option.value, option);

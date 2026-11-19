@@ -56,12 +56,13 @@ export function FinalFormExample({ baseUrl }: { baseUrl?: string }) {
   return (
     <FinalForm<BasicFormValues>
       initialValues={initialProfileValues}
-      onSubmit={async (values): Promise<SubmissionErrors> => {
+      onSubmit={async (values) => {
         setProfileId(undefined);
         const result = await profileSchema['~standard'].validate(values);
         if (result.issues) {
           return { [FORM_ERROR]: 'Form values changed after validation.' };
         }
+        let submissionErrors: SubmissionErrors;
         try {
           const response = await client.submitBasicForm(result.value);
           setProfileId(response.profileId);
@@ -71,9 +72,9 @@ export function FinalFormExample({ baseUrl }: { baseUrl?: string }) {
             const fieldId = `${prefixId}-${submission.firstField}`;
             document.querySelector<HTMLElement>(`#${CSS.escape(fieldId)}`)?.focus();
           }
-          return submission.errors;
+          submissionErrors = submission.errors;
         }
-        return undefined;
+        return submissionErrors;
       }}
       validate={validate}
     >

@@ -42,7 +42,7 @@ describe('registry license distribution', () => {
       type: 'registry:file',
     });
 
-    function installsLicense(item: RegistryItem, visited = new Set<string>()): boolean {
+    const installsLicense: (item: RegistryItem, visited?: Set<string>) => boolean = (item, visited = new Set()) => {
       if (item.name === 'protoform-license') {
         return true;
       }
@@ -61,7 +61,7 @@ describe('registry license distribution', () => {
         const dependencyItem = dependencyName ? itemsByName.get(dependencyName) : undefined;
         return dependencyItem === undefined ? false : installsLicense(dependencyItem, new Set(visited));
       });
-    }
+    };
 
     for (const item of registry.items) {
       expect(installsLicense(item), item.name).toBe(true);

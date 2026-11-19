@@ -15,7 +15,7 @@ import { ObjectFieldRenderer } from './object';
 import { OneofFieldRenderer } from './oneof';
 import { isFieldHidden } from './shared';
 
-function resolveFieldType(field: ParsedField, registry: FieldTypeRegistry<string>): string {
+function resolveFieldType(field: ParsedField, registry: FieldTypeRegistry<string>) {
   const explicitControl = getFieldUiConfig(field).control;
   if (explicitControl !== undefined && explicitControl !== '') {
     return explicitControl;
@@ -98,10 +98,7 @@ interface SlotEntry {
   key: React.Key;
 }
 
-function extractSlots(children: React.ReactNode): {
-  slots: SlotEntry[];
-  other: { content: React.ReactNode; key: React.Key }[];
-} {
+function extractSlots(children: React.ReactNode) {
   const slots: SlotEntry[] = [];
   const other: { content: React.ReactNode; key: React.Key }[] = [];
 

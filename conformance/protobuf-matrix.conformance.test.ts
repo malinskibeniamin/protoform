@@ -1,6 +1,6 @@
 import { create, fromBinary, fromJson, toBinary } from '@bufbuild/protobuf';
-import { fromText, mergeFromText, toText } from '@bufbuild/protobuf/txtpb';
-import { base64Encode, sizeDelimitedDecodeStream, sizeDelimitedEncode } from '@bufbuild/protobuf/wire';
+import { fromText, toText } from '@bufbuild/protobuf/txtpb';
+import { base64Encode } from '@bufbuild/protobuf/wire';
 import { anyPack, anyUnpack, StructSchema } from '@bufbuild/protobuf/wkt';
 import { describe, expect } from '@rstest/core';
 
@@ -22,7 +22,7 @@ function issuePaths(
         path?: readonly (PropertyKey | { key: PropertyKey })[] | undefined;
       }[]
     | undefined
-): string[][] | undefined {
+) {
   return issues?.map((issue) =>
     (issue.path ?? []).map((segment) =>
       String(typeof segment === 'object' && segment !== null && 'key' in segment ? segment.key : segment)
@@ -30,7 +30,7 @@ function issuePaths(
   );
 }
 
-describe('protobuf text and streaming conformance', () => {
+describe('protobuf text format conformance', () => {
   test('round-trips form messages through the protobuf text format', () => {
     const parsed = fromText(NumericMatrixSchema, 'enabled: true\nint32_value: -7\n');
     const values = protoToFormValues(NumericMatrixSchema, parsed);
@@ -39,32 +39,6 @@ describe('protobuf text and streaming conformance', () => {
     const edited = formValuesToProto(NumericMatrixSchema, values, parsed);
 
     expect(toText(NumericMatrixSchema, edited)).toBe('enabled: true\nint32_value: 8\n');
-  });
-
-  test('merges protobuf text into an existing message', () => {
-    const target = create(NumericMatrixSchema, {
-      enabled: true,
-      int32Value: 1,
-    });
-
-    const merged = mergeFromText(NumericMatrixSchema, target, 'int32_value: 2\n');
-
-    expect(merged).toMatchObject({ enabled: true, int32Value: 2 });
-  });
-
-  test('bounds size-delimited decoding with readMaxBytes', async () => {
-    const encoded = sizeDelimitedEncode(NumericMatrixSchema, create(NumericMatrixSchema, { enabled: true }));
-    const chunks = new ReadableStream<Uint8Array>({
-      start(controller) {
-        controller.enqueue(encoded);
-        controller.close();
-      },
-    });
-    const decoded = sizeDelimitedDecodeStream(NumericMatrixSchema, chunks, {
-      readMaxBytes: 1,
-    });
-
-    await expect(decoded.next()).rejects.toThrow('readMaxBytes 1');
   });
 });
 

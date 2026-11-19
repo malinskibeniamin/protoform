@@ -57,14 +57,14 @@ function runBuf(args: readonly string[]) {
   return result;
 }
 
-function buildImage(input: string, output: string): void {
+function buildImage(input: string, output: string) {
   const result = runBuf(['build', input, '-o', output]);
   if (result.status !== 0) {
     throw new Error(`${result.stdout}${result.stderr}`.trim());
   }
 }
 
-function buildTargetImage(against: string, module: StableProtoModule, output: string): void {
+function buildTargetImage(against: string, module: StableProtoModule, output: string) {
   const paths = [module.path, ...(module.legacyPaths ?? [])];
   const failures: string[] = [];
 
@@ -80,17 +80,17 @@ function buildTargetImage(against: string, module: StableProtoModule, output: st
   throw new Error(failures.join('\n'));
 }
 
-function withSubdirectory(input: string, subdirectory: string): string {
+function withSubdirectory(input: string, subdirectory: string) {
   return input.includes('#') ? `${input},subdir=${subdirectory}` : `${input}#subdir=${subdirectory}`;
 }
 
-function parseViolations(output: string): BreakingViolation[] {
+function parseViolations(output: string) {
   return output
     .trim()
     .split('\n')
     .filter(Boolean)
-    .map((line): unknown => JSON.parse(line))
-    .map((value) => {
+    .map((line) => {
+      const value: unknown = JSON.parse(line);
       if (!isBreakingViolation(value)) {
         throw new Error('Buf returned an invalid breaking-change violation.');
       }
@@ -98,13 +98,13 @@ function parseViolations(output: string): BreakingViolation[] {
     });
 }
 
-function isWaived(violation: BreakingViolation, waivers: readonly BreakingViolation[]): boolean {
+function isWaived(violation: BreakingViolation, waivers: readonly BreakingViolation[]) {
   return waivers.some(
     (waiver) => waiver.message === violation.message && waiver.path === violation.path && waiver.type === violation.type
   );
 }
 
-function againstInput(): string {
+function againstInput() {
   const againstIndex = process.argv.indexOf('--against');
   if (againstIndex === -1) {
     return '.git#ref=origin/main';
@@ -116,7 +116,7 @@ function againstInput(): string {
   return value;
 }
 
-function checkModule(module: StableProtoModule, against: string, directory: string, index: number): void {
+function checkModule(module: StableProtoModule, against: string, directory: string, index: number) {
   const currentImage = join(directory, `current-${index}.binpb`);
   const targetImage = join(directory, `target-${index}.binpb`);
   buildImage(module.path, currentImage);

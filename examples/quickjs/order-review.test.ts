@@ -1,3 +1,4 @@
+import { captureRejection } from '../../registry/base-nova/protoform/lib/core/rejection.test-utils';
 import { evaluateQuickJs } from '../../registry/base-nova/protoform/lib/quickjs/evaluator';
 import { orderReviewRule } from './order-review';
 
@@ -24,13 +25,13 @@ test.each([
     stock: [{ key: 'BOOK-1', value: Number.MAX_SAFE_INTEGER }],
   },
 ])('rejects malformed or ambiguous order quantities and inventory %j', async (values) => {
-  await Promise.resolve(
-    expect(
+  expect(
+    await captureRejection(
       evaluateQuickJs({
         fields: ['lines', 'stock', 'backorderNote', 'dispatchReference'],
         values,
         source: orderReviewRule.source,
       })
-    ).rejects.toThrow()
-  );
+    )
+  ).toBeInstanceOf(Error);
 });

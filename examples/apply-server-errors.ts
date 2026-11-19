@@ -8,7 +8,7 @@ export function applyServerFieldErrors<T extends Record<string, unknown>>(
   error: unknown,
   schema: DescMessage,
   form: UseFormReturn<Record<string, unknown>, unknown, T>
-): boolean {
+) {
   if (!(error instanceof ConnectError)) {
     return false;
   }

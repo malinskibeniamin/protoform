@@ -80,7 +80,7 @@ export function createQuickJsController(options: ControllerOptions = {}) {
     }
   }
 
-  async function update(request: ReviewedQuickJsRequest): Promise<void> {
+  async function update(request: ReviewedQuickJsRequest) {
     if (state.status === 'disposed') {
       throw new Error('QuickJS controller disposed');
     }
@@ -130,7 +130,7 @@ export function createQuickJsController(options: ControllerOptions = {}) {
   async function submit<T>(
     request: ReviewedQuickJsRequest,
     action: (values: QuickJsRequest['values']) => T | Promise<T>
-  ): Promise<T> {
+  ) {
     if (state.status !== 'ready' || !accepted || submitting) {
       throw new Error('Form rules are not ready for submission');
     }

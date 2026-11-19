@@ -182,30 +182,29 @@ export function isProtoMessageDescriptor(value: unknown): value is DescMessage {
   );
 }
 
-export function getProtoFieldCustomData<FieldType extends string>(
-  field: ParsedField<FieldType>
-): ProtoFieldCustomData | undefined {
-  return (field.fieldConfig as ProtoFieldConfig | undefined)?.customData;
+export function getProtoFieldCustomData<FieldType extends string>(field: ParsedField<FieldType>) {
+  const customData: ProtoFieldCustomData | undefined = (field.fieldConfig as ProtoFieldConfig | undefined)?.customData;
+  return customData;
 }
 
-function getFieldRules(field: DescField): FieldRules {
+function getFieldRules(field: DescField) {
   return getExtension(field.proto.options ?? create(FieldOptionsSchema), fieldExtension);
 }
 
-function getMessageRules(desc: DescMessage): MessageRules {
+function getMessageRules(desc: DescMessage) {
   return getExtension(desc.proto.options ?? create(MessageOptionsSchema), messageExtension);
 }
 
-function getOneofRules(oneof: DescOneof): OneofRules {
+function getOneofRules(oneof: DescOneof) {
   return getExtension(oneof.proto.options ?? create(OneofOptionsSchema), oneofExtension);
 }
 
-const UNSPECIFIED_PATTERN = /(unspecified|unknown)$/iu;
-const CAMEL_BOUNDARY_PATTERN = /([a-z0-9])([A-Z])/gu;
+const UNSPECIFIED_PATTERN = /(?:unspecified|unknown)$/iu;
+const CAMEL_BOUNDARY_PATTERN = /(?<lowerOrDigit>[a-z0-9])(?<uppercase>[A-Z])/gu;
 const WORD_SEPARATOR_PATTERN = /[_.-]+/gu;
 const WHITESPACE_PATTERN = /\s+/gu;
 
-function isUnspecifiedEnumValue(enumValue: { number: number; localName: string; name?: string }): boolean {
+function isUnspecifiedEnumValue(enumValue: { number: number; localName: string; name?: string }) {
   if (enumValue.number !== 0) {
     return false;
   }
@@ -215,9 +214,9 @@ function isUnspecifiedEnumValue(enumValue: { number: number; localName: string; 
   );
 }
 
-function humanize(input: string): string {
+function humanize(input: string) {
   return input
-    .replaceAll(CAMEL_BOUNDARY_PATTERN, '$1 $2')
+    .replaceAll(CAMEL_BOUNDARY_PATTERN, '$<lowerOrDigit> $<uppercase>')
     .replaceAll(WORD_SEPARATOR_PATTERN, ' ')
     .replaceAll(WHITESPACE_PATTERN, ' ')
     .trim()
@@ -234,7 +233,7 @@ function humanize(input: string): string {
 
 const NORMALIZE_SEPARATOR_PATTERN = /[\s_-]+/gu;
 
-function formatEnumLabel(enumLocalName: string, enumTypeName: string): string {
+function formatEnumLabel(enumLocalName: string, enumTypeName: string) {
   const typePrefixNormalized = enumTypeName.toLowerCase().replaceAll(NORMALIZE_SEPARATOR_PATTERN, '');
   const valueNormalized = enumLocalName.toLowerCase().replaceAll(NORMALIZE_SEPARATOR_PATTERN, '');
   if (valueNormalized.startsWith(typePrefixNormalized) && valueNormalized.length > typePrefixNormalized.length) {
@@ -253,7 +252,7 @@ function buildEnumOptions(
     name?: string;
   }[],
   enumTypeName: string
-): [string, string][] {
+) {
   const seenNumbers = new Set<number>();
 
   const options: [string, string][] = [];
@@ -267,7 +266,7 @@ function buildEnumOptions(
   return options;
 }
 
-function bigIntToNumber(value: bigint | undefined): number | undefined {
+function bigIntToNumber(value: bigint | undefined) {
   if (value === undefined) {
     return;
   }
@@ -275,7 +274,7 @@ function bigIntToNumber(value: bigint | undefined): number | undefined {
   return Number.isFinite(numericValue) ? numericValue : undefined;
 }
 
-function getStringInputType(rules: StringRules | undefined): string | undefined {
+function getStringInputType(rules: StringRules | undefined) {
   switch (rules?.wellKnown.case) {
     case 'email':
       return 'email';
@@ -288,25 +287,27 @@ function getStringInputType(rules: StringRules | undefined): string | undefined 
   }
 }
 
-function withFieldUi(customData: ProtoFieldCustomData, field: DescField): ProtoFieldCustomData {
-  return {
+function withFieldUi(customData: ProtoFieldCustomData, field: DescField) {
+  const result: ProtoFieldCustomData = {
     ...customData,
     ui: getProtoFieldUi(field),
   };
+  return result;
 }
 
-function withOneofUi(customData: ProtoFieldCustomData, oneof: DescOneof): ProtoFieldCustomData {
-  return {
+function withOneofUi(customData: ProtoFieldCustomData, oneof: DescOneof) {
+  const result: ProtoFieldCustomData = {
     ...customData,
     ui: getProtoOneofUi(oneof),
   };
+  return result;
 }
 
 type ProtoInputProps = Record<string, string | number | boolean | undefined>;
 
-function hintsFromCustomData(data: ProtoFieldCustomData | undefined): FieldRenderHints | undefined {
+function hintsFromCustomData(data: ProtoFieldCustomData | undefined) {
   if (!data) {
-    return undefined;
+    return;
   }
   const { ui } = data;
   const hints: FieldRenderHints = {};
@@ -342,7 +343,7 @@ function hintsFromCustomData(data: ProtoFieldCustomData | undefined): FieldRende
   return Object.keys(hints).length > 0 ? hints : undefined;
 }
 
-function attachRenderHints(field: ParsedProtoField): ParsedProtoField {
+function attachRenderHints(field: ParsedProtoField) {
   const hints = hintsFromCustomData((field.fieldConfig as ProtoFieldConfig | undefined)?.customData);
   if (hints) {
     field.hints = hints;
@@ -350,14 +351,10 @@ function attachRenderHints(field: ParsedProtoField): ParsedProtoField {
   return field;
 }
 
-function buildFieldConfig(
-  customData: ProtoFieldCustomData,
-  inputProps: ProtoInputProps = {},
-  description?: string
-): ProtoFieldConfig {
+function buildFieldConfig(customData: ProtoFieldCustomData, inputProps: ProtoInputProps = {}, description?: string) {
   const fieldType = customData.ui?.control as ProtoFieldRenderType | undefined;
 
-  return {
+  const parsedField: ProtoFieldConfig = {
     customData,
     description,
     fieldType,
@@ -368,28 +365,30 @@ function buildFieldConfig(
       ...inputProps,
     },
   };
+  return parsedField;
 }
 
-function getMessageDescription(desc: DescMessage, context: ProtoParserContext): string | undefined {
+function getMessageDescription(desc: DescMessage, context: ProtoParserContext) {
   return context.annotations?.messages?.[desc.typeName];
 }
 
-function getFieldDescription(field: DescField, context: ProtoParserContext): string | undefined {
+function getFieldDescription(field: DescField, context: ProtoParserContext) {
   return context.annotations?.fields?.[`${field.parent.typeName}.${field.localName}`];
 }
 
-function getOneofDescription(oneof: DescOneof, context: ProtoParserContext): string | undefined {
+function getOneofDescription(oneof: DescOneof, context: ProtoParserContext) {
   return context.annotations?.oneofs?.[`${oneof.parent.typeName}.${oneof.localName}`];
 }
 
-function extractNumericBounds(rules: FieldRules | undefined): {
-  min?: number | undefined;
-  max?: number | undefined;
-  step?: string | undefined;
-} {
+function extractNumericBounds(rules: FieldRules | undefined) {
   const typeCase = rules?.type.case;
   if (!typeCase) {
-    return {};
+    const result: {
+      min?: number | undefined;
+      max?: number | undefined;
+      step?: string | undefined;
+    } = {};
+    return result;
   }
 
   const numericRules = rules.type.value as {
@@ -416,17 +415,27 @@ function extractNumericBounds(rules: FieldRules | undefined): {
   }
 
   if (min !== undefined && max !== undefined && min > max) {
-    return { step };
+    const result: {
+      min?: number | undefined;
+      max?: number | undefined;
+      step?: string | undefined;
+    } = { step };
+    return result;
   }
 
-  return { max, min, step };
+  const result: {
+    min?: number | undefined;
+    max?: number | undefined;
+    step?: string | undefined;
+  } = { max, min, step };
+  return result;
 }
 
-function buildStringField(field: DescField, rules: FieldRules, context: ProtoParserContext): ParsedProtoField {
+function buildStringField(field: DescField, rules: FieldRules, context: ProtoParserContext) {
   const stringRules = rules.type.case === 'string' ? rules.type.value : undefined;
   const inputType = getStringInputType(stringRules);
 
-  return {
+  const parsedField: ParsedProtoField = {
     fieldConfig: buildFieldConfig(
       withFieldUi(
         {
@@ -451,13 +460,14 @@ function buildStringField(field: DescField, rules: FieldRules, context: ProtoPar
     required: rules.required,
     type: 'string',
   };
+  return parsedField;
 }
 
-function buildNumberField(field: DescField, rules: FieldRules, context: ProtoParserContext): ParsedProtoField {
+function buildNumberField(field: DescField, rules: FieldRules, context: ProtoParserContext) {
   const { min, max, step } = extractNumericBounds(rules);
   const isInt64 = is64BitScalar(field.scalar);
 
-  return {
+  const parsedField: ParsedProtoField = {
     fieldConfig: buildFieldConfig(
       withFieldUi(
         {
@@ -479,10 +489,11 @@ function buildNumberField(field: DescField, rules: FieldRules, context: ProtoPar
     required: rules.required,
     type: isInt64 ? 'int64' : 'number',
   };
+  return parsedField;
 }
 
-function buildBooleanField(field: DescField, rules: FieldRules, context: ProtoParserContext): ParsedProtoField {
-  return {
+function buildBooleanField(field: DescField, rules: FieldRules, context: ProtoParserContext) {
+  const parsedField: ParsedProtoField = {
     fieldConfig: buildFieldConfig(
       withFieldUi(
         {
@@ -500,10 +511,11 @@ function buildBooleanField(field: DescField, rules: FieldRules, context: ProtoPa
     required: rules.required,
     type: 'boolean',
   };
+  return parsedField;
 }
 
-function buildBytesField(field: DescField, rules: FieldRules, context: ProtoParserContext): ParsedProtoField {
-  return {
+function buildBytesField(field: DescField, rules: FieldRules, context: ProtoParserContext) {
+  const parsedField: ParsedProtoField = {
     fieldConfig: buildFieldConfig(
       withFieldUi(
         {
@@ -521,10 +533,11 @@ function buildBytesField(field: DescField, rules: FieldRules, context: ProtoPars
     required: rules.required,
     type: 'bytes',
   };
+  return parsedField;
 }
 
-function buildEnumField(field: EnumField, rules: FieldRules, context: ProtoParserContext): ParsedProtoField {
-  return {
+function buildEnumField(field: EnumField, rules: FieldRules, context: ProtoParserContext) {
+  const parsedField: ParsedProtoField = {
     fieldConfig: buildFieldConfig(
       withFieldUi(
         {
@@ -543,15 +556,11 @@ function buildEnumField(field: EnumField, rules: FieldRules, context: ProtoParse
     required: rules.required,
     type: 'select',
   };
+  return parsedField;
 }
 
-function buildJsonField(
-  field: DescField,
-  rules: FieldRules,
-  jsonKind: ProtoJsonKind,
-  context: ProtoParserContext
-): ParsedProtoField {
-  return {
+function buildJsonField(field: DescField, rules: FieldRules, jsonKind: ProtoJsonKind, context: ProtoParserContext) {
+  const parsedField: ParsedProtoField = {
     fieldConfig: buildFieldConfig(
       withFieldUi(
         {
@@ -570,6 +579,7 @@ function buildJsonField(
     required: rules.required,
     type: 'json',
   };
+  return parsedField;
 }
 
 function buildRecursiveField(
@@ -577,8 +587,8 @@ function buildRecursiveField(
   rules: FieldRules | undefined,
   context: ProtoParserContext,
   key = field.localName
-): ParsedProtoField {
-  return {
+) {
+  const parsedField: ParsedProtoField = {
     fieldConfig: buildFieldConfig(
       {
         desc: field,
@@ -594,9 +604,10 @@ function buildRecursiveField(
     required: Boolean(rules?.required),
     type: 'json',
   };
+  return parsedField;
 }
 
-function buildMessageField(field: MessageField, rules: FieldRules, context: ProtoParserContext): ParsedProtoField {
+function buildMessageField(field: MessageField, rules: FieldRules, context: ProtoParserContext) {
   if (isWrapperDesc(field.message)) {
     const wrappedScalar = field.message.fields[0]?.scalar;
     if (wrappedScalar === ScalarType.BOOL) {
@@ -618,8 +629,8 @@ function buildMessageField(field: MessageField, rules: FieldRules, context: Prot
   }
 
   switch (field.message.typeName) {
-    case TIMESTAMP_TYPE:
-      return {
+    case TIMESTAMP_TYPE: {
+      const parsedField: ParsedProtoField = {
         fieldConfig: buildFieldConfig(
           withFieldUi(
             {
@@ -637,8 +648,10 @@ function buildMessageField(field: MessageField, rules: FieldRules, context: Prot
         required: rules.required,
         type: 'timestamp',
       };
-    case DURATION_TYPE:
-      return {
+      return parsedField;
+    }
+    case DURATION_TYPE: {
+      const parsedField: ParsedProtoField = {
         fieldConfig: buildFieldConfig(
           withFieldUi(
             {
@@ -656,8 +669,10 @@ function buildMessageField(field: MessageField, rules: FieldRules, context: Prot
         required: rules.required,
         type: 'duration',
       };
-    case FIELD_MASK_TYPE:
-      return {
+      return parsedField;
+    }
+    case FIELD_MASK_TYPE: {
+      const parsedField: ParsedProtoField = {
         fieldConfig: buildFieldConfig(
           withFieldUi(
             {
@@ -676,6 +691,8 @@ function buildMessageField(field: MessageField, rules: FieldRules, context: Prot
         required: rules.required,
         type: 'fieldMask',
       };
+      return parsedField;
+    }
     case STRUCT_TYPE:
       return buildJsonField(field, rules, 'struct', context);
     case VALUE_TYPE:
@@ -684,8 +701,8 @@ function buildMessageField(field: MessageField, rules: FieldRules, context: Prot
       return buildJsonField(field, rules, 'listValue', context);
     case ANY_TYPE:
       return buildJsonField(field, rules, 'any', context);
-    default:
-      return {
+    default: {
+      const parsedField: ParsedProtoField = {
         fieldConfig: buildFieldConfig(
           withFieldUi(
             {
@@ -706,10 +723,12 @@ function buildMessageField(field: MessageField, rules: FieldRules, context: Prot
           .fields,
         type: 'object',
       };
+      return parsedField;
+    }
   }
 }
 
-function buildListItemField(field: ListField, context: ProtoParserContext, itemRules?: FieldRules): ParsedProtoField {
+function buildListItemField(field: ListField, context: ProtoParserContext, itemRules?: FieldRules) {
   const syntheticField = cloneField(field, {
     localName: 'value',
   });
@@ -728,7 +747,7 @@ function buildListItemField(field: ListField, context: ProtoParserContext, itemR
   }
 
   if (field.listKind === 'enum') {
-    return {
+    const parsedField: ParsedProtoField = {
       fieldConfig: buildFieldConfig({
         desc: field,
         fieldRules: itemRules,
@@ -739,13 +758,14 @@ function buildListItemField(field: ListField, context: ProtoParserContext, itemR
       required: false,
       type: 'select',
     };
+    return parsedField;
   }
 
   if (context.ancestors.has(field.message.typeName)) {
     return buildRecursiveField(field, itemRules, context, 'value');
   }
 
-  return {
+  const parsedField: ParsedProtoField = {
     fieldConfig: buildFieldConfig(
       {
         desc: field,
@@ -760,11 +780,12 @@ function buildListItemField(field: ListField, context: ProtoParserContext, itemR
     schema: parseProtoSchemaInternal(field.message, context.annotations, context.ancestors, context.operation).fields,
     type: 'object',
   };
+  return parsedField;
 }
 
-function buildArrayField(field: ListField, rules: FieldRules, context: ProtoParserContext): ParsedProtoField {
+function buildArrayField(field: ListField, rules: FieldRules, context: ProtoParserContext) {
   const repeatedRules = rules.type.case === 'repeated' ? rules.type.value : undefined;
-  return {
+  const parsedField: ParsedProtoField = {
     fieldConfig: buildFieldConfig(
       withFieldUi(
         {
@@ -784,13 +805,10 @@ function buildArrayField(field: ListField, rules: FieldRules, context: ProtoPars
     schema: [buildListItemField(field, context, repeatedRules?.items)],
     type: 'array',
   };
+  return parsedField;
 }
 
-function buildMapKeyField(
-  field: MapField,
-  rules: FieldRules | undefined,
-  context: ProtoParserContext
-): ParsedProtoField {
+function buildMapKeyField(field: MapField, rules: FieldRules | undefined, context: ProtoParserContext) {
   const syntheticField = cloneField(field, {
     fieldKind: 'scalar',
     localName: 'key',
@@ -807,11 +825,7 @@ function buildMapKeyField(
   return buildNumberField(syntheticField, rules ?? getFieldRules(field), context);
 }
 
-function buildMapValueField(
-  field: MapField,
-  rules: FieldRules | undefined,
-  context: ProtoParserContext
-): ParsedProtoField {
+function buildMapValueField(field: MapField, rules: FieldRules | undefined, context: ProtoParserContext) {
   const syntheticField = cloneField(field, {
     localName: 'value',
   });
@@ -830,7 +844,7 @@ function buildMapValueField(
   }
 
   if (field.mapKind === 'enum') {
-    return {
+    const parsedField: ParsedProtoField = {
       fieldConfig: buildFieldConfig({
         desc: field,
         fieldRules: rules,
@@ -841,17 +855,18 @@ function buildMapValueField(
       required: false,
       type: 'select',
     };
+    return parsedField;
   }
 
   return buildMessageField(syntheticField as MessageField, rules ?? getFieldRules(field), context);
 }
 
-function buildMapField(field: MapField, rules: FieldRules, context: ProtoParserContext): ParsedProtoField {
+function buildMapField(field: MapField, rules: FieldRules, context: ProtoParserContext) {
   const mapRules = rules.type.case === 'map' ? rules.type.value : undefined;
   const keyField = buildMapKeyField(field, mapRules?.keys, context);
   const valueField = buildMapValueField(field, mapRules?.values, context);
 
-  return {
+  const parsedField: ParsedProtoField = {
     fieldConfig: buildFieldConfig(
       withFieldUi(
         {
@@ -873,9 +888,10 @@ function buildMapField(field: MapField, rules: FieldRules, context: ProtoParserC
     schema: [keyField, valueField],
     type: 'map',
   };
+  return parsedField;
 }
 
-function buildOneofField(oneof: DescOneof, context: ProtoParserContext): ParsedProtoField {
+function buildOneofField(oneof: DescOneof, context: ProtoParserContext) {
   const oneofRules = getOneofRules(oneof);
   return attachRenderHints({
     fieldConfig: buildFieldConfig(
@@ -897,7 +913,7 @@ function buildOneofField(oneof: DescOneof, context: ProtoParserContext): ParsedP
   });
 }
 
-function buildProtoField(field: DescField, context: ProtoParserContext): ParsedProtoField {
+function buildProtoField(field: DescField, context: ProtoParserContext) {
   const rules = getFieldRules(field);
 
   let result: ParsedProtoField;
@@ -966,8 +982,9 @@ function buildProtoField(field: DescField, context: ProtoParserContext): ParsedP
   return attachRenderHints(result);
 }
 
-export function getProtoMessageUiConfig(desc: DescMessage): ProtoMessageUiConfig | undefined {
-  return getProtoMessageUi(desc);
+export function getProtoMessageUiConfig(desc: DescMessage) {
+  const config: ProtoMessageUiConfig | undefined = getProtoMessageUi(desc);
+  return config;
 }
 
 function parseProtoSchemaInternal(
@@ -975,7 +992,7 @@ function parseProtoSchemaInternal(
   annotations: ProtoAnnotations | undefined,
   ancestors: ReadonlySet<string>,
   operation?: 'create' | 'update'
-): ParsedProtoSchema {
+) {
   const messageUi = getProtoMessageUi(desc);
   const context: ProtoParserContext = {
     ancestors: new Set([...ancestors, desc.typeName]),
@@ -983,51 +1000,46 @@ function parseProtoSchemaInternal(
     messageUi,
     operation: operation ?? inferProtoOperation(desc),
   };
-  return {
+  const schema: ParsedProtoSchema = {
     fields: desc.members.map((member) =>
       member.kind === 'oneof' ? buildOneofField(member, context) : buildProtoField(member, context)
     ),
   };
+  return schema;
 }
 
-export function parseProtoSchema(
-  desc: DescMessage,
-  annotations = getRegisteredProtoAnnotations(desc)
-): ParsedProtoSchema {
-  return parseProtoSchemaInternal(desc, annotations, new Set(), undefined);
+export function parseProtoSchema(desc: DescMessage, annotations = getRegisteredProtoAnnotations(desc)) {
+  const schema: ParsedProtoSchema = parseProtoSchemaInternal(desc, annotations, new Set(), undefined);
+  return schema;
 }
 
 const CREATE_REQUEST_PATTERN = /^Create.+Request$/u;
 const UPDATE_REQUEST_PATTERN = /^Update.+Request$/u;
 
-function inferProtoOperation(desc: DescMessage): 'create' | 'update' | undefined {
+function inferProtoOperation(desc: DescMessage) {
   const messageName = desc.typeName.split('.').at(-1) ?? '';
   if (CREATE_REQUEST_PATTERN.test(messageName)) {
-    return 'create';
+    return 'create' as const;
   }
-  if (UPDATE_REQUEST_PATTERN.test(messageName)) {
-    return 'update';
-  }
-  return undefined;
+  return UPDATE_REQUEST_PATTERN.test(messageName) ? ('update' as const) : undefined;
 }
 
 function mapResultToSchemaValidation<Desc extends DescMessage>(
   result: NormalizedProtoValidationResult<MessageValidType<Desc>>
-): SchemaValidation {
+) {
   if (result.issues) {
-    return {
+    const failure: SchemaValidation = {
       errors: result.issues.map((issue) => ({
         message: issue.message,
         path: issue.path,
       })),
       success: false,
     };
+    return failure;
   }
 
-  return {
-    data: result.value,
-    success: true,
-  };
+  const success: SchemaValidation = { data: result.value, success: true };
+  return success;
 }
 
 function validateProtoValues<Desc extends DescMessage>(
@@ -1035,7 +1047,7 @@ function validateProtoValues<Desc extends DescMessage>(
   values: Record<string, unknown>,
   schema: StandardSchemaV1<MessageShape<Desc>, MessageValidType<Desc>>,
   options: ProtoConversionOptions
-): SchemaValidation | Promise<SchemaValidation> {
+) {
   const result = validateFormValuesAgainstProtoSchema(desc, values, schema, options);
   if (result instanceof Promise) {
     return result.then((resolved) => mapResultToSchemaValidation<Desc>(resolved));
@@ -1056,14 +1068,15 @@ export class ProtoProvider<Desc extends DescMessage = DescMessage> implements Sc
     this.standardSchema = createDescriptorAwareStandardSchema(desc, options);
   }
 
-  parseSchema(): ParsedSchema {
-    return this.parsedSchema;
+  parseSchema() {
+    const schema: ParsedSchema = this.parsedSchema;
+    return schema;
   }
 
-  validateSchema(values: Record<string, unknown>): SchemaValidation {
+  validateSchema(values: Record<string, unknown>) {
     const validationResult = validateProtoValues(this.desc, values, this.standardSchema, this.options);
     if (validationResult instanceof Promise) {
-      return {
+      const result: SchemaValidation = {
         errors: [
           {
             message:
@@ -1073,15 +1086,17 @@ export class ProtoProvider<Desc extends DescMessage = DescMessage> implements Sc
         ],
         success: false,
       };
+      return result;
     }
     return validationResult;
   }
 
-  getDefaultValues(): Record<string, unknown> {
-    return protoToFormValues(this.desc);
+  getDefaultValues() {
+    const defaultValues: Record<string, unknown> = protoToFormValues(this.desc);
+    return defaultValues;
   }
 
-  getMessageDescriptor(): Desc {
+  getMessageDescriptor() {
     return this.desc;
   }
 }

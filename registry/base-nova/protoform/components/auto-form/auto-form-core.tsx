@@ -47,10 +47,8 @@ import { buildAutoFormTestId, resolveAutoFormTestIdPrefix } from './test-ids';
 import type {
   AutoFormMode,
   AutoFormProps,
-  AutoFormRevalidationMode,
   AutoFormStepperConfig,
   AutoFormSubmitContext,
-  AutoFormValidationMode,
   ResolvedSchema,
 } from './types';
 import type { ProtoformUIComponentMap } from './ui-component-map';
@@ -279,14 +277,11 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
     };
   }, []);
 
-  async function validateWithProvider(
-    submittedValues: Record<string, unknown>,
-    signal: AbortSignal
-  ): Promise<ValidatedFormValues> {
+  async function validateWithProvider(submittedValues: Record<string, unknown>, signal: AbortSignal) {
     try {
       return normalizeSchemaValidation(await resolvedSchema.provider.validateSchema(submittedValues, { signal }));
     } catch (error) {
-      return {
+      const result: ValidatedFormValues = {
         errors: [
           {
             message: error instanceof Error ? error.message : 'Failed to validate form values.',
@@ -295,10 +290,11 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
         ],
         success: false,
       };
+      return result;
     }
   }
 
-  function activeValidationMode(): AutoFormValidationMode | AutoFormRevalidationMode {
+  function activeValidationMode() {
     return hasSubmittedRef.current ? revalidationMode : validationMode;
   }
 
@@ -367,14 +363,15 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
     }
   }
 
-  function getSubmitContext(signal: AbortSignal): AutoFormSubmitContext {
-    return {
+  function getSubmitContext(signal: AbortSignal) {
+    const context: AutoFormSubmitContext = {
       form: engine,
       signal,
       updateMask: resolvedSchema.protoDesc
         ? createUpdateMask(resolvedSchema.protoDesc, engine.dirtyFields, engine.getValues(), engine.defaultValues)
         : undefined,
     };
+    return context;
   }
 
   async function submitValidatedValues(values: T, controller: AbortController) {
@@ -392,9 +389,10 @@ function AutoFormContent<T extends Record<string, unknown>, TNativeForm, TCustom
         const sourceMessage = isMessage(resolvedSchema.protoSource, resolvedSchema.protoDesc)
           ? resolvedSchema.protoSource
           : undefined;
-        submittedValues = validatedProtoMessage
-          ? preserveProtoMessageSource(resolvedSchema.protoDesc, validatedProtoMessage, sourceMessage)
-          : formValuesToProto(resolvedSchema.protoDesc, values, sourceMessage, conversionOptions);
+        submittedValues =
+          validatedProtoMessage === undefined
+            ? formValuesToProto(resolvedSchema.protoDesc, values, sourceMessage, conversionOptions)
+            : preserveProtoMessageSource(resolvedSchema.protoDesc, validatedProtoMessage, sourceMessage);
       }
       await onSubmit(submittedValues as T, engine.nativeForm as TNativeForm, context);
       if (!controller.signal.aborted) {
@@ -761,8 +759,9 @@ class AutoFormErrorBoundary extends React.Component<AutoFormErrorBoundaryProps, 
     this.state = { components: props.components, error: null, resetKey: props.resetKey };
   }
 
-  static getDerivedStateFromError(error: Error): Partial<AutoFormErrorBoundaryState> {
-    return { error };
+  static getDerivedStateFromError(error: Error) {
+    const state: Partial<AutoFormErrorBoundaryState> = { error };
+    return state;
   }
 
   override componentDidMount() {
@@ -786,10 +785,12 @@ class AutoFormErrorBoundary extends React.Component<AutoFormErrorBoundaryProps, 
   static getDerivedStateFromProps(
     props: { components: ProtoformUIComponentMap; resetKey: unknown },
     state: AutoFormErrorBoundaryState
-  ): AutoFormErrorBoundaryState | null {
-    return props.resetKey === state.resetKey && props.components === state.components
-      ? null
-      : { components: props.components, error: null, resetKey: props.resetKey };
+  ) {
+    const nextState: AutoFormErrorBoundaryState | null =
+      props.resetKey === state.resetKey && props.components === state.components
+        ? null
+        : { components: props.components, error: null, resetKey: props.resetKey };
+    return nextState;
   }
 
   private reportConfigurationDiagnostics() {

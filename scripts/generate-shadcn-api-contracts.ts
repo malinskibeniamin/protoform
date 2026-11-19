@@ -12,23 +12,33 @@ const registrySchema = z.array(
 );
 const [sourcePath] = process.argv.slice(2);
 if (sourcePath === undefined) {
-  throw new Error('Pass the pinned shadcn view JSON file. See registry/shadcn-api-contracts/README.md.');
+  throw new Error('Pass the pinned shadcn view JSON file or --assertions-only.');
 }
-const input = registrySchema.parse(JSON.parse(readFileSync(sourcePath, 'utf8')));
+const input =
+  sourcePath === '--assertions-only' ? undefined : registrySchema.parse(JSON.parse(readFileSync(sourcePath, 'utf8')));
 const root = resolve(import.meta.dirname, '..');
 const output = join(root, 'registry/shadcn-api-contracts');
 mkdirSync(join(root, '.tmp'), { recursive: true });
 const temporary = mkdtempSync(join(root, '.tmp/shadcn-api-'));
+const chartLegendParameters = /(?<declaration>declare function ChartLegendContent)\(\{[^}]*\}:/u;
+const COMPONENTS_PER_FIXTURE = 16;
 const COMPONENT_NAME = /^[A-Z]/u;
 const inferredElement =
   /import\("react"\)\.ReactElement<unknown, string \| import\("react"\)\.JSXElementConstructor<any>>/gu;
+
+function normalizeParameterBindings(content: string, name: string) {
+  return name === 'chart' ? content.replace(chartLegendParameters, '$<declaration>(props:') : content;
+}
 
 function normalizeDeclaration(content: string, name: string) {
   let result = content
     .replaceAll('import * as ', 'import type * as ')
     .replaceAll(inferredElement, 'ReturnType<typeof useRender>')
     .replaceAll('import("@base-ui/react").ToastManager<any>', 'ReturnType<typeof ToastPrimitive.createToastManager>');
-  result = result.replaceAll(/(React\.ReactElement<unknown), string \| React\.JSXElementConstructor<any>>/gu, '$1>');
+  result = result.replaceAll(
+    /(?<element>React\.ReactElement<unknown), string \| React\.JSXElementConstructor<any>>/gu,
+    '$1>'
+  );
   if (name === 'message-scroller') {
     for (const symbol of ['useMessageScroller', 'useMessageScrollerScrollable', 'useMessageScrollerVisibility']) {
       result = result.replaceAll(new RegExp(`\\b${symbol}\\b,?\\s*`, 'gu'), '');
@@ -36,11 +46,20 @@ function normalizeDeclaration(content: string, name: string) {
     result +=
       '\nexport { useMessageScroller, useMessageScrollerScrollable, useMessageScrollerVisibility } from "@shadcn/react/message-scroller";\n';
   }
-  return result;
+  return normalizeParameterBindings(result, name);
 }
 
 try {
   const files = catalog.components.map(({ name }) => {
+    if (input === undefined) {
+      const declaration = join(output, `${name}.d.ts`);
+      const content = readFileSync(declaration, 'utf8');
+      const normalized = normalizeParameterBindings(content, name);
+      if (content !== normalized) {
+        writeFileSync(declaration, normalized);
+      }
+      return declaration;
+    }
     const source = input
       .find((item) => item.name === name)
       ?.files.find((file) => basename(file.path) === `${name}.tsx`);
@@ -81,24 +100,26 @@ try {
   }
   const program = ts.createProgram(files, configuration.options);
   const checker = program.getTypeChecker();
-  const imports = ["import { expectTypeOf } from 'expect-type';", "import type React from 'react';"];
-  const tests: string[] = [];
+  const sharedImports = ["import { expectTypeOf } from 'expect-type';", "import type React from 'react';"];
+  const sections: { imports: string[]; assertions: string[] }[] = [];
   for (const file of files) {
     const source = program.getSourceFile(file);
     if (source === undefined) {
       throw new Error(`Cannot parse ${file}`);
     }
-    const name = basename(file, '.tsx');
-    const alias = name.replaceAll(/-([a-z])/gu, (_match, character: string) => character.toUpperCase());
-    program.emit(source, (filename, content) => {
-      if (basename(filename) === `${name}.d.ts`) {
-        writeFileSync(join(output, `${name}.d.ts`), normalizeDeclaration(content, name));
-      }
-    });
-    imports.push(
-      `import type * as ${alias}Official from './shadcn-api-contracts/${name}';`,
-      `import type * as ${alias}Local from './base-nova/protoform/components/${name}';`
-    );
+    const name = basename(file, input === undefined ? '.d.ts' : '.tsx');
+    const alias = name.replaceAll(/-(?<initial>[a-z])/gu, (_match, character: string) => character.toUpperCase());
+    if (input !== undefined) {
+      program.emit(source, (filename, content) => {
+        if (basename(filename) === `${name}.d.ts`) {
+          writeFileSync(join(output, `${name}.d.ts`), normalizeDeclaration(content, name));
+        }
+      });
+    }
+    const imports = [
+      `import type * as ${alias}Official from './${name}';`,
+      `import type * as ${alias}Local from '../base-nova/protoform/components/${name}';`,
+    ];
     const module = checker.getSymbolAtLocation(source);
     if (module === undefined) {
       throw new Error(`Missing upstream module: ${name}`);
@@ -119,18 +140,24 @@ try {
       }
       return `expectTypeOf<typeof ${alias}Local.${symbol.name}>().toExtend<typeof ${alias}Official.${symbol.name}>();`;
     });
-    tests.push(`test('${name} accepts the pinned shadcn public props', () => {\n${assertions.join('\n')}\n});`);
+    sections.push({ imports, assertions });
   }
-  const contracts = join(root, 'registry/shadcn-api-contract.test.ts');
-  writeFileSync(
-    contracts,
-    `${imports.join('\n')}\n\ndeclare const { test }: typeof import('bun:test');\n\n${tests.join('\n\n')}\n`
-  );
-  execFileSync('bunx', ['--no-install', 'oxlint', '--config', '.oxlintrc.jsonc', '--fix', output, contracts], {
+  const fixtures: string[] = [];
+  const groups = Math.ceil(sections.length / COMPONENTS_PER_FIXTURE);
+  for (let group = 0; group < groups; group += 1) {
+    const batch = sections.slice(group * COMPONENTS_PER_FIXTURE, (group + 1) * COMPONENTS_PER_FIXTURE);
+    const fixture = join(output, `part-${group + 1}.typecheck.ts`);
+    const imports = [...sharedImports, ...batch.flatMap((section) => section.imports)];
+    const assertions = batch.map((section) => section.assertions.join('\n'));
+    writeFileSync(fixture, `${imports.join('\n')}\n\n${assertions.join('\n\n')}\n`);
+    fixtures.push(fixture);
+  }
+  const outputs = input === undefined ? fixtures : [output];
+  execFileSync('bunx', ['--no-install', 'oxlint', '--config', '.oxlintrc.jsonc', '--fix', ...outputs], {
     cwd: root,
     stdio: 'inherit',
   });
-  execFileSync('bunx', ['--no-install', 'biome', 'check', '--write', output, contracts], {
+  execFileSync('bunx', ['--no-install', 'biome', 'check', '--write', ...outputs], {
     cwd: root,
     stdio: 'inherit',
   });

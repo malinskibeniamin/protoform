@@ -1,4 +1,4 @@
-import { create, createFileRegistry, type DescMessage } from '@bufbuild/protobuf';
+import { create, createFileRegistry } from '@bufbuild/protobuf';
 import {
   FieldDescriptorProto_Label,
   FieldDescriptorProto_Type,
@@ -9,7 +9,7 @@ import { formValuesToProtoInit } from './provider.js';
 
 declare const { describe, expect, test }: typeof import('bun:test');
 
-function createConversionFixture(): DescMessage {
+function createConversionFixture() {
   const file = create(FileDescriptorProtoSchema, {
     enumType: [
       {

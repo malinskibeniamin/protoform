@@ -58,7 +58,7 @@ interface TanStackV2EngineContextValue {
 const TanStackV2EngineContext = React.createContext<TanStackV2EngineContextValue | null>(null);
 const DIGITS_PATTERN = /^\d+$/u;
 
-function toTanStackV2Path(path: string): string {
+function toTanStackV2Path(path: string) {
   return path
     .split('.')
     .map((segment, index) => {
@@ -210,7 +210,7 @@ function TanStackV2ArrayController({
   );
 }
 
-function validationErrorsByPath(errors: SchemaValidationError[]): Map<string, string[]> {
+function validationErrorsByPath(errors: SchemaValidationError[]) {
   const byPath = new Map<string, string[]>();
   for (const error of errors) {
     if (error.path.length === 0) {
@@ -240,7 +240,7 @@ function setErrorAtPath(target: Record<string, unknown>, path: string[], message
   }
 }
 
-function toV2ValidationError(errors: SchemaValidationError[]): ValidationErrorMap<FormValues> {
+function toV2ValidationError(errors: SchemaValidationError[]) {
   const fieldEntries = validationErrorsByPath(errors);
   const formErrors: string[] = [];
   for (const error of errors) {
@@ -248,10 +248,11 @@ function toV2ValidationError(errors: SchemaValidationError[]): ValidationErrorMa
       formErrors.push(error.message);
     }
   }
-  return {
+  const result: ValidationErrorMap<FormValues> = {
     ...(formErrors.length > 0 ? { form: formErrors } : {}),
     fields: Object.fromEntries([...fieldEntries].map(([path, messages]) => [toTanStackV2Path(path), messages])),
   };
+  return result;
 }
 
 function shouldValidateForMode(mode: AutoFormValidationMode | AutoFormRevalidationMode, event: 'blur' | 'change') {

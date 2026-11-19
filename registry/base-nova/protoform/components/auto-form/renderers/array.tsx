@@ -39,7 +39,7 @@ function RequiredArraySeeder({
   return null;
 }
 
-function getCollectionItemLabel(collectionLabel: string, index: number): string {
+function getCollectionItemLabel(collectionLabel: string, index: number) {
   let singularLabel = collectionLabel;
   if (collectionLabel.endsWith('ies')) {
     singularLabel = `${collectionLabel.slice(0, -3)}y`;

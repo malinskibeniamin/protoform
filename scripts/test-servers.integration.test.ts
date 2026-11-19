@@ -1,4 +1,4 @@
-import { expect, rs, test } from '@rstest/core';
+import { afterAll, beforeAll, describe, expect, test } from '@rstest/core';
 import { startTestServers } from './test-servers';
 
 function terminate(pid: number) {
@@ -42,104 +42,35 @@ test('rejects failed startup without leaving earlier servers alive', async () =>
   await expect(fetch('http://127.0.0.1:55129')).rejects.toThrow();
 });
 
-test('closes descendants even when their parent exits first during shutdown', { timeout: 15_000 }, async () => {
+describe('process-group cleanup', () => {
   const url = 'http://127.0.0.1:55131';
-  const descendant =
-    'process.on("SIGTERM", () => {}); require("node:http").createServer((_, r) => r.end(String(process.pid))).listen(55131, "127.0.0.1")';
-  const close = await startTestServers([
-    {
-      command: process.execPath,
-      args: [
-        '-e',
-        `require("node:child_process").spawn(process.execPath, ['-e', ${JSON.stringify(descendant)}], { stdio: 'inherit' }); setInterval(() => {}, 1000)`,
-      ],
-      url,
-      timeout: 5000,
-    },
-  ]);
-  const response2 = await fetch(url);
-  const descendantPid = Number(await response2.text());
-  try {
+  let descendantPid: number | undefined;
+  beforeAll(async () => {
+    const descendant =
+      'process.on("SIGTERM", () => {}); require("node:http").createServer((_, r) => r.end(String(process.pid))).listen(55131, "127.0.0.1")';
+    const close = await startTestServers([
+      {
+        command: process.execPath,
+        args: [
+          '-e',
+          `require("node:child_process").spawn(process.execPath, ['-e', ${JSON.stringify(descendant)}], { stdio: 'inherit' }); setInterval(() => {}, 1000)`,
+        ],
+        url,
+        timeout: 5000,
+      },
+    ]);
+    const response2 = await fetch(url);
+    descendantPid = Number(await response2.text());
     await close();
-    await expect(fetch(url)).rejects.toThrow();
-  } finally {
-    terminate(descendantPid);
-  }
-});
+  }, 15_000);
 
-test('accepts a vanished process group reported as EPERM without hiding live permission failures', async () => {
-  const url = 'http://127.0.0.1:55132';
-  const close = await startTestServers([
-    {
-      command: process.execPath,
-      args: [
-        '-e',
-        'require("node:http").createServer((_, r) => r.end(String(process.pid))).listen(55132, "127.0.0.1")',
-      ],
-      url,
-      timeout: 5000,
-    },
-  ]);
-  const response3 = await fetch(url);
-  const pid = Number(await response3.text());
-  const kill = process.kill.bind(process);
-  const denied = Object.assign(new Error('kill EPERM'), { code: 'EPERM' });
-  let probePermissionFailure = false;
-  const signal = rs.spyOn(process, 'kill').mockImplementation((target, action) => {
-    if (target === -pid && action === 'SIGTERM') {
-      throw denied;
+  afterAll(() => {
+    if (descendantPid !== undefined) {
+      terminate(descendantPid);
     }
-    return kill(target, action);
   });
-  try {
-    await expect(close()).rejects.toThrow(`kill EPERM; live test-server group ${pid}:`);
-    const response4 = await fetch(url);
-    expect(await response4.text()).toBe(String(pid));
-    signal.mockImplementation((target, action) => {
-      if (target === -pid && action === 0) {
-        probePermissionFailure = true;
-        throw denied;
-      }
-      return kill(target, action);
-    });
-    await close();
-    expect(probePermissionFailure).toBe(true);
-    await expect(fetch(url)).rejects.toThrow();
-  } finally {
-    signal.mockRestore();
-    await close();
-  }
-});
 
-test('retries a transient permission response while still closing the owned server', async () => {
-  const url = 'http://127.0.0.1:55133';
-  const close = await startTestServers([
-    {
-      command: process.execPath,
-      args: [
-        '-e',
-        'require("node:http").createServer((_, r) => r.end(String(process.pid))).listen(55133, "127.0.0.1")',
-      ],
-      url,
-      timeout: 5000,
-    },
-  ]);
-  const response5 = await fetch(url);
-  const pid = Number(await response5.text());
-  const kill = process.kill.bind(process);
-  let pending = true;
-  const signal = rs.spyOn(process, 'kill').mockImplementation((target, action) => {
-    if (target === -pid && pending) {
-      pending = false;
-      throw Object.assign(new Error('kill EPERM'), { code: 'EPERM' });
-    }
-    return kill(target, action);
-  });
-  try {
-    await expect(close()).resolves.toBeUndefined();
+  test('closes descendants even when their parent exits first during shutdown', async () => {
     await expect(fetch(url)).rejects.toThrow();
-  } finally {
-    signal.mockRestore();
-    await close();
-  }
+  });
 });

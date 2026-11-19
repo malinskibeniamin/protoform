@@ -7,9 +7,9 @@ interface DocsDiagnosticSummary {
   warnings: number;
 }
 
-const diagnosticSummaryPattern = /^-\s+(\d+)\s+(errors?|warnings?|hints?)\s*$/gimu;
+const diagnosticSummaryPattern = /^-\s+(?<count>\d+)\s+(?<severity>errors?|warnings?|hints?)\s*$/gimu;
 
-export function parseDocsDiagnosticSummary(output: string): DocsDiagnosticSummary | null {
+export function parseDocsDiagnosticSummary(output: string) {
   const summary: Partial<DocsDiagnosticSummary> = {};
   const cleanOutput = stripVTControlCharacters(output);
 
@@ -36,7 +36,7 @@ export function parseDocsDiagnosticSummary(output: string): DocsDiagnosticSummar
   };
 }
 
-function checkDocsTypes(): void {
+function checkDocsTypes() {
   const result = spawnSync('blume', ['check', '--strict', '--isolated'], {
     encoding: 'utf8',
     maxBuffer: 50 * 1024 * 1024,

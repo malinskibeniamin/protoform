@@ -55,7 +55,7 @@ function isValidIsoDate(value: unknown): value is string {
   return date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day;
 }
 
-function buildPreviewSchema(instanceId: string): SchemaProvider<PreviewValues> {
+function buildPreviewSchema(instanceId: string) {
   const approvalKey = `${instanceId}-approval`;
   const coverageKey = `${instanceId}-coverage`;
   const dueDateKey = `${instanceId}-due-date`;
@@ -65,7 +65,7 @@ function buildPreviewSchema(instanceId: string): SchemaProvider<PreviewValues> {
   const notesKey = `${instanceId}-notes`;
   const reviewTemplateKey = `${instanceId}-review-template`;
 
-  return {
+  const schema: SchemaProvider<PreviewValues> = {
     getDefaultValues: () => ({
       [approvalKey]: true,
       [coverageKey]: 80,
@@ -234,6 +234,7 @@ function buildPreviewSchema(instanceId: string): SchemaProvider<PreviewValues> {
       return errors.length > 0 ? { errors, success: false } : { data: values, success: true };
     },
   };
+  return schema;
 }
 
 const previewSchema = buildPreviewSchema('preset-preview');
@@ -250,17 +251,18 @@ interface InitialSelection {
   status?: string | undefined;
 }
 
-function readBlumeTheme(): PresetMode {
+function readBlumeTheme() {
   return document.documentElement.dataset['theme'] === 'dark' ? 'dark' : 'light';
 }
 
-function readInitialSelection(): InitialSelection {
+function readInitialSelection() {
   if (Reflect.get(globalThis, 'window') === undefined) {
-    return {
+    const result: InitialSelection = {
       mode: 'light',
       preset: defaultPreset,
       radius: defaultRadius,
     };
+    return result;
   }
 
   const searchParams = new URLSearchParams(globalThis.window.location.search);
@@ -269,7 +271,7 @@ function readInitialSelection(): InitialSelection {
   const supportedPreset = presetCode ? findSupportedPreset(presetCode) : undefined;
   const hasInvalidPreset = Boolean(presetCode && !supportedPreset);
   const hasInvalidMode = Boolean(requestedMode && requestedMode !== 'light' && requestedMode !== 'dark');
-  let mode = readBlumeTheme();
+  let mode: PresetMode = readBlumeTheme();
   if (requestedMode === 'dark' || requestedMode === 'light') {
     mode = requestedMode;
   } else if (hasInvalidMode) {
@@ -286,17 +288,18 @@ function readInitialSelection(): InitialSelection {
     statusMessages.push('This shared preview mode is not supported. Showing the light preview.');
   }
 
-  return {
+  const result: InitialSelection = {
     mode,
     preset: supportedPreset?.preset ?? defaultPreset,
     radius: supportedPreset?.radius ?? defaultRadius,
     status: statusMessages.length > 0 ? statusMessages.join(' ') : undefined,
   };
+  return result;
 }
 
 type FullscreenMode = 'fallback' | 'native' | 'none';
 
-function createWorkspaceHost(): HTMLDivElement | null {
+function createWorkspaceHost() {
   if (typeof document === 'undefined') {
     return null;
   }
@@ -307,7 +310,7 @@ function createWorkspaceHost(): HTMLDivElement | null {
   return host;
 }
 
-function isolateWorkspace(workspace: HTMLElement): () => void {
+function isolateWorkspace(workspace: HTMLElement) {
   const inertedElements: Array<{
     element: HTMLElement;
     wasInert: boolean;

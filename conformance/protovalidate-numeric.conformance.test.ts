@@ -5,7 +5,7 @@ import { FloatDoubleRulesSchema, IntegerRulesSchema } from './gen/protoform/conf
 
 type ValidationResult = Awaited<ReturnType<ReturnType<typeof createProtoFormSchema>['~standard']['validate']>>;
 
-function paths(result: ValidationResult): string[][] {
+function paths(result: ValidationResult) {
   return (result.issues ?? []).map((issue) => (issue.path ?? []).map(String));
 }
 

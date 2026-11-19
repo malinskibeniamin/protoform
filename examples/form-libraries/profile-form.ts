@@ -24,11 +24,12 @@ export const profileSchema = createProtoFormSchema<BasicFormValues, typeof Submi
   SubmitBasicFormRequestSchema
 );
 
-function emptyServerErrors(): ProfileServerErrors {
-  return { displayName: [], email: [], root: [] };
+function emptyServerErrors() {
+  const errors: ProfileServerErrors = { displayName: [], email: [], root: [] };
+  return errors;
 }
 
-export function mapProfileServerErrors(error: unknown): ProfileServerErrors {
+export function mapProfileServerErrors(error: unknown) {
   const errors = emptyServerErrors();
   if (!(error instanceof ConnectError)) {
     errors.root.push(error instanceof Error ? error.message : 'The request could not be sent.');
@@ -66,12 +67,9 @@ export function splitErrorMessages(error: unknown) {
     : [];
 }
 
-export function firstServerErrorField(errors: ProfileServerErrors): keyof BasicFormValues | undefined {
+export function firstServerErrorField(errors: ProfileServerErrors) {
   if (errors.displayName.length > 0) {
     return 'displayName';
   }
-  if (errors.email.length > 0) {
-    return 'email';
-  }
-  return undefined;
+  return errors.email.length > 0 ? 'email' : undefined;
 }

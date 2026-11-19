@@ -4,7 +4,7 @@ import { authoredFiles } from './source-files';
 
 const biomeExtension = /\.(?:[cm]?[jt]sx?|astro|s?css|graphql|html|jsonc?|md|ya?ml)$/u;
 const oxlintExtension = /\.(?:[cm]?[jt]sx?|astro)$/u;
-const processedFilePattern = /^\s*- (.+)$/gmu;
+const processedFilePattern = /^\s*- (?<file>.+)$/gmu;
 
 const result = spawnSync(
   'biome',

@@ -19,7 +19,7 @@ const DIAGRAM_SELECTOR = 'blume-mermaid, [data-diagram], [data-architecture-diag
 
 let controlId = 0;
 
-function getDiagramLabel(target: HTMLElement): string {
+function getDiagramLabel(target: HTMLElement) {
   const explicitLabel = target.getAttribute('aria-label')?.trim();
   if (explicitLabel) {
     return explicitLabel;
@@ -33,7 +33,7 @@ function getDiagramLabel(target: HTMLElement): string {
   return 'diagram';
 }
 
-function findDiagramTargets(root: ParentNode = document): HTMLElement[] {
+function findDiagramTargets(root: ParentNode = document) {
   return [...root.querySelectorAll<HTMLElement>(DIAGRAM_SELECTOR)].filter((target) => {
     if (target.closest('[data-diagram-dialog]')) {
       return false;
@@ -43,7 +43,7 @@ function findDiagramTargets(root: ParentNode = document): HTMLElement[] {
   });
 }
 
-function createControlHost(target: HTMLElement): HTMLDivElement {
+function createControlHost(target: HTMLElement) {
   const host = document.createElement('div');
   host.className = 'absolute top-3 right-3 z-10 w-auto';
   host.dataset['diagramControls'] = '';
@@ -54,7 +54,7 @@ function createControlHost(target: HTMLElement): HTMLDivElement {
   return host;
 }
 
-function samePortals(current: DiagramPortal[], next: DiagramPortal[]): boolean {
+function samePortals(current: DiagramPortal[], next: DiagramPortal[]) {
   return (
     current.length === next.length &&
     current.every((portal, index) => portal.target === next[index]?.target && portal.host === next[index]?.host)
