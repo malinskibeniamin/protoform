@@ -8,7 +8,11 @@ import { Button } from '.';
 test('supports the shadcn render API and state callbacks without submitting a form', async () => {
   const user = userEvent.setup();
   const onClick = rs.fn();
-  const onSubmit = rs.fn((event: React.SubmitEvent<HTMLFormElement>) => event.preventDefault());
+  let submissions = 0;
+  function onSubmit(event: React.SubmitEvent<HTMLFormElement>) {
+    event.preventDefault();
+    submissions += 1;
+  }
   render(
     <form onSubmit={onSubmit}>
       {React.createElement(
@@ -32,7 +36,7 @@ test('supports the shadcn render API and state callbacks without submitting a fo
   expect(button).toHaveStyle({ opacity: '1' });
   await user.click(button);
   expect(onClick).toHaveBeenCalledTimes(1);
-  expect(onSubmit).not.toHaveBeenCalled();
+  expect(submissions).toBe(0);
 });
 
 test('keeps the Protoform loading, icon and asChild extensions', async () => {

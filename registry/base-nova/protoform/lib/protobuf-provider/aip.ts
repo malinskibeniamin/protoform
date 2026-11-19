@@ -16,38 +16,42 @@ export interface ProtoResourceReference {
   type?: string | undefined;
 }
 
-export function getProtoResourceMetadata(desc: DescMessage): ProtoResourceMetadata | undefined {
+export function getProtoResourceMetadata(desc: DescMessage) {
   const metadata = getExtension(desc.proto.options ?? create(MessageOptionsSchema), resource);
   if (!metadata.type && metadata.pattern.length === 0) {
     return;
   }
-  return {
+  const result: ProtoResourceMetadata | undefined = {
     nameField: metadata.nameField || 'name',
     patterns: [...metadata.pattern],
     plural: metadata.plural,
     singular: metadata.singular,
     type: metadata.type,
   };
+  return result;
 }
 
-export function getProtoResourceReference(field: DescField): ProtoResourceReference | undefined {
+export function getProtoResourceReference(field: DescField) {
   const reference = getExtension(field.proto.options ?? create(FieldOptionsSchema), resource_reference);
   if (!(reference.type || reference.childType)) {
     return;
   }
-  return {
+  const result: ProtoResourceReference | undefined = {
     childType: reference.childType || undefined,
     type: reference.type || undefined,
   };
+  return result;
 }
 
-export function getProtoFieldBehaviors(field: DescField): readonly FieldBehavior[] {
-  return getExtension(field.proto.options ?? create(FieldOptionsSchema), field_behavior).filter(
-    (behavior) => behavior !== FieldBehavior.FIELD_BEHAVIOR_UNSPECIFIED
-  );
+export function getProtoFieldBehaviors(field: DescField) {
+  const behaviors: readonly FieldBehavior[] = getExtension(
+    field.proto.options ?? create(FieldOptionsSchema),
+    field_behavior
+  ).filter((behavior) => behavior !== FieldBehavior.FIELD_BEHAVIOR_UNSPECIFIED);
+  return behaviors;
 }
 
-export function isSingletonProtoResource(desc: DescMessage): boolean {
+export function isSingletonProtoResource(desc: DescMessage) {
   const metadata = getProtoResourceMetadata(desc);
   if (!metadata || metadata.patterns.length === 0) {
     return false;

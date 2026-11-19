@@ -262,3 +262,10 @@ of the host kernel's native exit error. The first hosted replay exposed the prio
 fixture's Linux-only `ESRCH` assumption; all eight consumer screenshots and actual
 shutdown had passed. Both the persistent-denial rejection and real closed-port assertion
 remain required.
+
+## Landmines cutover
+
+The historical cohorts and paths above describe the original migration, not the current selection.
+The [Landmines migration record](landmines-migration.md) documents current routing and test cuts.
+The Darwin permission-policy branches now replay observed group-state inputs without replacing
+`process.kill`; real child-process and installed-consumer tests still verify teardown on the host.

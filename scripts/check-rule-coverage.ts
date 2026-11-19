@@ -1,7 +1,13 @@
 import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
+import { isDeepStrictEqual } from 'node:util';
+import structure from '@interfere/landmines/structure';
+import style from '@interfere/landmines/style';
+import testing from '@interfere/landmines/testing';
+import types from '@interfere/landmines/types';
 import shadcn from '@shadcn/lint';
 import ts from 'typescript';
+import landminesPreset from 'ultracite/oxlint/landmines';
 import { z } from 'zod';
 import doctorConfig from '../doctor.config';
 import { authoredFiles } from './source-files';
@@ -9,16 +15,20 @@ import { authoredFiles } from './source-files';
 const objectSchema = z.record(z.string(), z.unknown());
 const groups = ['A11y', 'Complexity', 'Correctness', 'Nursery', 'Performance', 'Security', 'Style', 'Suspicious'];
 
-function object(value: unknown): Record<string, unknown> {
+function object(value: unknown) {
   return objectSchema.parse(value);
 }
 
-function readConfig(file: string): Record<string, unknown> {
-  const value: unknown = ts.parseConfigFileTextToJson(file, readFileSync(file, 'utf8')).config;
+function readConfig(file: string) {
+  const parsed = ts.parseConfigFileTextToJson(file, readFileSync(file, 'utf8'));
+  if (parsed.error) {
+    throw new Error(`${file}: ${ts.flattenDiagnosticMessageText(parsed.error.messageText, '\n')}`);
+  }
+  const value: unknown = parsed.config;
   return object(value);
 }
 
-function checkCatalog(tool: string, available: string[], configured: Record<string, unknown>): void {
+function checkCatalog(tool: string, available: string[], configured: Record<string, unknown>) {
   const expected = new Set(available);
   const actual = Object.keys(configured);
   const missing = available.filter((rule) => !Object.hasOwn(configured, rule));
@@ -65,11 +75,41 @@ for (const group of groups) {
 const availableOxlint = z
   .array(z.object({ scope: z.string(), value: z.string() }))
   .parse(JSON.parse(execFileSync('oxlint', ['--rules', '--format', 'json'], { encoding: 'utf8' })));
+const oxlint = readConfig('.oxlintrc.jsonc');
+const oxlintRules = object(oxlint['rules']);
+const landminesRules = Object.fromEntries(
+  Object.entries(oxlintRules).filter(([rule]) => rule.startsWith('landmines-'))
+);
 checkCatalog(
   'Oxlint',
   availableOxlint.map(({ scope, value }) => (scope === 'eslint' ? value : `${scope.replaceAll('_', '-')}/${value}`)),
-  object(readConfig('.oxlintrc.jsonc')['rules'])
+  Object.fromEntries(Object.entries(oxlintRules).filter(([rule]) => !rule.startsWith('landmines-')))
 );
+checkCatalog(
+  'Landmines',
+  [structure, style, testing, types].flatMap(({ meta, rules }) =>
+    Object.keys(rules).map((rule) => `${meta?.name}/${rule}`)
+  ),
+  landminesRules
+);
+if (
+  !(
+    isDeepStrictEqual(oxlint['jsPlugins'], landminesPreset.jsPlugins) &&
+    isDeepStrictEqual(landminesRules, landminesPreset.rules)
+  ) ||
+  Object.values(landminesRules).some((config) => (Array.isArray(config) ? config[0] : config) !== 'error')
+) {
+  throw new Error('Oxlint must load the entire installed Ultracite Landmines preset at error severity.');
+}
+const overrides = z.array(objectSchema).parse(oxlint['overrides']);
+for (const override of overrides) {
+  if (
+    Object.keys(object(override['rules'] ?? {})).some((rule) => rule.startsWith('landmines-')) ||
+    Object.hasOwn(override, 'jsPlugins')
+  ) {
+    throw new Error('Landmines plugin and rule decisions cannot be overridden.');
+  }
+}
 
 checkCatalog(
   'shadcn',
@@ -87,4 +127,6 @@ checkCatalog(
   availableDoctor.map(({ key }) => key),
   object(doctorConfig.rules)
 );
-console.info('Every installed Biome, Oxlint, shadcn and React Doctor rule has an explicit error/off decision.');
+console.info(
+  'Every installed Biome, Oxlint, Landmines, shadcn and React Doctor rule has an explicit error/off decision.'
+);

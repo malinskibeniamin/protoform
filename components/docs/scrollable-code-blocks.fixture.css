@@ -1,0 +1,11 @@
+[data-code-width='narrow'] {
+  display: block;
+  inline-size: 50px;
+  overflow: auto;
+  white-space: nowrap;
+}
+
+[data-code-width='wide'] {
+  display: block;
+  inline-size: 600px;
+}

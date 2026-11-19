@@ -28,12 +28,12 @@ export class ProtoOperationError extends Error {
   }
 }
 
-function abortError(): DOMException {
+function abortError() {
   return new DOMException('The operation was aborted.', 'AbortError');
 }
 
-function defaultSleep(delayMs: number, signal: AbortSignal): Promise<void> {
-  return new Promise((resolve, reject) => {
+function defaultSleep(delayMs: number, signal: AbortSignal) {
+  return new Promise<void>((resolve, reject) => {
     if (signal.aborted) {
       reject(abortError());
       return;
@@ -50,13 +50,13 @@ function defaultSleep(delayMs: number, signal: AbortSignal): Promise<void> {
   });
 }
 
-function requireActive(signal: AbortSignal): void {
+function requireActive(signal: AbortSignal) {
   if (signal.aborted) {
     throw abortError();
   }
 }
 
-function finishOperation(operation: Operation): Operation {
+function finishOperation(operation: Operation) {
   if (operation.result.case === 'error') {
     throw new ProtoOperationError(operation.result.value);
   }
@@ -73,7 +73,7 @@ async function pollUntilDone(
   pollIntervalMs: number,
   signal: AbortSignal,
   onProgress?: ProtoOperationRunner['onProgress']
-): Promise<Operation> {
+) {
   let current = operation;
   while (!current.done) {
     if (!current.name) {
@@ -95,7 +95,7 @@ export async function runProtoOperation({
   signal = new AbortController().signal,
   sleep = defaultSleep,
   start,
-}: ProtoOperationRunner): Promise<Operation> {
+}: ProtoOperationRunner) {
   let operationName: string | undefined;
   try {
     requireActive(signal);
@@ -120,30 +120,35 @@ export interface ProtoRetryDecision {
   retry: boolean;
 }
 
-function getRetryDelayMs(error: ConnectError): number | undefined {
+function getRetryDelayMs(error: ConnectError) {
   const delay = error.findDetails(RetryInfoSchema)[0]?.retryDelay;
   if (!delay) {
-    return undefined;
+    return;
   }
   return Math.max(0, Number(delay.seconds) * 1000 + delay.nanos / 1e6);
 }
 
-export function getProtoRetryDecision(method: DescMethod, reason: unknown): ProtoRetryDecision {
+export function getProtoRetryDecision(method: DescMethod, reason: unknown) {
   if (method.methodKind !== 'unary') {
-    return { reason: 'streaming', retry: false };
+    const decision: ProtoRetryDecision = { reason: 'streaming', retry: false };
+    return decision;
   }
   if (
     method.idempotency !== MethodOptions_IdempotencyLevel.NO_SIDE_EFFECTS &&
     method.idempotency !== MethodOptions_IdempotencyLevel.IDEMPOTENT
   ) {
-    return { reason: 'unsafe', retry: false };
+    const decision: ProtoRetryDecision = { reason: 'unsafe', retry: false };
+    return decision;
   }
   const error = ConnectError.from(reason);
   if (error.code !== Code.Unavailable) {
-    return { reason: 'non-retryable-code', retry: false };
+    const decision: ProtoRetryDecision = { reason: 'non-retryable-code', retry: false };
+    return decision;
   }
   const delayMs = getRetryDelayMs(error);
-  return delayMs === undefined ? { reason: 'transient', retry: true } : { delayMs, reason: 'transient', retry: true };
+  const decision: ProtoRetryDecision =
+    delayMs === undefined ? { reason: 'transient', retry: true } : { delayMs, reason: 'transient', retry: true };
+  return decision;
 }
 
 export interface ProtoPartialResultRecovery {
@@ -158,20 +163,21 @@ export interface ProtoPartialResult {
   warning?: string;
 }
 
-function resourceLabel(resourceName: string): string {
+function resourceLabel(resourceName: string) {
   const segments = resourceName.split('/');
   return segments.at(-1) || resourceName;
 }
 
-export function getProtoPartialResult(response: { unreachable?: unknown }): ProtoPartialResult {
+export function getProtoPartialResult(response: { unreachable?: unknown }) {
   const unreachable = Array.isArray(response.unreachable)
     ? response.unreachable.filter((value): value is string => typeof value === 'string' && value !== '')
     : [];
   if (unreachable.length === 0) {
-    return { complete: true, recovery: [], unreachable: [] };
+    const partialResult: ProtoPartialResult = { complete: true, recovery: [], unreachable: [] };
+    return partialResult;
   }
   const noun = unreachable.length === 1 ? 'resource' : 'resources';
-  return {
+  const partialResult: ProtoPartialResult = {
     complete: false,
     recovery: unreachable.map((resourceName) => ({
       label: `Retry ${resourceLabel(resourceName)}`,
@@ -180,6 +186,7 @@ export function getProtoPartialResult(response: { unreachable?: unknown }): Prot
     unreachable,
     warning: `Some results are unavailable from ${unreachable.length} ${noun}.`,
   };
+  return partialResult;
 }
 
 export interface ProtoPurgePlan {
@@ -193,11 +200,11 @@ export interface ProtoPurgePlan {
 export function getProtoPurgePlan(
   request: { filter: string; force: boolean },
   response: { purgeCount: number; purgeSample: readonly string[] }
-): ProtoPurgePlan {
+) {
   if (!request.filter) {
     throw new Error('A purge plan requires a filter.');
   }
-  return {
+  const plan: ProtoPurgePlan = {
     confirmationRequired: request.force,
     count: response.purgeCount,
     mode: request.force ? 'execute' : 'preview',
@@ -206,6 +213,7 @@ export function getProtoPurgePlan(
       ? 'This permanently deletes every resource matching the filter.'
       : 'Preview only. No resources will be deleted.',
   };
+  return plan;
 }
 
 export type ProtoPolicyPreviewAction = 'commit' | 'start-preview' | 'stop-preview';
@@ -217,29 +225,35 @@ export interface ProtoPolicyPreviewPlan {
   notice: string;
 }
 
-export function getProtoPolicyPreviewPlan(action: ProtoPolicyPreviewAction): ProtoPolicyPreviewPlan {
+export function getProtoPolicyPreviewPlan(action: ProtoPolicyPreviewAction) {
   switch (action) {
-    case 'start-preview':
-      return {
+    case 'start-preview': {
+      const plan: ProtoPolicyPreviewPlan = {
         action,
         confirmationRequired: false,
         enforcesPolicy: false,
         notice: 'Preview compares the experiment with live traffic without enforcing it.',
       };
-    case 'stop-preview':
-      return {
+      return plan;
+    }
+    case 'stop-preview': {
+      const plan: ProtoPolicyPreviewPlan = {
         action,
         confirmationRequired: false,
         enforcesPolicy: false,
         notice: 'Stopping preview does not change the live policy.',
       };
-    case 'commit':
-      return {
+      return plan;
+    }
+    case 'commit': {
+      const plan: ProtoPolicyPreviewPlan = {
         action,
         confirmationRequired: true,
         enforcesPolicy: true,
         notice: 'Commit replaces the live policy and deletes the experiment.',
       };
+      return plan;
+    }
     default:
       throw new Error(`Unsupported policy preview action: ${action satisfies never}`);
   }
@@ -258,27 +272,31 @@ export interface ProtoStabilityDescriptor {
   typeName: string;
 }
 
-export function getProtoStability({ deprecated, typeName }: ProtoStabilityDescriptor): ProtoStability {
+export function getProtoStability({ deprecated, typeName }: ProtoStabilityDescriptor) {
   if (deprecated) {
-    return {
+    const stability: ProtoStability = {
       guidance: 'Deprecated: migrate before the documented support period ends.',
       level: 'deprecated',
       preview: false,
     };
+    return stability;
   }
   if (ALPHA_VERSION_PATTERN.test(typeName)) {
-    return {
+    const stability: ProtoStability = {
       guidance: 'Alpha preview: breaking changes are expected.',
       level: 'alpha',
       preview: true,
     };
+    return stability;
   }
   if (BETA_VERSION_PATTERN.test(typeName)) {
-    return {
+    const stability: ProtoStability = {
       guidance: 'Beta preview: changes remain possible before stability.',
       level: 'beta',
       preview: true,
     };
+    return stability;
   }
-  return { level: 'stable', preview: false };
+  const stability: ProtoStability = { level: 'stable', preview: false };
+  return stability;
 }

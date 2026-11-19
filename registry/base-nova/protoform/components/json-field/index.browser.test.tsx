@@ -145,10 +145,14 @@ describe('json field accessibility', () => {
 
   test('shows rejected custom option creation instead of losing the error', async () => {
     const user = userEvent.setup();
-    const createOption = rs
-      .fn<() => Promise<void>>()
-      .mockRejectedValueOnce(new Error('Creation failed'))
-      .mockResolvedValue(undefined);
+    const created: string[] = [];
+    function createOption(value: string) {
+      if (value === 'new') {
+        return Promise.reject(new Error('Creation failed'));
+      }
+      created.push(value);
+      return Promise.resolve();
+    }
     render(
       <JSONField
         customFields={[{ fieldName: 'region', options: [], onCreateOption: createOption }]}
@@ -163,7 +167,7 @@ describe('json field accessibility', () => {
     await user.clear(screen.getByRole('combobox'));
     await user.type(screen.getByRole('combobox'), 'next');
     await user.click(await screen.findByRole('option', { name: /create.*next/iu }));
-    expect(createOption).toHaveBeenCalledTimes(2);
+    expect(created).toEqual(['next']);
     await waitFor(() => expect(screen.queryByRole('alert')).not.toBeInTheDocument());
   });
 

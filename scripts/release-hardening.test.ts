@@ -9,7 +9,7 @@ declare const { expect, test }: typeof import('bun:test');
 
 const object = z.record(z.string(), z.unknown());
 
-function copyBiomeConfiguration(directory: string): void {
+function copyBiomeConfiguration(directory: string) {
   writeFileSync(join(directory, 'biome.jsonc'), readFileSync('biome.jsonc', 'utf8'));
   writeFileSync(join(directory, 'theme.css'), readFileSync('theme.css', 'utf8'));
   symlinkSync(resolve('node_modules'), join(directory, 'node_modules'), 'dir');
@@ -41,7 +41,7 @@ test('enforces explicit-any safety in inherited test-file scopes', () => {
   } finally {
     rmSync(directory, { recursive: true, force: true });
   }
-}, 25_000);
+});
 
 test('keeps enabled and disabled nursery rules distinct beyond 256 entries', () => {
   const directory = mkdtempSync(join(tmpdir(), 'protoform-biome-rule-selection-'));
@@ -91,9 +91,9 @@ export function drain(items: string[]) {
   } finally {
     rmSync(directory, { recursive: true, force: true });
   }
-}, 25_000);
+});
 
-function readConfig(file: string): Record<string, unknown> {
+function readConfig(file: string) {
   const value: unknown = ts.parseConfigFileTextToJson(file, readFileSync(file, 'utf8')).config;
   return object.parse(value);
 }
@@ -162,7 +162,7 @@ export function safeNarrow(value: unknown) {
   } finally {
     rmSync(directory, { recursive: true, force: true });
   }
-}, 65_000);
+});
 
 test.each([
   {
@@ -377,8 +377,7 @@ test.each([
     } finally {
       rmSync(directory, { recursive: true, force: true });
     }
-  },
-  25_000
+  }
 );
 
 test('bounds assertion exceptions to named bridges and keeps other safety checks active there', () => {
@@ -429,7 +428,7 @@ test('bounds assertion exceptions to named bridges and keeps other safety checks
   } finally {
     rmSync(directory, { recursive: true, force: true });
   }
-}, 65_000);
+});
 
 test('keeps one IIFE diagnostic owner and stable accepted factory fixes', () => {
   const directory = mkdtempSync(join(tmpdir(), 'protoform-arrow-compatibility-'));
@@ -505,4 +504,4 @@ test('keeps one IIFE diagnostic owner and stable accepted factory fixes', () => 
   } finally {
     rmSync(directory, { recursive: true, force: true });
   }
-}, 65_000);
+});

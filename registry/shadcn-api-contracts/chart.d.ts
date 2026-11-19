@@ -68,15 +68,11 @@ declare function ChartTooltipContent({
 declare const ChartLegend: React.MemoExoticComponent<
   (outsideProps: RechartsPrimitive.LegendProps) => React.ReactPortal | null
 >;
-declare function ChartLegendContent({
-  className,
-  hideIcon,
-  payload,
-  verticalAlign,
-  nameKey,
-}: React.ComponentProps<'div'> & {
-  hideIcon?: boolean;
-  nameKey?: string;
-} & RechartsPrimitive.DefaultLegendContentProps): React.JSX.Element | null;
+declare function ChartLegendContent(
+  props: React.ComponentProps<'div'> & {
+    hideIcon?: boolean;
+    nameKey?: string;
+  } & RechartsPrimitive.DefaultLegendContentProps
+): React.JSX.Element | null;
 
 export { ChartContainer, ChartLegend, ChartLegendContent, ChartStyle, ChartTooltip, ChartTooltipContent };

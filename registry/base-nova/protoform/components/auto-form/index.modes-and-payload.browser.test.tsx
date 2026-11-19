@@ -1,0 +1,168 @@
+import { afterEach, describe, expect, test } from '@rstest/core';
+import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { z } from 'zod';
+import { AutoForm } from '.';
+import { createMockProvider } from './index.test-utils';
+
+afterEach(cleanup);
+
+const ADVANCED_TAB = /advanced/iu;
+const JSON_TAB = /json/iu;
+const PAYLOAD_SUMMARY_TEXT = /payload preview/iu;
+const PAYLOAD_JSON_TEXT = /payload json/iu;
+const COPY_JSON_BUTTON = /copy json/iu;
+const FORMAT_JSON_BUTTON = /format json/iu;
+
+describe('autoForm – modes and payload', () => {
+  test('supports payloadBuilder and custom summary rendering', async () => {
+    const user = userEvent.setup();
+    const schema = createMockProvider([
+      { key: 'teamName', required: true, type: 'string' },
+      { key: 'ownerEmail', required: true, type: 'string' },
+      { key: 'enableDryRun', required: false, type: 'boolean' },
+    ]);
+
+    render(
+      <AutoForm
+        defaultValues={{
+          enableDryRun: true,
+          ownerEmail: 'forms@protoform.com',
+          teamName: 'registry-ui',
+        }}
+        modes={['advanced', 'json']}
+        payloadBuilder={(values) => ({
+          request: {
+            mode: values['enableDryRun'] ? 'dry-run' : 'live',
+            owner: values['ownerEmail'],
+            team: values['teamName'],
+          },
+        })}
+        renderSummary={(payload) => {
+          const request = z
+            .object({ request: z.object({ mode: z.string().optional(), team: z.string().optional() }).optional() })
+            .parse(payload);
+          return <div>{`Custom summary: ${request.request?.team} (${request.request?.mode})`}</div>;
+        }}
+        schema={schema}
+        showSummary
+        withSubmit
+      />
+    );
+
+    expect(screen.getByText('Custom summary: registry-ui (dry-run)')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('tab', { name: JSON_TAB }));
+
+    expect(screen.getByText(PAYLOAD_JSON_TEXT)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: COPY_JSON_BUTTON })).toBeInTheDocument();
+  });
+
+  test('supports editable JSON mode via payloadParser and updates the summary after switching back to advanced', async () => {
+    const user = userEvent.setup();
+    const schema = createMockProvider([
+      { key: 'teamName', required: true, type: 'string' },
+      { key: 'ownerEmail', required: true, type: 'string' },
+      { key: 'enableDryRun', required: false, type: 'boolean' },
+    ]);
+
+    render(
+      <AutoForm
+        defaultValues={{
+          enableDryRun: true,
+          ownerEmail: 'forms@protoform.com',
+          teamName: 'registry-ui',
+        }}
+        modes={['advanced', 'json']}
+        payloadBuilder={(values) => ({
+          request: {
+            owner: {
+              email: values['ownerEmail'],
+            },
+            rollout: {
+              mode: values['enableDryRun'] ? 'dry-run' : 'live',
+            },
+            team: values['teamName'],
+          },
+        })}
+        payloadParser={(payload) => {
+          const { request } = z
+            .object({
+              request: z
+                .object({
+                  owner: z.object({ email: z.string().optional() }).optional(),
+                  rollout: z.object({ mode: z.string().optional() }).optional(),
+                  team: z.string().optional(),
+                })
+                .optional(),
+            })
+            .parse(payload);
+
+          return {
+            enableDryRun: request?.rollout?.mode === 'dry-run',
+            ownerEmail: request?.owner?.email ?? '',
+            teamName: request?.team ?? '',
+          };
+        }}
+        schema={schema}
+        withSubmit
+      />
+    );
+
+    await user.click(screen.getByRole('tab', { name: JSON_TAB }));
+
+    const jsonEditor = await within(await screen.findByRole('tabpanel', { name: JSON_TAB })).findByRole('textbox');
+
+    await user.clear(jsonEditor);
+    await user.paste(
+      '{"request":{"owner":{"email":"ops@protoform.com"},"rollout":{"mode":"live"},"team":"ops-console"}}'
+    );
+    await user.click(screen.getByRole('button', { name: FORMAT_JSON_BUTTON }));
+    await user.click(screen.getByRole('tab', { name: ADVANCED_TAB }));
+
+    await waitFor(() => {
+      expect(screen.getByDisplayValue('ops-console')).toBeInTheDocument();
+    });
+
+    expect(screen.getByDisplayValue('ops@protoform.com')).toBeInTheDocument();
+
+    cleanup();
+    const schemaSummary = createMockProvider([
+      { key: 'monthlyBudget', required: true, type: 'number' },
+      { key: 'teamName', required: true, type: 'string' },
+    ]);
+
+    render(
+      <AutoForm
+        defaultValues={{
+          monthlyBudget: 12_500,
+          teamName: 'registry-ui',
+        }}
+        modes={['advanced', 'json']}
+        schema={schemaSummary}
+        showSummary
+        withSubmit
+      />
+    );
+
+    expect(screen.getByText(PAYLOAD_SUMMARY_TEXT)).toBeVisible();
+    const summaryEl = screen.getByTestId('autoform-summary');
+    expect(summaryEl.textContent).toContain('12500');
+
+    await user.click(screen.getByRole('tab', { name: JSON_TAB }));
+    const jsonEditorSummary = await within(await screen.findByRole('tabpanel', { name: JSON_TAB })).findByRole(
+      'textbox'
+    );
+    await user.clear(jsonEditorSummary);
+    await user.paste('{"monthlyBudget":99999,"teamName":"ops-team"}');
+
+    await user.click(screen.getByRole('tab', { name: ADVANCED_TAB }));
+
+    await waitFor(() => {
+      expect(screen.getByDisplayValue('ops-team')).toBeInTheDocument();
+    });
+
+    const updatedSummaryEl = screen.getByTestId('autoform-summary');
+    expect(updatedSummaryEl.textContent).toContain('99999');
+  });
+});

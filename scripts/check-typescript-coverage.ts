@@ -5,7 +5,7 @@ import { authoredFiles } from './source-files';
 const typescriptPathPattern = /\.[cm]?[jt]sx?$/u;
 const projectRoot = process.cwd();
 
-function run(command: string, args: string[]): string {
+function run(command: string, args: string[]) {
   const result = spawnSync(command, args, {
     cwd: projectRoot,
     encoding: 'utf8',
@@ -17,7 +17,7 @@ function run(command: string, args: string[]): string {
   return result.stdout;
 }
 
-function normalizePath(path: string): string {
+function normalizePath(path: string) {
   const absolutePath = isAbsolute(path) ? path : resolve(projectRoot, path);
   return relative(projectRoot, absolutePath).replaceAll('\\', '/');
 }

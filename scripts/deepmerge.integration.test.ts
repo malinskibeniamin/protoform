@@ -13,7 +13,7 @@ interface Merge {
   (target: unknown, source: unknown, options?: MergeOptions): unknown;
 }
 
-function loadMerge(consumer: string): Merge {
+function loadMerge(consumer: string) {
   const consumerRequire = createRequire(resolve('node_modules', consumer, 'package.json'));
   const entry = consumerRequire.resolve('deepmerge');
   const value: unknown = consumerRequire(entry);

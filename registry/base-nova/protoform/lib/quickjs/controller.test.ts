@@ -1,3 +1,4 @@
+import { captureRejectionMessage } from '../core/rejection.test-utils';
 import type { QuickJsOptions } from './client';
 import { isRecord, type QuickJsPresentation } from './contract';
 import { createQuickJsController, type ReviewedQuickJsRequest } from './controller';
@@ -39,25 +40,25 @@ test('only the latest revision can enable submission, even when cancellation is 
   const latest = controller.update(latestRequest);
   expect(signals[0]?.aborted).toBe(true);
   let calls = 0;
-  await Promise.resolve(
-    expect(
+  expect(
+    await captureRejectionMessage(
       controller.submit(latestRequest, () => {
         calls += 1;
       })
-    ).rejects.toThrow('not ready')
-  );
+    )
+  ).toContain('not ready');
   second.resolve({ company: { visible: false } });
   await latest;
   first.resolve({ company: { visible: true } });
   await old;
   expect(controller.getSnapshot().presentation).toEqual({ company: { visible: false } });
-  await Promise.resolve(
-    expect(
+  expect(
+    await captureRejectionMessage(
       controller.submit(request, () => {
         calls += 1;
       })
-    ).rejects.toThrow('changed')
-  );
+    )
+  ).toContain('changed');
   await controller.submit(latestRequest, (values) => {
     calls += 1;
     expect(values).toEqual(latestRequest.values);
@@ -75,13 +76,13 @@ test('submission is blocked if a synchronous subscriber changes values during no
     }
   });
   let called = false;
-  await Promise.resolve(
-    expect(
+  expect(
+    await captureRejectionMessage(
       controller.submit(request, () => {
         called = true;
       })
-    ).rejects.toThrow('changed')
-  );
+    )
+  ).toContain('changed');
   expect(called).toBe(false);
   controller.dispose();
 });
@@ -105,7 +106,7 @@ test('failures retain accepted presentation, block submission, and recover only 
   await controller.update(request);
   expect(controller.getSnapshot()).toMatchObject({ presentation: { company: { visible: false } }, status: 'error' });
   expect(controller.getSnapshot().error).not.toContain('private');
-  await Promise.resolve(expect(controller.submit(request, () => undefined)).rejects.toThrow('not ready'));
+  expect(await captureRejectionMessage(controller.submit(request, () => undefined))).toContain('not ready');
   await controller.update(request);
   expect(controller.getSnapshot().status).toBe('ready');
   controller.dispose();
@@ -127,14 +128,14 @@ test('invalidation blocks streaming gaps; disposal aborts work and ignores late 
   const running = controller.update(request);
   controller.invalidate();
   expect(signal?.aborted).toBe(true);
-  await Promise.resolve(expect(controller.submit(request, () => undefined)).rejects.toThrow('not ready'));
+  expect(await captureRejectionMessage(controller.submit(request, () => undefined))).toContain('not ready');
   controller.dispose();
   const before = notifications;
   pending.reject(new Error('obsolete'));
   await running;
   expect(notifications).toBe(before);
   expect(controller.getSnapshot().status).toBe('disposed');
-  await Promise.resolve(expect(controller.update(request)).rejects.toThrow('disposed'));
+  expect(await captureRejectionMessage(controller.update(request))).toContain('disposed');
   unsubscribe();
 });
 
@@ -144,9 +145,9 @@ test('concurrent submissions are rejected and action failure does not leave a pe
   await controller.update(request);
   const first = controller.submit(request, () => action.promise);
   await controller.update(request);
-  await Promise.resolve(expect(controller.submit(request, () => undefined)).rejects.toThrow('not ready'));
+  expect(await captureRejectionMessage(controller.submit(request, () => undefined))).toContain('not ready');
   action.reject(new Error('tool unavailable'));
-  await Promise.resolve(expect(first).rejects.toThrow('tool unavailable'));
+  expect(await captureRejectionMessage(first)).toContain('tool unavailable');
   expect(controller.getSnapshot().submitting).toBe(false);
   await controller.submit(request, () => undefined);
   controller.dispose();
@@ -158,7 +159,7 @@ test('schema and rule revisions clear obsolete policies; malformed input fails c
   const changed = { ...request, fields: ['kind'], rule: { ...request.rule, version: '2' } };
   await controller.update({ ...changed, values: { kind: 'business' } });
   expect(controller.getSnapshot()).toMatchObject({ presentation: {}, status: 'error' });
-  await Promise.resolve(expect(controller.submit(request, () => undefined)).rejects.toThrow('not ready'));
+  expect(await captureRejectionMessage(controller.submit(request, () => undefined))).toContain('not ready');
   await controller.update({ ...request, rule: { ...request.rule, version: '' } });
   expect(controller.getSnapshot().status).toBe('error');
   controller.dispose();
@@ -171,7 +172,7 @@ test('external mutation cannot alter the accepted snapshot or presentation', asy
   mutable.values['company'] = 'Changed';
   expect(Object.isFrozen(controller.getSnapshot())).toBe(true);
   expect(Object.isFrozen(controller.getSnapshot().presentation['company'])).toBe(true);
-  await Promise.resolve(expect(controller.submit(mutable, () => undefined)).rejects.toThrow('changed'));
+  expect(await captureRejectionMessage(controller.submit(mutable, () => undefined))).toContain('changed');
   await controller.submit(request, (values) => {
     expect(values['company']).toBe('Acme');
     values['company'] = 'local';
@@ -220,7 +221,7 @@ test('returning to A after B does not reuse the first A while the final revision
   first.resolve({ company: { visible: true } });
   await a;
   expect(controller.getSnapshot().status).toBe('pending');
-  await Promise.resolve(expect(controller.submit(request, () => undefined)).rejects.toThrow('not ready'));
+  expect(await captureRejectionMessage(controller.submit(request, () => undefined))).toContain('not ready');
   final.resolve({ company: { visible: true } });
   await backToA;
   middle.reject(new Error('obsolete B'));
@@ -250,7 +251,7 @@ test('nested snapshots compare by content and action copies cannot change accept
       expect(values).toEqual({ kind: 'business', company: { name: 'Acme', active: true } });
     });
     nested.values.company.name = 'changed';
-    await Promise.resolve(expect(controller.submit(nested, () => undefined)).rejects.toThrow('changed'));
+    expect(await captureRejectionMessage(controller.submit(nested, () => undefined))).toContain('changed');
   } finally {
     controller.dispose();
   }
@@ -269,7 +270,7 @@ test('metadata changes invalidate submission and clear old presentation before e
   const changed = { ...request, fieldInfo: { company: { type: 'string', required: true } } };
   try {
     await controller.update(original);
-    await Promise.resolve(expect(controller.submit(changed, () => undefined)).rejects.toThrow('changed'));
+    expect(await captureRejectionMessage(controller.submit(changed, () => undefined))).toContain('changed');
     const updating = controller.update(changed);
     expect(controller.getSnapshot()).toMatchObject({ status: 'pending', presentation: {} });
     latest.resolve({ company: { disabled: true } });

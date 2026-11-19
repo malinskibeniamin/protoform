@@ -36,7 +36,7 @@ import {
   TooltipTrigger,
 } from './ui-components';
 
-const REGEX_ERROR_PATTERN = /regex pattern\s*`([^`]+)`/u;
+const REGEX_ERROR_PATTERN = /regex pattern\s*`[^`]+`/u;
 
 export const Form = React.forwardRef<HTMLFormElement, React.ComponentProps<'form'> & { testId?: string | undefined }>(
   ({ children, testId, className, ...props }, ref) => (
@@ -110,10 +110,7 @@ export const ErrorMessage: React.FC<{ error: string }> = ({ error }) => (
   </Alert>
 );
 
-function augmentError(
-  error: FieldWrapperProps['error'],
-  field: FieldWrapperProps['field']
-): FieldWrapperProps['error'] {
+function augmentError(error: FieldWrapperProps['error'], field: FieldWrapperProps['field']) {
   if (!(typeof error === 'string' && REGEX_ERROR_PATTERN.test(error))) {
     return error;
   }
@@ -217,17 +214,19 @@ function getCollectionAccessibility({
   error: FieldWrapperProps['error'];
   errorId: string;
   labelId: string;
-}): React.AriaAttributes & { role?: 'group' | undefined } {
+}) {
   if (field.type !== 'array' && field.type !== 'map') {
-    return {};
+    const result: React.AriaAttributes & { role?: 'group' | undefined } = {};
+    return result;
   }
   const hasError = Boolean(error);
-  return {
+  const result: React.AriaAttributes & { role?: 'group' | undefined } = {
     'aria-describedby': hasError ? errorId : undefined,
     'aria-invalid': hasError ? true : undefined,
     'aria-labelledby': isCompact ? undefined : labelId,
     role: isCompact ? undefined : 'group',
   };
+  return result;
 }
 
 export const FieldWrapper: React.FC<FieldWrapperProps> = ({ label, children, id, field, error: rawError }) => {

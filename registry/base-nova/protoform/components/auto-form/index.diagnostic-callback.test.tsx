@@ -1,0 +1,54 @@
+import { describe, expect } from '@rstest/core';
+import { render, screen, waitFor } from '@testing-library/react';
+
+import type { AutoFormDiagnostic } from './configuration';
+import { AutoForm } from './index';
+import { createMockProvider } from './index.test-utils';
+
+describe('autoForm diagnostic callback', () => {
+  test('delivers configuration diagnostics and schema resolution causes without a logging dependency', async () => {
+    const diagnostics: AutoFormDiagnostic[] = [];
+    const onDiagnostic = (diagnostic: AutoFormDiagnostic) => {
+      diagnostics.push(diagnostic);
+    };
+    const schema = createMockProvider([
+      {
+        fieldConfig: { customData: { dataProvider: 'regions' } },
+        key: 'region',
+        required: false,
+        type: 'string',
+      },
+    ]);
+    const brokenSchema = {
+      getDefaultValues: () => ({}),
+      parseSchema: () => {
+        throw new TypeError('Unsupported schema shape.');
+      },
+      validateSchema: () => ({ data: {}, success: true as const }),
+    };
+
+    render(<AutoForm onDiagnostic={onDiagnostic} schema={schema} />);
+    await waitFor(() =>
+      expect(diagnostics).toContainEqual(
+        expect.objectContaining({
+          code: 'missing-data-provider',
+          fieldPath: 'region',
+          severity: 'error',
+        })
+      )
+    );
+
+    render(<AutoForm onDiagnostic={onDiagnostic} schema={brokenSchema} />);
+    await waitFor(() =>
+      expect(diagnostics).toContainEqual(
+        expect.objectContaining({
+          cause: expect.any(TypeError) as unknown,
+          code: 'render-error',
+          fieldPath: '$',
+          severity: 'error',
+        })
+      )
+    );
+    expect(screen.getByText(/autoform failed to render/iu)).toBeVisible();
+  });
+});

@@ -1,6 +1,6 @@
 import { create } from '@bufbuild/protobuf';
 import { describe, expect, rs } from '@rstest/core';
-import { act, render, renderHook, screen, waitFor } from '@testing-library/react';
+import { act, render, renderHook, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { AutoForm } from '../registry/base-nova/protoform/components/auto-form/index.js';
@@ -14,68 +14,63 @@ const SUBMIT_BUTTON = /submit/iu;
 
 describe('descriptor-aware CEL entrypoints', () => {
   test('resolves transitive imported and nested enum symbols through useProtoForm', async () => {
-    const valid = renderHook(() =>
-      useProtoForm(TransitiveCelConsumerSchema, {
-        defaultValues: create(TransitiveCelConsumerSchema, {
-          deployment: { environment: DeploymentPolicy_Environment.PRODUCTION, releaseTrack: ReleaseTrack.STABLE },
-        }),
-      })
-    );
-    const invalid = renderHook(() =>
-      useProtoForm(TransitiveCelConsumerSchema, {
+    const view = renderHook(() => {
+      const form = useProtoForm(TransitiveCelConsumerSchema, {
         defaultValues: create(TransitiveCelConsumerSchema, {
           deployment: { environment: DeploymentPolicy_Environment.STAGING, releaseTrack: ReleaseTrack.PREVIEW },
         }),
-      })
+      });
+      return { errors: form.formState.errors, form };
+    });
+    const invalid = await act<boolean>(() => view.result.current.form.trigger());
+
+    expect(invalid).toBe(false);
+    expect(view.result.current.errors.deployment?.message).toBe(
+      'Production deployments require the stable release track.'
     );
-    let validResult = false;
-    let invalidResult = true;
 
-    await act(async () => {
-      validResult = await valid.result.current.trigger();
-      invalidResult = await invalid.result.current.trigger();
+    const valid = await act<boolean>(() => {
+      const { form } = view.result.current;
+      form.setValue('deployment', {
+        environment: DeploymentPolicy_Environment.PRODUCTION,
+        releaseTrack: ReleaseTrack.STABLE,
+      });
+      return form.trigger();
     });
-
-    expect(validResult).toBe(true);
-    expect(invalidResult).toBe(false);
-    await waitFor(() => {
-      expect(invalid.result.current.formState.errors.deployment?.message).toBe(
-        'Production deployments require the stable release track.'
-      );
-    });
+    expect(valid).toBe(true);
+    expect(view.result.current.errors).toEqual({});
   });
 
   test('blocks CEL runtime failures safely through useProtoForm and recovers', async () => {
-    const form = renderHook(() =>
-      useProtoForm(InvalidCelRuntimeSchema, {
+    const view = renderHook(() => {
+      const form = useProtoForm(InvalidCelRuntimeSchema, {
         defaultValues: create(InvalidCelRuntimeSchema, { value: 0 }),
-      })
-    );
-    let result = true;
-
-    await act(async () => {
-      result = await form.result.current.trigger();
+      });
+      return { errors: form.formState.errors, form };
     });
+    const invalid = await act<boolean>(() => view.result.current.form.trigger());
 
-    expect(result).toBe(false);
-    expect(form.result.current.formState.errors.root?.message).toBe('Validation could not be completed.');
-    await act(async () => {
-      form.result.current.setValue('value', 1);
-      result = await form.result.current.trigger();
+    expect(invalid).toBe(false);
+    expect(view.result.current.errors.root?.message).toBe('Validation could not be completed.');
+    const valid = await act<boolean>(() => {
+      const { form } = view.result.current;
+      form.setValue('value', 1);
+      return form.trigger();
     });
-    expect(result).toBe(true);
-    expect(form.result.current.formState.errors).toEqual({});
+    expect(valid).toBe(true);
+    expect(view.result.current.errors).toEqual({});
   });
 
   test('submits descriptor-aware valid values through AutoForm', async () => {
     const user = userEvent.setup();
-    const onSubmit = rs.fn();
+    const submission = Promise.withResolvers<unknown>();
+    const handleSubmit = submission.resolve;
     render(
       <AutoForm
         defaultValues={{
           deployment: { environment: 20, releaseTrack: 7 },
         }}
-        onSubmit={onSubmit}
+        onSubmit={handleSubmit}
         schema={TransitiveCelConsumerSchema}
         withSubmit
       />
@@ -83,7 +78,9 @@ describe('descriptor-aware CEL entrypoints', () => {
 
     await user.click(screen.getByRole('button', { name: SUBMIT_BUTTON }));
 
-    await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
+    await expect(submission.promise).resolves.toMatchObject({
+      deployment: { environment: 20, releaseTrack: 7 },
+    });
   });
 
   test('renders the declared CEL message at its form path through AutoForm', async () => {
@@ -111,11 +108,15 @@ describe('descriptor-aware CEL entrypoints', () => {
 
   test('blocks CEL runtime failures safely through AutoForm and recovers', async () => {
     const user = userEvent.setup();
-    const onSubmit = rs.fn();
+    const submission = Promise.withResolvers<unknown>();
+    const messages: unknown[] = [];
     render(
       <AutoForm
         defaultValues={{ value: 0 }}
-        onSubmit={onSubmit}
+        onSubmit={(message) => {
+          messages.push(message);
+          submission.resolve(message);
+        }}
         schema={InvalidCelRuntimeSchema}
         testId="runtime-cel"
         withSubmit
@@ -124,14 +125,14 @@ describe('descriptor-aware CEL entrypoints', () => {
 
     await user.click(screen.getByRole('button', { name: SUBMIT_BUTTON }));
 
-    await waitFor(() => expect(screen.getByText('Validation could not be completed.')).toBeInTheDocument());
-    expect(onSubmit).not.toHaveBeenCalled();
+    expect(await screen.findByText('Validation could not be completed.')).toBeVisible();
+    expect(messages).toEqual([]);
     const input = screen.getByRole('spinbutton', { name: 'Value' });
     await user.clear(input);
     await user.type(input, '1');
     await user.click(screen.getByRole('button', { name: SUBMIT_BUTTON }));
-    await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
-    expect(onSubmit.mock.calls[0]?.[0]).toMatchObject({ value: 1 });
+    await expect(submission.promise).resolves.toMatchObject({ value: 1 });
+    expect(messages).toHaveLength(1);
     expect(screen.queryByText('int divide by zero')).not.toBeInTheDocument();
   });
 });

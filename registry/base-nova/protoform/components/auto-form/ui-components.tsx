@@ -18,8 +18,8 @@ export function ProtoformUIProvider({
   return <ProtoformUiContext.Provider value={components}>{children}</ProtoformUiContext.Provider>;
 }
 
-export function useProtoformUIComponents(): ProtoformUIComponentMap {
-  const components = React.use(ProtoformUiContext);
+export function useProtoformUIComponents() {
+  const components: ProtoformUIComponentMap | undefined = React.use(ProtoformUiContext);
   if (components === undefined) {
     throw new Error('ProtoformUIProvider is required to render Protoform controls.');
   }
@@ -30,8 +30,9 @@ export const AutoFormErrorDescriptionContext = React.createContext<string | unde
 
 function createUIComponent<TName extends keyof ProtoformUIProps>(
   name: TName,
-  describesFieldError = false
-): React.ComponentType<ProtoformUIProps[TName]> {
+  describesFieldError?: boolean
+): React.ComponentType<ProtoformUIProps[TName]>;
+function createUIComponent<TName extends keyof ProtoformUIProps>(name: TName, describesFieldError = false) {
   function InjectedUIComponent(props: ProtoformUIProps[TName]) {
     const Component = useProtoformUIComponents()[name];
     const errorId = React.useContext(AutoFormErrorDescriptionContext);

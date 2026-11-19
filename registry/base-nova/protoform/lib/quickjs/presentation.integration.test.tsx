@@ -2,7 +2,7 @@ import { expect, test } from '@rstest/core';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AutoForm } from '../../components/auto-form';
-import { createMockProvider } from '../../components/auto-form/__tests__/test-utils';
+import { createMockProvider } from '../../components/auto-form/index.test-utils';
 import type { FieldConfigMap } from '../../components/auto-form/types';
 import { quickJsFieldConfig } from './presentation';
 

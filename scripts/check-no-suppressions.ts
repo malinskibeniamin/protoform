@@ -17,10 +17,10 @@ const forbiddenDirectives = [
   ['@ts', 'nocheck'].join('-'),
 ];
 
-export function findForbiddenDirectives(source: string): string[] {
+export function findForbiddenDirectives(source: string) {
   const comments: string[] = [];
   const file = ts.createSourceFile('source.tsx', source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
-  function visit(node: ts.Node): void {
+  function visit(node: ts.Node) {
     const ranges = [
       ...(ts.getLeadingCommentRanges(source, node.getFullStart()) ?? []),
       ...(ts.getTrailingCommentRanges(source, node.end) ?? []),
@@ -42,7 +42,7 @@ export function findForbiddenDirectives(source: string): string[] {
   return matches;
 }
 
-function checkNoSuppressions(): void {
+function checkNoSuppressions() {
   const sourceFiles = authoredFiles().filter((path) => sourceExtensionPattern.test(path));
 
   const violations: string[] = [];

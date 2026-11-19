@@ -31,17 +31,17 @@ export interface ProtoMethodWorkflow {
   operation?: ProtoOperationInfo | undefined;
 }
 
-const STANDARD_METHOD_PATTERN = /^(Create|Delete|Get|List|Update)[A-Z]/u;
-const PATH_FIELD_PATTERN = /\{([^}=]+)(?:=[^}]*)?\}/gu;
+const STANDARD_METHOD_PATTERN = /^(?:Create|Delete|Get|List|Update)[A-Z]/u;
+const PATH_FIELD_PATTERN = /\{(?<field>[^}=]+)(?:=[^}]*)?\}/gu;
 
-function getMethodCategory(name: string): ProtoMethodCategory {
+function getMethodCategory(name: string) {
   if (name.startsWith('Batch')) {
     return 'batch';
   }
   return STANDARD_METHOD_PATTERN.test(name) ? 'standard' : 'custom';
 }
 
-function getHttpPattern(rule: HttpRule): { method: string; path: string } {
+function getHttpPattern(rule: HttpRule) {
   const { pattern } = rule;
   if (pattern.case === undefined) {
     return { method: '', path: '' };
@@ -58,9 +58,9 @@ function getHttpPattern(rule: HttpRule): { method: string; path: string } {
   };
 }
 
-function parseHttpBinding(method: DescMethod, rule: HttpRule): ProtoHttpBinding {
+function parseHttpBinding(method: DescMethod, rule: HttpRule) {
   const pattern = getHttpPattern(rule);
-  const pathFields = Array.from(pattern.path.matchAll(PATH_FIELD_PATTERN), (match) => match[1]).filter(
+  const pathFields = Array.from(pattern.path.matchAll(PATH_FIELD_PATTERN), (match) => match.groups?.['field']).filter(
     (field): field is string => field !== undefined
   );
   const pathFieldSet = new Set(pathFields);
@@ -76,16 +76,17 @@ function parseHttpBinding(method: DescMethod, rule: HttpRule): ProtoHttpBinding 
     queryFields = requestFields.filter((field) => !pathFieldSet.has(field));
   }
 
-  return {
+  const result: ProtoHttpBinding = {
     bodyFields,
     method: pattern.method,
     path: pattern.path,
     pathFields,
     queryFields,
   };
+  return result;
 }
 
-export function getProtoMethodWorkflow(method: DescMethod): ProtoMethodWorkflow {
+export function getProtoMethodWorkflow(method: DescMethod) {
   const options = method.proto.options ?? create(MethodOptionsSchema);
   const httpRule = hasExtension(options, http) ? getExtension(options, http) : undefined;
   const operationInfo = hasExtension(options, operation_info) ? getExtension(options, operation_info) : undefined;
@@ -105,7 +106,7 @@ export function getProtoMethodWorkflow(method: DescMethod): ProtoMethodWorkflow 
         }
       : undefined;
 
-  return {
+  const workflow: ProtoMethodWorkflow = {
     category: getMethodCategory(method.name),
     execution,
     httpBindings: httpRule
@@ -114,4 +115,5 @@ export function getProtoMethodWorkflow(method: DescMethod): ProtoMethodWorkflow 
     method,
     operation,
   };
+  return workflow;
 }

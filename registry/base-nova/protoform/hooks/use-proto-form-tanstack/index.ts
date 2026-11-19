@@ -29,15 +29,12 @@ import { protoPathToFormPath } from '@/registry/base-nova/protoform/lib/protobuf
 
 type FormValues = Record<string, unknown>;
 
-function getErrorMessage(error: unknown): string | undefined {
+function getErrorMessage(error: unknown) {
   if (typeof error === 'string') {
     return error;
   }
-  if (error !== null && typeof error === 'object') {
-    const message: unknown = Reflect.get(error, 'message');
-    return typeof message === 'string' ? message : undefined;
-  }
-  return undefined;
+  const message: unknown = error !== null && typeof error === 'object' ? Reflect.get(error, 'message') : undefined;
+  return typeof message === 'string' ? message : undefined;
 }
 
 export type UseProtoFormReturn<
@@ -83,8 +80,8 @@ export type UseProtoFormReturn<
 function composeSubmitAsyncValidator<Values extends FormValues>(
   nativeValidator: FormAsyncValidateOrFn<Values> | undefined,
   protoValidator: FormValidateOrFn<Values>
-): FormAsyncValidateOrFn<Values> {
-  return async ({ value, formApi }) => {
+) {
+  const result: FormAsyncValidateOrFn<Values> = async ({ value, formApi }) => {
     if (nativeValidator) {
       const nativeError = await formApi.runValidator({
         type: 'validateAsync',
@@ -110,6 +107,7 @@ function composeSubmitAsyncValidator<Values extends FormValues>(
       },
     });
   };
+  return result;
 }
 
 function setDirtyPath(target: Record<string, unknown>, path: string) {
@@ -131,7 +129,7 @@ function setDirtyPath(target: Record<string, unknown>, path: string) {
   }
 }
 
-function dirtyFieldsFromMeta(fieldMeta: Record<string, unknown>): Record<string, unknown> {
+function dirtyFieldsFromMeta(fieldMeta: Record<string, unknown>) {
   const dirtyFields: Record<string, unknown> = {};
   for (const [path, meta] of Object.entries(fieldMeta)) {
     if (
@@ -181,20 +179,7 @@ export function useProtoForm<
     serverPathPrefix?: string;
     serverPathPrefixes?: readonly string[];
   }
-): UseProtoFormReturn<
-  Values,
-  Desc,
-  TOnMount,
-  TOnChange,
-  TOnChangeAsync,
-  TOnBlur,
-  TOnBlurAsync,
-  TOnSubmit,
-  TOnDynamic,
-  TOnDynamicAsync,
-  TOnServer,
-  TSubmitMeta
-> {
+) {
   const {
     emptyRepeatedStringPolicies,
     formatMessage,
@@ -304,7 +289,7 @@ export function useProtoForm<
     }
     setDynamicFieldValue(path, { case: oneofCase, value }, { dontUpdateMeta: false, ...updateOptions });
   };
-  const getNestedErrors = <T = Record<string, { message?: string }>>(path: string): T | undefined => {
+  const getNestedErrors = <T = Record<string, { message?: string }>>(path: string) => {
     const nested: Record<string, unknown> = {};
     let found = false;
     const fieldErrors = form.getAllErrors().fields as Record<string, { errors: unknown[] }>;
@@ -329,7 +314,20 @@ export function useProtoForm<
     return found ? (nested as T) : undefined;
   };
 
-  return Object.assign(form, {
+  const protoForm: UseProtoFormReturn<
+    Values,
+    Desc,
+    TOnMount,
+    TOnChange,
+    TOnChangeAsync,
+    TOnBlur,
+    TOnBlurAsync,
+    TOnSubmit,
+    TOnDynamic,
+    TOnDynamicAsync,
+    TOnServer,
+    TSubmitMeta
+  > = Object.assign(form, {
     clearServerErrorContext: () => setServerErrorContext(undefined),
     createMessage: (values?: Values) =>
       formValuesToProto(schema, values ?? form.state.values, sourceMessage, conversionOptions),
@@ -345,6 +343,7 @@ export function useProtoForm<
     setOneofValue,
     setServerErrors,
   });
+  return protoForm;
 }
 
 function setNestedMessage(target: Record<string, unknown>, path: string[], message: string) {
@@ -365,7 +364,7 @@ function setNestedMessage(target: Record<string, unknown>, path: string[], messa
   }
 }
 
-function stripPrefix(field: string, prefixes: readonly string[]): string {
+function stripPrefix(field: string, prefixes: readonly string[]) {
   for (const prefix of prefixes) {
     if (!prefix) {
       continue;

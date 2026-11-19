@@ -98,6 +98,6 @@ export interface SchemaProvider<Values extends FormValues = FormValues> {
   validateSchema: (values: Values, context?: SchemaValidationContext) => SchemaValidation | Promise<SchemaValidation>;
 }
 
-export function getFieldHints<FieldTypes>(field: ParsedField<FieldTypes>): FieldRenderHints | undefined {
+export function getFieldHints<FieldTypes>(field: ParsedField<FieldTypes>) {
   return field.hints;
 }

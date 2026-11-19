@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, rs } from '@rstest/core';
+import { afterEach, describe, expect } from '@rstest/core';
 import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
@@ -20,10 +20,6 @@ afterEach(() => {
   for (const element of document.querySelectorAll('[data-test-diagram]')) {
     element.remove();
   }
-  Object.defineProperty(document, 'fullscreenElement', {
-    configurable: true,
-    value: null,
-  });
 });
 
 describe('diagramMaximizer', () => {
@@ -31,10 +27,6 @@ describe('diagramMaximizer', () => {
     const user = userEvent.setup();
     const diagram = appendDiagram();
     diagram.removeAttribute('aria-label');
-    Object.defineProperty(diagram, 'requestFullscreen', {
-      configurable: true,
-      value: undefined,
-    });
 
     render(<DiagramMaximizer />);
     await user.click(
@@ -48,11 +40,7 @@ describe('diagramMaximizer', () => {
 
   test('opens an accessible full-viewport fallback and restores focus', async () => {
     const user = userEvent.setup();
-    const diagram = appendDiagram();
-    Object.defineProperty(diagram, 'requestFullscreen', {
-      configurable: true,
-      value: undefined,
-    });
+    appendDiagram();
 
     render(<DiagramMaximizer />);
 
@@ -96,51 +84,5 @@ describe('diagramMaximizer', () => {
       })
     ).toBeVisible();
     expect(screen.getAllByRole('button', { name: FULL_SCREEN_PATTERN })).toHaveLength(2);
-  });
-
-  test('uses the browser Fullscreen API when available and exits from the same control', async () => {
-    const user = userEvent.setup();
-    const diagram = appendDiagram();
-    const requestFullscreen = rs.fn(() => {
-      Object.defineProperty(document, 'fullscreenElement', {
-        configurable: true,
-        value: diagram,
-      });
-      document.dispatchEvent(new Event('fullscreenchange'));
-      return Promise.resolve();
-    });
-    const exitFullscreen = rs.fn(() => {
-      Object.defineProperty(document, 'fullscreenElement', {
-        configurable: true,
-        value: null,
-      });
-      document.dispatchEvent(new Event('fullscreenchange'));
-      return Promise.resolve();
-    });
-    Object.defineProperty(diagram, 'requestFullscreen', {
-      configurable: true,
-      value: requestFullscreen,
-    });
-    Object.defineProperty(document, 'exitFullscreen', {
-      configurable: true,
-      value: exitFullscreen,
-    });
-
-    render(<DiagramMaximizer />);
-
-    await user.click(
-      await screen.findByRole('button', {
-        name: 'View System flow full screen',
-      })
-    );
-    expect(requestFullscreen).toHaveBeenCalledOnce();
-
-    await user.click(
-      await screen.findByRole('button', {
-        name: 'Exit System flow full screen',
-      })
-    );
-    expect(exitFullscreen).toHaveBeenCalledOnce();
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 });

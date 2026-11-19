@@ -19,11 +19,11 @@ interface BookstoreDemoProps {
 
 const VISITOR_KEY = 'protoform-bookstore-visitor';
 
-function newVisitorId(): string {
+function newVisitorId() {
   return `demo-${globalThis.crypto.randomUUID().toLowerCase()}`;
 }
 
-function initialVisitorId(provided?: string): string {
+function initialVisitorId(provided?: string) {
   if (provided !== undefined && provided !== '') {
     return provided;
   }

@@ -1,7 +1,7 @@
 import type { CSSProperties } from 'react';
 import './browser-fixture.css';
 
-import { afterEach, expect, rs, test } from '@rstest/core';
+import { afterEach, expect, test } from '@rstest/core';
 import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import { Suspense } from 'react';
 import { Bar, BarChart } from 'recharts';
@@ -61,14 +61,18 @@ test('uses the resolved vertical layout for a side legend', async () => {
 
 test('passes the complete tooltip payload to a custom formatter', async () => {
   const payload = [{ graphicalItemId: 'requests', name: 'requests', value: 5, payload: { fill: '#111111' } }];
-  const formatter = rs.fn(() => 'Formatted requests');
+  const calls: unknown[][] = [];
+  function formatter(...args: unknown[]) {
+    calls.push(args);
+    return 'Formatted requests';
+  }
   render(
     <ChartContainer className="h-50 w-80" config={{ requests: { label: 'Requests', color: '#111111' } }}>
       <ChartTooltipContent active formatter={formatter} payload={payload} />
     </ChartContainer>
   );
   expect(await screen.findByText('Formatted requests')).toBeVisible();
-  expect(formatter).toHaveBeenCalledWith(5, 'requests', payload[0], 0, payload);
+  expect(calls).toContainEqual([5, 'requests', payload[0], 0, payload]);
 });
 
 test('keeps a numeric zero series label visible', async () => {

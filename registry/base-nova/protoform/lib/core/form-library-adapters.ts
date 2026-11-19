@@ -28,8 +28,9 @@ function isErrorContainer(value: unknown): value is ErrorContainer {
   return typeof value === 'object' && value !== null;
 }
 
-function readOwn(container: ErrorContainer, key: PropertyKey): unknown {
-  return Object.hasOwn(container, key) ? Reflect.get(container, key) : undefined;
+function readOwn(container: ErrorContainer, key: PropertyKey) {
+  const value: unknown = Object.hasOwn(container, key) ? Reflect.get(container, key) : undefined;
+  return value;
 }
 
 function writeOwn(container: ErrorContainer, key: PropertyKey, value: FormValidationErrorValue) {
@@ -55,12 +56,13 @@ function appendMessage(container: ErrorContainer, key: PropertyKey, message: str
   writeOwn(container, key, message);
 }
 
-function getPathKey(segment: PropertyKey | StandardSchemaV1.PathSegment): PropertyKey {
+function getPathKey(segment: PropertyKey | StandardSchemaV1.PathSegment) {
   return typeof segment === 'object' ? segment.key : segment;
 }
 
-function createContainer(nextKey: PropertyKey): ErrorContainer {
-  return typeof nextKey === 'number' ? [] : {};
+function createContainer(nextKey: PropertyKey) {
+  const container: ErrorContainer = typeof nextKey === 'number' ? [] : {};
+  return container;
 }
 
 function addIssue(errors: FormValidationErrors, issue: StandardSchemaV1.Issue, rootErrorKey: PropertyKey) {
@@ -103,7 +105,7 @@ function addIssue(errors: FormValidationErrors, issue: StandardSchemaV1.Issue, r
 export function standardSchemaIssuesToFormErrors(
   issues: readonly StandardSchemaV1.Issue[],
   options?: FormValidatorOptions
-): FormValidationErrors {
+) {
   const errors: FormValidationErrors = {};
   const rootErrorKey = options?.rootErrorKey ?? '_error';
   for (const issue of issues) {
@@ -112,42 +114,44 @@ export function standardSchemaIssuesToFormErrors(
   return errors;
 }
 
-function resultToErrors<Output>(
-  result: StandardSchemaV1.Result<Output>,
-  options: FormValidatorOptions | undefined
-): FormValidationErrors {
+function resultToErrors<Output>(result: StandardSchemaV1.Result<Output>, options: FormValidatorOptions | undefined) {
   return result.issues ? standardSchemaIssuesToFormErrors(result.issues, options) : {};
 }
 
-function getStandardSchemaOptions(options: FormValidatorOptions | undefined): StandardSchemaV1.Options | undefined {
-  return options?.libraryOptions === undefined ? undefined : { libraryOptions: options.libraryOptions };
+function getStandardSchemaOptions(options: FormValidatorOptions | undefined) {
+  const result: StandardSchemaV1.Options | undefined =
+    options?.libraryOptions === undefined ? undefined : { libraryOptions: options.libraryOptions };
+  return result;
 }
 
 function createValidator<Input, Output>(
   schema: StandardSchemaV1<Input, Output>,
   options: FormValidatorOptions | undefined
-): FormValidator<Input> {
-  return (values) => {
+) {
+  const validate: FormValidator<Input> = (values) => {
     const result = schema['~standard'].validate(values, getStandardSchemaOptions(options));
     return isPromiseLike<StandardSchemaV1.Result<Output>>(result)
       ? Promise.resolve(result).then((resolved) => resultToErrors(resolved, options))
       : resultToErrors(result, options);
   };
+  return validate;
 }
 
 export function createFormikValidator<Input, Output>(
   schema: StandardSchemaV1<Input, Output>,
   options?: FormValidatorOptions
-): FormValidator<Input> {
-  return createValidator(schema, {
+) {
+  const validate: FormValidator<Input> = createValidator(schema, {
     ...options,
     rootErrorKey: options?.rootErrorKey ?? '_form',
   });
+  return validate;
 }
 
 export function createFinalFormValidator<Input, Output>(
   schema: StandardSchemaV1<Input, Output>,
   options?: FormValidatorOptions
-): FormValidator<Input> {
-  return createValidator(schema, options);
+) {
+  const validate: FormValidator<Input> = createValidator(schema, options);
+  return validate;
 }

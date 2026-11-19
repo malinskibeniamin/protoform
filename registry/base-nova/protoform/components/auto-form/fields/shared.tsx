@@ -7,12 +7,12 @@ import { useAutoFormRuntimeContext } from '../context';
 import type { AutoFormFieldProps } from '../core-types';
 import { getFieldUiConfig, isRecord, NUMERIC_OPTION_PATTERN } from '../helpers';
 import { getAutoFormChoiceTestId, getAutoFormFieldTestId } from '../test-ids';
-import type { AutoFormOptionGroup, AutoFormOptionItem } from '../types';
+import type { AutoFormOptionItem } from '../types';
 import { Input, InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from '../ui-components';
 
-const TIME_ZONE_SUFFIX_PATTERN = /([+-]\d{2}:\d{2}|Z)$/u;
+const TIME_ZONE_SUFFIX_PATTERN = /(?:[+-]\d{2}:\d{2}|Z)$/u;
 
-export function getControlLabel(label: AutoFormFieldProps['label'], field: AutoFormFieldProps['field']): string {
+export function getControlLabel(label: AutoFormFieldProps['label'], field: AutoFormFieldProps['field']) {
   return typeof label === 'string' || typeof label === 'number'
     ? String(label)
     : String(field.fieldConfig?.label ?? field.key);
@@ -34,11 +34,11 @@ export function useFieldTestIds(id: string) {
   );
 }
 
-export function resolveControlTestId(inputProps: AutoFormFieldProps['inputProps'], fallback: string): string {
+export function resolveControlTestId(inputProps: AutoFormFieldProps['inputProps'], fallback: string) {
   return typeof inputProps.testId === 'string' ? inputProps.testId : fallback;
 }
 
-export function normalizeDateValue(value: unknown): string {
+export function normalizeDateValue(value: unknown) {
   if (typeof value === 'string') {
     if (TIME_ZONE_SUFFIX_PATTERN.test(value)) {
       const parsed = new Date(value);
@@ -55,7 +55,7 @@ export function normalizeDateValue(value: unknown): string {
   return '';
 }
 
-export function normalizeTimeValue(value: unknown): string {
+export function normalizeTimeValue(value: unknown) {
   if (typeof value === 'string') {
     if (TIME_ZONE_SUFFIX_PATTERN.test(value)) {
       const parsed = new Date(value);
@@ -72,7 +72,7 @@ export function normalizeTimeValue(value: unknown): string {
   return '';
 }
 
-export function parseCalendarDate(value: string): Date | undefined {
+export function parseCalendarDate(value: string) {
   if (!value) {
     return;
   }
@@ -81,7 +81,7 @@ export function parseCalendarDate(value: string): Date | undefined {
   return isValid(parsed) ? parsed : undefined;
 }
 
-export function buildTimestampValue(datePart: string, timePart: string): string {
+export function buildTimestampValue(datePart: string, timePart: string) {
   if (!datePart) {
     return '';
   }
@@ -89,19 +89,19 @@ export function buildTimestampValue(datePart: string, timePart: string): string 
   return `${datePart}T${timePart || '00:00'}`;
 }
 
-export function parseNumericProp(value: unknown): number | undefined {
+export function parseNumericProp(value: unknown) {
   if (typeof value === 'number') {
     return Number.isFinite(value) ? value : undefined;
   }
 
-  if (typeof value === 'string' && value.trim().length > 0) {
-    const parsed = Number(value);
-    return Number.isFinite(parsed) ? parsed : undefined;
+  if (typeof value !== 'string' || value.trim().length === 0) {
+    return;
   }
-  return undefined;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : undefined;
 }
 
-export function resolveNumericStep(inputProps: AutoFormFieldProps['inputProps'], fallbackValue?: number): number {
+export function resolveNumericStep(inputProps: AutoFormFieldProps['inputProps'], fallbackValue?: number) {
   const explicitStep = parseNumericProp(inputProps['step']);
   if (explicitStep !== undefined && explicitStep > 0) {
     return explicitStep;
@@ -113,23 +113,23 @@ export function resolveNumericStep(inputProps: AutoFormFieldProps['inputProps'],
   return values.some((value) => !Number.isInteger(value)) ? 0.01 : 1;
 }
 
-export function normalizeNumberValue(value: unknown): number | undefined {
+export function normalizeNumberValue(value: unknown) {
   if (typeof value === 'number') {
     return Number.isFinite(value) ? value : undefined;
   }
 
-  if (typeof value === 'string' && value.trim().length > 0) {
-    const parsed = Number(value);
-    return Number.isFinite(parsed) ? parsed : undefined;
+  if (typeof value !== 'string' || value.trim().length === 0) {
+    return;
   }
-  return undefined;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : undefined;
 }
 
-export function getGroupedOptions(field: AutoFormFieldProps['field']): AutoFormOptionGroup[] | undefined {
+export function getGroupedOptions(field: AutoFormFieldProps['field']) {
   return getFieldUiConfig(field).optionGroups;
 }
 
-export function getFlatOptions(field: AutoFormFieldProps['field']): AutoFormOptionItem[] {
+export function getFlatOptions(field: AutoFormFieldProps['field']) {
   const uiConfig = getFieldUiConfig(field);
   const labelOverrides = uiConfig.optionLabels;
   const optionGroups = getGroupedOptions(field);
@@ -137,15 +137,20 @@ export function getFlatOptions(field: AutoFormFieldProps['field']): AutoFormOpti
   if (optionGroups && optionGroups.length > 0) {
     const options = optionGroups.flatMap((group) => group.options);
     if (labelOverrides) {
-      return options.map((opt) => ({ ...opt, label: labelOverrides[opt.value] ?? opt.label }));
+      const result: AutoFormOptionItem[] = options.map((opt) => ({
+        ...opt,
+        label: labelOverrides[opt.value] ?? opt.label,
+      }));
+      return result;
     }
     return options;
   }
 
-  return (field.options || []).map(([value, label]) => ({
+  const result: AutoFormOptionItem[] = (field.options || []).map(([value, label]) => ({
     label: labelOverrides?.[value] ?? label,
     value,
   }));
+  return result;
 }
 
 export function renderOptionLabel(option: AutoFormOptionItem | { label?: React.ReactNode; value: string }) {
@@ -157,7 +162,7 @@ export function renderOptionLabel(option: AutoFormOptionItem | { label?: React.R
   );
 }
 
-export function hasNumericOptions(field: AutoFormFieldProps['field']): boolean {
+export function hasNumericOptions(field: AutoFormFieldProps['field']) {
   const options = getFlatOptions(field);
   return options.length > 0 && options.every((option) => NUMERIC_OPTION_PATTERN.test(option.value));
 }
@@ -221,7 +226,7 @@ export function StringLikeInput({
   );
 }
 
-export function readDataProviderId(field: AutoFormFieldProps['field'] | undefined): string | undefined {
+export function readDataProviderId(field: AutoFormFieldProps['field'] | undefined) {
   const customData = field?.fieldConfig?.customData;
   if (!(customData && typeof customData === 'object')) {
     return;
@@ -230,8 +235,5 @@ export function readDataProviderId(field: AutoFormFieldProps['field'] | undefine
     return customData['dataProvider'];
   }
   const { ui } = customData;
-  if (isRecord(ui) && typeof ui['dataProvider'] === 'string') {
-    return ui['dataProvider'];
-  }
-  return undefined;
+  return isRecord(ui) && typeof ui['dataProvider'] === 'string' ? ui['dataProvider'] : undefined;
 }

@@ -3,9 +3,9 @@ import { readdir, readFile } from 'node:fs/promises';
 import { join, relative } from 'node:path';
 
 const coreSrc = join(import.meta.dir, '..', 'registry', 'base-nova', 'protoform', 'lib', 'core');
-const bannedModulePattern = /from\s+["'](@bufbuild\/[^"']+|@connectrpc\/[^"']+)["']/gu;
+const bannedModulePattern = /from\s+["'](?<module>@bufbuild\/[^"']+|@connectrpc\/[^"']+)["']/gu;
 
-async function collectTypescriptFiles(dir: string): Promise<string[]> {
+async function collectTypescriptFiles(dir: string) {
   const entries = await readdir(dir, { recursive: true, withFileTypes: true });
   return entries
     .filter((entry) => entry.isFile() && entry.name.endsWith('.ts'))

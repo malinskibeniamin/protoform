@@ -81,14 +81,11 @@ function SampleRecordActions({ record }: { record: SampleRecord }) {
     </div>
   );
 }
-function sortDirection(value: false | 'asc' | 'desc'): 'ascending' | 'descending' | undefined {
+function sortDirection(value: false | 'asc' | 'desc') {
   if (value === 'asc') {
-    return 'ascending';
+    return 'ascending' as const;
   }
-  if (value === 'desc') {
-    return 'descending';
-  }
-  return undefined;
+  return value === 'desc' ? ('descending' as const) : undefined;
 }
 const helper = createColumnHelper<typeof features, SampleRecord>();
 const columns = helper.columns([

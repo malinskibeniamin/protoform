@@ -41,11 +41,11 @@ const statusFilters: ReadonlyArray<{
   { label: 'Superseded', value: 'superseded' },
 ];
 
-function isGapStatus(status: ReadinessRequirement['status']): boolean {
+function isGapStatus(status: ReadinessRequirement['status']) {
   return ['missing', 'deferred', 'unsupported'].includes(status);
 }
 
-function statusLabel(status: ReadinessRequirement['status']): string {
+function statusLabel(status: ReadinessRequirement['status']) {
   switch (status) {
     case 'verified':
       return 'Verified';
@@ -68,7 +68,7 @@ function statusLabel(status: ReadinessRequirement['status']): string {
   }
 }
 
-function requirementExplanation(requirement: ReadinessRequirement): string {
+function requirementExplanation(requirement: ReadinessRequirement) {
   if (requirement.status === 'verified' || requirement.status === 'optional') {
     return requirement.description ?? `Evidence: ${requirement.evidence.testName}`;
   }

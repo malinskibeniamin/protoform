@@ -141,8 +141,8 @@ const accentDefinitions = [
   },
 ] satisfies AccentDefinition[];
 
-function buildAccentPreset(accent: AccentDefinition): PresetDefinition {
-  return {
+function buildAccentPreset(accent: AccentDefinition) {
+  const preset: PresetDefinition = {
     chartColor: accent.chartColor,
     dark: {
       ...darkBase,
@@ -161,6 +161,7 @@ function buildAccentPreset(accent: AccentDefinition): PresetDefinition {
     name: accent.name,
     theme: accent.theme,
   };
+  return preset;
 }
 
 const neutralPreset: PresetDefinition = {
@@ -202,8 +203,8 @@ export const presetRadii: Array<{
 export const defaultPreset = neutralPreset;
 export const defaultRadius: PresetRadius = 'default';
 
-export function buildPresetConfig(preset: PresetDefinition, radius: PresetRadius): PresetConfig {
-  return {
+export function buildPresetConfig(preset: PresetDefinition, radius: PresetRadius) {
+  const config: PresetConfig = {
     baseColor: 'neutral',
     chartColor: preset.chartColor,
     font: 'geist',
@@ -215,13 +216,14 @@ export function buildPresetConfig(preset: PresetDefinition, radius: PresetRadius
     style: 'nova',
     theme: preset.theme,
   };
+  return config;
 }
 
-export function buildPresetCode(preset: PresetDefinition, radius: PresetRadius): string {
+export function buildPresetCode(preset: PresetDefinition, radius: PresetRadius) {
   return encodePreset(buildPresetConfig(preset, radius));
 }
 
-export function findSupportedPreset(code: string): { preset: PresetDefinition; radius: PresetRadius } | undefined {
+export function findSupportedPreset(code: string) {
   const config = decodePreset(code);
   if (
     config?.style !== 'nova' ||
@@ -244,5 +246,6 @@ export function findSupportedPreset(code: string): { preset: PresetDefinition; r
     return;
   }
 
-  return { preset, radius };
+  const selection: { preset: PresetDefinition; radius: PresetRadius } | undefined = { preset, radius };
+  return selection;
 }

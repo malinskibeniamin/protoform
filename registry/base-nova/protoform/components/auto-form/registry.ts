@@ -21,21 +21,22 @@ export class FieldTypeRegistry<TName extends string = never> {
 
   register<const TRegisteredName extends string>(
     definition: FieldTypeDefinition<TRegisteredName>
-  ): FieldTypeRegistry<TName | TRegisteredName> {
+  ): FieldTypeRegistry<TName | TRegisteredName>;
+  register<const TRegisteredName extends string>(definition: FieldTypeDefinition<TRegisteredName>) {
     this.definitions.push(definition);
     this.definitions.sort((a, b) => b.priority - a.priority);
     return this;
   }
 
-  resolve(field: ParsedField, context: FieldMatchContext): FieldTypeDefinition<TName> | undefined {
+  resolve(field: ParsedField, context: FieldMatchContext) {
     return this.definitions.find((def) => def.match(field, context)) as FieldTypeDefinition<TName> | undefined;
   }
 
-  list(): readonly FieldTypeDefinition<TName>[] {
+  list() {
     return this.definitions as unknown as readonly FieldTypeDefinition<TName>[];
   }
 
-  clone(): FieldTypeRegistry<TName> {
+  clone() {
     const registry = new FieldTypeRegistry<TName>();
     for (const def of this.definitions) {
       registry.register(def);
@@ -44,10 +45,11 @@ export class FieldTypeRegistry<TName extends string = never> {
   }
 }
 
-export function buildFieldMatchContext(field: ParsedField): FieldMatchContext {
+export function buildFieldMatchContext(field: ParsedField) {
   const label = String(field.fieldConfig?.label ?? getLabel(field));
   const identity = `${field.key} ${label}`.toLowerCase();
   const inputType = String(field.fieldConfig?.inputProps?.['type'] ?? getProtoFieldCustomData(field)?.inputType ?? '');
   const maxLength = Number(field.fieldConfig?.inputProps?.['maxLength'] ?? 0);
-  return { identity, inputType, maxLength };
+  const context: FieldMatchContext = { identity, inputType, maxLength };
+  return context;
 }

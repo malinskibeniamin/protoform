@@ -10,15 +10,12 @@ import { useProtoForm } from '@/registry/base-nova/protoform/hooks/use-proto-for
 import { createFormExamplesTransport } from '../browser-transport.js';
 import { FormExamplesService, SubmitBasicFormRequestSchema } from '../gen/protoform/examples/v1/forms_pb.js';
 
-function fieldErrorMessage(error: unknown): string | undefined {
+function fieldErrorMessage(error: unknown) {
   if (typeof error === 'string') {
     return error;
   }
-  if (error !== null && typeof error === 'object') {
-    const message: unknown = Reflect.get(error, 'message');
-    return typeof message === 'string' ? message : undefined;
-  }
-  return undefined;
+  const message: unknown = error !== null && typeof error === 'object' ? Reflect.get(error, 'message') : undefined;
+  return typeof message === 'string' ? message : undefined;
 }
 
 export function TanStackFormExample({ baseUrl }: { baseUrl?: string }) {

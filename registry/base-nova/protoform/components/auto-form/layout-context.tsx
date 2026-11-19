@@ -2,7 +2,7 @@ import React from 'react';
 
 const FormDepthContext = React.createContext(0);
 
-export function useFormDepth(): number {
+export function useFormDepth() {
   return React.useContext(FormDepthContext);
 }
 
@@ -10,7 +10,7 @@ export function FormDepthProvider({ depth, children }: { depth: number; children
   return <FormDepthContext.Provider value={depth}>{children}</FormDepthContext.Provider>;
 }
 
-export function headingLevelForDepth(depth: number): 2 | 3 | 4 | 5 {
+export function headingLevelForDepth(depth: number) {
   if (depth < 1 || Number.isNaN(depth)) {
     return 2;
   }
@@ -37,8 +37,9 @@ const DEFAULT_APPEARANCE: ResolvedAutoFormAppearance = { arrayItems: 'cards', la
 
 const AppearanceContext = React.createContext<ResolvedAutoFormAppearance>(DEFAULT_APPEARANCE);
 
-export function useAutoFormAppearance(): ResolvedAutoFormAppearance {
-  return React.useContext(AppearanceContext);
+export function useAutoFormAppearance() {
+  const appearance: ResolvedAutoFormAppearance = React.useContext(AppearanceContext);
+  return appearance;
 }
 
 export function AutoFormAppearanceProvider({

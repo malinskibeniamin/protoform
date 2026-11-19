@@ -36,7 +36,7 @@ const Group = ({
   const childCount = childrenArray.length;
 
   const content = childrenArray.map((child, index) => {
-    const getPosition = (): GroupPosition | undefined => {
+    const getPosition = () => {
       if (attached !== true || childCount === 1) {
         return;
       }

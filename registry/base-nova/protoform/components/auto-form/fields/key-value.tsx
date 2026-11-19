@@ -52,7 +52,7 @@ function KeyValueFieldComponent({ field, id, inputProps }: AutoFormFieldProps) {
 
 export { KeyValueFieldComponent };
 
-function isKeyValueScalarField(field: { type?: string | undefined } | undefined): boolean {
+function isKeyValueScalarField(field: { type?: string | undefined } | undefined) {
   if (!field) {
     return false;
   }
@@ -68,7 +68,7 @@ function isSimpleKeyValueLikeObject(
         schema?: Array<{ key: string; type?: string | undefined }> | undefined;
       }
     | undefined
-): boolean {
+) {
   if (!(field?.type === 'object' && field.schema?.length === 2)) {
     return false;
   }

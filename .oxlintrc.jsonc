@@ -1,6 +1,24 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "plugins": ["eslint", "typescript", "unicorn", "oxc", "import", "jsdoc", "node", "promise", "vitest"],
+  "jsPlugins": [
+    {
+      "name": "landmines-structure",
+      "specifier": "@interfere/landmines/structure"
+    },
+    {
+      "name": "landmines-style",
+      "specifier": "@interfere/landmines/style"
+    },
+    {
+      "name": "landmines-testing",
+      "specifier": "@interfere/landmines/testing"
+    },
+    {
+      "name": "landmines-types",
+      "specifier": "@interfere/landmines/types"
+    }
+  ],
   "options": {
     "denyWarnings": true,
     "maxWarnings": 0,
@@ -18,6 +36,17 @@
     "registry/base-nova/protoform/lib/protobuf-v1-bridge/**"
   ],
   "rules": {
+    // Ultracite 8.3 Landmines preset; lint:rules verifies these decisions against the installed preset.
+    "landmines-structure/colocated-tests": "error",
+    "landmines-structure/package-exports": "error",
+    "landmines-structure/test-file-names": "error",
+    "landmines-style/no-comments": ["error", { "allow": ["WARNING", "SAFETY"] }],
+    "landmines-testing/no-fixed-sleep": "error",
+    "landmines-testing/no-flake-masking": "error",
+    "landmines-testing/no-test-doubles": "error",
+    "landmines-testing/no-unsignaled-poll": "error",
+    "landmines-testing/strict-msw": "error",
+    "landmines-types/no-explicit-return-types": "error",
     // Reject assigning values from unrelated enum types.
     "typescript/no-unsafe-enum-assignment": "error",
     // Reviewed: enforce as an error, including nursery checks.
@@ -363,8 +392,8 @@
     "prefer-destructuring": "error",
     // Reviewed: enforce as an error, including nursery checks.
     "prefer-exponentiation-operator": "error",
-    // Reviewed prefer-named-capture-group: Biome/Ultracite owns this convention or rejects the opposite construct; do not add a competing style restriction.
-    "prefer-named-capture-group": "off",
+    // Oxlint owns named capture groups; Biome does not duplicate the check.
+    "prefer-named-capture-group": "error",
     // Reviewed: enforce as an error, including nursery checks.
     "prefer-numeric-literals": "error",
     // Reviewed: enforce as an error, including nursery checks.
@@ -1092,10 +1121,13 @@
     "typescript/no-base-to-string": "off",
     // Reviewed: enforce as an error, including nursery checks.
     "typescript/no-confusing-non-null-assertion": "error",
-    // Void-returning expression callbacks are the project convention; no-floating-promises separately rejects discarded async work.
-    "typescript/no-confusing-void-expression": "off",
-    // Compatibility mocks intentionally implement legacy browser APIs; stable and experimental adapters must coexist.
-    "typescript/no-deprecated": "off",
+    // A shorthand callback may discard void; capturing a void result must remain an error.
+    "typescript/no-confusing-void-expression": [
+      "error",
+      { "ignoreArrowShorthand": true, "ignoreVoidReturningFunctions": true }
+    ],
+    // Flag references to APIs whose installed declaration is deprecated.
+    "typescript/no-deprecated": "error",
     // Reviewed: enforce as an error, including nursery checks.
     "typescript/no-duplicate-enum-values": "error",
     // Reviewed: enforce as an error, including nursery checks.

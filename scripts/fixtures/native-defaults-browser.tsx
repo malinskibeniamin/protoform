@@ -76,7 +76,7 @@ function Controls({
         <Button
           onClick={() =>
             setOutput(
-              JSON.stringify(createMessage(), (_key, value: unknown): unknown =>
+              JSON.stringify(createMessage(), (_key, value: unknown) =>
                 typeof value === 'bigint' ? value.toString() : value
               )
             )

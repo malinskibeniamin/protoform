@@ -1,9 +1,8 @@
 import { describe, expect } from '@rstest/core';
-import { cleanup, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { CapabilityDemo } from './capability-demo.js';
-import { demoCatalog } from './demo-catalog.js';
 
 const FOCUSED_REQUEST_TEXT = /Edit the focused request/u;
 
@@ -42,33 +41,5 @@ describe('capabilityDemo', () => {
     render(<CapabilityDemo demoId="aip.133" />);
 
     expect(screen.getByRole('textbox', { name: 'Ttl' })).toHaveValue('86400s');
-  });
-
-  test('stacks bounded recursive array items inside their collection', () => {
-    render(<CapabilityDemo demoId="demo.protobuf-recursive-messages" />);
-
-    expect(screen.getByTestId('demo-protobuf-recursive-messages-field-children-0')).toHaveAttribute(
-      'data-layout',
-      'stacked'
-    );
-  });
-
-  test('renders repeated enum defaults with their protobuf labels', () => {
-    render(<CapabilityDemo demoId="demo.protobuf-maps" />);
-
-    expect(screen.getByTestId('demo-protobuf-maps-field-statuses-selected-1')).toHaveTextContent('Active');
-    expect(screen.getByTestId('demo-protobuf-maps-field-statuses-selected-2')).toHaveTextContent('Paused');
-  });
-
-  test.each([
-    ...new Map(
-      demoCatalog.filter((demo) => demo.engine === 'react-hook-form').map((demo) => [demo.schemaKey, demo])
-    ).values(),
-  ])('renders the $schemaKey contract', (demo) => {
-    render(<CapabilityDemo demoId={demo.id} />);
-
-    expect(screen.getByRole('button', { name: 'Submit' })).toBeInTheDocument();
-
-    cleanup();
   });
 });

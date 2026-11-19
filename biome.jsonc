@@ -846,7 +846,7 @@
         "useGlobalThis": "error",
         "useGraphqlNamingConvention": "error",
         "useGroupedAccessorPairs": "error",
-        "useImportType": "error",
+        "useImportType": { "level": "error", "options": { "style": "auto" } },
         "useInputName": "error",
         "useLiteralEnumMembers": "error",
         "useLoneExecutableDefinition": "error",
@@ -1166,29 +1166,6 @@
       }
     },
     {
-      // React 19's `act` always returns a thenable at runtime, but its void overload hides that
-      // contract from Biome's type-aware rule for async callbacks.
-      "includes": [
-        "conformance/cel-entrypoints.conformance.test.tsx",
-        "conformance/email-adapters.conformance.test.tsx",
-        "registry/base-nova/protoform/components/auto-form-tanstack-v2/__tests__/conformance.test.tsx",
-        "registry/base-nova/protoform/components/auto-form-tanstack/__tests__/conformance.test.tsx",
-        "registry/base-nova/protoform/components/auto-form/__tests__/stepper.test.tsx",
-        "registry/base-nova/protoform/hooks/use-proto-form-tanstack-v2/index.test.tsx",
-        "registry/base-nova/protoform/hooks/use-proto-form-tanstack/index.test.tsx",
-        "registry/base-nova/protoform/hooks/use-proto-form-v8/conformance.test.tsx",
-        "registry/base-nova/protoform/hooks/use-proto-form/partial-edit-validation.test.tsx",
-        "registry/base-nova/protoform/hooks/use-proto-form/use-proto-form.test.ts"
-      ],
-      "linter": {
-        "rules": {
-          "nursery": {
-            "useAwaitThenable": "off"
-          }
-        }
-      }
-    },
-    {
       // Standard Schema path keys are PropertyKey primitives, not objects. Biome loses
       // the imported union's primitive types at the recursive path-conversion boundary.
       "includes": ["registry/base-nova/protoform/lib/protobuf-provider/hook-runtime.ts"],
@@ -1220,18 +1197,6 @@
           "nursery": {},
           "complexity": {
             "useMathMinMax": "off"
-          }
-        }
-      }
-    },
-    {
-      // ResizeObserver requires instance methods even though this no-op DOM mock has no state.
-      "includes": ["rstest.shared.setup.ts"],
-      "linter": {
-        "rules": {
-          "nursery": {},
-          "style": {
-            "useThisInClassMethods": "off"
           }
         }
       }
@@ -1428,7 +1393,7 @@
     {
       // Tests are executable specifications: native controls, Node fixtures, and long scenario
       // bodies make the exercised behavior clearer than production abstractions would.
-      "includes": ["**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts", "**/*.spec.tsx"],
+      "includes": ["**/*.test.ts", "**/*.test.tsx"],
       "linter": {
         "rules": {
           "complexity": {
@@ -1566,7 +1531,7 @@
     {
       // These workflows are intentionally sequential because each iteration mutates shared
       // browser or request state before the next one starts.
-      "includes": ["e2e/docs-screenshots.spec.ts", "registry/**/lib/protobuf-provider/aip-client-workflow.ts"],
+      "includes": ["registry/**/lib/protobuf-provider/aip-client-workflow.ts"],
       "linter": {
         "rules": {
           "performance": {

@@ -83,11 +83,11 @@ interface AutoFormRuntimeProviderProps<TNativeForm> {
 class ApplySequence {
   private current = 0;
 
-  isCurrent(sequence: number): boolean {
+  isCurrent(sequence: number) {
     return this.current === sequence;
   }
 
-  next(): number {
+  next() {
     this.current += 1;
     return this.current;
   }
@@ -109,7 +109,7 @@ function buildPayloadState<TNativeForm>({
   resolvedSchema: AutoFormRuntimeProviderProps<TNativeForm>['resolvedSchema'];
   signal: AbortSignal;
   values: Record<string, unknown>;
-}): { bestEffort: boolean; payload: unknown } {
+}) {
   let validationSuccess = false;
   let validatedData: unknown;
   let bestEffort = false;

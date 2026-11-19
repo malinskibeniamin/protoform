@@ -14,7 +14,15 @@ export function wrapStringChild(
     className?: string | undefined;
   }>,
   className?: string
-): React.ReactNode {
+): React.ReactNode;
+export function wrapStringChild(
+  child: React.ReactNode,
+  Wrapper: React.ComponentType<{
+    children: React.ReactNode;
+    className?: string | undefined;
+  }>,
+  className?: string
+) {
   if (typeof child === 'string') {
     return <Wrapper className={className}>{child}</Wrapper>;
   }

@@ -1,6 +1,6 @@
 import type { AutoFormStep } from './types';
 
-export function getStepConfigurationError(steps: AutoFormStep[], defaultStep?: string): string | undefined {
+export function getStepConfigurationError(steps: AutoFormStep[], defaultStep?: string) {
   if (steps.length < 2) {
     return 'AutoForm stepper requires at least two steps.';
   }
@@ -16,9 +16,7 @@ export function getStepConfigurationError(steps: AutoFormStep[], defaultStep?: s
     ids.add(step.id);
   }
 
-  if (defaultStep !== undefined && defaultStep !== '' && !ids.has(defaultStep)) {
-    return 'AutoForm default step "'.concat(defaultStep, '" does not exist.');
-  }
-
-  return undefined;
+  return defaultStep !== undefined && defaultStep !== '' && !ids.has(defaultStep)
+    ? 'AutoForm default step "'.concat(defaultStep, '" does not exist.')
+    : undefined;
 }

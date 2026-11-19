@@ -1,6 +1,7 @@
 import { type ChildProcess, execFileSync, spawn } from 'node:child_process';
 import { once } from 'node:events';
 import { setTimeout as delay } from 'node:timers/promises';
+import { resolveDeniedGroupSignal } from './process-group-permissions.ts';
 
 const processColumns = /\s+/u;
 
@@ -23,7 +24,11 @@ function liveGroupMembers(pid: number) {
   });
 }
 
-async function signalGroup(pid: number, signal: NodeJS.Signals | 0, deadline = Date.now() + 1000): Promise<boolean> {
+const signalGroup: (pid: number, signal: NodeJS.Signals | 0, deadline?: number) => Promise<boolean> = async (
+  pid,
+  signal,
+  deadline = Date.now() + 1000
+) => {
   try {
     process.kill(-pid, signal);
     return true;
@@ -37,19 +42,15 @@ async function signalGroup(pid: number, signal: NodeJS.Signals | 0, deadline = D
     if (error.code !== 'EPERM') {
       throw error;
     }
-    const live = liveGroupMembers(pid);
-    if (live.length === 0) {
+    if (resolveDeniedGroupSignal(error, pid, liveGroupMembers(pid), Date.now(), deadline) === 'exited') {
       return false;
-    }
-    if (Date.now() >= deadline) {
-      throw new Error(`${error.message}; live test-server group ${pid}: ${live.join('; ')}`, { cause: error });
     }
     await delay(50);
     return signalGroup(pid, signal, deadline);
   }
-}
+};
 
-async function waitForGroupExit(pid: number, deadline: number): Promise<void> {
+async function waitForGroupExit(pid: number, deadline: number) {
   if ((await signalGroup(pid, 0)) && Date.now() < deadline) {
     await delay(50);
     await waitForGroupExit(pid, deadline);
@@ -82,7 +83,7 @@ async function waitForServer(child: ChildProcess, server: TestServer, signal?: A
   child.on('error', (error) => {
     failure = error;
   });
-  async function poll(): Promise<void> {
+  const poll: () => Promise<void> = async () => {
     if (Date.now() >= deadline) {
       throw new Error(`Test server ${server.url} did not become ready within ${server.timeout}ms`);
     }
@@ -98,7 +99,7 @@ async function waitForServer(child: ChildProcess, server: TestServer, signal?: A
     }
     await delay(100, undefined, signal ? { signal } : undefined);
     await poll();
-  }
+  };
   await poll();
 }
 

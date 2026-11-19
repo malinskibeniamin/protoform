@@ -1,4 +1,4 @@
-import { create, createFileRegistry, type DescMessage, fromBinary, toBinary } from '@bufbuild/protobuf';
+import { create, createFileRegistry, fromBinary, toBinary } from '@bufbuild/protobuf';
 import {
   FieldDescriptorProto_Label,
   FieldDescriptorProto_Type,
@@ -12,10 +12,7 @@ import { formValuesToProto, protoToFormValues } from './provider.js';
 
 declare const { describe, expect, test }: typeof import('bun:test');
 
-function createPreservationFixture(): {
-  nested: DescMessage;
-  root: DescMessage;
-} {
+function createPreservationFixture() {
   const file = create(FileDescriptorProtoSchema, {
     dependency: ['google/protobuf/timestamp.proto'],
     messageType: [
@@ -125,21 +122,22 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-function requireRecord(value: unknown, label: string): Record<string, unknown> {
+function requireRecord(value: unknown, label: string) {
   if (!isRecord(value)) {
     throw new Error(`Expected ${label} to be an object.`);
   }
   return value;
 }
 
-function requireArray(value: unknown, label: string): unknown[] {
+function requireArray(value: unknown, label: string) {
   if (!Array.isArray(value)) {
     throw new TypeError(`Expected ${label} to be an array.`);
   }
-  return value;
+  const elements: unknown[] = value;
+  return elements;
 }
 
-function requireElement<T>(values: readonly T[], index: number, label: string): T {
+function requireElement<T>(values: readonly T[], index: number, label: string) {
   const value = values[index];
   if (value === undefined) {
     throw new Error(`Expected ${label} at index ${index}.`);
@@ -147,11 +145,11 @@ function requireElement<T>(values: readonly T[], index: number, label: string): 
   return value;
 }
 
-function unknownFields(value: unknown, label: string): unknown {
+function unknownFields(value: unknown, label: string) {
   return requireRecord(value, label)['$unknown'];
 }
 
-function unknownBytes(marker: number): number[] {
+function unknownBytes(marker: number) {
   return [0x98, 0x06, marker];
 }
 

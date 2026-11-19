@@ -28,38 +28,41 @@ export function resolveSchema<T extends Record<string, unknown>>(
   schemaInput: AutoFormSchemaInput<T>,
   conversionOptions: ProtoConversionOptions = {},
   protoSource?: Message
-): ResolvedSchema {
+) {
   if (isSchemaProvider(schemaInput)) {
     const provider = schemaInput;
     const parsedSchema = provider.parseSchema();
 
     if (isProtoProvider(provider)) {
       const protoDesc = provider.getMessageDescriptor();
-      return {
+      const resolvedSchema: ResolvedSchema = {
         isProto: true,
         parsedSchema,
         protoDesc,
         protoSource,
         provider,
       };
+      return resolvedSchema;
     }
 
-    return {
+    const resolvedSchema: ResolvedSchema = {
       isProto: false,
       parsedSchema,
       provider,
     };
+    return resolvedSchema;
   }
 
   if (isProtoMessageDescriptor(schemaInput)) {
     const provider = new ProtoProvider(schemaInput, conversionOptions);
-    return {
+    const resolvedSchema: ResolvedSchema = {
       isProto: true,
       parsedSchema: provider.parseSchema(),
       protoDesc: schemaInput,
       protoSource,
       provider,
     };
+    return resolvedSchema;
   }
 
   throw new Error('Unsupported AutoForm schema input. Pass a SchemaProvider or a Buf message descriptor.');
@@ -67,25 +70,28 @@ export function resolveSchema<T extends Record<string, unknown>>(
 
 export function protoConversionOptionsFromFieldConfig<TCustom extends string>(
   fieldConfig: FieldConfigMap<TCustom> | undefined
-): ProtoConversionOptions {
+) {
   const emptyRepeatedStringPolicies = Object.fromEntries(
     Object.entries(fieldConfig ?? {}).flatMap(([path, config]) =>
       config.emptyRepeatedStringPolicy ? [[path, config.emptyRepeatedStringPolicy] as const] : []
     )
   );
-  return Object.keys(emptyRepeatedStringPolicies).length > 0 ? { emptyRepeatedStringPolicies } : {};
+  const result: ProtoConversionOptions =
+    Object.keys(emptyRepeatedStringPolicies).length > 0 ? { emptyRepeatedStringPolicies } : {};
+  return result;
 }
 
 export function mergeFieldOverrides<TCustom extends string = never>(
   fields: ParsedField[] | undefined,
   overrides: FieldConfigMap<TCustom> | undefined,
   path: string[] = []
-): ParsedField<FieldTypes<TCustom>>[] {
+) {
   if (!fields) {
-    return [];
+    const result: ParsedField<FieldTypes<TCustom>>[] = [];
+    return result;
   }
 
-  return sortFieldsByOrder(
+  const result: ParsedField<FieldTypes<TCustom>>[] = sortFieldsByOrder(
     fields.map((field) => {
       const fieldPath = [...path, field.key].join('.');
       const override = overrides?.[fieldPath];
@@ -117,24 +123,27 @@ export function mergeFieldOverrides<TCustom extends string = never>(
       } as ParsedField<FieldTypes<TCustom>>;
     })
   );
+  return result;
 }
 
 export type ValidatedFormValues =
   | { success: true; data: Record<string, unknown> }
   | Extract<SchemaValidation, { success: false }>;
 
-export function normalizeSchemaValidation(result: SchemaValidation): ValidatedFormValues {
+export function normalizeSchemaValidation(result: SchemaValidation) {
   if (!result.success) {
     return result;
   }
   const { data } = result;
   if (isFormValues(data)) {
-    return { data, success: true };
+    const success: ValidatedFormValues = { data, success: true };
+    return success;
   }
-  return {
+  const failure: ValidatedFormValues = {
     errors: [{ message: 'Validation returned invalid form values.', path: [] }],
     success: false,
   };
+  return failure;
 }
 
 function isFormValues(value: unknown): value is Record<string, unknown> {

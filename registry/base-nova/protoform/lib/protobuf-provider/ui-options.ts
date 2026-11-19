@@ -36,19 +36,20 @@ export interface ProtoMessageUiConfig {
   title?: string | undefined;
 }
 
-function normalizeRule(rule: ProtoUiRuleMessage): ProtoUiRule | undefined {
+function normalizeRule(rule: ProtoUiRuleMessage) {
   if (!rule.expression) {
     return;
   }
 
-  return {
+  const normalized: ProtoUiRule = {
     expression: rule.expression,
     id: rule.id || undefined,
     message: rule.message || undefined,
   };
+  return normalized;
 }
 
-function normalizeRules(rules: ProtoUiRuleMessage[] | undefined): ProtoUiRule[] | undefined {
+function normalizeRules(rules: ProtoUiRuleMessage[] | undefined) {
   if (!rules || rules.length === 0) {
     return;
   }
@@ -64,7 +65,7 @@ function normalizeRules(rules: ProtoUiRuleMessage[] | undefined): ProtoUiRule[] 
   return normalized.length > 0 ? normalized : undefined;
 }
 
-function controlTypeToFieldType(control: ControlType): string | undefined {
+function controlTypeToFieldType(control: ControlType) {
   switch (control) {
     case ControlType.TEXT:
       return 'string';
@@ -107,7 +108,7 @@ function controlTypeToFieldType(control: ControlType): string | undefined {
   }
 }
 
-function dataProviderIdToKey(id: DataProviderId): string | undefined {
+function dataProviderIdToKey(id: DataProviderId) {
   if (id === DataProviderId.UNSPECIFIED) {
     return;
   }
@@ -115,17 +116,12 @@ function dataProviderIdToKey(id: DataProviderId): string | undefined {
   return typeof name === 'string' ? name.toLowerCase() : undefined;
 }
 
-function extractDescription(options: FieldUiOptions | OneofUiOptions): string | undefined {
-  if ('description' in options) {
-    const value = options.description;
-    if (typeof value === 'string' && value.length > 0) {
-      return value;
-    }
-  }
-  return undefined;
+function extractDescription(options: FieldUiOptions | OneofUiOptions) {
+  const value = 'description' in options ? options.description : undefined;
+  return typeof value === 'string' && value.length > 0 ? value : undefined;
 }
 
-function isFieldUiEmpty(options: FieldUiOptions): boolean {
+function isFieldUiEmpty(options: FieldUiOptions) {
   return !(
     options.control !== ControlType.UNSPECIFIED ||
     options.placeholder ||
@@ -143,7 +139,7 @@ function isFieldUiEmpty(options: FieldUiOptions): boolean {
   );
 }
 
-function isOneofUiEmpty(options: OneofUiOptions): boolean {
+function isOneofUiEmpty(options: OneofUiOptions) {
   return !(
     options.help ||
     ('description' in options && options.description) ||
@@ -154,23 +150,24 @@ function isOneofUiEmpty(options: OneofUiOptions): boolean {
   );
 }
 
-function isMessageUiEmpty(options: MessageUiOptions): boolean {
+function isMessageUiEmpty(options: MessageUiOptions) {
   return !(options.title || options.description);
 }
 
-export function getProtoMessageUi(desc: DescMessage): ProtoMessageUiConfig | undefined {
+export function getProtoMessageUi(desc: DescMessage) {
   const options = getExtension(desc.proto.options ?? create(MessageOptionsSchema), message_ui);
   if (isMessageUiEmpty(options)) {
     return;
   }
 
-  return {
+  const config: ProtoMessageUiConfig | undefined = {
     description: options.description || undefined,
     title: options.title || undefined,
   };
+  return config;
 }
 
-export function getProtoFieldUi(field: DescField): ProtoFieldUiConfig | undefined {
+export function getProtoFieldUi(field: DescField) {
   const options = getExtension(field.proto.options ?? create(FieldOptionsSchema), field_ui);
   if (isFieldUiEmpty(options)) {
     return;
@@ -181,7 +178,7 @@ export function getProtoFieldUi(field: DescField): ProtoFieldUiConfig | undefine
   const docsUrl =
     'docsUrl' in options && typeof options.docsUrl === 'string' && options.docsUrl ? options.docsUrl : undefined;
 
-  return {
+  const config: ProtoFieldUiConfig | undefined = {
     control: controlTypeToFieldType(options.control),
     dataProvider: dataProviderKey,
     description: extractDescription(options),
@@ -196,15 +193,16 @@ export function getProtoFieldUi(field: DescField): ProtoFieldUiConfig | undefine
     summaryLabel: options.summaryLabel || undefined,
     visibleWhen: normalizeRules(options.visibleWhen),
   };
+  return config;
 }
 
-export function getProtoOneofUi(oneof: DescOneof): ProtoFieldUiConfig | undefined {
+export function getProtoOneofUi(oneof: DescOneof) {
   const options = getExtension(oneof.proto.options ?? create(OneofOptionsSchema), oneof_ui);
   if (isOneofUiEmpty(options)) {
     return;
   }
 
-  return {
+  const config: ProtoFieldUiConfig | undefined = {
     description: extractDescription(options),
     disabledWhen: normalizeRules(options.disabledWhen),
     help: options.help || undefined,
@@ -212,4 +210,5 @@ export function getProtoOneofUi(oneof: DescOneof): ProtoFieldUiConfig | undefine
     summaryLabel: options.summaryLabel || undefined,
     visibleWhen: normalizeRules(options.visibleWhen),
   };
+  return config;
 }

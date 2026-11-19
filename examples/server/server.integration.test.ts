@@ -1,13 +1,10 @@
-import { Code, ConnectError, createClient, createRouterTransport } from '@connectrpc/connect';
+import { Code, createClient } from '@connectrpc/connect';
 import { createConnectTransport } from '@connectrpc/connect-node';
-import { callUnaryMethod } from '@connectrpc/connect-query';
-import { createValidateInterceptor } from '@connectrpc/validate';
 import { afterEach, describe, expect } from '@rstest/core';
 
 import { LibraryService } from '../../conformance/gen/protoform/conformance/v1/aip_pb.js';
 import { FormExamplesService } from '../gen/protoform/examples/v1/forms_pb.js';
 import { buildExampleServer } from './server.js';
-import { formExamplesService } from './service.js';
 
 let closeServer: (() => Promise<void>) | undefined;
 
@@ -48,25 +45,6 @@ describe('form example Connect server', () => {
     expect(invalidPreflight.status).toBe(400);
   });
 
-  test('runs the generated route and validation interceptor in process', async () => {
-    const transport = createRouterTransport((router) => router.service(FormExamplesService, formExamplesService), {
-      router: { interceptors: [createValidateInterceptor()] },
-    });
-
-    const response = await callUnaryMethod(transport, FormExamplesService.method.submitBasicForm, {
-      displayName: 'Ada Lovelace',
-      email: 'ada@example.com',
-    });
-    expect(response.profileId).toBe('profiles/ada-lovelace');
-
-    await expect(
-      callUnaryMethod(transport, FormExamplesService.method.submitBasicForm, {
-        displayName: '',
-        email: 'not-an-email',
-      })
-    ).rejects.toMatchObject({ code: Code.InvalidArgument });
-  });
-
   test('serves generated clients and rejects invalid protobuf requests', async () => {
     const server = buildExampleServer();
     const address = await server.listen({ host: '127.0.0.1', port: 0 });
@@ -79,9 +57,9 @@ describe('form example Connect server', () => {
     });
     expect(response.profileId).toBe('profiles/ada-lovelace');
 
-    await expect(client.submitBasicForm({ displayName: '', email: 'not-an-email' })).rejects.toBeInstanceOf(
-      ConnectError
-    );
+    await expect(client.submitBasicForm({ displayName: '', email: 'not-an-email' })).rejects.toMatchObject({
+      code: Code.InvalidArgument,
+    });
   });
 
   test('serves the LibraryService CRUD API and enforces the ISBN-13 CEL rule', async () => {

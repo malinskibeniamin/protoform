@@ -9,7 +9,7 @@ interface ProtoformPluginOptions {
   runtimeImport: string;
 }
 
-function parseOptions(rawOptions: { key: string; value: string }[]): ProtoformPluginOptions {
+function parseOptions(rawOptions: { key: string; value: string }[]) {
   const runtimeImports = rawOptions.filter((option) => option.key === 'runtime_import');
   if (runtimeImports.length > 1) {
     throw new Error('runtime_import can only be specified once');
@@ -23,7 +23,7 @@ function parseOptions(rawOptions: { key: string; value: string }[]): ProtoformPl
   };
 }
 
-function generateMessageBinding(f: GeneratedFile, message: DescMessage, runtimeImport: string): void {
+function generateMessageBinding(f: GeneratedFile, message: DescMessage, runtimeImport: string) {
   const createProtoFormSchema = f.import('createProtoFormSchema', runtimeImport);
   const parseProtoSchema = f.import('parseProtoSchema', runtimeImport);
   const protoToFormValues = f.import('protoToFormValues', runtimeImport);
@@ -48,7 +48,7 @@ function generateMessageBinding(f: GeneratedFile, message: DescMessage, runtimeI
   f.print('} as const;');
 }
 
-function generateTs(schema: Schema<ProtoformPluginOptions>): void {
+function generateTs(schema: Schema<ProtoformPluginOptions>) {
   for (const file of schema.files) {
     if (file.messages.length === 0) {
       continue;

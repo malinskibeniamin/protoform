@@ -24,14 +24,15 @@ function getDrawerConfiguration(
   showSwipeHandle: boolean,
   snapPoints: DrawerPrimitive.Root.Props['snapPoints'],
   swipeDirection: DrawerContextProps['swipeDirection']
-): DrawerContextProps {
+) {
   const hasSnapPoints = snapPoints !== null && snapPoints !== undefined && snapPoints.length > 0;
-  return {
+  const configuration: DrawerContextProps = {
     hasSnapPoints,
     modal,
     showSwipeHandle,
     swipeDirection,
   };
+  return configuration;
 }
 function Drawer({
   modal = true,

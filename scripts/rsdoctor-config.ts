@@ -1,8 +1,8 @@
 import { resolve } from 'node:path';
 import type { ExtendConfigFn } from '@rstest/core';
 
-export function rsdoctorConfig(suite: string): ExtendConfigFn {
-  return async function configureRsdoctor() {
+export function rsdoctorConfig(suite: string) {
+  const configureRsdoctor: ExtendConfigFn = async () => {
     if (process.env['PROTOFORM_RSDOCTOR'] !== 'true') {
       return {};
     }
@@ -25,4 +25,5 @@ export function rsdoctorConfig(suite: string): ExtendConfigFn {
       tools: { rspack: { plugins: [plugin] } },
     };
   };
+  return configureRsdoctor;
 }

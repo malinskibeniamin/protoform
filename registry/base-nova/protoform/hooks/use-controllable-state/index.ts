@@ -19,7 +19,7 @@ export function useControllableState<T>({
   prop,
   defaultProp,
   onChange = () => undefined,
-}: UseControllableStateParams<T>): [T, SetStateFn<T>] {
+}: UseControllableStateParams<T>) {
   const [uncontrolledProp, setUncontrolledProp, onChangeRef] = useUncontrolledState({
     defaultProp,
     onChange,
@@ -38,17 +38,11 @@ export function useControllableState<T>({
     }
   };
 
-  return [value, setValue];
+  const state: [T, SetStateFn<T>] = [value, setValue];
+  return state;
 }
 
-function useUncontrolledState<T>({
-  defaultProp,
-  onChange,
-}: Omit<UseControllableStateParams<T>, 'prop'>): [
-  Value: T,
-  setValue: React.Dispatch<React.SetStateAction<T>>,
-  OnChangeRef: React.RefObject<ChangeHandler<T> | undefined>,
-] {
+function useUncontrolledState<T>({ defaultProp, onChange }: Omit<UseControllableStateParams<T>, 'prop'>) {
   const [value, setValue] = React.useState(defaultProp);
   const prevValueRef = React.useRef(value);
 
@@ -64,7 +58,12 @@ function useUncontrolledState<T>({
     }
   }, [value]);
 
-  return [value, setValue, onChangeRef];
+  const state: [
+    Value: T,
+    setValue: React.Dispatch<React.SetStateAction<T>>,
+    OnChangeRef: React.RefObject<ChangeHandler<T> | undefined>,
+  ] = [value, setValue, onChangeRef];
+  return state;
 }
 
 function isStateUpdater<T>(value: React.SetStateAction<T>): value is (previous: T) => T {

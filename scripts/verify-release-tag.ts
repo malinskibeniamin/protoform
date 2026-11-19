@@ -2,11 +2,11 @@ import { readFileSync } from 'node:fs';
 import process from 'node:process';
 import { z } from 'zod';
 
-export function expectedReleaseTag(version: string): string {
+export function expectedReleaseTag(version: string) {
   return `v${version}`;
 }
 
-export function verifyReleaseTag(tag: string | undefined, version: string): void {
+export function verifyReleaseTag(tag: string | undefined, version: string) {
   if (!(tag !== undefined && tag !== '')) {
     throw new Error('GITHUB_REF_NAME is required for a release.');
   }

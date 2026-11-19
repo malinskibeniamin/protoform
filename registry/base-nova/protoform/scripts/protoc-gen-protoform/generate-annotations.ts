@@ -2,7 +2,7 @@ import type { DescMessage } from '@bufbuild/protobuf';
 import type { GeneratedFile } from '@bufbuild/protoplugin';
 import { getProtoAnnotationEntries, type ProtoAnnotationEntry } from './source-comments.js';
 
-function printAnnotationMap(f: GeneratedFile, name: string, entries: readonly ProtoAnnotationEntry[]): void {
+function printAnnotationMap(f: GeneratedFile, name: string, entries: readonly ProtoAnnotationEntry[]) {
   if (entries.length === 0) {
     return;
   }
@@ -13,7 +13,7 @@ function printAnnotationMap(f: GeneratedFile, name: string, entries: readonly Pr
   f.print('  },');
 }
 
-export function generateMessageAnnotations(f: GeneratedFile, message: DescMessage, runtimeImport: string): string {
+export function generateMessageAnnotations(f: GeneratedFile, message: DescMessage, runtimeImport: string) {
   const registerProtoAnnotations = f.import('registerProtoAnnotations', runtimeImport);
   const messageSchema = f.importSchema(message);
   const annotationsName = `${message.name}FormAnnotations`;

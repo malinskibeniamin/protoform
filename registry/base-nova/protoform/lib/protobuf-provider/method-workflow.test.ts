@@ -39,7 +39,7 @@ function createMethodFixture({
   output = BookSchema,
   path,
   verb,
-}: MethodFixture): DescMethod {
+}: MethodFixture) {
   const options = create(MethodOptionsSchema);
   if (verb && path !== undefined && path !== '') {
     setExtension(

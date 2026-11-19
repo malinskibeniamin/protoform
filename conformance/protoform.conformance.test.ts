@@ -154,7 +154,7 @@ function getIssuePaths(
         path?: readonly (PropertyKey | { key: PropertyKey })[] | undefined;
       }[]
     | undefined
-): (string | number)[][] | undefined {
+) {
   return issues?.map((issue) =>
     (issue.path ?? []).map((segment) => {
       const key = typeof segment === 'object' && segment !== null && 'key' in segment ? segment.key : segment;

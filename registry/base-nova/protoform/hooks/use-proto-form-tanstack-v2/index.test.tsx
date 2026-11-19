@@ -60,9 +60,11 @@ describe('experimental TanStack Form v2 useProtoForm', () => {
     );
 
     let errors: Awaited<ReturnType<typeof result.current.handleSubmit>> = [];
-    await act(async () => {
-      errors = await result.current.handleSubmit();
-    });
+    await Promise.resolve(
+      act(async () => {
+        errors = await result.current.handleSubmit();
+      })
+    );
 
     expect(onSubmit).not.toHaveBeenCalled();
     expect(errors).not.toHaveLength(0);
@@ -78,9 +80,11 @@ describe('experimental TanStack Form v2 useProtoForm', () => {
       })
     );
 
-    await act(async () => {
-      await valid.current.handleSubmit();
-    });
+    await Promise.resolve(
+      act(async () => {
+        await valid.current.handleSubmit();
+      })
+    );
 
     expect(onValidSubmit).toHaveBeenCalledTimes(1);
     const [call] = onValidSubmit.mock.calls;
@@ -94,9 +98,11 @@ describe('experimental TanStack Form v2 useProtoForm', () => {
     expect(validatorOutputs[1].username).toBe('protoform_admin');
 
     const onSubmitNative = rs.fn();
-    const nativeValidator = rs.fn(() => ({
-      fields: { username: 'Native validation failed.' },
-    }));
+    let nativeValidations = 0;
+    function nativeValidator() {
+      nativeValidations += 1;
+      return { fields: { username: 'Native validation failed.' } };
+    }
     const { result: resultNative } = renderHook(() =>
       useProtoForm(AutoFormExampleSchema, {
         defaultValues: {
@@ -108,16 +114,18 @@ describe('experimental TanStack Form v2 useProtoForm', () => {
       })
     );
 
-    await act(async () => {
-      await resultNative.current.handleSubmit();
-    });
+    await Promise.resolve(
+      act(async () => {
+        await resultNative.current.handleSubmit();
+      })
+    );
 
-    expect(nativeValidator).toHaveBeenCalledTimes(1);
+    expect(nativeValidations).toBe(1);
     expect(onSubmitNative).not.toHaveBeenCalled();
   });
 });
 
-function buildValidProtoFormValues(): Record<string, unknown> {
+function buildValidProtoFormValues() {
   return {
     accessTier: 3,
     age: 34,

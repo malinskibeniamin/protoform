@@ -14,7 +14,7 @@ export interface KeyValueDiffResult {
   updated: Record<string, string>;
 }
 
-export function findDuplicateIndices<T>(items: T[], getKey: (item: T) => string): Set<number> {
+export function findDuplicateIndices<T>(items: T[], getKey: (item: T) => string) {
   const seen = new Map<string, number[]>();
   const duplicates = new Set<number>();
 
@@ -43,7 +43,7 @@ function collectPairIssues(
   pair: { key: string; value: string },
   options: KeyValuePairsSchemaOptions,
   duplicates: Set<number>
-): { message: string; path: [number, string] }[] {
+) {
   const issues: { message: string; path: [number, string] }[] = [];
   const { allowedPattern, maxKeyLength, maxValueLength } = options;
 
@@ -94,10 +94,7 @@ export function keyValuePairsSchema(options: KeyValuePairsSchemaOptions = {}) {
   });
 }
 
-export function getKeyValueDiff(
-  initial: { key: string; value: string }[],
-  current: { key: string; value: string }[]
-): KeyValueDiffResult {
+export function getKeyValueDiff(initial: { key: string; value: string }[], current: { key: string; value: string }[]) {
   const initialMap = new Map<string, string>();
   for (const { key, value } of initial) {
     if (key) {
@@ -130,7 +127,8 @@ export function getKeyValueDiff(
     }
   }
 
-  return { created, removed, updated };
+  const diff: KeyValueDiffResult = { created, removed, updated };
+  return diff;
 }
 
 export function useInputListFocus(containerRef: RefObject<HTMLElement | null>) {
@@ -173,7 +171,7 @@ export function useInputListFocus(containerRef: RefObject<HTMLElement | null>) {
   return { onAdd, onRemove };
 }
 
-export function useMemoizedArray<T>(items: T[], isEqual: (a: T, b: T) => boolean = Object.is): T[] {
+export function useMemoizedArray<T>(items: T[], isEqual: (a: T, b: T) => boolean = Object.is) {
   'use no memo';
 
   const prevRef = useRef(items);

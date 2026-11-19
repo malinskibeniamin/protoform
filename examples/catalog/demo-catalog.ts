@@ -593,7 +593,7 @@ const featureDemoDefinitions: readonly FeatureDemoDefinition[] = [
   },
 ];
 
-function slugify(value: string): string {
+function slugify(value: string) {
   return value
     .toLowerCase()
     .replaceAll(/[^a-z0-9]+/gu, '-')
@@ -642,7 +642,7 @@ const aipSchemas: Readonly<Partial<Record<number, DemoSchemaKey>>> = {
   236: 'commit-policy',
 };
 
-function schemaForAip(number: number): DemoSchemaKey {
+function schemaForAip(number: number) {
   return aipSchemas[number] ?? 'book';
 }
 
@@ -677,6 +677,6 @@ const featureDemos: DemoCatalogEntry[] = featureDemoDefinitions.map((definition)
 
 export const demoCatalog: readonly DemoCatalogEntry[] = [...aipDemos, ...featureDemos];
 
-export function getDemo(demoId: string): DemoCatalogEntry | undefined {
+export function getDemo(demoId: string) {
   return demoCatalog.find((demo) => demo.id === demoId);
 }

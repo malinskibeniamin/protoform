@@ -3,7 +3,7 @@ import { definePlaywrightConfig } from '@rstest/playwright/config';
 
 export default defineConfig({
   name: 'runner-compatibility',
-  include: ['scripts/e2e-compatibility.spec.ts'],
+  include: ['scripts/e2e-compatibility.e2e.test.ts'],
   extends: definePlaywrightConfig({}),
   testEnvironment: 'node',
 });

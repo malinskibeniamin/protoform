@@ -11,7 +11,7 @@ import type { StandardSchemaV1 } from '../core/index.js';
 import { formatProtoformMessage, type ProtoformMessageFormatter } from '../core/messages.js';
 import { humanizeValidationError } from './humanize-validation-error.js';
 
-function violationToIssue(violation: Violation, formatter?: ProtoformMessageFormatter): StandardSchemaV1.Issue {
+function violationToIssue(violation: Violation, formatter?: ProtoformMessageFormatter) {
   const path: PropertyKey[] = [];
 
   for (const segment of violation.field) {
@@ -43,13 +43,14 @@ function violationToIssue(violation: Violation, formatter?: ProtoformMessageForm
   }
 
   const message = humanizeValidationError(violation.message, formatter);
-  return path.length > 0 ? { message, path } : { message };
+  const result: StandardSchemaV1.Issue = path.length > 0 ? { message, path } : { message };
+  return result;
 }
 
 export function createDescriptorAwareStandardSchema<Desc extends DescMessage>(
   desc: Desc,
   options?: ValidatorOptions & { formatMessage?: ProtoformMessageFormatter | undefined }
-): StandardSchemaV1<MessageShape<Desc>, MessageValidType<Desc>> {
+) {
   const { formatMessage, ...validatorOptions } = options ?? {};
   const registry = createRegistry(
     desc,
@@ -58,7 +59,7 @@ export function createDescriptorAwareStandardSchema<Desc extends DescMessage>(
   );
   const validator = createValidator({ ...validatorOptions, registry });
 
-  return {
+  const standardSchema: StandardSchemaV1<MessageShape<Desc>, MessageValidType<Desc>> = {
     '~standard': {
       validate: (value) => {
         if (typeof value !== 'object' || value === null) {
@@ -98,4 +99,5 @@ export function createDescriptorAwareStandardSchema<Desc extends DescMessage>(
       version: 1,
     },
   };
+  return standardSchema;
 }

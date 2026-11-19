@@ -26,7 +26,7 @@ const MESSAGE_LEVEL_ERROR = /minimum threshold must be less than or equal to max
 const DATETIME_LOCAL_VALUE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/u;
 const REQUIRED_FIELD_ERROR = /enter a value/iu;
 
-function requireDefined<T>(value: T | undefined, name: string): T {
+function requireDefined<T>(value: T | undefined, name: string) {
   if (value === undefined) {
     throw new Error(`Expected ${name} to be present.`);
   }

@@ -73,7 +73,8 @@ export function ReactHookFormSubmission({
               return;
             }
             inFlightRef.current = true;
-            await Promise.resolve(submit(event))
+            const requestSubmit: (...args: Parameters<typeof submit>) => unknown = submit;
+            await Promise.resolve(requestSubmit(event))
               .catch(reportSubmissionError)
               .finally(() => {
                 inFlightRef.current = false;

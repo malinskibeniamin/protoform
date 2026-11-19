@@ -44,7 +44,7 @@ export const demoHubs = [
   },
 ] as const satisfies readonly DemoHubDefinition[];
 
-export function demoHubCategoryFor(category: DemoCategory): DemoHubCategory {
+export function demoHubCategoryFor(category: DemoCategory) {
   switch (category) {
     case 'aip':
     case 'cel':
@@ -68,12 +68,13 @@ const demosByHub = new Map(
   ])
 );
 
-export function demosForHub(category: DemoHubCategory): readonly DemoCatalogEntry[] {
-  return demosByHub.get(category) ?? [];
+export function demosForHub(category: DemoHubCategory) {
+  const demos: readonly DemoCatalogEntry[] = demosByHub.get(category) ?? [];
+  return demos;
 }
 
-export function getDemoHub(category: DemoHubCategory): DemoHubDefinition {
-  const hub = demoHubs.find((candidate) => candidate.category === category);
+export function getDemoHub(category: DemoHubCategory) {
+  const hub: DemoHubDefinition | undefined = demoHubs.find((candidate) => candidate.category === category);
   if (!hub) {
     throw new Error(`Missing demo hub definition for ${category}.`);
   }
@@ -92,12 +93,13 @@ export const demoRedirects = [
     status: 308,
     to: '/protobuf-examples',
   },
-  ...demoCatalog.map((demo): DemoRedirect => {
+  ...demoCatalog.map((demo) => {
     const hub = getDemoHub(demoHubCategoryFor(demo.category));
-    return {
+    const result: DemoRedirect = {
       from: demo.category === 'aip' ? `/${demo.slug}` : `/example-${demo.slug}`,
       status: 308,
       to: `/${hub.slug}#${demo.slug}`,
     };
+    return result;
   }),
 ] satisfies readonly DemoRedirect[];

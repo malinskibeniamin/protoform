@@ -1,17 +1,20 @@
 import type { DescField, DescMessage, DescOneof } from '@bufbuild/protobuf';
 
-export function protoPathToFormPath(schema: DescMessage, serverPath: string): string | null {
+export function protoPathToFormPath(schema: DescMessage, serverPath: string) {
   if (!serverPath) {
-    return null;
+    const result: string | null = null;
+    return result;
   }
-  const path = walk(schema, serverPath.replaceAll(LIST_INDEX_PATTERN, '.$1').split('.'));
-  return path ? path.join('.') : null;
+  const path = walk(schema, serverPath.replaceAll(LIST_INDEX_PATTERN, '.$<index>').split('.'));
+  const result: string | null = path ? path.join('.') : null;
+  return result;
 }
 
-const LIST_INDEX_PATTERN = /\[(\d+)\]/gu;
+const LIST_INDEX_PATTERN = /\[(?<index>\d+)\]/gu;
 const INDEX_SEGMENT_PATTERN = /^\d+$/u;
 
-function walk(current: DescMessage, segments: readonly string[]): string[] | null {
+function walk(current: DescMessage, segments: readonly string[]): string[] | null;
+function walk(current: DescMessage, segments: readonly string[]) {
   if (segments.length === 0) {
     return [];
   }
@@ -55,7 +58,8 @@ function walk(current: DescMessage, segments: readonly string[]): string[] | nul
   return tail === null ? null : [...formPath, ...tail];
 }
 
-function walkListItem(field: DescField, formPath: string[], segments: readonly string[]): string[] | null {
+function walkListItem(field: DescField, formPath: string[], segments: readonly string[]): string[] | null;
+function walkListItem(field: DescField, formPath: string[], segments: readonly string[]) {
   const [index, ...afterIndex] = segments;
   if (!(index && INDEX_SEGMENT_PATTERN.test(index))) {
     return null;
@@ -70,7 +74,8 @@ function walkListItem(field: DescField, formPath: string[], segments: readonly s
   return tail === null ? null : [...formPath, index, ...tail];
 }
 
-function walkInto(field: DescField, segments: readonly string[]): string[] | null {
+function walkInto(field: DescField, segments: readonly string[]): string[] | null;
+function walkInto(field: DescField, segments: readonly string[]) {
   if (segments.length === 0) {
     return [];
   }
@@ -79,19 +84,23 @@ function walkInto(field: DescField, segments: readonly string[]): string[] | nul
 
 type Resolved = { kind: 'field'; field: DescField } | { kind: 'oneof'; oneof: DescOneof };
 
-function findMember(message: DescMessage, protoName: string): Resolved | undefined {
+function findMember(message: DescMessage, protoName: string) {
+  let resolved: Resolved | undefined;
   for (const member of message.members) {
     if (member.kind === 'oneof') {
       if (member.name === protoName) {
-        return { kind: 'oneof', oneof: member };
+        resolved = { kind: 'oneof', oneof: member };
+        break;
       }
       const field = member.fields.find((candidate) => candidate.name === protoName);
       if (field !== undefined) {
-        return { field, kind: 'field' };
+        resolved = { field, kind: 'field' };
+        break;
       }
     } else if (member.name === protoName) {
-      return { field: member, kind: 'field' };
+      resolved = { field: member, kind: 'field' };
+      break;
     }
   }
-  return undefined;
+  return resolved;
 }

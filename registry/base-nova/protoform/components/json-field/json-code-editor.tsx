@@ -29,7 +29,7 @@ const [
 ]);
 const parseJSON = jsonParseLinter();
 
-function jsonDiagnostics(view: CodeMirrorView): Diagnostic[] {
+function jsonDiagnostics(view: CodeMirrorView) {
   const diagnostics = parseJSON(view);
   const syntaxErrors: { from: number; to: number }[] = [];
   if (diagnostics.length > 0) {
@@ -41,7 +41,7 @@ function jsonDiagnostics(view: CodeMirrorView): Diagnostic[] {
       },
     });
   }
-  return diagnostics.map((diagnostic) => {
+  const result: Diagnostic[] = diagnostics.map((diagnostic) => {
     const range =
       syntaxErrors.find((candidate) => candidate.from <= diagnostic.from && candidate.to >= diagnostic.from) ??
       syntaxErrors.at(0) ??
@@ -49,6 +49,7 @@ function jsonDiagnostics(view: CodeMirrorView): Diagnostic[] {
     const from = Math.min(range.from, Math.max(0, view.state.doc.length - 1));
     return { ...diagnostic, from, to: Math.min(view.state.doc.length, Math.max(from + 1, range.to)) };
   });
+  return result;
 }
 
 const editorTheme = EditorView.theme({

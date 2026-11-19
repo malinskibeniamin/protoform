@@ -1,24 +1,35 @@
 import { create } from '@bufbuild/protobuf';
-import { DurationSchema, timestampFromDate } from '@bufbuild/protobuf/wkt';
 import { createValidator } from '@bufbuild/protovalidate';
 import { describe, expect } from '@rstest/core';
 
+import { createProtoFormSchema } from '../registry/base-nova/protoform/lib/protobuf-provider/index.js';
 import { CelProtoLanguageMatrixSchema, MatrixStatus } from './gen/protoform/conformance/v1/conformance_pb.js';
 
 describe('cel protobuf conformance', () => {
-  test('evaluates protobuf messages, enums, presence, collections, bytes, and temporal values', () => {
-    const message = create(CelProtoLanguageMatrixSchema, {
+  test('evaluates protobuf messages, enums, presence, collections, bytes, and temporal values', async () => {
+    const schema = createProtoFormSchema(CelProtoLanguageMatrixSchema);
+    const valid = await schema['~standard'].validate({
       child: { name: 'child-primary' },
       numbers: [1, 2, 3],
       optionalValue: 'present',
-      payload: new TextEncoder().encode('proto'),
-      scores: { primary: 3 },
-      start: timestampFromDate(new Date('2025-01-01T00:00:00Z')),
+      payload: 'cHJvdG8=',
+      scores: [{ key: 'primary', value: 3 }],
+      start: '2025-01-01T00:00:00Z',
       status: MatrixStatus.ACTIVE,
-      window: create(DurationSchema, { seconds: 3600n }),
+      window: '3600s',
     });
 
-    expect(createValidator().validate(CelProtoLanguageMatrixSchema, message)).toMatchObject({ kind: 'valid' });
+    expect(valid).toMatchObject({ value: { status: MatrixStatus.ACTIVE } });
+    const invalid = await schema['~standard'].validate({});
+    expect(invalid.issues).toEqual(
+      expect.arrayContaining([
+        { message: 'Protobuf message, enum, and presence operations failed.', path: [] },
+        { message: 'Protobuf list and map operations failed.', path: [] },
+        { message: 'Protobuf bytes operations failed.', path: [] },
+        { message: 'Protobuf timestamp and duration operations failed.', path: [] },
+      ])
+    );
+    expect(invalid.issues).toHaveLength(4);
   });
 
   test('reports every protobuf CEL capability failure by stable rule id', () => {

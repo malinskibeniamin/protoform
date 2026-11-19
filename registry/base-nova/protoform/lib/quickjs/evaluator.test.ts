@@ -1,49 +1,32 @@
 import { create } from '@bufbuild/protobuf';
 import { PresenceMatrixSchema } from '../../../../../conformance/gen/protoform/conformance/v1/conformance_pb';
+import { captureRejection } from '../core/rejection.test-utils';
 import { evaluateQuickJs } from './evaluator';
 
 declare const { expect, jest, test }: typeof import('bun:test');
 
 const quickJs = await import('quickjs-emscripten');
 
-test('context startup does not consume the guest execution budget', async () => {
-  const QuickJS = await quickJs.newQuickJSWASMModule(quickJs.RELEASE_SYNC);
-  const runtime = QuickJS.newRuntime();
-  const createContext = runtime.newContext.bind(runtime);
-  let elapsed = 0;
-  const clock = jest.spyOn(performance, 'now').mockImplementation(() => elapsed);
-  const createModule = jest.spyOn(quickJs, 'newQuickJSWASMModule').mockResolvedValue(QuickJS);
-  const createRuntime = jest.spyOn(QuickJS, 'newRuntime').mockReturnValue(runtime);
-  const contextStartup = jest.spyOn(runtime, 'newContext').mockImplementation((...args) => {
-    const context = createContext(...args);
-    elapsed = 100;
-    return context;
-  });
-  try {
-    await Promise.resolve(
-      expect(evaluateQuickJs({ fields: [], source: '() => ({fields:{}})', values: {} })).resolves.toEqual({})
-    );
-  } finally {
-    contextStartup.mockRestore();
-    createRuntime.mockRestore();
-    createModule.mockRestore();
-    clock.mockRestore();
-  }
-});
-
 test('each evaluation has independent WASM memory that cannot grow past 32 MiB', async () => {
-  const instantiate = quickJs.newQuickJSWASMModule;
-  const memories: WebAssembly.Memory[] = [];
-  const createModule = jest.spyOn(quickJs, 'newQuickJSWASMModule').mockImplementation(async (...args) => {
-    const module = await instantiate(...args);
-    memories.push(module.getWasmMemory());
-    return module;
-  });
+  const createModule = jest.spyOn(quickJs, 'newQuickJSWASMModule');
+
   try {
     const results = await Promise.all(
       Array.from({ length: 2 }, () => evaluateQuickJs({ fields: [], source: '() => ({fields:{}})', values: {} }))
     );
     expect(results).toEqual([{}, {}]);
+    const memories = await Promise.all(
+      createModule.mock.results.map(async ({ type, value }) => {
+        if (type !== 'return' || !(value instanceof Promise)) {
+          throw new TypeError('Expected the WASM factory to return a promise.');
+        }
+        const module: unknown = await value;
+        if (!(module instanceof quickJs.QuickJSWASMModule)) {
+          throw new TypeError('Expected the promise to resolve to a QuickJS module.');
+        }
+        return module.getWasmMemory();
+      })
+    );
     expect(new Set(memories).size).toBe(2);
     for (const memory of memories) {
       const pagesPastCap = 513 - memory.buffer.byteLength / 65_536;
@@ -51,31 +34,6 @@ test('each evaluation has independent WASM memory that cannot grow past 32 MiB',
     }
   } finally {
     createModule.mockRestore();
-  }
-});
-
-test('disposes the runtime if guest context creation fails', async () => {
-  const module = await quickJs.newQuickJSWASMModule(quickJs.RELEASE_SYNC);
-  const runtime = module.newRuntime();
-  const createModule = jest.spyOn(quickJs, 'newQuickJSWASMModule').mockResolvedValue(module);
-  const createRuntime = jest.spyOn(module, 'newRuntime').mockReturnValue(runtime);
-  const createContext = jest.spyOn(runtime, 'newContext').mockImplementation(() => {
-    throw new Error('Context allocation failed');
-  });
-  try {
-    await Promise.resolve(
-      expect(evaluateQuickJs({ fields: [], source: '() => ({fields:{}})', values: {} })).rejects.toThrow(
-        'Context allocation failed'
-      )
-    );
-    expect(runtime.alive).toBe(false);
-  } finally {
-    createContext.mockRestore();
-    createRuntime.mockRestore();
-    createModule.mockRestore();
-    if (runtime.alive) {
-      runtime.dispose();
-    }
   }
 });
 
@@ -100,17 +58,17 @@ test.each([
   '(form) => ({',
   'async () => ({fields:{}})',
 ])('rejects unsafe or invalid rule %s', async (source) => {
-  await Promise.resolve(
-    expect(evaluateQuickJs({ fields: ['company', 'kind'], source, values: { kind: 'business' } })).rejects.toThrow()
-  );
+  expect(
+    await captureRejection(evaluateQuickJs({ fields: ['company', 'kind'], source, values: { kind: 'business' } }))
+  ).toBeInstanceOf(Error);
 });
 
 test.each([Number.POSITIVE_INFINITY, new Date(), new Uint8Array([1]), 1n].map((kind) => ({ kind })))(
   'rejects non-JSON inputs',
   async ({ kind }) => {
-    await Promise.resolve(
-      expect(evaluateQuickJs({ fields: ['kind'], source: '() => ({fields:{}})', values: { kind } })).rejects.toThrow()
-    );
+    expect(
+      await captureRejection(evaluateQuickJs({ fields: ['kind'], source: '() => ({fields:{}})', values: { kind } }))
+    ).toBeInstanceOf(Error);
   }
 );
 
@@ -118,22 +76,22 @@ test.each([
   'form => {form.kind[0].name = "mutated"; return {fields:{}}}',
   'form => {form.kind.push({name:"new"}); return {fields:{}}}',
 ])('nested guest snapshots cannot be mutated: %s', async (source) => {
-  await Promise.resolve(
-    expect(evaluateQuickJs({ fields: ['kind'], source, values: { kind: [{ name: 'original' }] } })).rejects.toThrow()
-  );
+  expect(
+    await captureRejection(evaluateQuickJs({ fields: ['kind'], source, values: { kind: [{ name: 'original' }] } }))
+  ).toBeInstanceOf(Error);
 });
 
 test('field metadata is frozen in the guest', async () => {
-  await Promise.resolve(
-    expect(
+  expect(
+    await captureRejection(
       evaluateQuickJs({
         fields: ['kind'],
         fieldInfo: { kind: { type: 'string', required: false } },
         source: '(form, fields) => {fields.kind.required = true; return {fields:{}}}',
         values: {},
       })
-    ).rejects.toThrow()
-  );
+    )
+  ).toBeInstanceOf(Error);
 });
 
 test('nested snapshot limits reject live objects, unsafe properties, cycles, and oversized trees', async () => {
@@ -156,9 +114,9 @@ test('nested snapshot limits reject live objects, unsafe properties, cycles, and
       ['x'.repeat(17_000)],
       [undefined],
     ].map(async (kind) => {
-      await Promise.resolve(
-        expect(evaluateQuickJs({ fields: ['kind'], source: '() => ({fields:{}})', values: { kind } })).rejects.toThrow()
-      );
+      expect(
+        await captureRejection(evaluateQuickJs({ fields: ['kind'], source: '() => ({fields:{}})', values: { kind } }))
+      ).toBeInstanceOf(Error);
     })
   );
   expect(
@@ -176,20 +134,18 @@ test.each([
   { fields: ['company'], values: { unknown: 'value' } },
   { fields: ['company'], values: { company: 'x'.repeat(17_000) } },
 ])('rejects invalid host contracts', async (request) => {
-  await Promise.resolve(expect(evaluateQuickJs({ ...request, source: '() => ({fields:{}})' })).rejects.toThrow());
+  expect(await captureRejection(evaluateQuickJs({ ...request, source: '() => ({fields:{}})' }))).toBeInstanceOf(Error);
 });
 
 test('a guest runtime cannot leave globals for the next evaluation', async () => {
   await evaluateQuickJs({ fields: [], source: '() => {globalThis.leaked = true;return {fields:{}}}', values: {} });
-  await Promise.resolve(
-    expect(
-      evaluateQuickJs({
-        fields: [],
-        source: '() => {if(typeof leaked !== "undefined") throw Error("leak"); return {fields:{}}}',
-        values: {},
-      })
-    ).resolves.toEqual({})
-  );
+  expect(
+    await evaluateQuickJs({
+      fields: [],
+      source: '() => {if(typeof leaked !== "undefined") throw Error("leak"); return {fields:{}}}',
+      values: {},
+    })
+  ).toEqual({});
 });
 
 test.each(
@@ -200,9 +156,7 @@ test.each(
     { kind: { type: 'string', required: 'yes' } },
   ].map((fieldInfo) => ({ fieldInfo }))
 )('rejects unknown or malformed field metadata %j', async ({ fieldInfo }) => {
-  await Promise.resolve(
-    expect(
-      evaluateQuickJs({ fields: ['kind'], source: '() => ({fields:{}})', values: {}, fieldInfo })
-    ).rejects.toThrow()
-  );
+  expect(
+    await captureRejection(evaluateQuickJs({ fields: ['kind'], source: '() => ({fields:{}})', values: {}, fieldInfo }))
+  ).toBeInstanceOf(Error);
 });

@@ -22,7 +22,7 @@ import {
 
 const validate = createFormikValidator(profileSchema);
 
-function readStatusMessages(status: unknown): string[] {
+function readStatusMessages(status: unknown) {
   return Array.isArray(status) ? status.filter((message): message is string => typeof message === 'string') : [];
 }
 

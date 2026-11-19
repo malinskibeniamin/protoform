@@ -4,7 +4,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-function redactCredentials(payload: unknown): unknown {
+function redactCredentials(payload: unknown) {
   if (!isRecord(payload)) {
     return payload;
   }

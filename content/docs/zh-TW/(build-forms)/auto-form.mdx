@@ -9,6 +9,8 @@ AutoForm 會讀取 protobuf descriptor 與選用的 UI 註解來產生欄位。
 `@/components/auto-form-tanstack` 匯入，即可讓 TanStack Form 管理狀態。兩者使用相同的
 renderer、欄位、驗證生命週期、stepper，以及 protobuf 提交契約。
 
+如果使用 Formisch 管理表單狀態，請參考 [Formisch 指南](/docs/zh-TW/formisch) 安裝對應的 AutoForm 配接器。
+
 ```tsx
 import { AutoForm } from "@/components/auto-form";
 import { CreateConnectorRequestSchema } from "@/gen/example/v1/connector_pb";

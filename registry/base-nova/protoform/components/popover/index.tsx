@@ -19,7 +19,7 @@ interface PopoverContextType {
 
 const PopoverContext = React.createContext<PopoverContextType | undefined>(undefined);
 
-const usePopover = (): PopoverContextType => {
+const usePopover = () => {
   const context = React.useContext(PopoverContext);
   if (context === undefined) {
     throw new Error('usePopover must be used within a Popover');

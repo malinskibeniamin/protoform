@@ -11,7 +11,7 @@ export default defineConfig({
     headless: true,
     provider: 'playwright',
   },
-  include: ['registry/**/*.browser.test.tsx'],
+  include: ['registry/**/*.browser.test.tsx', 'components/**/*.browser.test.tsx', 'examples/**/*.browser.test.tsx'],
   plugins: [
     pluginReact({
       reactCompiler: {
@@ -21,5 +21,5 @@ export default defineConfig({
       },
     }),
   ],
-  setupFiles: ['./rstest.browser.setup.ts'],
+  setupFiles: ['./rstest.setup.ts'],
 });

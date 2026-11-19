@@ -28,7 +28,7 @@ export function evaluateUiRules(
     form: Record<string, unknown>;
     thisValue: unknown;
   }
-): boolean {
+) {
   if (!rules || rules.length === 0) {
     return true;
   }

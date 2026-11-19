@@ -12,7 +12,8 @@ import {
 
 const PARENT_PATTERN = /^publishers\/[a-z0-9][a-z0-9-]{2,63}$/u;
 const BOOK_ID_PATTERN = /^[a-z][a-z0-9-]{2,62}[a-z0-9]$/u;
-const BOOK_NAME_PATTERN = /^(publishers\/[a-z0-9][a-z0-9-]{2,63})\/books\/([a-z][a-z0-9-]{2,62}[a-z0-9])$/u;
+const BOOK_NAME_PATTERN =
+  /^(?<parent>publishers\/[a-z0-9][a-z0-9-]{2,63})\/books\/(?<bookId>[a-z][a-z0-9-]{2,62}[a-z0-9])$/u;
 const DEFAULT_TTL_MS = 30 * 60 * 1000;
 const DEFAULT_MAX_LIBRARIES = 500;
 const DEFAULT_MAX_BOOKS = 20;
@@ -33,7 +34,7 @@ export interface LibraryServiceOptions {
   ttlMs?: number;
 }
 
-function fieldError(field: string, description: string): ConnectError {
+function fieldError(field: string, description: string) {
   return new ConnectError('Review the highlighted fields.', Code.InvalidArgument, undefined, [
     {
       desc: BadRequestSchema,
@@ -42,25 +43,25 @@ function fieldError(field: string, description: string): ConnectError {
   ]);
 }
 
-function connectError(code: Code, message: string): ConnectError {
+function connectError(code: Code, message: string) {
   return new ConnectError(message, code);
 }
 
-function parentFromName(name: string): string {
-  const match = BOOK_NAME_PATTERN.exec(name);
-  if (!match?.[1]) {
+function parentFromName(name: string) {
+  const parent = BOOK_NAME_PATTERN.exec(name)?.groups?.['parent'];
+  if (parent === undefined || parent === '') {
     throw fieldError('name', 'Enter a book name such as publishers/my-library/books/my-book.');
   }
-  return match[1];
+  return parent;
 }
 
-function validateParent(parent: string): void {
+function validateParent(parent: string) {
   if (!PARENT_PATTERN.test(parent)) {
     throw fieldError('parent', 'Enter a publisher name such as publishers/my-library.');
   }
 }
 
-function validateBookId(bookId: string): void {
+function validateBookId(bookId: string) {
   if (!BOOK_ID_PATTERN.test(bookId)) {
     throw fieldError('book_id', 'Use 4–64 lowercase letters, numbers, or hyphens, starting with a letter.');
   }
@@ -70,7 +71,7 @@ function isUpdatableBookPath(path: string): path is UpdatableBookPath {
   return UPDATABLE_BOOK_PATH_SET.has(path);
 }
 
-function populatedUpdatableBookPaths(book: Book): UpdatableBookPath[] {
+function populatedUpdatableBookPaths(book: Book) {
   const paths: UpdatableBookPath[] = [];
   if (book.displayName !== '') {
     paths.push('display_name');
@@ -90,7 +91,7 @@ export function createLibraryService({
   const libraries = new Map<string, LibraryState>();
   let version = 0;
 
-  function nextEtag(): string {
+  function nextEtag() {
     version += 1;
     return `v${version}`;
   }
@@ -110,7 +111,7 @@ export function createLibraryService({
     });
   }
 
-  function pruneExpired(): void {
+  function pruneExpired() {
     const currentTime = now();
     for (const [parent, library] of libraries) {
       if (library.expiresAt <= currentTime) {
@@ -125,7 +126,7 @@ export function createLibraryService({
     }
   }
 
-  function seedLibrary(parent: string): LibraryState {
+  function seedLibrary(parent: string) {
     const first = makeBook(
       parent,
       'designing-data-intensive-applications',
@@ -151,7 +152,7 @@ export function createLibraryService({
     };
   }
 
-  function getLibrary(parent: string): LibraryState {
+  function getLibrary(parent: string) {
     validateParent(parent);
     pruneExpired();
     let library = libraries.get(parent);

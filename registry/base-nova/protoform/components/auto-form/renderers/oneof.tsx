@@ -157,14 +157,14 @@ export function OneofFieldRenderer({
   );
 }
 
-function withoutHeading(variant: ParsedField): ParsedField {
+function withoutHeading(variant: ParsedField) {
   if (variant.type !== 'object' || isEmptyVariant(variant)) {
     return variant;
   }
   return { ...variant, fieldConfig: { ...variant.fieldConfig, label: '' } };
 }
 
-function isEmptyVariant(variant: ParsedField | undefined): boolean {
+function isEmptyVariant(variant: ParsedField | undefined) {
   return variant?.type === 'object' && !(variant.schema && variant.schema.length > 0);
 }
 

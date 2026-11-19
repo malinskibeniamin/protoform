@@ -18,7 +18,7 @@ export interface ProtoformCliArguments {
 
 const USAGE = 'Usage: protoform audit [config.ts ...] [--format json|sarif]';
 
-export function parseProtoformCliArguments(arguments_: readonly string[]): ProtoformCliArguments {
+export function parseProtoformCliArguments(arguments_: readonly string[]) {
   const [command, ...options] = arguments_;
   if (command !== 'audit') {
     throw new Error('Unknown command "'.concat(command ?? '', '". ', USAGE));
@@ -62,7 +62,7 @@ function isAuditTarget(value: unknown): value is AutoFormAuditTarget {
   );
 }
 
-async function loadAuditTargets(configPath: string): Promise<AutoFormAuditTarget[]> {
+async function loadAuditTargets(configPath: string) {
   const modulePath = pathToFileURL(resolve(configPath)).href;
   const module: unknown = await import(modulePath);
   if (typeof module !== 'object' || module === null) {
@@ -76,7 +76,7 @@ async function loadAuditTargets(configPath: string): Promise<AutoFormAuditTarget
   return candidate;
 }
 
-export async function runProtoformCli(arguments_: readonly string[]): Promise<0 | 1> {
+export async function runProtoformCli(arguments_: readonly string[]) {
   const parsed = parseProtoformCliArguments(arguments_);
   const resolvedValues1 = await Promise.all(parsed.configPaths.map(loadAuditTargets));
   const targets = resolvedValues1.flat();

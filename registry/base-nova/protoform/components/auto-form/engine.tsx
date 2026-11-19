@@ -69,7 +69,7 @@ export function AutoFormEngineProvider({ children, engine }: { children: React.R
   return <AutoFormEngineContext.Provider value={engine}>{children}</AutoFormEngineContext.Provider>;
 }
 
-export function useAutoFormEngine(): AutoFormEngine {
+export function useAutoFormEngine() {
   const engine = React.useContext(AutoFormEngineContext);
   if (!(engine !== null && Boolean(engine))) {
     throw new Error('AutoForm engine controls must be used inside an AutoForm engine provider.');
@@ -77,23 +77,18 @@ export function useAutoFormEngine(): AutoFormEngine {
   return engine;
 }
 
-export function errorMessage(value: unknown): string | undefined {
+export function errorMessage(value: unknown) {
   if (typeof value === 'string') {
     return value;
   }
   if (value instanceof Error) {
     return value.message;
   }
-  if (value !== null && typeof value === 'object') {
-    const message: unknown = Reflect.get(value, 'message');
-    if (typeof message === 'string') {
-      return message;
-    }
-  }
-  return undefined;
+  const message: unknown = value !== null && typeof value === 'object' ? Reflect.get(value, 'message') : undefined;
+  return typeof message === 'string' ? message : undefined;
 }
 
-export function errorMessages(values: unknown[]): string[] {
+export function errorMessages(values: unknown[]) {
   return values.map(errorMessage).filter((message): message is string => Boolean(message));
 }
 

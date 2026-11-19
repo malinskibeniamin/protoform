@@ -11,7 +11,8 @@ type Storage =
   | { kind: 'array'; item: Storage }
   | { kind: 'object'; entries: Record<string, Storage> };
 
-function fieldStorage(field: ParsedField): Storage {
+function fieldStorage(field: ParsedField): Storage;
+function fieldStorage(field: ParsedField) {
   if (field.type === 'object' && field.schema) {
     return objectStorage(field.schema);
   }
@@ -27,8 +28,8 @@ function fieldStorage(field: ParsedField): Storage {
   return { kind: 'leaf' };
 }
 
-export function objectStorage(fields: ParsedField[]): Extract<Storage, { kind: 'object' }> {
-  return {
+export function objectStorage(fields: ParsedField[]) {
+  const result: Extract<Storage, { kind: 'object' }> = {
     entries: Object.fromEntries(
       fields.map((field) => {
         if (Object.hasOwn(Object.prototype, field.key)) {
@@ -39,9 +40,11 @@ export function objectStorage(fields: ParsedField[]): Extract<Storage, { kind: '
     ),
     kind: 'object',
   };
+  return result;
 }
 
-function storageSchema(storage: Storage): GenericSchema {
+function storageSchema(storage: Storage): GenericSchema;
+function storageSchema(storage: Storage) {
   if (storage.kind === 'object') {
     return nullish(objectSchema(storage));
   }
@@ -90,11 +93,14 @@ export function storagePath(storage: Storage, name: string) {
   return { field, remaining: keys.slice(path.length), storage: current };
 }
 
-function ownValue(value: unknown, key: Segment): unknown {
-  return typeof value === 'object' && value !== null && Object.hasOwn(value, key) ? Reflect.get(value, key) : undefined;
+function ownValue(value: unknown, key: Segment) {
+  const property: unknown =
+    typeof value === 'object' && value !== null && Object.hasOwn(value, key) ? Reflect.get(value, key) : undefined;
+  return property;
 }
 
-function withPathValue(input: unknown, path: string[], value: unknown): unknown {
+function withPathValue(input: unknown, path: string[], value: unknown): unknown;
+function withPathValue(input: unknown, path: string[], value: unknown) {
   const [head, ...rest] = path;
   if (head === undefined) {
     return value;
@@ -112,15 +118,16 @@ function withPathValue(input: unknown, path: string[], value: unknown): unknown 
   return { ...(typeof input === 'object' && input !== null ? input : {}), [head]: next };
 }
 
-function readFieldInput(form: FormischAutoFormApi, path: RequiredPath): unknown {
-  return Reflect.apply(getInput, undefined, [form, { path }]);
+function readFieldInput(form: FormischAutoFormApi, path: RequiredPath) {
+  const input: unknown = Reflect.apply(getInput, undefined, [form, { path }]);
+  return input;
 }
 
 export function clearFieldError(form: FormischAutoFormApi, path: RequiredPath) {
   Reflect.apply(setErrors, undefined, [form, { errors: null, path }]);
 }
 
-export function useGeneratedArrayKeys(form: FormischAutoFormApi, path: RequiredPath): string[] {
+export function useGeneratedArrayKeys(form: FormischAutoFormApi, path: RequiredPath) {
   const field: unknown = Reflect.apply(useFieldArray, undefined, [form, { path }]);
   const items = ownValue(field, 'items');
   if (!(Array.isArray(items) && items.every((item: unknown): item is string => typeof item === 'string'))) {
@@ -147,7 +154,7 @@ export function setGeneratedValue(form: FormischAutoFormApi, storage: Storage, n
   Reflect.apply(setInput, undefined, [form, { input, path: path.field }]);
 }
 
-export function errorTree(issues: Array<{ message: string; path: Segment[] }>): Values {
+export function errorTree(issues: Array<{ message: string; path: Segment[] }>) {
   const errors: Values = {};
   for (const issue of issues) {
     let current = errors;

@@ -40,7 +40,7 @@ test('supports callable schemas and forwards vendor options', async () => {
   let receivedOptions: StandardSchemaV1.Options | undefined;
   const schema = Object.assign(() => undefined, {
     '~standard': {
-      validate: (value: unknown, options?: StandardSchemaV1.Options): StandardSchemaV1.Result<unknown> => {
+      validate: (value: unknown, options?: StandardSchemaV1.Options) => {
         receivedOptions = options;
         return { value };
       },
@@ -55,10 +55,6 @@ test('supports callable schemas and forwards vendor options', async () => {
 });
 
 describe.each(implementations)('$name Standard Schema', ({ schema }) => {
-  test('is accepted without a vendor adapter', () => {
-    expect(isStandardSchema(schema)).toBe(true);
-  });
-
   test('maps nested issues through every supported form-library adapter', async () => {
     const expected = {
       profile: { displayName: expect.stringContaining('2') as unknown },

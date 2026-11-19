@@ -11,10 +11,10 @@ function isFormValueObject(value: unknown): value is FormValues {
 export function createProtoFormSchema<Input extends object = FormValues, Desc extends DescMessage = DescMessage>(
   desc: Desc,
   options: ProtoFormOptions = {}
-): StandardSchemaV1<Input, MessageValidType<Desc>> {
+) {
   const messageSchema = createDescriptorAwareStandardSchema(desc, options);
 
-  return {
+  const standardSchema: StandardSchemaV1<Input, MessageValidType<Desc>> = {
     '~standard': {
       validate: (value) => {
         if (!isFormValueObject(value)) {
@@ -28,4 +28,5 @@ export function createProtoFormSchema<Input extends object = FormValues, Desc ex
       version: 1,
     },
   };
+  return standardSchema;
 }

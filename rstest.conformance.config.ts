@@ -1,17 +1,13 @@
 import { pluginReact } from '@rsbuild/plugin-react';
 import { defineConfig } from '@rstest/core';
 
+import { happyDom } from './scripts/dom-test-environment';
 import { rsdoctorConfig } from './scripts/rsdoctor-config';
 
-export default defineConfig({
+const base = defineConfig({
   extends: rsdoctorConfig('conformance'),
   globals: true,
-  include: [
-    'conformance/**/*.conformance.test.ts',
-    'conformance/**/*.conformance.test.tsx',
-    'examples/tanstack/tanstack-form.test.tsx',
-    'examples/form-libraries/form-libraries.test.tsx',
-  ],
+  include: ['conformance/**/*.conformance.test.ts', 'conformance/**/*.conformance.test.tsx'],
   output: {
     externals: [/^zod(?:\/|$)/u],
   },
@@ -25,8 +21,19 @@ export default defineConfig({
     }),
   ],
   setupFiles: ['./rstest.setup.ts'],
-  testEnvironment: {
-    name: 'happy-dom',
-    options: { settings: { disableCSSFileLoading: true, disableIframePageLoading: true } },
-  },
+  testEnvironment: happyDom,
+});
+
+const celEntryPointsTest = 'conformance/cel-entrypoints.conformance.test.tsx';
+
+export default defineConfig({
+  projects: [
+    { ...base, name: 'conformance', exclude: [celEntryPointsTest] },
+    {
+      ...base,
+      name: 'conformance-dom-interop',
+      include: [celEntryPointsTest],
+      testEnvironment: 'jsdom',
+    },
+  ],
 });

@@ -28,15 +28,15 @@ const ACRONYMS: Record<string, string> = {
   yaml: 'YAML',
 };
 
-function applyAcronyms(label: string): string {
+function applyAcronyms(label: string) {
   return label.replaceAll(/\b[A-Za-z]+\b/gu, (word) => ACRONYMS[word.toLowerCase()] ?? word);
 }
 
-function beautifyLabel(label: string): string {
+function beautifyLabel(label: string) {
   if (!label) {
     return '';
   }
-  let output = label.replaceAll(/([A-Z])/gu, ' $1');
+  let output = label.replaceAll(/(?<uppercase>[A-Z])/gu, ' $<uppercase>');
   output = output.charAt(0).toUpperCase() + output.slice(1);
   if (!Number.isNaN(Number(output))) {
     return '';
@@ -47,7 +47,7 @@ function beautifyLabel(label: string): string {
   return applyAcronyms(output);
 }
 
-export function getLabel(field: ParsedField): string {
+export function getLabel(field: ParsedField) {
   for (const label of [field.fieldConfig?.label, field.description]) {
     if (typeof label === 'number' || (typeof label === 'string' && label !== '')) {
       return String(label);
@@ -56,18 +56,18 @@ export function getLabel(field: ParsedField): string {
   return beautifyLabel(field.key);
 }
 
-export function sortFieldsByOrder<TFieldType extends string = string>(
-  fields: ParsedField<TFieldType>[] | undefined
-): ParsedField<TFieldType>[] {
+export function sortFieldsByOrder<TFieldType extends string = string>(fields: ParsedField<TFieldType>[] | undefined) {
   if (!fields) {
-    return [];
+    const result: ParsedField<TFieldType>[] = [];
+    return result;
   }
-  return fields
+  const result: ParsedField<TFieldType>[] = fields
     .map((field) => (field.schema ? { ...field, schema: sortFieldsByOrder(field.schema) } : field))
     .sort((a, b) => (a.fieldConfig?.order ?? 0) - (b.fieldConfig?.order ?? 0));
+  return result;
 }
 
-export function getPathInObject(obj: Record<string, unknown>, path: string[]): unknown {
+export function getPathInObject(obj: Record<string, unknown>, path: string[]) {
   let current: unknown = obj;
   for (const key of path) {
     if (typeof current !== 'object' || current === null || !Object.hasOwn(current, key)) {

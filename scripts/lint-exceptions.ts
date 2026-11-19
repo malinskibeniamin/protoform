@@ -13,7 +13,7 @@ const SOURCE_EXTENSIONS = ['ts', 'tsx', 'js', 'jsx'];
 const PROBE_OWNERS = ['__boundary_owner_a__', '__boundary_owner_b__'];
 const WEAKER_SEVERITIES = new Set(['off', 'warn', 'info']);
 
-function isUnboundedPattern(pattern: string): boolean {
+function isUnboundedPattern(pattern: string) {
   const normalized = posix.normalize(pattern);
   return STRUCTURAL_ROOTS.some((root) =>
     SOURCE_EXTENSIONS.some((extension) =>
@@ -22,30 +22,30 @@ function isUnboundedPattern(pattern: string): boolean {
   );
 }
 
-function propertyName(name: ts.PropertyName): string | undefined {
+function propertyName(name: ts.PropertyName) {
   return ts.isIdentifier(name) || ts.isStringLiteral(name) ? name.text : undefined;
 }
 
-function propertyValue(object: ts.ObjectLiteralExpression, name: string): ts.Expression | undefined {
+function propertyValue(object: ts.ObjectLiteralExpression, name: string) {
   const property = object.properties.find(
     (entry): entry is ts.PropertyAssignment => ts.isPropertyAssignment(entry) && propertyName(entry.name) === name
   );
   return property?.initializer;
 }
 
-function hasWeakerSeverity(node: ts.Node): boolean {
+const hasWeakerSeverity: (node: ts.Node) => boolean = (node) => {
   if (ts.isStringLiteral(node) && WEAKER_SEVERITIES.has(node.text)) {
     return true;
   }
   return ts.forEachChild(node, hasWeakerSeverity) ?? false;
-}
+};
 
-function isException(override: ts.ObjectLiteralExpression): boolean {
+function isException(override: ts.ObjectLiteralExpression) {
   const rules = propertyValue(override, 'rules');
   return (rules !== undefined && ts.isArrayLiteralExpression(rules)) || hasWeakerSeverity(override);
 }
 
-function inspectPattern(pattern: string, sourcePaths: readonly string[]): string[] {
+function inspectPattern(pattern: string, sourcePaths: readonly string[]) {
   if (isUnboundedPattern(pattern)) {
     return ['Exception must name a bounded owner, not all source.'];
   }
@@ -55,7 +55,7 @@ function inspectPattern(pattern: string, sourcePaths: readonly string[]): string
   return [`Selector "${pattern}" matches no source files. Remove or correct the stale exception.`];
 }
 
-function inspectSelectors(override: ts.ObjectLiteralExpression, sourcePaths: readonly string[]): string[] {
+function inspectSelectors(override: ts.ObjectLiteralExpression, sourcePaths: readonly string[]) {
   const selectors = propertyValue(override, 'files') ?? propertyValue(override, 'includes');
   if (!(selectors && ts.isArrayLiteralExpression(selectors))) {
     return ['Exception must declare static files/includes selectors.'];
@@ -82,18 +82,14 @@ function inspectSelectors(override: ts.ObjectLiteralExpression, sourcePaths: rea
   return messages;
 }
 
-function collectOverrideArrays(node: ts.Node, found: ts.PropertyAssignment[]): void {
+function collectOverrideArrays(node: ts.Node, found: ts.PropertyAssignment[]) {
   if (ts.isPropertyAssignment(node) && propertyName(node.name) === 'overrides') {
     found.push(node);
   }
   ts.forEachChild(node, (child) => collectOverrideArrays(child, found));
 }
 
-export function auditLintExceptions(
-  file: string,
-  source: string,
-  sourcePaths: readonly string[]
-): LintExceptionDiagnostic[] {
+export function auditLintExceptions(file: string, source: string, sourcePaths: readonly string[]) {
   const text = file.endsWith('.jsonc') ? `const config = ${source};` : source;
   const parsed = ts.createSourceFile('config.ts', text, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
   const lineOf = (node: ts.Node) => parsed.getLineAndCharacterOfPosition(node.getStart(parsed)).line + 1;
@@ -113,7 +109,7 @@ export function auditLintExceptions(
   });
 }
 
-function normalizeBiomeRuleGroups(override: ts.ObjectLiteralExpression): ts.ObjectLiteralExpression {
+function normalizeBiomeRuleGroups(override: ts.ObjectLiteralExpression) {
   const linter = propertyValue(override, 'linter');
   if (!(linter && ts.isObjectLiteralExpression(linter))) {
     return override;
@@ -154,7 +150,7 @@ function normalizeBiomeRuleGroups(override: ts.ObjectLiteralExpression): ts.Obje
   );
 }
 
-function ruleLevel(node: ts.Expression): string | undefined {
+function ruleLevel(node: ts.Expression) {
   if (ts.isStringLiteral(node)) {
     return node.text;
   }
@@ -162,14 +158,11 @@ function ruleLevel(node: ts.Expression): string | undefined {
     const [first] = node.elements;
     return first && ts.isStringLiteral(first) ? first.text : undefined;
   }
-  if (ts.isObjectLiteralExpression(node)) {
-    const level = propertyValue(node, 'level');
-    return level && ts.isStringLiteral(level) ? level.text : undefined;
-  }
-  return undefined;
+  const level = ts.isObjectLiteralExpression(node) ? propertyValue(node, 'level') : undefined;
+  return level !== undefined && ts.isStringLiteral(level) ? level.text : undefined;
 }
 
-function rulePolicies(file: string, config: ts.ObjectLiteralExpression): Map<string, string> {
+function rulePolicies(file: string, config: ts.ObjectLiteralExpression) {
   const linter = file === 'biome.jsonc' ? propertyValue(config, 'linter') : config;
   const rules = linter && ts.isObjectLiteralExpression(linter) ? propertyValue(linter, 'rules') : undefined;
   if (rules && ts.isArrayLiteralExpression(rules)) {
@@ -198,11 +191,11 @@ function rulePolicies(file: string, config: ts.ObjectLiteralExpression): Map<str
   );
 }
 
-function configPolicies(file: string, source: string): Map<string, string> {
+function configPolicies(file: string, source: string) {
   const text = file.endsWith('.jsonc') ? `const config = ${source};` : source;
   const parsed = ts.createSourceFile('config.ts', text, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
   let root: ts.ObjectLiteralExpression | undefined;
-  function visit(node: ts.Node): void {
+  function visit(node: ts.Node) {
     if (root) {
       return;
     }
@@ -222,7 +215,7 @@ interface ExceptionPolicy {
   selectors: string[];
 }
 
-function exceptionFingerprint(file: string, node: ts.ObjectLiteralExpression, parsed: ts.SourceFile): string {
+function exceptionFingerprint(file: string, node: ts.ObjectLiteralExpression, parsed: ts.SourceFile) {
   const printed = ts
     .createPrinter({ removeComments: true })
     .printNode(ts.EmitHint.Unspecified, file === 'biome.jsonc' ? normalizeBiomeRuleGroups(node) : node, parsed);
@@ -236,14 +229,14 @@ function exceptionFingerprint(file: string, node: ts.ObjectLiteralExpression, pa
   return JSON.stringify(value);
 }
 
-function literalSelectors(node: ts.ObjectLiteralExpression): string[] {
+function literalSelectors(node: ts.ObjectLiteralExpression) {
   const selectors = propertyValue(node, 'includes') ?? propertyValue(node, 'files');
   return selectors && ts.isArrayLiteralExpression(selectors)
     ? selectors.elements.filter(ts.isStringLiteral).map((entry) => entry.text)
     : [];
 }
 
-function exceptionPolicies(file: string, source: string, onlyWeak = true): ExceptionPolicy[] {
+function exceptionPolicies(file: string, source: string, onlyWeak = true) {
   const text = file.endsWith('.jsonc') ? `const config = ${source};` : source;
   const parsed = ts.createSourceFile('config.ts', text, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
   const assignments: ts.PropertyAssignment[] = [];
@@ -266,7 +259,7 @@ function exceptionPolicies(file: string, source: string, onlyWeak = true): Excep
   );
 }
 
-function scopeIsContained(candidate: readonly string[], previous: readonly string[]): boolean {
+function scopeIsContained(candidate: readonly string[], previous: readonly string[]) {
   const positive = previous.filter((selector) => !selector.startsWith('!'));
   const negative = previous.filter((selector) => selector.startsWith('!'));
   return (
@@ -281,7 +274,7 @@ function scopeIsContained(candidate: readonly string[], previous: readonly strin
   );
 }
 
-function ownerCoversRule(candidate: ExceptionPolicy, owner: ExceptionPolicy, rule: string, level: string): boolean {
+function ownerCoversRule(candidate: ExceptionPolicy, owner: ExceptionPolicy, rule: string, level: string) {
   const severity = new Map([
     ['off', 0],
     ['info', 1],
@@ -352,7 +345,7 @@ const APPROVED_BIOME_2_6_EXCEPTIONS = JSON.stringify({
   ],
 });
 
-export function newLintExceptions(file: string, source: string, baseline: string): string[] {
+export function newLintExceptions(file: string, source: string, baseline: string) {
   const previous = exceptionPolicies(file, baseline);
   const previouslyScopedRules = new Set(
     exceptionPolicies(file, baseline, false).flatMap((scope) => [...scope.rules.keys()])
@@ -365,7 +358,7 @@ export function newLintExceptions(file: string, source: string, baseline: string
   const weakenedGlobals = [...before]
     .filter(([rule, level]) => level === 'error' && after.has(rule) && after.get(rule) !== 'error')
     .map(([rule]) => `Global rule ${rule} was weakened from error to ${after.get(rule)}.`);
-  function isWeakening(candidate: ExceptionPolicy): boolean {
+  function isWeakening(candidate: ExceptionPolicy) {
     if (fingerprints.has(candidate.fingerprint)) {
       return false;
     }

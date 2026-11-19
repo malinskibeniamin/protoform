@@ -1,13 +1,14 @@
 import type { AutoFormMode } from '../types';
 
-export function normalizeModes(modes: AutoFormMode[] | undefined): AutoFormMode[] {
+export function normalizeModes(modes: AutoFormMode[] | undefined) {
   const resolved = (modes && modes.length > 0 ? modes : ['advanced']).filter(
     (mode): mode is AutoFormMode => mode === 'simple' || mode === 'advanced' || mode === 'json'
   );
-  return resolved.length > 0 ? [...new Set(resolved)] : ['advanced'];
+  const availableModes: AutoFormMode[] = resolved.length > 0 ? [...new Set(resolved)] : ['advanced'];
+  return availableModes;
 }
 
-export function resolveInitialMode(availableModes: AutoFormMode[], defaultMode?: AutoFormMode): AutoFormMode {
+export function resolveInitialMode(availableModes: AutoFormMode[], defaultMode?: AutoFormMode) {
   if (defaultMode && availableModes.includes(defaultMode)) {
     return defaultMode;
   }

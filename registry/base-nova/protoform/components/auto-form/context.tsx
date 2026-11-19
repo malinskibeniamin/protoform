@@ -22,7 +22,7 @@ export interface AutoFormContextValue {
 
 export const AutoFormContext = React.createContext<AutoFormContextValue | null>(null);
 
-export function useAutoForm(): AutoFormContextValue {
+export function useAutoForm() {
   const context = React.useContext(AutoFormContext);
   if (context === null) {
     throw new Error('useAutoForm must be used inside an AutoForm component.');
@@ -57,10 +57,12 @@ export type InternalAutoFormRuntimeContextValue = Pick<
 export const AutoFormRenderContext = AutoFormContext;
 export const AutoFormRuntimeContext = AutoFormContext;
 
-export function useAutoFormRenderContext(): InternalAutoFormRenderContextValue {
-  return useAutoForm();
+export function useAutoFormRenderContext() {
+  const result: InternalAutoFormRenderContextValue = useAutoForm();
+  return result;
 }
 
-export function useAutoFormRuntimeContext(): InternalAutoFormRuntimeContextValue {
-  return useAutoForm();
+export function useAutoFormRuntimeContext() {
+  const result: InternalAutoFormRuntimeContextValue = useAutoForm();
+  return result;
 }

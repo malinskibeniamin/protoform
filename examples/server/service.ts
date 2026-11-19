@@ -13,7 +13,7 @@ export {
   libraryService,
 } from '../../registry/base-nova/protoform/demo/bookstore/library-service.js';
 
-function fieldError(field: string, description: string): ConnectError {
+function fieldError(field: string, description: string) {
   return new ConnectError('Review the highlighted fields.', Code.InvalidArgument, undefined, [
     {
       desc: BadRequestSchema,
@@ -22,7 +22,7 @@ function fieldError(field: string, description: string): ConnectError {
   ]);
 }
 
-function profileId(displayName: string): string {
+function profileId(displayName: string) {
   const slug = displayName
     .trim()
     .toLowerCase()

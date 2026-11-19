@@ -36,8 +36,8 @@ Chromium at 1100×800 and 390×844:
 
 | Desktop                                                                                                     | Mobile                                                                                                               |
 | ----------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| ![Host form](../../scripts/__screenshots__/host-consumer.browser.spec.ts/desktop/host-ui.png)               | ![Host form on mobile](../../scripts/__screenshots__/host-consumer.browser.spec.ts/mobile/host-ui.png)               |
-| ![Missing mapping](../../scripts/__screenshots__/host-consumer.browser.spec.ts/desktop/missing-control.png) | ![Missing mapping on mobile](../../scripts/__screenshots__/host-consumer.browser.spec.ts/mobile/missing-control.png) |
+| ![Host form](../../scripts/__screenshots__/host-consumer.browser.test.ts/desktop/host-ui.png)               | ![Host form on mobile](../../scripts/__screenshots__/host-consumer.browser.test.ts/mobile/host-ui.png)               |
+| ![Missing mapping](../../scripts/__screenshots__/host-consumer.browser.test.ts/desktop/missing-control.png) | ![Missing mapping on mobile](../../scripts/__screenshots__/host-consumer.browser.test.ts/mobile/missing-control.png) |
 
 These are new-host-entrypoint baselines, not screenshots of a redesigned legacy form. The fixture's
 Tailwind v4 stylesheet and neutral theme are consumer-owned and are not shipped by Protoform.

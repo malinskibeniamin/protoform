@@ -18,7 +18,7 @@ const engineLabels = {
 
 const SENSITIVE_PREVIEW_KEY = /password|secret|apiKey|privateKey|credential|inputToken/iu;
 
-function formatSubmittedValue(value: Record<string, unknown>): string {
+function formatSubmittedValue(value: Record<string, unknown>) {
   return JSON.stringify(
     value,
     (key, nestedValue: unknown) => {

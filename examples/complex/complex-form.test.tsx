@@ -51,7 +51,7 @@ describe('complex form example', () => {
     await user.click(screen.getByRole('button', { name: 'Continue' }));
     await user.click(screen.getByRole('button', { name: 'Submit' }));
 
-    expect(await screen.findByText('Step 1 of 4', {}, { timeout: 1000 })).toBeInTheDocument();
+    expect(await screen.findByText('Step 1 of 4')).toBeInTheDocument();
     expect(screen.getByText('Choose a different project id.')).toBeInTheDocument();
     await waitFor(() => expect(screen.getByRole('textbox', { name: projectIdPattern })).toHaveFocus());
   });

@@ -15,7 +15,7 @@ import { getStepConfigurationError } from './step-configuration';
 import type { AutoFormStep, AutoFormStepperOrientation } from './types';
 import { Button, Heading, Text } from './ui-components';
 
-function getStepState(isCurrent: boolean, isComplete: boolean): 'complete' | 'current' | 'upcoming' {
+function getStepState(isCurrent: boolean, isComplete: boolean) {
   if (isCurrent) {
     return 'current';
   }
@@ -26,7 +26,7 @@ function getStepStatusLabel(
   formatMessage: ProtoformMessageFormatter | undefined,
   isCurrent: boolean,
   isComplete: boolean
-): string {
+) {
   if (isCurrent) {
     return formatProtoformMessage(formatMessage, 'auto_form.step_current', {}, 'current step');
   }
@@ -35,14 +35,14 @@ function getStepStatusLabel(
     : formatProtoformMessage(formatMessage, 'auto_form.step_upcoming', {}, 'upcoming step');
 }
 
-function fieldStep(field: ParsedField, firstStepId: string, stepIds: Set<string>): string {
+function fieldStep(field: ParsedField, firstStepId: string, stepIds: Set<string>) {
   const configuredStep = field.hints?.step;
   return configuredStep !== undefined && configuredStep !== '' && stepIds.has(configuredStep)
     ? configuredStep
     : firstStepId;
 }
 
-export function fieldsForStep(fields: ParsedField[], steps: AutoFormStep[], stepId: string): ParsedField[] {
+export function fieldsForStep(fields: ParsedField[], steps: AutoFormStep[], stepId: string) {
   const firstStepId = steps[0]?.id;
   if (!(firstStepId !== undefined && firstStepId !== '')) {
     return fields;
@@ -51,13 +51,13 @@ export function fieldsForStep(fields: ParsedField[], steps: AutoFormStep[], step
   return fields.filter((field) => fieldStep(field, firstStepId, stepIds) === stepId);
 }
 
-export function initialStepIndex(steps: AutoFormStep[], defaultStep: string | undefined): number {
+export function initialStepIndex(steps: AutoFormStep[], defaultStep: string | undefined) {
   const index =
     defaultStep !== undefined && defaultStep !== '' ? steps.findIndex((step) => step.id === defaultStep) : 0;
   return Math.max(index, 0);
 }
 
-export function validateSteps(steps: AutoFormStep[], defaultStep?: string): void {
+export function validateSteps(steps: AutoFormStep[], defaultStep?: string) {
   const error = getStepConfigurationError(steps, defaultStep);
   if (error !== undefined && error !== '') {
     throw new Error(error);
