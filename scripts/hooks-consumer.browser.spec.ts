@@ -68,3 +68,14 @@ test('installed preferences stay opt-in, restore on explicit enablement, and nev
   await expect(page.getByRole('combobox', { name: 'Example density' })).toHaveCount(0);
   expect(await page.evaluate((storageKey) => localStorage.getItem(storageKey), key)).toBe('compact');
 });
+
+test('installed localized number stepping preserves the draft and supports keyboard activation', async ({ page }) => {
+  const amount = page.getByRole('textbox', { name: 'Amount (German number format)' });
+  const increase = page.getByRole('button', { name: 'Increase value' });
+  await expect(amount).toHaveValue('1.234,5');
+  await increase.press('Enter');
+  await expect(amount).toHaveValue('1.234,6');
+  await amount.fill('not a number');
+  await increase.press('Enter');
+  await expect(amount).toHaveValue('not a number');
+});

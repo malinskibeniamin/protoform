@@ -22,6 +22,18 @@ Install `ui-sdk-hooks` for async loading, shortcuts/hints, and opt-in saved pref
 Install `ui-sdk-agent-workbench` for the Rating agent demonstration. Both require the canonical
 controls above. The standard bundles install no SDK dependencies.
 
+## Localized number stepping
+
+Pass `createNumberTextStepper(locale)` from `sdk/number-text` as `stepNumberText` to the
+existing `Input` with `type="number"` and `showStepControls`. UI SDK parses and formats
+the localized draft; the existing buttons and input change events still drive editing.
+Invalid text stays untouched. Use a localized string for the initial value.
+
+This opt-in mode uses a text input with a decimal keyboard hint. Change events and
+native form submission carry the displayed string; parse and validate it at the
+application boundary rather than relying on native number constraints. Without the
+callback, the ordinary number field keeps its existing behavior and has no SDK import.
+
 ## Agent boundary
 
 `protoform-ui-sdk-agent` can also be installed alone. `createAgentSession` requires an explicit

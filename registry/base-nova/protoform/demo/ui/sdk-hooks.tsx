@@ -7,11 +7,13 @@ import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui
 import { Input } from '@/components/ui/input';
 import { Kbd } from '@/components/ui/kbd';
 import { AsyncOptionCombobox } from '@/components/ui/sdk/async-option-combobox';
+import { createNumberTextStepper } from '@/components/ui/sdk/number-text';
 import { createLocalStorage, createPreference, PreferenceSelect, Preferences } from '@/components/ui/sdk/preferences';
 import { Textarea } from '@/components/ui/textarea';
 import { definedProps } from '@/registry/base-nova/protoform/lib/sdk-props';
 
 export const client = 'only';
+const stepGermanNumber = createNumberTextStepper('de-DE');
 const projects = ['Apollo', 'Atlas', 'Aurora', 'Beacon', 'Coast', 'Drift'];
 async function loadProjects(query: string, { signal, page }: { signal: AbortSignal; page: number }) {
   await Promise.resolve();
@@ -102,6 +104,17 @@ export default function SDKHooksExample() {
           value={project}
         />
         <output aria-label="Selected project">{project === '' ? 'None' : <span>{project}</span>}</output>
+      </section>
+      <section className="space-y-3">
+        <h2 className="font-semibold">Localized number stepping</h2>
+        <Input
+          aria-label="Amount (German number format)"
+          defaultValue="1.234,5"
+          showStepControls
+          step={0.1}
+          stepNumberText={stepGermanNumber}
+          type="number"
+        />
       </section>
       <section className="space-y-3">
         <h2 className="font-semibold">Opt-in saved preferences</h2>

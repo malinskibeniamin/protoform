@@ -2,6 +2,7 @@ import { afterEach, describe, expect, rs, test } from '@rstest/core';
 import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
+import { createNumberTextStepper } from '@/components/ui/sdk/number-text';
 import { Input } from '.';
 
 afterEach(cleanup);
@@ -69,4 +70,34 @@ test('keeps the mounted input ref attached while controlled text changes', async
   await user.type(input, 'post');
   expect(input).toHaveValue('post');
   expect(inputRef.mock.calls).toEqual([[input]]);
+});
+
+test.each([
+  ['de-DE', '1.234,5', '1.234,6'],
+  ['ar-EG', '٣٫٥', '٣٫٦'],
+])('steps a localized %s draft and preserves invalid text', async (locale, initial, next) => {
+  const user = userEvent.setup();
+  const onChange = rs.fn<(text: string) => void>();
+  render(
+    <Input
+      aria-label="Amount"
+      defaultValue={initial}
+      onChange={(event) => onChange(event.currentTarget.value)}
+      showStepControls
+      step={0.1}
+      stepNumberText={createNumberTextStepper(locale)}
+      type="number"
+    />
+  );
+  const input = screen.getByRole('textbox', { name: 'Amount' });
+  const increase = screen.getByRole('button', { name: 'Increase value' });
+  await user.click(increase);
+  expect(input).toHaveValue(next);
+  expect(onChange).toHaveBeenLastCalledWith(next);
+  await user.clear(input);
+  await user.type(input, '-');
+  onChange.mockClear();
+  await user.click(increase);
+  expect(input).toHaveValue('-');
+  expect(onChange).not.toHaveBeenCalled();
 });

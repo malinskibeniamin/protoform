@@ -54,6 +54,7 @@ export interface InputProps
   containerClassName?: string | undefined;
   showStepControls?: boolean | undefined;
   size?: VariantProps<typeof inputVariants>['size'] | number;
+  stepNumberText?: ((text: string, delta: number) => string | null) | undefined;
 }
 
 function useInputState(value: InputProps['value'], defaultValue: InputProps['defaultValue']) {
@@ -86,18 +87,17 @@ function useNumberInputHandlers(
   setValue: React.Dispatch<React.SetStateAction<string>>,
   step: number,
   inputRef: React.RefObject<HTMLInputElement | null>,
-  onChange?: React.ChangeEventHandler<HTMLInputElement>
+  onChange?: React.ChangeEventHandler<HTMLInputElement>,
+  stepNumberText?: InputProps['stepNumberText']
 ) {
-  const increment = () => {
-    const currentValue = Number.parseFloat(value) || 0;
-    const newValue = (currentValue + step).toString();
-    dispatchInputChange(inputRef.current, newValue);
-  };
-
-  const decrement = () => {
-    const currentValue = Number.parseFloat(value) || 0;
-    const newValue = (currentValue - step).toString();
-    dispatchInputChange(inputRef.current, newValue);
+  const move = (delta: number) => {
+    const next =
+      stepNumberText === undefined
+        ? ((Number.parseFloat(value) || 0) + delta).toString()
+        : stepNumberText(value, delta);
+    if (next !== null) {
+      dispatchInputChange(inputRef.current, next);
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -105,7 +105,7 @@ function useNumberInputHandlers(
     onChange?.(e);
   };
 
-  return { decrement, handleInputChange, increment };
+  return { decrement: () => move(-step), handleInputChange, increment: () => move(step) };
 }
 
 function getInputGroupClasses(attached: boolean, groupPosition: ReturnType<typeof useGroup>['position']) {
@@ -239,6 +239,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       className,
       type,
       showStepControls,
+      stepNumberText,
       size: requestedSize,
       variant,
       testId,
@@ -280,7 +281,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       setValue,
       step,
       inputRef,
-      props.onChange
+      props.onChange,
+      shouldShowControls === true ? stepNumberText : undefined
     );
 
     const controlsDisabled = props.disabled || readOnly;
@@ -289,6 +291,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
     const { inputType, inputVariant, layout } = getInputMode(type, variant, showPassword, showStepControls);
 
+    const localized = shouldShowControls === true && stepNumberText !== undefined;
     const inputValueProps = getInputValueProps(isNumberInput, value, props.value, defaultValue);
 
     const adornmentStyle: CSSProperties & Record<`--${string}`, string | number | undefined> = {
@@ -312,13 +315,14 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         data-slot="input"
         data-start-adornment={Boolean(startWidth)}
         data-testid={testId}
+        inputMode={props.inputMode ?? (localized ? 'decimal' : undefined)}
         onChange={isNumberInput ? handleInputChange : props.onChange}
         readOnly={readOnly}
         ref={inputRef}
         size={nativeSize}
-        step={isNumberInput ? step : undefined}
+        step={isNumberInput && !localized ? step : undefined}
         style={adornmentStyle}
-        type={inputType}
+        type={localized ? 'text' : inputType}
         {...inputValueProps}
       />
     );

@@ -4003,6 +4003,11 @@
       "registryDependencies": ["@protoform/protoform-ui-sdk-agent"],
       "files": [
         {
+          "path": "registry/ui-sdk/protoform/components/number-text/index.ts",
+          "type": "registry:ui",
+          "target": "@ui/sdk/number-text/index.ts"
+        },
+        {
           "path": "registry/ui-sdk/protoform/components/rating/index.tsx",
           "type": "registry:component",
           "target": "@ui/sdk/rating/index.tsx"
