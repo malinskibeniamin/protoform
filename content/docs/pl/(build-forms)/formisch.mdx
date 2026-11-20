@@ -1,0 +1,98 @@
+---
+title: Formisch
+description: "Zachowaj natywne pola Formisch lub wygeneruj AutoForm z deskryptora protobuf."
+---
+
+Użyj Formisch do zarządzania stanem oraz [pól shadcn](https://ui.shadcn.com/docs/forms/formisch) do renderowania formularza. Protoform sprawdzi wiadomość protobuf za pomocą Protovalidate przed przekazaniem jej do funkcji obsługującej wysłanie.
+
+## Zachowaj natywne pola Formisch
+
+```bash
+bunx shadcn@latest add @protoform/use-proto-form-formisch
+```
+
+Przekaż deskryptor protobuf i ten sam schemat Valibot, którego używasz z Formisch. Schemat określa strukturę danych wejściowych i jest stosowany jako pierwszy, łącznie z transformacjami Valibot. Natywny komponent `Form` przekazuje następnie do `onSubmit` zweryfikowaną wiadomość protobuf, a nie surowe dane.
+
+```tsx
+import { Field as FormischField, Form } from "@formisch/react";
+import * as v from "valibot";
+import { Button } from "@/components/ui/button";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { useProtoForm } from "@/hooks/use-proto-form-formisch";
+import { SignupRequestSchema, type SignupRequest } from "@/gen/example/v1/signup_pb";
+
+const inputSchema = v.object({ email: v.pipe(v.string(), v.trim()) });
+
+export function SignupForm({ save }: { save: (message: SignupRequest) => Promise<void> }) {
+  const form = useProtoForm(SignupRequestSchema, {
+    schema: inputSchema,
+    initialInput: { email: "" },
+  });
+
+  return (
+    <Form
+      of={form}
+      onSubmit={async (message) => {
+        try {
+          await save(message);
+        } catch (error) {
+          const result = form.setServerErrors(error);
+          if (!result.handled || result.unmapped.length > 0) throw error;
+        }
+      }}
+    >
+      <FormischField of={form} path={["email"]}>
+        {(field) => (
+          <Field data-invalid={field.errors !== null}>
+            <FieldLabel htmlFor="signup-email">Email</FieldLabel>
+            <Input
+              {...field.props}
+              id="signup-email"
+              type="email"
+              autoComplete="email"
+              value={field.input ?? ""}
+              aria-invalid={field.errors !== null}
+              aria-describedby={field.errors ? "signup-email-error" : undefined}
+            />
+            {field.errors && <FieldError id="signup-email-error">{field.errors.join(" ")}</FieldError>}
+          </Field>
+        )}
+      </FormischField>
+      {form.errors && <FieldError role="alert">{form.errors.join(" ")}</FieldError>}
+      <Button type="submit" disabled={form.isSubmitting}>Create account</Button>
+    </Form>
+  );
+}
+```
+
+Użyj funkcji Formisch `getInput` i `reset` do obsługi stanu. Hook udostępnia też `createUpdateMask()`, która porównuje bieżące surowe dane z wartościami z chwili zamontowania, oraz `createMessage(values)`, która konwertuje przekazane wartości bez ich walidacji. Zamontuj formularz ponownie po zmianie deskryptora, schematu wejściowego lub edytowanego rekordu.
+
+## Wygeneruj AutoForm
+
+Zainstaluj adapter Formisch wraz z [kontrolkami Protoform shadcn](/docs/registry-install).
+
+```bash
+bunx shadcn@latest add @protoform/protoform-shadcn-tanstack @protoform/auto-form-formisch
+```
+
+```tsx
+import { AutoForm } from "@/components/auto-form-formisch";
+import { SignupRequestSchema, type SignupRequest } from "@/gen/example/v1/signup_pb";
+
+export function GeneratedSignupForm({ save }: { save: (message: SignupRequest) => Promise<void> }) {
+  return (
+    <AutoForm<SignupRequest>
+      schema={SignupRequestSchema}
+      onSubmit={save}
+      validationMode="blur"
+      revalidationMode="change"
+      withSubmit
+    />
+  );
+}
+```
+
+AutoForm wyprowadza strukturę pól Formisch z deskryptora, więc nie musisz pisać drugiego schematu. Korzysta ze wspólnego renderowania i cyklu walidacji AutoForm. Funkcje `onFormInit` i `onSubmit` otrzymują natywny magazyn stanu Formisch, a trzeci argument `onSubmit` zawiera funkcje silnika, maskę aktualizacji i sygnał anulowania. Wysyłanie obsługuje wygenerowany formularz: użyj przycisku wysyłania lub metody `requestSubmit()` formularza, a nie `submit(store)` z Formisch.
+
+Wartość wybranej gałęzi oneof jest przechowywana jako całość, więc zmiana gałęzi nie pozostawia poprzedniej wartości w magazynie. Do zmiany wyboru użyj wygenerowanych kontrolek lub zastąp cały wybór oneof programowo.

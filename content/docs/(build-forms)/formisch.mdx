@@ -1,0 +1,111 @@
+---
+title: Formisch
+description: "Keep native Formisch fields or generate an AutoForm from a protobuf descriptor."
+---
+
+Use Formisch for state and [shadcn fields](https://ui.shadcn.com/docs/forms/formisch) for markup.
+Protoform validates the protobuf message with Protovalidate before it reaches your submit handler.
+
+## Keep your native Formisch fields
+
+```bash
+bunx shadcn@latest add @protoform/use-proto-form-formisch
+```
+
+Pass your protobuf descriptor and the same Valibot schema you would pass to Formisch. The schema
+defines the input shape and runs first, including any Valibot transformations. Formisch's native
+`Form` then passes the validated protobuf message to `onSubmit`, not the raw input.
+
+```tsx
+import { Field as FormischField, Form } from "@formisch/react";
+import * as v from "valibot";
+import { Button } from "@/components/ui/button";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { useProtoForm } from "@/hooks/use-proto-form-formisch";
+import { SignupRequestSchema, type SignupRequest } from "@/gen/example/v1/signup_pb";
+
+const inputSchema = v.object({ email: v.pipe(v.string(), v.trim()) });
+
+export function SignupForm({ save }: { save: (message: SignupRequest) => Promise<void> }) {
+  const form = useProtoForm(SignupRequestSchema, {
+    schema: inputSchema,
+    initialInput: { email: "" },
+  });
+
+  return (
+    <Form
+      of={form}
+      onSubmit={async (message) => {
+        try {
+          await save(message);
+        } catch (error) {
+          const result = form.setServerErrors(error);
+          if (!result.handled || result.unmapped.length > 0) throw error;
+        }
+      }}
+    >
+      <FormischField of={form} path={["email"]}>
+        {(field) => (
+          <Field data-invalid={field.errors !== null}>
+            <FieldLabel htmlFor="signup-email">Email</FieldLabel>
+            <Input
+              {...field.props}
+              id="signup-email"
+              type="email"
+              autoComplete="email"
+              value={field.input ?? ""}
+              aria-invalid={field.errors !== null}
+              aria-describedby={field.errors ? "signup-email-error" : undefined}
+            />
+            {field.errors && <FieldError id="signup-email-error">{field.errors.join(" ")}</FieldError>}
+          </Field>
+        )}
+      </FormischField>
+      {form.errors && <FieldError role="alert">{form.errors.join(" ")}</FieldError>}
+      <Button type="submit" disabled={form.isSubmitting}>Create account</Button>
+    </Form>
+  );
+}
+```
+
+Use Formisch's `getInput` and `reset` for native state operations. The hook also provides
+`createUpdateMask()`, which compares the current raw input with the mount-time baseline, and
+`createMessage(values)`, which converts an explicit set of form values without validating them.
+Remount when switching descriptors, input schemas, or edit records.
+
+## Generate an AutoForm
+
+Install the Formisch adapter alongside the [Protoform shadcn UI controls](/docs/registry-install).
+
+```bash
+bunx shadcn@latest add @protoform/protoform-shadcn-tanstack @protoform/auto-form-formisch
+```
+
+```tsx
+import { AutoForm } from "@/components/auto-form-formisch";
+import { SignupRequestSchema, type SignupRequest } from "@/gen/example/v1/signup_pb";
+
+export function GeneratedSignupForm({ save }: { save: (message: SignupRequest) => Promise<void> }) {
+  return (
+    <AutoForm<SignupRequest>
+      schema={SignupRequestSchema}
+      onSubmit={save}
+      validationMode="blur"
+      revalidationMode="change"
+      withSubmit
+    />
+  );
+}
+```
+
+AutoForm derives the Formisch field structure from the descriptor; you do not write a second
+schema. It uses the shared AutoForm rendering and validation lifecycle. `onFormInit` and
+`onSubmit` expose the native Formisch store, while the third `onSubmit` argument provides
+the engine helpers, update mask, and abort signal. The generated renderer owns submission;
+use a submit button or the underlying form's `requestSubmit()`, rather than Formisch's
+`submit(store)`.
+
+A oneof's selected value is stored atomically so switching branches cannot leave the previous
+value in the store. Use the generated controls or set the whole oneof selection when changing it
+programmatically.

@@ -68,6 +68,7 @@ const sidebarHierarchy = [
       'Oneof and edge cases',
       'React Hook Form',
       'TanStack Form',
+      'Formisch',
       'Formik',
       'Final Form',
     ],

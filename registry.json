@@ -435,6 +435,21 @@
       "registryDependencies": ["@protoform/hook-runtime"]
     },
     {
+      "name": "use-proto-form-formisch",
+      "type": "registry:hook",
+      "title": "useProtoForm for Formisch",
+      "description": "Native Formisch and Valibot validation with typed protobuf submission, update masks, and Connect/gRPC field errors.",
+      "dependencies": ["@bufbuild/protobuf", "@connectrpc/connect", "@formisch/react@^1.2.0", "valibot@^1.5.0"],
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/hooks/use-proto-form-formisch/index.ts",
+          "type": "registry:hook",
+          "target": "@hooks/use-proto-form-formisch/index.ts"
+        }
+      ],
+      "registryDependencies": ["@protoform/hook-runtime"]
+    },
+    {
       "name": "auto-form-core",
       "type": "registry:block",
       "title": "Protoform AutoForm core",
@@ -1806,6 +1821,36 @@
         }
       ],
       "devDependencies": ["@types/js-cookie@3.0.6"]
+    },
+    {
+      "name": "auto-form-formisch",
+      "type": "registry:block",
+      "title": "Protoform AutoForm for Formisch",
+      "description": "Descriptor-driven shadcn AutoForm with Formisch state and Protoform validation and submission.",
+      "registryDependencies": ["@protoform/auto-form-core"],
+      "dependencies": ["@formisch/react@^1.2.0", "valibot@^1.5.0"],
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/components/auto-form-formisch/index.tsx",
+          "type": "registry:component",
+          "target": "@components/auto-form-formisch/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/adapters/formisch.tsx",
+          "type": "registry:component",
+          "target": "@components/auto-form/adapters/formisch.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/adapters/formisch-storage.ts",
+          "type": "registry:component",
+          "target": "@components/auto-form/adapters/formisch-storage.ts"
+        },
+        {
+          "path": "registry/base-nova/protoform/components/auto-form/shadcn-ui-components.ts",
+          "type": "registry:component",
+          "target": "@components/auto-form/shadcn-ui-components.ts"
+        }
+      ]
     },
     {
       "name": "auto-form-tanstack",
