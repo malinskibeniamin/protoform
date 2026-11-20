@@ -42,6 +42,12 @@ a session, registers WebMCP tools, or connects an LLM. Preserve secret/hidden/co
 attributes; dispose sessions when disabling agent access. Use the SDK’s native `createAgent` factory
 from `@ui-sdk/react/agent` for application-owned integrations.
 
+In the workbench, **Enable WebMCP agent** explicitly exposes the SDK's snapshot, query, and
+act tools in supported browsers. **Enable local agent** keeps the tools in-page only.
+Both modes enforce the same scoped Rating policy and human confirmation. Stopping the
+session or leaving the page removes browser registrations. The browser can read the SDK
+snapshot while enabled, so only opt in on pages whose exposed content is safe to share.
+
 The workbench exposes declared Rating actions only, not ordinary Base UI controls or saving.
 History restores UI values, never network effects. Source-specific undo preserves later human
 edits; reverting a staged preview restores its captured values and may overwrite later edits.

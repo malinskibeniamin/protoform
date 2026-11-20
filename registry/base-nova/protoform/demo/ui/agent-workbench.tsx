@@ -1,4 +1,4 @@
-import { agentTools } from '@ui-sdk/react/agent';
+import { agentTools, registerTools } from '@ui-sdk/react/agent';
 import { stageChanges } from '@ui-sdk/react/history';
 import { elementOf, observe } from '@ui-sdk/react/observe';
 import type { ComponentProps } from 'react';
@@ -86,7 +86,9 @@ function Settings() {
 
 export default function AgentWorkbench() {
   const panelRef = useRef<HTMLDivElement>(null);
+  const confirmationPendingRef = useRef(false);
   const [session, setSession] = useState<Session | null>(null);
+  const [webMcp, setWebMcp] = useState(false);
   const [confirmation, setConfirmation] = useState<Confirmation | null>(null);
   const [preview, setPreview] = useState<Preview | null>(null);
   const [result, setResult] = useState('Agent access is off.');
@@ -99,18 +101,28 @@ export default function AgentWorkbench() {
     if (session === null) {
       return;
     }
+    const unregister =
+      webMcp === true
+        ? registerTools(session.agent, {
+            allow: (step, { signal }) =>
+              !(signal.aborted || session.signal.aborted) &&
+              step.action === 'setValue' &&
+              panelRef.current?.contains(elementOf(step.ref)) === true,
+          })
+        : undefined;
     const stopHistory = session.history.subscribe(() => setHistory(JSON.stringify(session.history.entries(), null, 2)));
     const stopObserve = observe(
       (change) => setActivity(JSON.stringify({ component: change.component, key: change.key, source: change.source })),
       { within: () => panelRef.current }
     );
     return () => {
+      unregister?.();
       stopObserve();
       stopHistory();
       session.dispose();
     };
-  }, [session]);
-  function enable() {
+  }, [session, webMcp]);
+  function enable(exposeToBrowser: boolean) {
     const next = createAgentSession({
       allow: (step) => panelRef.current?.contains(elementOf(step.ref)) === true && step.action === 'setValue',
       history: { within: () => panelRef.current },
@@ -118,16 +130,18 @@ export default function AgentWorkbench() {
         new Promise<boolean>((resolve) => {
           function finish(approved: boolean) {
             signal.removeEventListener('abort', cancel);
+            confirmationPendingRef.current = false;
             setConfirmation(null);
             resolve(approved);
           }
           function cancel() {
             finish(false);
           }
-          if (signal.aborted) {
+          if (signal.aborted || confirmationPendingRef.current) {
             resolve(false);
             return;
           }
+          confirmationPendingRef.current = true;
           signal.addEventListener('abort', cancel, { once: true });
           setConfirmation({ message: step.confirm ?? 'Approve this action?', finish });
         }),
@@ -135,6 +149,7 @@ export default function AgentWorkbench() {
     setHistory('[]');
     setActivity('[]');
     setResult('Agent access enabled for this local example.');
+    setWebMcp(exposeToBrowser);
     setSession(next);
   }
   async function run(action: (current: Session) => unknown) {
@@ -160,6 +175,7 @@ export default function AgentWorkbench() {
   function disable() {
     session?.dispose();
     setSession(null);
+    setWebMcp(false);
     setPreview(null);
     setBusy(false);
     setResult('Agent access is off.');
@@ -172,8 +188,8 @@ export default function AgentWorkbench() {
     >
       <h1 className="text-2xl font-semibold">UI SDK agent workbench</h1>
       <p>
-        This local tool runner uses the real bridge, not an LLM or a backend. Nothing registers WebMCP tools. Enable
-        explicitly; disabling resets the example. Base UI controls are never exposed as SDK agent targets.
+        Enable the local runner or explicitly expose its tools through WebMCP in a supported browser. Disabling resets
+        the example and removes browser tools. Base UI controls are never exposed as SDK agent targets.
       </p>
       <AgentCommands
         busy={busy}
@@ -237,7 +253,7 @@ export default function AgentWorkbench() {
 interface AgentCommandsProps {
   busy: boolean;
   disable: () => void;
-  enable: () => void;
+  enable: (exposeToBrowser: boolean) => void;
   enabled: boolean;
   onPreview: (preview: Preview | null) => void;
   preview: Preview | null;
@@ -247,8 +263,11 @@ function AgentCommands({ busy, enabled, enable, disable, run, preview, onPreview
   const unavailable = !enabled || busy;
   return (
     <section aria-label="Agent controls" className="flex flex-wrap gap-2" data-agent-hidden>
-      <Button disabled={enabled} onClick={enable}>
+      <Button disabled={enabled} onClick={() => enable(false)}>
         Enable local agent
+      </Button>
+      <Button disabled={enabled} onClick={() => enable(true)} variant="outline">
+        Enable WebMCP agent
       </Button>
       <Button disabled={!enabled} onClick={disable} variant="outline">
         Disable agent
