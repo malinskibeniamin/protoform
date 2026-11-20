@@ -124,11 +124,20 @@ function getInputMode(
   type: InputProps['type'],
   variant: InputProps['variant'],
   showPassword: boolean,
-  showStepControls: InputProps['showStepControls']
+  {
+    showStepControls,
+    stepNumberText,
+    step,
+    inputMode,
+  }: Pick<InputProps, 'showStepControls' | 'stepNumberText' | 'step' | 'inputMode'>
 ) {
+  const isNumberInput = type === 'number';
   const isPasswordInput = type === 'password';
-  const shouldShowControls = type === 'number' && showStepControls;
-  let inputType = type;
+  const shouldShowControls = isNumberInput && showStepControls === true;
+  const stepper = shouldShowControls ? stepNumberText : undefined;
+  const localized = stepper !== undefined;
+  const stepDelta = step ? Number(step) : 1;
+  let inputType = localized ? 'text' : type;
   if (isPasswordInput) {
     inputType = showPassword ? 'text' : 'password';
   }
@@ -140,7 +149,18 @@ function getInputMode(
     layout = 'password';
   }
   const inputVariant = isPasswordInput && variant !== 'group' ? 'password' : variant;
-  return { inputType, inputVariant, layout };
+  return {
+    inputType,
+    inputVariant,
+    layout,
+    isNumberInput,
+    isPasswordInput,
+    shouldShowControls,
+    stepper,
+    stepDelta,
+    nativeStep: isNumberInput && !localized ? stepDelta : undefined,
+    inputMode: inputMode ?? (localized ? 'decimal' : undefined),
+  };
 }
 
 function getInputValueProps(
@@ -269,29 +289,29 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       [endWidth, startWidth]
     );
 
-    const isNumberInput = type === 'number';
-    const isPasswordInput = type === 'password';
-    const shouldShowControls = isNumberInput && showStepControls;
-    const step = props.step ? Number(props.step) : 1;
+    const mode = getInputMode(type, variant, showPassword, {
+      showStepControls,
+      stepNumberText,
+      step: props.step,
+      inputMode: props.inputMode,
+    });
+    const { isNumberInput, isPasswordInput, shouldShowControls } = mode;
     const { position: groupPosition, attached: groupAttached } = useGroup();
     const attached = groupAttached || isPasswordInput;
 
     const { increment, decrement, handleInputChange } = useNumberInputHandlers(
       value,
       setValue,
-      step,
+      mode.stepDelta,
       inputRef,
       props.onChange,
-      shouldShowControls === true ? stepNumberText : undefined
+      mode.stepper
     );
 
     const controlsDisabled = props.disabled || readOnly;
 
     const positionClasses = getInputGroupClasses(attached, groupPosition);
 
-    const { inputType, inputVariant, layout } = getInputMode(type, variant, showPassword, showStepControls);
-
-    const localized = shouldShowControls === true && stepNumberText !== undefined;
     const inputValueProps = getInputValueProps(isNumberInput, value, props.value, defaultValue);
 
     const adornmentStyle: CSSProperties & Record<`--${string}`, string | number | undefined> = {
@@ -305,7 +325,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         aria-invalid={props['aria-invalid'] ?? (fieldCtx.invalid || undefined)}
         className={cn(
           positionClasses,
-          inputVariants({ size, variant: inputVariant }),
+          inputVariants({ size, variant: mode.inputVariant }),
           isPasswordInput && 'pr-10',
           'data-[start-adornment=true]:pl-(--input-start-padding)',
           'data-[end-adornment=true]:pr-(--input-end-padding)',
@@ -315,14 +335,14 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         data-slot="input"
         data-start-adornment={Boolean(startWidth)}
         data-testid={testId}
-        inputMode={props.inputMode ?? (localized ? 'decimal' : undefined)}
+        inputMode={mode.inputMode}
         onChange={isNumberInput ? handleInputChange : props.onChange}
         readOnly={readOnly}
         ref={inputRef}
         size={nativeSize}
-        step={isNumberInput && !localized ? step : undefined}
+        step={mode.nativeStep}
         style={adornmentStyle}
-        type={localized ? 'text' : inputType}
+        type={mode.inputType}
         {...inputValueProps}
       />
     );
@@ -332,7 +352,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         <div
           className={cn(
             inputContainerVariants({
-              layout,
+              layout: mode.layout,
             }),
             containerClassName
           )}
