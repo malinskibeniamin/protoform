@@ -1,6 +1,7 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "plugins": ["eslint", "typescript", "unicorn", "oxc", "import", "jsdoc", "node", "promise", "vitest"],
+  "jsPlugins": [{ "name": "quality", "specifier": "./scripts/cloudflare-quality-plugin.ts" }],
   "options": {
     "denyWarnings": true,
     "maxWarnings": 0,
@@ -18,6 +19,20 @@
     "registry/base-nova/protoform/lib/protobuf-v1-bridge/**"
   ],
   "rules": {
+    // Adopt the compatible anti-slop checks from Cloudflare's quality plugin.
+    "quality/no-reduce-accumulator-copy": "error",
+    "quality/no-widen-then-assert": "error",
+    // Reviewed: defer the remaining plugin rules; see docs/ui-toolchain.md.
+    "quality/no-array-filter-map": "off",
+    "quality/no-chained-type-assertions": "off",
+    "quality/no-conditional-empty-object-spread": "off",
+    "quality/no-known-value-widening": "off",
+    "quality/no-object-parameters": "off",
+    "quality/no-reflect-apply": "off",
+    "quality/no-reflect-get": "off",
+    "quality/no-unknown-returns": "off",
+    "quality/no-unknown-type-aliases": "off",
+    "quality/no-unsafe-dictionary-type": "off",
     // Reject assigning values from unrelated enum types.
     "typescript/no-unsafe-enum-assignment": "error",
     // Reviewed: enforce as an error, including nursery checks.

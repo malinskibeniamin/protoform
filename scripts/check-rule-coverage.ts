@@ -4,6 +4,7 @@ import shadcn from '@shadcn/lint';
 import ts from 'typescript';
 import { z } from 'zod';
 import doctorConfig from '../doctor.config';
+import quality from './cloudflare-quality-plugin';
 import { authoredFiles } from './source-files';
 
 const objectSchema = z.record(z.string(), z.unknown());
@@ -65,10 +66,16 @@ for (const group of groups) {
 const availableOxlint = z
   .array(z.object({ scope: z.string(), value: z.string() }))
   .parse(JSON.parse(execFileSync('oxlint', ['--rules', '--format', 'json'], { encoding: 'utf8' })));
+const oxlintRules = Object.entries(object(readConfig('.oxlintrc.jsonc')['rules']));
 checkCatalog(
   'Oxlint',
   availableOxlint.map(({ scope, value }) => (scope === 'eslint' ? value : `${scope.replaceAll('_', '-')}/${value}`)),
-  object(readConfig('.oxlintrc.jsonc')['rules'])
+  Object.fromEntries(oxlintRules.filter(([rule]) => !rule.startsWith('quality/')))
+);
+checkCatalog(
+  'Oxlint quality plugin',
+  Object.keys(quality.rules).map((rule) => `quality/${rule}`),
+  Object.fromEntries(oxlintRules.filter(([rule]) => rule.startsWith('quality/')))
 );
 
 checkCatalog(

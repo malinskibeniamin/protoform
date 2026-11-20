@@ -144,6 +144,28 @@ minimum animation durations add noise here. Loop expressions now use named input
 in the project's Node 26 runtime.
 Other disabled additions target frameworks the project does not use.
 
+### Cloudflare Oxlint preset review
+
+Protoform adopts two rules from the quality plugin exposed by the published
+[Cloudflare Oxlint preset 0.1.0](https://npmx.dev/package/@cloudflare/oxlint-config):
+`quality/no-reduce-accumulator-copy` catches growing reducer copies that the existing
+spread rule does not cover; `quality/no-widen-then-assert` catches erasing a known
+local type and asserting it back later. The plugin is shipped by
+[nkzw](https://github.com/nkzw-tech/oxlint-config) and adapts rules from
+[Dillon Mulroy’s anti-slop plugin](https://github.com/dmmulroy/anti-slop/tree/13909c9e07590f5a85d93c62712259fe14a883f7).
+These are syntax and scope checks. The existing tsrs beta runner still handles
+type-aware lint and compiler diagnostics.
+
+This is selective adoption, not a replacement preset. Cloudflare's test and JavaScript
+overrides turn off safety checks Protoform currently enforces, and its import-style
+rules overlap with Biome. Local compiler options, plugins, generated-file ignores, and
+exact bridge exemptions are unchanged. The remaining plugin rules are reviewed as off:
+nine reported existing patterns in the repo-wide trial and need separate decisions
+about legitimate boundary types, assertions, or refactors; `no-unknown-type-aliases`
+is deferred because it bans a general type-alias shape rather than the specific
+erase-and-reassert behavior. `lint:rules` checks all 12 plugin decisions against the
+installed catalog.
+
 ### Biome 2.6.4 additions
 
 The installed schema adds 30 rule decisions. Six gain error-level enforcement; recursion is production-scoped:
