@@ -1,6 +1,6 @@
 # Optional UI SDK enhancements
 
-Keep the canonical Base UI catalog and AutoForm. These additions use UI SDK `0.1.0-beta.5`;
+Keep the canonical Base UI catalog and AutoForm. These additions use UI SDK `0.1.0-beta.13`;
 there is no parallel control catalog, new form contract, or automatic agent session.
 Declare `@layer ui-sdk;` before Tailwind on SDK pages. No SDK default stylesheet is installed.
 
