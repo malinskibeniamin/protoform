@@ -1,6 +1,6 @@
 ---
 title: Formisch
-description: "保留原生 Formisch 欄位，或根據 protobuf 描述元產生 AutoForm。"
+description: "保留原生 Formisch 欄位，或根據 protobuf 描述元產生 AutoForm。使用 Valibot 驗證欄位，並在送出前使用 Protovalidate 驗證 protobuf 訊息。"
 ---
 
 使用 Formisch 管理狀態，並用 [shadcn 欄位](https://ui.shadcn.com/docs/forms/formisch) 呈現表單。Protoform 會先透過 Protovalidate 驗證 protobuf 訊息，再將訊息交給送出處理函式。
