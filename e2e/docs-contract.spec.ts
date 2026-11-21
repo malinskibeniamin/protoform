@@ -1,9 +1,11 @@
 import { expect } from '@rstest/playwright';
+import ts from 'typescript';
 import { z } from 'zod';
 import { demoCatalog } from '../examples/catalog/demo-catalog';
 import { demoHubs, demoRedirects } from '../examples/catalog/demo-docs';
 import { docsBaseURL } from '../scripts/e2e-context';
 import { test } from '../scripts/e2e-test';
+import { measureJavaScriptPayload } from '../scripts/javascript-payload';
 
 const redirectSchema = z.array(z.object({ from: z.string(), status: z.literal(308), to: z.string() }));
 
@@ -105,6 +107,121 @@ test('keeps the selected demo when switching documentation language', async ({ p
   await expect(page.locator('html')).toHaveAttribute('lang', 'pl');
   await expect(page.getByRole('heading', { exact: true, name: 'Protobuf maps' })).toBeVisible();
 });
+
+test('keeps locale selection independent of unused translation dictionaries', async ({ page, request }) => {
+  await page.goto('/docs/getting-started');
+  const script = await page.locator('script[src*="/LanguageSwitcher."]').getAttribute('src');
+  if (!script) {
+    throw new Error('The language switcher must load its client module.');
+  }
+  const visited = new Set<string>();
+  let bytes = 0;
+  const visit = async (url: string): Promise<void> => {
+    if (visited.has(url)) {
+      return;
+    }
+    visited.add(url);
+    const response = await request.get(url);
+    expect(response.ok()).toBe(true);
+    const body = await response.body();
+    bytes += body.byteLength;
+    const source = ts.createSourceFile(url, body.toString(), ts.ScriptTarget.Latest, true);
+    const imports = source.statements.flatMap((statement) => {
+      if (
+        (ts.isImportDeclaration(statement) || ts.isExportDeclaration(statement)) &&
+        statement.moduleSpecifier &&
+        ts.isStringLiteral(statement.moduleSpecifier)
+      ) {
+        return [new URL(statement.moduleSpecifier.text, url).href];
+      }
+      return [];
+    });
+    await Promise.all(imports.map(visit));
+  };
+  await visit(new URL(script, docsBaseURL).href);
+  expect(bytes).toBeLessThan(8192);
+});
+
+for (const entry of [
+  { deferredBudget: 1_750_000, initialBudget: 200_000, route: '/docs/getting-started' },
+  { deferredBudget: 2_500_000, initialBudget: 210_000, route: '/docs/protobuf-examples' },
+]) {
+  test(`bounds initial and deferred module graphs for ${entry.route}`, async ({ page, request }) => {
+    const documentResponse = await request.get(entry.route);
+    expect(documentResponse.ok()).toBe(true);
+    const roots = await page.evaluate(
+      (html) => {
+        const document = new DOMParser().parseFromString(html, 'text/html');
+        const initial = [...document.querySelectorAll('script[src], link[rel="modulepreload"]')].flatMap(
+          (node) => node.getAttribute('src') ?? node.getAttribute('href') ?? []
+        );
+        const deferred: string[] = [];
+        for (const island of document.querySelectorAll('astro-island')) {
+          const target = ['load', 'only'].includes(island.getAttribute('client') ?? '') ? initial : deferred;
+          for (const name of ['component-url', 'renderer-url']) {
+            const url = island.getAttribute(name);
+            if (url) {
+              target.push(url);
+            }
+          }
+        }
+        const inline = [...document.querySelectorAll('script:not([src])')]
+          .filter((node) =>
+            ['', 'module', 'text/javascript', 'application/javascript'].includes(node.getAttribute('type') ?? '')
+          )
+          .map((node) => node.textContent ?? '');
+        return { deferred, initial, inline };
+      },
+      await documentResponse.text()
+    );
+    const { origin } = new URL(docsBaseURL);
+    const inline = roots.inline.map((text, index) => ({
+      text,
+      url: `${documentResponse.url()}?payload-inline=${index}`,
+    }));
+    const inlineUrls = new Set(inline.map(({ url }) => url));
+    const payload = await measureJavaScriptPayload(
+      {
+        deferred: [...roots.deferred, '/pagefind/pagefind.js', '/pagefind/pagefind-worker.js'].map(
+          (url) => new URL(url, docsBaseURL).href
+        ),
+        initial: roots.initial.map((url) => new URL(url, docsBaseURL).href),
+        inline,
+      },
+      async (url) => {
+        expect(new URL(url).origin, `Unbudgeted external module: ${url}`).toBe(origin);
+        const response = await request.get(url);
+        expect(response.ok(), `Missing JavaScript module: ${url}`).toBe(true);
+        expect(response.headers()['content-type'], `Invalid JavaScript response: ${url}`).toMatch(
+          /(?:java|ecma)script/u
+        );
+        return response.text();
+      }
+    );
+    expect(payload.initialModules.length).toBeGreaterThan(0);
+    expect(payload.deferredModules.length).toBeGreaterThan(0);
+    expect(new TextEncoder().encode(roots.inline.join('\n')).byteLength).toBeLessThanOrEqual(16_000);
+    expect(payload.computedImports.filter(({ module }) => inlineUrls.has(module)).map(({ count }) => count)).toEqual([
+      3,
+    ]);
+    expect(
+      payload.computedImports
+        .filter(({ module }) => !inlineUrls.has(module))
+        .map(({ module, count }) => [/\/_astro\/search-client\.[^/]+\.js$/u.test(new URL(module).pathname), count])
+    ).toEqual([[true, 1]]);
+    const searchWorkerOwner = new URL('/pagefind/pagefind.js', docsBaseURL).href;
+    expect(payload.computedWorkers.filter(({ module }) => module === searchWorkerOwner)).toEqual([
+      { count: 1, module: searchWorkerOwner },
+    ]);
+    expect(
+      payload.computedWorkers
+        .filter(({ module }) => module !== searchWorkerOwner)
+        .map(({ module, count }) => [/\/_astro\/elk-[^/]+\.js$/u.test(new URL(module).pathname), count])
+    ).toEqual([[true, 1]]);
+    expect(payload.initialGzipBytes).toBeLessThanOrEqual(entry.initialBudget);
+    expect(payload.deferredGzipBytes).toBeLessThanOrEqual(entry.deferredBudget);
+  });
+}
 
 test('publishes complete search assets for every configured language', async ({ request }) => {
   await Promise.all(

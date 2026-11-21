@@ -4,6 +4,7 @@ import type { AutoFormFieldProps } from '../core-types';
 import { getFieldUiConfig } from '../helpers';
 import type { FieldTypeDefinition } from '../registry';
 import { Input } from '../ui-components';
+import { builtInFieldMetadata } from './metadata';
 import { useFieldTestIds } from './shared';
 
 function Int64FieldComponent({ error, field, id, inputProps }: AutoFormFieldProps) {
@@ -28,8 +29,6 @@ function Int64FieldComponent({ error, field, id, inputProps }: AutoFormFieldProp
 export { Int64FieldComponent };
 
 export const int64FieldDefinition: FieldTypeDefinition = {
+  ...builtInFieldMetadata.int64,
   component: Int64FieldComponent,
-  match: (field) => field.type === 'int64',
-  name: 'int64',
-  priority: 10,
 };

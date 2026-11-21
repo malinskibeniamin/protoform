@@ -17,6 +17,7 @@ import { getFieldUiConfig, NUMERIC_OPTION_PATTERN } from '../helpers';
 import type { FieldTypeDefinition } from '../registry';
 import { Button, SimpleMultiSelect } from '../ui-components';
 import { safeStringify } from '../utils/serialization';
+import { builtInFieldMetadata } from './metadata';
 import { getGroupedOptions, readDataProviderId, renderOptionLabel, useFieldTestIds } from './shared';
 
 function MultiSelectFieldComponent({ field, id, inputProps }: AutoFormFieldProps) {
@@ -67,16 +68,8 @@ function MultiSelectFieldComponent({ field, id, inputProps }: AutoFormFieldProps
 export { MultiSelectFieldComponent };
 
 export const multiselectFieldDefinition: FieldTypeDefinition = {
+  ...builtInFieldMetadata.multiselect,
   component: MultiSelectFieldComponent,
-  match: (field) => {
-    if (field.type !== 'array') {
-      return false;
-    }
-    const itemField = field.schema?.[0];
-    return itemField?.type === 'select' && itemField.options !== undefined && itemField.options.length > 0;
-  },
-  name: 'multiselect',
-  priority: 20,
 };
 
 const NO_PROVIDER_RESULT: DataProviderResult = { options: [] };
@@ -308,17 +301,6 @@ function ProviderOptionLabel({ option }: { option: DataProviderOption }) {
 }
 
 export const dataProviderMultiselectFieldDefinition: FieldTypeDefinition = {
+  ...builtInFieldMetadata.dataProviderMultiSelect,
   component: DataProviderMultiSelectComponent,
-  match: (field) => {
-    if (field.type !== 'array') {
-      return false;
-    }
-    const itemField = field.schema?.[0];
-    if (!itemField || (itemField.type !== 'string' && itemField.type !== 'number')) {
-      return false;
-    }
-    return readDataProviderId(itemField) !== undefined;
-  },
-  name: 'dataProviderMultiSelect',
-  priority: 120,
 };

@@ -4,7 +4,7 @@
   "title": "Protoform AutoForm for TanStack Form",
   "description": "TanStack Form-native AutoForm with the complete native form API plus Protoform rendering and protobuf helpers.",
   "dependencies": [
-    "@tanstack/react-form"
+    "@tanstack/react-form@^1.33.5"
   ],
   "registryDependencies": [
     "@protoform/auto-form-core",

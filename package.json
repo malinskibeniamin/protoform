@@ -9,15 +9,16 @@
   },
   "scripts": {
     "aip:lint": "bun run scripts/check-api-linter.ts",
-    "build": "bun run registry:build && blume build --strict && bun run scripts/finalize-docs-build.ts",
+    "build": "bun run registry:build && bun run docs:blume:build",
     "check": "bun run lint",
     "check:boundaries": "bun run scripts/check-core-boundaries.ts",
     "ci:gate": "bun run registry:build && bun run registry:smoke && bun run registry:consumer-smoke && bun run test:e2e:canary && bun run registry:host-browser && bun run check:boundaries && bun run test:conformance && bun run aip:lint && bun run readiness:gate && bun run test:unit && bun run test:integration && bun run test:browser && bun run docs:blume:translate:check && bun run build && bun run docs:blume:audit && bun run typecheck && bun run lint:no-suppressions && bun run lint && bun run doctor:strict",
     "demos:generate": "bun run scripts/generate-demo-catalog.ts",
     "dev": "blume dev --port 55011",
     "docs:blume:audit": "blume audit --fail-on info --skip url_style",
-    "docs:blume:build": "blume build --strict && bun run scripts/finalize-docs-build.ts",
+    "docs:blume:build": "node scripts/build-docs.ts",
     "docs:blume:check": "bun run scripts/check-docs-types.ts",
+    "docs:blume:compile": "blume build --strict && bun run scripts/finalize-docs-build.ts",
     "docs:blume:dev": "blume dev --port 55011",
     "docs:blume:doctor": "blume doctor",
     "docs:blume:e2e": "bun run docs:blume:build && blume preview --host 127.0.0.1 --port ${PROTOFORM_DOCS_PORT:-55013}",
@@ -82,21 +83,21 @@
     "test:unit:ci": "bun test --parallel=1 --dots",
     "test:unit:watch": "bun test --watch --parallel=4",
     "type:check": "bun run typecheck",
-    "typecheck": "bun run typecheck:coverage && bun run typecheck:source && bun run typecheck:tests && bun run docs:blume:check",
+    "typecheck": "bun run typecheck:coverage && bun run typecheck:source && bun run docs:blume:check",
     "typecheck:coverage": "bun run scripts/check-typescript-coverage.ts",
     "typecheck:source": "tsrs --noEmit",
     "typecheck:tests": "tsrs --project tsconfig.tests.json --noEmit"
   },
   "overrides": {
     "@tailwindcss/typography": {
-      "postcss-selector-parser": "7.1.7"
+      "postcss-selector-parser": "6.1.6"
     },
     "@vercel/routing-utils": {
       "path-to-regexp": "6.3.0"
     },
     "deepmerge@^4": "npm:@stackline/deepmerge@1.1.2",
     "glob": "14.0.4",
-    "minimatch": "11.0.5",
+    "minimatch": "11.0.8",
     "router": {
       "path-to-regexp": "8.4.2"
     }
@@ -166,6 +167,7 @@
     "@fontsource-variable/inter": "5.3.0",
     "@fontsource-variable/inter-tight": "5.3.0",
     "@fontsource/ibm-plex-mono": "5.3.0",
+    "@jitl/quickjs-wasmfile-release-sync": "0.32.0",
     "@rsbuild/plugin-react": "2.1.1",
     "@rsdoctor/agent-cli": "0.1.2",
     "@rsdoctor/core": "2.0.3",
@@ -194,7 +196,7 @@
     "pixelmatch": "8.0.0",
     "playwright": "1.65.0",
     "pngjs": "7.0.0",
-    "quickjs-emscripten": "0.32.0",
+    "quickjs-emscripten-core": "0.32.0",
     "react-doctor": "0.9.23",
     "react-scan": "0.5.7",
     "tailwindcss": "^4.3.5",

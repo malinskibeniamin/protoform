@@ -80,10 +80,14 @@ test('catalog overlays allow cancellation, recovery and keyboard actions @cross-
   await exerciseOverlay(page, 'Open field sheet', 'Field details', 'Close field sheet');
   await exerciseOverlay(page, 'Open form drawer', 'Form preview', 'Close form drawer');
   const actions = page.getByRole('button', { name: 'Schema actions', exact: true });
+  await actions.evaluate((trigger) => trigger.scrollIntoView({ block: 'center', behavior: 'instant' }));
   await actions.focus();
   await page.keyboard.press('ArrowDown');
-  await page.getByRole('menuitemcheckbox', { name: 'Show metadata' }).click();
+  const metadata = page.getByRole('menuitemcheckbox', { name: 'Show metadata' });
+  await metadata.click();
+  await expect(metadata).toHaveAttribute('aria-checked', 'true');
   await page.keyboard.press('Escape');
+  await expect(actions).toBeFocused();
   await expect(page.getByText('Metadata: shown', { exact: true })).toBeVisible();
   await page.getByText('Right-click for sample field actions', { exact: true }).click({ button: 'right' });
   await page.getByRole('menuitem', { name: 'Duplicate field' }).click();

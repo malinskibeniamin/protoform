@@ -6,6 +6,7 @@ import { z } from 'zod';
 interface MergeOptions {
   arrayMerge?: (target: unknown[], source: unknown[]) => unknown[];
   clone?: boolean;
+  customMerge?: (key: string) => ((target: unknown, source: unknown) => unknown) | undefined;
 }
 
 interface Merge {
@@ -93,4 +94,36 @@ test('does not inherit properties from either input when the target has a null p
     expect(Object.hasOwn(value, '__proto__')).toBe(false);
     expect(Object.getPrototypeOf(value)).toBe(Object.prototype);
   }
+});
+
+test('retains custom property merging through the shadcn-resolved replacement', () => {
+  const merge = loadMerge('shadcn');
+  const result = merge(
+    { settings: { enabled: true } },
+    { settings: { theme: 'dark' } },
+    {
+      customMerge: (key) => (key === 'settings' ? (target, source) => [target, source] : undefined),
+    }
+  );
+  expect(result).toEqual({ settings: [{ enabled: true }, { theme: 'dark' }] });
+});
+
+test('preserves cycles while cloning non-cyclic shared configuration independently', () => {
+  const merge = loadMerge('ultracite');
+  const source: { name: string; self?: unknown } = { name: 'root' };
+  source.self = source;
+  const cyclic = merge({}, source);
+  if (!isRecord(cyclic)) {
+    throw new TypeError('Expected a merged cyclic configuration.');
+  }
+  expect(cyclic['self']).toBe(cyclic);
+  expect(cyclic).not.toBe(source);
+  const shared = { enabled: true };
+  const result = merge({}, { first: shared, second: shared });
+  if (!isRecord(result)) {
+    throw new TypeError('Expected a merged configuration.');
+  }
+  expect(result).toEqual({ first: { enabled: true }, second: { enabled: true } });
+  expect(result['first']).not.toBe(shared);
+  expect(result['first']).not.toBe(result['second']);
 });

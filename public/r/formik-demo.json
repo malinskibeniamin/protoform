@@ -4,10 +4,10 @@
   "title": "Formik interoperability",
   "description": "Feed Protoform validation results into an existing Formik form without replacing Formik state.",
   "dependencies": [
-    "formik"
+    "formik@^2.4.9"
   ],
   "registryDependencies": [
-    "@protoform/protoform-demo-runtime",
+    "@protoform/protoform-demo-fixtures",
     "@protoform/form-library-adapters"
   ],
   "files": [

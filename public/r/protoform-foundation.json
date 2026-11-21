@@ -4,7 +4,7 @@
   "title": "Protoform foundation",
   "description": "Framework-free field model and Standard Schema integration shared by Protoform adapters.",
   "dependencies": [
-    "@standard-schema/spec"
+    "@standard-schema/spec@^1.1.0"
   ],
   "registryDependencies": [
     "@protoform/protoform-license"

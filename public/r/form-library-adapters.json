@@ -4,7 +4,7 @@
   "title": "Form library validation adapters",
   "description": "Formik and Final Form validators built from any Standard Schema, including Protoform schemas.",
   "dependencies": [
-    "@standard-schema/spec"
+    "@standard-schema/spec@^1.1.0"
   ],
   "registryDependencies": [
     "@protoform/protoform-foundation"

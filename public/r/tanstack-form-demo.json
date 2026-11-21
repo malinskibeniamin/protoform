@@ -4,10 +4,10 @@
   "title": "TanStack Form interoperability",
   "description": "Use the same generated field model through the optional TanStack Form adapter.",
   "dependencies": [
-    "@tanstack/react-form"
+    "@tanstack/react-form@^1.33.5"
   ],
   "registryDependencies": [
-    "@protoform/protoform-demo-runtime",
+    "@protoform/protoform-demo-fixtures",
     "@protoform/use-proto-form-tanstack"
   ],
   "files": [

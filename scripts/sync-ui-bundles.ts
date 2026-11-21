@@ -1,7 +1,10 @@
 import { execFileSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
 import { readFile, writeFile } from 'node:fs/promises';
 import { registrySchema } from 'shadcn/schema';
 import { z } from 'zod';
+import { generateGranularUiItems } from './granular-ui-registry';
+import { synchronizeRegistryDependencies } from './registry-dependencies';
 
 type Registry = z.infer<typeof registrySchema>;
 const fallbackPackages = /^(?:recharts|react-is)(?:@|$)/u;
@@ -18,8 +21,12 @@ if (fallback === undefined) {
   throw new Error('Missing Recharts fallback UI bundle');
 }
 const manifest = z
-  .object({ dependencies: z.record(z.string(), z.string()) })
+  .looseObject({
+    dependencies: z.record(z.string(), z.string()),
+    devDependencies: z.record(z.string(), z.string()),
+  })
   .parse(JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8')));
+synchronizeRegistryDependencies(registry.items, manifest);
 const version = z
   .string()
   .regex(/^\d+\.\d+\.\d+$/u)
@@ -60,6 +67,13 @@ if (existing === -1) {
 } else {
   registry.items[existing] = bundle;
 }
+registry.items = registry.items.filter(
+  (item) => !item.name.startsWith('protoform-ui-') || item.name === 'protoform-ui-sdk-agent'
+);
+registry.items.push(
+  ...generateGranularUiItems(registry.items, (path) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8'))
+);
+registrySchema.parse(registry);
 const content = execFileSync('bun', ['x', '--no-install', 'biome', 'format', '--stdin-file-path=registry.json'], {
   input: JSON.stringify(registry, null, 2),
   encoding: 'utf8',

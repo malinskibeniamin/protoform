@@ -2,9 +2,10 @@
 
 import { DollarSignIcon } from 'lucide-react';
 import type { AutoFormFieldProps } from '../core-types';
-import { CURRENCY_FIELD_PATTERN, getFieldUiConfig } from '../helpers';
+import { getFieldUiConfig } from '../helpers';
 import type { FieldTypeDefinition } from '../registry';
 import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from '../ui-components';
+import { builtInFieldMetadata } from './metadata';
 import { useFieldTestIds } from './shared';
 
 function CurrencyFieldComponent({ error, field, id, inputProps }: AutoFormFieldProps) {
@@ -39,8 +40,6 @@ function CurrencyFieldComponent({ error, field, id, inputProps }: AutoFormFieldP
 export { CurrencyFieldComponent };
 
 export const currencyFieldDefinition: FieldTypeDefinition = {
+  ...builtInFieldMetadata.currency,
   component: CurrencyFieldComponent,
-  match: (field, context) => field.type === 'string' && CURRENCY_FIELD_PATTERN.test(context.identity),
-  name: 'currency',
-  priority: 18,
 };

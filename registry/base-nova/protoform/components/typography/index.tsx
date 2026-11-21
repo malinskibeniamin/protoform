@@ -1,6 +1,5 @@
 'use client';
 
-import { Link as TanStackLink } from '@tanstack/react-router';
 import { cva, type VariantProps } from 'class-variance-authority';
 import React, { forwardRef } from 'react';
 
@@ -209,17 +208,20 @@ export function InlineCode({ className, children, testId, ...props }: InlineCode
 
 type BaseLinkProps = SharedProps & {
   children: React.ReactNode;
-  className?: string;
+  className?: string | undefined;
 };
 
-type LinkProps =
+type LinkProps<TComponent extends React.ElementType> =
   | (BaseLinkProps &
-      React.AnchorHTMLAttributes<HTMLAnchorElement> & {
+      React.ComponentPropsWithRef<'a'> & {
         as?: never;
         href: string;
       })
   | (BaseLinkProps & {
-      as: typeof TanStackLink;
+      as: TComponent;
+    } & Omit<React.ComponentPropsWithRef<TComponent>, keyof BaseLinkProps | 'as'>)
+  | (BaseLinkProps & {
+      as: TComponent;
       to: string;
       params?: Record<string, string>;
       search?: Record<string, unknown>;
@@ -232,20 +234,18 @@ type LinkProps =
 const linkStyles =
   'font-medium text-primary decoration-dotted underline underline-offset-3 hover:text-primary/80 transition-colors';
 
-export function Link({ className, children, testId, ...props }: LinkProps) {
-  if ('as' in props && props.as === TanStackLink) {
-    const { as: _, ...routerProps } = props;
-    return (
-      <TanStackLink className={cn(linkStyles, className)} data-testid={testId} {...routerProps}>
-        {children}
-      </TanStackLink>
-    );
-  }
-
-  return (
-    <a className={cn(linkStyles, className)} data-testid={testId} {...props}>
-      {children}
-    </a>
+export function Link<TComponent extends React.ElementType = 'a'>({
+  as,
+  className,
+  children,
+  testId,
+  ...props
+}: LinkProps<TComponent>) {
+  const Component = as ?? 'a';
+  return React.createElement(
+    Component,
+    { className: cn(linkStyles, className), 'data-testid': testId, ...props },
+    children
   );
 }
 

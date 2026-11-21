@@ -2,8 +2,9 @@
 
 import { Link2Icon } from 'lucide-react';
 import type { AutoFormFieldProps } from '../core-types';
-import { getFieldUiConfig, URL_FIELD_PATTERN } from '../helpers';
+import { getFieldUiConfig } from '../helpers';
 import type { FieldTypeDefinition } from '../registry';
+import { builtInFieldMetadata } from './metadata';
 import { StringLikeInput, useFieldTestIds } from './shared';
 
 function UrlFieldComponent(props: AutoFormFieldProps) {
@@ -27,9 +28,6 @@ function UrlFieldComponent(props: AutoFormFieldProps) {
 export { UrlFieldComponent };
 
 export const urlFieldDefinition: FieldTypeDefinition = {
+  ...builtInFieldMetadata.url,
   component: UrlFieldComponent,
-  match: (field, context) =>
-    field.type === 'string' && (context.inputType === 'url' || URL_FIELD_PATTERN.test(context.identity)),
-  name: 'url',
-  priority: 20,
 };
