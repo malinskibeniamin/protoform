@@ -591,36 +591,6 @@ const consumerManifestSchema = z.looseObject({
   devDependencies: z.record(z.string(), z.string()),
 });
 const consumerCases = {
-  table: {
-    names: ['protoform-ui-data-table-demo'],
-    forbidden:
-      /(?:recharts|@tanstack\/charts|@tanstack\/react-router|react-day-picker|embla-carousel-react|input-otp|@codemirror\/|@uiw\/react-codemirror|react-hook-form|@bufbuild\/protobuf)/u,
-    source: [
-      'import { renderToReadableStream } from "react-dom/server";',
-      'import DataTable from "./components/ui/examples/data-table";',
-      'const stream = await renderToReadableStream(<DataTable />);',
-      'await stream.allReady;',
-      'const html = await new Response(stream).text();',
-      'for (const expected of ["Ada", "ada@example.test", "Ready"]) if (!html.includes(expected)) throw new Error("Installed table did not render " + expected);',
-    ],
-  },
-  'typography-router': {
-    names: ['protoform-ui-typography-tanstack-link'],
-    forbidden: /react-hook-form|@bufbuild\/protobuf|recharts|@tanstack\/react-table/u,
-    source: [
-      'import { renderToReadableStream } from "react-dom/server";',
-      'import { createMemoryHistory, createRootRoute, createRoute, createRouter, RouterProvider } from "@tanstack/react-router";',
-      'import { TanStackLink } from "./components/ui/typography/tanstack-link";',
-      'const root = createRootRoute({ component: () => <TanStackLink to="/next" preload="intent">Installed typed route</TanStackLink> });',
-      'const next = createRoute({ getParentRoute: () => root, path: "/next", component: () => <p>Next route</p> });',
-      'const router = createRouter({ routeTree: root.addChildren([next]), history: createMemoryHistory({ initialEntries: ["/"] }) });',
-      'await router.load();',
-      'const stream = await renderToReadableStream(<RouterProvider router={router} />);',
-      'await stream.allReady;',
-      'const html = await new Response(stream).text();',
-      'for (const expected of ["Installed typed route", \'href="/next"\']) if (!html.includes(expected)) throw new Error("Installed router link failed " + expected);',
-    ],
-  },
   'protobuf-v1': {
     names: ['protobuf-v1-bridge'],
     forbidden: /@bufbuild\/protobuf@(?:2|\^2)\.|react-hook-form|@bufbuild\/protovalidate/u,
@@ -634,12 +604,7 @@ const consumerCases = {
   },
   capabilities: {
     names: [
-      'protoform-ui-alert',
-      'protoform-ui-calendar',
-      'protoform-ui-carousel',
-      'protoform-ui-input-otp',
-      'protoform-ui-json-field',
-      'protoform-ui-chart-tanstack',
+      'protoform-shadcn-tanstack',
       'formik-demo',
       'final-form-demo',
       'tanstack-form-demo',
@@ -647,7 +612,7 @@ const consumerCases = {
       'use-proto-form-v8',
       'use-proto-form-tanstack-v2',
     ],
-    forbidden: /\brecharts@|@tanstack\/react-router@/u,
+    forbidden: rechartsPackage,
     source: [
       'import { renderToReadableStream } from "react-dom/server";',
       'import { Calendar } from "./components/ui/calendar";',
@@ -774,9 +739,7 @@ async function assertSupportedVersionMatrix(modes: ConsumerDependencyMode[]) {
     await modes.reduce(
       (previous, mode) =>
         previous.then(async () => {
-          await assertVersionedConsumer(mode, 'table', matrixRoot);
           await assertVersionedConsumer(mode, 'capabilities', matrixRoot);
-          await assertVersionedConsumer(mode, 'typography-router', matrixRoot);
           return assertVersionedConsumer(mode, 'protobuf-v1', matrixRoot);
         }),
       Promise.resolve()
@@ -786,7 +749,7 @@ async function assertSupportedVersionMatrix(modes: ConsumerDependencyMode[]) {
   }
 }
 
-const isolatedMatrix = process.argv.includes('--granular-only') || process.argv.includes('--matrix-only');
+const isolatedMatrix = process.argv.includes('--matrix-only');
 if (!isolatedMatrix) {
   await createFixture();
   await rm(coreFixture, { force: true, recursive: true });
@@ -798,7 +761,7 @@ if (!isolatedMatrix) {
 const server = await servePublic();
 try {
   if (isolatedMatrix) {
-    await assertSupportedVersionMatrix(process.argv.includes('--matrix-only') ? ['floor', 'current'] : ['current']);
+    await assertSupportedVersionMatrix(['floor', 'current']);
   } else {
     if (!process.argv.includes('--host-only')) {
       await assertInteropInstalled();

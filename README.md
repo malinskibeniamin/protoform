@@ -144,20 +144,6 @@ add `@protoform/protoform-sdk-enhancements` for Rating, asynchronous options, an
 preferences. These are additions, not replacement controls. The agent bridge is opt-in and
 never registers WebMCP tools automatically. See the [install and safety guide](registry/base-nova/protoform/UI_SDK_COMPONENTS.md).
 
-## Install individual UI capabilities
-
-Keep the complete UI bundles when you need their full catalogue. For a smaller source-copy
-install, select `protoform-ui-*` items instead, for example:
-
-```bash
-bunx shadcn@latest add @protoform/protoform-ui-calendar @protoform/protoform-ui-data-table-demo
-```
-
-Each item includes its imported source dependencies and notices, not unrelated catalogue demos.
-`protoform-ui-typography` is router-neutral; add `protoform-ui-typography-tanstack-link` for the
-optional typed `TanStackLink` from `@/components/ui/typography/tanstack-link`. Your configured
-`ui` alias determines the actual destination. Existing full-bundle URLs remain supported.
-
 ## Flagship example
 
 The bookstore walkthrough connects five real RPCs to one generated contract:

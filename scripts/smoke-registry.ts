@@ -25,6 +25,7 @@ const expectedItems = [
   'protoform-shadcn',
   'protoform-shadcn-tanstack',
   'protoform-shadcn-host',
+  'protoform-ui-sdk-agent',
   'auto-form-react-hook-form-v8',
   'auto-form-formisch',
   'auto-form-tanstack',
@@ -39,11 +40,6 @@ const registry = z
   .looseObject({ items: z.array(z.looseObject({ name: z.string() })).optional() })
   .parse(JSON.parse(readFileSync('public/r/registry.json', 'utf8')));
 const names = new Set((registry.items ?? []).map((item) => item.name));
-
-const sourceRegistry = z
-  .looseObject({ items: z.array(z.looseObject({ name: z.string() })) })
-  .parse(JSON.parse(readFileSync('registry.json', 'utf8')));
-expectedItems.push(...sourceRegistry.items.map((item) => item.name).filter((name) => name.startsWith('protoform-ui-')));
 
 for (const name of expectedItems) {
   if (!names.has(name)) {
