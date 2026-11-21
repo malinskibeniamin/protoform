@@ -7,6 +7,8 @@ source snapshots.
 
 ### Added
 
+- Opt-in UI SDK beta.13 Rating, async option loading, explicit saved preferences, and an application-policy agent helper. Existing Base UI controls and form contracts are preserved.
+
 - Fail-closed dependency audit and installed-consumer browser checks in CI and release gates.
 - Real AutoForm browser budgets for 50, 200, and 500 controls, including typing, submit validation, and step transitions.
 

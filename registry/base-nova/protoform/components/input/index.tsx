@@ -54,6 +54,7 @@ export interface InputProps
   containerClassName?: string | undefined;
   showStepControls?: boolean | undefined;
   size?: VariantProps<typeof inputVariants>['size'] | number;
+  stepNumberText?: ((text: string, delta: number) => string | null) | undefined;
 }
 
 function useInputState(value: InputProps['value'], defaultValue: InputProps['defaultValue']) {
@@ -86,18 +87,17 @@ function useNumberInputHandlers(
   setValue: React.Dispatch<React.SetStateAction<string>>,
   step: number,
   inputRef: React.RefObject<HTMLInputElement | null>,
-  onChange?: React.ChangeEventHandler<HTMLInputElement>
+  onChange?: React.ChangeEventHandler<HTMLInputElement>,
+  stepNumberText?: InputProps['stepNumberText']
 ) {
-  const increment = () => {
-    const currentValue = Number.parseFloat(value) || 0;
-    const newValue = (currentValue + step).toString();
-    dispatchInputChange(inputRef.current, newValue);
-  };
-
-  const decrement = () => {
-    const currentValue = Number.parseFloat(value) || 0;
-    const newValue = (currentValue - step).toString();
-    dispatchInputChange(inputRef.current, newValue);
+  const move = (delta: number) => {
+    const next =
+      stepNumberText === undefined
+        ? ((Number.parseFloat(value) || 0) + delta).toString()
+        : stepNumberText(value, delta);
+    if (next !== null) {
+      dispatchInputChange(inputRef.current, next);
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -105,7 +105,7 @@ function useNumberInputHandlers(
     onChange?.(e);
   };
 
-  return { decrement, handleInputChange, increment };
+  return { decrement: () => move(-step), handleInputChange, increment: () => move(step) };
 }
 
 function getInputGroupClasses(attached: boolean, groupPosition: ReturnType<typeof useGroup>['position']) {
@@ -124,11 +124,20 @@ function getInputMode(
   type: InputProps['type'],
   variant: InputProps['variant'],
   showPassword: boolean,
-  showStepControls: InputProps['showStepControls']
+  {
+    showStepControls,
+    stepNumberText,
+    step,
+    inputMode,
+  }: Pick<InputProps, 'showStepControls' | 'stepNumberText' | 'step' | 'inputMode'>
 ) {
+  const isNumberInput = type === 'number';
   const isPasswordInput = type === 'password';
-  const shouldShowControls = type === 'number' && showStepControls;
-  let inputType = type;
+  const shouldShowControls = isNumberInput && showStepControls === true;
+  const stepper = shouldShowControls ? stepNumberText : undefined;
+  const localized = stepper !== undefined;
+  const stepDelta = step ? Number(step) : 1;
+  let inputType = localized ? 'text' : type;
   if (isPasswordInput) {
     inputType = showPassword ? 'text' : 'password';
   }
@@ -140,7 +149,18 @@ function getInputMode(
     layout = 'password';
   }
   const inputVariant = isPasswordInput && variant !== 'group' ? 'password' : variant;
-  return { inputType, inputVariant, layout };
+  return {
+    inputType,
+    inputVariant,
+    layout,
+    isNumberInput,
+    isPasswordInput,
+    shouldShowControls,
+    stepper,
+    stepDelta,
+    nativeStep: isNumberInput && !localized ? stepDelta : undefined,
+    inputMode: inputMode ?? (localized ? 'decimal' : undefined),
+  };
 }
 
 function getInputValueProps(
@@ -239,6 +259,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       className,
       type,
       showStepControls,
+      stepNumberText,
       size: requestedSize,
       variant,
       testId,
@@ -268,26 +289,28 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       [endWidth, startWidth]
     );
 
-    const isNumberInput = type === 'number';
-    const isPasswordInput = type === 'password';
-    const shouldShowControls = isNumberInput && showStepControls;
-    const step = props.step ? Number(props.step) : 1;
+    const mode = getInputMode(type, variant, showPassword, {
+      showStepControls,
+      stepNumberText,
+      step: props.step,
+      inputMode: props.inputMode,
+    });
+    const { isNumberInput, isPasswordInput, shouldShowControls } = mode;
     const { position: groupPosition, attached: groupAttached } = useGroup();
     const attached = groupAttached || isPasswordInput;
 
     const { increment, decrement, handleInputChange } = useNumberInputHandlers(
       value,
       setValue,
-      step,
+      mode.stepDelta,
       inputRef,
-      props.onChange
+      props.onChange,
+      mode.stepper
     );
 
     const controlsDisabled = props.disabled || readOnly;
 
     const positionClasses = getInputGroupClasses(attached, groupPosition);
-
-    const { inputType, inputVariant, layout } = getInputMode(type, variant, showPassword, showStepControls);
 
     const inputValueProps = getInputValueProps(isNumberInput, value, props.value, defaultValue);
 
@@ -302,7 +325,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         aria-invalid={props['aria-invalid'] ?? (fieldCtx.invalid || undefined)}
         className={cn(
           positionClasses,
-          inputVariants({ size, variant: inputVariant }),
+          inputVariants({ size, variant: mode.inputVariant }),
           isPasswordInput && 'pr-10',
           'data-[start-adornment=true]:pl-(--input-start-padding)',
           'data-[end-adornment=true]:pr-(--input-end-padding)',
@@ -312,13 +335,14 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         data-slot="input"
         data-start-adornment={Boolean(startWidth)}
         data-testid={testId}
+        inputMode={mode.inputMode}
         onChange={isNumberInput ? handleInputChange : props.onChange}
         readOnly={readOnly}
         ref={inputRef}
         size={nativeSize}
-        step={isNumberInput ? step : undefined}
+        step={mode.nativeStep}
         style={adornmentStyle}
-        type={inputType}
+        type={mode.inputType}
         {...inputValueProps}
       />
     );
@@ -328,7 +352,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         <div
           className={cn(
             inputContainerVariants({
-              layout,
+              layout: mode.layout,
             }),
             containerClassName
           )}

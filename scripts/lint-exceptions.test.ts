@@ -190,3 +190,23 @@ test('does not use global adoption to weaken a previously strict scoped rule', (
   });
   expect(newLintExceptions('.oxlintrc.jsonc', weakened, baseline)).toHaveLength(1);
 });
+
+test('bounds SDK prop forwarding to the three rendering adapters and one existing wrapper rule', () => {
+  const baseline = `export default { rules: { 'react-doctor/jsx-props-no-spreading': 'error', 'react-doctor/no-effect-chain': 'error' } };`;
+  const approved = `export default { rules: { 'react-doctor/jsx-props-no-spreading': 'error', 'react-doctor/no-effect-chain': 'error' }, ignore: { overrides: [{ files: [
+    'registry/ui-sdk/protoform/components/async-option-combobox/index.tsx',
+    'registry/ui-sdk/protoform/components/preferences/index.tsx',
+    'registry/ui-sdk/protoform/components/rating/index.tsx',
+  ], rules: ['react-doctor/jsx-props-no-spreading'] }] } };`;
+  expect(newLintExceptions('doctor.config.ts', approved, baseline)).toEqual([]);
+  for (const invalid of [
+    approved.replace('components/rating/index.tsx', 'components/**'),
+    approved.replace('components/rating/index.tsx', 'components/button/index.tsx'),
+    approved.replace(
+      "rules: ['react-doctor/jsx-props-no-spreading']",
+      "rules: ['react-doctor/jsx-props-no-spreading', 'react-doctor/no-effect-chain']"
+    ),
+  ]) {
+    expect(newLintExceptions('doctor.config.ts', invalid, baseline).length).toBeGreaterThan(0);
+  }
+});

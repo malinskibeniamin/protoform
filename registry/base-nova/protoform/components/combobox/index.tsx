@@ -37,6 +37,7 @@ export interface ComboboxProps
   disabled?: boolean | undefined;
   emptyState?: React.ReactNode | undefined;
   filter?: boolean | undefined;
+  footer?: React.ReactNode;
   id?: string | undefined;
   inputTestId?: string | undefined;
   loading?: boolean | undefined;
@@ -142,9 +143,17 @@ function ComboboxOptionsPopup({
   canCreate,
   createOption,
   renderOption,
+  footer,
 }: Pick<
   ComboboxProps,
-  'container' | 'preventAutoFocusOnOpen' | 'loading' | 'emptyState' | 'creatable' | 'createLabel' | 'renderOption'
+  | 'container'
+  | 'preventAutoFocusOnOpen'
+  | 'loading'
+  | 'emptyState'
+  | 'creatable'
+  | 'createLabel'
+  | 'renderOption'
+  | 'footer'
 > & {
   canCreate: boolean;
   createOption: ComboboxOption | undefined;
@@ -174,6 +183,7 @@ function ComboboxOptionsPopup({
           >
             <ComboboxOptionGroups createOption={createOption} renderOption={renderOption} />
           </ComboboxPrimitive.List>
+          {footer}
           {creatable === true && !canCreate ? (
             <div className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground">
               <Plus className="size-4 opacity-50" />
@@ -211,6 +221,7 @@ function LegacyCombobox({
   loading = false,
   emptyState,
   filter = true,
+  footer,
   renderOption,
   ...ariaProps
 }: ComboboxProps) {
@@ -282,6 +293,7 @@ function LegacyCombobox({
         createLabel={createLabel}
         createOption={createOption}
         emptyState={emptyState}
+        footer={footer}
         loading={loading}
         preventAutoFocusOnOpen={preventAutoFocusOnOpen}
         renderOption={renderOption}

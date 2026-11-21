@@ -15,6 +15,11 @@ const hostFixture = join(root, '.tmp', 'host-consumer-fixture');
 const coreFixture = join(root, '.tmp', 'core-consumer-fixture');
 const tanstackFixture = join(root, '.tmp', 'tanstack-consumer-fixture');
 const publicDir = join(root, 'public');
+const queryVersion = z
+  .object({ version: z.string() })
+  .parse(
+    JSON.parse(await readFile(fileURLToPath(import.meta.resolve('@tanstack/react-query/package.json')), 'utf8'))
+  ).version;
 const leadingSlashes = /^\/+/u;
 const registryPort = Number(process.env['PROTOFORM_REGISTRY_PORT'] ?? '48741');
 if (!Number.isInteger(registryPort) || registryPort < 1 || registryPort > 65_535) {
@@ -51,6 +56,7 @@ async function createFixture() {
           '@types/react': 'latest',
           '@types/react-dom': 'latest',
         },
+        overrides: { '@tanstack/react-query': queryVersion, '@tanstack/query-core': queryVersion },
         name: 'protoform-consumer-fixture',
         private: true,
         scripts: { typecheck: 'tsc --noEmit' },
@@ -501,7 +507,7 @@ async function assertTanStackInstalled() {
   const theme = await readFile(join(root, 'scripts/fixtures/host-theme.css'), 'utf8');
   await writeFile(
     join(tanstackFixture, 'app/globals.css'),
-    `${theme}\n@source "../components";\n@source "../chart-browser.tsx";\n:root { --chart-1: rgb(147 51 234); }\n`
+    `@layer ui-sdk;\n${theme}\n@source "../components";\n@source "../chart-browser.tsx";\n:root { --chart-1: rgb(147 51 234); }\n`
   );
   await writeFile(
     join(tanstackFixture, 'index.html'),
@@ -561,6 +567,37 @@ try {
     await $`bunx --no-install shadcn add @protoform/auto-form-tanstack-v2 --cwd ${fixture} --yes --overwrite`;
     await $`bunx --no-install shadcn add @protoform/auto-form-formisch @protoform/use-proto-form-formisch --cwd ${fixture} --yes --overwrite`;
     await assertInstalled();
+    const canonicalPaths = [
+      ...(await Array.fromAsync(new Glob('components/ui/**/*').scan({ cwd: fixture, onlyFiles: true }))),
+      ...(await Array.fromAsync(new Glob('components/auto-form/**/*').scan({ cwd: fixture, onlyFiles: true }))),
+      'lib/utils/index.tsx',
+    ];
+    const canonicalSources = await Promise.all(
+      canonicalPaths.map(async (path) => ({ path, content: await readFile(join(fixture, path), 'utf8') }))
+    );
+    await $`bunx --no-install shadcn add @protoform/ui-sdk-agent-workbench @protoform/ui-sdk-hooks --cwd ${fixture} --yes`;
+    await Promise.all(
+      canonicalSources.map(async ({ path, content }) => {
+        if ((await readFile(join(fixture, path), 'utf8')) !== content) {
+          throw new Error(`SDK enhancement modified canonical source ${path}`);
+        }
+      })
+    );
+    await Promise.all(
+      [
+        { name: 'agent', component: '@/components/protoform-examples/ui-sdk-agent-workbench' },
+        { name: 'hooks', component: '@/components/protoform-examples/ui-sdk-hooks' },
+      ].map(async ({ name, component }) => {
+        await writeFile(
+          join(fixture, `${name}-browser.tsx`),
+          `import { createRoot } from 'react-dom/client'; import Example from '${component}'; const root = document.getElementById('root'); if (!root) throw new Error('Missing root'); createRoot(root).render(<Example />);`
+        );
+        await writeFile(
+          join(fixture, `${name}.html`),
+          `<html lang="en"><head><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Optional SDK enhancement</title><link rel="stylesheet" href="/app/globals.css" /></head><body><div id="root"></div><script type="module" src="/${name}-browser.tsx"></script></body></html>`
+        );
+      })
+    );
     await $`bun add --cwd ${fixture} tailwindcss@4.3.5 @tailwindcss/vite@4.3.5`;
     const browserSource = await readFile(join(root, 'scripts/fixtures/reliability-browser.tsx'), 'utf8');
     await writeFile(
@@ -593,7 +630,7 @@ try {
     const theme = await readFile(join(root, 'scripts/fixtures/host-theme.css'), 'utf8');
     await writeFile(
       join(fixture, 'app/globals.css'),
-      `${theme}\n@source "../components";\n@source "../reliability-browser.tsx";\n@source "../native-defaults-browser.tsx";\n@source "../custom-options-browser.tsx";\n@source "../indented-sections-browser.tsx";\n`
+      `@layer ui-sdk;\n${theme}\n@source "../components";\n@source "../reliability-browser.tsx";\n@source "../native-defaults-browser.tsx";\n@source "../custom-options-browser.tsx";\n@source "../indented-sections-browser.tsx";\n`
     );
     await writeFile(
       join(fixture, 'index.html'),

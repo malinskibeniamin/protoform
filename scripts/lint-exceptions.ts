@@ -352,13 +352,23 @@ const APPROVED_BIOME_2_6_EXCEPTIONS = JSON.stringify({
   ],
 });
 
+const APPROVED_SDK_RENDERERS = `export default { overrides: [{
+  files: [
+    "registry/ui-sdk/protoform/components/async-option-combobox/index.tsx",
+    "registry/ui-sdk/protoform/components/preferences/index.tsx",
+    "registry/ui-sdk/protoform/components/rating/index.tsx",
+  ],
+  rules: ['react-doctor/jsx-props-no-spreading'],
+}] };`;
+
 export function newLintExceptions(file: string, source: string, baseline: string): string[] {
   const previous = exceptionPolicies(file, baseline);
   const previouslyScopedRules = new Set(
     exceptionPolicies(file, baseline, false).flatMap((scope) => [...scope.rules.keys()])
   );
   const approved = file === 'biome.jsonc' ? exceptionPolicies(file, APPROVED_BIOME_2_6_EXCEPTIONS) : [];
-  const owners = [...previous, ...approved];
+  const rendererPolicies = file === 'doctor.config.ts' ? exceptionPolicies(file, APPROVED_SDK_RENDERERS) : [];
+  const owners = [...previous, ...approved, ...rendererPolicies];
   const fingerprints = new Set(owners.map((entry) => entry.fingerprint));
   const before = configPolicies(file, baseline);
   const after = configPolicies(file, source);

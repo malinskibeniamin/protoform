@@ -117,6 +117,14 @@ export default defineConfig({
         rules: ['react-doctor/jsx-props-no-spreading'],
       },
       {
+        files: [
+          'registry/ui-sdk/protoform/components/async-option-combobox/index.tsx',
+          'registry/ui-sdk/protoform/components/preferences/index.tsx',
+          'registry/ui-sdk/protoform/components/rating/index.tsx',
+        ],
+        rules: ['react-doctor/jsx-props-no-spreading'],
+      },
+      {
         files: ['registry/base-nova/protoform/components/auto-form/fields/**'],
         rules: ['react-doctor/jsx-handler-names'],
       },

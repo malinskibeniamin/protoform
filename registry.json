@@ -3993,6 +3993,99 @@
       "registryDependencies": ["@protoform/protoform-demo-runtime"],
       "title": "Untrusted input hardening",
       "type": "registry:example"
+    },
+    {
+      "name": "protoform-sdk-enhancements",
+      "type": "registry:component",
+      "title": "Optional Protoform SDK enhancements",
+      "description": "Core-composed rating, async loading and persistent preferences alongside the canonical Base UI catalog. No replacement controls or alternate AutoForm.",
+      "dependencies": ["@ui-sdk/core@0.1.0-beta.13", "@ui-sdk/react@0.1.0-beta.13"],
+      "registryDependencies": ["@protoform/protoform-ui-sdk-agent"],
+      "files": [
+        {
+          "path": "registry/ui-sdk/protoform/components/number-text/index.ts",
+          "type": "registry:ui",
+          "target": "@ui/sdk/number-text/index.ts"
+        },
+        {
+          "path": "registry/ui-sdk/protoform/components/rating/index.tsx",
+          "type": "registry:component",
+          "target": "@ui/sdk/rating/index.tsx"
+        },
+        {
+          "path": "registry/ui-sdk/protoform/components/rating/primitive.ts",
+          "type": "registry:component",
+          "target": "@ui/sdk/rating/primitive.ts"
+        },
+        {
+          "path": "registry/ui-sdk/protoform/components/async-option-combobox/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/sdk/async-option-combobox/index.tsx"
+        },
+        {
+          "path": "registry/ui-sdk/protoform/components/preferences/index.tsx",
+          "type": "registry:ui",
+          "target": "@ui/sdk/preferences/index.tsx"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/sdk-props.ts",
+          "type": "registry:lib",
+          "target": "@lib/sdk-props.ts"
+        },
+        {
+          "path": "registry/base-nova/protoform/UI_SDK_COMPONENTS.md",
+          "type": "registry:file",
+          "target": "~/LICENSES/protoform-ui-sdk-provenance.md"
+        },
+        {
+          "path": "registry/base-nova/protoform/lib/utils/index.tsx",
+          "type": "registry:lib",
+          "target": "@lib/utils/index.tsx"
+        }
+      ]
+    },
+    {
+      "name": "protoform-ui-sdk-agent",
+      "type": "registry:lib",
+      "title": "Opt-in UI SDK agent bridge",
+      "description": "Opt-in agent tools, explicit-policy sessions, redacted change subscriptions, and experimental history helpers. Never registers WebMCP tools or starts a session on import.",
+      "registryDependencies": ["@protoform/protoform-license"],
+      "dependencies": ["@ui-sdk/core@0.1.0-beta.13", "@ui-sdk/react@0.1.0-beta.13"],
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/lib/ui-sdk/session.ts",
+          "type": "registry:lib",
+          "target": "@lib/ui-sdk/session.ts"
+        }
+      ]
+    },
+    {
+      "name": "ui-sdk-agent-workbench",
+      "type": "registry:example",
+      "title": "UI SDK agent workbench",
+      "description": "Opt-in agent access to the core-composed rating, with application-owned approval, redaction, history, and disposal. Base UI controls are not agent targets.",
+      "registryDependencies": ["@protoform/protoform-sdk-enhancements"],
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/ui/agent-workbench.tsx",
+          "type": "registry:example",
+          "target": "@components/protoform-examples/ui-sdk-agent-workbench.tsx"
+        }
+      ]
+    },
+    {
+      "name": "ui-sdk-hooks",
+      "type": "registry:example",
+      "title": "UI SDK hook integrations",
+      "description": "Field accessibility, asynchronous options and opt-in saved preferences.",
+      "registryDependencies": ["@protoform/protoform-sdk-enhancements"],
+      "files": [
+        {
+          "path": "registry/base-nova/protoform/demo/ui/sdk-hooks.tsx",
+          "type": "registry:component",
+          "target": "@components/protoform-examples/ui-sdk-hooks.tsx"
+        }
+      ]
     }
   ],
   "$schema": "https://ui.shadcn.com/schema/registry.json",

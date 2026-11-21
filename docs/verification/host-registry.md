@@ -57,3 +57,9 @@ the stylesheet. The original handwritten-CSS snapshots were inadequate styling e
 - No primitive implementations or themes were changed. Most extra source-file changes are import
   paths needed to support independently nested aliases. The internal field-mask renderer was renamed
   to avoid shadcn confusing it with the protobuf field-mask helper during import rewriting.
+
+## Opt-in SDK additions
+
+The primary consumer installs SDK examples after canonical controls and requires existing UI/AutoForm source to remain byte-identical. Both chart backends and the separate host registry retain their original install checks. Fixtures pin Query/Core to the repository-tested version to avoid partially published npm tarballs.
+
+Installed and built agent journeys cover explicit enablement, Rating read-back, refused Base UI edits, cancellation, redaction, human approval, staging, seek/replay, source undo, and disposal. Browser tests exercise explicit WebMCP registration, policy enforcement, and signal-based cleanup through an API stub; the local mode never registers browser tools. Async options retain retry, cancellation, and pagination checks; preferences require explicit storage. Rating retains SDK pattern/server/direction checks. Existing native screenshot baselines and tolerances remain unchanged.

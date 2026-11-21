@@ -137,6 +137,13 @@ readiness guidance instant. Motion is owned by these variants, not the former Mo
 - Review source diffs when updating. This change does not delete old copied primitives or theme
   files from an existing app. Remove them only after checking your own references.
 
+### Optional UI SDK enhancements
+
+Keep the existing Base UI bundle and AutoForm. After installing either canonical UI bundle,
+add `@protoform/protoform-sdk-enhancements` for Rating, asynchronous options, and explicit saved
+preferences. These are additions, not replacement controls. The agent bridge is opt-in and
+never registers WebMCP tools automatically. See the [install and safety guide](registry/base-nova/protoform/UI_SDK_COMPONENTS.md).
+
 ## Flagship example
 
 The bookstore walkthrough connects five real RPCs to one generated contract:
