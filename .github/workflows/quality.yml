@@ -29,7 +29,7 @@ jobs:
         with:
           cache: false
           go-version: 1.27.3
-      - run: bun install --frozen-lockfile
+      - run: bun install --frozen-lockfile --linker hoisted
       - run: bunx playwright install chromium
       - name: Match native date controls to existing macOS references
         run: |
