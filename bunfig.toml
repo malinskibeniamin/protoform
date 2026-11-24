@@ -1,3 +1,8 @@
+[install]
+# Share package files across local worktrees. Hosted workflows explicitly use hoisted installs.
+linker = "isolated"
+globalStore = true
+
 [test]
 pathIgnorePatterns = [
   "**/*.test.tsx",

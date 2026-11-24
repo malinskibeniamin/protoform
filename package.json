@@ -210,6 +210,14 @@
     "bun": "1.4.4",
     "node": ">=26.0.0"
   },
+  "packageExtensions": {
+    "@codemirror/lang-json@6.0.2": {
+      "dependencies": {
+        "@codemirror/lint": "^6.0.0",
+        "@codemirror/view": "^6.0.0"
+      }
+    }
+  },
   "patchedDependencies": {
     "blume@2.2.7": "patches/blume@2.2.7.patch"
   }
