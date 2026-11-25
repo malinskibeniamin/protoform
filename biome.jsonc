@@ -1120,17 +1120,6 @@
         }
       }
     },
-    // Bare workflow event declarations intentionally mean null.
-    {
-      "includes": [".github/workflows/ci.yml", ".github/workflows/quality.yml", ".github/workflows/security.yml"],
-      "linter": {
-        "rules": {
-          "nursery": {
-            "noYamlEmptyMapValues": "off"
-          }
-        }
-      }
-    },
     // Revision guards, submission locks and sequential cleanup protect these async updates; the rule does not model them.
     {
       "includes": [
@@ -1146,17 +1135,6 @@
         "rules": {
           "nursery": {
             "useAtomicUpdates": "off"
-          }
-        }
-      }
-    },
-    // The JSON renderer reassigns an Array.isArray-narrowed array; Biome loses that narrowing in React callbacks.
-    {
-      "includes": ["registry/base-nova/protoform/components/json-field/index.tsx"],
-      "linter": {
-        "rules": {
-          "nursery": {
-            "noMisusedSpread": "off"
           }
         }
       }

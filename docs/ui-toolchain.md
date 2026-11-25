@@ -251,10 +251,11 @@ The nine disabled additions have ecosystem or contract reasons:
 
 Four previously disabled checks are now errors: CSS `useBaseline`, `noMisusedSpread`,
 `useAtomicUpdates`, and `noYamlEmptyMapValues`. Baseline permits only the existing progressive
-`fullscreen` selector and `user-select` property in `theme.css`. The spread rule exempts only the
-JSON renderer's lost array narrowing. Atomic-update exceptions name the revision-guarded QuickJS
-controller, sequential screenshot poller and five server-cleanup tests. YAML null-map exceptions
-name only the three workflows with bare event declarations. Other files retain enforcement.
+`fullscreen` selector and `user-select` property in `theme.css`. An explicit `JSONValue[]` annotation
+preserves array inference inside the JSON renderer's callbacks. Workflows spell out intentional
+null event values without changing their parsed triggers. Neither check needs a waiver.
+Atomic-update exceptions name the revision-guarded QuickJS controller, sequential screenshot
+poller and five server-cleanup tests.
 
 Biome's Astro scope fixes restore unused-import, undeclared-variable, JSX-key and type-import
 checks; only compiler-provided `Fragment` is declared as an Astro global. The test-wide misplaced
