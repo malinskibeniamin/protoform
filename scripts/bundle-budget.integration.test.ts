@@ -41,8 +41,8 @@ const entries = [
 ] as const;
 
 const consumerEntries = [
-  { asyncBudget: 0, entry: 'host.tsx', initialBudget: 265_000, name: 'host', totalBudget: 265_000 },
-  { asyncBudget: 180_000, entry: 'index.tsx', initialBudget: 490_000, name: 'default UI', totalBudget: 670_000 },
+  { asyncBudget: 0, entry: 'host.tsx', initialBudget: 215_000, name: 'host', totalBudget: 215_000 },
+  { asyncBudget: 185_000, entry: 'index.tsx', initialBudget: 355_000, name: 'default UI', totalBudget: 535_000 },
 ] as const;
 
 describe('bundle budgets', () => {
@@ -138,20 +138,33 @@ describe('bundle budgets', () => {
       true
     );
     expect(initialModules.some((file) => file.includes('/node_modules/react/'))).toBe(true);
+    const allModules = chunks.flatMap((chunk) => chunk.modules);
     expect(
-      initialModules.filter((file) => /\/node_modules\/(?:@codemirror|@uiw\/react-codemirror)\//u.test(file))
+      initialModules.filter((file) =>
+        /\/node_modules\/(?:@codemirror|@uiw\/react-codemirror|react-day-picker|date-fns)\//u.test(file)
+      )
+    ).toEqual([]);
+    expect(
+      allModules.filter((file) =>
+        /\/node_modules\/(?:motion|motion-dom|framer-motion|@uiw\/react-codemirror|@bufbuild\/protovalidate\/node_modules\/@bufbuild\/)\//u.test(
+          file
+        )
+      )
     ).toEqual([]);
     expect(sum(initial)).toBeLessThanOrEqual(entry.initialBudget);
     expect(sum(deferred)).toBeLessThanOrEqual(entry.asyncBudget);
     expect(sum(chunks)).toBeLessThanOrEqual(entry.totalBudget);
     expect(
-      chunks
-        .flatMap((chunk) => chunk.modules)
-        .filter((file) => /\/node_modules\/(?:recharts|formik|react-final-form|@tanstack\/react-form)\//u.test(file))
+      allModules.filter((file) =>
+        /\/node_modules\/(?:recharts|formik|react-final-form|@tanstack\/react-form)\//u.test(file)
+      )
     ).toEqual([]);
     expect(deferred.some((chunk) => chunk.modules.some((file) => file.includes('/node_modules/@codemirror/')))).toBe(
       entry.name === 'default UI'
     );
+    expect(
+      deferred.some((chunk) => chunk.modules.some((file) => file.includes('/node_modules/react-day-picker/')))
+    ).toBe(entry.name === 'default UI');
   });
 
   test('keeps the headless configuration inspector independent of rendering runtimes', async () => {

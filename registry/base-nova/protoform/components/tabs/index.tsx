@@ -2,29 +2,9 @@
 
 import { Tabs as TabsPrimitive } from '@base-ui/react/tabs';
 import { cva, type VariantProps } from 'class-variance-authority';
-import {
-  AnimatePresence,
-  type HTMLMotionProps,
-  MotionConfigContext,
-  motion,
-  type Transition,
-  useReducedMotion,
-} from 'motion/react';
 import React from 'react';
 
-import { splitMotionProps } from '@/registry/base-nova/protoform/lib/base-ui-compat';
 import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
-
-const DEFAULT_TRANSITION = {
-  damping: 25,
-  stiffness: 200,
-  type: 'spring',
-} satisfies Transition;
-
-const DEFAULT_PANEL_TRANSITION = {
-  duration: 0.5,
-  ease: 'easeInOut',
-} satisfies Transition;
 
 interface HighlightBounds {
   height: number;
@@ -154,27 +134,11 @@ type TabsListProps = React.ComponentProps<typeof TabsPrimitive.List> &
   VariantProps<typeof tabsListVariants> &
   SharedProps & {
     activeClassName?: string;
-    transition?: Transition;
     columns?: number;
   };
 
 const TabsList = React.forwardRef<HTMLDivElement, TabsListProps>(
-  (
-    {
-      children,
-      className,
-      activeClassName,
-      variant,
-      layout,
-      gap,
-      columns,
-      testId,
-      style,
-      transition = DEFAULT_TRANSITION,
-      ...props
-    },
-    ref
-  ) => {
+  ({ children, className, activeClassName, variant, layout, gap, columns, testId, style, ...props }, ref) => {
     const localRef = React.useRef<HTMLDivElement>(null);
     React.useImperativeHandle(ref, () => localRef.current ?? document.createElement('div'));
 
@@ -239,13 +203,16 @@ const TabsList = React.forwardRef<HTMLDivElement, TabsListProps>(
       };
     }, [syncHighlight]);
 
-    const isHorizontal = orientation !== 'vertical';
-    const axisLockedTransition: Transition = React.useMemo(() => {
-      const snap = { duration: 0 } as const;
-      return isHorizontal ? { ...transition, height: snap, top: snap } : { ...transition, left: snap, width: snap };
-    }, [transition, isHorizontal]);
-
-    const showHighlight = bounds !== null;
+    const highlightStyle: (React.CSSProperties & Record<`--${string}`, string>) | undefined =
+      bounds === null
+        ? undefined
+        : {
+            '--tabs-highlight-height': `${bounds.height}px`,
+            '--tabs-highlight-left': `${bounds.left}px`,
+            '--tabs-highlight-top': `${bounds.top}px`,
+            '--tabs-highlight-transition-property': orientation === 'vertical' ? 'top, height' : 'left, width',
+            '--tabs-highlight-width': `${bounds.width}px`,
+          };
     React.useLayoutEffect(
       function synchronizeColumnCount() {
         const list = localRef.current;
@@ -288,25 +255,18 @@ const TabsList = React.forwardRef<HTMLDivElement, TabsListProps>(
         style={style}
         {...props}
       >
-        <AnimatePresence initial={false}>
-          {showHighlight ? (
-            <motion.div
-              animate={{
-                height: bounds.height,
-                left: bounds.left,
-                opacity: 1,
-                top: bounds.top,
-                width: bounds.width,
-              }}
-              aria-hidden
-              className={cn('pointer-events-none absolute z-0', tabsListActiveVariants({ variant }), activeClassName)}
-              data-slot="tabs-list-highlight"
-              exit={{ opacity: 0, transition: { duration: 0.15 } }}
-              initial={false}
-              transition={axisLockedTransition}
-            />
-          ) : null}
-        </AnimatePresence>
+        {highlightStyle === undefined ? null : (
+          <div
+            aria-hidden
+            className={cn(
+              'pointer-events-none absolute top-(--tabs-highlight-top) left-(--tabs-highlight-left) z-0 h-(--tabs-highlight-height) w-(--tabs-highlight-width) transition-(--tabs-highlight-transition-property) duration-200 ease-out motion-reduce:transition-none',
+              tabsListActiveVariants({ variant }),
+              activeClassName
+            )}
+            data-slot="tabs-list-highlight"
+            style={highlightStyle}
+          />
+        )}
         {children}
       </TabsPrimitive.List>
     );
@@ -359,70 +319,48 @@ function TabsTrigger({ className, value, variant, testId, disabled, render, ...p
   );
 }
 
+const tabsContentVariants = cva('flex-1 space-y-6 outline-none', {
+  variants: {
+    animation: {
+      enter: 'animate-in duration-500 ease-in-out fade-in-0 blur-in-4 slide-in-from-top-2 motion-reduce:animate-none',
+      none: '',
+    },
+  },
+  defaultVariants: {
+    animation: 'enter',
+  },
+});
+
 type TabsContentProps = React.ComponentProps<typeof TabsPrimitive.Panel> &
-  Omit<HTMLMotionProps<'div'>, keyof React.ComponentProps<typeof TabsPrimitive.Panel>> &
-  SharedProps & {
-    transition?: Transition;
-  };
+  VariantProps<typeof tabsContentVariants> &
+  SharedProps;
 
-function TabsContent({
-  className,
-  children,
-  transition = DEFAULT_PANEL_TRANSITION,
-  testId,
-  render,
-  ...props
-}: TabsContentProps) {
-  const prefersReducedMotion = useReducedMotion();
-  const reducedMotionConfig = React.useContext(MotionConfigContext).reducedMotion;
-  const separated = splitMotionProps(props);
-  const shouldReduceMotion = reducedMotionConfig === 'always' || prefersReducedMotion;
-
+function TabsContent({ animation, className, children, testId, render, ...props }: TabsContentProps) {
   return (
     <TabsPrimitive.Panel
       className={(state) =>
-        cn('flex-1 space-y-6 outline-none', typeof className === 'function' ? className(state) : className)
+        cn(tabsContentVariants({ animation }), typeof className === 'function' ? className(state) : className)
       }
       data-slot="tabs-content"
       data-testid={testId}
       render={render}
-      {...separated.native}
+      {...props}
     >
-      <motion.div
-        {...(shouldReduceMotion === true
-          ? { initial: false, layout: false }
-          : {
-              animate: { filter: 'blur(0px)', opacity: 1, y: 0 },
-              exit: { filter: 'blur(4px)', opacity: 0, y: 10 },
-              initial: { filter: 'blur(4px)', opacity: 0, y: -10 },
-              layout: true,
-              transition,
-            })}
-        {...separated.motion}
-      >
-        {children}
-      </motion.div>
+      {children}
     </TabsPrimitive.Panel>
   );
 }
 
-type TabsContentsProps = HTMLMotionProps<'div'> & {
+type TabsContentsProps = React.ComponentProps<'div'> & {
   children: React.ReactNode;
   className?: string;
-  transition?: Transition;
 };
 
-function TabsContents({ children, className, transition = DEFAULT_TRANSITION, ...props }: TabsContentsProps) {
+function TabsContents({ children, className, ...props }: TabsContentsProps) {
   return (
-    <motion.div
-      className={cn('h-auto overflow-visible', className)}
-      data-slot="tabs-contents"
-      layout
-      transition={transition}
-      {...props}
-    >
+    <div className={cn('h-auto overflow-visible', className)} data-slot="tabs-contents" {...props}>
       {children}
-    </motion.div>
+    </div>
   );
 }
 

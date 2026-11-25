@@ -2,6 +2,7 @@
 
 import type { Diagnostic } from '@codemirror/lint';
 import type { EditorView as CodeMirrorView } from '@codemirror/view';
+import React from 'react';
 
 interface JSONCodeEditorProps {
   error: string | undefined;
@@ -13,21 +14,76 @@ interface JSONCodeEditorProps {
 }
 
 const [
-  { default: CodeMirror },
+  { closeBrackets, closeBracketsKeymap },
+  { defaultKeymap, history, historyKeymap },
   { json, jsonParseLinter },
-  { HighlightStyle, syntaxHighlighting, syntaxTree },
-  { linter, lintGutter },
-  { EditorView },
+  { bracketMatching, foldGutter, foldKeymap, HighlightStyle, indentOnInput, syntaxHighlighting, syntaxTree },
+  { linter, lintGutter, lintKeymap },
+  { highlightSelectionMatches, searchKeymap },
+  { Annotation, Compartment, EditorState },
+  {
+    crosshairCursor,
+    drawSelection,
+    dropCursor,
+    EditorView,
+    highlightActiveLine,
+    highlightActiveLineGutter,
+    highlightSpecialChars,
+    keymap,
+    lineNumbers,
+    rectangularSelection,
+  },
   { tags },
 ] = await Promise.all([
-  import('@uiw/react-codemirror'),
-  import('@codemirror/lang-json'),
-  import('@codemirror/language'),
-  import('@codemirror/lint'),
-  import('@codemirror/view'),
-  import('@lezer/highlight'),
+  import('@codemirror/autocomplete').then((module) => ({
+    closeBrackets: module.closeBrackets,
+    closeBracketsKeymap: module.closeBracketsKeymap,
+  })),
+  import('@codemirror/commands').then((module) => ({
+    defaultKeymap: module.defaultKeymap,
+    history: module.history,
+    historyKeymap: module.historyKeymap,
+  })),
+  import('@codemirror/lang-json').then((module) => ({ json: module.json, jsonParseLinter: module.jsonParseLinter })),
+  import('@codemirror/language').then((module) => ({
+    bracketMatching: module.bracketMatching,
+    foldGutter: module.foldGutter,
+    foldKeymap: module.foldKeymap,
+    HighlightStyle: module.HighlightStyle,
+    indentOnInput: module.indentOnInput,
+    syntaxHighlighting: module.syntaxHighlighting,
+    syntaxTree: module.syntaxTree,
+  })),
+  import('@codemirror/lint').then((module) => ({
+    linter: module.linter,
+    lintGutter: module.lintGutter,
+    lintKeymap: module.lintKeymap,
+  })),
+  import('@codemirror/search').then((module) => ({
+    highlightSelectionMatches: module.highlightSelectionMatches,
+    searchKeymap: module.searchKeymap,
+  })),
+  import('@codemirror/state').then((module) => ({
+    Annotation: module.Annotation,
+    Compartment: module.Compartment,
+    EditorState: module.EditorState,
+  })),
+  import('@codemirror/view').then((module) => ({
+    crosshairCursor: module.crosshairCursor,
+    drawSelection: module.drawSelection,
+    dropCursor: module.dropCursor,
+    EditorView: module.EditorView,
+    highlightActiveLine: module.highlightActiveLine,
+    highlightActiveLineGutter: module.highlightActiveLineGutter,
+    highlightSpecialChars: module.highlightSpecialChars,
+    keymap: module.keymap,
+    lineNumbers: module.lineNumbers,
+    rectangularSelection: module.rectangularSelection,
+  })),
+  import('@lezer/highlight').then((module) => ({ tags: module.tags })),
 ]);
 const parseJSON = jsonParseLinter();
+const externalSyncAnnotation = Annotation.define<boolean>();
 
 function jsonDiagnostics(view: CodeMirrorView): Diagnostic[] {
   const diagnostics = parseJSON(view);
@@ -86,7 +142,12 @@ const jsonHighlighting = syntaxHighlighting(
   ])
 );
 
-function contentAttributes({ error, errorId, id, label }: JSONCodeEditorProps) {
+function contentAttributes({
+  error,
+  errorId,
+  id,
+  label,
+}: Pick<JSONCodeEditorProps, 'error' | 'errorId' | 'id' | 'label'>) {
   const hasError = error !== undefined && error !== '';
   return EditorView.contentAttributes.of({
     id: `${id}-editor`,
@@ -96,23 +157,117 @@ function contentAttributes({ error, errorId, id, label }: JSONCodeEditorProps) {
   });
 }
 
+const basicSetupEditingExtensions = [
+  lineNumbers(),
+  highlightActiveLineGutter(),
+  highlightSpecialChars(),
+  history(),
+  foldGutter(),
+  drawSelection(),
+  dropCursor(),
+  EditorState.allowMultipleSelections.of(true),
+  indentOnInput(),
+  bracketMatching(),
+  closeBrackets(),
+  rectangularSelection(),
+  crosshairCursor(),
+  highlightActiveLine(),
+  highlightSelectionMatches(),
+  keymap.of([
+    ...closeBracketsKeymap,
+    ...defaultKeymap,
+    ...searchKeymap,
+    ...historyKeymap,
+    ...foldKeymap,
+    ...lintKeymap,
+  ]),
+];
+
 const jsonExtensions = [
+  ...basicSetupEditingExtensions,
   json(),
   jsonHighlighting,
   EditorView.lineWrapping,
   lintGutter(),
   linter(jsonDiagnostics, { delay: 150 }),
+  editorTheme,
 ];
 
-export function JSONCodeEditor(props: JSONCodeEditorProps) {
-  return (
-    <CodeMirror
-      className="min-w-0 rounded-md"
-      extensions={[...jsonExtensions, contentAttributes(props)]}
-      indentWithTab={false}
-      onChange={props.onChange}
-      theme={editorTheme}
-      value={props.value}
-    />
+export function JSONCodeEditor({ error, errorId, id, label, onChange, value }: JSONCodeEditorProps) {
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const viewRef = React.useRef<CodeMirrorView | null>(null);
+  const attributesCompartmentRef = React.useRef<InstanceType<typeof Compartment> | null>(null);
+  const getInitialConfig = React.useEffectEvent(() => ({
+    attributes: contentAttributes({ error, errorId, id, label }),
+    doc: value,
+  }));
+  const onChangeEvent = React.useEffectEvent(onChange);
+
+  React.useEffect(function mountEditorView() {
+    const parent = containerRef.current;
+    if (parent === null) {
+      return;
+    }
+
+    const attributesCompartment = new Compartment();
+    attributesCompartmentRef.current = attributesCompartment;
+    const { attributes, doc } = getInitialConfig();
+    const state = EditorState.create({
+      doc,
+      extensions: [
+        ...jsonExtensions,
+        attributesCompartment.of(attributes),
+        EditorView.updateListener.of((update) => {
+          if (
+            update.docChanged &&
+            update.transactions.every((transaction) => transaction.annotation(externalSyncAnnotation) !== true)
+          ) {
+            onChangeEvent(update.state.doc.toString());
+          }
+        }),
+      ],
+    });
+    const view = new EditorView({ parent, state });
+    viewRef.current = view;
+
+    return () => {
+      view.destroy();
+      viewRef.current = null;
+      attributesCompartmentRef.current = null;
+    };
+  }, []);
+
+  React.useEffect(
+    function synchronizeEditorDocument() {
+      const view = viewRef.current;
+      if (view === null) {
+        return;
+      }
+      const current = view.state.doc.toString();
+      if (current === value) {
+        return;
+      }
+      view.dispatch({
+        annotations: externalSyncAnnotation.of(true),
+        changes: { from: 0, insert: value, to: current.length },
+      });
+    },
+    [value]
   );
+
+  React.useEffect(
+    function synchronizeEditorAttributes() {
+      const view = viewRef.current;
+      const attributesCompartment = attributesCompartmentRef.current;
+      if (view === null || attributesCompartment === null) {
+        return;
+      }
+      view.dispatch({
+        effects: attributesCompartment.reconfigure(contentAttributes({ error, errorId, id, label })),
+      });
+    },
+    [error, errorId, id, label]
+  );
+
+  return <div className="min-w-0 rounded-md" ref={containerRef} />;
 }

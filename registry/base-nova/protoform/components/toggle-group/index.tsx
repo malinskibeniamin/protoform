@@ -5,14 +5,10 @@ import { Toggle as TogglePrimitive } from '@base-ui/react/toggle';
 import { ToggleGroup as ToggleGroupPrimitive } from '@base-ui/react/toggle-group';
 import { useRender } from '@base-ui/react/use-render';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { AnimatePresence, type HTMLMotionProps, motion, type Transition } from 'motion/react';
 import type { CSSProperties } from 'react';
 import React from 'react';
 import type { GroupContextValue, GroupPosition } from '@/components/ui/group';
-import { splitMotionProps } from '@/registry/base-nova/protoform/lib/base-ui-compat';
 import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
-
-const DEFAULT_TRANSITION = { bounce: 0, damping: 25, stiffness: 200, type: 'spring' } satisfies Transition;
 
 type Orientation = 'horizontal' | 'vertical';
 
@@ -112,7 +108,6 @@ type ToggleGroupBaseProps = Omit<
 > &
   Omit<VariantProps<typeof toggleVariants>, 'type'> &
   SharedProps & {
-    transition?: Transition;
     activeClassName?: string;
     attached?: boolean;
   };
@@ -209,7 +204,6 @@ function LegacyToggleGroup({
   variant,
   size,
   children,
-  transition = DEFAULT_TRANSITION,
   activeClassName,
   testId,
   attached = true,
@@ -304,11 +298,6 @@ function LegacyToggleGroup({
     return () => ro.disconnect();
   }, [activeValue, hasActiveValue, isMultiple]);
 
-  const axisLockedTransition: Transition = React.useMemo(() => {
-    const snap = { duration: 0 } as const;
-    return isHorizontal ? { ...transition, height: snap, top: snap } : { ...transition, left: snap, width: snap };
-  }, [transition, isHorizontal]);
-
   const getPosition = (index: number): GroupPosition | undefined => {
     if (attached !== true || childCount === 1) {
       return;
@@ -337,6 +326,17 @@ function LegacyToggleGroup({
     orientation
   );
 
+  const highlightStyle: (CSSProperties & Record<`--${string}`, string>) | undefined =
+    !isMultiple && bounds !== null
+      ? {
+          '--toggle-highlight-height': `${bounds.height}px`,
+          '--toggle-highlight-left': `${bounds.left}px`,
+          '--toggle-highlight-top': `${bounds.top}px`,
+          '--toggle-highlight-transition-property': orientation === 'vertical' ? 'top, height' : 'left, width',
+          '--toggle-highlight-width': `${bounds.width}px`,
+        }
+      : undefined;
+
   return (
     <ToggleGroupPrimitive
       className={(state) =>
@@ -362,19 +362,18 @@ function LegacyToggleGroup({
       value={toValueArray(value)}
       {...props}
     >
-      <AnimatePresence initial={false}>
-        {!isMultiple && bounds ? (
-          <motion.div
-            animate={{ height: bounds.height, left: bounds.left, opacity: 1, top: bounds.top, width: bounds.width }}
-            aria-hidden
-            className={cn('pointer-events-none absolute z-0 bg-accent', highlightPositionClasses, activeClassName)}
-            data-slot="toggle-group-highlight"
-            exit={{ opacity: 0, transition: { duration: 0.15 } }}
-            initial={false}
-            transition={axisLockedTransition}
-          />
-        ) : null}
-      </AnimatePresence>
+      {highlightStyle === undefined ? null : (
+        <div
+          aria-hidden
+          className={cn(
+            'pointer-events-none absolute top-(--toggle-highlight-top) left-(--toggle-highlight-left) z-0 h-(--toggle-highlight-height) w-(--toggle-highlight-width) bg-accent transition-(--toggle-highlight-transition-property) duration-200 ease-out motion-reduce:transition-none',
+            highlightPositionClasses,
+            activeClassName
+          )}
+          data-slot="toggle-group-highlight"
+          style={highlightStyle}
+        />
+      )}
       {childrenArray.map((child, index) => {
         const element = child as React.ReactElement;
         return (
@@ -401,7 +400,7 @@ type ToggleGroupItemProps = React.ComponentProps<typeof TogglePrimitive> &
   SharedProps & {
     value?: string | undefined;
     children?: React.ReactNode;
-    buttonProps?: HTMLMotionProps<'button'>;
+    buttonProps?: React.ComponentProps<'button'>;
     spanProps?: React.ComponentProps<'span'>;
   };
 
@@ -460,7 +459,6 @@ const ToggleGroupItem = React.forwardRef<HTMLButtonElement, ToggleGroupItemProps
     );
 
     const { className: buttonClassName, style: buttonStyle, value: _buttonValue, ...buttonOptions } = buttonProps ?? {};
-    const separated = splitMotionProps(buttonOptions, false);
     const renderRoot: NonNullable<React.ComponentProps<typeof TogglePrimitive>['render']> = (rootProps, state) => {
       const requestedType: unknown = Reflect.get(rootProps, 'type');
       const buttonType = requestedType === 'submit' || requestedType === 'reset' ? requestedType : 'button';
@@ -474,7 +472,7 @@ const ToggleGroupItem = React.forwardRef<HTMLButtonElement, ToggleGroupItemProps
     };
     return (
       <TogglePrimitive
-        {...mergeProps<typeof TogglePrimitive>(separated.native, props)}
+        {...mergeProps<typeof TogglePrimitive>(buttonOptions, props)}
         className={(state) =>
           cn(
             'relative',
@@ -494,17 +492,17 @@ const ToggleGroupItem = React.forwardRef<HTMLButtonElement, ToggleGroupItemProps
         role={isSingle ? 'radio' : undefined}
         value={value}
       >
-        <motion.span
-          initial={{ scale: 1 }}
-          whileTap={{ scale: 0.9 }}
-          {...separated.motion}
+        <span
           {...(buttonStyle === undefined ? {} : { style: buttonStyle })}
-          className={cn('relative z-[1]', isVerticalAttached && 'w-full')}
+          className={cn(
+            'relative z-[1] transition-transform duration-100 active:scale-90 motion-reduce:transition-none motion-reduce:active:scale-100',
+            isVerticalAttached && 'w-full'
+          )}
         >
           <span {...spanProps} className={cn(isVerticalAttached && 'w-full', spanProps?.className)}>
             {children}
           </span>
-        </motion.span>
+        </span>
       </TogglePrimitive>
     );
   }

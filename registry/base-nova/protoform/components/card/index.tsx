@@ -1,5 +1,4 @@
 import { cva, type VariantProps } from 'class-variance-authority';
-import { type MotionProps, motion } from 'motion/react';
 import React from 'react';
 
 import { Heading, Text } from '@/components/ui/typography';
@@ -42,21 +41,11 @@ type BaseCardProps = SharedProps & {
   className?: string | undefined;
 };
 
-type StaticCardProps = BaseCardProps & Omit<React.ComponentProps<'div'>, keyof BaseCardProps> & { animated?: false };
-type AnimatedCardProps = BaseCardProps & Omit<MotionProps, keyof BaseCardProps> & { animated: true };
-
-export type CardProps = StaticCardProps | AnimatedCardProps;
+export type CardProps = BaseCardProps & Omit<React.ComponentProps<'div'>, keyof BaseCardProps>;
 
 const Card = React.forwardRef<HTMLDivElement, CardProps>(({ className, size, variant, testId, ...props }, ref) => {
   const cardClassName = cn(cardVariants({ size, variant }), className);
-
-  if (props.animated === true) {
-    const { animated: _animated, ...motionProps } = props;
-    return <motion.div className={cardClassName} data-slot="card" data-testid={testId} ref={ref} {...motionProps} />;
-  }
-
-  const { animated: _animated, ...staticProps } = props;
-  return <div className={cardClassName} data-slot="card" data-testid={testId} ref={ref} {...staticProps} />;
+  return <div className={cardClassName} data-slot="card" data-testid={testId} ref={ref} {...props} />;
 });
 
 Card.displayName = 'Card';

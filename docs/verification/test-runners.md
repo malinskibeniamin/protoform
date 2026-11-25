@@ -290,3 +290,11 @@ default Darwin host-control references. Candidate host captures had identical de
 pixels to the unchanged base. Only the four host/missing-control references were copied
 from the inspected base captures; all 16 candidate consumer cases then passed normally.
 No comparator, tolerance, screenshot path, skip or automatic-update policy changed.
+
+The 2026-11-25 UI dependency removals replayed unchanged `fce5fcb2` on Darwin 27.2.0 arm64 with
+Playwright 1.65.0. That base failed the same six generic Darwin consumer references (1–7
+text-rendering pixels each) as the candidate, and all six candidate captures had decoded pixels
+identical to the base captures. Only those six references were copied from the inspected base
+captures. Five are byte-identical to the images the 2026-11-08 refresh replaced, so the generic
+Darwin set alternates between hosts; hosted macOS keeps using the `darwin-25-arm64` references.
+No comparator, tolerance, screenshot path, skip or automatic-update policy changed.

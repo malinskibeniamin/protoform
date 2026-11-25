@@ -492,20 +492,15 @@ async function assertInteropInstalled() {
   const manifest = z
     .looseObject({ dependencies: z.record(z.string(), z.string()) })
     .parse(JSON.parse(await readFile(join(root, 'package.json'), 'utf8')));
-  const hostDependencies = [
-    '@base-ui/react',
-    'class-variance-authority',
-    'clsx',
-    'lucide-react',
-    'motion',
-    'tailwind-merge',
-  ].map((name) => {
-    const version = manifest.dependencies[name];
-    if (version === undefined) {
-      throw new Error(`Missing host control dependency: ${name}`);
+  const hostDependencies = ['@base-ui/react', 'class-variance-authority', 'clsx', 'lucide-react', 'tailwind-merge'].map(
+    (name) => {
+      const version = manifest.dependencies[name];
+      if (version === undefined) {
+        throw new Error(`Missing host control dependency: ${name}`);
+      }
+      return `${name}@${version}`;
     }
-    return `${name}@${version}`;
-  });
+  );
   await $`bun add --cwd ${interopFixture} ${hostDependencies}`;
   const controls = ['alert', 'badge', 'button', 'field', 'group', 'input', 'label', 'separator', 'spinner'];
   const hostFiles = [

@@ -1,12 +1,4 @@
 import { type RefObject, useCallback, useEffect, useRef, useState } from 'react';
-import { z } from 'zod';
-
-export interface KeyValuePairsSchemaOptions {
-  allowedPattern?: RegExp;
-  maxItems?: number;
-  maxKeyLength?: number;
-  maxValueLength?: number;
-}
 
 export interface KeyValueDiffResult {
   created: Record<string, string>;
@@ -36,62 +28,6 @@ export function findDuplicateIndices<T>(items: T[], getKey: (item: T) => string)
   }
 
   return duplicates;
-}
-
-function collectPairIssues(
-  index: number,
-  pair: { key: string; value: string },
-  options: KeyValuePairsSchemaOptions,
-  duplicates: Set<number>
-): { message: string; path: [number, string] }[] {
-  const issues: { message: string; path: [number, string] }[] = [];
-  const { allowedPattern, maxKeyLength, maxValueLength } = options;
-
-  if (pair.value && !pair.key.trim()) {
-    issues.push({ message: 'Key is required when a value is provided', path: [index, 'key'] });
-  }
-
-  if (duplicates.has(index)) {
-    issues.push({ message: `Duplicate key: "${pair.key}"`, path: [index, 'key'] });
-  }
-
-  if (maxKeyLength !== undefined && maxKeyLength !== 0 && pair.key.length > maxKeyLength) {
-    issues.push({ message: `Key exceeds maximum length of ${maxKeyLength}`, path: [index, 'key'] });
-  }
-
-  if (maxValueLength !== undefined && maxValueLength !== 0 && pair.value.length > maxValueLength) {
-    issues.push({ message: `Value exceeds maximum length of ${maxValueLength}`, path: [index, 'value'] });
-  }
-
-  if (allowedPattern && pair.key && !allowedPattern.test(pair.key)) {
-    issues.push({ message: 'Key contains invalid characters', path: [index, 'key'] });
-  }
-
-  if (allowedPattern && pair.value && !allowedPattern.test(pair.value)) {
-    issues.push({ message: 'Value contains invalid characters', path: [index, 'value'] });
-  }
-
-  return issues;
-}
-
-export function keyValuePairsSchema(options: KeyValuePairsSchemaOptions = {}) {
-  return z.array(z.object({ key: z.string(), value: z.string() })).superRefine((pairs, ctx) => {
-    const issues: { message: string; path?: [number, string] }[] = [];
-
-    if (options.maxItems !== undefined && pairs.length > options.maxItems) {
-      issues.push({ message: `Maximum of ${options.maxItems} items allowed` });
-    }
-
-    const duplicates = findDuplicateIndices(pairs, (p) => p.key);
-
-    for (const [index, pair] of pairs.entries()) {
-      issues.push(...collectPairIssues(index, pair, options, duplicates));
-    }
-
-    for (const issue of issues) {
-      ctx.addIssue({ code: 'custom', message: issue.message, path: issue.path });
-    }
-  });
 }
 
 export function getKeyValueDiff(

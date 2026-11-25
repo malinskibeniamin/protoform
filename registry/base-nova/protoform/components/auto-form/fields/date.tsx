@@ -1,6 +1,5 @@
 'use client';
 
-import { format } from 'date-fns';
 import { CalendarIcon, Clock3Icon } from 'lucide-react';
 import type { AutoFormFieldProps } from '../core-types';
 import { getFieldUiConfig } from '../helpers';
@@ -19,6 +18,7 @@ import {
 import { builtInFieldMetadata } from './metadata';
 import {
   buildTimestampValue,
+  formatCalendarDate,
   getControlLabel,
   normalizeDateValue,
   normalizeTimeValue,
@@ -64,7 +64,7 @@ function DateFieldComponent({ error, field, id, inputProps, label }: AutoFormFie
         <Calendar
           mode="single"
           onSelect={(date) => {
-            inputProps['onValueChange'](date ? format(date, 'yyyy-MM-dd') : '');
+            inputProps['onValueChange'](date ? formatCalendarDate(date) : '');
           }}
           selected={selectedDate}
         />

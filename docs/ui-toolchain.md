@@ -5,18 +5,17 @@ conformance, browser, registry-consumer and documentation tests.
 
 ## Reviewed versions (updated 2026-11-16)
 
-| Tool            | Version             | Responsibility                                     |
-| --------------- | ------------------- | -------------------------------------------------- |
-| Bun             | 1.4.4               | Package manager; pinned across workflows           |
-| Blume           | 2.2.7               | Astro/MDX checking, builds and audits              |
-| Ultracite       | 8.2.1               | Shared conventions and safe edit hooks             |
-| Biome           | 2.6.8               | General linting and source formatting              |
-| Oxlint          | 1.94.0              | Additional syntax, import, promise and test checks |
-| oxlint-tsgolint | 7.0.2007            | Type-aware linting and compiler diagnostics        |
-| tsrs            | 0.25.0-ts7.1.0-beta | Rust-based strict source and test checking         |
-| Oxfmt           | 0.79.0              | Astro/Markdown/YAML formatting                     |
-| React Doctor    | 0.9.23              | Full warning-blocking component/design audit       |
-| React Scan      | 0.5.7               | Interactive profiling: `bun run scan:react`        |
+| Tool         | Version             | Responsibility                                      |
+| ------------ | ------------------- | --------------------------------------------------- |
+| Bun          | 1.4.4               | Package manager; pinned across workflows            |
+| Blume        | 2.2.7               | Astro/MDX checking, builds and audits               |
+| Ultracite    | 8.2.1               | Shared conventions and safe edit hooks              |
+| Biome        | 2.6.8               | General linting and source formatting               |
+| Oxlint       | 1.94.0              | Additional syntax, import, promise and test checks  |
+| tsrs         | 0.25.0-ts7.1.0-beta | Strict source/test checks; type-aware Oxlint runner |
+| Oxfmt        | 0.79.0              | Astro/Markdown/YAML formatting                      |
+| React Doctor | 0.9.23              | Full warning-blocking component/design audit        |
+| React Scan   | 0.5.7               | Interactive profiling: `bun run scan:react`         |
 
 Source, test, and authored-file coverage checks use the exactly pinned Rust compiler, `tsrs`.
 This release targets TypeScript 7.1 beta and uses upstream checker defaults. It supports macOS
@@ -167,13 +166,12 @@ registry consumers, form integrations, native compiler and complete documentatio
 
 ## Client payload budgets
 
-The current main dependency refresh installs CEL 0.6.2 alongside Protovalidate 1.3.0's exact CEL/Re2 0.6.1 pins. The complete-consumer caps account for both engines after isolated base/head builds confirmed the inherited increase. The complete-consumer probes externalize no dependencies, and Protovalidate's CEL/Re2 pins are unchanged; revisit the duplication when Protovalidate updates its declared dependencies.
+`@bufbuild/cel` is pinned to `0.6.1` to match `@bufbuild/protovalidate` 1.3.0's exact `@bufbuild/cel`/`@bufbuild/re2` 0.6.1 pins, eliminating duplicate CEL and RE2 runtimes from consumer bundles without adding a package override. Revisit the pin when Protovalidate updates its declared CEL/RE2 versions.
 
 Own-code bundle checks remain in place. Fully resolved, no-externals host/default-UI probes additionally bound initial,
-async and total gzip JavaScript; CodeMirror must remain deferred. Built-route budgets follow representative routes'
+async and total gzip JavaScript: `motion` and `@uiw/react-codemirror` are absent from all chunks (UI transitions use native CSS / Base UI state attributes, and `JSONCodeEditor` loads each CodeMirror package through a dynamic import that keeps only the exports it uses, all in one `Promise.all`, so packages load in parallel and are tree-shaken to the extensions it uses, keeping the former basic-setup history, keymaps, bracket handling, folding and search without the wrapper); `date-fns` is absent from host and initial default-UI loads (AutoForm date normalization uses native `Date` helpers); and `Calendar` (`react-day-picker`), CodeMirror and the copy-toast module remain deferred from initial load. Built-route budgets follow representative routes'
 static, literal-dynamic, inline and island module graphs, counting shared chunks once. Pagefind's runtime/worker and ELK's embedded fallback are accounted for explicitly; unexpected computed import or worker sites fail. These measure compressed artifact graphs,
-not observed network traffic or CSS, font and WASM payloads. A paired host probe found only a negligible gzip difference
-when removing the existing Motion wrapper, while losing its inherited reduced-motion policy; keep the wrapper without a speculative abstraction.
+not observed network traffic or CSS, font and WASM payloads.
 
 ## Formatting and edit hooks
 

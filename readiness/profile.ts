@@ -79,7 +79,7 @@ export interface ReadinessCategory {
 
 export const readinessProfile = {
   dependencyRanges: {
-    '@bufbuild/cel': '^0.6.2',
+    '@bufbuild/cel': '0.6.1',
     '@bufbuild/protobuf': '^2.17.0',
     '@bufbuild/protovalidate': '^1.3.0',
     '@standard-schema/spec': '^1.1.0',
