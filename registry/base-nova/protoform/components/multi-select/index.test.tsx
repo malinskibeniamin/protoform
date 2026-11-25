@@ -87,5 +87,5 @@ test('shows the supplied empty state without a search input', async () => {
     <SimpleMultiSelect aria-label="Statuses" emptyState="No statuses available" options={[]} searchable={false} />
   );
   await user.click(screen.getByLabelText('Statuses'));
-  expect(await screen.findByText('No statuses available')).toBeVisible();
+  await waitFor(() => expect(screen.getByText('No statuses available')).toBeVisible());
 });

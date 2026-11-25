@@ -8,42 +8,56 @@ description: "使用 Rstest，通过真实的 Connect 服务器测试一个具�
 
 此边界涵盖生成的表单、React Hook Form、Connect Query、HTTP 序列化、
 Connect handler、Protovalidate 和结构化字段错误映射。Rstest 在
-`happy-dom` 中运行组件，因此应将其称为集成测试，而不是浏览器端到端测试。
+TurboDOM 模拟的 DOM 中运行组件，因此这是集成测试，而不是浏览器端到端测试。
 
 ## 测试设置
 
-在应用中安装 Rstest 和 Testing Library：
+在应用中安装 Rstest、TurboDOM 和 Testing Library：
 
 ```bash
-bun add --dev @rsbuild/plugin-react @rstest/core happy-dom undici @testing-library/jest-dom @testing-library/react @testing-library/user-event
+bun add --dev @rsbuild/plugin-react @rstest/core @miaskiewicz/turbo-dom @testing-library/jest-dom @testing-library/react @testing-library/user-event
 ```
 
-使用 `happy-dom` 配置集成测试套件，并加载 Testing Library matcher：
+使用 Rstest 的 Node 环境。先安装 TurboDOM，再加载 Testing Library 的匹配器：
 
 ```ts title="rstest.dom.config.ts"
 import { pluginReact } from "@rsbuild/plugin-react";
 import { defineConfig } from "@rstest/core";
 
 export default defineConfig({
-  plugins: [pluginReact()],
-  setupFiles: ["./rstest.setup.ts"],
-  testEnvironment: {
-    name: "happy-dom",
-    options: { settings: { disableCSSFileLoading: true, disableIframePageLoading: true } },
+  globals: true,
+  output: {
+    bundleDependencies: true,
+    externals: ["@miaskiewicz/turbo-dom/install"],
   },
+  plugins: [pluginReact()],
+  setupFiles: ["./rstest.setup.mjs"],
+  testEnvironment: "node",
 });
 ```
 
-```ts title="rstest.setup.ts"
-import * as jestDomMatchers from "@testing-library/jest-dom/matchers";
+```js title="rstest.setup.mjs"
+import { installGlobals } from "@miaskiewicz/turbo-dom/install";
 import { expect } from "@rstest/core";
-import { fetch as nodeFetch } from "undici";
 
-expect.extend(jestDomMatchers);
-Object.defineProperty(globalThis, "fetch", {
-  configurable: true,
-  value: nodeFetch,
-});
+const nodeFetch = globalThis.fetch;
+installGlobals(globalThis, { url: "http://localhost/" });
+globalThis.fetch = nodeFetch;
+
+const { default: defaultMatchers, ...namedMatchers } =
+  await import("@testing-library/jest-dom/matchers");
+expect.extend(defaultMatchers ?? namedMatchers);
+```
+
+此配置保留 Node 的 `fetch`，让请求发送到真实的 Connect 服务器。使用 TypeScript 编写测试时，
+请在测试的 `tsconfig.json` 中包含以下匹配器声明：
+
+```ts title="rstest.d.ts"
+import type { TestingLibraryMatchers } from "@testing-library/jest-dom/matchers";
+
+declare module "@rstest/core" {
+  interface Assertion<T> extends TestingLibraryMatchers<unknown, void> {}
+}
 ```
 
 应用应导出一个 server builder，用于注册真实的 Connect route，但不监听固定端口。
@@ -116,6 +130,12 @@ describe("profile form", () => {
 });
 ```
 
+在你的应用中运行该示例：
+
+```bash
+bunx rstest run --config rstest.dom.config.ts profile-form.test.tsx
+```
+
 `port: 0` 请求操作系统分配一个可用端口，因此并行 worker 不会争用同一个
 地址。即使断言失败，`afterEach` 也会关闭 server。`findByRole` 会等待
 异步 mutation 结果，无需使用定时休眠。
@@ -142,4 +162,4 @@ bun run test:integration -- examples/basic/basic-form.test.tsx
 和 path-mapping contract。仅当表单引入不同的提交或恢复工作流时，才添加另一个应用集成测试。
 
 使用 Rstest Browser Mode 测试组件的原生交互。通过 Rstest 的 Playwright 集成，
-针对运行中的应用测试完整用户旅程。Happy DOM 不能替代这两类测试。
+针对运行中的应用测试完整用户旅程。TurboDOM 不能替代这两类浏览器测试。

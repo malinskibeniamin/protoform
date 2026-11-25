@@ -1,9 +1,21 @@
 # Test runner migration verification
 
-Protoform uses Bun for pure units, Happy DOM for simulated rendering, and Rstest
-for integrations and real Chromium journeys. This record distinguishes those
-boundaries and preserves the existing application and installed-consumer coverage.
-Firefox and WebKit were intentionally removed from the automated matrix.
+Protoform uses Bun for pure units and Rstest for integration, conformance, and Chromium
+tests. The [DOM integration](../../rstest.dom.config.ts) and
+[conformance](../../rstest.conformance.config.ts) projects install TurboDOM in their
+Rstest Node setup for simulated rendering. The [test-only TurboDOM patch](../../patches/turbo-dom@0.8.6.patch)
+covers DOM event constructors, focus, same-document URL changes, and form APIs used
+by the suites. Browser Mode uses real Chromium for native component
+interactions, and Playwright integration runs full journeys against the built
+application and Connect server. Neither loads the simulated DOM or its patch.
+
+The simulated setup installs TurboDOM before loading jest-dom so Testing Library binds
+`screen` to the right document. It preserves Node's real `fetch` for Connect requests
+and lets Motion use its JavaScript animation path instead of the simulated Web Animations stub.
+
+The record below describes the earlier test runner migration, when simulated rendering
+still used Happy DOM. Its inventory and benchmarks are not measurements of TurboDOM.
+Firefox and WebKit were intentionally removed from the automated matrix in that migration.
 
 ## Rebase integration
 
@@ -56,6 +68,8 @@ filesystem-artifact and network contracts use Node integration. The hook-renderi
 cross-module contract suite, not a filename-based unit bucket.
 
 ## Configuration and compatibility
+
+The settings below are from the earlier test runner migration.
 
 ```text
 bunfig.toml                 -> Bun pure-unit discovery and isolation

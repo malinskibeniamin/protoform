@@ -1,5 +1,5 @@
 import { afterEach, expect, rs, test } from '@rstest/core';
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
 
@@ -40,7 +40,7 @@ test('opens output by keyboard without making output a nested button', async () 
   trigger.focus();
   await user.keyboard('{Enter}');
   expect(trigger).toHaveAttribute('aria-expanded', 'true');
-  expect(await screen.findByText('request validated')).toBeVisible();
+  await waitFor(() => expect(screen.getByText('request validated')).toBeVisible());
   expect(screen.getAllByRole('button')).toHaveLength(1);
 });
 
@@ -89,7 +89,7 @@ test('supports a controlled trace and forwards native trigger props', async () =
   render(<ControlledTrace onChange={onChange} />);
   await user.click(screen.getByRole('button', { name: 'Inspect response' }));
   expect(onChange).toHaveBeenLastCalledWith(true);
-  expect(await screen.findByText('Response details')).toBeVisible();
+  await waitFor(() => expect(screen.getByText('Response details')).toBeVisible());
   await user.click(screen.getByRole('button', { name: 'Inspect response' }));
   expect(onChange).toHaveBeenLastCalledWith(false);
   expect(screen.getByRole('button', { name: 'Inspect response' })).toHaveAttribute('aria-expanded', 'false');

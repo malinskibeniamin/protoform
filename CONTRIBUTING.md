@@ -29,10 +29,10 @@ bun run quality:gate
 
 - `bun test` or `bun run test:unit`: pure unit contracts in isolated Bun workers. `bunfig.toml`
   excludes DOM, process/network integration, conformance, and browser suites.
-- `bun run test:integration`: Rstest Node integration and Happy DOM rendering projects.
+- `bun run test:integration`: Rstest Node integration and TurboDOM rendering projects.
   The `.integration.test.ts` suffix identifies process, artifact, and network contracts;
   the hook-rendering `use-proto-form.test.ts` is explicitly assigned to the DOM project.
-- `bun run test:conformance`: schema/CEL/Protobuf and form-adapter conformance in Happy DOM.
+- `bun run test:conformance`: schema/CEL/Protobuf and form-adapter conformance with TurboDOM.
 - `bun run test:browser`: real Chromium component tests, including native keyboard/focus,
   timestamp precision and large-form interactions. Simulated-DOM shims never replace native browser APIs.
 - `bun run test:e2e`: Rstest's Playwright integration against the built, running docs application

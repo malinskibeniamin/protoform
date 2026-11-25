@@ -9,42 +9,56 @@ Start the real application router on an ephemeral port instead of replacing RPCs
 
 This boundary covers the generated form, React Hook Form, Connect Query, HTTP serialization, the
 Connect handler, Protovalidate, and structured field-error mapping. Rstest runs the component in
-`happy-dom`, so call this an integration test rather than browser end-to-end coverage.
+a DOM simulated by TurboDOM, so this is an integration test, not a browser end-to-end test.
 
 ## Test setup
 
-Install Rstest and Testing Library in the application:
+Install Rstest, TurboDOM, and Testing Library in the application:
 
 ```bash
-bun add --dev @rsbuild/plugin-react @rstest/core happy-dom undici @testing-library/jest-dom @testing-library/react @testing-library/user-event
+bun add --dev @rsbuild/plugin-react @rstest/core @miaskiewicz/turbo-dom @testing-library/jest-dom @testing-library/react @testing-library/user-event
 ```
 
-Configure the integration suite with `happy-dom` and load the Testing Library matchers:
+Use Rstest’s Node environment. Install TurboDOM before loading the Testing Library matchers:
 
 ```ts title="rstest.dom.config.ts"
 import { pluginReact } from "@rsbuild/plugin-react";
 import { defineConfig } from "@rstest/core";
 
 export default defineConfig({
-  plugins: [pluginReact()],
-  setupFiles: ["./rstest.setup.ts"],
-  testEnvironment: {
-    name: "happy-dom",
-    options: { settings: { disableCSSFileLoading: true, disableIframePageLoading: true } },
+  globals: true,
+  output: {
+    bundleDependencies: true,
+    externals: ["@miaskiewicz/turbo-dom/install"],
   },
+  plugins: [pluginReact()],
+  setupFiles: ["./rstest.setup.mjs"],
+  testEnvironment: "node",
 });
 ```
 
-```ts title="rstest.setup.ts"
-import * as jestDomMatchers from "@testing-library/jest-dom/matchers";
+```js title="rstest.setup.mjs"
+import { installGlobals } from "@miaskiewicz/turbo-dom/install";
 import { expect } from "@rstest/core";
-import { fetch as nodeFetch } from "undici";
 
-expect.extend(jestDomMatchers);
-Object.defineProperty(globalThis, "fetch", {
-  configurable: true,
-  value: nodeFetch,
-});
+const nodeFetch = globalThis.fetch;
+installGlobals(globalThis, { url: "http://localhost/" });
+globalThis.fetch = nodeFetch;
+
+const { default: defaultMatchers, ...namedMatchers } =
+  await import("@testing-library/jest-dom/matchers");
+expect.extend(defaultMatchers ?? namedMatchers);
+```
+
+The setup preserves Node’s `fetch` so requests reach the real Connect server. For TypeScript
+tests, include this matcher declaration in your test `tsconfig.json`:
+
+```ts title="rstest.d.ts"
+import type { TestingLibraryMatchers } from "@testing-library/jest-dom/matchers";
+
+declare module "@rstest/core" {
+  interface Assertion<T> extends TestingLibraryMatchers<unknown, void> {}
+}
 ```
 
 The application should export a server builder that registers its real Connect routes without
@@ -119,6 +133,12 @@ describe("profile form", () => {
 });
 ```
 
+Run the example in your application:
+
+```bash
+bunx rstest run --config rstest.dom.config.ts profile-form.test.tsx
+```
+
 `port: 0` asks the operating system for an available port, so parallel workers do not compete for a
 shared address. `afterEach` closes the server even when an assertion fails. `findByRole` waits for
 the asynchronous mutation result without timing sleeps.
@@ -146,4 +166,4 @@ and path-mapping contracts. Add another application integration test only when a
 different submission or recovery workflow.
 
 Use Rstest Browser Mode for native component interactions. Use Rstest’s Playwright integration
-against the running application for complete user journeys. Neither boundary is replaced by Happy DOM.
+against the running application for complete user journeys. TurboDOM does not replace either kind of browser test.

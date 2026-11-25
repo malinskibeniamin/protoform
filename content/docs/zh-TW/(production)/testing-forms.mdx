@@ -8,42 +8,56 @@ description: "使用 Rstest，透過真實的 Connect 伺服器測試一個具�
 
 此邊界涵蓋產生的表單、React Hook Form、Connect Query、HTTP 序列化、
 Connect handler、Protovalidate，以及結構化欄位錯誤對應。Rstest 會在
-`happy-dom` 中執行元件，因此應稱為整合測試，而不是瀏覽器端對端測試。
+TurboDOM 模擬的 DOM 中執行元件，因此這是整合測試，而不是瀏覽器端對端測試。
 
 ## 測試設定
 
-在應用程式中安裝 Rstest 和 Testing Library：
+在應用程式中安裝 Rstest、TurboDOM 和 Testing Library：
 
 ```bash
-bun add --dev @rsbuild/plugin-react @rstest/core happy-dom undici @testing-library/jest-dom @testing-library/react @testing-library/user-event
+bun add --dev @rsbuild/plugin-react @rstest/core @miaskiewicz/turbo-dom @testing-library/jest-dom @testing-library/react @testing-library/user-event
 ```
 
-使用 `happy-dom` 設定整合測試套件，並載入 Testing Library matchers：
+使用 Rstest 的 Node 環境。先安裝 TurboDOM，再載入 Testing Library 的比對函式：
 
 ```ts title="rstest.dom.config.ts"
 import { pluginReact } from "@rsbuild/plugin-react";
 import { defineConfig } from "@rstest/core";
 
 export default defineConfig({
-  plugins: [pluginReact()],
-  setupFiles: ["./rstest.setup.ts"],
-  testEnvironment: {
-    name: "happy-dom",
-    options: { settings: { disableCSSFileLoading: true, disableIframePageLoading: true } },
+  globals: true,
+  output: {
+    bundleDependencies: true,
+    externals: ["@miaskiewicz/turbo-dom/install"],
   },
+  plugins: [pluginReact()],
+  setupFiles: ["./rstest.setup.mjs"],
+  testEnvironment: "node",
 });
 ```
 
-```ts title="rstest.setup.ts"
-import * as jestDomMatchers from "@testing-library/jest-dom/matchers";
+```js title="rstest.setup.mjs"
+import { installGlobals } from "@miaskiewicz/turbo-dom/install";
 import { expect } from "@rstest/core";
-import { fetch as nodeFetch } from "undici";
 
-expect.extend(jestDomMatchers);
-Object.defineProperty(globalThis, "fetch", {
-  configurable: true,
-  value: nodeFetch,
-});
+const nodeFetch = globalThis.fetch;
+installGlobals(globalThis, { url: "http://localhost/" });
+globalThis.fetch = nodeFetch;
+
+const { default: defaultMatchers, ...namedMatchers } =
+  await import("@testing-library/jest-dom/matchers");
+expect.extend(defaultMatchers ?? namedMatchers);
+```
+
+此設定保留 Node 的 `fetch`，讓請求送到真實的 Connect 伺服器。使用 TypeScript 撰寫測試時，
+請在測試的 `tsconfig.json` 中納入以下比對函式宣告：
+
+```ts title="rstest.d.ts"
+import type { TestingLibraryMatchers } from "@testing-library/jest-dom/matchers";
+
+declare module "@rstest/core" {
+  interface Assertion<T> extends TestingLibraryMatchers<unknown, void> {}
+}
 ```
 
 應用程式應匯出 server builder，以註冊真實的 Connect routes，且不監聽固定連接埠。
@@ -116,6 +130,12 @@ describe("profile form", () => {
 });
 ```
 
+在你的應用程式中執行這個範例：
+
+```bash
+bunx rstest run --config rstest.dom.config.ts profile-form.test.tsx
+```
+
 `port: 0` 會要求作業系統提供可用的連接埠，因此平行執行的 worker 不會爭用
 同一個位址。即使 assertion 失敗，`afterEach` 仍會關閉 server。`findByRole` 會等待
 非同步 mutation 結果，不需要使用固定延遲。
@@ -143,4 +163,4 @@ conversion 及 path-mapping contracts。只有當表單引入不同的提交或�
 才新增應用程式整合測試。
 
 使用 Rstest Browser Mode 測試元件的原生互動。透過 Rstest 的 Playwright 整合，
-針對執行中的應用程式測試完整使用者流程。Happy DOM 不能取代這兩類測試。
+針對執行中的應用程式測試完整使用者流程。TurboDOM 不能取代這兩類瀏覽器測試。

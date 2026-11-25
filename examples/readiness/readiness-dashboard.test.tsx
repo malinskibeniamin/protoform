@@ -131,7 +131,7 @@ describe('readinessDashboard', () => {
       name: 'Service and RPC descriptors: Verified',
     });
     await user.hover(serviceCheck);
-    expect(await screen.findByRole('tooltip')).toHaveTextContent(
+    expect(await screen.findByRole('tooltip', { name: /Service and RPC descriptors/iu })).toHaveTextContent(
       'Generated service methods now expose request descriptors'
     );
   });

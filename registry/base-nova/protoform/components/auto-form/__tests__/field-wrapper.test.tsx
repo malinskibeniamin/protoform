@@ -78,7 +78,7 @@ describe('objectWrapper', () => {
 
     await user.click(trigger);
 
-    expect(screen.getByText('Advanced fields')).toBeVisible();
+    await waitFor(() => expect(screen.getByText('Advanced fields')).toBeVisible());
   });
 
   test('opens a collapsible section with errors and keeps it open once they clear', async () => {

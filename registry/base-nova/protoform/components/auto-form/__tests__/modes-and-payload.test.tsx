@@ -1,5 +1,5 @@
 import { describe, expect } from '@rstest/core';
-import { cleanup, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { z } from 'zod';
 import { AutoForm } from '..';
@@ -109,7 +109,7 @@ describe('autoForm – modes and payload', () => {
 
     await user.click(screen.getByRole('tab', { name: JSON_TAB }));
 
-    const jsonEditor = screen.getByRole('textbox');
+    const jsonEditor = within(screen.getByRole('tabpanel', { name: JSON_TAB })).getByRole('textbox');
 
     await user.clear(jsonEditor);
     await user.paste(
@@ -148,7 +148,7 @@ describe('autoForm – modes and payload', () => {
     expect(summaryEl.textContent).toContain('12500');
 
     await user.click(screen.getByRole('tab', { name: JSON_TAB }));
-    const jsonEditorSummary = screen.getByRole('textbox');
+    const jsonEditorSummary = within(screen.getByRole('tabpanel', { name: JSON_TAB })).getByRole('textbox');
     await user.clear(jsonEditorSummary);
     await user.paste('{"monthlyBudget":99999,"teamName":"ops-team"}');
 

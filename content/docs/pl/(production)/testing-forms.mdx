@@ -8,42 +8,56 @@ Uruchom rzeczywisty router aplikacji na porcie efemerycznym zamiast zastępować
 
 Ten zakres obejmuje wygenerowany formularz, React Hook Form, Connect Query, serializację HTTP,
 procedurę obsługi Connect, Protovalidate oraz mapowanie ustrukturyzowanych błędów pól. Rstest uruchamia komponent w
-`happy-dom`, dlatego traktuj ten test jako integracyjny, a nie kompleksowy test end-to-end w przeglądarce.
+DOM-ie symulowanym przez TurboDOM. To test integracyjny, a nie test end-to-end w przeglądarce.
 
 ## Konfiguracja testów
 
-Zainstaluj Rstest i Testing Library w aplikacji:
+Zainstaluj Rstest, TurboDOM i Testing Library w aplikacji:
 
 ```bash
-bun add --dev @rsbuild/plugin-react @rstest/core happy-dom undici @testing-library/jest-dom @testing-library/react @testing-library/user-event
+bun add --dev @rsbuild/plugin-react @rstest/core @miaskiewicz/turbo-dom @testing-library/jest-dom @testing-library/react @testing-library/user-event
 ```
 
-Skonfiguruj zestaw testów integracyjnych z użyciem `happy-dom` i załaduj matchery Testing Library:
+Użyj środowiska Node w Rstest. Zainstaluj TurboDOM przed załadowaniem matcherów Testing Library:
 
 ```ts title="rstest.dom.config.ts"
 import { pluginReact } from "@rsbuild/plugin-react";
 import { defineConfig } from "@rstest/core";
 
 export default defineConfig({
-  plugins: [pluginReact()],
-  setupFiles: ["./rstest.setup.ts"],
-  testEnvironment: {
-    name: "happy-dom",
-    options: { settings: { disableCSSFileLoading: true, disableIframePageLoading: true } },
+  globals: true,
+  output: {
+    bundleDependencies: true,
+    externals: ["@miaskiewicz/turbo-dom/install"],
   },
+  plugins: [pluginReact()],
+  setupFiles: ["./rstest.setup.mjs"],
+  testEnvironment: "node",
 });
 ```
 
-```ts title="rstest.setup.ts"
-import * as jestDomMatchers from "@testing-library/jest-dom/matchers";
+```js title="rstest.setup.mjs"
+import { installGlobals } from "@miaskiewicz/turbo-dom/install";
 import { expect } from "@rstest/core";
-import { fetch as nodeFetch } from "undici";
 
-expect.extend(jestDomMatchers);
-Object.defineProperty(globalThis, "fetch", {
-  configurable: true,
-  value: nodeFetch,
-});
+const nodeFetch = globalThis.fetch;
+installGlobals(globalThis, { url: "http://localhost/" });
+globalThis.fetch = nodeFetch;
+
+const { default: defaultMatchers, ...namedMatchers } =
+  await import("@testing-library/jest-dom/matchers");
+expect.extend(defaultMatchers ?? namedMatchers);
+```
+
+Konfiguracja zachowuje funkcję `fetch` z Node, dzięki czemu żądania trafiają do rzeczywistego
+serwera Connect. W testach TypeScript uwzględnij tę deklarację matcherów w pliku `tsconfig.json`:
+
+```ts title="rstest.d.ts"
+import type { TestingLibraryMatchers } from "@testing-library/jest-dom/matchers";
+
+declare module "@rstest/core" {
+  interface Assertion<T> extends TestingLibraryMatchers<unknown, void> {}
+}
 ```
 
 Aplikacja powinna eksportować funkcję budującą serwer, która rejestruje rzeczywiste trasy Connect bez
@@ -118,6 +132,12 @@ describe("profile form", () => {
 });
 ```
 
+Uruchom przykład w swojej aplikacji:
+
+```bash
+bunx rstest run --config rstest.dom.config.ts profile-form.test.tsx
+```
+
 `port: 0` powoduje, że system operacyjny przydziela dostępny port, dzięki czemu równolegle działające procesy robocze nie rywalizują o
 wspólny adres. `afterEach` zamyka serwer nawet wtedy, gdy asercja zakończy się niepowodzeniem. `findByRole` czeka na
 wynik asynchronicznej mutacji bez stosowania opóźnień czasowych.
@@ -145,4 +165,4 @@ i mapowania ścieżek. Dodaj kolejny test integracyjny aplikacji tylko wtedy, gd
 inny przepływ przesyłania lub odzyskiwania po błędzie.
 
 Użyj trybu przeglądarkowego Rstest do testowania natywnych interakcji komponentów. Użyj integracji Rstest z Playwright
-z uruchomioną aplikacją do testowania kompletnych ścieżek użytkownika. Happy DOM nie zastępuje żadnej z tych granic.
+z uruchomioną aplikacją do testowania kompletnych ścieżek użytkownika. TurboDOM nie zastępuje żadnego z tych rodzajów testów przeglądarkowych.
