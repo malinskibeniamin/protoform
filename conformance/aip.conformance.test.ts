@@ -70,7 +70,7 @@ describe('google AIP form conformance', () => {
       ])
     );
 
-    expect(contracts).toEqual({
+    expect(contracts).toStrictEqual({
       createBook: {
         bodyFields: ['book'],
         httpMethod: 'POST',
@@ -114,7 +114,7 @@ describe('google AIP form conformance', () => {
         path: '/v1/{book.name=publishers/*/books/*}',
       },
     });
-    expect(signatures).toEqual({
+    expect(signatures).toStrictEqual({
       createBook: ['parent,book,book_id'],
       deleteBook: ['name'],
       expungeBook: ['name'],
@@ -126,7 +126,7 @@ describe('google AIP form conformance', () => {
   });
 
   test('parses AIP-121/123 resource type, pattern, singular, and plural metadata', () => {
-    expect(getProtoResourceMetadata(BookSchema)).toEqual({
+    expect(getProtoResourceMetadata(BookSchema)).toStrictEqual({
       nameField: 'name',
       patterns: ['publishers/{publisher}/books/{book}'],
       plural: 'books',
@@ -139,15 +139,17 @@ describe('google AIP form conformance', () => {
     const book = parseProtoSchema(BookSchema);
     const createBook = parseProtoSchema(CreateBookRequestSchema);
 
-    expect(book.fields.map((candidate) => candidate.key)).toEqual(expect.arrayContaining(['name', 'displayName']));
-    expect(createBook.fields.map((candidate) => candidate.key)).toEqual([
+    expect(book.fields.map((candidate) => candidate.key)).toStrictEqual(
+      expect.arrayContaining(['name', 'displayName'])
+    );
+    expect(createBook.fields.map((candidate) => candidate.key)).toStrictEqual([
       'parent',
       'book',
       'bookId',
       'requestId',
       'validateOnly',
     ]);
-    expect(getProtoResourceReference(GetBookRequestSchema.field.name)).toEqual({
+    expect(getProtoResourceReference(GetBookRequestSchema.field.name)).toStrictEqual({
       childType: undefined,
       type: 'library.protoform.dev/Book',
     });
@@ -182,7 +184,7 @@ describe('google AIP form conformance', () => {
       required: false,
       type: 'oneof',
     });
-    expect(expiration.schema?.map((candidate) => candidate.key)).toEqual(['expireTime', 'ttl']);
+    expect(expiration.schema?.map((candidate) => candidate.key)).toStrictEqual(['expireTime', 'ttl']);
     expect(getProtoFieldCustomData(field({ fields: expiration.schema ?? [] }, 'ttl'))?.inputOnly).toBe(true);
     expect(getProtoFieldCustomData(field(parsed, 'state'))?.hidden).toBe(true);
   });
@@ -201,7 +203,7 @@ describe('google AIP form conformance', () => {
   test('models AIP-162 revisions as nested, server-produced snapshot resources', () => {
     const revision = parseProtoSchema(BookRevisionSchema);
 
-    expect(getProtoResourceMetadata(BookRevisionSchema)).toEqual({
+    expect(getProtoResourceMetadata(BookRevisionSchema)).toStrictEqual({
       nameField: 'name',
       patterns: ['publishers/{publisher}/books/{book}/revisions/{revision}'],
       plural: 'bookRevisions',
@@ -218,7 +220,7 @@ describe('google AIP form conformance', () => {
     const createFields = { fields: createBook.schema ?? [] };
     const updateFields = { fields: updateBook.schema ?? [] };
 
-    expect(getProtoFieldBehaviors(BookSchema.field.name)).toEqual([FieldBehavior.IDENTIFIER]);
+    expect(getProtoFieldBehaviors(BookSchema.field.name)).toStrictEqual([FieldBehavior.IDENTIFIER]);
     expect(getProtoFieldCustomData(field(createFields, 'name'))?.hidden).toBe(true);
     expect(field(createFields, 'displayName').required).toBe(true);
     expect(getProtoFieldCustomData(field(createFields, 'isbn'))?.immutable).toBe(false);
@@ -245,7 +247,7 @@ describe('google AIP form conformance', () => {
     const parsed = parseProtoSchema(CreateBookRequestSchema);
     const book = field(parsed, 'book');
 
-    expect(parsed.fields.map((candidate) => candidate.key)).toEqual([
+    expect(parsed.fields.map((candidate) => candidate.key)).toStrictEqual([
       'parent',
       'book',
       'bookId',
@@ -278,7 +280,7 @@ describe('google AIP form conformance', () => {
   });
 
   test('models AIP-132/158/160 List request and response fields without interpreting opaque values', () => {
-    expect(parseProtoSchema(ListBooksRequestSchema).fields.map((candidate) => candidate.key)).toEqual([
+    expect(parseProtoSchema(ListBooksRequestSchema).fields.map((candidate) => candidate.key)).toStrictEqual([
       'parent',
       'pageSize',
       'pageToken',
@@ -287,7 +289,7 @@ describe('google AIP form conformance', () => {
       'returnPartialSuccess',
       'showDeleted',
     ]);
-    expect(parseProtoSchema(ListBooksResponseSchema).fields.map((candidate) => candidate.key)).toEqual([
+    expect(parseProtoSchema(ListBooksResponseSchema).fields.map((candidate) => candidate.key)).toStrictEqual([
       'books',
       'nextPageToken',
       'unreachable',
@@ -299,15 +301,15 @@ describe('google AIP form conformance', () => {
       { key: 'parent', required: false },
       { key: 'names', required: true },
     ]);
-    expect(parseProtoSchema(BatchCreateBooksRequestSchema).fields.map((candidate) => candidate.key)).toEqual([
+    expect(parseProtoSchema(BatchCreateBooksRequestSchema).fields.map((candidate) => candidate.key)).toStrictEqual([
       'parent',
       'requests',
     ]);
-    expect(parseProtoSchema(BatchUpdateBooksRequestSchema).fields.map((candidate) => candidate.key)).toEqual([
+    expect(parseProtoSchema(BatchUpdateBooksRequestSchema).fields.map((candidate) => candidate.key)).toStrictEqual([
       'parent',
       'requests',
     ]);
-    expect(parseProtoSchema(BatchDeleteBooksRequestSchema).fields.map((candidate) => candidate.key)).toEqual([
+    expect(parseProtoSchema(BatchDeleteBooksRequestSchema).fields.map((candidate) => candidate.key)).toStrictEqual([
       'parent',
       'requests',
     ]);
@@ -318,14 +320,14 @@ describe('google AIP form conformance', () => {
       BatchUpdateBooksResponseSchema,
       BatchDeleteBooksResponseSchema,
     ]) {
-      expect(parseProtoSchema(schema).fields.map((candidate) => candidate.key)).toEqual(['books']);
+      expect(parseProtoSchema(schema).fields.map((candidate) => candidate.key)).toStrictEqual(['books']);
     }
   });
 
   test('models AIP-135/154 Delete with full name and optional etag', () => {
     const parsed = parseProtoSchema(DeleteBookRequestSchema);
 
-    expect(parsed.fields.map((candidate) => candidate.key)).toEqual([
+    expect(parsed.fields.map((candidate) => candidate.key)).toStrictEqual([
       'name',
       'etag',
       'requestId',
@@ -346,12 +348,11 @@ describe('google AIP form conformance', () => {
 
   test('recognizes AIP-156 singleton resources and their Get/Update-only shapes', () => {
     expect(isSingletonProtoResource(ProjectSettingsSchema)).toBe(true);
-    expect(parseProtoSchema(GetProjectSettingsRequestSchema).fields.map((candidate) => candidate.key)).toEqual([
+    expect(parseProtoSchema(GetProjectSettingsRequestSchema).fields.map((candidate) => candidate.key)).toStrictEqual([
       'name',
     ]);
-    expect(parseProtoSchema(UpdateProjectSettingsRequestSchema).fields.map((candidate) => candidate.key)).toEqual([
-      'projectSettings',
-      'updateMask',
-    ]);
+    expect(parseProtoSchema(UpdateProjectSettingsRequestSchema).fields.map((candidate) => candidate.key)).toStrictEqual(
+      ['projectSettings', 'updateMask']
+    );
   });
 });

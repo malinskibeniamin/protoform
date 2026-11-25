@@ -17,9 +17,7 @@ export interface DataProviderResult {
   options: DataProviderOption[];
 }
 
-export interface DataProviderDependencyValues {
-  readonly [path: string]: unknown;
-}
+export interface DataProviderDependencyValues extends Readonly<Record<string, unknown>> {}
 
 export interface DataProviderRequest {
   cursor?: string | undefined;

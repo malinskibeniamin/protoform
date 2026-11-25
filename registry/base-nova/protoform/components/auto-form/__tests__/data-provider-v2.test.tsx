@@ -81,7 +81,7 @@ describe('autoForm data providers v2', () => {
     await user.keyboard('{Enter}');
     await user.click(screen.getByRole('button', { name: 'Submit' }));
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
-    expect(onSubmit.mock.calls[0]?.[0]).toEqual({ region: 'PL' });
+    expect(onSubmit.mock.calls[0]?.[0]).toStrictEqual({ region: 'PL' });
   });
 
   test('provides a live signal after StrictMode effect replay and cancels it on unmount', async () => {
@@ -155,7 +155,7 @@ describe('autoForm data providers v2', () => {
 
     await user.clear(screen.getByRole('textbox', { name: /Project/u }));
     await user.paste('project-b');
-    await waitFor(() => expect(requests.at(-1)?.dependencyValues).toEqual({ project: 'project-b' }));
+    await waitFor(() => expect(requests.at(-1)?.dependencyValues).toStrictEqual({ project: 'project-b' }));
     expect(initialSignal?.aborted).toBe(true);
 
     await user.clear(screen.getByRole('combobox', { name: /Region/u }));
@@ -278,7 +278,7 @@ describe('autoForm data providers v2', () => {
     const initialSignal = requests.at(-1)?.signal;
     await user.clear(screen.getByRole('textbox', { name: /Project/u }));
     await user.paste('project-b');
-    await waitFor(() => expect(requests.at(-1)?.dependencyValues).toEqual({ project: 'project-b' }));
+    await waitFor(() => expect(requests.at(-1)?.dependencyValues).toStrictEqual({ project: 'project-b' }));
     expect(initialSignal?.aborted).toBe(true);
   });
 
@@ -450,7 +450,7 @@ test('multi-select preserves incomplete selections and clears only missing value
   expect(onSubmit.mock.calls[0]?.[0]).toMatchObject({ methods: ['get', 'post', 'retired'] });
   await user.click(screen.getByRole('button', { name: 'Load more' }));
   expect(pagedRequests.at(-1)?.cursor).toBe('page-2');
-  await waitFor(() => expect(pagedRequests.at(-1)?.selectedValues).toEqual(['get', 'post']));
+  await waitFor(() => expect(pagedRequests.at(-1)?.selectedValues).toStrictEqual(['get', 'post']));
   await user.click(screen.getByRole('button', { name: 'Submit' }));
   await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(2));
   expect(onSubmit.mock.calls[1]?.[0]).toMatchObject({ methods: ['get', 'post'] });

@@ -70,15 +70,15 @@ describe.each([
 
     render(<FormComponent onDirtyChange={onDirtyChange} onSubmit={onSubmit} schema={schema} withSubmit />);
 
-    await waitFor(() => expect(onDirtyChange.mock.calls.map(([dirty]) => dirty)).toEqual([false]));
+    await waitFor(() => expect(onDirtyChange.mock.calls.map(([dirty]) => dirty)).toStrictEqual([false]));
 
     await user.type(screen.getByRole('textbox', { name: /name/iu }), 'Ada');
-    await waitFor(() => expect(onDirtyChange.mock.calls.map(([dirty]) => dirty)).toEqual([false, true]));
+    await waitFor(() => expect(onDirtyChange.mock.calls.map(([dirty]) => dirty)).toStrictEqual([false, true]));
 
     await user.click(screen.getByRole('button', { name: 'Submit' }));
-    await waitFor(() => expect(onSubmit).toHaveBeenCalledOnce());
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
     expect(cleanBeforeNavigation).toBe(true);
-    expect(onDirtyChange.mock.calls.map(([dirty]) => dirty)).toEqual([false, true, false]);
+    expect(onDirtyChange.mock.calls.map(([dirty]) => dirty)).toStrictEqual([false, true, false]);
 
     await user.clear(screen.getByRole('textbox', { name: /name/iu }));
     await waitFor(() => expect(onDirtyChange).toHaveBeenLastCalledWith(true));
@@ -126,7 +126,7 @@ describe.each([
     await expectEditThenClean('map field', () => user.click(screen.getByRole('button', { name: 'Add pair' })));
     await expectEditThenClean('oneof field', () => user.click(screen.getByRole('switch', { name: 'Contact' })));
 
-    expect(onDirtyChange.mock.calls.map(([dirty]) => dirty)).toEqual([
+    expect(onDirtyChange.mock.calls.map(([dirty]) => dirty)).toStrictEqual([
       false,
       true,
       false,

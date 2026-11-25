@@ -174,11 +174,12 @@ export function extractConnectErrorContext(error: unknown): ConnectErrorContext 
 
   try {
     for (const localized of error.findDetails(LocalizedMessageSchema)) {
-      if (localized.message) {
-        context.message = localized.message;
-        if (localized.locale) {
-          context.messageLocale = localized.locale;
-        }
+      if (!localized.message) {
+        continue;
+      }
+      context.message = localized.message;
+      if (localized.locale) {
+        context.messageLocale = localized.locale;
       }
     }
 
@@ -201,12 +202,13 @@ export function extractConnectErrorContext(error: unknown): ConnectErrorContext 
         context.domain = info.domain;
       }
       const metaKeys = Object.keys(info.metadata);
-      if (metaKeys.length > 0) {
-        context.metadata = { ...info.metadata };
-        const metaReq = info.metadata['request_id'] ?? info.metadata['requestId'];
-        if (metaReq && !(context.requestId !== undefined && context.requestId !== '')) {
-          context.requestId = metaReq;
-        }
+      if (metaKeys.length === 0) {
+        continue;
+      }
+      context.metadata = { ...info.metadata };
+      const metaReq = info.metadata['request_id'] ?? info.metadata['requestId'];
+      if (metaReq && !(context.requestId !== undefined && context.requestId !== '')) {
+        context.requestId = metaReq;
       }
     }
 
@@ -217,11 +219,12 @@ export function extractConnectErrorContext(error: unknown): ConnectErrorContext 
     }
 
     for (const retry of error.findDetails(RetryInfoSchema)) {
-      if (retry.retryDelay) {
-        const { nanos, seconds: retrySeconds } = retry.retryDelay;
-        const seconds = Number(retrySeconds);
-        context.retryAfterSeconds = seconds + nanos / 1e9;
+      if (!retry.retryDelay) {
+        continue;
       }
+      const { nanos, seconds: retrySeconds } = retry.retryDelay;
+      const seconds = Number(retrySeconds);
+      context.retryAfterSeconds = seconds + nanos / 1e9;
     }
 
     for (const dbg of error.findDetails(DebugInfoSchema)) {

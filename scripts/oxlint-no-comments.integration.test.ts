@@ -35,15 +35,15 @@ describe('comment policy', () => {
     ['JSX', 'export const view = <div>{/* explanation */}</div>;\n', 'example.tsx'],
     ['documentation', '/** Explains the value. */\nexport const value = 1;\n', 'example.ts'],
   ])('rejects %s comments', (_kind, source, fileName) => {
-    expect(lintCodes(source, fileName)).toEqual(['protoform(no-comments)']);
+    expect(lintCodes(source, fileName)).toStrictEqual(['protoform(no-comments)']);
   });
 
   test('permits a shebang', () => {
-    expect(lintCodes('#!/usr/bin/env bun\nexport const value = 1;\n')).toEqual([]);
+    expect(lintCodes('#!/usr/bin/env bun\nexport const value = 1;\n')).toStrictEqual([]);
   });
 
   test('rejects license headers', () => {
-    expect(lintCodes('// Copyright 2026 Example, Inc.\nexport const value = 1;\n')).toEqual([
+    expect(lintCodes('// Copyright 2026 Example, Inc.\nexport const value = 1;\n')).toStrictEqual([
       'eslint(no-warning-comments)',
       'protoform(no-comments)',
     ]);

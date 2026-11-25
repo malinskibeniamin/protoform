@@ -87,7 +87,7 @@ function Calendar({
       <DayPicker
         captionLayout={captionLayout}
         className={cn(
-          'group/calendar bg-background p-3 [--cell-size:--spacing(8)] [&:is([data-slot=card-content]_*)]:bg-transparent [&:is([data-slot=popover-content]_*)]:bg-transparent',
+          'group/calendar [--cell-size:--spacing(8)] bg-background p-3 [&:is([data-slot=card-content]_*)]:bg-transparent [&:is([data-slot=popover-content]_*)]:bg-transparent',
           String.raw`rtl:**:[.rdp-button\_next>svg]:rotate-180`,
           String.raw`rtl:**:[.rdp-button\_previous>svg]:rotate-180`,
           className

@@ -3,14 +3,14 @@
 Run `bun run lint:fix` and `bun run type:check` before submitting changes. CI also runs component,
 conformance, browser, registry-consumer and documentation tests.
 
-## Reviewed versions (updated 2026-11-16)
+## Reviewed versions (updated 2026-11-25)
 
 | Tool            | Version             | Responsibility                                     |
 | --------------- | ------------------- | -------------------------------------------------- |
 | Bun             | 1.4.4               | Package manager; pinned across workflows           |
 | Blume           | 2.2.7               | Astro/MDX checking, builds and audits              |
-| Ultracite       | 8.2.1               | Shared conventions and safe edit hooks             |
-| Biome           | 2.6.8               | General linting and source formatting              |
+| Ultracite       | 8.3.1               | Shared conventions and safe edit hooks             |
+| Biome           | 2.6.9               | General linting and source formatting              |
 | Oxlint          | 1.94.0              | Additional syntax, import, promise and test checks |
 | oxlint-tsgolint | 7.0.2007            | Type-aware linting and compiler diagnostics        |
 | tsrs            | 0.25.0-ts7.1.0-beta | Rust-based strict source and test checking         |
@@ -108,8 +108,8 @@ existing contracts rather than accepting destructive autofixes.
 ## Formatting and edit hooks
 
 Biome owns JavaScript, TypeScript, JSON and CSS/SCSS formatting. Oxfmt owns Astro,
-Markdown and YAML; Biome still lints those languages. Markdown formatting stays off in
-Biome because its upstream whitespace bug can change rendered text. MDX stays with Blume.
+Markdown and YAML; Biome still lints those languages. Ultracite 8.3.1 reenables Biome Markdown formatting after upstream whitespace fixes, but this
+project keeps it off so two formatters do not compete. MDX stays with Blume.
 `bun run lint:fix` runs both formatters before the read-only lint gate.
 
 Oxfmt's `astro: true` requires the pinned `@astrojs/compiler-rs` development dependency.
@@ -125,8 +125,8 @@ plus a valid edit that formats only its target. Run it with
 ## Rule decisions and coverage
 
 `lint:rules` compares installed Biome, Oxlint, shadcn and React Doctor catalogs with explicit decisions.
-New or removed rules fail until reviewed. Biome has 648 rules globally enabled as errors out of
-816 explicit decisions. The React, Astro, Playwright, TanStack and type-aware presets match
+New or removed rules fail until reviewed. Biome has 671 rules globally enabled as errors out of
+844 explicit decisions. The React, Astro, Playwright, TanStack and type-aware presets match
 this project's dependencies. React Native, Drizzle, Vue and Svelte presets are not installed.
 `.oxlintrc.jsonc` records all 872 Oxlint decisions,
 including nursery rules. Incompatible duplicate conventions retain one owner: Biome owns
@@ -223,6 +223,64 @@ Biome 2.6.8 improves flow narrowing, conditional types and overload selection. T
 suppression-free and Tailwind lint paths apply without configuration changes; this repository
 has not benchmarked the upstream performance claims. Markdown/YAML formatting remains with Oxfmt.
 
+### Biome 2.6.9 and Ultracite 8.3.1
+
+The published schema adds **28** nursery rule IDs (816 → 844), despite the release announcement's
+27-rule count. All were reviewed: 19 are errors and nine are explicitly off.
+
+New errors cover array deletion, avoidable canvas conversions, immediate mutation, unnecessary
+binding/defaults/nested ternaries/Set copies, early loop exits, Astro default exports, competing
+Tailwind classes, unsafe Node SQLite interpolation, and TanStack Query key dependencies/mutation
+callback order. Test rules require explicit return flow, exact mock call counts, equality/length
+matchers, and `toStrictEqual()` rather than `toEqual()`. The 329 existing loose-equality assertions
+were migrated without weakening expected values. Indexed object types use `Record`; the three
+public interfaces still use `interface … extends Record` (and `Readonly<Record>`), preserving
+interface extension rather than changing public declarations to type aliases.
+
+The nine disabled additions have ecosystem or contract reasons:
+
+- `noVueDuplicateVElseIf` and `noVueNegationElse`: Vue is not used.
+- `useBiomeKindSets` and `useBiomeTopLevelTypes`: these optimize **authored Biome plugins**;
+  Protoform has no Biome JavaScript or GritQL plugin sources/configuration. Enabling these rules
+  would not accelerate this repository's linting. Rust formatter crates are likewise not a dependency
+  of this TypeScript UI project. No plugin or runtime dependency was added just to use a feature.
+- `noJasmineGlobals` and `useDescribeFunctionTitle`: the Jest/Jasmine/Vitest APIs they target
+  are not project test providers.
+- `noTestGlobals`, `noTestHooks`, and `useTopLevelDescribe`: Bun/Rstest globals, Playwright lifecycle
+  hooks and flat tests are intentional runner contracts, not defects.
+
+Four previously disabled checks are now errors: CSS `useBaseline`, `noMisusedSpread`,
+`useAtomicUpdates`, and `noYamlEmptyMapValues`. Baseline permits only the existing progressive
+`fullscreen` selector and `user-select` property in `theme.css`. An explicit `JSONValue[]` annotation
+preserves array inference inside the JSON renderer's callbacks. Workflows spell out intentional
+null event values without changing their parsed triggers. Neither check needs a waiver.
+Atomic-update exceptions name the revision-guarded QuickJS controller, sequential screenshot
+poller and five server-cleanup tests.
+
+Biome's Astro scope fixes restore unused-import, undeclared-variable, JSX-key and type-import
+checks; only compiler-provided `Fragment` is declared as an Astro global. The test-wide misplaced
+assertion waiver and catalog import-order/Tailwind-shorthand waivers are removed. React `act()`
+and unnecessary-condition exceptions were retested against the actual installed dependency graph
+and narrowed to files that still reproduce false positives; defensive runtime behavior is preserved.
+The formatter now refuses to rewrite syntax-error files (`formatWithErrors: false`).
+
+Ultracite's new separated-type-import preset option would rewrite existing mixed imports.
+An explicit `useImportType.options.style: "auto"` retains the established convention without
+weakening type-import checks, and a real CLI regression protects this choice. Oxfmt remains the
+single Astro/Markdown/YAML formatter; the six applicable Biome presets remain extended.
+Ultracite 8.3's optional Landmines preset was reviewed but not added: it requires another
+JavaScript-plugin dependency, rejects this repo's Playwright `.spec.ts`/`__tests__` conventions,
+and prohibits explicit implementation return types and deliberate test doubles. Those are not
+compatible blanket policies for this source-copy UI library. Existing promise, assertion,
+suppression, compiler and test-quality checks remain enforced.
+The 2.6.9 GritQL performance improvements apply inside the upgraded tool, but this repository
+has no GritQL plugins and has not measured an end-to-end speedup.
+
+The release-hardening tests run the installed Biome binary against invalid/valid rule fixtures,
+including the restored Astro, misplaced-assertion and CSS Baseline checks. Existing catalog,
+exception, suppression and actual-file-discovery gates remain active; no preexisting error-level
+rule was downgraded and no preexisting exception was broadened.
+
 ### Release hardening
 
 Additional compatible checks now enforce:
@@ -279,6 +337,13 @@ These checks prevent accidental bypasses, not malicious edits to the gates thems
 required CI checks and review policy changes at the repository-hosting layer.
 
 ## Upstream evidence
+
+- [Biome 2.6.9 changelog](https://biomejs.dev/internals/changelog/version/2-6-9/)
+- [Ultracite 8.3.1 release notes](https://github.com/haydenbleasel/ultracite/releases/tag/ultracite%408.3.1)
+- [Ultracite 8.3.0 release notes](https://github.com/haydenbleasel/ultracite/releases/tag/ultracite%408.3.0)
+- [Biome plugin kind sets](https://biomejs.dev/linter/rules/use-biome-kind-sets/javascript/)
+- [Biome plugin top-level types](https://biomejs.dev/linter/rules/use-biome-top-level-types/javascript/)
+- [Biome CSS Baseline options](https://biomejs.dev/linter/rules/use-baseline/css/)
 
 - [Biome 2.6.8 release notes](https://github.com/biomejs/biome/releases/tag/%40biomejs%2Fbiome%402.6.8)
 - [Biome 2.6.7 release notes](https://github.com/biomejs/biome/releases/tag/%40biomejs%2Fbiome%402.6.7)

@@ -83,7 +83,7 @@ describe('cel guarded runtime conformance', () => {
       maxCost: 2,
     });
     expect(() => overBudget()).not.toThrow();
-    expect(overBudget()).toEqual({
+    expect(overBudget()).toStrictEqual({
       cost: 3,
       kind: 'cost-exceeded',
       limit: 2,

@@ -52,11 +52,11 @@ describe('protobuf defaults and reset', () => {
     const second = source('second', 22);
     const { result } = renderHook(() => useProtoForm(AutoFormExampleSchema, { defaultValues: first }));
     act(() => result.current.reset(second));
-    expect(toBinary(AutoFormExampleSchema, result.current.createMessage())).toEqual(
+    expect(toBinary(AutoFormExampleSchema, result.current.createMessage())).toStrictEqual(
       toBinary(AutoFormExampleSchema, second)
     );
     act(() => result.current.reset());
-    expect(toBinary(AutoFormExampleSchema, result.current.createMessage())).toEqual(
+    expect(toBinary(AutoFormExampleSchema, result.current.createMessage())).toStrictEqual(
       toBinary(AutoFormExampleSchema, second)
     );
   });

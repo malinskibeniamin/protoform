@@ -111,7 +111,7 @@ describe('getProtoMethodWorkflow', () => {
         },
       ],
     });
-    expect(createBook.httpBindings).toEqual([
+    expect(createBook.httpBindings).toStrictEqual([
       {
         bodyFields: ['book'],
         method: 'POST',

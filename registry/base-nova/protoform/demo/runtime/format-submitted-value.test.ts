@@ -14,7 +14,7 @@ describe('formatSubmittedValue', () => {
       title: 'Visible',
     });
 
-    expect(JSON.parse(formatted)).toEqual({
+    expect(JSON.parse(formatted)).toStrictEqual({
       apiKey: 'demo-api-key',
       count: '42',
       nested: {

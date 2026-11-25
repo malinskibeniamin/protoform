@@ -600,7 +600,7 @@ const JSONField = ({
         );
       }
       case 'array': {
-        let arrayValue = Array.isArray(currentValue) ? currentValue : [];
+        let arrayValue: JSONValue[] = Array.isArray(currentValue) ? currentValue : [];
         const itemSchema = propSchema.items;
         if (!itemSchema) {
           return null;

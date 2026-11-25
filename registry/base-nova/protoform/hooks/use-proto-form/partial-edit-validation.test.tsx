@@ -58,7 +58,7 @@ describe('useProtoForm partial-edit validation', () => {
     });
 
     expect(result.current.formState.errors.username).toBeUndefined();
-    expect(result.current.createUpdateMask().paths).toEqual([]);
+    expect(result.current.createUpdateMask().paths).toStrictEqual([]);
 
     await act(async () => {
       result.current.setValue('username', 'temporary_name', {
@@ -74,7 +74,7 @@ describe('useProtoForm partial-edit validation', () => {
 
     await waitFor(() => {
       expect(result.current.formState.errors.username).toBeDefined();
-      expect(result.current.createUpdateMask().paths).toEqual(['username']);
+      expect(result.current.createUpdateMask().paths).toStrictEqual(['username']);
     });
 
     await act(async () => {
@@ -84,7 +84,7 @@ describe('useProtoForm partial-edit validation', () => {
 
     await waitFor(() => {
       expect(result.current.formState.errors.username).toBeUndefined();
-      expect(result.current.createUpdateMask().paths).toEqual([]);
+      expect(result.current.createUpdateMask().paths).toStrictEqual([]);
     });
   });
 
@@ -118,7 +118,7 @@ describe('useProtoForm partial-edit validation', () => {
 
     act(() => result.current.setError('username', { message: 'Name is unavailable', type: 'server' }));
 
-    expect(result.current.createUpdateMask().paths).toEqual([]);
+    expect(result.current.createUpdateMask().paths).toStrictEqual([]);
   });
 
   test('matches nested modified fields to protobuf mask paths', async () => {
@@ -146,7 +146,7 @@ describe('useProtoForm partial-edit validation', () => {
     await waitFor(() => {
       expect(result.current.formState.errors.shippingAddress?.city).toBeDefined();
       expect(result.current.formState.errors.username).toBeUndefined();
-      expect(result.current.createUpdateMask().paths).toEqual(['shipping_address.city']);
+      expect(result.current.createUpdateMask().paths).toStrictEqual(['shipping_address.city']);
     });
   });
 

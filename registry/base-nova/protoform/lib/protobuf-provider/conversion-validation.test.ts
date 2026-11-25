@@ -89,7 +89,7 @@ describe('raw conversion validation', () => {
     const message = create(root);
     Reflect.set(message, 'mask', { paths: ['display_name', 17] });
     expect(() => protoToFormValues(root, message)).toThrow('FieldMask');
-    expect(protoToFormValues(root, create(root, { mask: { paths: ['display_name'] } }))['mask']).toEqual([
+    expect(protoToFormValues(root, create(root, { mask: { paths: ['display_name'] } }))['mask']).toStrictEqual([
       'display_name',
     ]);
   });
@@ -110,7 +110,7 @@ describe('raw conversion validation', () => {
     { values: { choice: { case: 'missingCase', value: 'lost' } }, path: ['choice'] },
   ])('rejects lossy input at $path before protobuf conversion', async ({ values, path }) => {
     const result = await schema['~standard'].validate(values);
-    expect(result.issues).toEqual<unknown>(expect.arrayContaining([expect.objectContaining({ path })]));
+    expect(result.issues).toStrictEqual<unknown>(expect.arrayContaining([expect.objectContaining({ path })]));
   });
 
   test('retains valid field masks and known oneof selections', async () => {

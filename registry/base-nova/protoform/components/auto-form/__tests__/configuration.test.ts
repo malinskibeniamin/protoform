@@ -49,7 +49,7 @@ describe('inspectAutoFormConfiguration', () => {
       schema,
     });
 
-    expect(diagnostics).toEqual<AutoFormConfigurationDiagnostic[]>([
+    expect(diagnostics).toStrictEqual<AutoFormConfigurationDiagnostic[]>([
       {
         code: 'unsupported-configuration',
         message: 'emptyRepeatedStringPolicy is supported only on repeated string fields.',
@@ -110,7 +110,7 @@ describe('inspectAutoFormConfiguration', () => {
         fieldRegistry,
         schema,
       })
-    ).toEqual([]);
+    ).toStrictEqual([]);
   });
 
   test('reports incompatible built-in controls', () => {
@@ -179,7 +179,7 @@ describe('inspectAutoFormConfiguration', () => {
           ],
         },
       })
-    ).toEqual<unknown>(
+    ).toStrictEqual<unknown>(
       expect.arrayContaining([
         expect.objectContaining({ code: 'invalid-step-configuration', path: '$' }),
         expect.objectContaining({ code: 'invalid-step-configuration', path: 'name' }),

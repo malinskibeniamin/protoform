@@ -9,7 +9,7 @@ import { ToggleGroup, ToggleGroupItem } from '.';
 test('supports shadcn multiple selection and cancelable change details', async () => {
   const user = userEvent.setup();
   const onValueChange = rs.fn((value: string[], details: { cancel: () => void }) => {
-    expect(value).toEqual(['bold']);
+    expect(value).toStrictEqual(['bold']);
     details.cancel();
   });
   render(
@@ -55,7 +55,7 @@ test('supports standalone shadcn items, render props and native events', async (
   await user.click(button);
   expect(onPressedChange).toHaveBeenCalledWith(true, expect.objectContaining({ reason: 'none' }));
   fireEvent.animationStart(button);
-  expect(animations).toEqual(['animationstart']);
+  expect(animations).toStrictEqual(['animationstart']);
 });
 
 test('requires a discriminator for the legacy uncontrolled string callback', () => {

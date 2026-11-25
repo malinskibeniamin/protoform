@@ -50,7 +50,7 @@ test('only the latest revision can enable submission, even when cancellation is 
   await latest;
   first.resolve({ company: { visible: true } });
   await old;
-  expect(controller.getSnapshot().presentation).toEqual({ company: { visible: false } });
+  expect(controller.getSnapshot().presentation).toStrictEqual({ company: { visible: false } });
   await Promise.resolve(
     expect(
       controller.submit(request, () => {
@@ -60,7 +60,7 @@ test('only the latest revision can enable submission, even when cancellation is 
   );
   await controller.submit(latestRequest, (values) => {
     calls += 1;
-    expect(values).toEqual(latestRequest.values);
+    expect(values).toStrictEqual(latestRequest.values);
   });
   expect(calls).toBe(1);
   controller.dispose();
@@ -247,7 +247,7 @@ test('nested snapshots compare by content and action copies cannot change accept
       company['name'] = 'action-local';
     });
     await controller.submit(nested, (values) => {
-      expect(values).toEqual({ kind: 'business', company: { name: 'Acme', active: true } });
+      expect(values).toStrictEqual({ kind: 'business', company: { name: 'Acme', active: true } });
     });
     nested.values.company.name = 'changed';
     await Promise.resolve(expect(controller.submit(nested, () => undefined)).rejects.toThrow('changed'));

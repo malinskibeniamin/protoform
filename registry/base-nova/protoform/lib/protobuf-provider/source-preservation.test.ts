@@ -183,7 +183,7 @@ describe('source-message preservation', () => {
     const source = create(RootSchema, { nested: { createdAt: timestamp } });
     const values = protoToFormValues(RootSchema, source);
     expect(requireRecord(values['nested'], 'nested form value')['createdAt']).toMatch(/T\d{2}:00:37\.999$/u);
-    expect(formValuesToProto(RootSchema, values, source)).toEqual(source);
+    expect(formValuesToProto(RootSchema, values, source)).toStrictEqual(source);
   });
   test('preserves untouched timestamp precision through nested, reordered, map and oneof edits', () => {
     const timestamp = timestampFromDate(new Date('2026-10-03T12:00:37.123Z'));
@@ -209,9 +209,9 @@ describe('source-message preservation', () => {
       requireRecord(edited['choice'], 'edited choice')['value'],
     ];
     for (const node of editedNodes) {
-      expect(requireRecord(node, 'edited node')['createdAt']).toEqual(timestamp);
+      expect(requireRecord(node, 'edited node')['createdAt']).toStrictEqual(timestamp);
     }
-    expect(toBinary(RootSchema, source)).toEqual(sourceBytes);
+    expect(toBinary(RootSchema, source)).toStrictEqual(sourceBytes);
 
     nested['createdAt'] = String(nested['createdAt']).replace('.123', '.123987654');
     const explicitEdit = requireRecord(formValuesToProto(RootSchema, values, source), 'explicit edit');
@@ -250,17 +250,17 @@ describe('source-message preservation', () => {
     const editedMap = requireRecord(edited['nestedByKey'], 'edited map');
     const editedChoice = requireRecord(edited['choice'], 'edited choice');
 
-    expect(edited['$unknown']).toEqual(source.$unknown);
-    expect(unknownFields(edited['nested'], 'edited nested message')).toEqual(
+    expect(edited['$unknown']).toStrictEqual(source.$unknown);
+    expect(unknownFields(edited['nested'], 'edited nested message')).toStrictEqual(
       unknownFields(sourceRecord['nested'], 'source nested message')
     );
-    expect(unknownFields(requireElement(editedChildren, 0, 'edited child'), 'edited child')).toEqual(
+    expect(unknownFields(requireElement(editedChildren, 0, 'edited child'), 'edited child')).toStrictEqual(
       unknownFields(requireElement(sourceChildren, 0, 'source child'), 'source child')
     );
-    expect(unknownFields(editedMap['first'], 'edited first map value')).toEqual(
+    expect(unknownFields(editedMap['first'], 'edited first map value')).toStrictEqual(
       unknownFields(sourceMap['first'], 'source first map value')
     );
-    expect(unknownFields(editedChoice['value'], 'edited choice value')).toEqual(
+    expect(unknownFields(editedChoice['value'], 'edited choice value')).toStrictEqual(
       unknownFields(sourceChoice['value'], 'source choice value')
     );
   });
@@ -285,13 +285,13 @@ describe('source-message preservation', () => {
 
     expect(edited['nested']).toBeUndefined();
     expect(editedChildren).toHaveLength(1);
-    expect(unknownFields(requireElement(editedChildren, 0, 'edited child'), 'edited child')).toEqual(
+    expect(unknownFields(requireElement(editedChildren, 0, 'edited child'), 'edited child')).toStrictEqual(
       unknownFields(requireElement(sourceChildren, 1, 'second source child'), 'second source child')
     );
     expect(editedMap).not.toHaveProperty('first');
-    expect(unknownFields(editedMap['second'], 'edited second map value')).toEqual(
+    expect(unknownFields(editedMap['second'], 'edited second map value')).toStrictEqual(
       unknownFields(sourceMap['second'], 'source second map value')
     );
-    expect(edited['choice']).toEqual({ case: 'textChoice', value: 'replacement' });
+    expect(edited['choice']).toStrictEqual({ case: 'textChoice', value: 'replacement' });
   });
 });

@@ -84,7 +84,7 @@ test.each(cases)('shadcn lint $name', ({ prefix, rules, source }) => {
       [...new Set(report.diagnostics.map((diagnostic) => diagnostic.code))].toSorted((left, right) =>
         left < right ? -1 : Number(left > right)
       )
-    ).toEqual(
+    ).toStrictEqual(
       rules.map((rule) => `shadcn(${rule})`).toSorted((left, right) => (left < right ? -1 : Number(left > right)))
     );
   } finally {

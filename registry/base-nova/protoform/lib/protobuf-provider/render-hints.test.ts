@@ -23,9 +23,9 @@ test('maps field and oneof annotations onto hints without empty hint objects', (
   expect(regionHints?.disabledWhen?.[0]?.id).toBe('region.disabled');
   expect(regionHints?.disabledWhen?.[0]?.expression).toBe('form.provider == 0');
   expect(getFieldHints(supportContact ?? { key: '', required: false, type: '' })?.step).toBe('support');
-  expect(schema.fields.filter((field) => field.hints !== undefined && Object.keys(field.hints).length === 0)).toEqual(
-    []
-  );
+  expect(
+    schema.fields.filter((field) => field.hints !== undefined && Object.keys(field.hints).length === 0)
+  ).toStrictEqual([]);
 });
 
 test('enum aliases produce one selectable option per numeric value', () => {

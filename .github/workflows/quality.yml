@@ -1,7 +1,7 @@
 name: Exhaustive quality
 
 on:
-  workflow_dispatch:
+  workflow_dispatch: null
   schedule:
     - cron: "17 3 * * *"
 

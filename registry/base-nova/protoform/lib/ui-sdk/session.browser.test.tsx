@@ -56,7 +56,7 @@ test('requires authorization and separate confirmation, exposes only declared ac
   try {
     await render(<Controls />);
     const snapshot = session.agent.snapshot();
-    expect(snapshot.find((entry) => entry.label === 'Session rating')?.actions).toEqual(['setValue']);
+    expect(snapshot.find((entry) => entry.label === 'Session rating')?.actions).toStrictEqual(['setValue']);
     expect(JSON.stringify(snapshot)).not.toContain('private-note');
     expect(snapshot.find((entry) => entry.label === 'Hidden session note')).toBeUndefined();
     expect(snapshot.find((entry) => entry.label === 'Session secret')?.['value']).toBe('[redacted]');
@@ -115,7 +115,7 @@ for (const { Control, label, value } of [
       await expect.element(page.getByRole('textbox', { name: label })).toHaveValue(value);
       const entry = session.agent.snapshot().find((control) => control.label === label);
       expect(entry?.['disabled']).toBe(true);
-      expect(entry?.actions).toEqual([]);
+      expect(entry?.actions).toStrictEqual([]);
       expect(entry?.['required']).toBe(true);
     } finally {
       session.dispose();
@@ -134,16 +134,16 @@ test('observe, seek, staging and source undo preserve later human edits', async 
     await act(async () => {
       await session.agent.act({ steps: [{ ref: 'Session name', action: 'setValue', args: ['Atlas'] }] });
     });
-    expect(await session.history.seek(0)).toEqual([]);
+    expect(await session.history.seek(0)).toStrictEqual([]);
     await expect.element(page.getByRole('textbox', { name: 'Session name' })).toHaveValue('Apollo');
-    expect(await session.history.seek(session.history.entries().length)).toEqual([]);
+    expect(await session.history.seek(session.history.entries().length)).toStrictEqual([]);
     await expect.element(page.getByRole('textbox', { name: 'Session name' })).toHaveValue('Atlas');
     const staged = await stageChanges(session.agent, [{ ref: 'Session name', value: 'Preview' }]);
     await expect.element(page.getByRole('textbox', { name: 'Session name' })).toHaveValue('Preview');
-    expect(await staged.revert()).toEqual([]);
+    expect(await staged.revert()).toStrictEqual([]);
     await expect.element(page.getByRole('textbox', { name: 'Session name' })).toHaveValue('Atlas');
     await page.getByRole('textbox', { name: 'Session name' }).fill('Human choice');
-    expect(await session.history.undoSource('agent')).toEqual([]);
+    expect(await session.history.undoSource('agent')).toStrictEqual([]);
     await expect.element(page.getByRole('textbox', { name: 'Session name' })).toHaveValue('Human choice');
     expect(observed.some((change) => change.source === 'agent')).toBe(true);
     expect(

@@ -37,5 +37,5 @@ test('honors canceled changes, native events and Base UI state classes', async (
   expect(checkbox).toHaveAttribute('aria-checked', 'false');
   expect(checkbox).toHaveClass('unselected');
   fireEvent.animationStart(checkbox);
-  expect(animationEvents).toEqual(['animationstart']);
+  expect(animationEvents).toStrictEqual(['animationstart']);
 });

@@ -35,13 +35,13 @@ describe('experimental TanStack Form v2 useProtoForm', () => {
     });
 
     expect(result.current.createMessage().username).toBe('ada_user');
-    expect(result.current.createUpdateMask().paths).toEqual(['username']);
+    expect(result.current.createUpdateMask().paths).toStrictEqual(['username']);
 
     act(() => {
       result.current.setOneofValue('preferredContact', 'preferredPhone', '+48123456789');
     });
 
-    expect(result.current.createMessage().preferredContact).toEqual({
+    expect(result.current.createMessage().preferredContact).toStrictEqual({
       case: 'preferredPhone',
       value: '+48123456789',
     });

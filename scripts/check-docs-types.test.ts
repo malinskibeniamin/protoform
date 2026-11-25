@@ -8,7 +8,7 @@ describe('documentation typecheck diagnostics', () => {
     ['warning', 'Result (404 files):\n- 0 errors\n- 1 warning\n- 0 hints', { errors: 0, hints: 0, warnings: 1 }],
     ['hint', 'Result (404 files):\n- 0 errors\n- 0 warnings\n- 18 hints', { errors: 0, hints: 18, warnings: 0 }],
   ])('parses a %s summary', (_name, output, expected) => {
-    expect(parseDocsDiagnosticSummary(output)).toEqual(expected);
+    expect(parseDocsDiagnosticSummary(output)).toStrictEqual(expected);
   });
 
   test('rejects output without a complete summary', () => {

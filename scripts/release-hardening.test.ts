@@ -166,6 +166,91 @@ export function safeNarrow(value: unknown) {
 
 test.each([
   {
+    path: 'scripts/biome-2-6-9-probe.ts',
+    group: 'nursery',
+    rule: 'useAtomicUpdates',
+    invalid: 'let total = 0; export async function add(load: () => Promise<number>) { total += await load(); }',
+    valid:
+      'let total = 0; export async function add(load: () => Promise<number>) { const amount = await load(); total += amount; }',
+  },
+  {
+    path: 'scripts/biome-2-6-9-probe.ts',
+    group: 'nursery',
+    rule: 'useConsistentIndexedObjectStyle',
+    invalid: 'export interface Values { [key: string]: unknown; }',
+    valid: 'export interface Values extends Record<string, unknown> {}',
+  },
+  {
+    path: 'scripts/biome-2-6-9-probe.ts',
+    group: 'nursery',
+    rule: 'noMisusedSpread',
+    invalid: 'declare function load(): Promise<{ enabled: boolean }>; export const value = { ...load() };',
+    valid: 'declare function load(): Promise<{ enabled: boolean }>; export const value = { ...await load() };',
+  },
+  {
+    path: '.github/workflows/biome-2-6-9-probe.yml',
+    group: 'nursery',
+    rule: 'noYamlEmptyMapValues',
+    invalid: 'name:\n',
+    valid: 'name: ci\n',
+  },
+  {
+    path: 'components/docs/biome-2-6-9-probe.astro',
+    group: 'correctness',
+    rule: 'noUnusedImports',
+    invalid: "---\nimport Widget from './widget';\n---\n<div />",
+    valid: "---\nimport Widget from './widget';\n---\n<Widget />",
+  },
+  {
+    path: 'scripts/biome-2-6-9-probe.test.ts',
+    group: 'suspicious',
+    rule: 'noMisplacedAssertion',
+    invalid: "import { expect } from 'bun:test'; expect(1).toBe(1);",
+    valid: "import { expect, test } from 'bun:test'; test('value', () => { expect(1).toBe(1); });",
+  },
+  {
+    path: 'components/biome-2-6-9-probe.css',
+    group: 'suspicious',
+    rule: 'useBaseline',
+    invalid: '.example { view-transition-name: example; }',
+    valid: '.example { color: red; }',
+  },
+  {
+    path: 'scripts/biome-2-6-9-probe.ts',
+    group: 'nursery',
+    rule: 'noArrayDelete',
+    invalid: 'export function remove(values: string[]) { delete values[0]; }',
+    valid: 'export function remove(values: string[]) { values.splice(0, 1); }',
+  },
+  {
+    path: 'scripts/biome-2-6-9-probe.ts',
+    group: 'nursery',
+    rule: 'noImmediateMutation',
+    invalid: 'export function collect() { const values: number[] = []; values.push(1); return values; }',
+    valid: 'export function collect() { const values: number[] = [1]; return values; }',
+  },
+  {
+    path: 'scripts/biome-2-6-9-probe.ts',
+    group: 'nursery',
+    rule: 'noUselessBind',
+    invalid: 'export const identity = ((value: number) => value).bind(null);',
+    valid: 'export const identity = (value: number) => value;',
+  },
+  {
+    path: 'scripts/biome-2-6-9-probe.test.ts',
+    group: 'nursery',
+    rule: 'useExpectToStrictEqual',
+    invalid: 'test("value", () => { expect({ value: 1 }).toEqual({ value: 1 }); });',
+    valid: 'test("value", () => { expect({ value: 1 }).toStrictEqual({ value: 1 }); });',
+  },
+  {
+    path: 'scripts/biome-2-6-9-probe.test.ts',
+    group: 'nursery',
+    rule: 'useExpectToHaveLength',
+    invalid: 'test("length", () => { expect(values.length).toBe(1); });',
+    valid: 'test("length", () => { expect(values).toHaveLength(1); });',
+  },
+  {
     path: 'scripts/biome-hardening-probe.ts',
     group: 'complexity',
     rule: 'useMaxParams',
@@ -417,7 +502,7 @@ test('bounds assertion exceptions to named bridges and keeps other safety checks
       .object({ diagnostics: z.array(z.object({ filename: z.string(), code: z.string() })) })
       .parse(JSON.parse(result.stdout));
     expect(result.status).toBe(1);
-    expect(diagnostics).toEqual([{ filename: leaf, code: 'typescript(no-unsafe-type-assertion)' }]);
+    expect(diagnostics).toStrictEqual([{ filename: leaf, code: 'typescript(no-unsafe-type-assertion)' }]);
     writeFileSync(join(directory, bridge), 'export const unsafe: string = JSON.parse("{}");');
     const unsafeBridge = spawnSync(resolve('node_modules/.bin/oxlint'), args, {
       cwd: directory,

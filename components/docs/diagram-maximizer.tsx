@@ -74,11 +74,12 @@ export function DiagramMaximizer() {
       const nextTargets = new Set(targets);
 
       for (const [target, host] of hosts) {
-        if (!nextTargets.has(target)) {
-          host.remove();
-          Reflect.deleteProperty(target.dataset, 'diagramEnhanced');
-          hosts.delete(target);
+        if (nextTargets.has(target)) {
+          continue;
         }
+        host.remove();
+        Reflect.deleteProperty(target.dataset, 'diagramEnhanced');
+        hosts.delete(target);
       }
 
       const nextPortals = targets.map((target) => {

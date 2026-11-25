@@ -21,7 +21,7 @@ describe('experimental React Hook Form v8 AutoForm conformance', () => {
     await user.click(screen.getByRole('button', { name: 'Submit' }));
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
-    expect(onSubmit.mock.calls[0]?.[0]).toEqual({ name: 'ADA' });
+    expect(onSubmit.mock.calls[0]?.[0]).toStrictEqual({ name: 'ADA' });
     expect(onFormInit.mock.calls[0]?.[0].register).toBeTypeOf('function');
     expect(onFormInit.mock.calls[0]?.[0].control).toBeDefined();
   });
@@ -58,7 +58,7 @@ describe('experimental React Hook Form v8 AutoForm conformance', () => {
     await user.click(screen.getByRole('button', { name: 'Submit' }));
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
-    expect(onSubmit.mock.calls[0]?.[0]).toEqual({ tags: ['second'] });
+    expect(onSubmit.mock.calls[0]?.[0]).toStrictEqual({ tags: ['second'] });
   });
 
   test('renders every provider field failure, focuses the first v8 field, and renders a root error once', async () => {

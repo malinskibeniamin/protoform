@@ -39,7 +39,7 @@ describe('aip-193 error lifecycle conformance', () => {
         Code.DataLoss,
         Code.Unauthenticated,
       ].map(grpcCodeLabel)
-    ).toEqual([
+    ).toStrictEqual([
       'canceled',
       'unknown',
       'invalid_argument',
@@ -110,7 +110,7 @@ describe('aip-193 error lifecycle conformance', () => {
       },
     ]);
 
-    expect(extractFieldViolations(error)).toEqual([
+    expect(extractFieldViolations(error)).toStrictEqual([
       { description: 'Choose another title.', field: 'book.display_name' },
     ]);
     expect(extractConnectErrorContext(error)).toMatchObject({

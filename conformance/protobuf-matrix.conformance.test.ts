@@ -80,8 +80,8 @@ describe('protobuf scalar conformance', () => {
     const editedBytes = toBinary(NumericMatrixSchema, edited);
 
     expect(edited.int32Value).toBe(2);
-    expect(edited.$unknown).toEqual(parsed.$unknown);
-    expect([...editedBytes].slice(-unknownFieldBytes.length)).toEqual(unknownFieldBytes);
+    expect(edited.$unknown).toStrictEqual(parsed.$unknown);
+    expect([...editedBytes].slice(-unknownFieldBytes.length)).toStrictEqual(unknownFieldBytes);
   });
 
   test('round-trips explicit and implicit boolean values', async () => {
@@ -120,7 +120,7 @@ describe('protobuf scalar conformance', () => {
       }))
     );
     for (const { field, result, value } of invalidResults) {
-      expect(issuePaths(result.issues), `${field} accepted ${value}`).toEqual([[field]]);
+      expect(issuePaths(result.issues), `${field} accepted ${value}`).toStrictEqual([[field]]);
     }
   });
 
@@ -146,7 +146,7 @@ describe('protobuf scalar conformance', () => {
       }))
     );
     for (const { field, result, value } of invalidResults) {
-      expect(issuePaths(result.issues), `${field} accepted ${value}`).toEqual([[field]]);
+      expect(issuePaths(result.issues), `${field} accepted ${value}`).toStrictEqual([[field]]);
     }
   });
 
@@ -180,7 +180,7 @@ describe('protobuf scalar conformance', () => {
       }))
     );
     for (const { field, result, value } of invalidResults) {
-      expect(issuePaths(result.issues), `${field} accepted ${value}`).toEqual([[field]]);
+      expect(issuePaths(result.issues), `${field} accepted ${value}`).toStrictEqual([[field]]);
     }
   });
 
@@ -226,12 +226,12 @@ describe('protobuf collection conformance', () => {
     if (!('value' in result)) {
       throw new Error('Expected the repeated scalar matrix to validate.');
     }
-    expect(result.value.flags).toEqual([true, false]);
-    expect(result.value.blobs.map((value) => [...value])).toEqual([
+    expect(result.value.flags).toStrictEqual([true, false]);
+    expect(result.value.blobs.map((value) => [...value])).toStrictEqual([
       [1, 2, 3],
       [4, 5],
     ]);
-    expect(result.value.identifiers).toEqual([-9_223_372_036_854_775_808n, 9_223_372_036_854_775_807n]);
+    expect(result.value.identifiers).toStrictEqual([-9_223_372_036_854_775_808n, 9_223_372_036_854_775_807n]);
     expect(Number.isNaN(result.value.ratios[1])).toBe(true);
     expect(result.value.amounts[1]).toBe(Number.POSITIVE_INFINITY);
     expect(protoToFormValues(CollectionMatrixSchema, result.value)).toMatchObject({
@@ -255,11 +255,11 @@ describe('protobuf collection conformance', () => {
     expect(valid).toMatchObject({
       value: { children: [{ name: 'one' }, { name: 'two' }] },
     });
-    expect(issuePaths(twoInvalid.issues)).toEqual([
+    expect(issuePaths(twoInvalid.issues)).toStrictEqual([
       ['children', '0', 'name'],
       ['children', '1', 'name'],
     ]);
-    expect(issuePaths(afterRemoval.issues)).toEqual([['children', '0', 'name']]);
+    expect(issuePaths(afterRemoval.issues)).toStrictEqual([['children', '0', 'name']]);
   });
 
   test('round-trips every legal boolean and integer map key type', async () => {
@@ -285,20 +285,20 @@ describe('protobuf collection conformance', () => {
     if (!('value' in result)) {
       throw new Error('Expected the map key matrix to validate.');
     }
-    expect(result.value.boolKeys).toEqual({ false: 'no', true: 'yes' });
-    expect(result.value.int64Keys).toEqual({
+    expect(result.value.boolKeys).toStrictEqual({ false: 'no', true: 'yes' });
+    expect(result.value.int64Keys).toStrictEqual({
       '-9223372036854775808': 'min',
     });
 
     const formValues = protoToFormValues(CollectionMatrixSchema, result.value);
-    expect(formValues['boolKeys']).toEqual(
+    expect(formValues['boolKeys']).toStrictEqual(
       expect.arrayContaining([
         { key: false, value: 'no' },
         { key: true, value: 'yes' },
       ])
     );
-    expect(formValues['int32Keys']).toEqual([{ key: -2_147_483_648, value: 'min' }]);
-    expect(formValues['uint64Keys']).toEqual([{ key: '18446744073709551615', value: 'max' }]);
+    expect(formValues['int32Keys']).toStrictEqual([{ key: -2_147_483_648, value: 'min' }]);
+    expect(formValues['uint64Keys']).toStrictEqual([{ key: '18446744073709551615', value: 'max' }]);
   });
 });
 
@@ -398,11 +398,11 @@ describe('protobuf presence and well-known-type conformance', () => {
     if (!('value' in result && result.value.allowedPayload)) {
       throw new Error('Expected the Any payload to validate.');
     }
-    expect(protoToFormValues(AnyMatrixSchema, result.value)['allowedPayload']).toEqual({
+    expect(protoToFormValues(AnyMatrixSchema, result.value)['allowedPayload']).toStrictEqual({
       typeUrl: packed.typeUrl,
       valueBase64,
     });
     expect(anyUnpack(result.value.allowedPayload, StructSchema)).toStrictEqual(struct);
-    expect(issuePaths(malformed.issues)).toEqual([['allowedPayload']]);
+    expect(issuePaths(malformed.issues)).toStrictEqual([['allowedPayload']]);
   });
 });

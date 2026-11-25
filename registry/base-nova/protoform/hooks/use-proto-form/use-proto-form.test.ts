@@ -124,7 +124,7 @@ describe('useProtoForm — update mask', () => {
     });
 
     await waitFor(() => {
-      expect(result.current.createUpdateMask().paths).toEqual(['primary_email', 'shipping_address']);
+      expect(result.current.createUpdateMask().paths).toStrictEqual(['primary_email', 'shipping_address']);
     });
     expect(result.current.createMessage().shippingAddress).toBeUndefined();
     expect(result.current.createMessage().primaryEmail).toBe('new@example.com');
@@ -150,7 +150,7 @@ describe('useProtoForm — update mask', () => {
     });
 
     await waitFor(() => {
-      expect(result.current.createUpdateMask().paths).toEqual(['primary_email', 'shipping_address.city']);
+      expect(result.current.createUpdateMask().paths).toStrictEqual(['primary_email', 'shipping_address.city']);
     });
   });
 
@@ -177,7 +177,7 @@ describe('useProtoForm — update mask', () => {
     });
 
     await waitFor(() => {
-      expect(result.current.createUpdateMask().paths).toEqual(['shipping_address.city']);
+      expect(result.current.createUpdateMask().paths).toStrictEqual(['shipping_address.city']);
     });
   });
 });
@@ -191,7 +191,7 @@ describe('useProtoForm — createMessage', () => {
       })
     );
 
-    expect(result.current.createMessage().tags).toEqual(['alpha', '', 'omega']);
+    expect(result.current.createMessage().tags).toStrictEqual(['alpha', '', 'omega']);
   });
 
   test('preserves unknown fields from parsed default values', () => {
@@ -219,8 +219,8 @@ describe('useProtoForm — createMessage', () => {
     const message = result.current.createMessage();
     const editedBytes = toBinary(AutoFormExampleSchema, message);
     expect(message.age).toBe(26);
-    expect(message.$unknown).toEqual(parsedDefaultValues.$unknown);
-    expect([...editedBytes].slice(-unknownFieldBytes.length)).toEqual(unknownFieldBytes);
+    expect(message.$unknown).toStrictEqual(parsedDefaultValues.$unknown);
+    expect([...editedBytes].slice(-unknownFieldBytes.length)).toStrictEqual(unknownFieldBytes);
   });
 
   test('builds a protobuf message from current form values', () => {
@@ -253,7 +253,7 @@ describe('useProtoForm — createMessage', () => {
 
     const message = result.current.createMessage();
     const json = toJson(AutoFormExampleSchema, message);
-    expect(json).toEqual(expect.objectContaining({ preferredPhone: '+1555' }));
+    expect(json).toStrictEqual(expect.objectContaining({ preferredPhone: '+1555' }));
     expect(message.preferredContact.case).toBe('preferredPhone');
     expect(message.preferredContact.value).toBe('+1555');
   });
@@ -273,7 +273,7 @@ describe('useProtoForm — createMessage', () => {
     const message = result.current.createMessage();
     const json = toJson(AutoFormExampleSchema, message);
 
-    expect(json).toEqual(
+    expect(json).toStrictEqual(
       expect.objectContaining({
         accessTier: 'ACCESS_TIER_EDITOR',
         age: 30,

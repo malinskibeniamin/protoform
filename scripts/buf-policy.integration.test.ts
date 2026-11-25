@@ -33,7 +33,7 @@ describe('buf policy', () => {
 
     expect(result.status).not.toBe(0);
     expect(violations.length).toBeGreaterThan(0);
-    expect(new Set(violations.map((violation) => violation.type))).toEqual(new Set(['PROTOVALIDATE']));
+    expect(new Set(violations.map((violation) => violation.type))).toStrictEqual(new Set(['PROTOVALIDATE']));
   });
 
   test('enforces target-branch compatibility and rejects an isolated fixture', () => {

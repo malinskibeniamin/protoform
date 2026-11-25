@@ -49,5 +49,5 @@ test('installed TanStack charts select, update, clear, and recover without Recha
       async () => compareScreenshotBuffers(original, await chart.screenshot({ animations: 'disabled' })).differentPixels
     )
     .toBe(0);
-  expect(errors).toEqual([]);
+  expect(errors).toStrictEqual([]);
 });

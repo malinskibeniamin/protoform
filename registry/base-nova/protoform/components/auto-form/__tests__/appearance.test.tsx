@@ -120,7 +120,7 @@ describe('single-variant oneofs', () => {
     render(<AutoForm onDirtyChange={onDirtyChange} schema={singleVariant(true)} />);
 
     expect(await screen.findByRole('textbox', { name: /Endpoint/u })).toBeVisible();
-    expect(onDirtyChange.mock.calls.map(([dirty]) => dirty)).toEqual([false]);
+    expect(onDirtyChange.mock.calls.map(([dirty]) => dirty)).toStrictEqual([false]);
   });
 
   test('a disabled required oneof with one variant is not selected for the user', async () => {

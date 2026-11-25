@@ -32,9 +32,11 @@ test('binds schema fields independently of values and exposes only selected inpu
     valueFields: ['kind', 'company'],
     values: { kind: 'business', company: undefined, secret: 'host-only' },
   });
-  expect(request.fields).toEqual(['kind', 'company', 'secret']);
-  expect(request.values).toEqual({ kind: 'business' });
-  expect(await evaluateQuickJs({ ...request, source: request.rule.source })).toEqual({ company: { visible: true } });
+  expect(request.fields).toStrictEqual(['kind', 'company', 'secret']);
+  expect(request.values).toStrictEqual({ kind: 'business' });
+  expect(await evaluateQuickJs({ ...request, source: request.rule.source })).toStrictEqual({
+    company: { visible: true },
+  });
 });
 
 test('passes normalized protobuf collections, enum numbers, bytes, and lossless integers to a rule', async () => {
@@ -59,7 +61,7 @@ test('passes normalized protobuf collections, enum numbers, bytes, and lossless 
     valueFields: ['blobs', 'children', 'flags', 'identifiers', 'int64Keys', 'statuses'],
     values: protoToFormValues(CollectionMatrixSchema, message),
   });
-  expect(request.values).toEqual({
+  expect(request.values).toStrictEqual({
     blobs: ['AQID'],
     children: [{ name: 'Ada' }],
     flags: [false, true],
@@ -67,7 +69,9 @@ test('passes normalized protobuf collections, enum numbers, bytes, and lossless 
     int64Keys: [{ key: '9007199254740993', value: 'primary' }],
     statuses: [1, 2],
   });
-  expect(await evaluateQuickJs({ ...request, source: request.rule.source })).toEqual({ children: { visible: true } });
+  expect(await evaluateQuickJs({ ...request, source: request.rule.source })).toStrictEqual({
+    children: { visible: true },
+  });
 });
 
 test('preserves explicit false, omits unset object members, and carries oneof selection in form shape', async () => {
@@ -89,15 +93,17 @@ test('preserves explicit false, omits unset object members, and carries oneof se
       })
     ),
   });
-  expect(request.values).toEqual({ optionalEnabled: false, selection: { case: 'approved', value: false } });
-  expect(await evaluateQuickJs({ ...request, source: request.rule.source })).toEqual({ child: { visible: true } });
+  expect(request.values).toStrictEqual({ optionalEnabled: false, selection: { case: 'approved', value: false } });
+  expect(await evaluateQuickJs({ ...request, source: request.rule.source })).toStrictEqual({
+    child: { visible: true },
+  });
   const unset = createQuickJsFormRequest({
     rule,
     schema: parseProtoSchema(PresenceMatrixSchema),
     valueFields: ['optionalEnabled', 'selection'],
     values: protoToFormValues(PresenceMatrixSchema, create(PresenceMatrixSchema)),
   });
-  expect(unset.values).toEqual({ selection: {} });
+  expect(unset.values).toStrictEqual({ selection: {} });
 });
 
 test("binds only safe field metadata as the rule's second argument", async () => {
@@ -118,7 +124,9 @@ test("binds only safe field metadata as the rule's second argument", async () =>
     valueFields: [],
     values: {},
   });
-  expect(await evaluateQuickJs({ ...request, source: request.rule.source })).toEqual({ company: { visible: true } });
+  expect(await evaluateQuickJs({ ...request, source: request.rule.source })).toStrictEqual({
+    company: { visible: true },
+  });
 });
 
 test.each([['kind', 'kind'], ['invented']].map((valueFields) => ({ valueFields })))(

@@ -76,7 +76,7 @@ test('lets the owner cancel an agent-originated change', () => {
   );
   try {
     withSource('agent', () => view.api.setValue(4));
-    expect(sources).toEqual(['agent']);
+    expect(sources).toStrictEqual(['agent']);
     expect(view.state.value).toBe(2);
     expect(view.changes).toHaveLength(0);
   } finally {

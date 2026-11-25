@@ -30,7 +30,7 @@ test('composes shadcn APIs and cancels selection without losing the current valu
   await page.getByRole('checkbox', { name: 'Cancel selection and disclosure changes' }).uncheck();
   await page.getByRole('button', { name: 'Show details', exact: true }).click();
   await expect(page.getByText('Cancelable Base UI events are preserved.')).toBeVisible();
-  expect(errors).toEqual([]);
+  expect(errors).toStrictEqual([]);
 });
 
 test('supports chips, both toggle contracts, numeric sliders and named popovers', async ({ page }) => {

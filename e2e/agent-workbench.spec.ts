@@ -13,7 +13,7 @@ for (const width of [1280, 390, 320]) {
       await page.addInitScript((value) => localStorage.setItem('blume-theme', value), theme);
       await page.goto('/docs/blume-examples/registry/base-nova/protoform/demo/ui/agent-workbench');
       await verifyAgentWorkbench(page);
-      expect(errors).toEqual([]);
+      expect(errors).toStrictEqual([]);
     });
   }
 }

@@ -24,7 +24,7 @@ describe('experimental TanStack Form v2 AutoForm conformance', () => {
     await user.click(screen.getByRole('button', { name: 'Submit' }));
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
-    expect(onSubmit.mock.calls[0]?.[0]).toEqual({ name: 'ADA' });
+    expect(onSubmit.mock.calls[0]?.[0]).toStrictEqual({ name: 'ADA' });
     expect(onFormInit.mock.calls[0]?.[0].Field).toBeTypeOf('function');
     expect(onFormInit.mock.calls[0]?.[0].Subscribe).toBeTypeOf('function');
     expect(onFormInit.mock.calls[0]?.[0].atom).toBeDefined();
@@ -59,7 +59,7 @@ describe('experimental TanStack Form v2 AutoForm conformance', () => {
     await user.click(screen.getByRole('button', { name: 'Submit' }));
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
-    expect(onSubmit.mock.calls[0]?.[0]).toEqual({ tags: ['first', 'second'] });
+    expect(onSubmit.mock.calls[0]?.[0]).toStrictEqual({ tags: ['first', 'second'] });
 
     cleanup();
     const onSubmitOneof = rs.fn();
@@ -96,7 +96,7 @@ describe('experimental TanStack Form v2 AutoForm conformance', () => {
     await user.click(screen.getByRole('button', { name: 'Submit' }));
 
     await waitFor(() => expect(onSubmitOneof).toHaveBeenCalledTimes(1));
-    expect(onSubmitOneof.mock.calls[0]?.[0]).toEqual({
+    expect(onSubmitOneof.mock.calls[0]?.[0]).toStrictEqual({
       contact: { case: 'phone', value: '+48123456789' },
     });
   });
@@ -173,7 +173,7 @@ describe('experimental TanStack Form v2 AutoForm conformance', () => {
     await user.click(screen.getByRole('button', { name: 'Submit' }));
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
-    expect(onSubmit.mock.calls[0]?.[2].updateMask?.paths).toEqual(['city']);
+    expect(onSubmit.mock.calls[0]?.[2].updateMask?.paths).toStrictEqual(['city']);
   });
 
   test('runs provider validation on change or blur when requested', async () => {

@@ -49,7 +49,7 @@ describe('aip workflow form conformance', () => {
       patterns: ['publishers/{publisher}/writeBookJobs/{write_book_job}'],
       type: 'library.protoform.dev/WriteBookJob',
     });
-    expect(parseProtoSchema(CreateWriteBookJobRequestSchema).fields.map((candidate) => candidate.key)).toEqual([
+    expect(parseProtoSchema(CreateWriteBookJobRequestSchema).fields.map((candidate) => candidate.key)).toStrictEqual([
       'parent',
       'writeBookJob',
       'writeBookJobId',
@@ -65,8 +65,11 @@ describe('aip workflow form conformance', () => {
       required: true,
       type: 'oneof',
     });
-    expect(field(importSchema, 'source').schema?.map(({ key }) => key)).toEqual(['cloudStorageSource', 'inlineSource']);
-    expect(field(exportSchema, 'destination').schema?.map(({ key }) => key)).toEqual([
+    expect(field(importSchema, 'source').schema?.map(({ key }) => key)).toStrictEqual([
+      'cloudStorageSource',
+      'inlineSource',
+    ]);
+    expect(field(exportSchema, 'destination').schema?.map(({ key }) => key)).toStrictEqual([
       'cloudStorageDestination',
       'archiveDestination',
     ]);
@@ -90,7 +93,7 @@ describe('aip workflow form conformance', () => {
   });
 
   test('enforces AIP-159 cross-collection and AIP-217 partial-result controls', async () => {
-    expect(parseProtoSchema(ListBooksRequestSchema).fields.map(({ key }) => key)).toEqual([
+    expect(parseProtoSchema(ListBooksRequestSchema).fields.map(({ key }) => key)).toStrictEqual([
       'parent',
       'pageSize',
       'pageToken',
@@ -111,7 +114,7 @@ describe('aip workflow form conformance', () => {
         orderBy: 'display_name',
         parent: 'publishers/-',
       })
-    ).toEqual(
+    ).toStrictEqual(
       expect.arrayContaining([
         expect.objectContaining({
           message: 'order by is unavailable when reading across collections',
@@ -123,7 +126,7 @@ describe('aip workflow form conformance', () => {
         parent: 'publishers/acme',
         returnPartialSuccess: true,
       })
-    ).toEqual(
+    ).toStrictEqual(
       expect.arrayContaining([
         expect.objectContaining({
           message: 'partial success is available only when reading across collections',

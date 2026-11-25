@@ -64,7 +64,7 @@ describe('descriptor-aware CEL entrypoints', () => {
       result = await form.result.current.trigger();
     });
     expect(result).toBe(true);
-    expect(form.result.current.formState.errors).toEqual({});
+    expect(form.result.current.formState.errors).toStrictEqual({});
   });
 
   test('submits descriptor-aware valid values through AutoForm', async () => {

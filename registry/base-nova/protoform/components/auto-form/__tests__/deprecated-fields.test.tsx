@@ -99,8 +99,8 @@ describe.each([
 
     await user.keyboard('{Escape}');
     await user.click(screen.getByRole('button', { name: 'Submit' }));
-    await waitFor(() => expect(onSubmit).toHaveBeenCalledOnce());
-    expect(onSubmit.mock.calls[0]?.[0]).toEqual({
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
+    expect(onSubmit.mock.calls[0]?.[0]).toStrictEqual({
       contact: { case: 'legacyContact', value: 'saved@example.com' },
       legacyName: 'saved name',
       profile: { legacyDetail: 'saved detail' },

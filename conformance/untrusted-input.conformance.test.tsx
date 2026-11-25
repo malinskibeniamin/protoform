@@ -37,7 +37,7 @@ describe('untrusted input hardening', () => {
         output = { value: 'safe' };
         await user.click(screen.getByRole('button', { name: 'Submit' }));
         await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
-        expect(onSubmit.mock.calls[0]?.[0]).toEqual({ value: 'safe' });
+        expect(onSubmit.mock.calls[0]?.[0]).toStrictEqual({ value: 'safe' });
       });
     }
   }

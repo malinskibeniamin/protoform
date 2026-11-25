@@ -28,7 +28,7 @@ describe('cel protobuf conformance', () => {
     if (result.kind !== 'invalid') {
       throw new Error('Expected protobuf CEL fixture to fail.');
     }
-    expect(result.violations.map((violation) => violation.ruleId)).toEqual(
+    expect(result.violations.map((violation) => violation.ruleId)).toStrictEqual(
       expect.arrayContaining([
         'cel.proto.messages_enums_presence',
         'cel.proto.collections',

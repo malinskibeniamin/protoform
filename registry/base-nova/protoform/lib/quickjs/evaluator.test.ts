@@ -21,7 +21,7 @@ test('context startup does not consume the guest execution budget', async () => 
   });
   try {
     await Promise.resolve(
-      expect(evaluateQuickJs({ fields: [], source: '() => ({fields:{}})', values: {} })).resolves.toEqual({})
+      expect(evaluateQuickJs({ fields: [], source: '() => ({fields:{}})', values: {} })).resolves.toStrictEqual({})
     );
   } finally {
     contextStartup.mockRestore();
@@ -43,7 +43,7 @@ test('each evaluation has independent WASM memory that cannot grow past 32 MiB',
     const results = await Promise.all(
       Array.from({ length: 2 }, () => evaluateQuickJs({ fields: [], source: '() => ({fields:{}})', values: {} }))
     );
-    expect(results).toEqual([{}, {}]);
+    expect(results).toStrictEqual([{}, {}]);
     expect(new Set(memories).size).toBe(2);
     for (const memory of memories) {
       const pagesPastCap = 513 - memory.buffer.byteLength / 65_536;
@@ -86,7 +86,7 @@ test('evaluates explicit schema fields, including fields without current values'
       source: 'form => ({fields:{company:{visible: form.kind === "business"}}})',
       values: { kind: 'business' },
     })
-  ).toEqual({ company: { visible: true } });
+  ).toStrictEqual({ company: { visible: true } });
 });
 
 test.each([
@@ -167,7 +167,7 @@ test('nested snapshot limits reject live objects, unsafe properties, cycles, and
       source: 'form => ({fields:{kind:{visible: form.kind.nil === null && !("unset" in form.kind)}}})',
       values: { kind: { nil: null, unset: undefined, empty: [], nested: {} } },
     })
-  ).toEqual({ kind: { visible: true } });
+  ).toStrictEqual({ kind: { visible: true } });
 });
 
 test.each([
@@ -188,7 +188,7 @@ test('a guest runtime cannot leave globals for the next evaluation', async () =>
         source: '() => {if(typeof leaked !== "undefined") throw Error("leak"); return {fields:{}}}',
         values: {},
       })
-    ).resolves.toEqual({})
+    ).resolves.toStrictEqual({})
   );
 });
 

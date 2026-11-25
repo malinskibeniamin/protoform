@@ -117,11 +117,11 @@ describe('empty repeated string conversion', () => {
       states: [0, 1],
     });
 
-    expect(converted['labels']).toEqual(['foo', 'bar']);
-    expect(converted['numbers']).toEqual([0, 2]);
-    expect(converted['payloads']).toEqual([new Uint8Array(), new Uint8Array([1])]);
-    expect(converted['states']).toEqual([0, 1]);
-    expect(converted['children']).toEqual([{ labels: [] }, { labels: ['child'] }]);
+    expect(converted['labels']).toStrictEqual(['foo', 'bar']);
+    expect(converted['numbers']).toStrictEqual([0, 2]);
+    expect(converted['payloads']).toStrictEqual([new Uint8Array(), new Uint8Array([1])]);
+    expect(converted['states']).toStrictEqual([0, 1]);
+    expect(converted['children']).toStrictEqual([{ labels: [] }, { labels: ['child'] }]);
   });
 
   test('preserves empty strings for configured root, nested, and oneof-message fields', () => {
@@ -144,9 +144,9 @@ describe('empty repeated string conversion', () => {
       }
     );
 
-    expect(converted['labels']).toEqual(['root', '', '   ']);
-    expect(converted['nested']).toEqual({ labels: ['nested', '', '   '] });
-    expect(converted['choice']).toEqual({
+    expect(converted['labels']).toStrictEqual(['root', '', '   ']);
+    expect(converted['nested']).toStrictEqual({ labels: ['nested', '', '   '] });
+    expect(converted['choice']).toStrictEqual({
       case: 'nestedChoice',
       value: { labels: ['oneof', '', '   '] },
     });

@@ -12,9 +12,9 @@ test('keeps the bare-bones contract to one string field', () => {
       name: field.name,
       scalar: field.scalar,
     }))
-  ).toEqual([{ kind: 'scalar', name: 'name', scalar: ScalarType.STRING }]);
+  ).toStrictEqual([{ kind: 'scalar', name: 'name', scalar: ScalarType.STRING }]);
 });
 
 test('assigns one simple field to each step', () => {
-  expect(TwoStepFormSchema.fields.map((field) => field.name)).toEqual(['name', 'email']);
+  expect(TwoStepFormSchema.fields.map((field) => field.name)).toStrictEqual(['name', 'email']);
 });

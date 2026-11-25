@@ -1,4 +1,7 @@
+import { expectTypeOf } from 'expect-type';
+import type { FormValues, InputProps } from '../../../lib/core/field-model';
 import type { ParsedField } from '../core-types';
+import type { DataProviderDependencyValues } from '../data-providers';
 import { getLabel, getPathInObject, sortFieldsByOrder } from '../field-utils';
 
 declare const { describe, expect, test }: typeof import('bun:test');
@@ -21,10 +24,10 @@ describe('sortFieldsByOrder', () => {
       },
     ];
     const result = sortFieldsByOrder(fields);
-    expect(result.map((f) => f.key)).toEqual(['a', 'b', 'c', 'parent']);
-    expect(result[3]?.schema?.map((f) => f.key)).toEqual(['y', 'z']);
+    expect(result.map((f) => f.key)).toStrictEqual(['a', 'b', 'c', 'parent']);
+    expect(result[3]?.schema?.map((f) => f.key)).toStrictEqual(['y', 'z']);
 
-    expect(sortFieldsByOrder(undefined)).toEqual([]);
+    expect(sortFieldsByOrder(undefined)).toStrictEqual([]);
   });
 });
 
@@ -67,4 +70,11 @@ describe('getPathInObject', () => {
     expect(getPathInObject(values, ['record', '__proto__'])).toBeUndefined();
     expect(getPathInObject(values, ['text', '0'])).toBeUndefined();
   });
+});
+
+test('preserves numeric and string keys in public indexed interfaces', () => {
+  expectTypeOf<keyof FormValues>().toEqualTypeOf<string | number>();
+  expectTypeOf<keyof InputProps>().toEqualTypeOf<string | number>();
+  expectTypeOf<keyof DataProviderDependencyValues>().toEqualTypeOf<string | number>();
+  expectTypeOf<DataProviderDependencyValues>().toExtend<Readonly<Record<string, unknown>>>();
 });

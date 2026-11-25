@@ -24,7 +24,7 @@ describe('useProtoForm map fields', () => {
     const instance = result.current.createMessage();
     const updateMask = result.current.createUpdateMask();
 
-    expect(instance.labels).toEqual({ region: 'eu' });
-    expect(updateMask.paths).toEqual(['labels']);
+    expect(instance.labels).toStrictEqual({ region: 'eu' });
+    expect(updateMask.paths).toStrictEqual(['labels']);
   });
 });

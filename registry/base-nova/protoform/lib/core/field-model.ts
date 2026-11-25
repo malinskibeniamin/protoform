@@ -11,18 +11,14 @@ export interface OptionGroup {
 
 export type Renderable = string | number | boolean | null | undefined;
 
-export interface InputProps {
-  [attribute: string]: string | number | boolean | undefined;
-}
+export interface InputProps extends Record<string, string | number | boolean | undefined> {}
 
 export interface ProviderCustomData {
   source?: string | undefined;
   [key: string]: unknown;
 }
 
-export interface FormValues {
-  [field: string]: unknown;
-}
+export interface FormValues extends Record<string, unknown> {}
 
 export type EmptyRepeatedStringPolicy = 'discard' | 'preserve';
 
