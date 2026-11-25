@@ -54,12 +54,12 @@ test('preserves recursive configuration merging, array concatenation and indepen
   const source = { files: ['tests'], rules: { style: { enabled: true } } };
   const result = merge(target, source);
 
-  expect(result).toEqual({
+  expect(result).toStrictEqual({
     files: ['source', 'tests'],
     rules: { correctness: { enabled: true }, style: { enabled: true } },
   });
-  expect(target).toEqual({ files: ['source'], rules: { correctness: { enabled: true } } });
-  expect(source).toEqual({ files: ['tests'], rules: { style: { enabled: true } } });
+  expect(target).toStrictEqual({ files: ['source'], rules: { correctness: { enabled: true } } });
+  expect(source).toStrictEqual({ files: ['tests'], rules: { style: { enabled: true } } });
   if (!(isRecord(result) && isRecord(result['rules']))) {
     throw new TypeError('Expected merged configuration rules.');
   }
@@ -71,8 +71,8 @@ test('preserves the custom array merger used by shadcn config updaters and merge
   const merge = loadMerge('shadcn');
   const options: MergeOptions = { arrayMerge: (_target, source) => source };
 
-  expect(merge({ files: ['old'] }, { files: ['replacement'] }, options)).toEqual({ files: ['replacement'] });
-  expect(merge.all([{ left: true }, { files: ['first'] }, { files: ['last'] }], options)).toEqual({
+  expect(merge({ files: ['old'] }, { files: ['replacement'] }, options)).toStrictEqual({ files: ['replacement'] });
+  expect(merge.all([{ left: true }, { files: ['first'] }, { files: ['last'] }], options)).toStrictEqual({
     files: ['last'],
     left: true,
   });

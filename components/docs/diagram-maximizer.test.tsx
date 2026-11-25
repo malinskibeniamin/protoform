@@ -133,14 +133,14 @@ describe('diagramMaximizer', () => {
         name: 'View System flow full screen',
       })
     );
-    expect(requestFullscreen).toHaveBeenCalledOnce();
+    expect(requestFullscreen).toHaveBeenCalledTimes(1);
 
     await user.click(
       await screen.findByRole('button', {
         name: 'Exit System flow full screen',
       })
     );
-    expect(exitFullscreen).toHaveBeenCalledOnce();
+    expect(exitFullscreen).toHaveBeenCalledTimes(1);
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 });

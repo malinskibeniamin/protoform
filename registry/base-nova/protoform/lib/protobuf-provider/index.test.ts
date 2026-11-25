@@ -89,14 +89,14 @@ describe('protobuf-provider', () => {
     expect(accessTierField?.options?.some(([value]) => value === '1')).toBe(true);
 
     expect(preferredContactField?.type).toBe('oneof');
-    expect(preferredContactField?.schema?.map((field) => field.key)).toEqual([
+    expect(preferredContactField?.schema?.map((field) => field.key)).toStrictEqual([
       'preferredEmail',
       'preferredPhone',
       'doNotContact',
     ]);
 
     const labels = accessTierField?.options?.map(([, label]) => label) ?? [];
-    expect(labels).toEqual<unknown>(expect.arrayContaining(['Viewer', 'Editor', 'Admin']));
+    expect(labels).toStrictEqual<unknown>(expect.arrayContaining(['Viewer', 'Editor', 'Admin']));
     for (const label of labels) {
       expect(label.startsWith('Access Tier')).toBe(false);
     }
@@ -182,8 +182,8 @@ describe('protobuf-provider', () => {
     expect(formValues['employeeNumber']).toBe('4001');
     expect(formValues['storageQuotaBytes']).toBe('4096');
     expect(formValues['avatarBytes']).toBe('AQIDBA==');
-    expect(formValues['labels']).toEqual([{ key: 'team', value: 'frontend' }]);
-    expect(formValues['officeLocations']).toEqual<unknown>([
+    expect(formValues['labels']).toStrictEqual([{ key: 'team', value: 'frontend' }]);
+    expect(formValues['officeLocations']).toStrictEqual<unknown>([
       {
         key: 'hq',
         value: expect.objectContaining({
@@ -192,19 +192,19 @@ describe('protobuf-provider', () => {
         }) as unknown,
       },
     ]);
-    expect(formValues['preferredContact']).toEqual({
+    expect(formValues['preferredContact']).toStrictEqual({
       case: 'preferredEmail',
       value: 'forms@protoform.com',
     });
     expect(formValues['createdAt']).toMatch(DATETIME_LOCAL_VALUE);
     expect(formValues['reminderInterval']).toBe('300s');
-    expect(formValues['writablePaths']).toEqual(['profile']);
+    expect(formValues['writablePaths']).toStrictEqual(['profile']);
 
     const provider = new ProtoProvider(AutoFormExampleSchema);
     const defaultValues = provider.getDefaultValues();
-    expect(defaultValues['tags']).toEqual([]);
-    expect(defaultValues['labels']).toEqual([]);
-    expect(defaultValues['preferredContact']).toEqual({
+    expect(defaultValues['tags']).toStrictEqual([]);
+    expect(defaultValues['labels']).toStrictEqual([]);
+    expect(defaultValues['preferredContact']).toStrictEqual({
       case: undefined,
       value: undefined,
     });
@@ -235,15 +235,15 @@ describe('protobuf-provider', () => {
     }
     expect(data['$typeName']).toBe('protoform.v1.AutoFormExample');
     expect(data['employeeNumber']).toBe(4001n);
-    expect(data['labels']).toEqual({ team: 'frontend' });
-    expect(data['preferredContact']).toEqual({
+    expect(data['labels']).toStrictEqual({ team: 'frontend' });
+    expect(data['preferredContact']).toStrictEqual({
       case: 'preferredEmail',
       value: 'forms@protoform.com',
     });
 
     const roundTrippedValues = protoToFormValues(AutoFormExampleSchema, data);
 
-    expect(roundTrippedValues).toEqual<unknown>(
+    expect(roundTrippedValues).toStrictEqual<unknown>(
       expect.objectContaining({
         betaTester: true,
         bonusPoints: 42,
@@ -297,7 +297,7 @@ describe('protobuf-provider', () => {
     const rootError = result.errors.root;
     const formRootError = result.errors[PROTO_FORM_ROOT_ERROR_KEY];
 
-    expect(result.values).toEqual({});
+    expect(result.values).toStrictEqual({});
     expect(rootError?.message).toMatch(MESSAGE_LEVEL_ERROR);
     expect(formRootError?.message).toMatch(MESSAGE_LEVEL_ERROR);
     expect(officeLocationsErrors?.[0]?.value?.city?.message).toMatch(REQUIRED_FIELD_ERROR);
@@ -330,20 +330,20 @@ describe('protobuf-provider', () => {
     const escalationReasonField = parsedSchema.fields.find((field) => field.key === 'escalationReason');
     const supportContactField = parsedSchema.fields.find((field) => field.key === 'supportContact');
 
-    expect(getProtoFieldCustomData(requireDefined(providerField, 'provider field'))?.ui).toEqual<unknown>(
+    expect(getProtoFieldCustomData(requireDefined(providerField, 'provider field'))?.ui).toStrictEqual<unknown>(
       expect.objectContaining({
         control: 'radio',
         help: 'Radio buttons make small enums easier to scan in generated forms.',
       })
     );
 
-    expect(getProtoFieldCustomData(requireDefined(regionField, 'region field'))?.ui?.disabledWhen).toEqual<unknown>([
-      expect.objectContaining({ expression: 'form.provider == 0' }),
-    ]);
+    expect(
+      getProtoFieldCustomData(requireDefined(regionField, 'region field'))?.ui?.disabledWhen
+    ).toStrictEqual<unknown>([expect.objectContaining({ expression: 'form.provider == 0' })]);
 
     expect(
       getProtoFieldCustomData(requireDefined(escalationReasonField, 'escalation reason field'))?.ui
-    ).toEqual<unknown>(
+    ).toStrictEqual<unknown>(
       expect.objectContaining({
         control: 'textarea',
         sensitive: true,
@@ -351,7 +351,9 @@ describe('protobuf-provider', () => {
       })
     );
 
-    expect(getProtoFieldCustomData(requireDefined(supportContactField, 'support contact field'))?.ui).toEqual<unknown>(
+    expect(
+      getProtoFieldCustomData(requireDefined(supportContactField, 'support contact field'))?.ui
+    ).toStrictEqual<unknown>(
       expect.objectContaining({
         help: 'This oneof is also driven by UI metadata, so it only appears after a support tier is chosen.',
         visibleWhen: [expect.objectContaining({ expression: 'form.enableSupportMode && form.supportTier != 0' })],
@@ -360,7 +362,7 @@ describe('protobuf-provider', () => {
 
     const apiTokenField = parsedSchema.fields.find((field) => field.key === 'apiToken');
 
-    expect(getProtoFieldCustomData(requireDefined(apiTokenField, 'API token field'))?.ui).toEqual<unknown>(
+    expect(getProtoFieldCustomData(requireDefined(apiTokenField, 'API token field'))?.ui).toStrictEqual<unknown>(
       expect.objectContaining({
         control: 'password',
         sensitive: true,

@@ -221,21 +221,21 @@ describe('required Protoform conformance', () => {
       },
       username: 'protoform_admin',
     });
-    expect([...result.value.avatarBytes]).toEqual([1, 2, 3, 4]);
+    expect([...result.value.avatarBytes]).toStrictEqual([1, 2, 3, 4]);
   });
 
   test.each(requiredValidationCases)('returns form-shaped paths for $name failures', async ({ input, paths }) => {
     const schema = createProtoFormSchema(AutoFormExampleSchema);
     const result = await schema['~standard'].validate(input);
 
-    expect(getIssuePaths(result.issues)).toEqual(paths);
+    expect(getIssuePaths(result.issues)).toStrictEqual(paths);
   });
 
   test('returns a root issue for a non-object input instead of throwing', async () => {
     const schema = createProtoFormSchema(AutoFormExampleSchema);
     const result = await schema['~standard'].validate('not an object');
 
-    expect(getIssuePaths(result.issues)).toEqual([[]]);
+    expect(getIssuePaths(result.issues)).toStrictEqual([[]]);
   });
 });
 
@@ -244,7 +244,7 @@ describe('recommended Protoform conformance', () => {
     const schema = createProtoFormSchema(AutoFormExampleSchema);
     const result = await schema['~standard'].validate(input);
 
-    expect(getIssuePaths(result.issues)).toEqual(paths);
+    expect(getIssuePaths(result.issues)).toStrictEqual(paths);
   });
 
   test('round-trips optional, wrapper, JSON, map, bytes, and oneof values', async () => {
@@ -289,6 +289,10 @@ describe('recommended Protoform conformance', () => {
     const parsedSchema = parseProtoSchema(AutoFormExampleSchema);
     const oneof = parsedSchema.fields.find((field) => field.key === 'preferredContact');
 
-    expect(oneof?.schema?.map((field) => field.key)).toEqual(['preferredEmail', 'preferredPhone', 'doNotContact']);
+    expect(oneof?.schema?.map((field) => field.key)).toStrictEqual([
+      'preferredEmail',
+      'preferredPhone',
+      'doNotContact',
+    ]);
   });
 });

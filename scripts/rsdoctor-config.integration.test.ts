@@ -9,7 +9,7 @@ afterEach(() => {
 
 test('leaves normal test builds unchanged', async () => {
   rs.stubEnv('PROTOFORM_RSDOCTOR', undefined);
-  expect(await rsdoctorConfig('unit')({})).toEqual({});
+  expect(await rsdoctorConfig('unit')({})).toStrictEqual({});
 });
 
 test('preserves server-disabled report settings inside Rstest', async () => {

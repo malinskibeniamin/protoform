@@ -43,5 +43,5 @@ test('host primitives submit, report errors, and recover without a theme depende
   await selection.click();
   await page.getByRole('option', { exact: true, name: 'Not set' }).click();
   await expect(page.getByLabel('Selected value')).toHaveText('null');
-  expect(uncaughtErrors).toEqual([]);
+  expect(uncaughtErrors).toStrictEqual([]);
 });

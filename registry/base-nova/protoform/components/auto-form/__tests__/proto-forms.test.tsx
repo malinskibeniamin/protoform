@@ -131,16 +131,16 @@ describe('autoForm – protobuf forms', () => {
     expect(submittedValue.$typeName).toBe('protoform.v1.AutoFormExample');
     expect(submittedValue.employeeNumber).toBe(4001n);
     expect(submittedValue.storageQuotaBytes).toBe(4096n);
-    expect([...submittedValue.avatarBytes]).toEqual([1, 2, 3, 4]);
-    expect(submittedValue.labels).toEqual({ team: 'frontend' });
+    expect([...submittedValue.avatarBytes]).toStrictEqual([1, 2, 3, 4]);
+    expect(submittedValue.labels).toStrictEqual({ team: 'frontend' });
     expect(submittedValue.officeLocations['hq']?.city).toBe('San Francisco');
-    expect(submittedValue.preferredContact).toEqual({
+    expect(submittedValue.preferredContact).toStrictEqual({
       case: 'preferredEmail',
       value: 'forms@protoform.com',
     });
     expect(submittedValue.createdAt?.$typeName).toBe('google.protobuf.Timestamp');
     expect(submittedValue.reminderInterval?.$typeName).toBe('google.protobuf.Duration');
-    expect(submittedValue.writablePaths?.paths).toEqual(['profile']);
+    expect(submittedValue.writablePaths?.paths).toStrictEqual(['profile']);
   }, 10_000);
 
   test('shows the root compatibility error instead of submitting over an unrecognized stored branch', async () => {
@@ -215,8 +215,8 @@ describe('autoForm – protobuf forms', () => {
     if (!(submitted.shippingAddress && source.shippingAddress)) {
       throw new Error('Expected submitted and source shipping addresses.');
     }
-    expect(submitted.$unknown).toEqual(source.$unknown);
-    expect(submitted.shippingAddress.$unknown).toEqual(source.shippingAddress.$unknown);
+    expect(submitted.$unknown).toStrictEqual(source.$unknown);
+    expect(submitted.shippingAddress.$unknown).toStrictEqual(source.shippingAddress.$unknown);
 
     unmount();
     onSubmit.mockClear();
@@ -245,7 +245,7 @@ describe('autoForm – protobuf forms', () => {
     }
     const [normalized] = normalizedCall;
     expect(normalized.username).toBe('normalized_admin');
-    expect(normalized.$unknown).toEqual(source.$unknown);
+    expect(normalized.$unknown).toStrictEqual(source.$unknown);
   }, 10_000);
 
   test('shows protobuf field-level and message-level validation feedback', async () => {
@@ -308,7 +308,7 @@ describe('autoForm – protobuf forms', () => {
       expect(onSubmit).toHaveBeenCalledTimes(1);
     });
 
-    expect(onSubmit.mock.calls[0]?.[0].preferredContact).toEqual({
+    expect(onSubmit.mock.calls[0]?.[0].preferredContact).toStrictEqual({
       case: 'preferredPhone',
       value: '+14155550123',
     });

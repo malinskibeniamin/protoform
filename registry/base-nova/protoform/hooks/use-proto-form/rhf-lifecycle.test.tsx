@@ -20,7 +20,7 @@ describe('react Hook Form lifecycle through useProtoForm', () => {
     act(() => result.current.form.reset(undefined, { keepDefaultValues: true }));
     expect(result.current.form.getValues('username')).toBe('Ada');
     expect(result.current.isDirty).toBe(false);
-    expect(result.current.form.createUpdateMask().paths).toEqual([]);
+    expect(result.current.form.createUpdateMask().paths).toStrictEqual([]);
   });
 
   test('setting and clearing errors publishes new references for subscribers', () => {
@@ -66,7 +66,7 @@ describe('react Hook Form lifecycle through useProtoForm', () => {
       act(() => result.current.form.setValue(name, 'Ada', { shouldDirty: true, shouldTouch: true }));
       expect(result.current.touchedFields[name]).toBe(true);
       expect(result.current.dirtyFields[name]).toBe(true);
-      expect(result.current.form.getValues(undefined, { dirtyFields: true })).toEqual({ [name]: 'Ada' });
+      expect(result.current.form.getValues(undefined, { dirtyFields: true })).toStrictEqual({ [name]: 'Ada' });
       expect(result.current.form.createMessage()).toMatchObject({ [name]: 'Ada' });
     }
   );
@@ -82,9 +82,9 @@ describe('react Hook Form lifecycle through useProtoForm', () => {
 
     act(() => result.current.array.remove(indexes));
 
-    expect(indexes).toEqual([2, 0, 0]);
-    expect(result.current.form.getValues('previousAddresses')).toEqual([{ city: 'Grace' }, { city: 'Margaret' }]);
-    expect(result.current.form.createMessage().previousAddresses.map(({ city }) => city)).toEqual([
+    expect(indexes).toStrictEqual([2, 0, 0]);
+    expect(result.current.form.getValues('previousAddresses')).toStrictEqual([{ city: 'Grace' }, { city: 'Margaret' }]);
+    expect(result.current.form.createMessage().previousAddresses.map(({ city }) => city)).toStrictEqual([
       'Grace',
       'Margaret',
     ]);

@@ -362,7 +362,7 @@ function buildFieldConfig(
     description,
     fieldType,
     inputProps: {
-      ...(customData.ui?.placeholder !== undefined && customData.ui?.placeholder !== ''
+      ...(customData.ui?.placeholder !== undefined && customData.ui.placeholder !== ''
         ? { placeholder: customData.ui.placeholder }
         : {}),
       ...inputProps,

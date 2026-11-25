@@ -234,7 +234,7 @@ describe('library demo service', () => {
           name: book.name,
         })
       )
-    ).toEqual(deleted);
+    ).toStrictEqual(deleted);
 
     service.undeleteBook(create(UndeleteBookRequestSchema, { name: book.name }));
     await expectConnectCode(

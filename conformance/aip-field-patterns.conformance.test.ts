@@ -21,7 +21,7 @@ async function expectValid(values: Record<string, unknown>): Promise<void> {
 
 async function expectInvalid(values: Record<string, unknown>, path: string): Promise<void> {
   const result = await createProtoFormSchema(ProvisionCapacityRequestSchema)['~standard'].validate(values);
-  expect(result.issues).toEqual(
+  expect(result.issues).toStrictEqual(
     expect.arrayContaining([expect.objectContaining({ path: expect.arrayContaining([path]) as unknown })])
   );
 }
@@ -106,7 +106,7 @@ describe('aip field pattern conformance', () => {
       ].map(async (values) => schema['~standard'].validate(values))
     );
     for (const result of invalidResults) {
-      expect(result.issues).toEqual(
+      expect(result.issues).toStrictEqual(
         expect.arrayContaining([
           expect.objectContaining({
             message: 'end time must be later than start time',

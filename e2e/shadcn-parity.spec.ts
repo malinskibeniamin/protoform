@@ -16,7 +16,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.afterEach(() => {
-  expect(pageErrors).toEqual([]);
+  expect(pageErrors).toStrictEqual([]);
 });
 
 test('defaults to TanStack Charts and keeps Recharts as an explicit fallback', async ({ page }) => {
@@ -203,7 +203,7 @@ for (const name of ['Basics', 'Overlays', 'Layout', 'Messages', 'Recipes']) {
     await checkScenario(page);
 
     const result = await new AxeBuilder({ page }).include('[data-testid="shadcn-parity-example"]').analyze();
-    expect(result.violations).toEqual([]);
+    expect(result.violations).toStrictEqual([]);
   });
 }
 

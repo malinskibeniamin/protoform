@@ -235,7 +235,7 @@ describe('protovalidate collection and Any rule conformance', () => {
     });
 
     expect(valid.issues).toBeUndefined();
-    expect(issuePaths(wrongAllowList.issues)).toEqual([['allowedPayload']]);
-    expect(issuePaths(denied.issues)).toEqual([['deniedPayload']]);
+    expect(issuePaths(wrongAllowList.issues)).toStrictEqual([['allowedPayload']]);
+    expect(issuePaths(denied.issues)).toStrictEqual([['deniedPayload']]);
   });
 });

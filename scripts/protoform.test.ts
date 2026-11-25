@@ -4,7 +4,7 @@ declare const { describe, expect, test }: typeof import('bun:test');
 
 describe('protoform CLI', () => {
   test('parses audit targets and the requested output format', () => {
-    expect(parseProtoformCliArguments(['audit', 'forms/audit.ts', '--format', 'sarif'])).toEqual({
+    expect(parseProtoformCliArguments(['audit', 'forms/audit.ts', '--format', 'sarif'])).toStrictEqual({
       command: 'audit',
       configPaths: ['forms/audit.ts'],
       format: 'sarif',

@@ -502,8 +502,8 @@ function normalizeMessageFieldValue(
       const anyValue = isPlainObject(value) ? (value as ProtoAnyFormValue) : undefined;
       if (
         !(
-          (anyValue?.typeUrl !== undefined && anyValue?.typeUrl !== '') ||
-          (anyValue?.valueBase64 !== undefined && anyValue?.valueBase64 !== '')
+          (anyValue?.typeUrl !== undefined && anyValue.typeUrl !== '') ||
+          (anyValue?.valueBase64 !== undefined && anyValue.valueBase64 !== '')
         )
       ) {
         return;

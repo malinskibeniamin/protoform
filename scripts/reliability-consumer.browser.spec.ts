@@ -24,7 +24,7 @@ test('installed custom options show creation failures and recover after retry', 
   await page.getByRole('option', { name: /create.*next/iu }).click();
   await expect(page.getByLabel('Selected region')).toHaveText('{"region":"next"}');
   await expect(page.getByRole('alert')).toHaveCount(0);
-  expect(errors).toEqual([]);
+  expect(errors).toStrictEqual([]);
 });
 
 test('installed controls retain paginated selections and announce every error', async ({ page }) => {
@@ -77,7 +77,7 @@ test('installed controls retain paginated selections and announce every error', 
   await expect(page.getByText('Enter a title', { exact: true })).toHaveCount(0);
   await page.reload();
   await expect(methods).toContainText('post');
-  expect(errors).toEqual([]);
+  expect(errors).toStrictEqual([]);
 });
 
 for (const version of ['v7', 'v8']) {
@@ -105,7 +105,7 @@ for (const version of ['v7', 'v8']) {
     await expect(page.getByRole('region', { name: `${version} timestamp` }).getByLabel('Created at')).toHaveValue(
       /T\d{2}:00:37\.123$/u
     );
-    expect(errors).toEqual([]);
+    expect(errors).toStrictEqual([]);
   });
 }
 
@@ -140,7 +140,7 @@ for (const { formWidth, gap } of [
         })
       )
     );
-    expect(dividerGaps, 'Section and oneof fields keep the same gap from their divider').toEqual([gap, gap]);
-    expect(errors).toEqual([]);
+    expect(dividerGaps, 'Section and oneof fields keep the same gap from their divider').toStrictEqual([gap, gap]);
+    expect(errors).toStrictEqual([]);
   });
 }

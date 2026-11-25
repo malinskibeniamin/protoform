@@ -180,13 +180,13 @@ describe('presetLab', () => {
 
     await user.click(screen.getByRole('button', { name: 'Enter full screen' }));
 
-    expect(requestFullscreen).toHaveBeenCalledOnce();
+    expect(requestFullscreen).toHaveBeenCalledTimes(1);
     expect(workspace).toHaveAttribute('data-fullscreen', 'true');
     expect(screen.getByRole('button', { name: 'Exit full screen' })).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: 'Exit full screen' }));
 
-    expect(exitFullscreen).toHaveBeenCalledOnce();
+    expect(exitFullscreen).toHaveBeenCalledTimes(1);
     expect(workspace).toHaveAttribute('data-fullscreen', 'false');
   });
 

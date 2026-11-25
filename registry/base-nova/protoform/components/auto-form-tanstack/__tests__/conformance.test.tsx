@@ -34,7 +34,7 @@ describe('tanStack AutoForm conformance', () => {
     await user.click(screen.getByRole('button', { name: 'Submit' }));
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
-    expect(onSubmit.mock.calls[0]?.[0]).toEqual({ name: 'ADA' });
+    expect(onSubmit.mock.calls[0]?.[0]).toStrictEqual({ name: 'ADA' });
     expect(onFormInit.mock.calls[0]?.[0].Field).toBeTypeOf('function');
     expect(onFormInit.mock.calls[0]?.[0].Subscribe).toBeTypeOf('function');
   });
@@ -65,7 +65,7 @@ describe('tanStack AutoForm conformance', () => {
     await user.click(screen.getByRole('button', { name: 'Submit' }));
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
-    expect(onSubmit.mock.calls[0]?.[0]).toEqual({ tags: ['first', 'second'] });
+    expect(onSubmit.mock.calls[0]?.[0]).toStrictEqual({ tags: ['first', 'second'] });
 
     cleanup();
     const onSubmitOneof = rs.fn();
@@ -102,7 +102,7 @@ describe('tanStack AutoForm conformance', () => {
     await user.click(screen.getByRole('button', { name: 'Submit' }));
 
     await waitFor(() => expect(onSubmitOneof).toHaveBeenCalledTimes(1));
-    expect(onSubmitOneof.mock.calls[0]?.[0]).toEqual({
+    expect(onSubmitOneof.mock.calls[0]?.[0]).toStrictEqual({
       contact: { case: 'phone', value: '+48123456789' },
     });
   });
@@ -254,7 +254,7 @@ describe('tanStack AutoForm conformance', () => {
     await user.click(screen.getByRole('button', { name: 'Submit' }));
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
     expect(nativeOnSubmit).toHaveBeenCalledTimes(1);
-    expect(nativeOnSubmit.mock.calls[0]?.[0].value).toEqual({ name: 'Ada' });
+    expect(nativeOnSubmit.mock.calls[0]?.[0].value).toStrictEqual({ name: 'Ada' });
   });
 
   test('builds update masks from native TanStack dirty metadata and preserves the edit source message', async () => {
@@ -289,9 +289,9 @@ describe('tanStack AutoForm conformance', () => {
     await user.click(screen.getByRole('button', { name: 'Submit' }));
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
-    expect(onSubmit.mock.calls[0]?.[2].updateMask?.paths).toEqual(['city']);
+    expect(onSubmit.mock.calls[0]?.[2].updateMask?.paths).toStrictEqual(['city']);
     expect(onSubmit.mock.calls[0]?.[0].city).toBe('Krakow');
-    expect(onSubmit.mock.calls[0]?.[0].$unknown).toEqual(source.$unknown);
+    expect(onSubmit.mock.calls[0]?.[0].$unknown).toStrictEqual(source.$unknown);
 
     await user.clear(city);
     await user.type(city, 'Gdansk');
@@ -300,7 +300,7 @@ describe('tanStack AutoForm conformance', () => {
     await user.click(screen.getByRole('button', { name: 'Submit' }));
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(2));
-    expect(onSubmit.mock.calls[1]?.[2].updateMask?.paths).toEqual([]);
+    expect(onSubmit.mock.calls[1]?.[2].updateMask?.paths).toStrictEqual([]);
   });
 });
 

@@ -106,10 +106,11 @@ function updateChartColors(element: HTMLElement, config: ChartConfig, applied: M
       applied.delete(property);
     }
     const color = value.theme === undefined ? value.color : `light-dark(${value.theme.light}, ${value.theme.dark})`;
-    if (color !== undefined && current.length === 0) {
-      element.style.setProperty(property, color);
-      applied.set(property, element.style.getPropertyValue(property));
+    if (!(color !== undefined && current.length === 0)) {
+      continue;
     }
+    element.style.setProperty(property, color);
+    applied.set(property, element.style.getPropertyValue(property));
   }
 }
 
@@ -141,21 +142,23 @@ function ChartStyle({ id, config }: { id: string; config: ChartConfig }) {
       const restored = new Map<HTMLElement, ChartColorRestoration>();
       const styles = new MutationObserver((records) => {
         for (const { target } of records) {
-          if (target instanceof HTMLElement) {
-            const restoration = restored.get(target);
-            if (restoration !== undefined) {
-              updateChartColors(target, config, restoration.applied);
-            }
+          if (!(target instanceof HTMLElement)) {
+            continue;
+          }
+          const restoration = restored.get(target);
+          if (restoration !== undefined) {
+            updateChartColors(target, config, restoration.applied);
           }
         }
       });
       function synchronizeTargets() {
         const targets = new Set(document.querySelectorAll<HTMLElement>(selector));
         for (const [element, restoration] of restored) {
-          if (!targets.has(element)) {
-            restoreChartColors(element, restoration);
-            restored.delete(element);
+          if (targets.has(element)) {
+            continue;
           }
+          restoreChartColors(element, restoration);
+          restored.delete(element);
         }
         styles.disconnect();
         for (const element of targets) {
@@ -225,7 +228,7 @@ function ChartIndicator({
     />
   );
 }
-function ChartValue({ value }: { value: TooltipValueType | undefined }) {
+function ChartValue({ value }: { value: TooltipValueType | null | undefined }) {
   if (value === undefined || value === null) {
     return null;
   }

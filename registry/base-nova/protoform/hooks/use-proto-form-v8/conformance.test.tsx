@@ -37,7 +37,7 @@ describe('experimental React Hook Form v8 useProtoForm conformance', () => {
     });
 
     await waitFor(() => {
-      expect(result.current.createUpdateMask().paths).toEqual(['primary_email']);
+      expect(result.current.createUpdateMask().paths).toStrictEqual(['primary_email']);
     });
   });
 
@@ -100,6 +100,6 @@ describe('experimental React Hook Form v8 useProtoForm conformance', () => {
     expect(prefixed.current.getFieldState('primaryEmail').error?.message).toBe('Enter a value.');
     expect(prefixed.current.getFieldState('tags').error?.message).toBe('Add at least one item.');
     expect(mapped?.handled).toBe(true);
-    expect(mapped?.unmapped).toEqual([]);
+    expect(mapped?.unmapped).toStrictEqual([]);
   });
 });

@@ -23,12 +23,12 @@ for (const finding of [
   test(`temporarily permits the approved ${finding.package} advisory, but blocks it at and after expiry`, () => {
     const response = { [finding.package]: [finding.advisory] };
     const expectedFinding = { ...finding.advisory, package: finding.package };
-    expect(classifyAudit(response, fixtureExceptions, new Date('2026-11-03T23:59:59.999Z'))).toEqual({
+    expect(classifyAudit(response, fixtureExceptions, new Date('2026-11-03T23:59:59.999Z'))).toStrictEqual({
       blocking: [],
       excepted: [expectedFinding],
     });
     for (const deadline of ['2026-11-04T00:00:00.000Z', '2026-11-05T00:00:00.000Z']) {
-      expect(classifyAudit(response, fixtureExceptions, new Date(deadline))).toEqual({
+      expect(classifyAudit(response, fixtureExceptions, new Date(deadline))).toStrictEqual({
         blocking: [expectedFinding],
         excepted: [],
       });
@@ -42,7 +42,7 @@ test('does not extend approved exceptions to another package or advisory', () =>
       fixtureExceptions,
       new Date('2026-10-06')
     )
-  ).toEqual({
+  ).toStrictEqual({
     blocking: [
       { ...advisory, package: 'sprintf-js' },
       { ...sprintfAdvisory, package: 'braces' },

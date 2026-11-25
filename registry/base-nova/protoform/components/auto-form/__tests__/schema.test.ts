@@ -14,7 +14,7 @@ describe('resolveSchema', () => {
         name: {},
         'settings.labels': { emptyRepeatedStringPolicy: 'discard' },
       })
-    ).toEqual({
+    ).toStrictEqual({
       emptyRepeatedStringPolicies: {
         aliases: 'preserve',
         'settings.labels': 'discard',

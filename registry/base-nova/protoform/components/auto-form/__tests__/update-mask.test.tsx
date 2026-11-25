@@ -29,8 +29,8 @@ describe('autoForm update masks', () => {
     await user.click(screen.getByRole('button', { name: 'Submit' }));
 
     await waitFor(() => {
-      expect(onSubmit).toHaveBeenCalledOnce();
+      expect(onSubmit).toHaveBeenCalledTimes(1);
     });
-    expect(onSubmit.mock.calls[0]?.[2].updateMask?.paths).toEqual(['display_name']);
+    expect(onSubmit.mock.calls[0]?.[2].updateMask?.paths).toStrictEqual(['display_name']);
   });
 });

@@ -131,11 +131,12 @@ export function AutoFormFields({ fields, children }: { fields: ParsedField[]; ch
   const beforeSlots = React.useMemo(() => {
     const map = new Map<string, SlotEntry[]>();
     for (const slot of slots) {
-      if (slot.before !== undefined && slot.before !== '') {
-        const existing = map.get(slot.before) ?? [];
-        existing.push(slot);
-        map.set(slot.before, existing);
+      if (!(slot.before !== undefined && slot.before !== '')) {
+        continue;
       }
+      const existing = map.get(slot.before) ?? [];
+      existing.push(slot);
+      map.set(slot.before, existing);
     }
     return map;
   }, [slots]);
@@ -143,11 +144,12 @@ export function AutoFormFields({ fields, children }: { fields: ParsedField[]; ch
   const afterSlots = React.useMemo(() => {
     const map = new Map<string, SlotEntry[]>();
     for (const slot of slots) {
-      if (slot.after !== undefined && slot.after !== '') {
-        const existing = map.get(slot.after) ?? [];
-        existing.push(slot);
-        map.set(slot.after, existing);
+      if (!(slot.after !== undefined && slot.after !== '')) {
+        continue;
       }
+      const existing = map.get(slot.after) ?? [];
+      existing.push(slot);
+      map.set(slot.after, existing);
     }
     return map;
   }, [slots]);

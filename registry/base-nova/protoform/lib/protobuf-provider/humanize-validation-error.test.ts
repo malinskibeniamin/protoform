@@ -27,6 +27,6 @@ describe('localized validation messages', () => {
     });
 
     expect(message).toBe('translated:3');
-    expect(calls).toEqual([['validation.min_length', { limit: 3 }, 'Must be at least 3 characters.']]);
+    expect(calls).toStrictEqual([['validation.min_length', { limit: 3 }, 'Must be at least 3 characters.']]);
   });
 });

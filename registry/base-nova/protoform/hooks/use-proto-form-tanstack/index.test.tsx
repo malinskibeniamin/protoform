@@ -50,13 +50,13 @@ describe('tanStack useProtoForm', () => {
     });
 
     expect(result.current.createMessage().username).toBe('ada_user');
-    expect(result.current.createUpdateMask().paths).toEqual(['username']);
+    expect(result.current.createUpdateMask().paths).toStrictEqual(['username']);
 
     act(() => {
       result.current.setOneofValue('preferredContact', 'preferredPhone', '+48123456789');
     });
 
-    expect(result.current.createMessage().preferredContact).toEqual({
+    expect(result.current.createMessage().preferredContact).toStrictEqual({
       case: 'preferredPhone',
       value: '+48123456789',
     });
@@ -143,7 +143,7 @@ describe('tanStack useProtoForm', () => {
     });
 
     expect(mapped?.handled).toBe(true);
-    expect(mapped?.unmapped).toEqual([]);
+    expect(mapped?.unmapped).toStrictEqual([]);
     const fieldErrors = result.current.getAllErrors().fields;
     expect(errorsForField(fieldErrors, 'primaryEmail')).toContain('Enter a value.');
     expect(errorsForField(fieldErrors, 'tags')).toContain('Add at least one item.');
@@ -178,7 +178,7 @@ describe('tanStack useProtoForm', () => {
     });
 
     expect(prefixedMapped?.handled).toBe(true);
-    expect(prefixedMapped?.unmapped).toEqual([]);
+    expect(prefixedMapped?.unmapped).toStrictEqual([]);
     const prefixedErrors = prefixed.current.getAllErrors().fields;
     expect(errorsForField(prefixedErrors, 'primaryEmail')).toContain('Enter a value.');
     expect(errorsForField(prefixedErrors, 'tags')).toContain('Add at least one item.');
@@ -210,7 +210,7 @@ describe('tanStack useProtoForm', () => {
       resultNested.current.setServerErrors(errorNested);
     });
 
-    expect(resultNested.current.getNestedErrors('shippingAddress')).toEqual({
+    expect(resultNested.current.getNestedErrors('shippingAddress')).toStrictEqual({
       city: { message: 'Choose a supported city.' },
     });
   });

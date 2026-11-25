@@ -206,7 +206,7 @@ test('renders every built-in field type through the configured UI alias', async 
     .map((field) => String(field.fieldConfig?.fieldType))
     .sort((first, second) => first.localeCompare(second));
 
-  expect(matrixFieldTypes).toEqual(registeredFieldTypes);
+  expect(matrixFieldTypes).toStrictEqual(registeredFieldTypes);
 
   await render(
     <main className="max-w-2xl bg-background p-6 text-foreground [&_textarea]:resize-none">

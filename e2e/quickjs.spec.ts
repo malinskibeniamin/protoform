@@ -37,7 +37,7 @@ test('real WASM worker rejects runaway code, bounded memory pressure, and recurs
     const recovered = await evaluateQuickJsInWorker({ ...request, values: { kind: 'personal' } });
     return { first, recovered, rejected, responsive };
   });
-  expect(result).toEqual({
+  expect(result).toStrictEqual({
     first: { company: { visible: true } },
     recovered: { company: { visible: false } },
     rejected: [true, true, true],
@@ -78,7 +78,7 @@ test('cancellation and watchdog terminate unfinished workers', async ({ page }) 
       });
     return [cancelled, timedOut];
   });
-  expect(messages).toEqual(['QuickJS evaluation cancelled', 'QuickJS worker timed out']);
+  expect(messages).toStrictEqual(['QuickJS evaluation cancelled', 'QuickJS worker timed out']);
 });
 
 test('controller preserves drafts through repeated worker failures and gates exact-snapshot submission', async ({
@@ -129,7 +129,7 @@ test('controller preserves drafts through repeated worker failures and gates exa
       controller.dispose();
     }
   });
-  expect(result).toEqual({
+  expect(result).toStrictEqual({
     blocked: 2,
     states: ['error', 'ready', 'error', 'ready'],
     submitted: [{ company: 'Human draft', kind: 'business' }],
@@ -179,7 +179,7 @@ test('form bindings cross the real worker with nested values, metadata, and fail
       controller.dispose();
     }
   });
-  expect(result).toEqual({
+  expect(result).toStrictEqual({
     first: { company: { visible: true } },
     failure: 'error',
     status: 'ready',
@@ -239,7 +239,7 @@ test('order review aggregates duplicate lines against form-shaped inventory in t
       controller.dispose();
     }
   });
-  expect(result).toEqual({
+  expect(result).toStrictEqual({
     shortage: { backorderNote: {}, dispatchReference: { inputProps: { disabled: true } } },
     covered: { backorderNote: { customData: { hidden: true } }, dispatchReference: {} },
     failure: 'error',

@@ -47,7 +47,7 @@ describe('cel validation conformance', () => {
     });
 
     expect(valid.issues).toBeUndefined();
-    expect(invalid.issues).toEqual([
+    expect(invalid.issues).toStrictEqual([
       {
         message: 'Production deployments require the stable release track.',
         path: ['deployment'],
@@ -67,7 +67,7 @@ describe('cel validation conformance', () => {
       provider.validateSchema({
         deployment: { environment: 10, releaseTrack: 9 },
       })
-    ).toEqual({
+    ).toStrictEqual({
       errors: [
         {
           message: 'Production deployments require the stable release track.',
@@ -81,7 +81,7 @@ describe('cel validation conformance', () => {
   test('blocks a CEL runtime failure safely and recovers for valid input', () => {
     const provider = new ProtoProvider(InvalidCelRuntimeSchema);
 
-    expect(provider.validateSchema({ value: 0 })).toEqual({
+    expect(provider.validateSchema({ value: 0 })).toStrictEqual({
       errors: [{ message: 'Validation could not be completed.', path: [] }],
       success: false,
     });
@@ -117,7 +117,7 @@ describe('cel validation conformance', () => {
       stringValue: 'bad',
     });
 
-    expect(result.issues).toEqual(
+    expect(result.issues).toStrictEqual(
       expect.arrayContaining([
         expect.objectContaining({
           message: 'received bad',
@@ -134,7 +134,9 @@ describe('cel validation conformance', () => {
       children: [{ name: 'bad-one' }, { name: 'bad-two' }],
     });
 
-    expect(paths(result.issues)).toEqual(expect.arrayContaining([['child'], ['children', '0'], ['children', '1']]));
+    expect(paths(result.issues)).toStrictEqual(
+      expect.arrayContaining([['child'], ['children', '0'], ['children', '1']])
+    );
   });
 
   test('returns every message and field CEL violation without dropping any', async () => {
@@ -147,7 +149,7 @@ describe('cel validation conformance', () => {
     });
     const messages = (result.issues ?? []).map((issue) => issue.message);
 
-    expect(messages).toEqual(
+    expect(messages).toStrictEqual(
       expect.arrayContaining([
         'boolean field rule failed',
         'received bad',
@@ -161,7 +163,7 @@ describe('cel validation conformance', () => {
   test('returns a safe root issue for a CEL compile error', async () => {
     const result = await createProtoFormSchema(InvalidCelCompileSchema)['~standard'].validate({ value: 1 });
 
-    expect(paths(result.issues)).toEqual([[]]);
+    expect(paths(result.issues)).toStrictEqual([[]]);
     expect(result.issues?.[0]?.message).toBeTruthy();
   });
 
@@ -174,7 +176,7 @@ describe('cel validation conformance', () => {
       value,
     });
 
-    expect(result.issues).toEqual([{ message: 'Validation could not be completed.', path: [] }]);
+    expect(result.issues).toStrictEqual([{ message: 'Validation could not be completed.', path: [] }]);
     expect(result).not.toHaveProperty('value');
   });
 });

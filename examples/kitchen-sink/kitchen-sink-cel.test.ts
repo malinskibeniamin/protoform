@@ -141,7 +141,7 @@ describe('kitchen-sink CEL contract', () => {
     if (result.kind !== 'invalid') {
       throw new Error(`Expected invalid, received ${result.kind}.`);
     }
-    expect(result.violations).toEqual<unknown>(
+    expect(result.violations).toStrictEqual<unknown>(
       expect.arrayContaining([
         expect.objectContaining({
           message: expectedMessage,

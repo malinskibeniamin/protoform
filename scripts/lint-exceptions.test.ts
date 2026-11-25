@@ -10,7 +10,7 @@ test('rejects a stale file selector in a TypeScript config', () => {
     auditLintExceptions('doctor.config.ts', source, ['registry/base-nova/protoform/components/present.tsx']).map(
       ({ message }) => message
     )
-  ).toEqual([
+  ).toStrictEqual([
     'Selector "registry/base-nova/protoform/components/missing.tsx" matches no source files. Remove or correct the stale exception.',
   ]);
 });
@@ -25,7 +25,7 @@ test('accepts a bounded scoped exception in JSONC', () => {
   }`;
   expect(
     auditLintExceptions('biome.jsonc', source, ['registry/base-nova/protoform/components/multi-select/index.tsx'])
-  ).toEqual([]);
+  ).toStrictEqual([]);
 });
 
 test('does not mistake a stricter override for an exception', () => {
@@ -35,7 +35,7 @@ test('does not mistake a stricter override for an exception', () => {
       '{ "overrides": [{ "includes": ["**"], "linter": { "rules": { "suspicious": { "noExplicitAny": "error" } } } }] }',
       ['registry/example.ts']
     )
-  ).toEqual([]);
+  ).toStrictEqual([]);
 });
 
 test('rejects a repository-wide weakening', () => {
@@ -44,7 +44,7 @@ test('rejects a repository-wide weakening', () => {
   ] }`;
   expect(
     auditLintExceptions('shadcn-lint.jsonc', source, ['registry/example.ts']).map(({ message }) => message)
-  ).toEqual(['Exception must name a bounded owner, not all source.']);
+  ).toStrictEqual(['Exception must name a bounded owner, not all source.']);
 });
 
 test.each(['warn', 'info'])('rejects a repository-wide %s severity downgrade', (severity) => {
@@ -82,7 +82,7 @@ test('allows a named owner rather than the entire registry', () => {
   ] };`;
   expect(
     auditLintExceptions('doctor.config.ts', source, ['registry/base-nova/protoform/components/card/index.tsx'])
-  ).toEqual([]);
+  ).toStrictEqual([]);
 });
 
 test('rejects a glob exception that no longer matches any file', () => {
@@ -93,12 +93,12 @@ test('rejects a glob exception that no longer matches any file', () => {
     auditLintExceptions('shadcn-lint.jsonc', source, ['registry/base-nova/protoform/components/card/index.tsx']).map(
       ({ message }) => message
     )
-  ).toEqual(['Exception scope matches no source files. Remove or correct its selectors.']);
+  ).toStrictEqual(['Exception scope matches no source files. Remove or correct its selectors.']);
 });
 
 test('reports the line of the offending override', () => {
   const source = `{\n  "overrides": [\n    { "files": ["missing.ts"], "rules": { "protoform/no-comments": "off" } }\n  ]\n}`;
-  expect(auditLintExceptions('shadcn-lint.jsonc', source, []).map(({ line }) => line)).toEqual([3]);
+  expect(auditLintExceptions('shadcn-lint.jsonc', source, []).map(({ line }) => line)).toStrictEqual([3]);
 });
 
 test('does not permit new file-level rule exemptions', () => {
@@ -106,7 +106,7 @@ test('does not permit new file-level rule exemptions', () => {
   const weakened =
     '{ "overrides": [{ "includes": ["components/input.tsx"], "linter": { "rules": { "style": { "noNonNullAssertion": "off" } } } }] }';
   expect(newLintExceptions('biome.jsonc', weakened, baseline)).toHaveLength(1);
-  expect(newLintExceptions('biome.jsonc', baseline, weakened)).toEqual([]);
+  expect(newLintExceptions('biome.jsonc', baseline, weakened)).toStrictEqual([]);
 });
 
 test('allows bounded adoption of a previously disabled rule without weakening any protected rule', () => {
@@ -115,7 +115,7 @@ test('allows bounded adoption of a previously disabled rule without weakening an
     "rules": { "typescript/no-unsafe-type-assertion": "error", "no-eval": "error" },
     "overrides": [{ "files": ["lib/generic-adapter.ts"], "rules": { "typescript/no-unsafe-type-assertion": "off" } }]
   }`;
-  expect(newLintExceptions('.oxlintrc.jsonc', adopted, baseline)).toEqual([]);
+  expect(newLintExceptions('.oxlintrc.jsonc', adopted, baseline)).toStrictEqual([]);
   expect(newLintExceptions('.oxlintrc.jsonc', adopted, baseline.replace('"off"', '"error"'))).toHaveLength(1);
   expect(
     newLintExceptions(
@@ -140,7 +140,7 @@ test('permits narrowing an existing waiver but rejects new rules and widened sel
     "overrides": [{ "files": ["lib/adapter.ts", "lib/other.ts"], "rules": { "no-eval": "off", "no-console": "off" } }]
   }`;
   const narrowed = '{ "overrides": [{ "files": ["lib/adapter.ts"], "rules": { "no-console": "off" } }] }';
-  expect(newLintExceptions('.oxlintrc.jsonc', narrowed, baseline)).toEqual([]);
+  expect(newLintExceptions('.oxlintrc.jsonc', narrowed, baseline)).toStrictEqual([]);
   expect(newLintExceptions('.oxlintrc.jsonc', narrowed.replace('no-console', 'no-debugger'), baseline)).toHaveLength(1);
   expect(newLintExceptions('.oxlintrc.jsonc', narrowed.replace('lib/adapter.ts', 'lib/*.ts'), baseline)).toHaveLength(
     1
@@ -155,7 +155,7 @@ test('preserves Biome exemptions across nursery promotions without allowing broa
     }]
   }`;
   const migrated = baseline.replace('"nursery"', '"correctness"');
-  expect(newLintExceptions('biome.jsonc', migrated, baseline)).toEqual([]);
+  expect(newLintExceptions('biome.jsonc', migrated, baseline)).toStrictEqual([]);
   expect(
     newLintExceptions('biome.jsonc', migrated.replace('components/input.tsx', 'components/**'), baseline)
   ).toHaveLength(1);
@@ -172,7 +172,7 @@ test('limits approved Biome 2.6 false positives to the exact owner and rule', ()
     }]
   }`;
   const baseline = '{ "overrides": [] }';
-  expect(newLintExceptions('biome.jsonc', approved, baseline)).toEqual([]);
+  expect(newLintExceptions('biome.jsonc', approved, baseline)).toStrictEqual([]);
   expect(newLintExceptions('biome.jsonc', approved.replace('nested.tsx', '*.tsx'), baseline)).toHaveLength(1);
   expect(
     newLintExceptions('biome.jsonc', approved.replace('useReactCompiler', 'noFloatingPromises'), baseline)
@@ -198,7 +198,7 @@ test('bounds SDK prop forwarding to the three rendering adapters and one existin
     'registry/ui-sdk/protoform/components/preferences/index.tsx',
     'registry/ui-sdk/protoform/components/rating/index.tsx',
   ], rules: ['react-doctor/jsx-props-no-spreading'] }] } };`;
-  expect(newLintExceptions('doctor.config.ts', approved, baseline)).toEqual([]);
+  expect(newLintExceptions('doctor.config.ts', approved, baseline)).toStrictEqual([]);
   for (const invalid of [
     approved.replace('components/rating/index.tsx', 'components/**'),
     approved.replace('components/rating/index.tsx', 'components/button/index.tsx'),

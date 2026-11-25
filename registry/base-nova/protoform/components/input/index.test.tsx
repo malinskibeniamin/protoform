@@ -33,7 +33,9 @@ test('step controls deliver real input change events to form consumers', async (
   const input = screen.getByRole('spinbutton', { name: 'Quantity' });
   await user.click(screen.getByRole('button', { name: 'Increase value' }));
   expect(input).toHaveValue(2);
-  expect(changes).toEqual([{ currentTarget: input, name: 'quantity', nativeTarget: input, target: input, value: '2' }]);
+  expect(changes).toStrictEqual([
+    { currentTarget: input, name: 'quantity', nativeTarget: input, target: input, value: '2' },
+  ]);
   await user.click(screen.getByRole('button', { name: 'Decrease value' }));
   expect(input).toHaveValue(0);
   expect(changes).toHaveLength(2);
@@ -69,7 +71,7 @@ test('keeps the mounted input ref attached while controlled text changes', async
   const input = screen.getByRole('textbox', { name: 'Search' });
   await user.type(input, 'post');
   expect(input).toHaveValue('post');
-  expect(inputRef.mock.calls).toEqual([[input]]);
+  expect(inputRef.mock.calls).toStrictEqual([[input]]);
 });
 
 test.each([

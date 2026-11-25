@@ -50,7 +50,7 @@ test('supports callable schemas and forwards vendor options', async () => {
   });
 
   expect(isStandardSchema(schema)).toBe(true);
-  expect(await createFormikValidator(schema, { libraryOptions })(values)).toEqual({});
+  expect(await createFormikValidator(schema, { libraryOptions })(values)).toStrictEqual({});
   expect(receivedOptions?.libraryOptions).toBe(libraryOptions);
 });
 
@@ -64,7 +64,7 @@ describe.each(implementations)('$name Standard Schema', ({ schema }) => {
       profile: { displayName: expect.stringContaining('2') as unknown },
     };
 
-    expect(await createFormikValidator(schema)(values)).toEqual(expected);
-    expect(await createFinalFormValidator(schema)(values)).toEqual(expected);
+    expect(await createFormikValidator(schema)(values)).toStrictEqual(expected);
+    expect(await createFinalFormValidator(schema)(values)).toStrictEqual(expected);
   });
 });

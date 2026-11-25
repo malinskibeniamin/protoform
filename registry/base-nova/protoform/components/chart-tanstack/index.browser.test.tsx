@@ -62,7 +62,7 @@ test('updates native scenes and clears removed data without stale marks', async 
       width={320}
     />
   );
-  await waitFor(() => expect(values).toEqual([12, 18, 9]));
+  await waitFor(() => expect(values).toStrictEqual([12, 18, 9]));
   const updated = defineChart({
     marks: [barY([{ day: 'Thu', total: 24 }], { x: 'day', y: 'total' })],
     scales: { x: { scale: scaleBand }, y: { scale: scaleLinear } },
@@ -70,7 +70,7 @@ test('updates native scenes and clears removed data without stale marks', async 
   rerender(
     <TanStackChart ariaLabel="Requests by day" definition={updated} height={200} onRender={recordValues} width={320} />
   );
-  await waitFor(() => expect(values).toEqual([24]));
+  await waitFor(() => expect(values).toStrictEqual([24]));
   expect(screen.queryByText('Mon')).toBeNull();
   const noRows: typeof rows = [];
   const empty = defineChart({
@@ -80,6 +80,6 @@ test('updates native scenes and clears removed data without stale marks', async 
   rerender(
     <TanStackChart ariaLabel="Requests by day" definition={empty} height={200} onRender={recordValues} width={320} />
   );
-  await waitFor(() => expect(values).toEqual([]));
+  await waitFor(() => expect(values).toStrictEqual([]));
   expect(screen.queryByText('Thu')).toBeNull();
 });

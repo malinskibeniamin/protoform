@@ -18,7 +18,9 @@ test('installed SDK enhancement honors its opt-in safety boundary without regist
   });
   await page.goto(`${reliabilityBaseURL}/agent.html`);
   await verifyAgentWorkbench(page);
-  expect(await page.evaluate((): unknown => Reflect.get(globalThis.window, 'agentTestRegistrations'))).toEqual([]);
+  expect(await page.evaluate((): unknown => Reflect.get(globalThis.window, 'agentTestRegistrations'))).toStrictEqual(
+    []
+  );
 });
 
 test('installed WebMCP opt-in invokes SDK tools with policy and unregisters on disable', async ({ page }) => {
@@ -65,15 +67,15 @@ test('installed WebMCP opt-in invokes SDK tools with policy and unregisters on d
     );
   const set = (ref: string, value: number | string) =>
     call('act', { steps: [{ ref, action: 'setValue', args: [value] }] });
-  expect(await names()).toEqual([]);
+  expect(await names()).toStrictEqual([]);
   await page.getByRole('button', { name: 'Enable WebMCP agent', exact: true }).click();
-  await expect.poll(names).toEqual(['snapshot', 'act', 'query']);
+  await expect.poll(names).toStrictEqual(['snapshot', 'act', 'query']);
   const snapshot = JSON.stringify(await call('snapshot', {}));
   expect(snapshot).toContain('Review confidence');
   expect(snapshot).toContain('[redacted]');
   expect(snapshot).not.toContain('Private score');
   expect(snapshot).not.toContain('Human project name');
-  expect(await call('query', { within: 'Review confidence' })).toEqual(
+  expect(await call('query', { within: 'Review confidence' })).toStrictEqual(
     expect.arrayContaining([expect.objectContaining({ label: 'Review confidence' })])
   );
   expect(await set('Human project name', 'not allowed')).toMatchObject({ ok: false });
@@ -90,5 +92,5 @@ test('installed WebMCP opt-in invokes SDK tools with policy and unregisters on d
   const pending = set('Approval level', 4);
   await approval.getByRole('button', { name: 'Stop agent' }).click();
   expect(await pending).toMatchObject({ ok: false });
-  await expect.poll(names).toEqual([]);
+  await expect.poll(names).toStrictEqual([]);
 });

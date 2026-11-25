@@ -45,7 +45,7 @@ describe('form-library Standard Schema adapters', () => {
   test('maps Standard Schema issues for Formik', async () => {
     const validate = createFormikValidator(failingSchema());
 
-    expect(await validate(values)).toEqual({
+    expect(await validate(values)).toStrictEqual({
       _form: 'Review the highlighted fields.',
       contacts: [
         {
@@ -88,11 +88,11 @@ describe('form-library Standard Schema adapters', () => {
       },
     };
 
-    expect(await createFormikValidator(schema)(values)).toEqual({});
-    expect(await createFormikValidator(schema, { libraryOptions })(values)).toEqual({});
-    expect(await createFinalFormValidator(schema, { libraryOptions })(values)).toEqual({});
+    expect(await createFormikValidator(schema)(values)).toStrictEqual({});
+    expect(await createFormikValidator(schema, { libraryOptions })(values)).toStrictEqual({});
+    expect(await createFinalFormValidator(schema, { libraryOptions })(values)).toStrictEqual({});
 
-    expect(receivedOptions).toEqual([undefined, { libraryOptions }, { libraryOptions }]);
+    expect(receivedOptions).toStrictEqual([undefined, { libraryOptions }, { libraryOptions }]);
   });
 
   test('does not allow issue paths to mutate object prototypes', () => {

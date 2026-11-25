@@ -23,7 +23,7 @@ async function expectNoSeriousViolations(page: Page) {
       id: violation.id,
       targets: violation.nodes.map((node) => node.target),
     }))
-  ).toEqual([]);
+  ).toStrictEqual([]);
 }
 
 for (const theme of ['light', 'dark'] as const) {

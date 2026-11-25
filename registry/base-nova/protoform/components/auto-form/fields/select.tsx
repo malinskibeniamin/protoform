@@ -113,19 +113,22 @@ function SelectFieldComponent({ error, field, id, inputProps, label, path }: Aut
           </SelectItem>
         )}
         {optionGroups && optionGroups.length > 0
-          ? optionGroups.map((group) => (
-              <SelectGroup
-                key={`${field.key}-group-${String(group.label ?? group.options.map((option) => option.value).join('-'))}`}
-                testId={testIds.group(String(group.label ?? group.options.map((option) => option.value).join('-')))}
-              >
-                {group.label ? <SelectLabel>{group.label}</SelectLabel> : null}
-                {group.options.map((option) => (
-                  <SelectItem key={option.value} testId={testIds.option(option.value)} value={option.value}>
-                    {renderOptionLabel(option)}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            ))
+          ? optionGroups.map((group) => {
+              const hasLabel = Boolean(group.label);
+              return (
+                <SelectGroup
+                  key={`${field.key}-group-${String(group.label ?? group.options.map((option) => option.value).join('-'))}`}
+                  testId={testIds.group(String(group.label ?? group.options.map((option) => option.value).join('-')))}
+                >
+                  {hasLabel ? <SelectLabel>{group.label}</SelectLabel> : null}
+                  {group.options.map((option) => (
+                    <SelectItem key={option.value} testId={testIds.option(option.value)} value={option.value}>
+                      {renderOptionLabel(option)}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              );
+            })
           : flatOptions.map((option) => (
               <SelectItem key={option.value} testId={testIds.option(option.value)} value={option.value}>
                 {renderOptionLabel(option)}

@@ -42,7 +42,7 @@ describe('fieldTypeRegistry', () => {
       .register(makeDef('beta', 200, (f) => f.type === 'string'))
       .register(makeDef('gamma', 5, () => false));
 
-    expect(registry.list().map((d) => d.name)).toEqual(['beta', 'alpha', 'gamma']);
+    expect(registry.list().map((d) => d.name)).toStrictEqual(['beta', 'alpha', 'gamma']);
     expect(registry.resolve(stubField('string'), stubContext())?.name).toBe('beta');
     expect(registry.resolve(stubField('number'), stubContext())).toBeUndefined();
 

@@ -35,7 +35,7 @@ function lint(source: string): { codes: string[]; status: number | null } {
 
 describe('strict quality gates at the CLI', () => {
   test('accepts checked source', () => {
-    expect(lint('export const meaningfulName = 1;\n')).toEqual({ codes: [], status: 0 });
+    expect(lint('export const meaningfulName = 1;\n')).toStrictEqual({ codes: [], status: 0 });
   });
 
   test('rejects discarded promises instead of silently accepting a type-aware flag', () => {
@@ -47,8 +47,24 @@ describe('strict quality gates at the CLI', () => {
   test('rejects unsafe data flows from untyped APIs', () => {
     const result = lint('const payload = JSON.parse("{}");\npayload.run();\n');
     expect(result.status).toBe(1);
-    expect(result.codes).toEqual(
+    expect(result.codes).toStrictEqual(
       expect.arrayContaining(['typescript(no-unsafe-assignment)', 'typescript(no-unsafe-call)'])
     );
+  });
+
+  test('keeps mixed type and value imports together when fixing type-only imports', () => {
+    const result = spawnSync(
+      resolve('node_modules/.bin/biome'),
+      ['lint', '--only=style/useImportType', '--stdin-file-path=scripts/import-fix-probe.ts', '--write'],
+      {
+        encoding: 'utf8',
+        input:
+          "import { FileHandle, open } from 'node:fs/promises';\nexport const file = (): Promise<FileHandle> => open('example.txt');\n",
+        timeout: 10_000,
+      }
+    );
+    expect(result.error).toBeUndefined();
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain("import { type FileHandle, open } from 'node:fs/promises';");
   });
 });

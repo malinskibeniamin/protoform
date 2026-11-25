@@ -93,7 +93,9 @@ for (const theme of ['light', 'dark']) {
       .include('[data-slot="copy-button"]')
       .withRules(['color-contrast'])
       .analyze();
-    expect(results.violations.map(({ id, nodes }) => ({ id, targets: nodes.map(({ target }) => target) }))).toEqual([]);
+    expect(
+      results.violations.map(({ id, nodes }) => ({ id, targets: nodes.map(({ target }) => target) }))
+    ).toStrictEqual([]);
     await copy.focus();
     await expect(copy).toBeFocused();
   });

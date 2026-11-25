@@ -16,8 +16,8 @@ describe('createFieldMask', () => {
       'shippingAddress',
     ]);
 
-    expect(mask.paths).toEqual(['primary_email', 'shipping_address', 'previous_addresses']);
-    expect(createFieldMask(AutoFormExampleSchema, ['primaryEmail', '*']).paths).toEqual(['*']);
+    expect(mask.paths).toStrictEqual(['primary_email', 'shipping_address', 'previous_addresses']);
+    expect(createFieldMask(AutoFormExampleSchema, ['primaryEmail', '*']).paths).toStrictEqual(['*']);
   });
 });
 
@@ -43,7 +43,7 @@ describe('createUpdateMask', () => {
       }
     );
 
-    expect(mask.paths).toEqual([
+    expect(mask.paths).toStrictEqual([
       'primary_email',
       'shipping_address.postal_code',
       'previous_addresses',
@@ -67,7 +67,7 @@ describe('createUpdateMask', () => {
       }
     );
 
-    expect(maskWithAipFields.paths).toEqual(['display_name']);
+    expect(maskWithAipFields.paths).toStrictEqual(['display_name']);
   });
 
   test.each([undefined, null])('masks a cleared message as a whole when its current value is %s', (shippingAddress) => {
@@ -84,7 +84,7 @@ describe('createUpdateMask', () => {
       }
     );
 
-    expect(mask.paths).toEqual(['primary_email', 'shipping_address']);
+    expect(mask.paths).toStrictEqual(['primary_email', 'shipping_address']);
   });
 
   test('masks the cleared initial oneof branch and nested dirty leaves in the active branch', () => {
@@ -100,7 +100,7 @@ describe('createUpdateMask', () => {
       }
     );
 
-    expect(mask.paths).toEqual(['preferred_email']);
+    expect(mask.paths).toStrictEqual(['preferred_email']);
 
     const nestedMask = createUpdateMask(
       SubmitComplexFormRequestSchema,
@@ -113,7 +113,7 @@ describe('createUpdateMask', () => {
       }
     );
 
-    expect(nestedMask.paths).toEqual(['api_key.api_key']);
+    expect(nestedMask.paths).toStrictEqual(['api_key.api_key']);
   });
 });
 
@@ -132,7 +132,7 @@ describe('dirtyFieldsFromValues', () => {
           username: 'ada',
         }
       )
-    ).toEqual({
+    ).toStrictEqual({
       profile: { city: true },
       tags: true,
     });
@@ -141,6 +141,6 @@ describe('dirtyFieldsFromValues', () => {
         { profile: { name: 'Ada' }, tags: ['forms'] },
         { profile: { name: 'Ada' }, tags: ['forms'] }
       )
-    ).toEqual({});
+    ).toStrictEqual({});
   });
 });

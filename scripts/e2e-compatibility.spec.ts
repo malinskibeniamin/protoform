@@ -32,7 +32,7 @@ test('retains trusted keyboard chords, drag, live DOM access and runtime viewpor
     expect(await page.evaluate(() => innerWidth)).toBe(width);
     expect(
       await page.getByRole('button').evaluateAll((elements) => elements.map((element) => element.textContent))
-    ).toEqual(['Drag', 'Drop']);
+    ).toStrictEqual(['Drag', 'Drop']);
   }
   await verifyViewport(390);
   await verifyViewport(1440);
@@ -65,7 +65,7 @@ test('compares original PNG pixels, fails missing references and mismatches, and
       element.style.background = 'black';
     });
     await expect(matchScreenshot(target, reference, { timeout: 1000 })).rejects.toThrow('64 pixels differ');
-    expect(await readFile(reference)).toEqual(original);
+    expect(await readFile(reference)).toStrictEqual(original);
     await matchScreenshot(target, reference, { update: true });
     await matchScreenshot(target, reference);
   } finally {

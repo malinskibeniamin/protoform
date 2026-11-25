@@ -38,7 +38,7 @@ describe('useProtoForm server errors', () => {
     expect(result.current.getFieldState('tags').error?.message).toBe('Add at least one item.');
     expect(result.current.getFieldState('homepageUrl').error?.message).toBe('Review this value and try again.');
     expect(mapped?.handled).toBe(true);
-    expect(mapped?.unmapped).toEqual([{ description: 'value is required', field: 'other.unknown_field' }]);
+    expect(mapped?.unmapped).toStrictEqual([{ description: 'value is required', field: 'other.unknown_field' }]);
   });
 
   test("maps violations on repeated-field items to the item's form path", () => {
@@ -58,7 +58,7 @@ describe('useProtoForm server errors', () => {
     });
 
     expect(result.current.getFieldState('previousAddresses.0.postalCode').error?.message).toBe('Enter a value.');
-    expect(mapped?.unmapped).toEqual([]);
+    expect(mapped?.unmapped).toStrictEqual([]);
   });
 });
 
@@ -83,5 +83,5 @@ test('retains multiple backend violations for the same field', async () => {
   );
   const { error } = result.current.getFieldState('primaryEmail');
   expect(error?.message).toBe('Enter an email');
-  expect(Object.values(error?.types ?? {})).toEqual(['Enter an email', 'Use a company email']);
+  expect(Object.values(error?.types ?? {})).toStrictEqual(['Enter an email', 'Use a company email']);
 });

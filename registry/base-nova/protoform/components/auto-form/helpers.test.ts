@@ -18,5 +18,5 @@ test('rejects non-string option labels without changing valid label mappings', (
   expect(result.optionLabels).toBeUndefined();
   expect(
     getFieldUiConfig({ ...field, fieldConfig: { customData: { optionLabels: { eu: 'Europe' } } } }).optionLabels
-  ).toEqual({ eu: 'Europe' });
+  ).toStrictEqual({ eu: 'Europe' });
 });

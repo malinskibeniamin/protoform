@@ -96,9 +96,11 @@ describe('oneof schema evolution', () => {
     for (const selection of [selected, { case: 'text', value: '' }, { case: 'count', value: 0 }]) {
       test(`${convert.name} rejects selecting ${selection.case}=${JSON.stringify(selection.value)} over an unrecognized stored branch`, () => {
         const source = readOld({ selection: { case: 'futureText', value: 'stored' } });
-        expect(protoToFormValues(oldSchema, source)['selection']).toEqual({ case: undefined, value: undefined });
+        expect(protoToFormValues(oldSchema, source)['selection']).toStrictEqual({ case: undefined, value: undefined });
         expect(() => convert.run(source, selection)).toThrow(ProtoEditCompatibilityError);
-        expect(protoToFormValues(newSchema, fromBinary(newSchema, toBinary(oldSchema, source)))['selection']).toEqual({
+        expect(
+          protoToFormValues(newSchema, fromBinary(newSchema, toBinary(oldSchema, source)))['selection']
+        ).toStrictEqual({
           case: 'futureText',
           value: 'stored',
         });
@@ -153,7 +155,7 @@ for (const operation of ['delete', 'reorder'] as const) {
     }
     const edited = formValuesToProto(oldEnvelope, values, source);
     const decoded = protoToFormValues(newEnvelope, fromBinary(newEnvelope, toBinary(oldEnvelope, edited)));
-    expect(decoded['items']).toEqual(
+    expect(decoded['items']).toStrictEqual(
       operation === 'delete'
         ? [{ ...selectedChild, futureNote: '' }]
         : [
@@ -196,7 +198,7 @@ test('schema validation reports the incompatible edit as a root issue even with 
     { validationMask: create(FieldMaskSchema, { paths: ['label'] }) }
   );
   expect(result.issues).toHaveLength(1);
-  expect(result.issues?.[0]?.path).toEqual([]);
+  expect(result.issues?.[0]?.path).toStrictEqual([]);
   expect(result.issues?.[0]?.message).toContain('unknown wire fields');
 });
 

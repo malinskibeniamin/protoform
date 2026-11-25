@@ -48,7 +48,7 @@ test('the SDK enhancement namespace contains no parallel replacements for canoni
   const base = 'registry/base-nova/protoform/components';
   const sdk = 'registry/ui-sdk/protoform/components';
   const enhancements = readdirSync(sdk, { withFileTypes: true }).filter((entry) => entry.isDirectory());
-  expect(enhancements.map((entry) => entry.name).sort()).toEqual([
+  expect(enhancements.map((entry) => entry.name).sort()).toStrictEqual([
     'async-option-combobox',
     'number-text',
     'preferences',

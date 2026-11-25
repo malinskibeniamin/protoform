@@ -16,27 +16,27 @@ const forbiddenDirectiveCases = [
 
 describe('inline suppression policy', () => {
   test.each(forbiddenDirectiveCases)('rejects %s', (directive) => {
-    expect(findForbiddenDirectives(`// ${directive}`)).toEqual([directive]);
+    expect(findForbiddenDirectives(`// ${directive}`)).toStrictEqual([directive]);
   });
 
   test('rejects case-insensitive compiler bypasses', () => {
-    expect(findForbiddenDirectives(`/* ${['@TS', 'NOCHECK'].join('-')} */`)).not.toEqual([]);
+    expect(findForbiddenDirectives(`/* ${['@TS', 'NOCHECK'].join('-')} */`)).not.toStrictEqual([]);
   });
 
   test('rejects inline rule configuration', () => {
-    expect(findForbiddenDirectives('/* eslint no-alert: off */')).not.toEqual([]);
+    expect(findForbiddenDirectives('/* eslint no-alert: off */')).not.toStrictEqual([]);
   });
 
   test('does not treat documented string values as directives', () => {
-    expect(findForbiddenDirectives(`const name = '${['biome', 'ignore'].join('-')}';`)).toEqual([]);
+    expect(findForbiddenDirectives(`const name = '${['biome', 'ignore'].join('-')}';`)).toStrictEqual([]);
   });
 
   test('rejects directives after interpolated templates', () => {
     const directive = ['@ts', 'ignore'].join('-');
-    expect(findForbiddenDirectives(`const text = \`hello \${true}\`; // ${directive}`)).toEqual([directive]);
+    expect(findForbiddenDirectives(`const text = \`hello \${true}\`; // ${directive}`)).toStrictEqual([directive]);
   });
 
   test('accepts ordinary comments', () => {
-    expect(findForbiddenDirectives('// Explain why this branch exists.')).toEqual([]);
+    expect(findForbiddenDirectives('// Explain why this branch exists.')).toStrictEqual([]);
   });
 });

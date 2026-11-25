@@ -190,6 +190,8 @@ export function KeyValueField({
 }: KeyValueFieldProps) {
   const labelId = useId();
   const descriptionId = `${labelId}-description`;
+  const hasLabel = Boolean(label);
+  const hasDescription = Boolean(description);
   const containerRef = useRef<HTMLFieldSetElement>(null);
   const { onAdd, onRemove } = useInputListFocus(containerRef);
 
@@ -231,21 +233,21 @@ export function KeyValueField({
 
   return (
     <fieldset
-      aria-describedby={description ? descriptionId : undefined}
-      aria-labelledby={label ? labelId : undefined}
+      aria-describedby={hasDescription ? descriptionId : undefined}
+      aria-labelledby={hasLabel ? labelId : undefined}
       className="@container/key-value flex min-w-0 flex-col gap-2"
       data-slot="key-value-field"
       data-testid={testId}
       ref={containerRef}
     >
-      {label || description ? (
+      {hasLabel || hasDescription ? (
         <div className="flex flex-col gap-0.5">
-          {label ? (
+          {hasLabel ? (
             <span className="text-sm leading-none font-medium select-none" id={labelId}>
               {label}
             </span>
           ) : null}
-          {description ? (
+          {hasDescription ? (
             <p className="text-sm text-muted-foreground" id={descriptionId}>
               {description}
             </p>

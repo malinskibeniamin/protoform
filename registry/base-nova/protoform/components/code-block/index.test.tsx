@@ -66,7 +66,7 @@ test('numbers string lines without losing a blank line', async () => {
     })
   );
   const lines = container.querySelectorAll('[data-slot="code-block-line-content"]');
-  expect(Array.from(lines, (line) => line.textContent)).toEqual(['one', '\n', 'three']);
+  expect(Array.from(lines, (line) => line.textContent)).toStrictEqual(['one', '\n', 'three']);
 });
 
 test('copies the original source without line-number or diff decoration', async () => {

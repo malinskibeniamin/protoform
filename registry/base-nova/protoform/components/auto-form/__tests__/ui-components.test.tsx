@@ -56,7 +56,7 @@ describe('protoformUIProvider', () => {
     const button = screen.getByRole('button', { name: 'Continue' });
     expect(button).toHaveAttribute('data-consumer-component', 'button');
     await user.click(button);
-    expect(onClick).toHaveBeenCalledOnce();
+    expect(onClick).toHaveBeenCalledTimes(1);
 
     expect(() =>
       render(

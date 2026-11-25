@@ -52,7 +52,7 @@ describe('runProtoOperation', () => {
     });
 
     expect(poll).toHaveBeenCalledWith('operations/123', expect.any(AbortSignal));
-    expect(updates).toEqual([false, true]);
+    expect(updates).toStrictEqual([false, true]);
     expect(result.done).toBe(true);
 
     const status = create(StatusSchema, {
@@ -66,7 +66,7 @@ describe('runProtoOperation', () => {
           poll: async () => operation('operations/unused'),
           start: async () => operation('operations/123', true, { case: 'error', value: status }),
         })
-      ).rejects.toEqual<unknown>(expect.any(ProtoOperationError))
+      ).rejects.toStrictEqual<unknown>(expect.any(ProtoOperationError))
     );
   });
 
@@ -98,12 +98,12 @@ describe('getProtoRetryDecision', () => {
       },
     ]);
 
-    expect(getProtoRetryDecision(method(MethodOptions_IdempotencyLevel.IDEMPOTENT), error)).toEqual({
+    expect(getProtoRetryDecision(method(MethodOptions_IdempotencyLevel.IDEMPOTENT), error)).toStrictEqual({
       delayMs: 2500,
       reason: 'transient',
       retry: true,
     });
-    expect(getProtoRetryDecision(method(MethodOptions_IdempotencyLevel.IDEMPOTENCY_UNKNOWN), error)).toEqual({
+    expect(getProtoRetryDecision(method(MethodOptions_IdempotencyLevel.IDEMPOTENCY_UNKNOWN), error)).toStrictEqual({
       reason: 'unsafe',
       retry: false,
     });
@@ -112,7 +112,7 @@ describe('getProtoRetryDecision', () => {
         method(MethodOptions_IdempotencyLevel.IDEMPOTENT),
         new ConnectError('invalid', Code.InvalidArgument)
       )
-    ).toEqual({ reason: 'non-retryable-code', retry: false });
+    ).toStrictEqual({ reason: 'non-retryable-code', retry: false });
   });
 });
 
@@ -122,7 +122,7 @@ describe('getProtoPartialResult', () => {
       getProtoPartialResult({
         unreachable: ['projects/example/locations/europe-west2', 'projects/example/locations/us-east1'],
       })
-    ).toEqual({
+    ).toStrictEqual({
       complete: false,
       recovery: [
         {
@@ -137,7 +137,7 @@ describe('getProtoPartialResult', () => {
       unreachable: ['projects/example/locations/europe-west2', 'projects/example/locations/us-east1'],
       warning: 'Some results are unavailable from 2 resources.',
     });
-    expect(getProtoPartialResult({ unreachable: [] })).toEqual({
+    expect(getProtoPartialResult({ unreachable: [] })).toStrictEqual({
       complete: true,
       recovery: [],
       unreachable: [],
@@ -155,7 +155,7 @@ describe('destructive and preview workflow plans', () => {
           purgeSample: ['publishers/acme/books/old-1', 'publishers/acme/books/old-2'],
         }
       )
-    ).toEqual({
+    ).toStrictEqual({
       confirmationRequired: false,
       count: 2,
       mode: 'preview',
@@ -170,13 +170,13 @@ describe('destructive and preview workflow plans', () => {
       warning: 'This permanently deletes every resource matching the filter.',
     });
 
-    expect(getProtoPolicyPreviewPlan('start-preview')).toEqual({
+    expect(getProtoPolicyPreviewPlan('start-preview')).toStrictEqual({
       action: 'start-preview',
       confirmationRequired: false,
       enforcesPolicy: false,
       notice: 'Preview compares the experiment with live traffic without enforcing it.',
     });
-    expect(getProtoPolicyPreviewPlan('commit')).toEqual({
+    expect(getProtoPolicyPreviewPlan('commit')).toStrictEqual({
       action: 'commit',
       confirmationRequired: true,
       enforcesPolicy: true,
@@ -197,7 +197,7 @@ describe('getProtoStability', () => {
       level: 'beta',
       preview: true,
     });
-    expect(getProtoStability({ deprecated: false, typeName: 'library.v1.Book' })).toEqual({
+    expect(getProtoStability({ deprecated: false, typeName: 'library.v1.Book' })).toStrictEqual({
       level: 'stable',
       preview: false,
     });

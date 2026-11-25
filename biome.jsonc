@@ -36,7 +36,7 @@
   },
   "formatter": {
     "enabled": true,
-    "formatWithErrors": true,
+    "formatWithErrors": false,
     "indentStyle": "space",
     "indentWidth": 2,
     "lineEnding": "lf",
@@ -317,9 +317,11 @@
         "useVueValidVFor": "off"
       },
       "nursery": {
+        "noArrayDelete": "error",
         "noArrayForEach": "error",
         "noArrayMethodsOnArguments": "error",
         "noAwaitInPromiseMethods": "error",
+        "noCanvasToImage": "error",
         "noChainedComparison": "error",
         "noConstantComparisons": "error",
         "noDynamicDelete": "error",
@@ -364,10 +366,12 @@
         "noVueDeprecatedSlotScope": "off",
         "noVueDeprecatedVBindSync": "off",
         "noVueDeprecatedVOnNativeModifier": "off",
+        "noVueDuplicateVElseIf": "off",
         "noVueExcessiveProps": "off",
         "noVueLoneTemplate": "off",
         "noVueMixin": "off",
         "noVueMultipleObjectsInClass": "off",
+        "noVueNegationElse": "off",
         "noVueRefObjectReactivityLoss": "off",
         "noVueRestrictedCallAfterAwait": "off",
         "noVueRestrictedVOn": "off",
@@ -392,7 +396,9 @@
         "useSetSize": "error",
         "useSvelteStoreInitialValue": "off",
         "useTailwindVariablesShorthand": "error",
+        "useTanstackQueryExhaustiveDependencies": "error",
         "useTanstackQueryInfiniteQueryPropertyOrder": "error",
+        "useTanstackQueryMutationPropertyOrder": "error",
         "useTanstackQueryStableQueryClient": "error",
         "useVueBlockOrder": "off",
         "useVueBooleanPropTypeFirst": "off",
@@ -473,6 +479,7 @@
         // Name nontrivial iterable expressions before entering a loop.
         "noUnreadableForOfExpression": "error",
         "noUnsafeReturn": "error",
+        "noUselessSetConstruction": "error",
         "noUselessSplice": "error",
         // Vue is not used.
         "noVueUnusedEmitDeclarations": "off",
@@ -481,9 +488,13 @@
         // Vue is not used.
         "noVueWatchAfterAwait": "off",
         "noZeroLengthUnit": "error",
+        // These rules optimize authored Biome plugins; this project has no plugin sources.
+        "useBiomeKindSets": "off",
+        "useBiomeTopLevelTypes": "off",
         "useBlockStatementOverIife": "error",
         "useConsistentLightnessNotation": { "level": "error", "options": { "notation": "number" } },
         "useConsistentUnicodeBom": "error",
+        "useExpectEqualityMatcher": "error",
         "useExpectToContain": "error",
         // Do not require an experimental runtime API in source-copy browser consumers.
         "useIteratorZip": "off",
@@ -520,11 +531,13 @@
         "noSvelteInspect": "error",
         "noSvelteObjectInTextMustaches": "error",
         "noSvelteUselessDerivedBy": "error",
+        "noTailwindConflictingClasses": "error",
         "noTailwindLegacyUtilities": "error",
         // Registry components intentionally expose className for host-owned styling and variants.
         "noTailwindRestyledComponents": "off",
         "noUnsafeUnaryMinus": "error",
         "noUselessAssignment": "error",
+        "noUselessBind": "error",
         "noUselessCall": "error",
         "noUselessDateGetTime": "error",
         "noVueBooleanDefault": "error",
@@ -540,6 +553,7 @@
         // There are no Vue or Svelte block-language contracts to configure in this React/Astro project.
         "useConsistentBlockLang": "off",
         "useConsistentHeadingLevel": "error",
+        "useConsistentIndexedObjectStyle": { "level": "error", "options": { "style": "record" } },
         "useConsistentJsonFileRead": "error",
         "useFencedCodeLanguage": "error",
         "useLowercaseTestTitle": "error",
@@ -551,15 +565,21 @@
         "useSvelteReactiveClasses": "error",
         "useSvelteShorthandDirective": "error",
         "useTailwindStaticClassStrings": "error",
+        // Flat test files are supported; wrapping every test adds no safety.
+        "useTopLevelDescribe": "off",
         "useTopLevelHeading": "error",
         "useUnaryMinus": "error",
         "useVueConsistentEventHyphenation": "error",
         "useVueMatchingComponentFileName": "error",
+        "noAstroComponentDefaultExport": "error",
         "noAstroConflictingSetDirectives": "error",
         "noAstroSetHtmlDirective": "error",
         "noBunModules": "error",
         "noInvalidFileInputAccept": "error",
         "noSvelteAtHtmlTags": "error",
+        // Bun/Rstest globals and real setup/cleanup hooks are intentional test-runner contracts.
+        "noTestGlobals": "off",
+        "noTestHooks": "off",
         "noThisOutsideOfClass": "error",
         // Blume injects theme variables from its external stylesheets.
         "noUndeclaredCustomProperties": "off",
@@ -576,10 +596,14 @@
         "useReactNamingConvention": "error",
         "useVueBaseImport": "error",
         "noBaseToString": "error",
+        "noExpectToHaveBeenCalledOnce": "error",
         "noExtendNative": "error",
         "noFloatingPromises": "error",
+        "noImmediateMutation": "error",
         "noImpliedEval": "error",
         "noInvalidPropertyInitValue": "error",
+        // This project has no Jest/Jasmine runtime.
+        "noJasmineGlobals": "off",
         "noJsRestrictedProperties": "error",
         "noJsonUnsafeValues": "error",
         "noMeaninglessVoidOperator": "error",
@@ -601,6 +625,7 @@
         "noTailwindRawColors": "error",
         "noUndeclaredClasses": "off",
         "noUnsafePlusOperands": "error",
+        "noUnsafeSqliteInterpolation": "error",
         // Type assertions are audited by strict TypeScript checks; this experimental rule
         // reports hundreds of verified boundary narrowings and generated-data adapters.
         "noUnsafeTypeAssertion": "off",
@@ -618,8 +643,13 @@
         },
         "useConsistentObjectKeys": "error",
         "useControlLabel": "error",
+        // The rule targets Jest/Vitest function-title APIs, not Bun/Rstest/Playwright.
+        "useDescribeFunctionTitle": "off",
         "useDisposables": "error",
+        "useEarlyContinue": "error",
         "useExhaustiveSwitchCases": "error",
+        "useExpectToHaveLength": "error",
+        "useExpectToStrictEqual": "error",
         // Inference remains part of the public TypeScript contract; requiring annotations on
         // every local and callback would add thousands of redundant declarations.
         "useExplicitReturnType": "off",
@@ -653,23 +683,26 @@
         "noInvalidFetchOptions": "error",
         "noLateCurrentTargetAccess": "error",
         // Misidentifies a narrowed Array.isArray result reassigned before React callbacks as a string.
-        "noMisusedSpread": "off",
+        "noMisusedSpread": "error",
         "noNewArray": "error",
         "noReactDirectStateMutation": "error",
         "noRedundantTypeConstituents": "error",
+        "noReturnInTest": "error",
         "noScssNullComparison": "error",
         "noTripleSlashReference": "error",
         "noUnresolvedDefaultImport": "error",
+        "noUselessDefaultAssignment": "error",
         "noUselessFallbackInSpread": "error",
+        "noUselessNestedTernary": "error",
         "noUselessParameterPropertyAssignment": "error",
         "noUselessQualifier": "error",
         "noUselessSpread": "error",
         "noYamlEmptyMapKeys": "error",
         // Empty YAML values deliberately encode null, including GitHub Actions event declarations.
-        "noYamlEmptyMapValues": "off",
+        "noYamlEmptyMapValues": "error",
         "noYamlEmptySequenceEntries": "error",
         // Cannot recognize revision-guarded updates, submission locks or sequential screenshot polling.
-        "useAtomicUpdates": "off",
+        "useAtomicUpdates": "error",
         "useCatchErrorName": "error",
         "useConsistentFontWeightNotation": "error",
         "useConsistentTupleLabels": "error",
@@ -846,7 +879,10 @@
         "useGlobalThis": "error",
         "useGraphqlNamingConvention": "error",
         "useGroupedAccessorPairs": "error",
-        "useImportType": "error",
+        "useImportType": {
+          "level": "error",
+          "options": { "style": "auto" }
+        },
         "useInputName": "error",
         "useLiteralEnumMembers": "error",
         "useLoneExecutableDefinition": "error",
@@ -1042,13 +1078,103 @@
         "noUntrustedLicenses": "error",
         // Protoform intentionally supports fullscreen and user-select behavior beyond the
         // rule's configured Baseline target.
-        "useBaseline": "off",
+        "useBaseline": "error",
         "useExpect": "error",
         "useScopedStyles": "error"
       }
     }
   },
   "overrides": [
+    // Preserve runtime guards for refs and supported third-party versions whose installed declarations imply they are present.
+    {
+      "includes": [
+        "registry/base-nova/protoform/components/auto-form/adapters/tanstack-v2.tsx",
+        "registry/base-nova/protoform/components/auto-form/auto-form-core.tsx",
+        "registry/base-nova/protoform/components/auto-form/fields/slider.tsx",
+        "registry/base-nova/protoform/components/auto-form/renderers/array.tsx",
+        "registry/base-nova/protoform/components/json-field/index.tsx",
+        "registry/base-nova/protoform/hooks/use-controllable-state/index.ts"
+      ],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noUnnecessaryConditions": "off"
+          }
+        }
+      }
+    },
+    // React act returns a thenable at runtime even when its void overload hides that contract from Biome.
+    {
+      "includes": [
+        "registry/base-nova/protoform/hooks/use-proto-form-tanstack-v2/index.test.tsx",
+        "registry/base-nova/protoform/hooks/use-proto-form-tanstack/index.test.tsx",
+        "registry/base-nova/protoform/hooks/use-proto-form-v8/conformance.test.tsx",
+        "registry/base-nova/protoform/hooks/use-proto-form/partial-edit-validation.test.tsx",
+        "registry/base-nova/protoform/hooks/use-proto-form/use-proto-form.test.ts"
+      ],
+      "linter": {
+        "rules": {
+          "nursery": {
+            "useAwaitThenable": "off"
+          }
+        }
+      }
+    },
+    // Bare workflow event declarations intentionally mean null.
+    {
+      "includes": [".github/workflows/ci.yml", ".github/workflows/quality.yml", ".github/workflows/security.yml"],
+      "linter": {
+        "rules": {
+          "nursery": {
+            "noYamlEmptyMapValues": "off"
+          }
+        }
+      }
+    },
+    // Revision guards, submission locks and sequential cleanup protect these async updates; the rule does not model them.
+    {
+      "includes": [
+        "examples/basic/basic-form.test.tsx",
+        "examples/complex/complex-form.test.tsx",
+        "examples/form-libraries/form-libraries.test.tsx",
+        "examples/server/server.integration.test.ts",
+        "examples/tanstack/tanstack-form.test.tsx",
+        "registry/base-nova/protoform/lib/quickjs/controller.ts",
+        "scripts/e2e-screenshots.ts"
+      ],
+      "linter": {
+        "rules": {
+          "nursery": {
+            "useAtomicUpdates": "off"
+          }
+        }
+      }
+    },
+    // The JSON renderer reassigns an Array.isArray-narrowed array; Biome loses that narrowing in React callbacks.
+    {
+      "includes": ["registry/base-nova/protoform/components/json-field/index.tsx"],
+      "linter": {
+        "rules": {
+          "nursery": {
+            "noMisusedSpread": "off"
+          }
+        }
+      }
+    },
+    {
+      // Fullscreen and selection styles progressively enhance the docs without blocking supported browsers.
+      "includes": ["theme.css"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "useBaseline": {
+              "level": "error",
+              "options": { "allowSelectors": ["fullscreen"], "allowProperties": ["user-select"] }
+            }
+          }
+        }
+      }
+    },
     {
       // Production recursion must not add avoidable call-stack depth. Test-only screenshot
       // polling remains sequential without weakening its existing await-in-loop rule.
@@ -1129,10 +1255,7 @@
     },
     // Biome 2.6 loses Base UI's imported Side union and incorrectly marks supported positioning cases unreachable.
     {
-      "includes": [
-        "registry/base-nova/protoform/components/popover/index.tsx",
-        "registry/base-nova/protoform/components/tooltip/index.tsx"
-      ],
+      "includes": ["registry/base-nova/protoform/components/popover/index.tsx"],
       "linter": {
         "rules": {
           "suspicious": {
@@ -1149,41 +1272,6 @@
         "rules": {
           "nursery": {
             "noAstroSetHtmlDirective": "off"
-          }
-        }
-      }
-    },
-    {
-      // Generated catalog modules expose Blume's static `client` marker before imports.
-      "includes": ["registry/base-nova/protoform/demo/catalog/**"],
-      "linter": {
-        "rules": {
-          "nursery": {},
-          "style": {
-            "useImportsFirst": "off"
-          }
-        }
-      }
-    },
-    {
-      // React 19's `act` always returns a thenable at runtime, but its void overload hides that
-      // contract from Biome's type-aware rule for async callbacks.
-      "includes": [
-        "conformance/cel-entrypoints.conformance.test.tsx",
-        "conformance/email-adapters.conformance.test.tsx",
-        "registry/base-nova/protoform/components/auto-form-tanstack-v2/__tests__/conformance.test.tsx",
-        "registry/base-nova/protoform/components/auto-form-tanstack/__tests__/conformance.test.tsx",
-        "registry/base-nova/protoform/components/auto-form/__tests__/stepper.test.tsx",
-        "registry/base-nova/protoform/hooks/use-proto-form-tanstack-v2/index.test.tsx",
-        "registry/base-nova/protoform/hooks/use-proto-form-tanstack/index.test.tsx",
-        "registry/base-nova/protoform/hooks/use-proto-form-v8/conformance.test.tsx",
-        "registry/base-nova/protoform/hooks/use-proto-form/partial-edit-validation.test.tsx",
-        "registry/base-nova/protoform/hooks/use-proto-form/use-proto-form.test.ts"
-      ],
-      "linter": {
-        "rules": {
-          "nursery": {
-            "useAwaitThenable": "off"
           }
         }
       }
@@ -1287,32 +1375,6 @@
         "rules": {
           "style": {
             "useConsistentMethodSignatures": "off"
-          }
-        }
-      }
-    },
-    {
-      // Keep runtime guards around React refs, browser APIs, and supported third-party package
-      // versions even when the currently installed declarations model them as always present.
-      "includes": [
-        "registry/base-nova/protoform/components/auto-form/adapters/tanstack-v2.tsx",
-        "registry/base-nova/protoform/components/auto-form/adapters/tanstack.tsx",
-        "registry/base-nova/protoform/components/auto-form/auto-form-core.tsx",
-        "registry/base-nova/protoform/components/auto-form/fields/slider.tsx",
-        "registry/base-nova/protoform/components/auto-form/renderers/array.tsx",
-        "registry/base-nova/protoform/components/combobox/index.tsx",
-        "registry/base-nova/protoform/components/input-group/index.tsx",
-        "registry/base-nova/protoform/components/json-field/index.tsx",
-        "registry/base-nova/protoform/components/tabs/index.tsx",
-        "registry/base-nova/protoform/components/tags/index.tsx",
-        "registry/base-nova/protoform/components/toggle-group/index.tsx",
-        "registry/base-nova/protoform/hooks/use-controllable-state/index.ts",
-        "registry/base-nova/protoform/lib/input-utils/index.ts"
-      ],
-      "linter": {
-        "rules": {
-          "suspicious": {
-            "noUnnecessaryConditions": "off"
           }
         }
       }
@@ -1445,8 +1507,7 @@
             "noExcessiveLinesPerFile": "off"
           },
           "suspicious": {
-            "noExplicitAny": "error",
-            "noMisplacedAssertion": "off"
+            "noExplicitAny": "error"
           }
         }
       }
@@ -1598,17 +1659,18 @@
       }
     },
     {
-      // Astro imports are referenced by the template compiler rather than the frontmatter AST.
+      // Biome 2.6.9 tracks template imports; Fragment is supplied by the Astro compiler.
       "includes": ["**/*.astro"],
+      "javascript": { "globals": ["Fragment"] },
       "linter": {
         "rules": {
           "correctness": {
-            "noUndeclaredVariables": "off",
-            "noUnusedImports": "off",
-            "useJsxKeyInIterable": "off"
+            "noUndeclaredVariables": "error",
+            "noUnusedImports": "error",
+            "useJsxKeyInIterable": "error"
           },
           "style": {
-            "useImportType": "off"
+            "useImportType": { "level": "error", "options": { "style": "auto" } }
           },
           "suspicious": {
             "noUnknownAttribute": "off"
@@ -1667,40 +1729,6 @@
         "rules": {
           "a11y": {
             "useSemanticElements": "off"
-          }
-        }
-      }
-    },
-    {
-      // Biome's Tailwind parser rejects valid arbitrary variants such as `[[data-slot=x]+&]:` and
-      // dynamic `grid-cols-${n}` candidates, so the shorthand rule cannot run on these files.
-      "includes": [
-        "registry/**/components/auto-form/field-wrapper.tsx",
-        "registry/**/components/calendar/index.tsx",
-        "registry/**/components/dialog/index.tsx",
-        "registry/**/components/field/index.tsx",
-        "registry/**/components/input-group/index.tsx",
-        "registry/**/components/tabs/index.tsx"
-      ],
-      "linter": {
-        "rules": {
-          "nursery": {
-            "useTailwindShorthandClasses": "off"
-          }
-        }
-      }
-    },
-    {
-      // Biome infers `RegExp.prototype.exec` as never returning null, so it misreports the
-      // optional chaining these match-or-skip parsers rely on.
-      "includes": [
-        "registry/**/demo/bookstore/library-service.ts",
-        "registry/**/lib/protobuf-provider/humanize-validation-error.ts"
-      ],
-      "linter": {
-        "rules": {
-          "suspicious": {
-            "noUnnecessaryConditions": "off"
           }
         }
       }

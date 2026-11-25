@@ -19,10 +19,11 @@ export function syncScrollableCodeBlocks(root: ParentNode = document): void {
       continue;
     }
 
-    if (code.hasAttribute(MANAGED_ATTRIBUTE)) {
-      code.removeAttribute('tabindex');
-      code.removeAttribute(MANAGED_ATTRIBUTE);
+    if (!code.hasAttribute(MANAGED_ATTRIBUTE)) {
+      continue;
     }
+    code.removeAttribute('tabindex');
+    code.removeAttribute(MANAGED_ATTRIBUTE);
   }
 }
 

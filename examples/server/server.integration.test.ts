@@ -26,7 +26,7 @@ describe('form example Connect server', () => {
       headers: { Origin: 'https://protoform.pages.dev' },
     });
 
-    await expect(response.json()).resolves.toEqual({ status: 'ok' });
+    await expect(response.json()).resolves.toStrictEqual({ status: 'ok' });
     expect(response.headers.get('access-control-allow-origin')).toBe('https://protoform.pages.dev');
 
     const preflight = await fetch(`${address}/health`, {

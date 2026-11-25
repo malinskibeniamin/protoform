@@ -19,7 +19,7 @@ test('rejects malformed email through every supported form adapter', async () =>
   const invalidValues = { email: 'not-an-email' };
   const direct = await schema['~standard'].validate(invalidValues);
 
-  expect(direct.issues).toEqual([expect.objectContaining({ path: ['email'] })]);
+  expect(direct.issues).toStrictEqual([expect.objectContaining({ path: ['email'] })]);
   expect(await createFormikValidator(schema)(invalidValues)).toHaveProperty('email');
   expect(await createFinalFormValidator(schema)(invalidValues)).toHaveProperty('email');
   const onSubmit = rs.fn();

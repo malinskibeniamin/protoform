@@ -658,7 +658,7 @@ test('shows line numbers in component code previews', async ({ page }) => {
         reset: getComputedStyle(code).counterReset,
       };
     })
-  ).toEqual({
+  ).toStrictEqual({
     content: 'counter(line)',
     increment: 'line 1',
     reset: 'line 0',
@@ -704,7 +704,7 @@ test('keeps readiness areas readable with enlarged text', async ({ page }) => {
         .filter((element) => element.scrollWidth > element.clientWidth)
         .map((element) => element.querySelector('h3')?.textContent)
     )
-  ).toEqual([]);
+  ).toStrictEqual([]);
 });
 
 for (const pageInfo of pages) {
@@ -865,6 +865,6 @@ for (const pageInfo of pages) {
     const unexpectedConsoleErrors = consoleErrors.filter(
       (message) => !(pageInfo.name === 'server-error-form' && message.includes('server responded with a status of 400'))
     );
-    expect(unexpectedConsoleErrors).toEqual([]);
+    expect(unexpectedConsoleErrors).toStrictEqual([]);
   });
 }
