@@ -38,7 +38,7 @@
         "@bufbuild/protobuf@^2.17.0",
         "@connectrpc/connect@^2.3.0",
         "@connectrpc/connect-query@^2.3.1",
-        "@tanstack/react-query@^5.107.1",
+        "@tanstack/react-query@^5.108.1",
         "react-hook-form@^7.92.0"
       ],
       "files": [
@@ -342,7 +342,7 @@
       "dependencies": [
         "@bufbuild/protobuf@^2.17.0",
         "@connectrpc/connect@^2.3.0",
-        "@hookform/resolvers@^7.0.6",
+        "@hookform/resolvers@^7.0.7",
         "react-hook-form@^7.92.0"
       ],
       "files": [
@@ -475,7 +475,7 @@
         "@bufbuild/protovalidate@^1.3.0",
         "@connectrpc/connect@^2.3.0",
         "@standard-schema/spec@^1.1.0",
-        "lucide-react@^1.73.0"
+        "lucide-react@^1.76.0"
       ],
       "files": [
         {
@@ -896,7 +896,7 @@
         "class-variance-authority@^0.7.1",
         "clsx@^2.1.1",
         "cmdk@^1.1.1",
-        "lucide-react@^1.73.0",
+        "lucide-react@^1.76.0",
         "react-day-picker@^10.0.2",
         "tailwind-merge@^3.7.0",
         "@shadcn/react@0.3.1",
@@ -905,8 +905,8 @@
         "input-otp@1.5.0",
         "js-cookie@3.0.8",
         "react-is@19.3.1",
-        "react-resizable-panels@4.24.0",
-        "recharts@3.10.1",
+        "react-resizable-panels@4.24.1",
+        "recharts@3.11.0",
         "tw-animate-css@1.4.0"
       ],
       "files": [
@@ -1385,7 +1385,7 @@
         "class-variance-authority@^0.7.1",
         "clsx@^2.1.1",
         "cmdk@^1.1.1",
-        "lucide-react@^1.73.0",
+        "lucide-react@^1.76.0",
         "react-day-picker@^10.0.2",
         "tailwind-merge@^3.7.0",
         "@shadcn/react@0.3.1",
@@ -1393,7 +1393,7 @@
         "embla-carousel-react@8.6.0",
         "input-otp@1.5.0",
         "js-cookie@3.0.8",
-        "react-resizable-panels@4.24.0",
+        "react-resizable-panels@4.24.1",
         "tw-animate-css@1.4.0",
         "@tanstack/charts@1.5.0"
       ],
@@ -2092,13 +2092,13 @@
         "@codemirror/state@^6.7.6",
         "@codemirror/view@^6.43.15",
         "@connectrpc/connect@^2.3.0",
-        "@hookform/resolvers@^7.0.6",
+        "@hookform/resolvers@^7.0.7",
         "@lezer/highlight@^1.2.5",
         "@standard-schema/spec@^1.1.0",
         "class-variance-authority@^0.7.1",
         "clsx@^2.1.1",
         "cmdk@^1.1.1",
-        "lucide-react@^1.73.0",
+        "lucide-react@^1.76.0",
         "react-day-picker@^10.0.2",
         "react-hook-form@^7.92.0",
         "tailwind-merge@^3.7.0"
