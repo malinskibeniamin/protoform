@@ -1,38 +1,12 @@
-import { Storage } from 'happy-dom';
-import { fetch as nodeFetch } from 'undici';
-import { ResizeObserverMock } from './rstest.shared.setup';
+import { installGlobals } from '@miaskiewicz/turbo-dom/install';
 
-if (Reflect.get(globalThis, 'window') !== undefined) {
-  Object.defineProperty(Element.prototype, 'animate', {
-    configurable: true,
-    value: undefined,
-  });
-  Object.defineProperty(globalThis, 'fetch', {
-    configurable: true,
-    value: nodeFetch,
-  });
-  Object.defineProperty(globalThis, 'localStorage', {
-    configurable: true,
-    value: new Storage(),
-  });
-  Object.defineProperty(globalThis, 'sessionStorage', {
-    configurable: true,
-    value: new Storage(),
-  });
-}
+const nodeFetch = globalThis.fetch;
+installGlobals(globalThis);
+globalThis.fetch = nodeFetch;
 
-globalThis.ResizeObserver ??= ResizeObserverMock;
-globalThis.matchMedia = (query: string): MediaQueryList => ({
-  addEventListener: () => undefined,
-  addListener: () => undefined,
-  dispatchEvent: () => false,
-  matches: false,
-  media: query,
-  onchange: null,
-  removeEventListener: () => undefined,
-  removeListener: () => undefined,
+Object.defineProperty(Element.prototype, 'animate', {
+  configurable: true,
+  value: undefined,
 });
-globalThis.scrollTo = () => undefined;
-if (typeof Element !== 'undefined' && typeof Reflect.get(Element.prototype, 'scrollIntoView') !== 'function') {
-  Element.prototype.scrollIntoView = () => undefined;
-}
+
+await import('./rstest.shared.setup');

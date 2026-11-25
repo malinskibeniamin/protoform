@@ -180,7 +180,7 @@ describe('autoForm – test IDs', () => {
     expect(await screen.findByTestId('deploy-form-field-region-option-us-west-2')).toBeInTheDocument();
 
     await user.click(screen.getByTestId('deploy-form-field-channels-control'));
-    await user.click(screen.getByTestId('deploy-form-field-channels-option-slack'));
+    await user.click(await screen.findByTestId('deploy-form-field-channels-option-slack'));
 
     expect(screen.getByTestId('deploy-form-field-channels-selected-slack')).toBeInTheDocument();
   });

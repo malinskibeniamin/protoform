@@ -1,0 +1,211 @@
+diff --git a/src/environment/install.mjs b/src/environment/install.mjs
+index bfb1c581b21d77565d5b035e396fa38b86bfab03..cb4b3a3e8e9206b35484107e659a8992708e2a54 100644
+--- a/src/environment/install.mjs
++++ b/src/environment/install.mjs
+@@ -36,6 +36,10 @@ export function installGlobals(target, { html = DEFAULT_HTML, url } = {}) {
+       set(v) { Object.defineProperty(target, k, { configurable: true, writable: true, value: v }); },
+     });
+   }
++  define('Window', { configurable: true, writable: true, value: class Window {
++    static [Symbol.hasInstance](value) { return value === target; }
++  } });
++
+   // document is eager + universal
+   define('document', { configurable: true, writable: true, enumerable: true, value: env.document });
+ 
+diff --git a/src/runtime/dom.mjs b/src/runtime/dom.mjs
+index 1ef7caf53a68eab94584a7ff340a019751bb440d..e1d4b652087cea463a6cb42845ce32d7a1a08624 100644
+--- a/src/runtime/dom.mjs
++++ b/src/runtime/dom.mjs
+@@ -33,6 +33,7 @@ function cachedQSA(node, sel) {
+   else cache = node.__qaCache = new Map();
+   if (cache.size > 512) cache.clear();
+   const r = qselAll(node, sel);
++  Object.defineProperty(r, 'item', { value: (index) => r[index >>> 0] ?? null });
+   cache.set(sel, { v, r });
+   return r;
+ }
+@@ -778,6 +779,8 @@ export class Element extends Node {
+   set disabled(x) { if (x) this.setAttribute('disabled', ''); else this.removeAttribute('disabled'); }
+   get readOnly() { return this.hasAttribute('readonly'); }
+   set readOnly(x) { if (x) this.setAttribute('readonly', ''); else this.removeAttribute('readonly'); }
++  get inert() { return this.hasAttribute('inert'); }
++  set inert(value) { this.toggleAttribute('inert', Boolean(value)); }
+   get required() { return this.hasAttribute('required'); }
+   set required(x) { if (x) this.setAttribute('required', ''); else this.removeAttribute('required'); }
+   get name() { return this.getAttribute('name') ?? ''; }
+@@ -1011,7 +1014,7 @@ export class Element extends Node {
+   }
+   focus() {
+     const doc = this.ownerDocument;
+-    const prev = doc.__active;
++    const prev = doc.activeElement;
+     if (prev === this) return;
+     // moving focus blurs the previously-focused element first
+     if (prev && prev !== doc.body && typeof prev.dispatchEvent === 'function') {
+@@ -1132,13 +1135,37 @@ export class Element extends Node {
+   assignedElements(options) { return this.assignedNodes(options).filter((n) => n.nodeType === ELEMENT_NODE); }
+ 
+   // forms
+-  get form() { return this.closest ? this.closest('form') : null; }
++  setCustomValidity(message) { this.__customValidity = String(message); }
++  get validationMessage() {
++    return this.disabled || this.readOnly || this.type === 'hidden' ? '' : (this.__customValidity ?? '');
++  }
++  checkValidity() {
++    const valid = this.localName === 'form'
++      ? Array.from(this.elements, (element) => element.checkValidity()).every(Boolean)
++      : this.validationMessage === '';
++    if (!valid && this.localName !== 'form') this.dispatchEvent(new Event('invalid', { cancelable: true }));
++    return valid;
++  }
++  reportValidity() { return this.checkValidity(); }
++  get form() {
++    if (this.hasAttribute('form')) {
++      const form = this.ownerDocument.getElementById(this.getAttribute('form'));
++      return form?.localName === 'form' ? form : null;
++    }
++    return this.closest('form');
++  }
+   get elements() {
+     if (this.localName !== 'form') return undefined;
+     return liveHTMLCollection(() => collectByTag(this, '*').filter((e) => /^(input|select|textarea|button|fieldset|output)$/.test(e.localName)));
+   }
+   submit() { if (this.localName === 'form') this.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true })); }
+-  requestSubmit() { this.submit(); }
++  requestSubmit(submitter = null) {
++    if (this.localName !== 'form') return;
++    if (!this.hasAttribute('novalidate') && !submitter?.hasAttribute('formnovalidate') && !this.checkValidity()) return;
++    const event = new Event('submit', { bubbles: true, cancelable: true });
++    Object.defineProperty(event, 'submitter', { value: submitter });
++    this.dispatchEvent(event);
++  }
+   reset() {
+     if (this.localName !== 'form') return;
+     if (!this.dispatchEvent(new Event('reset', { bubbles: true, cancelable: true }))) return;
+@@ -1446,7 +1473,7 @@ function resetControl(el) {
+   }
+ }
+ function submitIfType(el, type) {
+-  if (type === 'submit') { const f = el.closest('form'); if (f) f.requestSubmit(); }
++  if (type === 'submit' && !el.disabled) el.form?.requestSubmit(el);
+ }
+ function needsCeClone(el) {
+   return el.__ns === '' && (el.__ce !== undefined || el.__ceIs !== undefined || el.__attrIdx >= 0 || el.localName.indexOf('-') !== -1);
+@@ -2443,7 +2470,9 @@ export class Document extends Node {
+   get doctype() { return this.__children().find((n) => n.nodeType === DOCUMENT_TYPE_NODE) ?? null; }
+   get head() { const html = this.documentElement; return html ? html.__children().find((n) => n.localName === 'head') ?? null : null; }
+   get body() { const html = this.documentElement; return html ? html.__children().find((n) => n.localName === 'body') ?? null : null; }
+-  get activeElement() { return this.__active || this.body || null; }
++  get activeElement() {
++    return this.__active?.isConnected && this.__active.ownerDocument === this ? this.__active : this.body || null;
++  }
+   __setActive(el) { this.__active = el; }
+ 
+   // Live StyleSheetList. emotion iterates this to find its own <style>'s sheet by
+diff --git a/src/runtime/events.mjs b/src/runtime/events.mjs
+index ec1b1a23e9cea39a8ac10f649175d61a1b6c7d0c..eb3ef8f9ec4cfd03696ef73c6337d9cf68aa9c7c 100644
+--- a/src/runtime/events.mjs
++++ b/src/runtime/events.mjs
+@@ -71,6 +71,7 @@ const TYPED_DEFAULTS = {
+   InputEvent: { data: null, inputType: '', isComposing: false },
+   FocusEvent: { relatedTarget: null },
+   CompositionEvent: { data: '' },
++  AnimationEvent: { animationName: '', elapsedTime: 0, pseudoElement: '' },
+   WheelEvent: { deltaX: 0, deltaY: 0, deltaZ: 0, deltaMode: 0 },
+   TouchEvent: { touches: [], targetTouches: [], changedTouches: [] },
+   DragEvent: { dataTransfer: null },
+@@ -101,6 +102,7 @@ export const KeyboardEvent = makeTyped('KeyboardEvent');
+ export const InputEvent = makeTyped('InputEvent');
+ export const FocusEvent = makeTyped('FocusEvent');
+ export const CompositionEvent = makeTyped('CompositionEvent');
++export const AnimationEvent = makeTyped('AnimationEvent');
+ export const WheelEvent = makeTyped('WheelEvent');
+ export const TouchEvent = makeTyped('TouchEvent');
+ export const DragEvent = makeTyped('DragEvent');
+diff --git a/src/runtime/stubs.mjs b/src/runtime/stubs.mjs
+index 59853767e822f701217c623859d267cf372855eb..4bfd88e7e60a2fbe0c17da14313afec7635d3882 100644
+--- a/src/runtime/stubs.mjs
++++ b/src/runtime/stubs.mjs
+@@ -142,9 +142,12 @@ export class MutationObserver {
+   takeRecords() { const r = this.__records; this.__records = []; return r; }
+ }
+ 
++const updateHistoryURL = Symbol('updateHistoryURL');
++
+ export function makeLocation(href = 'http://localhost/') {
+-  const u = new URL(href);
++  let u = new URL(href);
+   return {
++    [updateHistoryURL](url) { u = new URL(url); },
+     get href() { return u.href; }, set href(v) { /* navigation is a no-op in headless */ },
+     get protocol() { return u.protocol; },
+     get host() { return u.host; },
+@@ -161,13 +164,29 @@ export function makeLocation(href = 'http://localhost/') {
+ export function makeHistory(location) {
+   const stack = [{ state: null, url: location.href }];
+   let idx = 0;
++  function resolve(url) {
++    const next = url == null ? new URL(location.href) : new URL(url, location.href);
++    if (next.origin !== location.origin) throw new DOMException('History URL must be same origin', 'SecurityError');
++    return next.href;
++  }
++  function move(index) {
++    idx = index;
++    location[updateHistoryURL](stack[idx].url);
++  }
+   return {
+     get length() { return stack.length; },
+     get state() { return stack[idx].state; },
+-    pushState(state, _title, url) { stack.splice(idx + 1); stack.push({ state, url }); idx++; },
+-    replaceState(state, _title, url) { stack[idx] = { state, url: url ?? stack[idx].url }; },
+-    back() { if (idx > 0) idx--; },
+-    forward() { if (idx < stack.length - 1) idx++; },
+-    go(n) { idx = Math.max(0, Math.min(stack.length - 1, idx + (n || 0))); },
++    pushState(state, _title, url) {
++      const href = resolve(url);
++      stack.splice(idx + 1, Infinity, { state, url: href });
++      move(idx + 1);
++    },
++    replaceState(state, _title, url) {
++      stack[idx] = { state, url: resolve(url) };
++      move(idx);
++    },
++    back() { if (idx > 0) move(idx - 1); },
++    forward() { if (idx < stack.length - 1) move(idx + 1); },
++    go(n) { const next = idx + (n || 0); if (next >= 0 && next < stack.length) move(next); },
+   };
+ }
+diff --git a/src/runtime/window.mjs b/src/runtime/window.mjs
+index bf0fb959d3c31f5386170a5c2faee78ba7ca2ce4..f3931d21caabf80e359cef62cfa64f629e00714a 100644
+--- a/src/runtime/window.mjs
++++ b/src/runtime/window.mjs
+@@ -20,7 +20,7 @@ import {
+ import {
+   EventTarget,
+   UIEvent, MouseEvent, PointerEvent, KeyboardEvent, InputEvent, FocusEvent,
+-  CompositionEvent, WheelEvent, TouchEvent, DragEvent, ProgressEvent,
++  CompositionEvent, AnimationEvent, WheelEvent, TouchEvent, DragEvent, ProgressEvent,
+ } from './events.mjs';
+ 
+ // Minimal DataTransfer / clipboard primitives some libraries (user-event) need.
+@@ -378,11 +378,18 @@ const STATIC_BASE = {
+   ShadowRoot,
+   Event, CustomEvent,
+   UIEvent, MouseEvent, PointerEvent, KeyboardEvent, InputEvent, FocusEvent,
+-  CompositionEvent, WheelEvent, TouchEvent, DragEvent, ProgressEvent, ClipboardEvent,
++  CompositionEvent, AnimationEvent, WheelEvent, TouchEvent, DragEvent, ProgressEvent, ClipboardEvent,
+   DataTransfer,
+   // every element is a plain Element → `el instanceof HTMLElement` is true.
+   // Tag-specific interfaces match by localName via Symbol.hasInstance.
+   HTMLElement: Element, SVGElement, MathMLElement,
++  NodeFilter: Object.freeze({
++    FILTER_ACCEPT: 1, FILTER_REJECT: 2, FILTER_SKIP: 3,
++    SHOW_ALL: 0xffffffff, SHOW_ELEMENT: 0x1, SHOW_ATTRIBUTE: 0x2, SHOW_TEXT: 0x4,
++    SHOW_CDATA_SECTION: 0x8, SHOW_ENTITY_REFERENCE: 0x10, SHOW_ENTITY: 0x20,
++    SHOW_PROCESSING_INSTRUCTION: 0x40, SHOW_COMMENT: 0x80, SHOW_DOCUMENT: 0x100,
++    SHOW_DOCUMENT_TYPE: 0x200, SHOW_DOCUMENT_FRAGMENT: 0x400, SHOW_NOTATION: 0x800,
++  }),
+   // SVG interface globals. Libs (and test setup mocks) do
+   // `Object.defineProperty(SVGSVGElement.prototype, 'viewBox', …)` and
+   // `el instanceof SVGSVGElement`; an undefined global is a hard ReferenceError.

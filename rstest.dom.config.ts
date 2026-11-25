@@ -16,7 +16,8 @@ export default defineConfig({
     'scripts/**/*.test.tsx',
   ],
   output: {
-    externals: [/^zod(?:\/|$)/u],
+    bundleDependencies: true,
+    externals: ['@miaskiewicz/turbo-dom/install', /^zod(?:\/|$)/u],
   },
   plugins: [
     pluginReact({
@@ -32,9 +33,6 @@ export default defineConfig({
     type: 'vmThreads',
   },
   setupFiles: ['./rstest.setup.ts'],
-  testEnvironment: {
-    name: 'happy-dom',
-    options: { settings: { disableCSSFileLoading: true, disableIframePageLoading: true } },
-  },
+  testEnvironment: 'node',
   testTimeout: 15_000,
 });

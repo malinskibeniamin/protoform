@@ -328,7 +328,7 @@ describe('autoForm data providers v2', () => {
     view.rerender(<AutoForm dataProviders={{ methods: useMethods }} schema={schema} />);
 
     await user.click(screen.getByRole('button', { name: 'Multi-select trigger' }));
-    expect(screen.getByText('GET')).toBeVisible();
+    await waitFor(() => expect(screen.getByText('GET')).toBeVisible());
   });
 
   test('keeps multi-select values and reports the failure when the provider errors', async () => {
@@ -455,7 +455,7 @@ test('multi-select preserves incomplete selections and clears only missing value
   await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(2));
   expect(onSubmit.mock.calls[1]?.[0]).toMatchObject({ methods: ['get', 'post'] });
   await user.click(screen.getByRole('button', { name: 'Multi-select trigger' }));
-  expect(screen.getByRole('option', { name: 'GET' })).toBeVisible();
+  await waitFor(() => expect(screen.getByRole('option', { name: 'GET' })).toBeVisible());
   expect(screen.getByRole('option', { name: 'POST' })).toBeVisible();
   await user.type(screen.getByPlaceholderText('Search…'), 'post');
   expect(pagedRequests.at(-1)).toMatchObject({ query: 'post', cursor: undefined, selectedValues: ['get', 'post'] });

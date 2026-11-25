@@ -13,7 +13,8 @@ export default defineConfig({
     'examples/form-libraries/form-libraries.test.tsx',
   ],
   output: {
-    externals: [/^zod(?:\/|$)/u],
+    bundleDependencies: true,
+    externals: ['@miaskiewicz/turbo-dom/install', /^zod(?:\/|$)/u],
   },
   plugins: [
     pluginReact({
@@ -25,8 +26,5 @@ export default defineConfig({
     }),
   ],
   setupFiles: ['./rstest.setup.ts'],
-  testEnvironment: {
-    name: 'happy-dom',
-    options: { settings: { disableCSSFileLoading: true, disableIframePageLoading: true } },
-  },
+  testEnvironment: 'node',
 });

@@ -40,8 +40,9 @@ The pinned package integrity in `bun.lock` owns provenance; upstream license fil
 
 The 2.2.7 upgrade retains that patch: its unpatched source still defers initialization
 until the disclosure toggle. Blume's declaration exports and localized reference labels,
-Astro's build/router fixes, Connect's cancellation cleanup and Rstest's Happy DOM 21
-prebundling apply without local opt-ins. Resolver 7's breaking TypeBox migration does not
+Astro's build/router fixes and Connect's cancellation cleanup apply without local opt-ins.
+That refresh also picked up Rstest's Happy DOM 21 prebundling, before the simulated-DOM
+suites moved to TurboDOM. Resolver 7's breaking TypeBox migration does not
 affect Protoform, which only uses `toNestErrors` and `validateFieldsNatively`.
 
 Pixelmatch 8 uses OKLab/HyAB color differences and improved transparency detection. The
