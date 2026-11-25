@@ -1,9 +1,9 @@
 'use client';
 
 import type { AutoFormFieldProps } from '../core-types';
-import { getFieldUiConfig } from '../helpers';
 import type { FieldTypeDefinition } from '../registry';
 import { ToggleGroup, ToggleGroupItem } from '../ui-components';
+import { builtInFieldMetadata } from './metadata';
 import { getControlLabel, getFlatOptions, hasNumericOptions, renderOptionLabel, useFieldTestIds } from './shared';
 
 function ToggleGroupFieldComponent({ error, field, id, inputProps, label }: AutoFormFieldProps) {
@@ -39,13 +39,6 @@ function ToggleGroupFieldComponent({ error, field, id, inputProps, label }: Auto
 export { ToggleGroupFieldComponent };
 
 export const toggleGroupFieldDefinition: FieldTypeDefinition = {
+  ...builtInFieldMetadata.toggleGroup,
   component: ToggleGroupFieldComponent,
-  match: (field) => {
-    if (field.type !== 'select') {
-      return false;
-    }
-    return getFieldUiConfig(field).control === 'toggleGroup';
-  },
-  name: 'toggleGroup',
-  priority: 25,
 };

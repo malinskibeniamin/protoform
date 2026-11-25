@@ -4,6 +4,7 @@ import type { AutoFormFieldProps } from '../core-types';
 import { getFieldUiConfig } from '../helpers';
 import type { FieldTypeDefinition } from '../registry';
 import { Combobox } from '../ui-components';
+import { builtInFieldMetadata } from './metadata';
 import { getFlatOptions, getGroupedOptions, hasNumericOptions, useFieldTestIds } from './shared';
 
 function ComboboxFieldComponent({ field, id, inputProps }: AutoFormFieldProps) {
@@ -46,14 +47,6 @@ function ComboboxFieldComponent({ field, id, inputProps }: AutoFormFieldProps) {
 export { ComboboxFieldComponent };
 
 export const comboboxFieldDefinition: FieldTypeDefinition = {
+  ...builtInFieldMetadata.combobox,
   component: ComboboxFieldComponent,
-  match: (field) => {
-    if (field.type !== 'select') {
-      return false;
-    }
-    const optionCount = field.options?.length ?? 0;
-    return optionCount > 8;
-  },
-  name: 'combobox',
-  priority: 18,
 };

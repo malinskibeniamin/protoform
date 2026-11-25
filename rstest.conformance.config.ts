@@ -15,18 +15,23 @@ export default defineConfig({
   output: {
     externals: [/^zod(?:\/|$)/u],
   },
-  plugins: [
-    pluginReact({
-      reactCompiler: {
-        compilationMode: 'infer',
-        panicThreshold: 'all_errors',
-        target: '19',
-      },
-    }),
-  ],
+  plugins: [pluginReact()],
   setupFiles: ['./rstest.setup.ts'],
   testEnvironment: {
     name: 'happy-dom',
     options: { settings: { disableCSSFileLoading: true, disableIframePageLoading: true } },
+  },
+  tools: {
+    swc: {
+      jsc: {
+        transform: {
+          reactCompiler: {
+            compilationMode: 'infer',
+            panicThreshold: 'all_errors',
+            target: '19',
+          },
+        },
+      },
+    },
   },
 });

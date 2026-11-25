@@ -2,11 +2,9 @@
 
 import { Checkbox as CheckboxPrimitive } from '@base-ui/react/checkbox';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { type HTMLMotionProps, motion } from 'motion/react';
 import type React from 'react';
 import { useState } from 'react';
 
-import { splitMotionProps } from '@/registry/base-nova/protoform/lib/base-ui-compat';
 import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
 const pathDrawClassName =
@@ -33,7 +31,6 @@ const checkboxVariants = cva(
 
 type PrimitiveCheckboxProps = React.ComponentProps<typeof CheckboxPrimitive.Root>;
 type CheckboxProps = Omit<PrimitiveCheckboxProps, 'checked' | 'defaultChecked'> &
-  Omit<HTMLMotionProps<'button'>, keyof PrimitiveCheckboxProps> &
   VariantProps<typeof checkboxVariants> &
   SharedProps & {
     checked?: boolean | 'indeterminate' | undefined;
@@ -60,7 +57,6 @@ function Checkbox({
       setUncontrolledIndeterminate(false);
     }
   };
-  const separated = splitMotionProps(props);
   const renderRoot: NonNullable<PrimitiveCheckboxProps['render']> = (rootProps, state) => {
     const Root: React.ElementType = nativeButton === false ? 'span' : 'button';
     let dataState = 'unchecked';
@@ -74,7 +70,7 @@ function Checkbox({
   };
   return (
     <CheckboxPrimitive.Root
-      {...separated.native}
+      {...props}
       checked={checked === 'indeterminate' ? false : checked}
       className={(state) =>
         cn(checkboxVariants({ variant }), typeof className === 'function' ? className(state) : className)
@@ -89,41 +85,39 @@ function Checkbox({
       onCheckedChange={handleCheckedChange}
       render={render ?? renderRoot}
     >
-      <motion.span className="contents" {...separated.motion}>
-        {children}
-        <CheckboxPrimitive.Indicator className="group/indicator size-3.5" keepMounted render={<span />}>
-          <svg
-            aria-hidden="true"
-            className="size-3.5"
-            data-slot="checkbox-indicator"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="3.5"
-            viewBox="0 0 24 24"
-          >
-            <path
-              className={cn(
-                pathDrawClassName,
-                'group-data-checked/indicator:opacity-100 group-data-checked/indicator:[stroke-dashoffset:0] group-data-indeterminate/indicator:hidden'
-              )}
-              d="M4.5 12.75l6 6 9-13.5"
-              pathLength={1}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <path
-              className={cn(
-                pathDrawClassName,
-                'group-data-indeterminate/indicator:opacity-100 group-data-indeterminate/indicator:[stroke-dashoffset:0]'
-              )}
-              d="M5 12h14"
-              pathLength={1}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </CheckboxPrimitive.Indicator>
-      </motion.span>
+      {children}
+      <CheckboxPrimitive.Indicator className="group/indicator size-3.5" keepMounted render={<span />}>
+        <svg
+          aria-hidden="true"
+          className="size-3.5"
+          data-slot="checkbox-indicator"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="3.5"
+          viewBox="0 0 24 24"
+        >
+          <path
+            className={cn(
+              pathDrawClassName,
+              'group-data-checked/indicator:opacity-100 group-data-checked/indicator:[stroke-dashoffset:0] group-data-indeterminate/indicator:hidden'
+            )}
+            d="M4.5 12.75l6 6 9-13.5"
+            pathLength={1}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            className={cn(
+              pathDrawClassName,
+              'group-data-indeterminate/indicator:opacity-100 group-data-indeterminate/indicator:[stroke-dashoffset:0]'
+            )}
+            d="M5 12h14"
+            pathLength={1}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </CheckboxPrimitive.Indicator>
     </CheckboxPrimitive.Root>
   );
 }

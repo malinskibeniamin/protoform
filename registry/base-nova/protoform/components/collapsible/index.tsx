@@ -1,13 +1,10 @@
 'use client';
 
 import { Collapsible as CollapsiblePrimitive } from '@base-ui/react/collapsible';
-import { AnimatePresence, type HTMLMotionProps, motion, type Transition } from 'motion/react';
 import React from 'react';
 
-import { asChildToRender, asChildTrigger, splitMotionProps } from '@/registry/base-nova/protoform/lib/base-ui-compat';
+import { asChildToRender, asChildTrigger } from '@/registry/base-nova/protoform/lib/base-ui-compat';
 import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
-
-const DEFAULT_TRANSITION = { damping: 22, stiffness: 150, type: 'spring' } satisfies Transition;
 
 interface CollapsibleContextType {
   isOpen: boolean;
@@ -71,45 +68,24 @@ function CollapsibleTrigger({ className, ...props }: CollapsibleTriggerProps) {
   );
 }
 
-type CollapsibleContentProps = React.ComponentProps<typeof CollapsiblePrimitive.Panel> &
-  Omit<HTMLMotionProps<'div'>, keyof React.ComponentProps<typeof CollapsiblePrimitive.Panel>> & {
-    transition?: Transition;
-  };
+type CollapsibleContentProps = React.ComponentProps<typeof CollapsiblePrimitive.Panel>;
 
-function CollapsibleContent({
-  className,
-  children,
-  render,
-  keepMounted = false,
-  transition = DEFAULT_TRANSITION,
-  ...props
-}: CollapsibleContentProps) {
-  const { isOpen } = useCollapsible();
-  const separated = splitMotionProps(props);
-
+function CollapsibleContent({ className, children, render, keepMounted = false, ...props }: CollapsibleContentProps) {
   return (
-    <AnimatePresence>
-      {isOpen || keepMounted === true ? (
-        <CollapsiblePrimitive.Panel
-          className={className}
-          data-slot="collapsible-content"
-          keepMounted
-          render={render}
-          {...separated.native}
-        >
-          <motion.div
-            animate={{ height: 'auto', opacity: 1, overflow: 'hidden' }}
-            exit={{ height: 0, opacity: 0, overflow: 'hidden' }}
-            initial={{ height: 0, opacity: 0, overflow: 'hidden' }}
-            layout
-            transition={transition}
-            {...separated.motion}
-          >
-            {children}
-          </motion.div>
-        </CollapsiblePrimitive.Panel>
-      ) : null}
-    </AnimatePresence>
+    <CollapsiblePrimitive.Panel
+      className={(state) =>
+        cn(
+          'h-(--collapsible-panel-height) overflow-hidden transition-all duration-200 ease-out data-ending-style:h-0 data-ending-style:opacity-0 data-starting-style:h-0 data-starting-style:opacity-0 motion-reduce:transition-none',
+          typeof className === 'function' ? className(state) : className
+        )
+      }
+      data-slot="collapsible-content"
+      keepMounted={keepMounted}
+      render={render}
+      {...props}
+    >
+      {children}
+    </CollapsiblePrimitive.Panel>
   );
 }
 

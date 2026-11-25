@@ -4,6 +4,7 @@ import type { AutoFormFieldProps } from '../core-types';
 import { getFieldUiConfig } from '../helpers';
 import type { FieldTypeDefinition } from '../registry';
 import { Textarea } from '../ui-components';
+import { builtInFieldMetadata } from './metadata';
 import { useFieldTestIds } from './shared';
 
 function BytesFieldComponent({ error, field, id, inputProps }: AutoFormFieldProps) {
@@ -30,8 +31,6 @@ function BytesFieldComponent({ error, field, id, inputProps }: AutoFormFieldProp
 export { BytesFieldComponent };
 
 export const bytesFieldDefinition: FieldTypeDefinition = {
+  ...builtInFieldMetadata.bytes,
   component: BytesFieldComponent,
-  match: (field) => field.type === 'bytes',
-  name: 'bytes',
-  priority: 10,
 };

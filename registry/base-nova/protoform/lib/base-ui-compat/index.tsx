@@ -1,4 +1,3 @@
-import { isValidMotionProp, type MotionProps } from 'motion/react';
 import React from 'react';
 
 type HTMLPropsCompat<T = Element> = React.HTMLAttributes<T> & {
@@ -365,26 +364,3 @@ export const Slot = React.forwardRef<HTMLElement, SlotProps>(function renderSlot
   );
 });
 Slot.displayName = 'Slot';
-
-type NativeMotionEvent = 'onAnimationStart' | 'onDrag' | 'onDragEnd' | 'onDragStart';
-type NativeProps<Props> = Omit<Props, keyof MotionProps> &
-  Pick<Props, Extract<keyof Props, NativeMotionEvent | 'style'>>;
-const nativeMotionEvents = new Set<string>(['onAnimationStart', 'onDrag', 'onDragEnd', 'onDragStart']);
-
-export function splitMotionProps<Props extends object>(
-  props: Props,
-  nativeEvents?: true
-): { native: NativeProps<Props>; motion: MotionProps };
-export function splitMotionProps<Props extends object>(
-  props: Props,
-  nativeEvents: false
-): { native: Omit<Props, keyof MotionProps>; motion: MotionProps };
-export function splitMotionProps<Props extends object>(props: Props, nativeEvents = true) {
-  const native: Record<string, unknown> = {};
-  const motion: Record<string, unknown> = {};
-  for (const [key, value] of Object.entries(props) as [string, unknown][]) {
-    const target = isValidMotionProp(key) && !(nativeEvents && nativeMotionEvents.has(key)) ? motion : native;
-    target[key] = value;
-  }
-  return { native: native as NativeProps<Props>, motion: motion as MotionProps };
-}

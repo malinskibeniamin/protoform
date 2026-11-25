@@ -1,8 +1,8 @@
 'use client';
 
+import { Button as ButtonPrimitive } from '@base-ui/react/button';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { CheckIcon, CopyIcon } from 'lucide-react';
-import { AnimatePresence, type HTMLMotionProps, motion } from 'motion/react';
 import React from 'react';
 
 import { cn } from '@/registry/base-nova/protoform/lib/utils';
@@ -34,7 +34,7 @@ const buttonVariants = cva(
   }
 );
 
-type CopyButtonProps = Omit<HTMLMotionProps<'button'>, 'onCopy' | 'children'> &
+type CopyButtonProps = Omit<React.ComponentProps<'button'>, 'onCopy' | 'children'> &
   VariantProps<typeof buttonVariants> & {
     content?: string;
     delay?: number;
@@ -94,7 +94,7 @@ function CopyButton({
 
   return (
     <>
-      <motion.button
+      <ButtonPrimitive
         className={cn(buttonVariants({ size, variant }), className)}
         data-slot="copy-button"
         data-testid={testId}
@@ -102,20 +102,15 @@ function CopyButton({
         type="button"
         {...props}
       >
-        <AnimatePresence mode="wait">
-          <motion.span
-            animate={{ opacity: 1, scale: 1 }}
-            data-slot="copy-button-icon"
-            exit={{ opacity: 0, scale: 0.95 }}
-            initial={{ opacity: 0, scale: 0.95 }}
-            key={copied === true ? 'check' : 'copy'}
-            transition={{ duration: 0.15 }}
-          >
-            <Icon />
-          </motion.span>
-        </AnimatePresence>
+        <span
+          className="inline-flex animate-in duration-150 fade-in-0 zoom-in-95 motion-reduce:animate-none"
+          data-slot="copy-button-icon"
+          key={copied === true ? 'check' : 'copy'}
+        >
+          <Icon />
+        </span>
         {children}
-      </motion.button>
+      </ButtonPrimitive>
       {copyError ? (
         <span aria-live="assertive" className="sr-only" role="alert">
           {copyError}

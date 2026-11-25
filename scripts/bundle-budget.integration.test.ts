@@ -1,5 +1,7 @@
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, readFileSync, rmSync, statSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { gzipSync } from 'node:zlib';
 import { describe, expect } from '@rstest/core';
 
 const external = [
@@ -38,7 +40,174 @@ const entries = [
   },
 ] as const;
 
+const consumerEntries = [
+  { asyncBudget: 0, entry: 'host.tsx', initialBudget: 215_000, name: 'host', totalBudget: 215_000 },
+  { asyncBudget: 185_000, entry: 'index.tsx', initialBudget: 355_000, name: 'default UI', totalBudget: 535_000 },
+] as const;
+
 describe('bundle budgets', () => {
+  test.each(consumerEntries)('bounds complete $name payloads without externalizing dependencies', async (entry) => {
+    const { build } = await import('vite');
+    mkdirSync('.tmp', { recursive: true });
+    const directory = mkdtempSync(resolve('.tmp/consumer-payload-'));
+    const fixture = resolve(directory, 'entry.ts');
+    const chunks: {
+      dynamicImports: string[];
+      gzip: number;
+      initial: boolean;
+      imports: string[];
+      modules: string[];
+      name: string;
+    }[] = [];
+    writeFileSync(
+      fixture,
+      `export { AutoForm } from ${JSON.stringify(resolve('registry/base-nova/protoform/components/auto-form', entry.entry))};`
+    );
+    try {
+      await build({
+        configFile: false,
+        define: { 'process.env.NODE_ENV': '"production"' },
+        logLevel: 'silent',
+        resolve: {
+          alias: [
+            { find: '@/components/ui', replacement: resolve('registry/base-nova/protoform/components') },
+            { find: '@', replacement: resolve('.') },
+          ],
+        },
+        plugins: [
+          {
+            name: 'consumer-payload-budget',
+            generateBundle(_options, bundle) {
+              for (const output of Object.values(bundle)) {
+                if (output.type === 'chunk') {
+                  chunks.push({
+                    dynamicImports: output.dynamicImports,
+                    gzip: gzipSync(output.code).byteLength,
+                    initial: output.isEntry,
+                    imports: output.imports,
+                    modules: Object.entries(output.modules)
+                      .filter(([, module]) => module.renderedLength > 0)
+                      .map(([file]) => file),
+                    name: output.fileName,
+                  });
+                }
+              }
+            },
+          },
+        ],
+        build: {
+          cssCodeSplit: true,
+          lib: { entry: fixture, formats: ['es'] },
+          minify: true,
+          reportCompressedSize: false,
+          write: false,
+        },
+      });
+    } finally {
+      rmSync(directory, { force: true, recursive: true });
+    }
+    const initialChunks = new Set<string>();
+    const visit = (name: string) => {
+      if (initialChunks.has(name)) {
+        return;
+      }
+      initialChunks.add(name);
+      const chunk = chunks.find((candidate) => candidate.name === name);
+      if (chunk === undefined) {
+        throw new Error(`Unbudgeted external import: ${name}`);
+      }
+      for (const dependency of chunk.imports) {
+        visit(dependency);
+      }
+    };
+    for (const chunk of chunks) {
+      if (chunk.initial) {
+        visit(chunk.name);
+      }
+    }
+    const initial = chunks.filter((chunk) => initialChunks.has(chunk.name));
+    const deferred = chunks.filter((chunk) => !initialChunks.has(chunk.name));
+    const sum = (values: typeof chunks) => values.reduce((bytes, chunk) => bytes + chunk.gzip, 0);
+    const initialModules = initial.flatMap((chunk) => chunk.modules);
+    expect(
+      chunks
+        .flatMap((chunk) => [...chunk.imports, ...chunk.dynamicImports])
+        .filter((name) => chunks.every((chunk) => chunk.name !== name))
+    ).toEqual([]);
+    expect(initial.some((chunk) => chunk.modules.some((file) => file.endsWith(`/auto-form/${entry.entry}`)))).toBe(
+      true
+    );
+    expect(initialModules.some((file) => file.includes('/node_modules/react/'))).toBe(true);
+    const allModules = chunks.flatMap((chunk) => chunk.modules);
+    expect(
+      initialModules.filter((file) =>
+        /\/node_modules\/(?:@codemirror|@uiw\/react-codemirror|react-day-picker|date-fns)\//u.test(file)
+      )
+    ).toEqual([]);
+    expect(
+      allModules.filter((file) =>
+        /\/node_modules\/(?:motion|motion-dom|framer-motion|@uiw\/react-codemirror|@bufbuild\/protovalidate\/node_modules\/@bufbuild\/)\//u.test(
+          file
+        )
+      )
+    ).toEqual([]);
+    expect(sum(initial)).toBeLessThanOrEqual(entry.initialBudget);
+    expect(sum(deferred)).toBeLessThanOrEqual(entry.asyncBudget);
+    expect(sum(chunks)).toBeLessThanOrEqual(entry.totalBudget);
+    expect(
+      allModules.filter((file) =>
+        /\/node_modules\/(?:recharts|formik|react-final-form|@tanstack\/react-form)\//u.test(file)
+      )
+    ).toEqual([]);
+    expect(deferred.some((chunk) => chunk.modules.some((file) => file.includes('/node_modules/@codemirror/')))).toBe(
+      entry.name === 'default UI'
+    );
+    expect(
+      deferred.some((chunk) => chunk.modules.some((file) => file.includes('/node_modules/react-day-picker/')))
+    ).toBe(entry.name === 'default UI');
+  });
+
+  test('keeps the headless configuration inspector independent of rendering runtimes', async () => {
+    const { build } = await import('vite');
+    const modules: string[] = [];
+    let compressedBytes = 0;
+    await build({
+      configFile: false,
+      logLevel: 'silent',
+      resolve: { alias: { '@': resolve('.') } },
+      plugins: [
+        {
+          name: 'inspect-configuration-dependencies',
+          generateBundle(_options, bundle) {
+            for (const output of Object.values(bundle)) {
+              if (output.type !== 'chunk') {
+                continue;
+              }
+              compressedBytes += gzipSync(output.code).byteLength;
+              modules.push(
+                ...Object.entries(output.modules)
+                  .filter(([, module]) => module.renderedLength > 0)
+                  .map(([file]) => file)
+              );
+            }
+          },
+        },
+      ],
+      build: {
+        lib: { entry: 'registry/base-nova/protoform/components/auto-form/configuration.ts', formats: ['es'] },
+        minify: true,
+        reportCompressedSize: false,
+        write: false,
+      },
+    });
+    expect(modules.some((file) => file.endsWith('/auto-form/configuration.ts'))).toBe(true);
+    expect(modules.filter((file) => /\/auto-form\/fields\/.*\.tsx$/u.test(file))).toEqual([]);
+    expect(
+      modules.filter((file) => /\/node_modules\/(?:date-fns|lucide-react|motion|framer-motion|react)\//u.test(file))
+    ).toEqual([]);
+    expect(compressedBytes).toBeLessThan(160_000);
+  });
+
   test('enforces registry runtime and example budgets', () => {
     const outputDirectory = '.tmp/bundle-budget';
     rmSync(outputDirectory, { force: true, recursive: true });

@@ -42,6 +42,22 @@ test('submits the current JSON edit without waiting for a debounce', async () =>
   expect(onSubmit).toHaveBeenCalledWith({ theme: 'light' });
 });
 
+test('auto-closes brackets, indents new lines and undoes edits like the former basic setup', async () => {
+  const onChange = rs.fn();
+  render(<JSONField onChange={onChange} schema={{ type: 'array' }} showPlaceholder={false} value={[]} />);
+  const editor = await screen.findByRole('textbox', { name: 'JSON value' });
+  const browserEditor = page.getByRole('textbox', { name: 'JSON value' });
+  const lines = () => [...editor.querySelectorAll('.cm-line')].map((line) => line.textContent);
+  await browserEditor.fill('');
+  await browserEditor.pressSequentially('[');
+  await waitFor(() => expect(lines()).toEqual(['[]']));
+  await browserEditor.press('Enter');
+  await waitFor(() => expect(lines()).toEqual(['[', '  ', ']']));
+  expect(onChange).toHaveBeenLastCalledWith([]);
+  await browserEditor.press('ControlOrMeta+z');
+  await waitFor(() => expect(lines()).not.toEqual(['[', '  ', ']']));
+});
+
 test('blocks malformed drafts, describes the error, and recovers after correction', async () => {
   const user = userEvent.setup();
   const onSubmit = rs.fn();

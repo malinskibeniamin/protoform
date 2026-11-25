@@ -1,16 +1,32 @@
 'use client';
 
-import { format, isValid, parse } from 'date-fns';
 import React from 'react';
 
 import { useAutoFormRuntimeContext } from '../context';
 import type { AutoFormFieldProps } from '../core-types';
-import { getFieldUiConfig, isRecord, NUMERIC_OPTION_PATTERN } from '../helpers';
+import { getFieldUiConfig, NUMERIC_OPTION_PATTERN, readDataProviderId as readFieldDataProviderId } from '../helpers';
 import { getAutoFormChoiceTestId, getAutoFormFieldTestId } from '../test-ids';
 import type { AutoFormOptionGroup, AutoFormOptionItem } from '../types';
 import { Input, InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from '../ui-components';
 
 const TIME_ZONE_SUFFIX_PATTERN = /([+-]\d{2}:\d{2}|Z)$/u;
+const CALENDAR_DATE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/u;
+
+function padTwoDigits(value: number): string {
+  return String(value).padStart(2, '0');
+}
+
+function isValidDate(value: Date): boolean {
+  return !Number.isNaN(value.getTime());
+}
+
+export function formatCalendarDate(value: Date): string {
+  return `${String(value.getFullYear()).padStart(4, '0')}-${padTwoDigits(value.getMonth() + 1)}-${padTwoDigits(value.getDate())}`;
+}
+
+function formatLocalTime(value: Date): string {
+  return `${padTwoDigits(value.getHours())}:${padTwoDigits(value.getMinutes())}`;
+}
 
 export function getControlLabel(label: AutoFormFieldProps['label'], field: AutoFormFieldProps['field']): string {
   return typeof label === 'string' || typeof label === 'number'
@@ -42,14 +58,14 @@ export function normalizeDateValue(value: unknown): string {
   if (typeof value === 'string') {
     if (TIME_ZONE_SUFFIX_PATTERN.test(value)) {
       const parsed = new Date(value);
-      return Number.isNaN(parsed.getTime()) ? '' : format(parsed, 'yyyy-MM-dd');
+      return isValidDate(parsed) ? formatCalendarDate(parsed) : '';
     }
 
     return value.includes('T') ? (value.split('T')[0] ?? '') : value;
   }
 
-  if (value instanceof Date && isValid(value)) {
-    return format(value, 'yyyy-MM-dd');
+  if (value instanceof Date && isValidDate(value)) {
+    return formatCalendarDate(value);
   }
 
   return '';
@@ -59,26 +75,39 @@ export function normalizeTimeValue(value: unknown): string {
   if (typeof value === 'string') {
     if (TIME_ZONE_SUFFIX_PATTERN.test(value)) {
       const parsed = new Date(value);
-      return Number.isNaN(parsed.getTime()) ? '' : format(parsed, 'HH:mm');
+      return isValidDate(parsed) ? formatLocalTime(parsed) : '';
     }
 
     return value.includes('T') ? (value.split('T')[1]?.slice(0, 5) ?? '') : '';
   }
 
-  if (value instanceof Date && isValid(value)) {
-    return format(value, 'HH:mm');
+  if (value instanceof Date && isValidDate(value)) {
+    return formatLocalTime(value);
   }
 
   return '';
 }
 
 export function parseCalendarDate(value: string): Date | undefined {
-  if (!value) {
-    return;
+  const match = CALENDAR_DATE_PATTERN.exec(value);
+  if (match === null) {
+    return undefined;
   }
 
-  const parsed = parse(value, 'yyyy-MM-dd', new Date());
-  return isValid(parsed) ? parsed : undefined;
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const parsed = new Date(year, month - 1, day);
+  parsed.setFullYear(year, month - 1, day);
+  if (
+    !isValidDate(parsed) ||
+    parsed.getFullYear() !== year ||
+    parsed.getMonth() !== month - 1 ||
+    parsed.getDate() !== day
+  ) {
+    return undefined;
+  }
+  return parsed;
 }
 
 export function buildTimestampValue(datePart: string, timePart: string): string {
@@ -222,16 +251,5 @@ export function StringLikeInput({
 }
 
 export function readDataProviderId(field: AutoFormFieldProps['field'] | undefined): string | undefined {
-  const customData = field?.fieldConfig?.customData;
-  if (!(customData && typeof customData === 'object')) {
-    return;
-  }
-  if (typeof customData['dataProvider'] === 'string') {
-    return customData['dataProvider'];
-  }
-  const { ui } = customData;
-  if (isRecord(ui) && typeof ui['dataProvider'] === 'string') {
-    return ui['dataProvider'];
-  }
-  return undefined;
+  return readFieldDataProviderId(field);
 }

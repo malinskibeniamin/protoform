@@ -3,6 +3,7 @@
 import type { AutoFormFieldProps } from '../core-types';
 import { getFieldUiConfig } from '../helpers';
 import type { FieldTypeDefinition } from '../registry';
+import { builtInFieldMetadata } from './metadata';
 import { StringLikeInput, useFieldTestIds } from './shared';
 
 function StringFieldComponent(props: AutoFormFieldProps) {
@@ -22,8 +23,6 @@ function StringFieldComponent(props: AutoFormFieldProps) {
 export { StringFieldComponent };
 
 export const stringFieldDefinition: FieldTypeDefinition = {
+  ...builtInFieldMetadata.string,
   component: StringFieldComponent,
-  match: (field) => field.type === 'string',
-  name: 'string',
-  priority: 10,
 };

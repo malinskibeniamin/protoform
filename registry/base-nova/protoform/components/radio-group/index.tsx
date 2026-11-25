@@ -1,21 +1,15 @@
 import { Radio as RadioPrimitive } from '@base-ui/react/radio';
 import { RadioGroup as RadioGroupPrimitive } from '@base-ui/react/radio-group';
 import { Circle } from 'lucide-react';
-import { AnimatePresence, type HTMLMotionProps, motion, type Transition } from 'motion/react';
 import type React from 'react';
 
-import { splitMotionProps } from '@/registry/base-nova/protoform/lib/base-ui-compat';
 import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
-
-const DEFAULT_TRANSITION = { duration: 0.15 } satisfies Transition;
 
 type RadioGroupOrientation = 'vertical' | 'horizontal';
 
 type RadioGroupProps = React.ComponentProps<typeof RadioGroupPrimitive> &
   SharedProps & {
     orientation?: RadioGroupOrientation;
-
-    transition?: Transition;
   };
 
 function RadioGroup(allProps: RadioGroupProps) {
@@ -44,11 +38,9 @@ function RadioGroup(allProps: RadioGroupProps) {
   );
 }
 
-type RadioGroupIndicatorProps = React.ComponentProps<typeof RadioPrimitive.Indicator> & {
-  transition: Transition;
-};
+type RadioGroupIndicatorProps = React.ComponentProps<typeof RadioPrimitive.Indicator>;
 
-function RadioGroupIndicator({ className, transition, ...props }: RadioGroupIndicatorProps) {
+function RadioGroupIndicator({ className, ...props }: RadioGroupIndicatorProps) {
   return (
     <RadioPrimitive.Indicator
       className={(state) =>
@@ -61,46 +53,35 @@ function RadioGroupIndicator({ className, transition, ...props }: RadioGroupIndi
       keepMounted
       {...props}
     >
-      <AnimatePresence>
-        <motion.div
-          animate={{ opacity: 1, scale: 1 }}
-          className="flex items-center justify-center"
-          data-slot="radio-group-indicator-circle"
-          exit={{ opacity: 0, scale: 0.95 }}
-          initial={{ opacity: 0, scale: 0.95 }}
-          key="radio-group-indicator-circle"
-          transition={transition}
-        >
-          <Circle className="size-2 fill-current stroke-none" />
-        </motion.div>
-      </AnimatePresence>
+      <span
+        className="flex animate-in items-center justify-center duration-150 fade-in-0 zoom-in-95 motion-reduce:animate-none"
+        data-slot="radio-group-indicator-circle"
+      >
+        <Circle className="size-2 fill-current stroke-none" />
+      </span>
     </RadioPrimitive.Indicator>
   );
 }
 
 type PrimitiveRadioProps = React.ComponentProps<typeof RadioPrimitive.Root>;
-type RadioGroupItemProps = PrimitiveRadioProps &
-  Omit<HTMLMotionProps<'button'>, keyof PrimitiveRadioProps> &
-  SharedProps & { transition?: Transition; variant?: 'card' | 'default' };
+type RadioGroupItemProps = PrimitiveRadioProps & SharedProps & { variant?: 'card' | 'default' };
 
 function RadioGroupItem({
   children,
   className,
-  transition = DEFAULT_TRANSITION,
   testId,
   variant = 'default',
   nativeButton,
   render,
   ...props
 }: RadioGroupItemProps) {
-  const separated = splitMotionProps(props);
   const renderRoot: NonNullable<PrimitiveRadioProps['render']> = (rootProps, state) => {
     const Root: React.ElementType = nativeButton === false ? 'span' : 'button';
     return <Root {...rootProps} data-state={state.checked ? 'checked' : 'unchecked'} />;
   };
   return (
     <RadioPrimitive.Root
-      {...separated.native}
+      {...props}
       className={(state) =>
         cn(
           variant === 'card'
@@ -114,19 +95,17 @@ function RadioGroupItem({
       nativeButton={nativeButton ?? render === undefined}
       render={render ?? renderRoot}
     >
-      <motion.span className="contents" {...separated.motion}>
-        {children}
-        {variant === 'card' ? (
-          <span
-            aria-hidden="true"
-            className="flex aspect-square size-5 shrink-0 items-center justify-center rounded-full border !border-input text-selected"
-          >
-            <RadioGroupIndicator data-slot="radio-group-item-indicator" transition={transition} />
-          </span>
-        ) : (
-          <RadioGroupIndicator data-slot="radio-group-item-indicator" transition={transition} />
-        )}
-      </motion.span>
+      {children}
+      {variant === 'card' ? (
+        <span
+          aria-hidden="true"
+          className="flex aspect-square size-5 shrink-0 items-center justify-center rounded-full border !border-input text-selected"
+        >
+          <RadioGroupIndicator data-slot="radio-group-item-indicator" />
+        </span>
+      ) : (
+        <RadioGroupIndicator data-slot="radio-group-item-indicator" />
+      )}
     </RadioPrimitive.Root>
   );
 }

@@ -1,9 +1,10 @@
 'use client';
 
 import type { AutoFormFieldProps } from '../core-types';
-import { getFieldUiConfig, LONG_TEXT_FIELD_PATTERN } from '../helpers';
+import { getFieldUiConfig } from '../helpers';
 import type { FieldTypeDefinition } from '../registry';
 import { Textarea } from '../ui-components';
+import { builtInFieldMetadata } from './metadata';
 import { useFieldTestIds } from './shared';
 
 function TextareaFieldComponent({ error, field, id, inputProps }: AutoFormFieldProps) {
@@ -28,10 +29,6 @@ function TextareaFieldComponent({ error, field, id, inputProps }: AutoFormFieldP
 export { TextareaFieldComponent };
 
 export const textareaFieldDefinition: FieldTypeDefinition = {
+  ...builtInFieldMetadata.textarea,
   component: TextareaFieldComponent,
-  match: (field, context) =>
-    field.type === 'string' &&
-    (context.inputType === 'textarea' || context.maxLength > 120 || LONG_TEXT_FIELD_PATTERN.test(context.identity)),
-  name: 'textarea',
-  priority: 15,
 };

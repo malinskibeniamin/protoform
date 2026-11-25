@@ -1,7 +1,6 @@
 import React from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
   Choicebox,
@@ -47,6 +46,10 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Heading, Text } from '@/components/ui/typography';
 import type { ProtoformUIComponentMap } from './ui-component-map';
 
+const LazyCalendar = React.lazy(() =>
+  import('@/components/ui/calendar').then((module) => ({ default: module.Calendar }))
+);
+
 function legacyTestIds(Component: React.ElementType) {
   return function LegacyControl(props: Record<string, unknown>) {
     return React.createElement(Component, {
@@ -56,12 +59,29 @@ function legacyTestIds(Component: React.ElementType) {
   };
 }
 
+function InstantTabsContent(props: React.ComponentProps<typeof TabsContent>) {
+  return React.createElement(TabsContent, { ...props, animation: 'none' });
+}
+
+function lazyLegacyControl(Component: React.ElementType, label: string) {
+  const Control = legacyTestIds(Component);
+  return function DeferredControl(props: Record<string, unknown>) {
+    return React.createElement(
+      React.Suspense,
+      {
+        fallback: React.createElement('div', { className: 'p-3 text-sm text-muted-foreground', role: 'status' }, label),
+      },
+      React.createElement(Control, props)
+    );
+  };
+}
+
 export const shadcnUIComponents = {
   Alert: legacyTestIds(Alert),
   AlertDescription: legacyTestIds(AlertDescription),
   AlertTitle: legacyTestIds(AlertTitle),
   Button: legacyTestIds(Button),
-  Calendar: legacyTestIds(Calendar),
+  Calendar: lazyLegacyControl(LazyCalendar, 'Loading calendar…'),
   Checkbox: legacyTestIds(Checkbox),
   Choicebox: legacyTestIds(Choicebox),
   ChoiceboxItem: legacyTestIds(ChoiceboxItem),
@@ -104,7 +124,7 @@ export const shadcnUIComponents = {
   Slider: legacyTestIds(Slider),
   Switch: legacyTestIds(Switch),
   Tabs: legacyTestIds(Tabs),
-  TabsContent: legacyTestIds(TabsContent),
+  TabsContent: legacyTestIds(InstantTabsContent),
   TabsList: legacyTestIds(TabsList),
   TabsTrigger: legacyTestIds(TabsTrigger),
   Text: legacyTestIds(Text),

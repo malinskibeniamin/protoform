@@ -10,7 +10,6 @@ import { CopyButton } from '@/components/ui/copy-button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { toast } from '@/components/ui/toast';
 import { Heading, Text } from '@/components/ui/typography';
 import { cn, type SharedProps } from '@/registry/base-nova/protoform/lib/utils';
 
@@ -810,13 +809,17 @@ const JSONField = ({
           <>
             <CopyButton
               content={JSON.stringify(value, null, 2)}
-              onCopy={() =>
-                toast.add({
-                  description: 'The JSON data was copied to your clipboard.',
-                  title: 'JSON copied',
-                  type: 'success',
-                })
-              }
+              onCopy={() => {
+                import('@/components/ui/toast')
+                  .then(({ toast }) => {
+                    toast.add({
+                      description: 'The JSON data was copied to your clipboard.',
+                      title: 'JSON copied',
+                      type: 'success',
+                    });
+                  })
+                  .catch(() => undefined);
+              }}
               size="sm"
               type="button"
               variant="outline"

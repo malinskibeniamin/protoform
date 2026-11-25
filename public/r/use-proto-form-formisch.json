@@ -4,8 +4,8 @@
   "title": "useProtoForm for Formisch",
   "description": "Native Formisch and Valibot validation with typed protobuf submission, update masks, and Connect/gRPC field errors.",
   "dependencies": [
-    "@bufbuild/protobuf",
-    "@connectrpc/connect",
+    "@bufbuild/protobuf@^2.17.0",
+    "@connectrpc/connect@^2.3.0",
     "@formisch/react@^1.2.0",
     "valibot@^1.5.0"
   ],

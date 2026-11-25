@@ -4,6 +4,7 @@ import type { AutoFormFieldProps } from '../core-types';
 import { getFieldUiConfig } from '../helpers';
 import type { FieldTypeDefinition } from '../registry';
 import { Input } from '../ui-components';
+import { builtInFieldMetadata } from './metadata';
 import { normalizeNumberValue, resolveNumericStep, useFieldTestIds } from './shared';
 
 function NumberFieldComponent({ error, field, id, inputProps }: AutoFormFieldProps) {
@@ -38,15 +39,6 @@ function NumberFieldComponent({ error, field, id, inputProps }: AutoFormFieldPro
 export { NumberFieldComponent };
 
 export const numberFieldDefinition: FieldTypeDefinition = {
+  ...builtInFieldMetadata.number,
   component: NumberFieldComponent,
-  match: (field) => {
-    if (field.type !== 'number') {
-      return false;
-    }
-    const min = Number(field.fieldConfig?.inputProps?.['min']);
-    const max = Number(field.fieldConfig?.inputProps?.['max']);
-    return !(Number.isFinite(min) && Number.isFinite(max));
-  },
-  name: 'number',
-  priority: 10,
 };

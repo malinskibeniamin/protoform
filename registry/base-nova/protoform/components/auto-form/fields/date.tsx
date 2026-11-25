@@ -1,6 +1,5 @@
 'use client';
 
-import { format } from 'date-fns';
 import { CalendarIcon, Clock3Icon } from 'lucide-react';
 import type { AutoFormFieldProps } from '../core-types';
 import { getFieldUiConfig } from '../helpers';
@@ -16,8 +15,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '../ui-components';
+import { builtInFieldMetadata } from './metadata';
 import {
   buildTimestampValue,
+  formatCalendarDate,
   getControlLabel,
   normalizeDateValue,
   normalizeTimeValue,
@@ -63,7 +64,7 @@ function DateFieldComponent({ error, field, id, inputProps, label }: AutoFormFie
         <Calendar
           mode="single"
           onSelect={(date) => {
-            inputProps['onValueChange'](date ? format(date, 'yyyy-MM-dd') : '');
+            inputProps['onValueChange'](date ? formatCalendarDate(date) : '');
           }}
           selected={selectedDate}
         />
@@ -116,15 +117,11 @@ function TimestampFieldComponent({ error, field, id, inputProps, label }: AutoFo
 export { DateFieldComponent, TimestampFieldComponent };
 
 export const dateFieldDefinition: FieldTypeDefinition = {
+  ...builtInFieldMetadata.date,
   component: DateFieldComponent,
-  match: (field) => field.type === 'date',
-  name: 'date',
-  priority: 10,
 };
 
 export const timestampFieldDefinition: FieldTypeDefinition = {
+  ...builtInFieldMetadata.timestamp,
   component: TimestampFieldComponent,
-  match: (field) => field.type === 'timestamp',
-  name: 'timestamp',
-  priority: 10,
 };

@@ -5,24 +5,32 @@ conformance, browser, registry-consumer and documentation tests.
 
 ## Reviewed versions (updated 2026-11-16)
 
-| Tool            | Version             | Responsibility                                     |
-| --------------- | ------------------- | -------------------------------------------------- |
-| Bun             | 1.4.4               | Package manager; pinned across workflows           |
-| Blume           | 2.2.7               | Astro/MDX checking, builds and audits              |
-| Ultracite       | 8.2.1               | Shared conventions and safe edit hooks             |
-| Biome           | 2.6.8               | General linting and source formatting              |
-| Oxlint          | 1.94.0              | Additional syntax, import, promise and test checks |
-| oxlint-tsgolint | 7.0.2007            | Type-aware linting and compiler diagnostics        |
-| tsrs            | 0.25.0-ts7.1.0-beta | Rust-based strict source and test checking         |
-| Oxfmt           | 0.79.0              | Astro/Markdown/YAML formatting                     |
-| React Doctor    | 0.9.23              | Full warning-blocking component/design audit       |
-| React Scan      | 0.5.7               | Interactive profiling: `bun run scan:react`        |
+| Tool         | Version             | Responsibility                                      |
+| ------------ | ------------------- | --------------------------------------------------- |
+| Bun          | 1.4.4               | Package manager; pinned across workflows            |
+| Blume        | 2.2.7               | Astro/MDX checking, builds and audits               |
+| Ultracite    | 8.2.1               | Shared conventions and safe edit hooks              |
+| Biome        | 2.6.8               | General linting and source formatting               |
+| Oxlint       | 1.94.0              | Additional syntax, import, promise and test checks  |
+| tsrs         | 0.25.0-ts7.1.0-beta | Strict source/test checks; type-aware Oxlint runner |
+| Oxfmt        | 0.79.0              | Astro/Markdown/YAML formatting                      |
+| React Doctor | 0.9.23              | Full warning-blocking component/design audit        |
+| React Scan   | 0.5.7               | Interactive profiling: `bun run scan:react`         |
 
 Source, test, and authored-file coverage checks use the exactly pinned Rust compiler, `tsrs`.
 This release targets TypeScript 7.1 beta and uses upstream checker defaults. It supports macOS
 arm64/x64, Linux x64/arm64 and Windows x64/arm64. The project uses the default checker mode, not `--fast`. TypeScript 6 remains for
 synchronous AST APIs used by tooling, not for source/test typechecking. Blume retains its own
 Astro/MDX checker.
+
+The primary strict program includes authored tests, so the combined gate checks it once;
+`typecheck:tests` remains available for a targeted test program. Coverage is checked against
+the primary program, preventing tests from silently moving outside the combined gate.
+
+Rstest's Node and Happy DOM projects enable React Compiler through SWC's
+`jsc.transform.reactCompiler`; the React plugin's `reactCompiler` option applies only to
+web targets. Real CLI regressions compile a valid component and reject an impure render
+in all three Node-target projects. Browser mode retains the plugin's web-target transform.
 
 `bun run scan:react` starts an opt-in development server with the installed React Scan module loaded
 before React hydration. Profiling is never injected into builds or previews. The installed CLI's
@@ -37,6 +45,12 @@ opens and edits in one event-loop task and checks the generated sample without a
 This trades deferred initialization for working controls; remove the patch
 when upstream makes initialization synchronous or exposes a real loading/readiness state.
 The pinned package integrity in `bun.lock` owns provenance; upstream license files are unchanged.
+
+The same patch isolates the language-choice listener from server-side locale routing. Importing
+the routing module retained every UI translation dictionary in the eager language-switcher chunk.
+The docs browser contract bounds the complete static client import graph and preserves language
+selection with the current fragment. Remove this portion when upstream separates that browser
+boundary without losing locale persistence, dismissal or routing behavior.
 
 The 2.2.7 upgrade retains that patch: its unpatched source still defers initialization
 until the disclosure toggle. Blume's declaration exports and localized reference labels,
@@ -75,7 +89,7 @@ The new React Doctor `forwarded-set-state-in-effect` rule is enforced as an erro
 
 Six redundant overrides were removed: MCP SDK, Rspack, Vercel's Zod, KaTeX, Lodash ES and Sharp.
 Their parents now resolve compatible versions normally. Security overrides remain for Glob 14.0.4,
-Minimatch 11.0.5, Typography's selector parser 7.1.7, Vercel's path-to-regexp 6.3.0, router's
+Minimatch 11.0.8, Typography's selector parser 6.1.6, Vercel's path-to-regexp 6.3.0, router's
 path-to-regexp 8.4.2 and the deepmerge fork. The path-to-regexp lines intentionally differ: the
 parents rely on different APIs; forcing v9 into either is not a compatible upgrade.
 
@@ -98,12 +112,66 @@ configured Promise/exhaustiveness checks. React refs and IDs use recognizable lo
 named loop/await results preserve runtime behavior. React Doctor keeps shorthand true props,
 and named forwardRef render callbacks retain their debugging/display names.
 
-Oxlint's type-aware runner is explicitly `node_modules/.bin/tsrs-lint`; the separate source and
-test `tsrs --noEmit` checks remain in place. The installed stable-tag tsrs runner accepts the
+Oxlint's type-aware runner is explicitly `node_modules/.bin/tsrs-lint`. Source and test
+`tsrs --noEmit` commands remain available; the combined gate checks the primary program once because it includes authored tests. The installed stable-tag tsrs runner accepts the
 Boolean `checksConditionals` option, not Oxlint 1.94's new object-form `flagUnions` option.
 Do not enable that option until the stable tsrs runner supports it. Numeric CSS parsing,
 empty callback expressions, generic builder returns and compiler inference retain their
 existing contracts rather than accepting destructive autofixes.
+
+Astro 7.4.12 and Vite 8.3.8 retain their compatible framework/bundler pairing. Targeted lockfile
+updates select `@astrojs/node` 11.1.13, `@hono/node-server` 2.1.8 and Hono 4.13.19 within their
+parents' existing ranges. The existing Minimatch override advances to 11.0.8 for its compile-cost,
+cache-retention and literal-escaping fixes. These updates add no audit exceptions or new overrides.
+
+## Dependency override decisions (reviewed 2026-11-15)
+
+Review owner ranges, security fixes and consumer behavior together; a clean audit alone does not prove compatibility.
+The existing Blume patch and `deepmerge@^4` alias retain their removal conditions above.
+
+| Original override                 | Decision and owner constraint                                                                                                          | Removal condition / verification                                                                                                            |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@modelcontextprotocol/sdk`       | Remove the redundant pin; Blume accepts `^1.30.0`. Locked SDK remains 1.32.1.                                                          | No package or integrity change; frozen install and audit.                                                                                   |
+| `@rspack/core`                    | Remove: Rsbuild 2.3.1 now supports the locked Rspack 2.3.1 through `~2.3.1`.                                                           | Native compiler, React Compiler, mock and browser suites verify the owner-supported resolution.                                             |
+| Typography → selector parser      | Use the security-backported 6.1.6 rather than force 7.x onto Typography's exact 6.0.10. Shadcn independently resolves supported 7.2.1. | Remove when Typography accepts a fixed parser. Prose, excluded children and nested modifiers compile; representative CSS is byte-identical. |
+| Vercel CLI config → Zod           | Remove after the supported Functions → OIDC → CLI-config update below.                                                                 | Fixed bundled and declared Zod; config passthrough, rejection and auth-file filtering regressions.                                          |
+| Vercel routing → `path-to-regexp` | Keep 6.3.0 instead of the owner's exact vulnerable 6.1.0; do not force router's v8 grammar.                                            | Remove when routing-utils drops or updates the old import; optional/repeated rewrite captures must still work.                              |
+| `deepmerge@^4`                    | Keep the scoped 1.1.2 security replacement; do not replace Formik's separate 2.x.                                                      | Fixed upstream owner release; hostile-key, array, custom-merge, cycle and clone regressions.                                                |
+| `glob`                            | Keep 14.0.4 security remediation despite NFT's `^13.0.0`; no speculative latest-major substitution.                                    | Remove when NFT accepts a fixed version. Dynamic asset tracing covers symlinks, dotfiles and dependency-directory exclusions.               |
+| `katex`                           | Remove: Mermaid 12.3.0 now accepts `^0.18.0`, resolving KaTeX 0.18.10 without a pin.                                                   | Preserve inline/display/error output and diagram math labels on the owner-supported family.                                                 |
+| `lodash-es`                       | Remove: Chevrotain 13.2.0 no longer pins Lodash ES; remaining owners resolve fixed 4.18.1.                                             | Retain Mermaid parsing and Formik integration checks without a global pin.                                                                  |
+| `minimatch`                       | Keep 11.0.8 for compile-cost, retained-cache and literal-escaping fixes, despite older ESLint/filelist ranges.                         | Remove when owners select fixed compatible releases; config matching and filelist expansion/exclusions exercise both API families.          |
+| Router → `path-to-regexp`         | Keep 8.4.2. Although Router accepts `^8.0.0`, removing the override resolves vulnerable 8.2.0.                                         | Require an unforced fixed resolution and clean audit; keep v8 separate from Vercel's v6 replacement.                                        |
+| `sharp`                           | Remove the redundant pin; Blume accepts `^0.35.5` and Astro `^0.35.4`. Locked Sharp/native packages remain unchanged.                  | Frozen install and image/documentation build; do not remove native image functionality.                                                     |
+
+Selector-parser 6.1.6 and 7.1.8 fix the newer
+[quadratic parsing advisory](https://github.com/postcss/postcss-selector-parser/security/advisories/GHSA-67xj-gfww-g738);
+7.2.1 also restores constructor escaping compatibility and fixes its TypeScript declaration
+([release notes](https://github.com/postcss/postcss-selector-parser/releases/tag/7.2.1)).
+This project parses trusted build-time CSS, not remote selectors. Router's unpinned downgrade
+reintroduces [optional-group](https://github.com/pillarjs/path-to-regexp/security/advisories/GHSA-j3q9-mxjg-w52f)
+and [wildcard](https://github.com/pillarjs/path-to-regexp/security/advisories/GHSA-27v5-c462-wpq7) denial-of-service advisories.
+
+CLI-config 0.3.1 bundled Zod 4.1.11: changing its installed dependency never rewrote that embedded code.
+The supported chain from Astro's existing Functions range now selects Functions 3.11.3 → OIDC 4.0.9 →
+CLI-config 0.4.0, whose artifact embeds Zod 4.6.7 and declares `^4.6.6`. This removes the ineffective
+leaf override without overriding an owner's exact pin. The [collection-exhaustion advisory](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5)
+was not reachable through the old default object/scalar config schemas; nevertheless the new artifact fixes the embedded runtime.
+Verification uses fixture config only, never real credentials, token refresh or deployment. New DPoP/affinity APIs are not adopted.
+
+Run the owner compatibility checks with
+`node scripts/run-tests.ts integration scripts/dependency-overrides.integration.test.ts scripts/deepmerge.integration.test.ts`.
+These targeted probes do not certify every third-party feature or platform. Keep frozen installation, security audit,
+registry consumers, form integrations, native compiler and complete documentation/browser gates before delivery.
+
+## Client payload budgets
+
+`@bufbuild/cel` is pinned to `0.6.1` to match `@bufbuild/protovalidate` 1.3.0's exact `@bufbuild/cel`/`@bufbuild/re2` 0.6.1 pins, eliminating duplicate CEL and RE2 runtimes from consumer bundles without adding a package override. Revisit the pin when Protovalidate updates its declared CEL/RE2 versions.
+
+Own-code bundle checks remain in place. Fully resolved, no-externals host/default-UI probes additionally bound initial,
+async and total gzip JavaScript: `motion` and `@uiw/react-codemirror` are absent from all chunks (UI transitions use native CSS / Base UI state attributes, and `JSONCodeEditor` loads each CodeMirror package through a dynamic import that keeps only the exports it uses, all in one `Promise.all`, so packages load in parallel and are tree-shaken to the extensions it uses, keeping the former basic-setup history, keymaps, bracket handling, folding and search without the wrapper); `date-fns` is absent from host and initial default-UI loads (AutoForm date normalization uses native `Date` helpers); and `Calendar` (`react-day-picker`), CodeMirror and the copy-toast module remain deferred from initial load. Built-route budgets follow representative routes'
+static, literal-dynamic, inline and island module graphs, counting shared chunks once. Pagefind's runtime/worker and ELK's embedded fallback are accounted for explicitly; unexpected computed import or worker sites fail. These measure compressed artifact graphs,
+not observed network traffic or CSS, font and WASM payloads.
 
 ## Formatting and edit hooks
 
